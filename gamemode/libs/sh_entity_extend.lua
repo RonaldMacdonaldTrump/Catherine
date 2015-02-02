@@ -15,7 +15,7 @@ end
 
 function Nexus_Ent:HasOwner( )
 
-	local ent = ply:GetEyeTrace( 70 ).Entity
+	local ent = self:GetEyeTrace( 70 ).Entity
 
 	if ent:GetOwner( ) == IsValid( ) then
 	
@@ -27,7 +27,7 @@ end
 
 function Nexus_Ent:DoorGetOwner( )
 
-	local ent = ply:GetEyeTrace( 70 ).Entity
+	local ent = self:GetEyeTrace( 70 ).Entity
 
 	if !ent:IsDoor( ) then return end
 	
@@ -37,7 +37,7 @@ end
 
 function Nexus_Ent:BuyDoor( )
 
-	local ent = ply:GetEyeTrace( 70 ).Entity
+	local ent = self:GetEyeTrace( 70 ).Entity
 
 	if !ent:IsDoor( ) then return end
 	
@@ -51,7 +51,7 @@ end
 
 function Nexus_Ent:SellDoor( )
 
-	local ent = ply:GetEyeTrace( 70 ).Entity
+	local ent = self:GetEyeTrace( 70 ).Entity
 
 	if !ent:IsDoor( ) then return end
 	
