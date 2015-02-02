@@ -7,8 +7,10 @@ nexus.configs.doorSellCost = 25
 
 nexus.configs.playerDefaultRunSpeed = 350
 nexus.configs.playerDefaultWalkSpeed = 200
-nexus.configs.playerDefaultWalkSpeed = 200
 nexus.configs.playerJumpPower = 130
+
+nexus.configs.paydayInterval = 1800 // default value. 30 minute 
+nexus.configs.paydayPay = 50
 
 nexus.configs.defaultMoney = 100
 nexus.configs.moneyName = "Token"
