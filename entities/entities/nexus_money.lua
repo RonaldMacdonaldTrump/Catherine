@@ -17,7 +17,7 @@ function ENT:Initialize()
 end
 
 function ENT:Use(activator)
-	local amt = math.random( 100, 500 )
+	local amt = 100
 
 	activator:AddMoney(amt)
 
