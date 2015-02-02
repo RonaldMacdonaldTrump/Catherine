@@ -25,7 +25,7 @@ function Nexus_Ent:HasOwner( )
 
 end
 
-function Nexus_Ent:GetOwner( )
+function Nexus_Ent:DoorGetOwner( )
 
 	local ent = ply:GetEyeTrace( 70 ).Entity
 
