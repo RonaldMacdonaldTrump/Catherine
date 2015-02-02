@@ -8,17 +8,21 @@ SWEP.WorldModel = ""
 
 function SWEP:Deploy( )
 	local ply = self.Owner
-	if CLIENT or !IsValid( ply ) then return true end
+	if ( CLIENT ) or !IsValid( ply ) then return true end
 	
 	ply:DrawWorldModel( false )
 	
 	return true
 end
 
+function SWEP:Initialize( )
+	self:SetWeaponHoldType( self.HoldType )
+end
+
 function SWEP:PrimaryAttack( )
 	if !IsFirstTimePredicted( ) then return end
 	
-	if CLIENT then return end
+	if ( CLIENT ) then return end
 	
 	local ply = self.Owner
 	local ent = ply:GetEyeTrace( 70 ).Entity

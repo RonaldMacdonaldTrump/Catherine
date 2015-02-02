@@ -5,6 +5,8 @@ nexus.configs = nexus.configs or { }
 nexus.configs.doorCost = 50
 nexus.configs.doorSellCost = 25
 
+nexus.configs.sodaCost = 10 // Vendingmachine soda cost
+
 nexus.configs.playerDefaultRunSpeed = 350
 nexus.configs.playerDefaultWalkSpeed = 200
 nexus.configs.playerJumpPower = 130
