@@ -7,8 +7,8 @@ nexus.configs.doorSellCost = 25
 
 nexus.configs.sodaCost = 10 // Vendingmachine soda cost
 
-nexus.configs.playerDefaultRunSpeed = 350
-nexus.configs.playerDefaultWalkSpeed = 200
+nexus.configs.playerDefaultRunSpeed = 200
+nexus.configs.playerDefaultWalkSpeed = 90
 nexus.configs.playerJumpPower = 130
 
 nexus.configs.paydayInterval = 1800 // default value. 30 minute 
