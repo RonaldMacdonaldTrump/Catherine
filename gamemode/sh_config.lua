@@ -2,9 +2,13 @@
 
 nexus.configs = nexus.configs or { }
 
-nexus.configs.DoorPrice = 50
+nexus.configs.doorCost = 50
+nexus.configs.doorSellCost = 25
 nexus.configs.playerDefaultRunSpeed = 350
 nexus.configs.playerDefaultWalkSpeed = 200
+
+nexus.configs.defaultMoney = 100
+nexus.configs.moneyName = "Token"
 
 nexus.configs.database_module = "mysqloo"
 nexus.configs.database_host = "127.0.0.1"
