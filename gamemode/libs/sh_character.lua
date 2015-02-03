@@ -142,6 +142,14 @@ if ( SERVER ) then
 	function GM:CharacterPreSet( pl, id )
 		pl:SetHealth( nexus.character.GetNexusData( pl, "health", 5 ) )
 		pl:SetArmor( nexus.character.GetNexusData( pl, "armor", 0 ) )
+		
+		if ( nexus.configs.giveHand ) then
+			pl:Give( "nexus_hands" )
+		end
+		
+		if ( nexus.configs.giveKey ) then
+			pl:Give( "nexus_key" )
+		end		
 	end
 	
 	function GM:DataSaved( )

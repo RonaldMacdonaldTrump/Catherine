@@ -7,8 +7,12 @@ nexus.configs.playerDefaultWalkSpeed = 200
 
 nexus.configs.defaultCash = 100
 nexus.configs.cashName = "Cash"
+nexus.configs.cashModel = "models/props_lab/box01a.mdl"
 
 nexus.configs.saveInterval = 300
+
+nexus.configs.giveHand = true
+nexus.configs.giveKey = true
 
 nexus.configs.database_module = "mysqloo"
 nexus.configs.database_host = "127.0.0.1"
