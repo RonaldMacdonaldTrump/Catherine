@@ -7,7 +7,11 @@ local META = FindMetaTable( "Player" )
 if ( SERVER ) then
 	nexus.character.characterDatas = nexus.character.characterDatas or { }
 	
-	function META:SetCharacterData( key, value, dbSave )
+	function META:SetCharacterData( key, value, dbSave, force )
+		if ( key == "_NexusData" and !force ) then
+			ErrorNoHalt( "[Nexus] SetCharacterData has can't change Nexus Data!" )
+			return
+		end
 		nexus.character.characterDatas[ self:UniqueID( ) ] = nexus.character.characterDatas[ self:UniqueID( ) ] or { }
 		nexus.character.characterDatas[ self:UniqueID( ) ][ key ] = value
 		self:CallOnRemove( "ClearCharacterData", function( )
@@ -25,6 +29,7 @@ if ( SERVER ) then
 	function META:IsCharacterLoaded( )
 		return self:GetNetworkValue( "characterLoaded", false )
 	end
+
 end
 
 function META:GetCharacterData( key, default )

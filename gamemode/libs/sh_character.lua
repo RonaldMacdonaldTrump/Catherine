@@ -1,4 +1,5 @@
 nexus.character = nexus.character or { }
+nexus.character.nexusDataLists = nexus.character.nexusDataLists or { }
 nexus.character.characterDataList = { }
 
 local encodePon = pon.encode( { } )
@@ -13,9 +14,25 @@ function nexus.character.DataListFindByField( field )
 			return v
 		end
 	end
-	
 	return nil
 end
+
+if ( SERVER ) then
+	function nexus.character.SetNexusData( pl, key, value )
+		pl:SetNetworkValue( "NexusData_" .. key, value )
+	end
+end
+
+function nexus.character.GetNexusData( pl, key, default )
+	return pl:GetNetworkValue( "NexusData_" .. key, default )
+end
+
+function nexus.character.NewNexusData( key, default )
+	nexus.character.nexusDataLists[ key ] = default
+end
+
+nexus.character.NewNexusData( "health", 100 )
+nexus.character.NewNexusData( "armor", 0 )
 
 nexus.character.RegisterCharacterData( {
 	Field = "_Name",
@@ -117,12 +134,24 @@ nexus.character.RegisterCharacterData( {
 	end
 } )
 
-	
 if ( SERVER ) then
 	nexus.character.Lists = nexus.character.Lists or { }
 	nexus.character.Registering = nexus.character.Registering or false
 	nexus.character.SaveCurTime = nexus.character.SaveCurTime or CurTime( ) + nexus.configs.saveInterval
 	
+	function GM:CharacterPreSet( pl, id )
+		pl:SetHealth( nexus.character.GetNexusData( pl, "health", 5 ) )
+		pl:SetArmor( nexus.character.GetNexusData( pl, "armor", 0 ) )
+	end
+	
+	function GM:DataSaved( )
+		for k, v in pairs( player.GetAll( ) ) do
+			if ( !v:IsCharacterLoaded( ) ) then continue end
+			nexus.character.SetNexusData( v, "health", v:Health( ) )
+			nexus.character.SetNexusData( v, "armor", v:Armor( ) )
+		end
+	end
+
 	function nexus.character.Register( pl, data )
 		nexus.character.Registering = true
 		
@@ -141,24 +170,20 @@ if ( SERVER ) then
 					MsgN( errorMsg )
 					return
 				end
-				
 			end
 				
 			buffer[ v.Field ] = value
 			buffer2[ v.Name ] = value
 		end
-	
-		//PrintTable( buffer )
+
 		nexus.database.Insert( buffer, "characters", function( )
 			nexus.database.GetTable( "_SteamID = '" .. pl:SteamID( ) .. "'", "characters", function( data )
 				nexus.character.SendCharacterLists( pl, data )
 			end )
 		end )
 	
-		print("Character created!")
-		
+		MsgN( "Character created!" )
 		nexus.character.Registering = false
-		
 		hook.Run( "CharacterCreated", pl, data )
 	end
 	
@@ -171,21 +196,38 @@ if ( SERVER ) then
 			pl:SetNetworkValue( "characterLoaded", true )
 			
 			for k, v in pairs( data ) do
-				if ( k == "_ID" or k == "_NexusData" ) then continue end
+				if ( k == "_ID" ) then continue end
 				local field = nexus.character.DataListFindByField( k )
 				if ( field.IgnoreSet ) then continue end
-				pl:SetCharacterData( k, v )
+				pl:SetCharacterData( k, v, false, true )
 			end
 			
-			// pl:SetTeam( )
-			// pl:SetHealth( )
-			// pl:SetArmor( )
+			local charNexusData = data[ "_NexusData" ]
+			local decodeNexusData = pon.decode( tostring( charNexusData ) )
+			local changed = false
+			for k, v in pairs( nexus.character.nexusDataLists ) do
+				for k2, v2 in pairs( decodeNexusData ) do
+					if ( !decodeNexusData[ k ] ) then
+						decodeNexusData[ k ] = v
+						changed = true
+					end
+					if ( k == k2 ) then
+						nexus.character.SetNexusData( pl, k, v2 )
+					end
+				end
+			end
 			
+			if ( changed ) then
+				nexus.database.Update( "_ID = '" .. id .. "'", { _NexusData = pon.encode( decodeNexusData ) }, "characters" )
+			end
+
 			pl:Spawn( )
 			pl:SetModel( pl:GetCharacterData( "_Model" ) )
 			pl:SetColor( Color( 255, 255, 255, 255 ) )
 			
-			print("Character Loaded! - " .. id)
+			hook.Run( "CharacterPreSet", pl, id )
+			
+			MsgN( "Character Loaded! - " .. id )
 			
 			hook.Run( "CharacterLoaded", pl, id )
 		end )
@@ -198,6 +240,14 @@ if ( SERVER ) then
 			if ( v.IgnoreSet ) then continue end
 			datas[ v.Field ] = pl:GetCharacterData( v.Field )
 		end
+		
+		local nexusData = { }
+		for k, v in pairs( nexus.character.nexusDataLists ) do
+			local value = nexus.character.GetNexusData( pl, k )
+			nexusData[ k ] = value
+		end
+
+		datas[ "_NexusData" ] = pon.encode( nexusData )
 		nexus.database.Update( "_ID = '" .. pl:GetCharacterID( ) .. "'", datas, "characters" )
 		
 		hook.Run( "CharacterSaved" )
@@ -225,37 +275,16 @@ if ( SERVER ) then
 				end )
 				start = start + math.max( v:Ping( ) / 75, 0.75 )
 			end
+			hook.Run( "DataSaved" )
 			nexus.character.SaveCurTime = CurTime( ) + nexus.configs.saveInterval
 		end
 	end )
-	
-	function nexus.character.NewNexusData( )
-	
-	end
-	
---[[ -- For Development
-	nexus.character.Register( player.GetByID( 2 ), {
-		"Bot",
-		"A Sample",
-		"Citizen",
-		"models/alyx.mdl"
-	} )
-
-	print(player.GetByID( 1 ):GetCharacterData( "_Model"))
-	nexus.character.SaveTargetPlayer( player.GetByID( 1 ) )
-	player.GetByID( 1 ):SetCharacterData( "_Model", "models/player/alyx.mdl" )
-	nexus.character.Load( player.GetByID( 1 ), 10 )
-	player.GetByID( 1 ):SetCharacterData( "_Faction", "Fristet" )
-	nexus.character.Save( player.GetByID( 1 ), 10 )
---]]	
 else
 	nexus.character.Lists = nexus.character.Lists or nil
 	nexus.character.characterDatas = nexus.character.characterDatas or { }
 	
 	netstream.Hook( "nexus.character.ReceiveCharacterLists", function( data )
 		nexus.character.Lists = data
-		
-		PrintTable( data )
 	end )
 	
 	netstream.Hook( "nexus.character.SendCharacterDatas", function( data )
@@ -278,18 +307,3 @@ else
 		// nexus.vgui.character = vgui.Create( "nexus.vgui.character" ) TO DO
 	end )
 end
-
---[[
-nexus.database.Insert( {
-	_Name = "L7D",
-	_SteamID = "STEAM_0:1:25704824",
-	_Desc = "127.0.0.1",
-	_Model = "breen.mdl",
-	_Att = "{}",
-	_Schema = "nexus_hl2rp",
-	_RegisterTime = 111111,
-	_NexusData = "{}",
-	_Cash = 0,
-	_Faction = "Citizen"
-}, "characters" )
---]]

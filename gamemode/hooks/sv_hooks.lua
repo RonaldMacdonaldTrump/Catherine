@@ -20,3 +20,10 @@ function GM:PlayerInitialSpawn( pl )
 	nexus.character.SendCharacterPanel( pl )
 end
 
+function GM:PlayerHealthChanged( pl )
+	return GAMEMODE:PlayerHurt( pl )
+end
+
+function GM:PlayerHurt( pl )
+	return true
+end
