@@ -117,46 +117,11 @@ nexus.character.RegisterCharacterData( {
 	end
 } )
 
-local META = FindMetaTable( "Player" )
-
-if ( SERVER ) then
-	nexus.character.characterDatas = nexus.character.characterDatas or { }
-	
-	function META:SetCharacterData( key, value, global )
-		nexus.character.characterDatas[ self:UniqueID( ) ] = nexus.character.characterDatas[ self:UniqueID( ) ] or { }
-		nexus.character.characterDatas[ self:UniqueID( ) ][ key ] = value
-		self:CallOnRemove( "ClearCharacterData", function( )
-			nexus.character.characterDatas[ self:UniqueID( ) ] = nil
-			netstream.Start( nil, "nexus.character.ClearCharacterDatas", {
-				self:UniqueID( )
-			} )
-		end )
-		if ( !global ) then
-			netstream.Start( nil, "nexus.character.SendCharacterDatas", { self:UniqueID( ), key, value } )
-		else
-			netstream.Start( self, "nexus.character.SendCharacterDatas", { self:UniqueID( ), key, value } )
-		end
-	end
-end
-function META:GetCharacterData( key, default )
-	if ( !nexus.character.characterDatas[ self:UniqueID( ) ] ) then
-		return default
-	end
-	
-	if ( !nexus.character.characterDatas[ self:UniqueID( ) ][ key ] ) then
-		return default
-	end
-	return nexus.character.characterDatas[ self:UniqueID( ) ][ key ] or default
-end
-	
-function META:GetCharacterID( )
-	return self:GetNetworkValue( "characterID", 0 )
-end
-	
 	
 if ( SERVER ) then
 	nexus.character.Lists = nexus.character.Lists or { }
 	nexus.character.Registering = nexus.character.Registering or false
+	nexus.character.SaveCurTime = nexus.character.SaveCurTime or CurTime( ) + nexus.configs.saveInterval
 	
 	function nexus.character.Register( pl, data )
 		nexus.character.Registering = true
@@ -190,17 +155,20 @@ if ( SERVER ) then
 			end )
 		end )
 	
-		print("Character create!")
+		print("Character created!")
 		
 		nexus.character.Registering = false
+		
+		hook.Run( "CharacterCreated", pl, data )
 	end
 	
 	function nexus.character.Load( pl, id )
 		nexus.database.GetTable( "_ID = '" .. id .. "'", "characters", function( data )
 			local data = data[ 1 ]
 			pl.characterID = data[ "_ID" ]
-			pl.characterTab = data
+			pl.characterTab = data[ 1 ]
 			pl:SetNetworkValue( "characterID", data[ "_ID" ] )
+			pl:SetNetworkValue( "characterLoaded", true )
 			
 			for k, v in pairs( data ) do
 				if ( k == "_ID" or k == "_NexusData" ) then continue end
@@ -217,48 +185,69 @@ if ( SERVER ) then
 			pl:SetModel( pl:GetCharacterData( "_Model" ) )
 			pl:SetColor( Color( 255, 255, 255, 255 ) )
 			
-			print("Character Load! - " .. id)
+			print("Character Loaded! - " .. id)
+			
+			hook.Run( "CharacterLoaded", pl, id )
 		end )
 	end
 	
 	function nexus.character.SaveTargetPlayer( pl )
-		if ( nexus.character.Registering ) then
-			return
-		end
+		if ( nexus.character.Registering ) then return end
 		local datas = { }
 		for k, v in pairs( nexus.character.characterDataList ) do
 			if ( v.IgnoreSet ) then continue end
 			datas[ v.Field ] = pl:GetCharacterData( v.Field )
 		end
 		nexus.database.Update( "_ID = '" .. pl:GetCharacterID( ) .. "'", datas, "characters" )
+		
+		hook.Run( "CharacterSaved" )
 	end
-	
+
 	function nexus.character.SendCharacterLists( pl, data )
 		netstream.Start( pl, "nexus.character.ReceiveCharacterLists", data )
+	end
+	
+	function nexus.character.SendCharacterPanel( pl )
+		netstream.Start( pl, "nexus.character.ReceiveCharacterPanel" )
 	end
 	
 	hook.Add( "PlayerDisconnected", "nexus.character.PlayerDisconnected", function( pl )
 		nexus.character.SaveTargetPlayer( pl )
 	end )
 	
+	hook.Add( "Think", "nexus.character.Think", function( )
+		if ( nexus.character.SaveCurTime <= CurTime( ) ) then
+			local start = 1
+			for k, v in pairs( player.GetAll( ) ) do
+				if ( !v:IsCharacterLoaded( ) ) then continue end
+				timer.Simple( start, function( )
+					nexus.character.SaveTargetPlayer( v )
+				end )
+				start = start + math.max( v:Ping( ) / 75, 0.75 )
+			end
+			nexus.character.SaveCurTime = CurTime( ) + nexus.configs.saveInterval
+		end
+	end )
+	
 	function nexus.character.NewNexusData( )
 	
 	end
---[[
+	
+--[[ -- For Development
 	nexus.character.Register( player.GetByID( 2 ), {
 		"Bot",
 		"A Sample",
 		"Citizen",
 		"models/alyx.mdl"
 	} )
+
+	print(player.GetByID( 1 ):GetCharacterData( "_Model"))
+	nexus.character.SaveTargetPlayer( player.GetByID( 1 ) )
+	player.GetByID( 1 ):SetCharacterData( "_Model", "models/player/alyx.mdl" )
+	nexus.character.Load( player.GetByID( 1 ), 10 )
+	player.GetByID( 1 ):SetCharacterData( "_Faction", "Fristet" )
+	nexus.character.Save( player.GetByID( 1 ), 10 )
 --]]	
-	//print(player.GetByID( 1 ):GetCharacterData( "_Model"))
-	//nexus.character.SaveTargetPlayer( player.GetByID( 1 ) )
-	//player.GetByID( 1 ):SetCharacterData( "_Model", "models/player/alyx.mdl" )
-	//nexus.character.Load( player.GetByID( 1 ), 10 )
-	
-	//player.GetByID( 1 ):SetCharacterData( "_Faction", "Fristet" )
-	//nexus.character.Save( player.GetByID( 1 ), 10 )
 else
 	nexus.character.Lists = nexus.character.Lists or nil
 	nexus.character.characterDatas = nexus.character.characterDatas or { }
@@ -284,13 +273,12 @@ else
 		if ( !nexus.character.characterDatas[ uniqueID ] ) then return end
 		nexus.character.characterDatas[ uniqueID ] = nil
 	end )
+	
+	netstream.Hook( "nexus.character.ReceiveCharacterPanel", function( )
+		// nexus.vgui.character = vgui.Create( "nexus.vgui.character" ) TO DO
+	end )
 end
 
-if ( SERVER ) then
-	//print( player.GetByID( 1 ):GetCharacterData( "_Faction" ) )
-else
-	//print( player.GetByID( 1 ):GetCharacterData( "_Faction" ) )
-end
 --[[
 nexus.database.Insert( {
 	_Name = "L7D",

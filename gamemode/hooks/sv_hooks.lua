@@ -15,3 +15,8 @@ function GM:PlayerSpawn( pl )
 	player_manager.SetPlayerClass( pl, "player_nexus" )
 	BaseClass.PlayerSpawn( self, pl )
 end
+
+function GM:PlayerInitialSpawn( pl )
+	nexus.character.SendCharacterPanel( pl )
+end
+
