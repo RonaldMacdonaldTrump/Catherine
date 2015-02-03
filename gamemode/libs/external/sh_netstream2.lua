@@ -53,10 +53,6 @@ if (SERVER) then
 
 	-- A function to start a net stream.
 	function netstream.Start(player, name, ...)
-		local playerBuffer = player
-		if ( playerBuffer and IsValid( playerBuffer ) ) then
-			playerBuffer:SetNWBool( "LBox.netstream.NW.Status", true )
-		end
 		local recipients = {};
 		local bShouldSend = false;
 	
@@ -90,17 +86,9 @@ if (SERVER) then
 				net.WriteData(encodedData, #encodedData);
 			net.Send(recipients);
 		end;
-		timer.Simple( 1, function( )
-			if ( playerBuffer and IsValid( playerBuffer ) ) then
-				playerBuffer:SetNWBool( "LBox.netstream.NW.Status", false )
-			end
-		end )
 	end;
 	
 	net.Receive("NetStreamDS", function(length, player)
-		if ( player and IsValid( player ) ) then
-			player:SetNWBool( "LBox.netstream.NW.Status", true )
-		end
 		local NS_DS_NAME = net.ReadString();
 		local NS_DS_LENGTH = net.ReadUInt(32);
 		local NS_DS_DATA = net.ReadData(NS_DS_LENGTH);
@@ -128,11 +116,6 @@ if (SERVER) then
 		end;
 		
 		NS_DS_NAME, NS_DS_DATA, NS_DS_LENGTH = nil, nil, nil;
-		timer.Simple( 1, function( )
-			if ( player and IsValid( player ) ) then
-				player:SetNWBool( "LBox.netstream.NW.Status", false )
-			end
-		end )
 	end);
 else
 	-- A function to start a net stream.
