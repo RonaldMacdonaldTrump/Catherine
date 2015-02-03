@@ -142,17 +142,15 @@ if ( SERVER ) then
 	function GM:CharacterPreSet( pl, id )
 		pl:SetHealth( nexus.character.GetNexusData( pl, "health", 5 ) )
 		pl:SetArmor( nexus.character.GetNexusData( pl, "armor", 0 ) )
-		
-		if ( nexus.configs.giveHand ) then
-			pl:Give( "nexus_hands" )
-		end
-		
-		if ( nexus.configs.giveKey ) then
-			pl:Give( "nexus_key" )
-		end		
 	end
 	
-	function GM:DataSaved( )
+	function GM:CharacterSpawned( pl )
+		nexus.character.SetNexusData( pl, "health", pl:Health( ) )
+		nexus.character.SetNexusData( pl, "armor", pl:Armor( ) )
+		pl:SetModel( pl:GetCharacterData( "_Model" ) )
+	end
+
+	function GM:DataSavePreSet( )
 		for k, v in pairs( player.GetAll( ) ) do
 			if ( !v:IsCharacterLoaded( ) ) then continue end
 			nexus.character.SetNexusData( v, "health", v:Health( ) )
@@ -160,6 +158,9 @@ if ( SERVER ) then
 		end
 	end
 
+	//nexus.character.Load( player.GetByID( 1 ), 10 )
+	//nexus.character.SaveTargetPlayer( player.GetByID( 1 ) )
+	
 	function nexus.character.Register( pl, data )
 		nexus.character.Registering = true
 		
@@ -275,6 +276,7 @@ if ( SERVER ) then
 	
 	hook.Add( "Think", "nexus.character.Think", function( )
 		if ( nexus.character.SaveCurTime <= CurTime( ) ) then
+			hook.Run( "DataSavePreSet" )
 			local start = 1
 			for k, v in pairs( player.GetAll( ) ) do
 				if ( !v:IsCharacterLoaded( ) ) then continue end
@@ -283,7 +285,6 @@ if ( SERVER ) then
 				end )
 				start = start + math.max( v:Ping( ) / 75, 0.75 )
 			end
-			hook.Run( "DataSaved" )
 			nexus.character.SaveCurTime = CurTime( ) + nexus.configs.saveInterval
 		end
 	end )

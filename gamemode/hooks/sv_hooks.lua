@@ -14,6 +14,15 @@ end
 function GM:PlayerSpawn( pl )
 	player_manager.SetPlayerClass( pl, "player_nexus" )
 	BaseClass.PlayerSpawn( self, pl )
+	if ( nexus.configs.giveHand ) then
+		pl:Give( "nexus_hands" )
+	end
+		
+	if ( nexus.configs.giveKey ) then
+		pl:Give( "nexus_key" )
+	end
+	
+	hook.Run( "CharacterSpawned", pl )
 end
 
 function GM:PlayerInitialSpawn( pl )
