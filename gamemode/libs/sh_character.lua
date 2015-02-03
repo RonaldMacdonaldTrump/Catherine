@@ -77,9 +77,9 @@ nexus.character.RegisterCharacterData( {
 nexus.character.RegisterCharacterData( {
 	Field = "_Cash",
 	Name = "Cash",
-	Default = 0,
+	Default = nexus.configs.defaultCash,
 	Fetch = function( )
-		return 0
+		return nexus.configs.defaultCash
 	end
 } )
 

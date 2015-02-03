@@ -1,5 +1,5 @@
 if ( !nexus.character ) then
-	nexus.util.Include( "sh_character.lua" )
+	nexus.util.Include( "libs/sh_character.lua" )
 end
 
 local META = FindMetaTable( "Player" )

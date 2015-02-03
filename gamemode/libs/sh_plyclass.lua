@@ -36,7 +36,6 @@ PLAYER.UnDuckSpeed = 0.1
 
 PLAYER.WalkSpeed = nexus.configs.playerDefaultWalkSpeed
 PLAYER.RunSpeed	= nexus.configs.playerDefaultRunSpeed
-PLAYER.JumpPower	= nexus.configs.playerJumpPower
 
 
 function PLAYER:Loadout()

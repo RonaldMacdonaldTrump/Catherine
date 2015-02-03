@@ -1,13 +1,37 @@
+--[[
+CREATE TABLE IF NOT EXISTS `characters` (
+	`_ID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+	`_Name` varchar(70) NOT NULL,
+	`_Desc` tinytext NOT NULL,
+	`_Model` varchar(160) NOT NULL,
+	`_Att` varchar(180) DEFAULT NULL,
+	`_Schema` varchar(24) NOT NULL,
+	`_RegisterTime` int(11) unsigned NOT NULL,
+	`_SteamID` bigint(20) unsigned NOT NULL,
+	`_NexusData` tinytext,
+	`_Cash` int(11) unsigned DEFAULT NULL,
+	`_Faction` varchar(50) NOT NULL,
+	PRIMARY KEY (`_ID`)
+);
+
+
+
+
+
+--]]
 nexus.database = nexus.database or { }
+nexus.database.Connected = nexus.database.Connected or false
 nexus.database.object = nexus.database.object or nil
 nexus.database[ "mysqloo" ] = {
 	ConnectFunc = function( )
 		nexus.database.object = mysqloo.connect( nexus.configs.database_host, nexus.configs.database_id, nexus.configs.database_pwd, nexus.configs.database_name, nexus.configs.database_port )
 		nexus.database.object.onConnected = function( )
 			MsgN( "Nexus has connected by MySQL" )
+			nexus.database.Connected = true
 		end
 		nexus.database.object.onConnectionFailed = function( sql, err )
 			MsgN( "Nexus has connect failed by MySQL!!!\n" .. err )
+			nexus.database.Connected = false
 		end
 		nexus.database.object:connect( )
 	end,
@@ -65,7 +89,7 @@ function nexus.database.Insert( data, tab, call )
 		error( "Object missing." )
 		return
 	end
-	local sqlStr = "UPDATE `" .. tab .. "`"
+	local sqlStr = "INSERT INTO `" .. tab .. "` ("
 	
 	for k, v in pairs( data ) do
 		sqlStr = sqlStr .. "`" .. k .. "`, "
@@ -87,6 +111,7 @@ function nexus.database.Insert( data, tab, call )
 	end
 	
 	sqlStr = string.sub( sqlStr, 1, -3 ) .. ")"
+	//print(sqlStr)
 	nexus.database.Query( sqlStr, call )
 end
 
@@ -150,7 +175,7 @@ function nexus.database.GetTable_All( tab, call )
 	nexus.database.Query( sqlStr, call )
 end
 
-if ( !nexus.database.object ) then
+if ( !nexus.database.Connected ) then
 	nexus.database.Connect( )
 end
 
@@ -168,8 +193,15 @@ nexus.database.Update( "IPAddress = '127.0.0.1'", {
 
 --[[
 nexus.database.Insert( {
-	Name = "Fristet",
-	SteamID = "STEAM_0:1:25704824",
-	IPAddress = "127.0.0.1"
-}, "players" )
+	_Name = "L7D",
+	_SteamID = "STEAM_0:1:25704824",
+	_Desc = "127.0.0.1",
+	_Model = "breen.mdl",
+	_Att = "{}",
+	_Schema = "nexus_hl2rp",
+	_RegisterTime = 111111,
+	_NexusData = "{}",
+	_Cash = 0,
+	_Faction = "Citizen"
+}, "characters" )
 --]]

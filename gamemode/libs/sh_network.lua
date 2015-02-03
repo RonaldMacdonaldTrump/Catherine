@@ -55,48 +55,19 @@ if ( SERVER ) then
 		self.nexus_networkValues[ key ] = value
 	
 		self:CallOnRemove( "ClearNetworkValues", function( )
-			// 엔터티가 제거될시, 네트워킹 해제
 			netstream.Start( nil, "nexus.network.NilEntityValues", {
 				self:EntIndex( ),
 				key
 			} )
-		//	print("Remove network!")
 		end )
-		
 		self:SendNetworkValues( key, target )
-		print("Entity Value Created - ", key, value )
-		PrintTable(self.nexus_networkValues)
 	end
 	
-	concommand.Add( "entityValueSet", function( pl, cmd, args )
-		local data = {}
-			data.start = pl:GetShootPos()
-			data.endpos = data.start + pl:GetAimVector()*96
-			data.filter = pl
-		local trace = util.TraceLine(data)
-		local entity = trace.Entity
-		
-		entity:SetNetworkValue( args[ 1 ], args[ 2 ] )
-	
-	end )
-	
-	concommand.Add( "entityValueGet", function( pl, cmd, args )
-		local data = {}
-			data.start = pl:GetShootPos()
-			data.endpos = data.start + pl:GetAimVector()*96
-			data.filter = pl
-		local trace = util.TraceLine(data)
-		local entity = trace.Entity
-		
-		pl:ChatPrint( args[ 1 ] .. " value : " .. entity:GetNetworkValue( args[ 1 ], "nil" ) )
-	end )
-
 	hook.Add( "PlayerAuthed", "nexus.network.PlayerAuthed", function( pl )
 		timer.Simple( 5, function( )
 			for k, v in pairs( ents.GetAll( ) ) do
 				if ( !IsValid( v ) ) then continue end
 				v:SyncNetworkValues( pl )
-				//print("Send! - " .. v:EntIndex( ) )
 			end
 		end )
 	end )
