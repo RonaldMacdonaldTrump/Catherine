@@ -1,4 +1,14 @@
 local META = FindMetaTable( "Player" )
+local META2 = FindMetaTable( "Entity" )
+
+function META2:IsDoor( )
+	if !IsValid( self ) then return false end
+	local class = self:GetClass( )
+	if ( class == "func_door" or class == "func_door_rotating" or class == "prop_door_rotating" or class == "prop_dynamic" ) then
+		return true
+	end
+	return false
+end
 
 if ( SERVER ) then
 	function META:BuyDoor( )
