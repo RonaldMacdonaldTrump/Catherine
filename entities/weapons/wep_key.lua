@@ -28,7 +28,7 @@ function SWEP:PrimaryAttack( )
 	local ent = ply:GetEyeTrace( 70 ).Entity
 	
 	if !ent:IsDoor( ) or ent.Locked then return end
-	if ent:GetOwner( ) == ply or ply:GetPos( ):Distance( ent:GetPos( ) ) > 100 then return end
+	if ent:GetOwner( ) == ply:GetCharacterID( ) or ply:GetPos( ):Distance( ent:GetPos( ) ) > 100 then return end
 	
 	ent.Locked = true
 	ent:Fire( "lock" )
@@ -48,7 +48,7 @@ function SWEP:SecondaryAttack( )
 	local ent = ply:GetEyeTrace( 70 ).Entity
 	
 	if !ent:IsDoor( ) or !ent.Locked then return end
-	if ent:GetOwner( ) == ply or ply:GetPos( ):Distance( ent:GetPos( ) ) > 100 then return end
+	if ent:GetOwner( ) == ply:GetCharacterID( ) or ply:GetPos( ):Distance( ent:GetPos( ) ) > 100 then return end
 	
 	
 	
