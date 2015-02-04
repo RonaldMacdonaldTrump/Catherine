@@ -36,3 +36,7 @@ end
 function GM:PlayerHurt( pl )
 	return true
 end
+
+function GM:PlayerDeathSound( ply )
+	return true
+end
