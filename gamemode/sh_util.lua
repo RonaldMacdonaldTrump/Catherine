@@ -1,6 +1,12 @@
-
-
 nexus.util = nexus.util or { }
+
+function nexus.util.Print( color, message )
+	if ( !color ) then
+		color = Color( 255, 255, 255 )
+	end
+	if ( !message ) then return end
+	MsgC( color, "[Nexus] " .. message .. "\n" )
+end
 
 function nexus.util.Include( dir, types )
 	if ( !dir ) then return end
@@ -26,8 +32,32 @@ function nexus.util.IncludeInDir( dir, isNexus )
 	for k, v in pairs( file.Find( dir2, "LUA" ) ) do
 		nexus.util.Include( dir .. "/" .. v )
 	end
+end
+
+function nexus.util.FindPlayerByName( name )
+	if ( !name ) then return nil end
+	for k, v in pairs( player.GetAll( ) ) do
+		if ( string.match( string.lower( v:Name( ) ), string.lower( name ) ) ) then
+			return v
+		end
+	end
 	
+	return nil
+end
+
+if ( SERVER ) then
+	function nexus.util.Notify( pl, message )
+		if ( !message ) then return end
+		if ( !pl ) then
+			return
+		end
+		pl:ChatPrint( message )
+	end
+else
+	function nexus.util.Notify( message )
+		if ( !message ) then return end
+		LocalPlayer( ):ChatPrint( message )
+	end
 end
 
 nexus.util.IncludeInDir( "libs/external", true )
-

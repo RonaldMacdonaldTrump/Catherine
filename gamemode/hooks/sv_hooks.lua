@@ -26,7 +26,7 @@ function GM:PlayerSpawn( pl )
 end
 
 function GM:PlayerInitialSpawn( pl )
-	nexus.character.SendCharacterPanel( pl )
+	//nexus.character.SendCharacterPanel( pl )
 end
 
 function GM:PlayerHealthChanged( pl )
