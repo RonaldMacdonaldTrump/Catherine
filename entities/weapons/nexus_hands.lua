@@ -77,7 +77,7 @@ function SWEP:Deploy()
 
 	if ( IsValid( viewModel ) ) then
 		viewModel:SetPlaybackRate( 1 )
-		viewModel:ResetSequence( ACT_VM_FISTS_DRAW )
+		//viewModel:ResetSequence( ACT_VM_FISTS_DRAW )
 	end
 
 	return true

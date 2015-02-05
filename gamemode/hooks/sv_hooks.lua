@@ -27,7 +27,116 @@ end
 
 function GM:PlayerInitialSpawn( pl )
 	//nexus.character.SendCharacterPanel( pl )
+	pl:SetNoDraw( true )
+	pl:KillSilent( )
+		local function stap01( )
+		netstream.Start( pl, "nexus.LoadingStatus", "Character networking ..." )
+		
+		nexus.character.SendCurrentCharacterDatas( pl )
+		
+		nexus.database.GetTable( "_steamID = '" .. pl:SteamID( ) .. "'", "nexus_players", function( data )
+			if ( #data == 0 ) then
+				netstream.Start( pl, "nexus.LoadingStatus", "Makeing player tables ..." )
+				print("Makeing player tables ..." )
+				nexus.database.Insert( {
+					_steamName = pl:Name( ),
+					_steamID = pl:SteamID( ),
+					_nexusData = "[]"
+				}, "nexus_players", function( )
+					netstream.Start( pl, "nexus.LoadingStatus", "Maked player tables ..." )
+					nexus.nexus_data.RegisterByMySQL( pl, true )
+					print("Register nexus data ..." )
+					timer.Simple( 3, function( )
+						netstream.Start( pl, "nexus.LoadingStatus", "Loaded!" )
+						netstream.Start( pl, "nexus.LoadingStatus", false )
+					end )
+					print("Maked player tables ..." )
+				end )
+			else
+				nexus.nexus_data.RegisterByMySQL( pl, true )
+				print("Register nexus data ..." )
+				timer.Simple( 3, function( )
+					netstream.Start( pl, "nexus.LoadingStatus", "Loaded!" )
+					netstream.Start( pl, "nexus.LoadingStatus", false )
+				end )
+			end
+		end )
+	end
+	
+	timer.Create( "nexus.loading.WaitLocalPlayer_" .. pl:SteamID( ), 1, 0, function( )
+		//netstream.Start( pl, "nexus.LoadingStatus", "Waiting local player ..." )
+		
+		if ( IsValid( pl ) ) then
+			print("Start")
+			timer.Destroy( "nexus.loading.WaitLocalPlayer_" .. pl:SteamID( ) )
+			netstream.Start( pl, "nexus.LoadingStatus", true )
+			
+			netstream.Start( pl, "nexus.LoadingStatus", "Waiting local player ..." )
+			timer.Simple( 3, function( )
+				stap01( )
+			end )
+		end
+	end )
+	
 end
+
+concommand.Add( "panelTest", function( pl )
+
+	nexus.character.SendCharacterPanel( pl )
+end )
+
+concommand.Add( "loadingTest", function( pl )
+	
+	local function stap01( )
+		netstream.Start( pl, "nexus.LoadingStatus", "Character networking ..." )
+		
+		nexus.character.SendCurrentCharacterDatas( pl )
+		
+		nexus.database.GetTable( "_steamID = '" .. pl:SteamID( ) .. "'", "nexus_players", function( data )
+			if ( #data == 0 ) then
+				netstream.Start( pl, "nexus.LoadingStatus", "Makeing player tables ..." )
+				print("Makeing player tables ..." )
+				nexus.database.Insert( {
+					_steamName = pl:Name( ),
+					_steamID = pl:SteamID( ),
+					_nexusData = "[]"
+				}, "nexus_players", function( )
+					netstream.Start( pl, "nexus.LoadingStatus", "Maked player tables ..." )
+					nexus.nexus_data.RegisterByMySQL( pl, true )
+					print("Register nexus data ..." )
+					timer.Simple( 3, function( )
+						netstream.Start( pl, "nexus.LoadingStatus", "Loaded!" )
+						netstream.Start( pl, "nexus.LoadingStatus", false )
+					end )
+					print("Maked player tables ..." )
+				end )
+			else
+				nexus.nexus_data.RegisterByMySQL( pl, true )
+				print("Register nexus data ..." )
+				timer.Simple( 3, function( )
+					netstream.Start( pl, "nexus.LoadingStatus", "Loaded!" )
+					netstream.Start( pl, "nexus.LoadingStatus", false )
+				end )
+			end
+		end )
+	end
+	
+	timer.Create( "nexus.loading.WaitLocalPlayer_" .. pl:SteamID( ), 1, 0, function( )
+		//netstream.Start( pl, "nexus.LoadingStatus", "Waiting local player ..." )
+		
+		if ( IsValid( pl ) ) then
+			print("Start")
+			timer.Destroy( "nexus.loading.WaitLocalPlayer_" .. pl:SteamID( ) )
+			netstream.Start( pl, "nexus.LoadingStatus", true )
+			
+			netstream.Start( pl, "nexus.LoadingStatus", "Waiting local player ..." )
+			timer.Simple( 3, function( )
+				stap01( )
+			end )
+		end
+	end )
+
+end )
 
 function GM:PlayerHealthChanged( pl )
 	return GAMEMODE:PlayerHurt( pl )

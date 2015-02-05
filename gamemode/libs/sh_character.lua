@@ -151,7 +151,7 @@ if ( SERVER ) then
 				for k, v in pairs( result[ 1 ] ) do
 					local globaldata = nexus.character.GetGlobalByField( k )
 					if ( globaldata and globaldata.needpon and type( v ) == "string" ) then
-						result[ 1 ][ k ] = pon.decode( v )
+						result[ 1 ][ k ] = util.JSONToTable( v )
 					end
 				end
 				nexus.character.buffers[ pl:SteamID( ) ][ #nexus.character.buffers[ pl:SteamID( ) ] + 1 ] = result[ 1 ]
@@ -160,7 +160,7 @@ if ( SERVER ) then
 			end )
 		end )
 	end
-	
+
 	function nexus.character.Load( pl, charID )
 		hook.Run( "PreCharacterLoaded", pl, pl.characterID )
 
@@ -174,6 +174,11 @@ if ( SERVER ) then
 	function nexus.character.SendCharacterLists( pl )
 		if ( !IsValid( pl ) or !nexus.character.buffers[ pl:SteamID( ) ] ) then return end
 		netstream.Start( pl, "nexus.character.SendCharacterLists", nexus.character.buffers[ pl:SteamID( ) ] )
+	end
+	
+	function nexus.character.SendCharacterPanel( pl )
+		if ( !IsValid( pl ) ) then return end
+		netstream.Start( pl, "nexus.character.SendCharacterPanel" )
 	end
 
 	function nexus.character.IsValid( charID )
@@ -194,7 +199,7 @@ if ( SERVER ) then
 				for k1, v1 in pairs( v ) do
 					for k2, v2 in pairs( v1 ) do
 						if ( type( k2 ) == "string" and ( k2:sub( 2 ) == "name" and v2 == data.name ) ) then
-							return { false, "Can't make that!" }
+							return { false, "name lol" }
 						end
 					end
 				end
@@ -290,6 +295,15 @@ if ( SERVER ) then
 	end )
 else
 	nexus.character.LocalCharacters = nexus.character.LocalCharacters or nil
+	
+	netstream.Hook( "nexus.character.SendCharacterPanel", function( data )
+		if ( IsValid( nexus.vgui.character ) ) then
+			nexus.vgui.character:Close( )
+			nexus.vgui.character = vgui.Create( "nexus.vgui.character" )
+		else
+			nexus.vgui.character = vgui.Create( "nexus.vgui.character" )
+		end
+	end )
 	
 	netstream.Hook( "nexus.character.SendCharacterLists", function( data )
 		nexus.character.LocalCharacters = data

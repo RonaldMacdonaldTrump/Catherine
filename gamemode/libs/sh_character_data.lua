@@ -55,6 +55,10 @@ if ( SERVER ) then
 			netstream.Start( nil, "nexus.character.SyncCharacterDatas", { pl:SteamID( ), nexus.character.characterDatas[ pl:SteamID( ) ] } )
 		end
 	end
+	
+	function nexus.character.SendCurrentCharacterDatas( pl )
+		netstream.Start( pl, "nexus.character.SendCurrentCharacterDatas", nexus.character.characterDatas )
+	end
 
 	function nexus.character.GetGlobalDatas( pl, charID )
 		if ( !IsValid( pl ) or !charID ) then return nil end
@@ -97,6 +101,10 @@ if ( SERVER ) then
 		end
 	end
 else
+	netstream.Hook( "nexus.character.SendCurrentCharacterDatas", function( data )
+		nexus.character.characterDatas = data
+	end )
+	
 	netstream.Hook( "nexus.character.SyncCharacterDatas", function( data )
 		nexus.character.characterDatas[ data[ 1 ] ] = data[ 2 ]
 	end )

@@ -14,6 +14,14 @@ CREATE TABLE IF NOT EXISTS `nexus_characters` (
 	`_faction` varchar(50) NOT NULL,
 	PRIMARY KEY (`_id`)
 );
+
+CREATE TABLE IF NOT EXISTS `nexus_players` (
+	`_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+	`_steamName` varchar(70) NOT NULL,
+	`_steamID` tinytext NOT NULL,
+	`_nexusData` tinytext,
+	PRIMARY KEY (`_id`)
+);
 --]]
 nexus.database = nexus.database or { }
 nexus.database.Connected = nexus.database.Connected or false
