@@ -136,6 +136,5 @@ function catherine.plugin.Load( directory )
 				catherine.util.Include( "gamemode/plugins/"..v, "shared")
 				catherine.plugin.buffer[Name] = PLUGIN
 			PLUGIN = nil
-		end
 	end
 end

@@ -4,6 +4,7 @@ end
 catherine.character.characterDatas = catherine.character.characterDatas or { }
 
 if ( SERVER ) then
+	catherine.character.DataTransferCurTime = catherine.character.DataTransferCurTime or CurTime( ) + catherine.configs.saveInterval - 10
 	hook.Add( "CharacterLoaded", "catherine.character.CharacterLoaded", function( pl, charID )
 		catherine.character.RegisterCharacterDatas( pl, charID )
 	end )
@@ -12,14 +13,25 @@ if ( SERVER ) then
 		if ( !prviouscharID ) then 
 			return print( "Not need previous character data clear!" )
 		end
+		catherine.character.TransferToCharacterTable( pl, prviouscharID )
 		netstream.Start( nil, "catherine.character.ClearCharacterDatas", pl:SteamID( ) )
 	end )
 	
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected_02", function( pl )
+		catherine.character.TransferToCharacterTable( pl, pl.characterID )
 		netstream.Start( nil, "catherine.character.ClearCharacterDatas", pl:SteamID( ) )
-		// please add save character codes.
 	end )
 	
+	hook.Add( "Tick", "catherine.character.Tick", function( )
+		if ( catherine.character.DataTransferCurTime <= CurTime( ) ) then
+			for k, v in pairs( player.GetAll( ) ) do
+				if ( !v:IsCharacterLoaded( ) ) then continue end
+				catherine.character.TransferToCharacterTable( v, v.characterID )
+			end
+			catherine.character.DataTransferCurTime = CurTime( ) + catherine.configs.saveInterval - 10
+		end
+	end )
+
 	function catherine.character.RegisterCharacterDatas( pl, charID, nosync )
 		local globalDatas = catherine.character.GetGlobalDatas( pl, charID )
 		if ( !globalDatas ) then return end
@@ -92,7 +104,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.character.TransferToCharacterTable( pl, charID )
-		if ( !IsValid( pl ) ) then return end
+		if ( !IsValid( pl ) or !charID ) then return end
 		if ( !catherine.character.characterDatas[ pl:SteamID( ) ] ) then return end
 		for k, v in pairs( catherine.character.characterDatas[ pl:SteamID( ) ] ) do
 			if ( catherine.character.buffers[ pl:SteamID( ) ][ charID ][ k ] != v ) then
@@ -112,6 +124,11 @@ else
 	netstream.Hook( "catherine.character.SetCharacterData", function( data )
 		catherine.character.characterDatas[ data[ 1 ] ] = catherine.character.characterDatas[ data[ 1 ] ] or { }
 		catherine.character.characterDatas[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
+		if ( data[ 2 ] == "_inv" ) then
+			if ( IsValid( catherine.vgui.inventory ) ) then
+				catherine.vgui.inventory:InitInventory( )
+			end
+		end
 	end )
 	
 	netstream.Hook( "catherine.character.SetCharData", function( data )

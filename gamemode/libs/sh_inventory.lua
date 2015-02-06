@@ -1,10 +1,6 @@
 catherine.inventory = catherine.inventory or { }
 
 if ( SERVER ) then
-	function catherine.inventory.GetInv( pl )
-		return catherine.character.GetGlobalData( pl, "_inv" )
-	end
-
 	function catherine.inventory.HasItem( pl, itemID )
 		local inv = catherine.inventory.GetInv( pl )
 		if ( !inv or !itemID ) then return false end
@@ -15,39 +11,69 @@ if ( SERVER ) then
 		end
 	end
 	
+	function catherine.inventory.GetInvHasItemCount( pl, itemID )
+		local inv = catherine.inventory.GetInv( pl )
+		if ( !inv or !itemID ) then return 0 end
+		if ( !inv[ itemID ] ) then return 0 end
+		return inv[ itemID ].count
+	end
+	
+	function catherine.inventory.Equiped( pl, itemID )
+		local inv = catherine.inventory.GetInv( pl )
+		if ( !inv or !itemID ) then return false end
+		if ( !inv[ itemID ] ) then return false end
+		return inv[ itemID ][ "itemData" ].equiped
+	end
+	
+	function catherine.inventory.GetInvLast( pl, itemID )
+		local inv = catherine.inventory.GetInv( pl )
+		
+		if ( !inv or !itemID ) then return nil end
+		if ( !inv[ itemID ] ) then return 1 end
+		return #inv[ itemID ]
+	end
+
 	function catherine.inventory.Update( pl, types, data )
 		local inv = table.Copy( catherine.inventory.GetInv( pl ) )
 		
 		if ( types == "add" ) then
 			if ( !data.uniqueID ) then return end
-			if ( !inv[ data.uniqueID ] ) then inv[ data.uniqueID ] = { } end
-			
-			inv[ data.uniqueID ][ #inv[ data.uniqueID ] + 1 ] = data
+			if ( inv[ data.uniqueID ] ) then
+				local newData = {
+					uniqueID = inv[ data.uniqueID ].uniqueID,
+					count = inv[ data.uniqueID ].count + 1,
+					itemData = inv[ data.uniqueID ].itemData
+				}
+				inv[ data.uniqueID ] = newData
+			else
+				local newData = {
+					uniqueID = data.uniqueID,
+					count = 1,
+					itemData = data.itemData
+				}
+				inv[ data.uniqueID ] = newData
+			end
 			catherine.character.SetGlobalData( pl, "_inv", inv )
 		elseif ( types == "updateData" ) then
-			if ( !data.uniqueID or !data.key ) then return end
+			if ( !data.uniqueID ) then return end
 			if ( !inv[ data.uniqueID ] ) then return end
-			if ( !inv[ data.uniqueID ][ data.key ] ) then return end
 			
 			local dataBuffer = { }
-			dataBuffer = table.Copy( inv[ data.uniqueID ][ data.key ][ "itemData" ] )
+			dataBuffer = table.Copy( inv[ data.uniqueID ][ "itemData" ] )
 			data.newData = table.Merge( dataBuffer, data.newData )
-			inv[ data.uniqueID ][ data.key ][ "itemData" ] = data.newData
+			inv[ data.uniqueID ][ "itemData" ] = data.newData
 			catherine.character.SetGlobalData( pl, "_inv", inv )
 		elseif ( types == "remove" ) then
 			if ( !data ) then return end
 			if ( !inv[ data ] ) then return end
 			
-			table.remove( inv[ data ], #inv[ data ] )
+			inv[ data ].count = inv[ data ].count - 1
+			if ( inv[ data ].count == 0 ) then
+				inv[ data ] = nil
+			end
 			catherine.character.SetGlobalData( pl, "_inv", inv )
 		end
 	end
-	
-	//catherine.inventory.Update( player.GetByID( 1 ), "updateData", { uniqueID = "weapon_pistol", key = 1, newData = { equiped = true } } )
-
-	//catherine.item.GiveToCharacter( player.GetByID( 1 ), "weapon_pistol" )
-	//catherine.inventory.Init( player.GetByID( 1 ) )
-	//PrintTable(catherine.inventory.GetInv( player.GetByID( 1 )))
 
 	function catherine.inventory.Init( pl )
 		if ( !IsValid( pl ) ) then return end
@@ -60,19 +86,28 @@ if ( SERVER ) then
 		
 		local weight = 0
 		for k, v in pairs( inv ) do
-			for k1, v1 in pairs( v ) do
-				local itemTab = catherine.item.FindByID( v1.uniqueID )
-				if ( !itemTab ) then continue end
-				
-				weight = weight + ( itemTab.weight or 0 )
-			end
+			local itemTab = catherine.item.FindByID( k )
+			if ( !itemTab ) then continue end
+			
+			weight = weight + ( ( itemTab.weight or 0 ) * v.count )
 		end
 		
 		return weight
 	end
 	
-	//print(catherine.inventory.GetInvWeight( player.GetByID(1) ))
-	
+	function catherine.inventory.GetInvMaxWeight( pl )
+		local weight = catherine.configs.baseInventoryWeight
+		
+		for k, v in pairs( catherine.item.items ) do
+			if ( v.isBag ) then
+				local count = catherine.inventory.GetInvHasItemCount( pl, v.uniqueID )
+				
+				weight = weight + ( v.weightPlus * count )
+			end
+		end
+		
+		return weight
+	end
 else
 	function catherine.inventory.GetInvWeight( ) // need change.;
 		local inv = catherine.character.GetGlobalData( LocalPlayer( ), "_inv" )
@@ -80,13 +115,62 @@ else
 		
 		local weight = 0
 		for k, v in pairs( inv ) do
-			for k1, v1 in pairs( v ) do
-				local itemTab = catherine.item.FindByID( v1.uniqueID )
-				if ( !itemTab ) then continue end
-				
-				weight = weight + ( itemTab.weight or 0 )
-			end
+			local itemTab = catherine.item.FindByID( v.uniqueID )
+			if ( !itemTab ) then continue end
+			
+			weight = weight + ( ( itemTab.weight or 0 ) * v.count )
 		end
 		return weight
 	end
+	
+	function catherine.inventory.GetInvHasItemCount( itemID )
+		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
+		if ( !inv or !itemID ) then return 0 end
+		if ( !inv[ itemID ] ) then return 0 end
+		return inv[ itemID ].count
+	end
+	
+	function catherine.inventory.GetInvMaxWeight( )
+		local weight = catherine.configs.baseInventoryWeight
+		
+		for k, v in pairs( catherine.item.items ) do
+			if ( v.isBag ) then
+				local count = catherine.inventory.GetInvHasItemCount( v.uniqueID )
+				
+				weight = weight + ( v.weightPlus * count )
+			end
+		end
+		
+		return weight
+	end
+
+	function catherine.inventory.Equiped( itemID )
+		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
+		if ( !inv or !itemID ) then return false end
+		local key = catherine.inventory.GetInvLast( itemID )
+		if ( !inv[ itemID ] ) then return false end
+		if ( inv[ itemID ][ "itemData" ].equiped ) then
+			return true
+		else
+			return false
+		end
+	end
+	
+	function catherine.inventory.GetItemCount( itemID )
+		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
+		if ( !inv or !itemID ) then return 0 end
+		if ( !inv[ itemID ] ) then return 0 end
+		return inv[ itemID ].count or 0
+	end
+	
+	function catherine.inventory.GetInvLast( itemID )
+		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
+		if ( !inv or !itemID ) then return nil end
+		if ( !inv[ itemID ] ) then return 1 end
+		return #inv[ itemID ]
+	end
+end
+
+function catherine.inventory.GetInv( pl )
+	return catherine.character.GetGlobalData( pl, "_inv", nil )
 end

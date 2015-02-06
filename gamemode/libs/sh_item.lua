@@ -12,17 +12,21 @@ function catherine.item.Register( tab, isBase )
 		if ( !base ) then print("Base missing!") return end
 		tab = table.Inherit( tab, base )
 	end
+	
 	tab.weight = tab.weight or 0
 	tab.itemData = tab.itemData or { }
-	tab.func = tab.func or { }
 	tab.desc = tab.desc or "ITEM DESC"
 	tab.cost = tab.cost or 0
 	tab.category = tab.category or "Other"
-	
-	tab.func.take = {
+	tab.funcBuffer = { }
+	tab.funcBuffer.take = {
 		text = "Take",
 		viewIsEntity = true,
 		func = function( pl, tab, data )
+			if ( catherine.inventory.GetInvWeight( pl ) + tab.weight > catherine.inventory.GetInvMaxWeight( pl ) ) then
+				catherine.util.Notify( pl, "Bags is full!" )
+				return
+			end
 			local item = {
 				uniqueID = tab.uniqueID,
 				itemData = tab.itemData or { }
@@ -33,21 +37,25 @@ function catherine.item.Register( tab, isBase )
 			return !tab.cantTake
 		end
 	}
-	tab.func.drop = {
+	tab.funcBuffer.drop = {
 		text = "Drop",
 		viewIsMenu = true,
 		func = function( pl, tab, data )
 			local eyeTrace = pl:GetEyeTrace( )
-			if ( pl:GetPos( ):Distance( eyeTrace ) > 100 ) then
+			if ( pl:GetPos( ):Distance( eyeTrace.HitPos ) > 100 ) then
 				pl:ChatPrint("Error!")
 				return
 			end
-			catherine.item.Spawn( tab, eyeTrace, pl )
+			catherine.item.Spawn( tab, eyeTrace.HitPos )
+			catherine.inventory.Update( pl, "remove", tab.uniqueID )
 		end,
 		viewCre = function( tab, ent, data )
 			return !tab.cantDrop
 		end
 	}
+	tab.funcBuf = table.Copy( tab.func )
+	tab.func = tab.funcBuffer
+	tab.func = table.Merge( tab.func, tab.funcBuf )
 	
 	catherine.item.items[ tab.uniqueID ] = tab
 end
@@ -86,24 +94,16 @@ end
 
 catherine.item.Include( catherine.FolderName .. "/gamemode" )
 
-//PrintTable(catherine.item.FindByID( "weapon_pistol" ))
-
 if ( SERVER ) then
-	function catherine.item.RunFunction( pl, funcName, itemTab, itemData )
+	function catherine.item.RunFunction( pl, funcName, itemTab )
 		if ( !IsValid( pl ) or !funcName or !itemTab ) then return end
 		if ( !pl:IsCharacterLoaded( ) ) then return end
 		if ( type( itemTab ) == "string" ) then itemTab = catherine.item.FindByID( itemTab ) end
 		if ( !itemTab ) then return end
 		if ( !itemData ) then itemData = { } end
-		if ( !itemTab.func[ funcName ] ) then
-			print("Function not found")
-			return
-		end
-		if ( !itemTab.func[ funcName ].func ) then
-			print("Function not found - 2")
-			return
-		end
-		itemTab.func[ funcName ].func( pl, itemTab, itemData )
+		if ( !itemTab.func[ funcName ] ) then return end
+		if ( !itemTab.func[ funcName ].func ) then return end
+		itemTab.func[ funcName ].func( pl, itemTab )
 	end
 	
 	function catherine.item.GiveToCharacter( pl, itemID )
@@ -124,21 +124,29 @@ if ( SERVER ) then
 		catherine.inventory.Update( pl, "remove", itemTab.uniqueID )
 	end
 	
-	netstream.Hook( "catherine.item.RunFunction", function( pl, data )
-		local ent = data[ 1 ]
-		catherine.item.RunFunction( pl, data[ 3 ], data[ 2 ] )
-		if ( IsValid( ent ) ) then
+	netstream.Hook( "catherine.item.RunFunction_Entity", function( pl, data )
+		local ent = data[ 3 ]
+		catherine.item.RunFunction( pl, data[ 1 ], data[ 2 ] )
+		if ( type( ent ) == "Entity" and IsValid( ent ) ) then
 			ent:Remove( )
 		end
+	end )
+
+	netstream.Hook( "catherine.item.RunFunction_Menu", function( pl, data )
+		catherine.item.RunFunction( pl, data[ 1 ], data[ 2 ] )
+	end )
+
+	concommand.Add( "itemCreate", function( pl, cmd, args )
+		catherine.item.Spawn( args[1], pl:EyePos( ) )
 	end )
 	
 	function catherine.item.Spawn( itemTab, pos, ang, pl )
 		if ( !itemTab ) then return end
 		if ( type( itemTab ) == "string" ) then itemTab = catherine.item.FindByID( itemTab ) end
-		if ( !itemTab ) then return end
-		if ( !pos ) then return end
+		if ( !itemTab ) then print("2") return end
+		if ( !pos ) then print("1") return end
 		local ent = ents.Create( "catherine_item" )
-		ent:SetPos( pos )
+		ent:SetPos( Vector( pos.x, pos.y, pos.z + 10 ) )
 		ent:SetAngles( ang or Angle( ) )
 		ent:Spawn( )
 		ent:SetModel( itemTab.model or "models/props_junk/watermelon01.mdl" )
@@ -153,16 +161,24 @@ if ( SERVER ) then
 			phyO:Wake( )
 		end
 	end
-
-	concommand.Add( "itemCreate", function( pl )
-		catherine.item.Spawn( "weapon_pistol", pl:EyePos( ) )
-	end )
-	
-	//catherine.item.TakeByCharacter( player.GetByID( 1 ), "weapon_pistol" )
-	
-	//catherine.item.RunFunction( player.GetByID( 1 ), "unequip", catherine.item.FindByID( "weapon_pistol" ) )
-	//PrintTable(catherine.inventory.GetInv( player.GetByID( 1 )))
 else
+	function catherine.item.OpenMenu( itemID )
+		if ( !itemID ) then return end
+		local itemTab = catherine.item.FindByID( itemID )
+		if ( !itemTab ) then return end
+		local menu = DermaMenu( )
+		for k, v in pairs( itemTab.func ) do
+			if ( !v.viewIsMenu ) then continue end
+			if ( v.showFunc and ( v.showFunc( LocalPlayer( ), itemTab ) == false ) ) then
+				continue
+			end
+			menu:AddOption( v.text or "ERROR", function( )
+				netstream.Start( "catherine.item.RunFunction_Menu", { k, itemID } )
+			end ):SetImage( "icon16/information.png" )
+		end
+		menu:Open( )
+	end
+	
 	function catherine.item.OpenEntityUseMenu( data )
 		local ent = data[ 1 ]
 		local itemID = data[ 2 ] // to do remove.;
@@ -172,8 +188,8 @@ else
 		local menu = DermaMenu( )
 		for k, v in pairs( itemTab.func ) do
 			if ( !v.viewIsEntity ) then continue end
-			local menuAdd = menu:AddOption( v.text or "ERROR", function( )
-				netstream.Start( "catherine.item.RunFunction", { ent, itemID, k } )
+			menu:AddOption( v.text or "ERROR", function( )
+				netstream.Start( "catherine.item.RunFunction_Entity", { k, itemID, ent } )
 			end ):SetImage( "icon16/information.png" )
 		end
 		menu:Open( )

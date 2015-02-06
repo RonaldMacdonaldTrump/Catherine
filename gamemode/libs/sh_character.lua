@@ -1,8 +1,26 @@
 catherine.character = catherine.character or { }
 
+do
+	local playerMeta = FindMetaTable( "Player" )
+	playerMeta.RealName = playerMeta.RealName or playerMeta.Name
+	playerMeta.SteamName = playerMeta.RealName
+
+	function playerMeta:Name( )
+		if ( self:IsCharacterLoaded( ) ) then
+			return self:GetCharacterGlobalData( "_name", "Jason" )
+		end
+
+		return self:SteamName( )
+	end
+
+	playerMeta.Nick = playerMeta.Name
+	playerMeta.GetName = playerMeta.Name
+end
+
 if ( SERVER ) then
 	catherine.character.buffers = catherine.character.buffers or { }
 	catherine.character.globals = { }
+	catherine.character.SaveCurTime = catherine.character.SaveCurTime or CurTime( ) + catherine.configs.saveInterval
 	
 	function catherine.character.GetGlobalListsAll( )
 		return catherine.character.globals
@@ -160,7 +178,11 @@ if ( SERVER ) then
 			end )
 		end )
 	end
+	
+	//catherine.character.Register( catherine.util.FindPlayerByName( "MOKAKI"	), { name = "MOKAKI2" } )
+	//catherine.character.Register( player.GetByID( 3 ), { name = "LOL!" } )
 
+	//PrintTable(catherine.character.buffers)
 	function catherine.character.Load( pl, charID )
 		local characterTab = catherine.character.GetCharacterTableByID( charID )
 		if ( charID == pl.characterID ) then
@@ -177,8 +199,10 @@ if ( SERVER ) then
 		end
 		hook.Run( "PreCharacterLoadStart", pl, pl.characterID )
 		
+		
 		pl:KillSilent( )
 		pl:Spawn( )
+		pl:StripWeapons( )
 		//pl:SetTeam( 1 )
 		pl:SetModel( characterTab._model )
 		
@@ -315,6 +339,13 @@ if ( SERVER ) then
 			catherine.util.Print( Color( 255, 255, 0 ), "catherine framework has loaded " .. catherine.character.CountBufferCharacters( ) .. "'s characters." )
 		end )
 	end
+	
+	hook.Add( "Tick", "catherine.character.Tick", function( )
+		if ( catherine.character.SaveCurTime <= CurTime( ) ) then
+			catherine.character.SaveAllToDataBases( )
+			catherine.character.SaveCurTime = CurTime( ) + catherine.configs.saveInterval
+		end
+	end )
 
 	//catherine.character.Register( player.GetByID( 1 ), { name = "L7D3", model = "models/player/alyx.mdl" } )
 	//PrintTable(catherine.character.buffers)

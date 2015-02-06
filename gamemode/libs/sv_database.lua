@@ -30,12 +30,12 @@ catherine.database[ "mysqloo" ] = {
 	ConnectFunc = function( )
 		catherine.database.object = mysqloo.connect( catherine.configs.database_host, catherine.configs.database_id, catherine.configs.database_pwd, catherine.configs.database_name, catherine.configs.database_port )
 		catherine.database.object.onConnected = function( )
-			catherine.util.Print( Color( 0, 255, 0 ), "catherine framework has connected by MySQL!" )
+			catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected by MySQL!" )
 			catherine.database.Connected = true
 			catherine.character.LoadAllByDataBases( )
 		end
 		catherine.database.object.onConnectionFailed = function( _, err )
-			catherine.util.Print( Color( 255, 0, 0 ), "catherine framework has connect failed by MySQL!!! - " .. err )
+			catherine.util.Print( Color( 255, 0, 0 ), "Catherine has connect failed by MySQL!!! - " .. err )
 			catherine.database.Connected = false
 		end
 		catherine.database.object:connect( )
@@ -62,11 +62,11 @@ catherine.database[ "mysqloo" ] = {
 function catherine.database.Connect( )
 	local moduleConfig = catherine.configs.database_module
 	if ( !moduleConfig ) then
-		return catherine.util.Print( Color( 255, 0, 0 ), "catherine framework has connect failed by MySQL!!! - please set 'catherine.configs.database_module' config to database module!" )
+		return catherine.util.Print( Color( 255, 0, 0 ), "Catherine has connect failed by MySQL!!! - please set 'catherine.configs.database_module' config to database module!" )
 	end
 	require( moduleConfig )
 	if ( !catherine.database[ moduleConfig ] ) then
-		return catherine.util.Print( Color( 255, 0, 0 ), "catherine framework has connect failed by MySQL!!! - function not found!" )
+		return catherine.util.Print( Color( 255, 0, 0 ), "Catherine has connect failed by MySQL!!! - function not found!" )
 	end
 	catherine.database[ moduleConfig ].ConnectFunc( )
 end

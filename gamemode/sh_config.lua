@@ -14,6 +14,8 @@ catherine.configs.saveInterval = 300
 catherine.configs.giveHand = true
 catherine.configs.giveKey = true
 
+catherine.configs.baseInventoryWeight = 10
+
 catherine.configs.database_module = "mysqloo"
 catherine.configs.database_host = "127.0.0.1"
 catherine.configs.database_id = "root"
