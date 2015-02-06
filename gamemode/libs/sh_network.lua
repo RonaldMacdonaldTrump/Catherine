@@ -4,7 +4,7 @@ local META = FindMetaTable( "Entity" )
 if ( SERVER ) then
 	local function sendDelayRegister( pl, ent, key )
 		if ( !IsValid( pl ) or !IsValid( ent ) ) then return end
-		local timerID = "nexus.network.timer_" .. pl:SteamID( ) .. ":" .. ent:EntIndex( ) .. ":" .. key
+		local timerID = "catherine.network.timer_" .. pl:SteamID( ) .. ":" .. ent:EntIndex( ) .. ":" .. key
 		timer.Create( timerID, math.max( pl:Ping( ) / 75, 0.75 ), 10, function( )
 			if ( !IsValid( pl ) or !IsValid( ent ) ) then
 				timer.Destroy( timerID )
@@ -15,29 +15,29 @@ if ( SERVER ) then
 	end
 	
 	function META:SyncNetworkValues( pl )
-		if ( !self.nexus_networkValues ) then return end
-		for k, v in pairs( self.nexus_networkValues ) do
+		if ( !self.catherine_networkValues ) then return end
+		for k, v in pairs( self.catherine_networkValues ) do
 			self:SendNetworkValues( k, pl )
 		end
 	end
 
 	function META:SendNetworkValues( key, target )
-		local value = self.nexus_networkValues[ key ]
+		local value = self.catherine_networkValues[ key ]
 		if ( value and value == nil ) then
-			netstream.Start( nil, "nexus.network.NilEntityValues", {
+			netstream.Start( nil, "catherine.network.NilEntityValues", {
 				self:EntIndex( ),
 				key
 			} )
 		else
 			if ( target ) then
-				netstream.Start( target, "nexus.network.ReceiveEntityValues", {
+				netstream.Start( target, "catherine.network.ReceiveEntityValues", {
 					self:EntIndex( ),
 					key,
 					value
 				} )
 				sendDelayRegister( target, self, key )
 			else
-				netstream.Start( nil, "nexus.network.ReceiveEntityValues", {
+				netstream.Start( nil, "catherine.network.ReceiveEntityValues", {
 					self:EntIndex( ),
 					key,
 					value
@@ -51,11 +51,11 @@ if ( SERVER ) then
 	
 	// SetNetworkValue
 	function META:SetNetworkValue( key, value, target )
-		self.nexus_networkValues = self.nexus_networkValues or { }
-		self.nexus_networkValues[ key ] = value
+		self.catherine_networkValues = self.catherine_networkValues or { }
+		self.catherine_networkValues[ key ] = value
 	
 		self:CallOnRemove( "ClearNetworkValues", function( )
-			netstream.Start( nil, "nexus.network.NilEntityValues", {
+			netstream.Start( nil, "catherine.network.NilEntityValues", {
 				self:EntIndex( ),
 				key
 			} )
@@ -63,7 +63,7 @@ if ( SERVER ) then
 		self:SendNetworkValues( key, target )
 	end
 	
-	hook.Add( "PlayerAuthed", "nexus.network.PlayerAuthed", function( pl )
+	hook.Add( "PlayerAuthed", "catherine.network.PlayerAuthed", function( pl )
 		timer.Simple( 5, function( )
 			for k, v in pairs( ents.GetAll( ) ) do
 				if ( !IsValid( v ) ) then continue end
@@ -72,39 +72,39 @@ if ( SERVER ) then
 		end )
 	end )
 	
-	netstream.Hook( "nexus.network.DelayRemove", function( pl, data )
-		timer.Destroy( "nexus.network.timer_" .. pl:SteamID( ) .. data )
+	netstream.Hook( "catherine.network.DelayRemove", function( pl, data )
+		timer.Destroy( "catherine.network.timer_" .. pl:SteamID( ) .. data )
 	end )
 else
-	nexus.network = nexus.network or { }
-	nexus.network.LocalNetworkValues = nexus.network.LocalNetworkValues or { }
+	catherine.network = catherine.network or { }
+	catherine.network.LocalNetworkValues = catherine.network.LocalNetworkValues or { }
 	
-	netstream.Hook( "nexus.network.ReceiveEntityValues", function( data )
+	netstream.Hook( "catherine.network.ReceiveEntityValues", function( data )
 		local index = data[ 1 ]
 		local key = data[ 2 ]
 		local value = data[ 3 ]
-		nexus.network.LocalNetworkValues[ index ] = nexus.network.LocalNetworkValues[ index ] or { }
-		nexus.network.LocalNetworkValues[ index ][ key ] = value
-		netstream.Start("nexus.network.DelayRemove", ":" .. index .. ":" .. key )
+		catherine.network.LocalNetworkValues[ index ] = catherine.network.LocalNetworkValues[ index ] or { }
+		catherine.network.LocalNetworkValues[ index ][ key ] = value
+		netstream.Start("catherine.network.DelayRemove", ":" .. index .. ":" .. key )
 	end )
 	
-	netstream.Hook( "nexus.network.NilEntityValues", function( data )
+	netstream.Hook( "catherine.network.NilEntityValues", function( data )
 		local index = data[ 1 ]
 		local key = data[ 2 ]
-		nexus.network.LocalNetworkValues[ index ][ key ] = nil
+		catherine.network.LocalNetworkValues[ index ][ key ] = nil
 	end )
 end
 
 function META:GetNetworkValue( key, default )
-	if ( SERVER and self.nexus_networkValues ) then
-		if ( self.nexus_networkValues[ key ] != nil ) then
-			return self.nexus_networkValues[ key ]
+	if ( SERVER and self.catherine_networkValues ) then
+		if ( self.catherine_networkValues[ key ] != nil ) then
+			return self.catherine_networkValues[ key ]
 		else
 			return default
 		end
-	elseif ( CLIENT and nexus.network.LocalNetworkValues[ self:EntIndex( ) ] ) then
-		if ( nexus.network.LocalNetworkValues[ self:EntIndex( ) ][ key ] != nil ) then
-			return nexus.network.LocalNetworkValues[ self:EntIndex( ) ][ key ]
+	elseif ( CLIENT and catherine.network.LocalNetworkValues[ self:EntIndex( ) ] ) then
+		if ( catherine.network.LocalNetworkValues[ self:EntIndex( ) ][ key ] != nil ) then
+			return catherine.network.LocalNetworkValues[ self:EntIndex( ) ][ key ]
 		else
 			return default
 		end

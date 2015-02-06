@@ -2,13 +2,13 @@
 
 DeriveGamemode( "sandbox" )
 
-nexus.Name = "Nexus"
-nexus.Author = "L7D, Fristet"
+catherine.Name = "Catherine"
+catherine.Author = "L7D, Fristet"
 
 include( "sh_util.lua" )
 AddCSLuaFile( "sh_util.lua" )
 
-nexus.util.Include( "sh_config.lua" )
-nexus.util.IncludeInDir( "libs", true )
-nexus.util.IncludeInDir( "hooks", true )
-nexus.util.IncludeInDir( "derma", true )
+catherine.util.Include( "sh_config.lua" )
+catherine.util.IncludeInDir( "libs", true )
+catherine.util.IncludeInDir( "hooks", true )
+catherine.util.IncludeInDir( "derma", true )

@@ -1,9 +1,9 @@
-nexus.cash = nexus.cash or { }
+catherine.cash = catherine.cash or { }
 
-function nexus.cash.GetOnlyName( )
-	return nexus.configs.cashName
+function catherine.cash.GetOnlyName( )
+	return catherine.configs.cashName
 end
 
-function nexus.cash.GetName( amount )
-	return amount .. " " .. nexus.configs.cashName
+function catherine.cash.GetName( amount )
+	return amount .. " " .. catherine.configs.cashName
 end

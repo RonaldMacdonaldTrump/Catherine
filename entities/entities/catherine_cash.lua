@@ -2,14 +2,14 @@ AddCSLuaFile( )
 
 DEFINE_BASECLASS( "base_gmodentity" )
 
-ENT.PrintName = "Nexus Money"
+ENT.PrintName = "Catherine Money"
 ENT.Author = "L7D, Fristet"
 ENT.Type = "anim"
 
 function ENT:Initialize( )
 	if ( CLIENT ) then return end
 	
-	self:SetModel( nexus.configs.cashModel )
+	self:SetModel( catherine.configs.cashModel )
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
@@ -35,7 +35,7 @@ end
 --]]
 function ENT:Use( activator )
 	activator:GiveCash( self:GetNetworkValue( "Cash", 0 ) )
-	activator:ChatPrint( "You got a " .. nexus.cash.GetName( self:GetNetworkValue( "Cash", 0 ) ) .. "s!" )
+	activator:ChatPrint( "You got a " .. catherine.cash.GetName( self:GetNetworkValue( "Cash", 0 ) ) .. "s!" )
 	self:Bomb( )
 	self:Remove( )
 end

@@ -1,0 +1,6 @@
+"catherine"
+{
+	"base"		"sandbox"
+	"title"			"Catherine"
+	"version"		"0"
+}

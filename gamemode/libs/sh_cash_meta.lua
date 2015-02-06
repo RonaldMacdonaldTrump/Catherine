@@ -1,5 +1,5 @@
-if ( !nexus.cash ) then
-	nexus.util.Include( "libs/sh_cash.lua" )
+if ( !catherine.cash ) then
+	catherine.util.Include( "libs/sh_cash.lua" )
 end
 
 local META = FindMetaTable( "Player" )

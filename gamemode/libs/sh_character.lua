@@ -1,26 +1,26 @@
-nexus.character = nexus.character or { }
+catherine.character = catherine.character or { }
 
 if ( SERVER ) then
-	nexus.character.buffers = nexus.character.buffers or { }
-	nexus.character.globals = { }
+	catherine.character.buffers = catherine.character.buffers or { }
+	catherine.character.globals = { }
 	
-	function nexus.character.GetGlobalListsAll( )
-		return nexus.character.globals
+	function catherine.character.GetGlobalListsAll( )
+		return catherine.character.globals
 	end
 	
-	function nexus.character.RegisterGlobal( tab )
-		nexus.character.globals[ tab.id ] = tab
+	function catherine.character.RegisterGlobal( tab )
+		catherine.character.globals[ tab.id ] = tab
 	end
 
-	function nexus.character.GetGlobalByID( id )
+	function catherine.character.GetGlobalByID( id )
 		if ( !id ) then return nil end
-		return nexus.character.globals[ id ]
+		return catherine.character.globals[ id ]
 	end
 	
-	function nexus.character.GetGlobalByField( field )
+	function catherine.character.GetGlobalByField( field )
 		if ( !field ) then return nil end
-		for k, v in pairs( nexus.character.globals ) do
-			for k1, v1 in pairs( nexus.character.globals[ k ] ) do
+		for k, v in pairs( catherine.character.globals ) do
+			for k1, v1 in pairs( catherine.character.globals[ k ] ) do
 				if ( v.field == field ) then
 					return v
 				end
@@ -30,13 +30,13 @@ if ( SERVER ) then
 		return nil
 	end
 
-	nexus.character.RegisterGlobal( {
+	catherine.character.RegisterGlobal( {
 		id = "id",
 		field = "_id",
 		static = true
 	} )
 	
-	nexus.character.RegisterGlobal( {
+	catherine.character.RegisterGlobal( {
 		id = "name",
 		field = "_name",
 		isNetwork = true,
@@ -46,7 +46,7 @@ if ( SERVER ) then
 		end
 	} )
 	
-	nexus.character.RegisterGlobal( {
+	catherine.character.RegisterGlobal( {
 		id = "desc",
 		field = "_desc",
 		isNetwork = true,
@@ -56,7 +56,7 @@ if ( SERVER ) then
 		end
 	} )
 	
-	nexus.character.RegisterGlobal( {
+	catherine.character.RegisterGlobal( {
 		id = "model",
 		field = "_model",
 		isNetwork = true,
@@ -66,7 +66,7 @@ if ( SERVER ) then
 		end
 	} )
 	
-	nexus.character.RegisterGlobal( {
+	catherine.character.RegisterGlobal( {
 		id = "att",
 		field = "_att",
 		isNetwork = true,
@@ -76,15 +76,15 @@ if ( SERVER ) then
 		needpon = true
 	} )
 	
-	nexus.character.RegisterGlobal( {
+	catherine.character.RegisterGlobal( {
 		id = "schema",
 		field = "_schema",
 		getFunc = function( )
-			return nexus.schema.GetUniqueID( )
+			return catherine.schema.GetUniqueID( )
 		end
 	} )
 	
-	nexus.character.RegisterGlobal( {
+	catherine.character.RegisterGlobal( {
 		id = "steamID",
 		field = "_steamID",
 		getFunc = function( pl )
@@ -92,7 +92,7 @@ if ( SERVER ) then
 		end
 	} )
 	
-	nexus.character.RegisterGlobal( {
+	catherine.character.RegisterGlobal( {
 		id = "inv",
 		field = "_inv",
 		isNetwork = true,
@@ -102,14 +102,14 @@ if ( SERVER ) then
 		needpon = true
 	} )
 	
-	nexus.character.RegisterGlobal( {
+	catherine.character.RegisterGlobal( {
 		id = "cash",
 		field = "_cash",
 		isNetwork = true,
-		default = nexus.configs.defaultCash
+		default = catherine.configs.defaultCash
 	} )
 	
-	nexus.character.RegisterGlobal( {
+	catherine.character.RegisterGlobal( {
 		id = "faction",
 		field = "_faction",
 		default = "Citizen",
@@ -118,7 +118,7 @@ if ( SERVER ) then
 		end
 	} )
 	
-	nexus.character.RegisterGlobal( {
+	catherine.character.RegisterGlobal( {
 		id = "charData",
 		field = "_charData",
 		isNetwork = true,
@@ -128,17 +128,17 @@ if ( SERVER ) then
 		needpon = true
 	} )
 
-	function nexus.character.Register( pl, data )
+	function catherine.character.Register( pl, data )
 		if ( !IsValid( pl ) or !data ) then return end
-		local canMake = nexus.character.CheckCanMake( data )
+		local canMake = catherine.character.CheckCanMake( data )
 		if ( canMake[ 1 ] == false ) then
-			return nexus.util.Notify( pl, canMake[ 2 ] )
+			return catherine.util.Notify( pl, canMake[ 2 ] )
 		end
-		nexus.character.buffers[ pl:SteamID( ) ] = nexus.character.buffers[ pl:SteamID( ) ] or { }
+		catherine.character.buffers[ pl:SteamID( ) ] = catherine.character.buffers[ pl:SteamID( ) ] or { }
 		
 		local character = { }
 	
-		for k, v in pairs( nexus.character.GetGlobalListsAll( ) ) do
+		for k, v in pairs( catherine.character.GetGlobalListsAll( ) ) do
 			if ( v.static ) then continue end
 			local value = v.default
 			if ( value == nil and v.getFunc ) then value = v.getFunc( pl ) end
@@ -146,22 +146,22 @@ if ( SERVER ) then
 			if ( v.replaceFunc ) then newvalue = v.replaceFunc( data ) or value end
 			character[ v.field ] = newvalue
 		end
-		nexus.database.Insert( character, "nexus_characters", function( )
-			nexus.database.GetTable( "_steamID = '" .. pl:SteamID( ) .. "' AND _name = '" .. data.name .. "'", "nexus_characters", function( result )
+		catherine.database.Insert( character, "catherine_characters", function( )
+			catherine.database.GetTable( "_steamID = '" .. pl:SteamID( ) .. "' AND _name = '" .. data.name .. "'", "catherine_characters", function( result )
 				for k, v in pairs( result[ 1 ] ) do
-					local globaldata = nexus.character.GetGlobalByField( k )
+					local globaldata = catherine.character.GetGlobalByField( k )
 					if ( globaldata and globaldata.needpon and type( v ) == "string" ) then
 						result[ 1 ][ k ] = util.JSONToTable( v )
 					end
 				end
-				nexus.character.buffers[ pl:SteamID( ) ][ #nexus.character.buffers[ pl:SteamID( ) ] + 1 ] = result[ 1 ]
-				nexus.util.Print( Color( 255, 255, 0 ), "Character created! - " .. pl:SteamID( ) )
-				nexus.character.SendCharacterLists( pl )
+				catherine.character.buffers[ pl:SteamID( ) ][ #catherine.character.buffers[ pl:SteamID( ) ] + 1 ] = result[ 1 ]
+				catherine.util.Print( Color( 255, 255, 0 ), "Character created! - " .. pl:SteamID( ) )
+				catherine.character.SendCharacterLists( pl )
 			end )
 		end )
 	end
 
-	function nexus.character.Load( pl, charID )
+	function catherine.character.Load( pl, charID )
 		hook.Run( "PreCharacterLoaded", pl, pl.characterID )
 
 		pl.characterID = charID
@@ -171,19 +171,19 @@ if ( SERVER ) then
 		hook.Run( "CharacterLoaded", pl, charID )
 	end
 
-	function nexus.character.SendCharacterLists( pl )
-		if ( !IsValid( pl ) or !nexus.character.buffers[ pl:SteamID( ) ] ) then return end
-		netstream.Start( pl, "nexus.character.SendCharacterLists", nexus.character.buffers[ pl:SteamID( ) ] )
+	function catherine.character.SendCharacterLists( pl )
+		if ( !IsValid( pl ) or !catherine.character.buffers[ pl:SteamID( ) ] ) then return end
+		netstream.Start( pl, "catherine.character.SendCharacterLists", catherine.character.buffers[ pl:SteamID( ) ] )
 	end
 	
-	function nexus.character.SendCharacterPanel( pl )
+	function catherine.character.SendCharacterPanel( pl )
 		if ( !IsValid( pl ) ) then return end
-		netstream.Start( pl, "nexus.character.SendCharacterPanel" )
+		netstream.Start( pl, "catherine.character.SendCharacterPanel" )
 	end
 
-	function nexus.character.IsValid( charID )
-		for k, v in pairs( nexus.character.buffers ) do
-			for k1, v1 in pairs( nexus.character.buffers[ k ] ) do
+	function catherine.character.IsValid( charID )
+		for k, v in pairs( catherine.character.buffers ) do
+			for k1, v1 in pairs( catherine.character.buffers[ k ] ) do
 				if ( v1.id == charID ) then
 					return true
 				end
@@ -193,9 +193,9 @@ if ( SERVER ) then
 		return false
 	end
 	
-	function nexus.character.CheckCanMake( data )
+	function catherine.character.CheckCanMake( data )
 		if ( data.name ) then
-			for k, v in pairs( nexus.character.buffers ) do
+			for k, v in pairs( catherine.character.buffers ) do
 				for k1, v1 in pairs( v ) do
 					for k2, v2 in pairs( v1 ) do
 						if ( type( k2 ) == "string" and ( k2:sub( 2 ) == "name" and v2 == data.name ) ) then
@@ -213,37 +213,37 @@ if ( SERVER ) then
 		return { false, "Error" }
 	end
 
-	function nexus.character.GetPlayerCharacterLists( pl )
-		if ( !IsValid( pl ) or !nexus.character.buffers[ pl:SteamID( ) ] ) then return nil end
-		return nexus.character.buffers[ pl:SteamID( ) ]
+	function catherine.character.GetPlayerCharacterLists( pl )
+		if ( !IsValid( pl ) or !catherine.character.buffers[ pl:SteamID( ) ] ) then return nil end
+		return catherine.character.buffers[ pl:SteamID( ) ]
 	end
 	
 
-	function nexus.character.SaveAllToDataBases( )
-		local characterCount = nexus.character.CountBufferCharacters( )
+	function catherine.character.SaveAllToDataBases( )
+		local characterCount = catherine.character.CountBufferCharacters( )
 		if ( characterCount == 0 ) then return end
-		nexus.util.Print( Color( 255, 255, 0 ), "Now nexus framework start working saveing characters! - " .. characterCount )
+		catherine.util.Print( Color( 255, 255, 0 ), "Now catherine framework start working saveing characters! - " .. characterCount )
 		local progress = 0
 		local time = 0
-		local buffer = table.Copy( nexus.character.buffers )
+		local buffer = table.Copy( catherine.character.buffers )
 		for k, v in pairs( buffer ) do
 			local steamID = k
 			for k1, v1 in pairs( v ) do
 				for k2, v2 in pairs( v1 ) do
-					local globaldata = nexus.character.GetGlobalByID( k2:sub( 2 ) )
+					local globaldata = catherine.character.GetGlobalByID( k2:sub( 2 ) )
 					local charID = v1._id
 					if ( !steamID or !charID ) then
-						nexus.util.Print( Color( 255, 0, 0 ), "ERROR - Can't save character! - " .. math.Round( ( progress / characterCount ), 2 ) * 100 .. "%" )
+						catherine.util.Print( Color( 255, 0, 0 ), "ERROR - Can't save character! - " .. math.Round( ( progress / characterCount ), 2 ) * 100 .. "%" )
 						continue
 					end
 					if ( globaldata and globaldata.needpon and type( v2 ) == "table" ) then
 						//v2 = util.TableToJSON( v2 ) 
 					end
-					local timerUniqueID = "nexus.character.timer.SaveCharacters_" .. charID
+					local timerUniqueID = "catherine.character.timer.SaveCharacters_" .. charID
 					timer.Create( timerUniqueID, time, 1, function( )
-						nexus.database.Update( "_steamID = '" .. steamID .. "' AND _id = '" .. charID .. "'", v1, "nexus_characters", function( )
+						catherine.database.Update( "_steamID = '" .. steamID .. "' AND _id = '" .. charID .. "'", v1, "catherine_characters", function( )
 							progress = progress + 1
-							nexus.util.Print( Color( 255, 255, 0 ), "Save complete! - " .. math.Round( ( progress / characterCount ), 2 ) * 100 .. "%" )
+							catherine.util.Print( Color( 255, 255, 0 ), "Save complete! - " .. math.Round( ( progress / characterCount ), 2 ) * 100 .. "%" )
 						end )
 					end )
 					time = time + 0.02
@@ -252,10 +252,10 @@ if ( SERVER ) then
 		end
 	end
 
-	function nexus.character.LoadAllByDataBases( )
-		nexus.database.GetTable_All( "nexus_characters", function( data )
+	function catherine.character.LoadAllByDataBases( )
+		catherine.database.GetTable_All( "catherine_characters", function( data )
 			if ( #data == 0 ) then return end
-			nexus.character.buffers = { }
+			catherine.character.buffers = { }
 			local buffer = { }
 			local curretCount = { }
 			for i = 1, #data do
@@ -267,21 +267,21 @@ if ( SERVER ) then
 				buffer[ steamID ][ #buffer[ steamID ] + 1 ] = data[ i ]
 				curretCount[ steamID ] = curretCount[ steamID ] + 1
 				for k, v in pairs( data[ i ] ) do
-					local globaldata = nexus.character.GetGlobalByField( k )
+					local globaldata = catherine.character.GetGlobalByField( k )
 					if ( globaldata and globaldata.needpon and type( v ) == "string" ) then
 						buffer[ steamID ][ curretCount[ steamID ] ][ k ] = util.JSONToTable( v )
 					end
 				end
 			end
-			nexus.character.buffers = buffer
-			nexus.util.Print( Color( 255, 255, 0 ), "Nexus framework has loaded " .. nexus.character.CountBufferCharacters( ) .. "'s characters." )
+			catherine.character.buffers = buffer
+			catherine.util.Print( Color( 255, 255, 0 ), "catherine framework has loaded " .. catherine.character.CountBufferCharacters( ) .. "'s characters." )
 		end )
 	end
 
-	function nexus.character.CountBufferCharacters( )
+	function catherine.character.CountBufferCharacters( )
 		local count = 0
-		for k, v in pairs( nexus.character.buffers ) do
-			for k1, v1 in pairs( nexus.character.buffers[ k ] ) do
+		for k, v in pairs( catherine.character.buffers ) do
+			for k1, v1 in pairs( catherine.character.buffers[ k ] ) do
 				if ( !v1._id ) then continue end
 				count = count + 1
 			end
@@ -289,27 +289,27 @@ if ( SERVER ) then
 		return count
 	end
 
-	hook.Add( "PlayerInitialSpawn", "nexus.character.PlayerInitialSpawn", function( pl )
-		//if ( nexus.character.GetPlayerCharacterLists( pl ) ) then return end
-		//nexus.character.buffers[ pl:SteamID( ) ] = { }
+	hook.Add( "PlayerInitialSpawn", "catherine.character.PlayerInitialSpawn", function( pl )
+		//if ( catherine.character.GetPlayerCharacterLists( pl ) ) then return end
+		//catherine.character.buffers[ pl:SteamID( ) ] = { }
 	end )
 else
-	nexus.character.LocalCharacters = nexus.character.LocalCharacters or nil
+	catherine.character.LocalCharacters = catherine.character.LocalCharacters or nil
 	
-	netstream.Hook( "nexus.character.SendCharacterPanel", function( data )
-		if ( IsValid( nexus.vgui.character ) ) then
-			nexus.vgui.character:Close( )
-			nexus.vgui.character = vgui.Create( "nexus.vgui.character" )
+	netstream.Hook( "catherine.character.SendCharacterPanel", function( data )
+		if ( IsValid( catherine.vgui.character ) ) then
+			catherine.vgui.character:Close( )
+			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
 		else
-			nexus.vgui.character = vgui.Create( "nexus.vgui.character" )
+			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
 		end
 	end )
 	
-	netstream.Hook( "nexus.character.SendCharacterLists", function( data )
-		nexus.character.LocalCharacters = data
+	netstream.Hook( "catherine.character.SendCharacterLists", function( data )
+		catherine.character.LocalCharacters = data
 		--[[ // for UI
-		if ( IsValid( nexus.vgui.character ) ) then
-			nexus.vgui.character:RefreshCharacterLists( )
+		if ( IsValid( catherine.vgui.character ) ) then
+			catherine.vgui.character:RefreshCharacterLists( )
 		end
 		--]]
 	end )

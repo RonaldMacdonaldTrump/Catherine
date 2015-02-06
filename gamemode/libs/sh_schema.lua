@@ -1,25 +1,25 @@
-nexus.schema = nexus.schema or { }
+catherine.schema = catherine.schema or { }
 
-function nexus.schema.Initialization( )
+function catherine.schema.Initialization( )
 	Schema = Schema or {
-		Name = "Nexus Schema",
+		Name = "Catherine Schema",
 		Author = "L7D, Fristet",
-		Desc = "A Nexus schema.",
+		Desc = "A catherine schema.",
 		UniqueID = GM.FolderName,
 		FolderName = GM.FolderName
 	}
-	nexus.util.IncludeInDir( "schema/libs" )
-	nexus.util.Include( "schema/sh_schema.lua" )
+	catherine.util.IncludeInDir( "schema/libs" )
+	catherine.util.Include( "schema/sh_schema.lua" )
 	
 	hook.Run( "SchemaInit" )
 end
 
-function nexus.schema.GetUniqueID( )
-	if ( !Schema ) then return "nexus" end
-	return Schema.UniqueID or "nexus"
+function catherine.schema.GetUniqueID( )
+	if ( !Schema ) then return "catherine" end
+	return Schema.UniqueID or "catherine"
 end
 
-hook.NexusHookCall = hook.NexusHookCall or hook.Call
+hook.catherineHookCall = hook.catherineHookCall or hook.Call
 
 function hook.Call( name, gm, ... )
 	if ( Schema and Schema[ name ] ) then
@@ -28,5 +28,5 @@ function hook.Call( name, gm, ... )
 			return func
 		end
 	end
-	return hook.NexusHookCall( name, gm, ... )
+	return hook.catherineHookCall( name, gm, ... )
 end

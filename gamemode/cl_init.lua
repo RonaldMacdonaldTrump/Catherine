@@ -1,5 +1,5 @@
 
-nexus = nexus or GM
-nexus.vgui = nexus.vgui or { }
+catherine = catherine or GM
+catherine.vgui = catherine.vgui or { }
 
 include( "shared.lua" )

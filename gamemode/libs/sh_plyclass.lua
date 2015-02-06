@@ -1,7 +1,7 @@
 --[[DEFINE_BASECLASS( "player_default" )
 
 local PLY = { }
-PLY.DisplayName = "Nexus Player"
+PLY.DisplayName = "catherine Player"
 
 PLY.WalkSpeed = 1000
 PLY.RunSpeed = 2000
@@ -22,20 +22,20 @@ do
 	local Length2D = FindMetaTable( "Vector" ).Length2D
 
 	function META:IsRunning( )
-		return Length2D( GetVelocity( self ) ) >= ( nexus.configs.playerDefaultRunSpeed - 10 )
+		return Length2D( GetVelocity( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 10 )
 	end
 end
 
 
-player_manager.RegisterClass( "player_nexus", PLY, "player_default" )--]]
+player_manager.RegisterClass( "player_catherine", PLY, "player_default" )--]]
 
 local PLAYER = {}
 
 PLAYER.DuckSpeed = 0.1
 PLAYER.UnDuckSpeed = 0.1
 
-PLAYER.WalkSpeed = nexus.configs.playerDefaultWalkSpeed
-PLAYER.RunSpeed	= nexus.configs.playerDefaultRunSpeed
+PLAYER.WalkSpeed = catherine.configs.playerDefaultWalkSpeed
+PLAYER.RunSpeed	= catherine.configs.playerDefaultRunSpeed
 
 
 function PLAYER:Loadout()
@@ -49,8 +49,8 @@ do
 	local Length2D = FindMetaTable( "Vector" ).Length2D
 
 	function META:IsRunning( )
-		return Length2D( GetVelocity( self ) ) >= ( nexus.configs.playerDefaultRunSpeed - 10 )
+		return Length2D( GetVelocity( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 10 )
 	end
 end
 
-player_manager.RegisterClass( "player_nexus", PLAYER, "player_default" )
+player_manager.RegisterClass( "catherine_player", PLAYER, "player_default" )

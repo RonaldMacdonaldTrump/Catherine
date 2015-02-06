@@ -1,5 +1,5 @@
 
-nexus = nexus or GM
+catherine = catherine or GM
 
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )

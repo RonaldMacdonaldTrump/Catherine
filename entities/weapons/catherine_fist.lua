@@ -1,6 +1,6 @@
 AddCSLuaFile( )
 
-SWEP.Base = "nexus_base"
+SWEP.Base = "catherine_base"
 SWEP.HoldType = "normal"
 SWEP.PrintName = "Fists"
 SWEP.Slot = 1

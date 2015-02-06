@@ -1,6 +1,0 @@
-"nexus"
-{
-	"base"		"sandbox"
-	"title"			"Nexus"
-	"version"		"0.1"
-}
