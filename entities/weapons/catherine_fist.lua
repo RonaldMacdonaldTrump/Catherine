@@ -43,9 +43,11 @@ end
 
 function SWEP:Reload( )
 	if ( self:GetHoldType( ) == "normal" ) then
-		self:SetHoldType( "fist" )
+	timer.Simple( ( CurTime( ) + self.Primary.Delay ), function( )
+		self:SetHoldType( "fist" ) end )
 	else
-		self:SetHoldType( "normal" )
+	timer.Simple( ( CurTime( ) + self.Primary.Delay ), function ( )
+		self:SetHoldType( "normal" ) end )
 	end
 end
 
