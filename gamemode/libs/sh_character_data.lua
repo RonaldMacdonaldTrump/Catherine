@@ -8,7 +8,7 @@ if ( SERVER ) then
 		catherine.character.RegisterCharacterDatas( pl, charID )
 	end )
 	
-	hook.Add( "PreCharacterLoaded", "catherine.character.PreCharacterLoaded", function( pl, prviouscharID )
+	hook.Add( "PreCharacterLoadStart", "catherine.character.PreCharacterLoadStart", function( pl, prviouscharID )
 		if ( !prviouscharID ) then 
 			return print( "Not need previous character data clear!" )
 		end

@@ -60,7 +60,7 @@ if ( SERVER ) then
 		id = "model",
 		field = "_model",
 		isNetwork = true,
-		default = "models/players/breen.mdl",
+		default = "models/player/breen.mdl",
 		replaceFunc = function( data )
 			if ( data.model ) then return data.model end
 		end
@@ -71,7 +71,7 @@ if ( SERVER ) then
 		field = "_att",
 		isNetwork = true,
 		replaceFunc = function( data )
-			if ( data.att ) then return "[]" end // to do
+			if ( data.att ) then return "[]" else return "[]" end // to do
 		end,
 		needpon = true
 	} )
@@ -162,14 +162,38 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.Load( pl, charID )
-		hook.Run( "PreCharacterLoaded", pl, pl.characterID )
-
+		local characterTab = catherine.character.GetCharacterTableByID( charID )
+		if ( charID == pl.characterID ) then
+			print("You are already using that")
+			return
+		end
+		if ( !characterTab ) then
+			print("Not valid character!")
+			return
+		end
+		if ( characterTab._steamID != pl:SteamID( ) ) then
+			print("You can't use that character!")
+			return
+		end
+		hook.Run( "PreCharacterLoadStart", pl, pl.characterID )
+		
+		pl:KillSilent( )
+		pl:Spawn( )
+		//pl:SetTeam( 1 )
+		pl:SetModel( characterTab._model )
+		
 		pl.characterID = charID
 		pl:SetNetworkValue( "characterID", charID )
 		pl:SetNetworkValue( "characterLoaded", true )
 		
 		hook.Run( "CharacterLoaded", pl, charID )
 	end
+	
+	concommand.Add( "characterLoad", function( pl, cmd, args )
+	
+		catherine.character.Load( pl, tonumber( args[ 1 ] ) )
+	end )
+	
 
 	function catherine.character.SendCharacterLists( pl )
 		if ( !IsValid( pl ) or !catherine.character.buffers[ pl:SteamID( ) ] ) then return end
@@ -218,6 +242,20 @@ if ( SERVER ) then
 		return catherine.character.buffers[ pl:SteamID( ) ]
 	end
 	
+	function catherine.character.GetCharacterTableByID( id )
+		if ( !id ) then return nil end
+		for k, v in pairs( catherine.character.buffers ) do
+			for k1, v1 in pairs( v ) do
+				for k2, v2 in pairs( v1 ) do
+					if ( k2 == "_id" and v2 == id ) then
+						return v1
+					end
+				end
+			end
+		end
+		
+		return nil
+	end
 
 	function catherine.character.SaveAllToDataBases( )
 		local characterCount = catherine.character.CountBufferCharacters( )
@@ -254,7 +292,7 @@ if ( SERVER ) then
 
 	function catherine.character.LoadAllByDataBases( )
 		catherine.database.GetTable_All( "catherine_characters", function( data )
-			if ( #data == 0 ) then return end
+			if ( #data == 0 ) then catherine.character.buffers = { } return end
 			catherine.character.buffers = { }
 			local buffer = { }
 			local curretCount = { }
@@ -277,6 +315,9 @@ if ( SERVER ) then
 			catherine.util.Print( Color( 255, 255, 0 ), "catherine framework has loaded " .. catherine.character.CountBufferCharacters( ) .. "'s characters." )
 		end )
 	end
+
+	//catherine.character.Register( player.GetByID( 1 ), { name = "L7D3", model = "models/player/alyx.mdl" } )
+	//PrintTable(catherine.character.buffers)
 
 	function catherine.character.CountBufferCharacters( )
 		local count = 0
