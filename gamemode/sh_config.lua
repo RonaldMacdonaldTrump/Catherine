@@ -17,6 +17,6 @@ catherine.configs.giveKey = true
 catherine.configs.database_module = "mysqloo"
 catherine.configs.database_host = "127.0.0.1"
 catherine.configs.database_id = "root"
-catherine.configs.database_pwd = "DGKaAnrKtG2jMLBV"
+catherine.configs.database_pwd = ""
 catherine.configs.database_name = "catherine"
 catherine.configs.database_port = 3306

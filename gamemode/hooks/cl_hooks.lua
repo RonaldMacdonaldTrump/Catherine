@@ -5,6 +5,9 @@ catherine.loadingAlpha = catherine.loadingAlpha or 255
 catherine.loadingImageRotated = catherine.loadingImageRotated or 0
 catherine.loadingImageAlpha = catherine.loadingImageAlpha or 255
 
+
+
+
 for i = 15, 64 do
 	surface.CreateFont( "catherine_font01_" .. i, { font = "Segoe UI", size = i, weight = 1000, antialias = true } )
 end
@@ -47,6 +50,18 @@ function GM:HUDDrawScoreBoard( )
 	surface.DrawTexturedRectRotated( scrW / 2, scrH / 2, 184, 184, catherine.loadingImageRotated )
 	--]]
 	draw.SimpleText( catherine.loadingText, "catherine_font01_25", scrW / 2, scrH - 70, Color( 255, 255, 255, catherine.loadingAlpha ), 1, 1 )
+end
+
+catherine.menuList = catherine.menuList or { }
+
+function GM:AddMenu( )
+	catherine.menuList = { }
+	catherine.menuList[ #catherine.menuList + 1 ] = {
+		text = "Inventory",
+		func = function( )
+		
+		end
+	}
 end
 
 netstream.Hook( "catherine.LoadingStatus", function( data )
