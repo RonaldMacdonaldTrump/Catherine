@@ -1,2 +1,2 @@
-# nexus
-A free role-play framework for Garry's Mod users.
+# Catherine
+A free role-playing framework for Garry's Mod.
