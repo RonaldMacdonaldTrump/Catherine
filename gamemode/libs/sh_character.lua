@@ -175,6 +175,7 @@ if ( SERVER ) then
 				catherine.character.buffers[ pl:SteamID( ) ][ #catherine.character.buffers[ pl:SteamID( ) ] + 1 ] = result[ 1 ]
 				catherine.util.Print( Color( 255, 255, 0 ), "Character created! - " .. pl:SteamID( ) )
 				catherine.character.SendCharacterLists( pl )
+				netstream.Start( pl, "catherine.character.RegisterCharacterResult" )
 			end )
 		end )
 	end
@@ -365,6 +366,11 @@ if ( SERVER ) then
 		//if ( catherine.character.GetPlayerCharacterLists( pl ) ) then return end
 		//catherine.character.buffers[ pl:SteamID( ) ] = { }
 	end )
+	
+	netstream.Hook( "catherine.character.RegisterCharacter", function( pl, data )
+		catherine.character.Register( pl, data )
+		PrintTable(data)
+	end )
 else
 	catherine.character.LocalCharacters = catherine.character.LocalCharacters or nil
 	
@@ -374,6 +380,13 @@ else
 			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
 		else
 			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+		end
+	end )
+	
+	netstream.Hook( "catherine.character.RegisterCharacterResult", function( data )
+		if ( IsValid( catherine.vgui.character ) ) then
+			catherine.vgui.character:CancelStage( )
+			print("Fin")
 		end
 	end )
 	

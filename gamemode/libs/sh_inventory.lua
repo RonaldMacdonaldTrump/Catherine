@@ -32,6 +32,14 @@ if ( SERVER ) then
 		if ( !inv[ itemID ] ) then return 1 end
 		return #inv[ itemID ]
 	end
+	
+	function catherine.inventory.GetInvItemData( pl, itemID )
+		if ( !catherine.inventory.HasItem( pl, itemID ) ) then return nil end
+		local inv = catherine.inventory.GetInv( pl )
+		if ( !inv ) then return nil end
+		if ( !inv[ itemID ] ) then return nil end
+		return inv[ itemID ][ "itemData" ]
+	end
 
 	function catherine.inventory.Update( pl, types, data )
 		local inv = table.Copy( catherine.inventory.GetInv( pl ) )
