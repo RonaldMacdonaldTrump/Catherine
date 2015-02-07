@@ -6,7 +6,9 @@ Base.cost = 0
 Base.weight = 0
 Base.weaponClass = "weapon_smg1"
 Base.itemData = {
-	equiped = false
+	equiped = false,
+	clipOne = 0,
+	clipTwo = 0
 }
 Base.func = { }
 Base.func.equip = {
@@ -14,14 +16,18 @@ Base.func.equip = {
 	viewIsEntity = true,
 	viewIsMenu = true,
 	ismenuRightclickFunc = true,
-	func = function( pl, tab )
+	func = function( pl, tab, data )
 		if ( !pl:HasItem( tab.uniqueID ) ) then
 			catherine.item.GiveToCharacter( pl, tab.uniqueID )
 		end
-		pl:Give( tab.weaponClass )
-		pl:SelectWeapon( tab.weaponClass )
+		local weapon = pl:Give( tab.weaponClass )
 		local newData = { }
 		newData.equiped = true
+		if ( IsValid( weapon ) ) then
+			pl:SelectWeapon( tab.weaponClass )
+			//pl:SetClip1( 100)
+		end
+		PrintTable(data)
 		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, itemData = newData } )
 	end,
 	showFunc = function( pl, tab, key )

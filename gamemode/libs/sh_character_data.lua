@@ -106,9 +106,14 @@ if ( SERVER ) then
 	function catherine.character.TransferToCharacterTable( pl, charID )
 		if ( !IsValid( pl ) or !charID ) then return end
 		if ( !catherine.character.characterDatas[ pl:SteamID( ) ] ) then return end
-		for k, v in pairs( catherine.character.characterDatas[ pl:SteamID( ) ] ) do
-			if ( catherine.character.buffers[ pl:SteamID( ) ][ charID ][ k ] != v ) then
-				catherine.character.buffers[ pl:SteamID( ) ][ charID ][ k ] = v
+		if ( !catherine.character.buffers[ pl:SteamID( ) ] ) then return end
+		local find = 0
+		for k, v in pairs( catherine.character.buffers[ pl:SteamID( ) ] ) do
+			for k1, v1 in pairs( v ) do
+				if ( k1 == "_id" and v1 == charID ) then
+					catherine.character.buffers[ pl:SteamID( ) ][ k ] = catherine.character.buffers[ pl:SteamID( ) ]
+					continue
+				end
 			end
 		end
 	end
