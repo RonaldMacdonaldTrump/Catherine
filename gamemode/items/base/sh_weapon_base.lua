@@ -22,7 +22,7 @@ Base.func.equip = {
 		pl:SelectWeapon( tab.weaponClass )
 		local newData = { }
 		newData.equiped = true
-		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, newData = newData } )
+		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, itemData = newData } )
 	end,
 	showFunc = function( pl, tab, key )
 		if ( pl:IsEquiped( tab.uniqueID ) ) then
@@ -40,7 +40,7 @@ Base.func.unequip = {
 		end
 		local newData = { }
 		newData.equiped = false
-		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, newData = newData } )
+		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, itemData = newData } )
 	end,
 	showFunc = function( pl, tab, key )
 		if ( pl:IsEquiped( tab.uniqueID ) ) then
@@ -61,8 +61,11 @@ Base.func.drop = {
 		if ( pl:HasWeapon( tab.weaponClass ) ) then
 			pl:StripWeapon( tab.weaponClass )
 		end
+		local newData = { }
+		newData.equiped = false
 		catherine.item.Spawn( tab, eyeTrace.HitPos )
 		catherine.inventory.Update( pl, "remove", tab.uniqueID )
+		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, itemData = newData } )
 	end,
 	viewCre = function( tab, ent, key )
 		return !tab.cantDrop

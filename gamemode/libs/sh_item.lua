@@ -188,6 +188,7 @@ else
 		local menu = DermaMenu( )
 		for k, v in pairs( itemTab.func ) do
 			if ( !v.viewIsEntity ) then continue end
+			if ( v.showFunc and v.showFunc( LocalPlayer( ), itemTab ) == false ) then continue end
 			menu:AddOption( v.text or "ERROR", function( )
 				netstream.Start( "catherine.item.RunFunction_Entity", { k, itemID, ent } )
 			end ):SetImage( "icon16/information.png" )

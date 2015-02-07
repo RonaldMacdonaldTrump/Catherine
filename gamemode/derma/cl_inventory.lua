@@ -13,7 +13,9 @@ function PANEL:Init( )
 	local LP = LocalPlayer( )
 	
 	self.w = ScrW( ) * 0.5
-	self.h = ScrH( ) * 0.5
+	self.h = ScrH( ) * 0.7
+	self.x = ScrW( ) / 2 - self.w / 2
+	self.y = ScrH( ) / 2 - self.h / 2
 	self.inv = nil
 	self.invWeightAni = 0
 	
@@ -21,12 +23,10 @@ function PANEL:Init( )
 	self.invMaxWeight = LocalPlayer( ):GetInvMaxWeight( )
 	
 	self:SetSize( self.w, self.h )
-	self:Center( )
+	self:SetPos( self.x, self.y )
 	self:SetTitle( "" )
 	self:ShowCloseButton( false )
 	self:SetDraggable( false )
-	self:MakePopup( )
-	self:Center( )
 	self.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 25, w, h, Color( 40, 40, 40, 255 ) )
 		
@@ -82,6 +82,8 @@ function PANEL:InitInventory( )
 	self.invMaxWeight = LocalPlayer( ):GetInvMaxWeight( )
 
 	self:RefreshInventory( )
+	
+	catherine.vgui.inventory = self
 end
 
 function PANEL:RefreshInventory( )

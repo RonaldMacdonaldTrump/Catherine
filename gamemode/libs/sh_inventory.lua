@@ -60,8 +60,8 @@ if ( SERVER ) then
 			
 			local dataBuffer = { }
 			dataBuffer = table.Copy( inv[ data.uniqueID ][ "itemData" ] )
-			data.newData = table.Merge( dataBuffer, data.newData )
-			inv[ data.uniqueID ][ "itemData" ] = data.newData
+			data.itemData = table.Merge( dataBuffer, data.itemData )
+			inv[ data.uniqueID ][ "itemData" ] = data.itemData
 			catherine.character.SetGlobalData( pl, "_inv", inv )
 		elseif ( types == "remove" ) then
 			if ( !data ) then return end

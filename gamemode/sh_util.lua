@@ -58,6 +58,24 @@ else
 		if ( !message ) then return end
 		LocalPlayer( ):ChatPrint( message )
 	end
+	
+	
+	function catherine.util.BlurDraw( x, y, w, h, amount )
+		local blur = Material( "pp/blurscreen" )
+		amount = amount or 5
+		surface.SetMaterial( blur )
+		surface.SetDrawColor( 255, 255, 255 )
+		
+		local x2, y2 = x / ScrW( ), y / ScrH( )
+		local w2, h2 = ( x + w ) / ScrW( ), ( y + h ) / ScrH( )
+
+		for i = -0.2, 1, 0.2 do
+			blur:SetFloat( "$blur", i * amount )
+			blur:Recompute( )
+			render.UpdateScreenEffectTexture( )
+			surface.DrawTexturedRectUV( x, y, w, h, x2, y2, w2, h2 )
+		end
+	end
 end
 
 catherine.util.IncludeInDir( "libs/external", true )
