@@ -1,3 +1,7 @@
+--[[
+	This code has brought by nutscript.
+	https://github.com/Chessnut/NutScript
+--]]
 catherine.anim = catherine.anim or { }
 catherine.anim.citizen_male = {
 	normal = {

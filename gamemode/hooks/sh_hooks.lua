@@ -1,5 +1,6 @@
 --[[
-
+	This code has brought by nutscript.
+	https://github.com/Chessnut/NutScript
 --]]
 
 Weapon_HolyType = {}
@@ -38,30 +39,30 @@ function GM:TranslateActivity(pl, act)
 	local weapon = pl:GetActiveWeapon( )
 	local animTab = catherine.anim[ class ]
 	
-	if (class == "player") then
-		if (IsValid(weapon) and pl:OnGround()) then
-			if (model:find("zombie")) then
+	if ( class == "player" ) then
+		if ( IsValid( weapon ) and pl:OnGround( ) ) then
+			if ( model:find("zombie") ) then
 				local tree = catherine.anim.zombie
 
-				if (model:find("fast")) then
+				if ( model:find("fast") ) then
 					tree = catherine.anim.fastZombie
 				end
 
-				if (tree[act]) then
-					return tree[act]
+				if ( tree[ act ] ) then
+					return tree[ act ]
 				end
 			end
 
-			local holdType = weapon:GetHoldType()
-			local value = PlayerHoldType[holdType] or "passive"
-			local tree = catherine.anim.player[value]
+			local holdType = weapon:GetHoldType( )
+			local value = PlayerHoldType[ holdType ] or "passive"
+			local tree = catherine.anim.player[ value ]
 
-			if (tree and tree[act]) then
-				return tree[act]
+			if ( tree and tree[ act ] ) then
+				return tree[ act ]
 			end
 		end
 
-		return self.BaseClass:TranslateActivity(pl, act)
+		return self.BaseClass:TranslateActivity( pl, act )
 	end
 
 	if ( animTab ) then
