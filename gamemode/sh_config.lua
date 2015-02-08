@@ -22,3 +22,9 @@ catherine.configs.database_id = "root"
 catherine.configs.database_pwd = ""
 catherine.configs.database_name = "catherine"
 catherine.configs.database_port = 3306
+
+catherine.configs.characterNameMaxLen = 30
+catherine.configs.characterNameMinLen = 10
+
+catherine.configs.characterDescMaxLen = 54
+catherine.configs.characterDescMinLen = 10

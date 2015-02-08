@@ -27,7 +27,6 @@ Base.func.equip = {
 			pl:SelectWeapon( tab.weaponClass )
 			//pl:SetClip1( 100)
 		end
-		PrintTable(data)
 		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, itemData = newData } )
 	end,
 	showFunc = function( pl, tab, key )

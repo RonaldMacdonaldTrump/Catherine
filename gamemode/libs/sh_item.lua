@@ -104,7 +104,7 @@ if ( SERVER ) then
 		if ( !itemTab.func[ funcName ] ) then return end
 		if ( !itemTab.func[ funcName ].func ) then return end
 		local data = catherine.inventory.GetInvItemData( pl, itemTab.uniqueID )
-		itemTab.func[ funcName ].func( pl, itemTab, data )
+		itemTab.func[ funcName ].func( pl, itemTab, data or { } )
 	end
 	
 	function catherine.item.GiveToCharacter( pl, itemID )

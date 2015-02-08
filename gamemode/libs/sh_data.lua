@@ -58,7 +58,7 @@ if ( SERVER ) then
 	function catherine.catherine_data.GetcatherineData( pl, key, default )
 		if ( !IsValid( pl ) or !key ) then return default end
 		if ( !catherine.catherine_data.buffers[ pl:SteamID( ) ] ) then return default end
-		return catherine.catherine_data.buffers[ pl:SteamID( ) ][ key ]
+		return catherine.catherine_data.buffers[ pl:SteamID( ) ][ key ] or default
 	end
 else
 	catherine.catherine_data.localData = catherine.catherine_data.localData or nil

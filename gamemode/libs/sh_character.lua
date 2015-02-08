@@ -130,7 +130,7 @@ if ( SERVER ) then
 	catherine.character.RegisterGlobal( {
 		id = "faction",
 		field = "_faction",
-		default = "Citizen",
+		default = "citizen",
 		replaceFunc = function( data )
 			if ( data.faction ) then return data.faction end
 		end
@@ -150,7 +150,10 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) or !data ) then return end
 		local canMake = catherine.character.CheckCanMake( data )
 		if ( canMake[ 1 ] == false ) then
-			return catherine.util.Notify( pl, canMake[ 2 ] )
+			local message = canMake[ 2 ]
+			netstream.Start( pl, "catherine.character.RegisterCharacterResult", message )
+			//catherine.util.Notify( pl, canMake[ 2 ] )
+			return
 		end
 		catherine.character.buffers[ pl:SteamID( ) ] = catherine.character.buffers[ pl:SteamID( ) ] or { }
 		
@@ -175,15 +178,11 @@ if ( SERVER ) then
 				catherine.character.buffers[ pl:SteamID( ) ][ #catherine.character.buffers[ pl:SteamID( ) ] + 1 ] = result[ 1 ]
 				catherine.util.Print( Color( 255, 255, 0 ), "Character created! - " .. pl:SteamID( ) )
 				catherine.character.SendCharacterLists( pl )
-				netstream.Start( pl, "catherine.character.RegisterCharacterResult" )
+				netstream.Start( pl, "catherine.character.RegisterCharacterResult", true )
 			end )
 		end )
 	end
 	
-	//catherine.character.Register( catherine.util.FindPlayerByName( "MOKAKI"	), { name = "MOKAKI2" } )
-	//catherine.character.Register( player.GetByID( 3 ), { name = "LOL!" } )
-
-	//PrintTable(catherine.character.buffers)
 	function catherine.character.Load( pl, charID )
 		local characterTab = catherine.character.GetCharacterTableByID( charID )
 		if ( charID == pl.characterID ) then
@@ -200,11 +199,17 @@ if ( SERVER ) then
 		end
 		hook.Run( "PreCharacterLoadStart", pl, pl.characterID )
 		
-		
+		local faction = catherine.faction.FindByID( characterTab._faction )
+		if ( !faction ) then
+			print("Faction error")
+			return
+		end
+
 		pl:KillSilent( )
 		pl:Spawn( )
 		pl:StripWeapons( )
-		//pl:SetTeam( 1 )
+		
+		pl:SetTeam( faction.index )
 		pl:SetModel( characterTab._model )
 		
 		pl.characterID = charID
@@ -213,12 +218,6 @@ if ( SERVER ) then
 		
 		hook.Run( "CharacterLoaded", pl, charID )
 	end
-	
-	concommand.Add( "characterLoad", function( pl, cmd, args )
-	
-		catherine.character.Load( pl, tonumber( args[ 1 ] ) )
-	end )
-	
 
 	function catherine.character.SendCharacterLists( pl )
 		if ( !IsValid( pl ) or !catherine.character.buffers[ pl:SteamID( ) ] ) then return end
@@ -281,7 +280,7 @@ if ( SERVER ) then
 		
 		return nil
 	end
-
+	
 	function catherine.character.SaveAllToDataBases( )
 		local characterCount = catherine.character.CountBufferCharacters( )
 		if ( characterCount == 0 ) then return end
@@ -293,14 +292,10 @@ if ( SERVER ) then
 			local steamID = k
 			for k1, v1 in pairs( v ) do
 				for k2, v2 in pairs( v1 ) do
-					local globaldata = catherine.character.GetGlobalByID( k2:sub( 2 ) )
 					local charID = v1._id
 					if ( !steamID or !charID ) then
 						catherine.util.Print( Color( 255, 0, 0 ), "ERROR - Can't save character! - " .. math.Round( ( progress / characterCount ), 2 ) * 100 .. "%" )
 						continue
-					end
-					if ( globaldata and globaldata.needpon and type( v2 ) == "table" ) then
-						//v2 = util.TableToJSON( v2 ) 
 					end
 					local timerUniqueID = "catherine.character.timer.SaveCharacters_" .. charID
 					timer.Create( timerUniqueID, time, 1, function( )
@@ -348,9 +343,6 @@ if ( SERVER ) then
 		end
 	end )
 
-	//catherine.character.Register( player.GetByID( 1 ), { name = "L7D3", model = "models/player/alyx.mdl" } )
-	//PrintTable(catherine.character.buffers)
-
 	function catherine.character.CountBufferCharacters( )
 		local count = 0
 		for k, v in pairs( catherine.character.buffers ) do
@@ -361,15 +353,13 @@ if ( SERVER ) then
 		end
 		return count
 	end
-
-	hook.Add( "PlayerInitialSpawn", "catherine.character.PlayerInitialSpawn", function( pl )
-		//if ( catherine.character.GetPlayerCharacterLists( pl ) ) then return end
-		//catherine.character.buffers[ pl:SteamID( ) ] = { }
-	end )
 	
 	netstream.Hook( "catherine.character.RegisterCharacter", function( pl, data )
 		catherine.character.Register( pl, data )
-		PrintTable(data)
+	end )
+	
+	netstream.Hook( "catherine.character.LoadCharacter", function( pl, data )
+		catherine.character.Load( pl, data )
 	end )
 else
 	catherine.character.LocalCharacters = catherine.character.LocalCharacters or nil
@@ -385,17 +375,15 @@ else
 	
 	netstream.Hook( "catherine.character.RegisterCharacterResult", function( data )
 		if ( IsValid( catherine.vgui.character ) ) then
-			catherine.vgui.character:CancelStage( )
-			print("Fin")
+			if ( type( data ) == "boolean" ) then
+				catherine.vgui.character:CancelStage( )
+			else
+				Derma_Message( data, "Character create failed", "Okay" )
+			end
 		end
 	end )
-	
+
 	netstream.Hook( "catherine.character.SendCharacterLists", function( data )
 		catherine.character.LocalCharacters = data
-		--[[ // for UI
-		if ( IsValid( catherine.vgui.character ) ) then
-			catherine.vgui.character:RefreshCharacterLists( )
-		end
-		--]]
 	end )
 end

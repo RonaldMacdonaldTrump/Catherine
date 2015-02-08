@@ -51,6 +51,12 @@ function PANEL:Init( )
 	self.Character:SetOutlineColor( Color( 255, 255, 255, 255 ) )
 	self.Character:SetStr( "Character" )
 	self.Character.Click = function( )
+		if ( IsValid( catherine.vgui.character ) ) then
+			catherine.vgui.character:Close( )
+			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+		else
+			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+		end
 		self:Close( )
 	end
 

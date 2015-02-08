@@ -19,6 +19,7 @@ if ( SERVER ) then
 	
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected_02", function( pl )
 		catherine.character.TransferToCharacterTable( pl, pl.characterID )
+		catherine.character.characterDatas[ pl:SteamID( ) ] = nil
 		netstream.Start( nil, "catherine.character.ClearCharacterDatas", pl:SteamID( ) )
 	end )
 	
@@ -31,6 +32,33 @@ if ( SERVER ) then
 			catherine.character.DataTransferCurTime = CurTime( ) + catherine.configs.saveInterval - 10
 		end
 	end )
+	
+	function catherine.character.TransferToCharacterTable( pl, charID )
+		if ( !IsValid( pl ) or !charID ) then return end
+		if ( !catherine.character.characterDatas[ pl:SteamID( ) ] ) then return end
+		if ( !catherine.character.buffers[ pl:SteamID( ) ] ) then return end
+		local found = nil
+		for k, v in pairs( catherine.character.buffers[ pl:SteamID( ) ] ) do
+			for k1, v1 in pairs( v ) do
+				if ( k1 == "_id" and v1 == charID ) then
+					found = k
+				end
+			end
+		end
+		if ( !found ) then return end
+		local buffer = table.Copy( catherine.character.characterDatas[ pl:SteamID( ) ] )
+		local b = catherine.character.buffers[ pl:SteamID( ) ][ found ]
+		for k, v in pairs( catherine.character.characterDatas[ pl:SteamID( ) ] ) do
+			for k1, v1 in pairs( buffer ) do
+				if ( k == k1 and v != v1 ) then
+					b[ k1 ] = v1
+				elseif ( k == k1 and v == v1 ) then
+					b[ k1 ] = v
+				end
+			end
+		end
+		catherine.character.buffers[ pl:SteamID( ) ][ found ] = b
+	end
 
 	function catherine.character.RegisterCharacterDatas( pl, charID, nosync )
 		local globalDatas = catherine.character.GetGlobalDatas( pl, charID )
@@ -100,21 +128,6 @@ if ( SERVER ) then
 		catherine.character.characterDatas[ pl:SteamID( ) ][ "_charData" ][ key ] = value
 		if ( !nosync ) then
 			netstream.Start( nil, "catherine.character.SetCharData", { pl:SteamID( ), key, value } )
-		end
-	end
-	
-	function catherine.character.TransferToCharacterTable( pl, charID )
-		if ( !IsValid( pl ) or !charID ) then return end
-		if ( !catherine.character.characterDatas[ pl:SteamID( ) ] ) then return end
-		if ( !catherine.character.buffers[ pl:SteamID( ) ] ) then return end
-		local find = 0
-		for k, v in pairs( catherine.character.buffers[ pl:SteamID( ) ] ) do
-			for k1, v1 in pairs( v ) do
-				if ( k1 == "_id" and v1 == charID ) then
-					catherine.character.buffers[ pl:SteamID( ) ][ k ] = catherine.character.buffers[ pl:SteamID( ) ]
-					continue
-				end
-			end
 		end
 	end
 else

@@ -30,7 +30,7 @@ function PANEL:Init( )
 		surface.SetMaterial( Material( "gui/gradient_up" ) )
 		surface.DrawTexturedRect( 0, 0, w, h )
 		
-		if ( !self.createCharacter ) then
+		if ( !self.createCharacter and !self.loadCharacter ) then
 			draw.SimpleText( Schema.Name, "catherine_font01_40", w / 2, h * 0.3, Color( 255, 255, 255, 255 ), 1, 1 )
 			draw.SimpleText( Schema.Desc, "catherine_font01_20", w / 2, h * 0.3 + 60, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
@@ -42,7 +42,7 @@ function PANEL:Init( )
 	self.NewCharacter:SetStr( "Create" )
 	self.NewCharacter:SetOutlineColor( Color( 255, 255, 255, 255 ) )
 	self.NewCharacter.Click = function( )
-		if ( !self.createCharacter ) then 
+		if ( !self.createCharacter and !self.loadCharacter ) then 
 			self:CreateCharacter_Init( )
 			self:NextStage( )
 		end
@@ -54,7 +54,9 @@ function PANEL:Init( )
 	self.LoadCharacter:SetStr( "Load" )
 	self.LoadCharacter:SetOutlineColor( Color( 255, 255, 255, 255 ) )
 	self.LoadCharacter.Click = function( )
-
+		if ( !self.createCharacter and !self.loadCharacter ) then 
+			self:LoadCharacter_Init( )
+		end
 	end
 	
 	self.Disconnect = vgui.Create( "catherine.vgui.button", self )
@@ -109,30 +111,69 @@ function PANEL:Init( )
 		entity:SetAngles( Angle( 0, 45, 0 ) )
 		self.CharcreateModelPreview:RunAnimation( )
 	end
+	
+	self.CharacterList = vgui.Create( "DPanelList", self )
+	self.CharacterList:SetPos( 10, 120 )
+	self.CharacterList:SetSize( self.w - 20, self.h - ( 170 ) - 10  )	
+	self.CharacterList:SetSpacing( 5 )
+	self.CharacterList:EnableHorizontal( false )
+	self.CharacterList:EnableVerticalScrollbar( true )	
+	self.CharacterList.Paint = function( pnl, w, h )
+
+	end
+end
+
+function PANEL:PrintErrorMessage( msg )
+	Derma_Message( msg )
 end
 
 function PANEL:Think( )
-	if ( !self.createCharacter ) then
+	if ( !self.createCharacter and !self.loadCharacter ) then
 		self.Previous:SetVisible( false )
 		self.Next:SetVisible( false )
 		self.Cancel:SetVisible( false )
+		self.CharacterList:SetVisible( false )
 		return
 	else
+		if ( self.createCharacter ) then
+			self.Previous:SetVisible( true )
+			self.Next:SetVisible( true )
+			self.Cancel:SetVisible( true )
+		end
+		if ( self.loadCharacter ) then
+			self.CharacterList:SetVisible( true )
+		end
+	end
+	
+	if ( self.createCharacter ) then
 		self.Previous:SetVisible( true )
 		self.Next:SetVisible( true )
 		self.Cancel:SetVisible( true )
+		self.CharacterList:SetVisible( false )
+	elseif ( !self.createCharacter and !self.loadCharacter ) then
+		self.Previous:SetVisible( false )
+		self.Next:SetVisible( false )
+		self.Cancel:SetVisible( false )
+		self.CharacterList:SetVisible( false )
+	elseif ( !self.createCharacter and self.loadCharacter ) then
+		self.Previous:SetVisible( false )
+		self.Next:SetVisible( false )
+		self.Cancel:SetVisible( true )
+		self.CharacterList:SetVisible( true )
 	end
 	
-	if ( self.createCharacter.currProgress == 1 ) then
-		self.Previous:SetStatus( false )
-	else
-		self.Previous:SetStatus( true )
-	end
-	
-	if ( self.createCharacter.currProgress == #self.createCharacter.progressList ) then
+	if ( self.createCharacter ) then
+		if ( self.createCharacter.currProgress == 1 ) then
+			self.Previous:SetStatus( false )
+		else
+			self.Previous:SetStatus( true )
+		end
+		
+		if ( self.createCharacter.currProgress == #self.createCharacter.progressList ) then
 
-	else
-		self.Next:SetStatus( true )
+		else
+			self.Next:SetStatus( true )
+		end
 	end
 end
 
@@ -153,17 +194,96 @@ function PANEL:CreateCharacter_Init( )
 	self.status = 1
 end
 
+function PANEL:LoadCharacter_Init( )
+	self.loadCharacter = { }
+	self.status = 1
+
+	self.CharacterList:Clear( )
+
+	if ( !catherine.character.LocalCharacters ) then return end
+	local transfer = { }
+	for k, v in pairs( catherine.character.LocalCharacters ) do
+		local factionData = catherine.faction.FindByID( v._faction )
+		if ( !factionData ) then continue end
+		transfer[ factionData.name ] = transfer[ factionData.name ] or { }
+		transfer[ factionData.name ][ #transfer[ factionData.name ] + 1 ] = v
+	end
+
+	for k, v in pairs( transfer ) do
+		local form = vgui.Create( "DForm" )
+		form:SetSize( self.CharacterList:GetWide( ), 0 )
+		form:SetName( k )
+		form.Paint = function( pnl, w, h )
+			draw.RoundedBox( 0, 0, 0, w, 20, Color( 80, 80, 80, 255 ) )
+		end
+		
+		local dpanelList = vgui.Create( "DPanelList", form )
+		dpanelList:SetSize( form:GetWide( ), form:GetTall( ) )
+		dpanelList:SetSpacing( 5 )
+		dpanelList:EnableHorizontal( true )
+		dpanelList:EnableVerticalScrollbar( false )	
+		
+		form:AddItem( dpanelList )
+		
+		local base = 0
+		
+		for k1, v1 in pairs( v ) do
+			local panel = vgui.Create( "DPanel" )
+			panel:SetSize( self.CharacterList:GetWide( ), 80 )
+			panel.Paint = function( pnl, w, h )
+				draw.SimpleText( v1._name, "catherine_font01_30", 80, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+				draw.SimpleText( v1._desc, "catherine_font01_20", 80, 50, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+				
+				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
+			end
+			
+			local model = vgui.Create( "SpawnIcon", panel )
+			model:SetSize( 70, 70 )
+			model:SetPos( 5, 5 )
+			model:SetModel( v1._model )
+			model:SetToolTip( false )
+			model.PaintOver = function( pnl, w, h )
+			
+			end
+			
+			local load = vgui.Create( "catherine.vgui.button", panel )
+			load:SetPos( panel:GetWide( ) - 100, 5 )
+			load:SetSize( 80, 70 )
+			load:SetStr( "Load" )
+			load:SetFont( "catherine_font01_30" )
+			load:SetOutlineColor( Color( 255, 255, 255, 255 ) )
+			load.Click = function( )
+				netstream.Start( "catherine.character.LoadCharacter", v1._id )
+				self:Close( )
+			end
+			
+			dpanelList:AddItem( panel )
+			
+			base = base + 85
+		end
+		
+		form:SetSize( self.CharacterList:GetWide( ), base )
+		dpanelList:SetSize( form:GetWide( ), form:GetTall( ) )
+		
+		self.CharacterList:AddItem( form )
+	end
+end
+
 			
 
 function PANEL:CancelStage( )
-	if ( IsValid( self.createCharacter.activePanel ) ) then
-		self.createCharacter.activePanel:AlphaTo( 0, 0.3, 0 )
-		timer.Simple( 0.3, function( )
-			if ( !IsValid( self.createCharacter.activePanel ) ) then return end
-			self.createCharacter.activePanel:Remove( )
-			self.createCharacter.activePanel = nil
-			self.createCharacter = nil
-		end )
+	if ( self.createCharacter ) then
+		if ( IsValid( self.createCharacter.activePanel ) ) then
+			self.createCharacter.activePanel:AlphaTo( 0, 0.3, 0 )
+			timer.Simple( 0.3, function( )
+				if ( !IsValid( self.createCharacter.activePanel ) ) then return end
+				self.createCharacter.activePanel:Remove( )
+				self.createCharacter.activePanel = nil
+				self.createCharacter = nil
+			end )
+		end
+	elseif ( self.loadCharacter ) then
+		self.loadCharacter = nil
 	end
 	self.status = 0
 end
@@ -202,9 +322,11 @@ function PANEL:NextStage( )
 		end
 	else
 		if ( self.createCharacter.currProgress == #self.createCharacter.progressList ) then
-			self.createCharacter.activePanel:OnContinue( )
-			//PrintTable(self.createCharacter.data)
-			netstream.Start( "catherine.character.RegisterCharacter", self.createCharacter.data )
+			if ( self.createCharacter.activePanel:CanContinue( ) ) then
+				self.createCharacter.activePanel:OnContinue( )
+				//PrintTable(self.createCharacter.data)
+				netstream.Start( "catherine.character.RegisterCharacter", self.createCharacter.data )
+			end
 		end
 	end
 end
@@ -261,23 +383,20 @@ function PANEL:Init( )
 	self.NameLabel:SetText( "Faction" )
 	self.NameLabel:SizeToContents( )
 	
-	self.FactionSelect = vgui.Create( "catherine.vgui.button", self )
+	
+	self.FactionSelect = vgui.Create( "DComboBox", self )
 	self.FactionSelect:SetPos( 40 + self.NameLabel:GetSize( ), 10 )
-	self.FactionSelect:SetSize( self.w - ( 40 + self.NameLabel:GetSize( ) ) - 20, 30 )
-	self.FactionSelect:SetStr( "Select Faction >" )
-	self.FactionSelect:SetOutlineColor( Color( 255, 255, 255, 255 ) )
-	self.FactionSelect.Click = function( )
-		local menu = DermaMenu( )
-		
-		for k, v in pairs( self.factionList ) do
-			menu:AddOption( v.name, function( )
-				if ( v.image ) then self:SetFactionImage( v.image ) end
-				self.faction = v.uniqueID
-				self.FactionSelect:SetStr( v.name )
-			end )
+	self.FactionSelect:SetSize( self.w - ( 40 + self.NameLabel:GetSize( ) ), 30 )
+	self.FactionSelect.OnSelect = function( _, index, value, data )
+		local factionData = catherine.faction.FindByID( data )
+		if ( factionData.image ) then
+			self:SetFactionImage( factionData.image )
 		end
-		
-		menu:Open( )
+		self.faction = data
+	end
+	
+	for k, v in pairs( self.factionList ) do
+		self.FactionSelect:AddChoice( v.name, v.uniqueID )
 	end
 end
 
@@ -310,11 +429,16 @@ function PANEL:GetFactionImage( )
 end
 
 function PANEL:CanContinue( )
-	if ( self.faction != "" ) then
-		return true
+	if ( self.faction == "" ) then
+		self:GetParent( ):PrintErrorMessage( "Please select faction!" )
+		return false
 	end
-	print("Please select faction!")
-	return false
+	if ( !catherine.faction.FindByID( self.faction ) ) then
+		self:GetParent( ):PrintErrorMessage( "Faction is not valid!" )
+		return false
+	end
+
+	return true
 end
 
 function PANEL:OnContinue( )
@@ -322,10 +446,9 @@ function PANEL:OnContinue( )
 end
 
 function PANEL:OnPrevious( )
-	print("OH YEAH")
 	local factionData = catherine.faction.FindByID( self:GetParent( ).createCharacter.data.faction )
 	if ( !factionData ) then return end
-	self.FactionSelect:SetStr( factionData.name )
+	self.FactionSelect:ChooseOption( factionData.name, factionData.index )
 	self:SetFactionImage( factionData.image )
 	self.faction = factionData.uniqueID
 end
@@ -426,6 +549,39 @@ end
 function PANEL:OnPrevious( )
 	self.Name:SetText( self:GetParent( ).createCharacter.data.name )
 	self.Desc:SetText( self:GetParent( ).createCharacter.data.desc )
+end
+
+function PANEL:CanContinue( )
+	if ( self.data.name == "" ) then
+		self:GetParent( ):PrintErrorMessage( "Please input name!" )
+		return false
+	end
+	if ( self.data.desc == "" ) then
+		self:GetParent( ):PrintErrorMessage( "Please input desc!" )
+		return false
+	end
+	if ( self.data.model == "" ) then
+		self:GetParent( ):PrintErrorMessage( "Please select model!" )
+		return false
+	end
+	if ( string.len( self.data.name ) > catherine.configs.characterNameMaxLen ) then
+		self:GetParent( ):PrintErrorMessage( "Name is too long!, please input under " .. catherine.configs.characterNameMaxLen .. " len!" )
+		return false
+	end
+	if ( string.len( self.data.name ) < catherine.configs.characterNameMinLen ) then
+		self:GetParent( ):PrintErrorMessage( "Name is too long!, please input up " .. catherine.configs.characterNameMinLen .. " len!" )
+		return false
+	end
+	if ( string.len( self.data.desc ) > catherine.configs.characterDescMaxLen ) then
+		self:GetParent( ):PrintErrorMessage( "Desc is too long!, please input under " .. catherine.configs.characterDescMaxLen .. " len!" )
+		return false
+	end
+	if ( string.len( self.data.desc ) < catherine.configs.characterDescMinLen ) then
+		self:GetParent( ):PrintErrorMessage( "Desc is too long!, please input under " .. catherine.configs.characterDescMaxLen .. " len!" )
+		return false
+	end
+
+	return true
 end
 
 function PANEL:RefreshModelList( )
