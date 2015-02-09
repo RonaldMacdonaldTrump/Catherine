@@ -15,6 +15,22 @@ end
 function GM:PlayerSpawn( pl )
 	player_manager.SetPlayerClass( pl, "catherine_player" )
 	BaseClass.PlayerSpawn( self, pl )
+	pl:SetWeaponRaised( false )
+end
+
+function GM:KeyPress( pl, key )
+	if ( key == IN_RELOAD ) then
+		timer.Create("catherine_toggleweaponRaised_" .. pl:SteamID( ), 1, 1, function()
+			if ( !IsValid( pl ) ) then return end
+			pl:ToggleWeaponRaised( )
+		end )
+	end
+end
+
+function GM:KeyRelease( pl, key )
+	if ( key == IN_RELOAD ) then
+		timer.Destroy( "catherine_toggleweaponRaised_" .. pl:SteamID( ) )
+	end
 end
 --[[
 netstream.Hook( "catherine.LoadingStatus", function( data )
@@ -59,7 +75,7 @@ function GM:PlayerInitialSpawn( pl )
 			if ( #data == 0 ) then
 				netstream.Start( pl, "catherine.LoadingStatus", { true, true, 1, 0.4 } )
 				catherine.database.Insert( {
-					_steamName = pl:Name( ),
+					_steamName = pl:SteamName( ),
 					_steamID = pl:SteamID( ),
 					_catherineData = "[]"
 				}, "catherine_players", function( )

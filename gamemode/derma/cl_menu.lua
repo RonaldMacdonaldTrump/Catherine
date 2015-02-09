@@ -38,8 +38,9 @@ function PANEL:Init( )
 	
 	self.CloseMenu = vgui.Create( "catherine.vgui.button", self )
 	self.CloseMenu:SetSize( self.w * 0.15, 30 )
-	self.CloseMenu:SetPos( 15, 50 )
-	self.CloseMenu:SetOutlineColor( Color( 255, 255, 255, 255 ) )
+	self.CloseMenu:SetPos( 15, 15 )
+	self.CloseMenu:SetOutlineColor( Color( 0, 0, 0, 255 ) )
+	self.CloseMenu:SetTextColor( Color( 0, 0, 0, 255 ) )
 	self.CloseMenu:SetStr( "Close Menu" )
 	self.CloseMenu.Click = function( )
 		self:Close( )
@@ -47,8 +48,9 @@ function PANEL:Init( )
 	
 	self.Character = vgui.Create( "catherine.vgui.button", self )
 	self.Character:SetSize( self.w * 0.15, 30 )
-	self.Character:SetPos( 15, 90 )
-	self.Character:SetOutlineColor( Color( 255, 255, 255, 255 ) )
+	self.Character:SetPos( 15, 50 )
+	self.Character:SetOutlineColor( Color( 0, 0, 0, 255 ) )
+	self.Character:SetTextColor( Color( 0, 0, 0, 255 ) )
 	self.Character:SetStr( "Character" )
 	self.Character.Click = function( )
 		if ( IsValid( catherine.vgui.character ) ) then
@@ -61,15 +63,37 @@ function PANEL:Init( )
 	end
 
 	self.Lists = vgui.Create( "DPanelList", self )
-	self.Lists:SetPos( 15, 150 )
-	self.Lists:SetSize( self.w * 0.15, self.h - 50 )
-	self.Lists:SetSpacing( 5 )
-	self.Lists:EnableHorizontal( false )
-	self.Lists:EnableVerticalScrollbar( true )	
+	self.Lists:SetPos( 5, self.h - 45 )
+	self.Lists:SetSize( self.w - 10, 40 )
+	self.Lists:SetSpacing( 3 )
+	self.Lists:EnableHorizontal( true )
+	self.Lists:EnableVerticalScrollbar( false )	
 	self.Lists.Paint = function( pnl, w, h )
-
+		
 	end
 	
+	self.CharcreateModelPreview = vgui.Create( "DModelPanel", self )
+	self.CharcreateModelPreview:SetSize( self.w * 0.15 + 10, self.h * 0.55 )
+	self.CharcreateModelPreview:SetPos( 10, self.h * 0.2 )
+	self.CharcreateModelPreview.OnCursorEntered = function() 
+	end
+	self.CharcreateModelPreview.OnCursorExited = function() 
+	end
+	self.CharcreateModelPreview:SetDisabled( true )
+	//self.CharcreateModelPreview:SetCursor( "none" )
+	self.CharcreateModelPreview:MoveToBack( )
+	self.CharcreateModelPreview:SetModel( LocalPlayer( ):GetModel( ) )
+	self.CharcreateModelPreview:SetVisible( true )
+	self.CharcreateModelPreview:SetFOV( 40 )
+	self.CharcreateModelPreview.LayoutEntity = function( pnl, entity )
+		entity:SetAngles( Angle( 0, 45, 0 ) )
+		self.CharcreateModelPreview:RunAnimation( )
+	end
+	self.CharcreateModelPreview.PaintOver = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
+		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
+	end
+
 	hook.Run( "AddMenu" )
 	
 	self:MenuInit( )
@@ -80,11 +104,12 @@ function PANEL:Paint( w, h )
 	
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 	
-	surface.SetDrawColor( 40, 40, 40, 200 )
-	surface.SetMaterial( Material( "gui/gradient_up" ) )
-	surface.DrawTexturedRect( 10, 45, w * 0.15 + 10, h / 2 )
+	draw.RoundedBox( 0, 0, h - 50, w, 50, Color( 235, 235, 235, 235 ) )
 	
-	draw.RoundedBox( 0, 10, 45, w * 0.15 + 10, h / 2, Color( 40, 40, 40, 150 ) )
+	draw.RoundedBox( 0, 10, 10, w * 0.15 + 10, 75, Color( 235, 235, 235, 235 ) )
+	
+	draw.RoundedBox( 0, 10, h * 0.8 - 30, 10 + ( w * 0.15 ), 65, Color( 235, 235, 235, 235 ) )
+	draw.SimpleText( LocalPlayer( ):Name( ), "catherine_font01_25", 10 + ( w * 0.15 ) / 2, h * 0.8, Color( 50, 50, 50, 255 ), 1, 1 )
 end
 
 function PANEL:Think( )
@@ -97,9 +122,10 @@ function PANEL:MenuInit( )
 	self.Lists:Clear( )
 	for k, v in pairs( catherine.menuList ) do
 		local panel = vgui.Create( "catherine.vgui.button", self )
-		panel:SetSize( self.Lists:GetWide( ), 30 )
-		panel:SetOutlineColor( Color( 255, 255, 255, 255 ) )
+		panel:SetSize( 100, self.Lists:GetTall( ) )
+		panel:SetOutlineColor( Color( 0, 0, 0, 255 ) )
 		panel:SetStr( v.text )
+		panel:SetTextColor( Color( 0, 0, 0, 255 ) )
 		panel:SetToolTip( v.desc )
 		panel.Click = function( )
 			local function createMenu( )

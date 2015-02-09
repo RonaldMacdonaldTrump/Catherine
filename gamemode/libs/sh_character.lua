@@ -12,6 +12,14 @@ do
 
 		return self:SteamName( )
 	end
+	
+	function playerMeta:Desc( )
+		if ( self:IsCharacterLoaded( ) ) then
+			return self:GetCharacterGlobalData( "_desc", "Error" )
+		end
+
+		return "Error Desc"
+	end
 
 	playerMeta.Nick = playerMeta.Name
 	playerMeta.GetName = playerMeta.Name

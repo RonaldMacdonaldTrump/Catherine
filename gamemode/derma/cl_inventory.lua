@@ -19,6 +19,8 @@ function PANEL:Init( )
 	self.inv = nil
 	self.invWeightAni = 0
 	
+	self.menuName = "INVENTORY"
+	
 	self.invWeight = LocalPlayer( ):GetInvWeight( )
 	self.invMaxWeight = LocalPlayer( ):GetInvMaxWeight( )
 	
@@ -28,20 +30,22 @@ function PANEL:Init( )
 	self:ShowCloseButton( false )
 	self:SetDraggable( false )
 	self.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 25, w, h, Color( 40, 40, 40, 255 ) )
+		draw.RoundedBox( 0, 0, 25, w, h, Color( 255, 255, 255, 235 ) )
 		
-		surface.SetDrawColor( 0, 0, 0, 255 )
+		surface.SetDrawColor( 200, 200, 200, 235 )
 		surface.SetMaterial( Material( "gui/gradient_up" ) )
 		surface.DrawTexturedRect( 0, 25, w, h )
 		
 		self.invWeightAni = Lerp( 0.03, self.invWeightAni, math.min( ( self.invWeight / self.invMaxWeight ), 1 ) * w - 20 )
 		
-		draw.RoundedBox( 0, 10, 40, w - 20, 30, Color( 70, 70, 70, 255 ) )
+		draw.RoundedBox( 0, 10, 40, w - 20, 30, Color( 100, 100, 100, 255 ) )
 		draw.RoundedBox( 0, 10, 40, self.invWeightAni, 30, Color( 150, 150, 150, 255 ) )
 		
 		draw.SimpleText( self.invWeight .. " kg / " .. self.invMaxWeight .. " kg", "catherine_font01_20", w / 2, 40 + 30 / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		
-		draw.SimpleText( "INVENTORY", "catherine_font01_25", 5, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		draw.RoundedBox( 0, 0, 0, surface.GetTextSize( self.menuName ) + 25, 25, Color( 255, 255, 255, 235 ) )
+		
+		draw.SimpleText( self.menuName, "catherine_font01_25", 5, 0, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 	end
 
 	self.CloseMenu = vgui.Create( "catherine.vgui.button", self )
@@ -60,7 +64,7 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
 	self.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 255 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 	end
 	
 	self:InitInventory( )
@@ -95,7 +99,7 @@ function PANEL:RefreshInventory( )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( k )
 		form.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, 20, Color( 80, 80, 80, 255 ) )
+			draw.RoundedBox( 0, 0, 0, w, 20, Color( 150, 150, 150, 255 ) )
 		end
 
 		local dpanelList = vgui.Create( "DPanelList", form )
@@ -126,19 +130,19 @@ function PANEL:RefreshInventory( )
 				end
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
-				surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
+				surface.SetDrawColor( Color( 50, 50, 50, 255 ) )
 				draw.NoTexture( )
 				surface.DrawLine( 0, 5, 5, 0 )
 				
-				draw.RoundedBox( 0, 0, 5, 1, 10, Color( 255, 255, 255, 255 ) )
-				draw.RoundedBox( 0, 5, 0, 10, 1, Color( 255, 255, 255, 255 ) )
+				draw.RoundedBox( 0, 0, 5, 1, 10, Color( 50, 50, 50, 255 ) )
+				draw.RoundedBox( 0, 5, 0, 10, 1, Color( 50, 50, 50, 255 ) )
 				
-				surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
+				surface.SetDrawColor( Color( 50, 50, 50, 255 ) )
 				draw.NoTexture( )
 				surface.DrawLine( w, h - 6, w - 6, h )
 				
-				draw.RoundedBox( 0, w - 1, h - 15, 1, 10, Color( 255, 255, 255, 255 ) )
-				draw.RoundedBox( 0, w - 15, h - 1, 10, 1, Color( 255, 255, 255, 255 ) )
+				draw.RoundedBox( 0, w - 1, h - 15, 1, 10, Color( 50, 50, 50, 255 ) )
+				draw.RoundedBox( 0, w - 15, h - 1, 10, 1, Color( 50, 50, 50, 255 ) )
 
 				if ( LocalPlayer( ):IsEquiped( v1.uniqueID ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
@@ -146,7 +150,7 @@ function PANEL:RefreshInventory( )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
 				
-				draw.SimpleText( v1.count, "catherine_font01_15", 5, h - 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.SimpleText( v1.count, "catherine_font01_15", 5, h - 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 			end
 			
 			dpanelList:AddItem( spawnIcon )

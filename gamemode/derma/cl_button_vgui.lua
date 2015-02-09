@@ -13,6 +13,8 @@ function BUTTON:Init( )
 	self.outlineColorDraw = Color( 0, 0, 0, 0 )
 	self.outlineColorOriginal = Color( 0, 0, 0, 0 )
 	self.outlineColor = Color( 0, 0, 0, 0 )
+	self.textColor = Color( 255, 255, 255, 255 )
+	
 	self:SetText( "" )
 	self:SetFont( self.Font )
 end
@@ -29,6 +31,10 @@ end
 
 function BUTTON:SetOutlineColor( col )
 	self.outlineColorOriginal = col
+end
+
+function BUTTON:SetTextColor( col )
+	self.textColor = col
 end
 
 function BUTTON:SetStr( str )
@@ -130,7 +136,7 @@ function BUTTON:Paint( w, h )
 	draw.RoundedBox( 0, w - 1, h - 15, 1, 10, self.outlineColorDraw )
 	draw.RoundedBox( 0, w - 15, h - 1, 10, 1, self.outlineColorDraw )
 	
-	draw.SimpleText( self.Text, self.Font, w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+	draw.SimpleText( self.Text, self.Font, w / 2, h / 2, self.textColor, 1, 1 )
 
 	self:PaintOverAll( w, h )
 end

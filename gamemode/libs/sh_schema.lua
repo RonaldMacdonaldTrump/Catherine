@@ -10,7 +10,7 @@ function catherine.schema.Initialization( )
 	}
 	catherine.util.IncludeInDir( "schema/libs" )
 	catherine.util.Include( "schema/sh_schema.lua" )
-	catherine.faction.Load( Schema.FolderName .. "/gamemode/schema" )
+	catherine.faction.Include( Schema.FolderName .. "/gamemode/schema" )
 	catherine.item.Include( Schema.FolderName .. "/gamemode/schema" )
 	
 	hook.Run( "SchemaInit" )
@@ -32,3 +32,4 @@ function hook.Call( name, gm, ... )
 	end
 	return hook.catherineHookCall( name, gm, ... )
 end
+

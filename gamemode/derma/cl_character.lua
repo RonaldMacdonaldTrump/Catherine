@@ -16,6 +16,13 @@ function PANEL:Init( )
 
 	self.blur = Material( "pp/blurscreen" )
 	self.status = nil
+	self.blurAmount = 0
+	self.schemaImageAlpha = 0
+	
+	self.alpha = 0
+	
+	self.music = CreateSound( LocalPlayer( ), catherine.configs.characterMenuMusic )
+	self.music:Play( )
 	
 	self:SetSize( self.w, self.h )
 	self:Center( )
@@ -24,15 +31,27 @@ function PANEL:Init( )
 	self:SetDraggable( false )
 	self:MakePopup( )
 	self.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, 255 ) )
-		
-		surface.SetDrawColor( 0, 0, 0, 255 )
-		surface.SetMaterial( Material( "gui/gradient_up" ) )
-		surface.DrawTexturedRect( 0, 0, w, h )
+	
+		self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
+	
+		catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
+	
+		draw.RoundedBox( 0, 0, h - 45, w, 50, Color( 40, 40, 40, self.alpha ) )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, 150 ) )
+
 		
 		if ( !self.createCharacter and !self.loadCharacter ) then
-			draw.SimpleText( Schema.Name, "catherine_font01_40", w / 2, h * 0.3, Color( 255, 255, 255, 255 ), 1, 1 )
-			draw.SimpleText( Schema.Desc, "catherine_font01_20", w / 2, h * 0.3 + 60, Color( 255, 255, 255, 255 ), 1, 1 )
+			self.schemaImageAlpha = Lerp( 0.03, self.schemaImageAlpha, 255 )
+		else
+			self.schemaImageAlpha = Lerp( 0.03, self.schemaImageAlpha, 0 )
+		end
+		
+		self.alpha = Lerp( 0.01, self.alpha, 255 )
+
+		if ( catherine.configs.schemaImage != nil and catherine.configs.schemaImage != "" ) then
+			surface.SetDrawColor( 255, 255, 255, self.schemaImageAlpha )
+			surface.SetMaterial( Material( catherine.configs.schemaImage ) )
+			surface.DrawTexturedRect( w / 2 - 512 / 2, h / 2 - 256 / 2, 512, 256 )
 		end
 	end
 
@@ -41,6 +60,7 @@ function PANEL:Init( )
 	self.NewCharacter:SetSize( self.w * 0.2, 30 )
 	self.NewCharacter:SetStr( "Create" )
 	self.NewCharacter:SetOutlineColor( Color( 255, 255, 255, 255 ) )
+	self.NewCharacter:RunFadeInAnimation( 0.3, 1 )
 	self.NewCharacter.Click = function( )
 		if ( !self.createCharacter and !self.loadCharacter ) then 
 			self:CreateCharacter_Init( )
@@ -53,6 +73,7 @@ function PANEL:Init( )
 	self.LoadCharacter:SetSize( self.w * 0.2, 30 )
 	self.LoadCharacter:SetStr( "Load" )
 	self.LoadCharacter:SetOutlineColor( Color( 255, 255, 255, 255 ) )
+	self.LoadCharacter:RunFadeInAnimation( 0.3, 1 )
 	self.LoadCharacter.Click = function( )
 		if ( !self.createCharacter and !self.loadCharacter ) then 
 			self:LoadCharacter_Init( )
@@ -63,9 +84,22 @@ function PANEL:Init( )
 	self.Disconnect:SetPos( self.w - self.w * 0.2 - 5, self.h - 35 )
 	self.Disconnect:SetSize( self.w * 0.2, 30 )
 	self.Disconnect:SetStr( "Disconnect" )
+	self.Disconnect:RunFadeInAnimation( 0.3, 1 )
+	self.Disconnect.PaintOverAll = function( )
+		if ( LocalPlayer( ):IsCharacterLoaded( ) ) then
+			self.Disconnect:SetStr( "Close" )
+		else
+			self.Disconnect:SetStr( "Disconnect" )
+		end
+	end
 	self.Disconnect:SetOutlineColor( Color( 255, 255, 255, 255 ) )
 	self.Disconnect.Click = function( )
-		self:Close( )
+		if ( LocalPlayer( ):IsCharacterLoaded( ) ) then
+			self:Close( )
+			self.music:FadeOut( 3 )
+		else
+			RunConsoleCommand( "disconnect" )
+		end
 	end
 	
 	self.Previous = vgui.Create( "catherine.vgui.button", self )

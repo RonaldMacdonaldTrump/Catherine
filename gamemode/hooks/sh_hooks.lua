@@ -71,7 +71,7 @@ function GM:TranslateActivity(pl, act)
 		if ( pl:InVehicle( ) and animTab.vehicle ) then
 			local vehicle = pl:GetVehicle( )
 			if ( vehicle and IsValid( vehicle ) ) then
-				local act = animTab.vehicle[ vehicle:GetClass( ) ][ 1 ]
+				local act = animTab.vehicle[ vehicle:GetClass( ) ][ pl:GetWeaponRaised( ) and 2 or 1 ]
 				
 				if ( type( act ) == "string" ) then
 					pl.Calcseq = pl:LookupSequence( act )
@@ -89,7 +89,7 @@ function GM:TranslateActivity(pl, act)
 			end
 
 			if ( animTab[ subClass ] and animTab[ subClass ][ act ] ) then
-				local act2 = animTab[ subClass ][ act ][ 1 ]
+				local act2 = animTab[ subClass ][ act ][ pl:GetWeaponRaised( ) and 2 or 1 ]
 				if ( type( act2 ) == "string" ) then
 					pl.Calcseq = pl:LookupSequence(act2)
 					return
@@ -101,7 +101,7 @@ function GM:TranslateActivity(pl, act)
 		end
 	end
 end
-
+--[[
 function GM:DoAnimationEvent(pl, event, data)
 	local model = pl:GetModel():lower()
 	local class = catherine.anim.getModelClass(model)
@@ -165,3 +165,4 @@ function GM:CalcMainActivity(pl, velocity)
 
 	return seqIdeal, pl.nutForceSeq or oldSeqOverride or pl.CalcSeqOverride
 end
+--]]

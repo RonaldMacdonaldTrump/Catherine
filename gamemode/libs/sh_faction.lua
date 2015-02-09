@@ -32,7 +32,7 @@ function catherine.faction.FindByID( id )
 	return nil
 end
 
-function catherine.faction.Load( dir )
+function catherine.faction.Include( dir )
 	local files = file.Find( dir .. "/factions/*", "LUA" )
 	for k, v in pairs( files ) do
 		Faction = { }
@@ -50,7 +50,6 @@ if ( SERVER ) then
 		if ( !factionData ) then return end
 		if ( !factionData.isWhitelist ) then return end
 		whiteLists[ #whiteLists + 1 ] = id
-		print(whiteLists)
 		catherine.catherine_data.SetcatherineData( pl, "whitelists", whiteLists, false, true )
 	end
 	
@@ -72,6 +71,7 @@ if ( SERVER ) then
 		local whiteLists = table.Copy( catherine.catherine_data.GetcatherineData( pl, "whitelists", { } ) )
 		local factionData = catherine.faction.FindByID( id )
 		if ( !factionData ) then return false end
+		
 		for k, v in pairs( whiteLists ) do
 			if ( v == id ) then
 				return true
@@ -80,7 +80,7 @@ if ( SERVER ) then
 		
 		return false
 	end
-	
+
 	concommand.Add( "addwhitelist", function( pl, cmd, args )
 		catherine.faction.AddWhiteList( pl, args[ 1 ] )
 	end )
@@ -90,7 +90,9 @@ if ( SERVER ) then
 	end )
 else
 	function catherine.faction.HasWhiteList( id )
+		if ( !id ) then return false end
 		local whiteLists = table.Copy( catherine.catherine_data.GetcatherineData( "whitelists", { } ) )
+		if ( !whiteLists ) then return false end
 		local factionData = catherine.faction.FindByID( id )
 		if ( !factionData ) then return false end
 		for k, v in pairs( whiteLists ) do
@@ -103,7 +105,4 @@ else
 	end
 end
 
-
-
-catherine.faction.Load( catherine.FolderName .. "/gamemode" )
-
+catherine.faction.Include( catherine.FolderName .. "/gamemode" )
