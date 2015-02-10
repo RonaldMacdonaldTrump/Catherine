@@ -105,7 +105,7 @@ if ( SERVER ) then
 		catherine.door.SaveData( )
 	end )
 	
-	hook.Add( "InitPostEntity", "catherine.door.InitPostEntity", function( )
+	hook.Add( "DataLoad", "catherine.door.DataLoad", function( )
 		catherine.door.LoadData( )
 	end )
 else

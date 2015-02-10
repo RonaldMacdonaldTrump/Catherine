@@ -150,6 +150,16 @@ function GM:AddMenu( )
 	catherine.RegisterMenuItem( "Inventory", "catherine.vgui.inventory", "Open the your inventory." )
 end
 
+function GM:ScoreboardShow()
+	if ( IsValid( catherine.vgui.menu ) ) then
+		catherine.vgui.menu:Close( )
+		gui.EnableScreenClicker( false )
+	else
+		catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )
+		gui.EnableScreenClicker( true )
+	end
+end
+
 netstream.Hook( "catherine.LoadingStatus", function( data )
 	if ( data[ 2 ] == true ) then
 		if ( data[ 1 ] == true ) then

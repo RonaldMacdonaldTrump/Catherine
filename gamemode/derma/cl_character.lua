@@ -18,7 +18,6 @@ function PANEL:Init( )
 	self.status = nil
 	self.blurAmount = 0
 	self.schemaImageAlpha = 0
-	
 	self.alpha = 0
 	
 	self.music = CreateSound( LocalPlayer( ), catherine.configs.characterMenuMusic )
@@ -31,7 +30,6 @@ function PANEL:Init( )
 	self:SetDraggable( false )
 	self:MakePopup( )
 	self.Paint = function( pnl, w, h )
-	
 		self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
 	
 		catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
@@ -96,7 +94,6 @@ function PANEL:Init( )
 	self.Disconnect.Click = function( )
 		if ( LocalPlayer( ):IsCharacterLoaded( ) ) then
 			self:Close( )
-			self.music:FadeOut( 3 )
 		else
 			RunConsoleCommand( "disconnect" )
 		end
@@ -225,15 +222,11 @@ function PANEL:CreateCharacter_Init( )
 	}
 	self.createCharacter.currProgress = 0
 	self.createCharacter.maxProgress = #self.createCharacter.progressList
-	self.status = 1
 end
 
 function PANEL:LoadCharacter_Init( )
 	self.loadCharacter = { }
-	self.status = 1
-
 	self.CharacterList:Clear( )
-
 	if ( !catherine.character.LocalCharacters ) then return end
 	local transfer = { }
 	for k, v in pairs( catherine.character.LocalCharacters ) do
@@ -303,8 +296,6 @@ function PANEL:LoadCharacter_Init( )
 	end
 end
 
-			
-
 function PANEL:CancelStage( )
 	if ( self.createCharacter ) then
 		if ( IsValid( self.createCharacter.activePanel ) ) then
@@ -319,7 +310,6 @@ function PANEL:CancelStage( )
 	elseif ( self.loadCharacter ) then
 		self.loadCharacter = nil
 	end
-	self.status = 0
 end
 
 function PANEL:NextStage( )
@@ -332,16 +322,13 @@ function PANEL:NextStage( )
 			self.createCharacter.activePanel:SetAlpha( 0 )
 			self.createCharacter.activePanel:AlphaTo( 255, 0.3, 0 )
 			self.createCharacter.activePanel:SetPos( ScrW( ) / 2 - self.createCharacter.activePanel:GetWide( ) / 2, ScrH( ) / 2 - self.createCharacter.activePanel:GetTall( ) / 2 )
-			//self.createCharacter.activePanel:MoveTo( 0 - self.createCharacter.activePanel:GetWide( ), ScrH( ) / 2 - self.createCharacter.activePanel:GetTall( ) / 2, 1, 0 )
 		else
 			if ( !self.createCharacter.activePanel:CanContinue( ) ) then return end
 			self.createCharacter.currProgress = self.createCharacter.currProgress + 1
 			self.createCharacter.activePanel:AlphaTo( 0, 0.3, 0 )
 			self.createCharacter.activePanel:OnContinue( )
-			
 			timer.Simple( 0.3, function( )
 				if ( !IsValid( self.createCharacter.activePanel ) ) then return end
-				
 				self.createCharacter.activePanel:Remove( )
 				self.createCharacter.activePanel = nil
 				
@@ -350,15 +337,12 @@ function PANEL:NextStage( )
 				self.createCharacter.activePanel:SetPos( ScrW( ) / 2 - self.createCharacter.activePanel:GetWide( ) / 2, ScrH( ) / 2 - self.createCharacter.activePanel:GetTall( ) / 2 )
 				self.createCharacter.activePanel:SetAlpha( 0 )
 				self.createCharacter.activePanel:AlphaTo( 255, 0.3, 0 )
-				//self.createCharacter.activePanel:SetPos( ScrW( ), ScrH( ) / 2 - self.createCharacter.activePanel:GetTall( ) / 2 )
-				//self.createCharacter.activePanel:MoveTo( ScrW( ) / 2 - self.createCharacter.activePanel:GetWide( ) / 2, ScrH( ) / 2 - self.createCharacter.activePanel:GetTall( ) / 2, 1, 0 )
 			end )
 		end
 	else
 		if ( self.createCharacter.currProgress == #self.createCharacter.progressList ) then
 			if ( self.createCharacter.activePanel:CanContinue( ) ) then
 				self.createCharacter.activePanel:OnContinue( )
-				//PrintTable(self.createCharacter.data)
 				netstream.Start( "catherine.character.RegisterCharacter", self.createCharacter.data )
 			end
 		end
@@ -367,33 +351,26 @@ end
 
 function PANEL:PreviousStage( )
 	if ( !self.createCharacter ) then return end
-	if ( self.status == 1 ) then
-		if ( self.createCharacter.currProgress > 1 ) then
-			self.createCharacter.currProgress = self.createCharacter.currProgress - 1
-			self.createCharacter.activePanel:AlphaTo( 0, 0.3, 0 )
-			timer.Simple( 0.3, function( )
-				if ( !IsValid( self.createCharacter.activePanel ) ) then return end
-				
-				self.createCharacter.activePanel:Remove( )
-				self.createCharacter.activePanel = nil
-				
-				self.createCharacter.activePanel = vgui.Create( self.createCharacter.progressList[ self.createCharacter.currProgress ], self )
-				self.createCharacter.activePanel:SetSize( 512, 312 )
-				self.createCharacter.activePanel:SetPos( ScrW( ) / 2 - self.createCharacter.activePanel:GetWide( ) / 2, ScrH( ) / 2 - self.createCharacter.activePanel:GetTall( ) / 2 )
-				self.createCharacter.activePanel:SetAlpha( 0 )
-				self.createCharacter.activePanel:AlphaTo( 255, 0.3, 0 )
-				self.createCharacter.activePanel:OnPrevious( )
-				
-			end )
-		else
-			print("Cant!")
-		end
-	else
-	
+	if ( self.createCharacter.currProgress > 1 ) then
+		self.createCharacter.currProgress = self.createCharacter.currProgress - 1
+		self.createCharacter.activePanel:AlphaTo( 0, 0.3, 0 )
+		timer.Simple( 0.3, function( )
+			if ( !IsValid( self.createCharacter.activePanel ) ) then return end
+			self.createCharacter.activePanel:Remove( )
+			self.createCharacter.activePanel = nil
+			
+			self.createCharacter.activePanel = vgui.Create( self.createCharacter.progressList[ self.createCharacter.currProgress ], self )
+			self.createCharacter.activePanel:SetSize( 512, 312 )
+			self.createCharacter.activePanel:SetPos( ScrW( ) / 2 - self.createCharacter.activePanel:GetWide( ) / 2, ScrH( ) / 2 - self.createCharacter.activePanel:GetTall( ) / 2 )
+			self.createCharacter.activePanel:SetAlpha( 0 )
+			self.createCharacter.activePanel:AlphaTo( 255, 0.3, 0 )
+			self.createCharacter.activePanel:OnPrevious( )
+		end )
 	end
 end
 
 function PANEL:Close( )
+	self.music:FadeOut( 3 )
 	self:Remove( )
 	self = nil
 	catherine.vgui.character = nil
@@ -410,17 +387,16 @@ function PANEL:Init( )
 	self.factionImage = nil
 	self.factionList = self:GetFactionList( )
 	
-	self.NameLabel = vgui.Create( "DLabel", self )
-	self.NameLabel:SetPos( 10, 10 )
-	self.NameLabel:SetColor( Color( 255, 255, 255, 255 ) )
-	self.NameLabel:SetFont( "catherine_font01_30" )
-	self.NameLabel:SetText( "Faction" )
-	self.NameLabel:SizeToContents( )
-	
+	self.FactionLabel = vgui.Create( "DLabel", self )
+	self.FactionLabel:SetPos( 10, 10 )
+	self.FactionLabel:SetColor( Color( 255, 255, 255, 255 ) )
+	self.FactionLabel:SetFont( "catherine_font01_30" )
+	self.FactionLabel:SetText( "Faction" )
+	self.FactionLabel:SizeToContents( )
 	
 	self.FactionSelect = vgui.Create( "DComboBox", self )
-	self.FactionSelect:SetPos( 40 + self.NameLabel:GetSize( ), 10 )
-	self.FactionSelect:SetSize( self.w - ( 40 + self.NameLabel:GetSize( ) ), 30 )
+	self.FactionSelect:SetPos( 40 + self.FactionLabel:GetSize( ), 10 )
+	self.FactionSelect:SetSize( self.w - ( 40 + self.FactionLabel:GetSize( ) ), 30 )
 	self.FactionSelect.OnSelect = function( _, index, value, data )
 		local factionData = catherine.faction.FindByID( data )
 		if ( factionData.image ) then
@@ -554,7 +530,6 @@ function PANEL:Init( )
 		draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
 		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
 		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 0 ) )
-		self.data.desc = pnl:GetText( )
 	end
 	self.Desc.OnTextChanged = function( pnl )
 		self.data.desc = pnl:GetText( )
@@ -603,7 +578,7 @@ function PANEL:CanContinue( )
 		return false
 	end
 	if ( string.len( self.data.name ) < catherine.configs.characterNameMinLen ) then
-		self:GetParent( ):PrintErrorMessage( "Name is too long!, please input up " .. catherine.configs.characterNameMinLen .. " len!" )
+		self:GetParent( ):PrintErrorMessage( "Name is too short!, please input up " .. catherine.configs.characterNameMinLen .. " len!" )
 		return false
 	end
 	if ( string.len( self.data.desc ) > catherine.configs.characterDescMaxLen ) then
@@ -611,7 +586,7 @@ function PANEL:CanContinue( )
 		return false
 	end
 	if ( string.len( self.data.desc ) < catherine.configs.characterDescMinLen ) then
-		self:GetParent( ):PrintErrorMessage( "Desc is too long!, please input under " .. catherine.configs.characterDescMaxLen .. " len!" )
+		self:GetParent( ):PrintErrorMessage( "Desc is too short!, please input up " .. catherine.configs.characterDescMaxLen .. " len!" )
 		return false
 	end
 
@@ -621,7 +596,7 @@ end
 function PANEL:RefreshModelList( )
 	local data = self:GetParent().createCharacter.data
 	self.ModelList:Clear( )
-	local factionData = catherine.faction.FindByID( data.faction ) //self.createCharacter.data.faction )
+	local factionData = catherine.faction.FindByID( data.faction )
 	if ( !factionData ) then return end
 	for k, v in pairs( factionData.models ) do
 		local spawnIcon = vgui.Create( "SpawnIcon" )
@@ -638,7 +613,6 @@ function PANEL:RefreshModelList( )
 				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 0, 0, 255 ) )
 			end
 		end
-		
 		self.ModelList:AddItem( spawnIcon )
 	end
 end

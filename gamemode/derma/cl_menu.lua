@@ -1,17 +1,3 @@
-function GM:ScoreboardShow()
-	if ( IsValid( catherine.vgui.menu ) ) then
-		catherine.vgui.menu:Close( )
-		gui.EnableScreenClicker( false )
-	else
-		catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )
-		gui.EnableScreenClicker( true )
-	end
-end
-
-function GM:ScoreboardHide()
-
-end
-
 function catherine.RegisterMenuItem( text, vgui, desc )
 	catherine.menuList[ text ] = { text = text, vgui = vgui, desc = desc }
 end
@@ -19,14 +5,10 @@ end
 local PANEL = { }
 
 function PANEL:Init( )
-	local LP = LocalPlayer( )
-	
 	self.w = ScrW( )
 	self.h = ScrH( )
 
 	self.blurAmount = 0
-	self.open = CurTime( )
-	self.staying = false
 	self.currMenu = nil
 	self.lastSelect = nil
 	
@@ -42,9 +24,7 @@ function PANEL:Init( )
 	self.CloseMenu:SetOutlineColor( Color( 0, 0, 0, 255 ) )
 	self.CloseMenu:SetTextColor( Color( 0, 0, 0, 255 ) )
 	self.CloseMenu:SetStr( "Close Menu" )
-	self.CloseMenu.Click = function( )
-		self:Close( )
-	end
+	self.CloseMenu.Click = function( ) self:Close( ) end
 	
 	self.Character = vgui.Create( "catherine.vgui.button", self )
 	self.Character:SetSize( self.w * 0.15, 30 )
@@ -68,9 +48,7 @@ function PANEL:Init( )
 	self.Lists:SetSpacing( 3 )
 	self.Lists:EnableHorizontal( true )
 	self.Lists:EnableVerticalScrollbar( false )	
-	self.Lists.Paint = function( pnl, w, h )
-		
-	end
+	self.Lists.Paint = function( pnl, w, h ) end
 	
 	self.CharcreateModelPreview = vgui.Create( "DModelPanel", self )
 	self.CharcreateModelPreview:SetSize( self.w * 0.15 + 10, self.h * 0.55 )
@@ -80,7 +58,7 @@ function PANEL:Init( )
 	self.CharcreateModelPreview.OnCursorExited = function() 
 	end
 	self.CharcreateModelPreview:SetDisabled( true )
-	//self.CharcreateModelPreview:SetCursor( "none" )
+	self.CharcreateModelPreview:SetCursor( "none" )
 	self.CharcreateModelPreview:MoveToBack( )
 	self.CharcreateModelPreview:SetModel( LocalPlayer( ):GetModel( ) )
 	self.CharcreateModelPreview:SetVisible( true )
@@ -105,18 +83,11 @@ function PANEL:Paint( w, h )
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 	
 	draw.RoundedBox( 0, 0, h - 50, w, 50, Color( 235, 235, 235, 235 ) )
-	
 	draw.RoundedBox( 0, 10, 10, w * 0.15 + 10, 75, Color( 235, 235, 235, 235 ) )
-	
 	draw.RoundedBox( 0, 10, h * 0.8 - 30, 10 + ( w * 0.15 ), 65, Color( 235, 235, 235, 235 ) )
+	
 	draw.SimpleText( LocalPlayer( ):Name( ), "catherine_font01_25", 10 + ( w * 0.15 ) / 2, h * 0.8, Color( 50, 50, 50, 255 ), 1, 1 )
 	draw.SimpleText( catherine.cash.GetName( LocalPlayer( ):GetCash( ) ), "catherine_font01_25", ScrW( ) - 15, 15, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
-end
-
-function PANEL:Think( )
-	if ( self.open <= CurTime( ) + 1 ) then
-		self.staying = true
-	end
 end
 
 function PANEL:MenuInit( )
@@ -154,7 +125,6 @@ function PANEL:MenuInit( )
 						if ( IsValid( self.currMenu ) ) then
 							self.currMenu:Remove( )
 							self.currMenu = nil
-							
 							createMenu( )
 						end
 					end )
@@ -166,7 +136,6 @@ function PANEL:MenuInit( )
 		self.Lists:AddItem( panel )
 	end
 end
-
 
 function PANEL:Close( )
 	self:Remove( )

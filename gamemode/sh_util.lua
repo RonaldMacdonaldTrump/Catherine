@@ -45,20 +45,22 @@ function catherine.util.FindPlayerByName( name )
 	return nil
 end
 
+catherine.util.IncludeInDir( "libs/external", true )
+
 if ( SERVER ) then
 	function catherine.util.Notify( pl, message )
 		if ( !message ) then return end
-		if ( !pl ) then
-			return
-		end
-		pl:ChatPrint( message )
+		netstream.Start( pl, "catherine.util.NotifySend", message )
 	end
 else
+	netstream.Hook( "catherine.util.NotifySend", function( data )
+		catherine.util.Notify( data )
+	end )
+	
 	function catherine.util.Notify( message )
 		if ( !message ) then return end
-		LocalPlayer( ):ChatPrint( message )
+		catherine.notify.Add( message, 5 )
 	end
-	
 	
 	function catherine.util.BlurDraw( x, y, w, h, amount )
 		local blur = Material( "pp/blurscreen" )
@@ -78,4 +80,3 @@ else
 	end
 end
 
-catherine.util.IncludeInDir( "libs/external", true )
