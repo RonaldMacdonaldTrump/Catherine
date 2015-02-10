@@ -4,9 +4,18 @@ end
 catherine.character.characterDatas = catherine.character.characterDatas or { }
 
 if ( SERVER ) then
-	catherine.character.DataTransferCurTime = catherine.character.DataTransferCurTime or CurTime( ) + catherine.configs.saveInterval - 10
+	catherine.character.DataTransferCurTime = catherine.character.DataTransferCurTime or CurTime( ) + catherine.configs.transferInterval
 	hook.Add( "CharacterLoaded", "catherine.character.CharacterLoaded", function( pl, charID )
 		catherine.character.RegisterCharacterDatas( pl, charID )
+		--[[
+		local health = catherine.character.GetCharData( pl, "health", 100 )
+		local armor = catherine.character.GetCharData( pl, "armor", 0 )
+		
+		pl:SetHealth( health )
+		pl:SetArmor( armor )
+		
+		catherine.character.SetCharData( pl, "health", pl:Health( ) )
+		catherine.character.SetCharData( pl, "armor", pl:Armor( ) )--]]
 	end )
 	
 	hook.Add( "PreCharacterLoadStart", "catherine.character.PreCharacterLoadStart", function( pl, prviouscharID )
@@ -29,9 +38,12 @@ if ( SERVER ) then
 				if ( !v:IsCharacterLoaded( ) ) then continue end
 				catherine.character.TransferToCharacterTable( v, v.characterID )
 			end
-			catherine.character.DataTransferCurTime = CurTime( ) + catherine.configs.saveInterval - 10
+			catherine.character.DataTransferCurTime = CurTime( ) + catherine.configs.transferInterval
 		end
 	end )
+	
+	//catherine.character.SaveAllToDataBases( )
+	
 	
 	function catherine.character.TransferToCharacterTable( pl, charID )
 		if ( !IsValid( pl ) or !charID ) then return end
@@ -164,6 +176,12 @@ function catherine.character.GetGlobalData( pl, key, default )
 	if ( !catherine.character.characterDatas[ pl:SteamID( ) ] ) then return default end
 	if ( !catherine.character.characterDatas[ pl:SteamID( ) ][ key ] ) then return default end
 	return catherine.character.characterDatas[ pl:SteamID( ) ][ key ]
+end
+
+function catherine.character.GetCharData( pl, key, default )
+	if ( !IsValid( pl ) or !key ) then return default end
+	if ( !catherine.character.characterDatas[ pl:SteamID( ) ] ) then return default end
+	return catherine.character.characterDatas[ pl:SteamID( ) ][ "_charData" ][ key ] or default
 end
 
 local META = FindMetaTable( "Player" )

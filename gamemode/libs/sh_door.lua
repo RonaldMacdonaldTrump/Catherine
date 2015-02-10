@@ -1,8 +1,10 @@
+catherine.door = catherine.door or { }
+
 local META = FindMetaTable( "Player" )
 local META2 = FindMetaTable( "Entity" )
 
 function META2:IsDoor( )
-	if !IsValid( self ) then return false end
+	if ( !IsValid( self ) ) then return false end
 	local class = self:GetClass( )
 	if ( class == "func_door" or class == "func_door_rotating" or class == "prop_door_rotating" or class == "prop_dynamic" ) then
 		return true
@@ -12,35 +14,134 @@ end
 
 if ( SERVER ) then
 	function META:BuyDoor( )
-		local ent = self:GetEyeTrace( 70 ).Entity
-		if ( self:GetCash( ) >= catherine.configs.doorCost or ent:IsDoor( ) or ent:GetOwner( ) == nil ) then
-			self:ChatPrint( "You has been bought the door!" )
-			ent:SetOwner( self:GetCharacterID( ) )
-			self:TakeCash( catherine.configs.doorCost )
-		elseif ( self:GetCash( ) <= catherine.configs.doorCost ) then
-			self:ChatPrint( "You need" .. ( catherine.configs.doorCost - self:GetCash( ) ) .. catherine.configs.cashName .. "(s) more!" )
-		end
+		catherine.door.Buy( self )
 	end
 
 	function META:SellDoor( )
-		local ent = self:GetEyeTrace( 70 ).Entity
-		if ( ent:IsDoor( ) or ent:GetOwner( ) == self:GetCharacterID( ) ) then
-			self:ChatPrint( "You has been sold the door!" )
-			self:GiveCash( catherine.configs.doorSellCost )
-			ent:SetOwner( nil )
-		else
-			self:ChatPrint( "You don't have a permission!" )
-		end
+		catherine.door.Sell( self )
 	end
 
-	function META:SetDoorTitle( args )
-		local ent = self:GetEyeTrace( 70 ).Entity
-		if ( ent:IsDoor( ) or ent:GetOwner( ) == self:GetCharacterID( ) ) then
-			ent:SetNetworkValue( "Title", args )
-		end
+	function META:SetDoorTitle( title )
+		catherine.door.SetDoorTitle( self, title )
 	end
 
-	concommand.Add( "DoorSetTitle", function( cmd, args ) 
-		ent:SetDoorTitle( tostring( args[ 1 ] ) )
+	function catherine.door.Buy( pl )
+		local ent = pl:GetEyeTrace( 70 ).Entity
+		if ( !IsValid( ent ) ) then
+			return catherine.util.Notify( pl, "Please look valid entity!" )
+		end
+		if ( !ent:IsDoor( ) ) then
+			return catherine.util.Notify( pl, "Please look valid door!" )
+		end
+		if ( ent:GetOwner( ) != NULL ) then
+			return catherine.util.Notify( pl, "This door has already buyed." )
+		end
+		if ( pl:GetCash( ) >= catherine.configs.doorCost ) then
+			ent:SetOwner( pl )
+			catherine.util.Notify( pl, "You are buyed this door." )
+			pl:TakeCash( catherine.configs.doorCost )
+		elseif ( pl:GetCash( ) < catherine.configs.doorCost ) then
+			catherine.util.Notify( pl, "You need " .. catherine.cash.GetName( catherine.configs.doorCost - pl:GetCash( ) ) .. "(s) more!" )
+		end
+	end
+	
+	function catherine.door.Sell( pl )
+		local ent = pl:GetEyeTrace( 70 ).Entity
+		if ( !IsValid( ent ) ) then
+			return catherine.util.Notify( pl, "Please look valid entity!" )
+		end
+		if ( !ent:IsDoor( ) ) then
+			return catherine.util.Notify( pl, "Please look valid door!" )
+		end
+		if ( ent:GetOwner( ) != pl ) then
+			return catherine.util.Notify( pl, "You do not have permission!" )
+		end
+		ent:SetOwner( NULL )
+		pl:GiveCash( catherine.configs.doorSellCost )
+		catherine.util.Notify( pl, "You are solded this door." )
+	end
+	
+	function catherine.door.SetDoorTitle( pl, title )
+		if ( !title ) then title = "Door" end
+		local ent = pl:GetEyeTrace( 70 ).Entity
+		if ( !IsValid( ent ) ) then return catherine.util.Notify( pl, "Please look valid entity!" ) end
+		if ( !ent:IsDoor( ) ) then return catherine.util.Notify( pl, "Please look valid door!" ) end
+		if ( ent:GetOwner( ) != pl ) then return catherine.util.Notify( pl, "You do not have permission!" ) end
+		ent:SetNetworkValue( "title", title )
+	end
+	
+	function catherine.door.SaveData( )
+		local data = { }
+		for k, v in pairs( ents.GetAll( ) ) do
+			if ( !v:IsDoor( ) ) then continue end
+			local title = v:GetNetworkValue( "title", "Door" )
+			if ( title == "Door" ) then continue end
+			data[ #data + 1 ] = {
+				title = title,
+				index = v:EntIndex( )
+			}
+		end
+		
+		catherine.data.Set( "door", data )
+	end
+	
+	
+	function catherine.door.LoadData( )
+		local data = catherine.data.Get( "door", { } )
+		
+		for k, v in pairs( data ) do
+			for k1, v1 in pairs( ents.GetAll( ) ) do
+				if ( IsValid( v1 ) and v1:IsDoor( ) and v1:EntIndex( ) == v.index ) then
+					v1:SetNetworkValue( "title", v.title )
+				end
+			end
+		end
+	end
+	
+	catherine.door.LoadData( )
+	
+	hook.Add( "DataSave", "catherine.door.DataSave", function( )
+		catherine.door.SaveData( )
+	end )
+	
+	hook.Add( "DataLoad", "catherine.door.DataLoad", function( )
+		catherine.door.LoadData( )
+	end )
+else
+	local toscreen = FindMetaTable("Vector").ToScreen
+	
+	hook.Add( "DrawEntityInformation", "catherine.door.DrawEntityInformation", function( ent, a )
+		if ( !ent:IsDoor( ) ) then return end
+		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
+		local title = ent:GetNetworkValue( "title", "A Door." )
+		local haveOwner = nil
+		if ( ent:GetOwner( ) == NULL ) then haveOwner = false else haveOwner = true end
+		local tw, th = surface.GetTextSize( title )
+		draw.SimpleText( ( haveOwner and "This door has been buyed!" ) or "This door can buy.", "catherine_font02_20", position.x, position.y + 20, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent:GetNetworkValue( "title", "A Door." ), "catherine_font02_25", position.x, position.y, Color( 255, 255, 255, a ), 1, 1 )
 	end )
 end
+
+catherine.command.Register( {
+	command = "doorbuy",
+	syntax = "[none]",
+	runFunc = function( pl, args )
+		pl:BuyDoor( )
+	end
+} )
+
+catherine.command.Register( {
+	command = "doorsell",
+	syntax = "[none]",
+	runFunc = function( pl, args )
+		pl:SellDoor( )
+	end
+} )
+
+catherine.command.Register( {
+	command = "doorsettitle",
+	syntax = "[text]",
+	runFunc = function( pl, args )
+		pl:SetDoorTitle( args[ 1 ] )
+	end
+} )

@@ -48,29 +48,7 @@ local entity = nil
 local entityIDCache = { }
 
 function GM:HUDDrawTargetID( )
-	local scrW, scrH = ScrW( ), ScrH( )
-	if ( LocalPlayer( ):IsCharacterLoaded( ) and nextRefresh < CurTime( ) ) then
-		nextRefresh = CurTime( ) + 0.5
-		local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
-		if ( IsValid( ent ) ) then
-			entityIDCache[ ent ] = true
-		else
-			entityIDCache[ ent ] = nil
-		end
-	end
 	
-	for k, v in pairs( entityIDCache ) do
-		if ( !IsValid( k ) ) then entityIDCache[ k ] = nil continue end
-		local distance = k:GetPos( ):Distance( LocalPlayer( ):GetPos( ) )
-		local a = Lerp( 0.03, k.alpha or 0, 255 - ( distance ) )
-		k.alpha = a
-
-		if ( math.Round( a ) <= 0 ) then
-			entityIDCache[ k ] = nil
-		end
-
-		hook.Run( "DrawEntityInformation", k, a )
-	end
 end
 
 local toscreen = FindMetaTable("Vector").ToScreen
@@ -125,7 +103,7 @@ function GM:HUDDrawScoreBoard( )
 	//draw.RoundedBox( 0, 10, scrH - 20, scrW - 20, 10, Color( catherine.textColor * 2, catherine.textColor * 2, catherine.textColor * 2, catherine.alpha ) )
 	//draw.RoundedBox( 0, 10, scrH - 20, catherine.progressBar, 10, Color( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha ) )
 	
-	draw.SimpleText( catherine.errorText, "catherine_font01_40", scrW / 2, scrH - 70, Color( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha ), 1, 1 )
+	draw.SimpleText( catherine.errorText, "catherine_font01_40", scrW / 2, scrH - 70, Color( 255, 0, 0, catherine.alpha ), 1, 1 )
 end
 
 function GM:HUDPaint( )
@@ -133,7 +111,32 @@ function GM:HUDPaint( )
 	surface.SetMaterial( Material( "catherine/vignette.png" ) )
 	surface.DrawTexturedRect( 0, 0, ScrW( ), ScrH( ) )
 	
+	draw.SimpleText( catherine.cash.GetName( LocalPlayer( ):GetCash( ) ), "catherine_font01_25", ScrW( ) - 15, 15, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	catherine.bar.Draw( )
+	
+	local scrW, scrH = ScrW( ), ScrH( )
+	if ( LocalPlayer( ):IsCharacterLoaded( ) and nextRefresh < CurTime( ) ) then
+		nextRefresh = CurTime( ) + 0.5
+		local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
+		if ( IsValid( ent ) ) then
+			entityIDCache[ ent ] = true
+		else
+			entityIDCache[ ent ] = nil
+		end
+	end
+	
+	for k, v in pairs( entityIDCache ) do
+		if ( !IsValid( k ) ) then entityIDCache[ k ] = nil continue end
+		local distance = k:GetPos( ):Distance( LocalPlayer( ):GetPos( ) )
+		local a = Lerp( 0.03, k.alpha or 0, 255 - ( distance ) )
+		k.alpha = a
+
+		if ( math.Round( a ) <= 0 ) then
+			entityIDCache[ k ] = nil
+		end
+		
+		hook.Run( "DrawEntityInformation", k, a )
+	end
 end
 
 function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePos, eyeAng )

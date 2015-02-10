@@ -317,6 +317,8 @@ if ( SERVER ) then
 			end
 		end
 	end
+	
+
 
 	function catherine.character.LoadAllByDataBases( )
 		catherine.database.GetTable_All( "catherine_characters", function( data )

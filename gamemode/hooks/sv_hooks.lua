@@ -108,7 +108,7 @@ function GM:PlayerInitialSpawn( pl )
 			print("Start")
 			timer.Destroy( "catherine.loading.WaitLocalPlayer_" .. pl:SteamID( ) )
 			netstream.Start( pl, "catherine.LoadingStatus", { false, true, 1, 0.1 } )
-			timer.Simple( 7, function( )
+			timer.Simple( 4, function( )
 				stap01( )
 			end )
 		end
@@ -183,4 +183,12 @@ end
 
 function GM:PlayerDeathSound( ply )
 	return true
+end
+
+function GM:Initialize( )
+	hook.Run( "DataLoad" )
+end
+
+function GM:ShutDown( )
+	hook.Run( "DataSave" )
 end

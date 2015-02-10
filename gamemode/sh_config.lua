@@ -12,6 +12,7 @@ catherine.configs.cashModel = "models/props_lab/box01a.mdl"
 catherine.configs.schemaImage = ""
 
 catherine.configs.saveInterval = 300
+catherine.configs.transferInterval = 100
 
 catherine.configs.giveHand = true
 catherine.configs.giveKey = true

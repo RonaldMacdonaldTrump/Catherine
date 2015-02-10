@@ -7,18 +7,18 @@ local META = FindMetaTable( "Player" )
 if ( SERVER ) then
 	function META:SetCash( amount, dbSave )
 		if ( amount < 0 ) then amount = 0 end
-		self:SetCharacterData( "_Cash", amount, dbSave )
+		self:SetCharacterGlobalData( "_cash", amount, dbSave )
 	end
 	
 	function META:GiveCash( amount, dbSave )
-		self:SetCharacterData( "_Cash", self:GetCash( ) + amount, dbSave )
+		self:SetCharacterGlobalData( "_cash", self:GetCash( ) + amount, dbSave )
 	end
 	
 	function META:TakeCash( amount, dbSave )
-		self:SetCharacterData( "_Cash", self:GetCash( ) - amount, dbSave )
+		self:SetCharacterGlobalData( "_cash", self:GetCash( ) - amount, dbSave )
 	end
 end
 
 function META:GetCash( )
-	self:GetCharacterData( "_Cash", 0 )
+	return self:GetCharacterGlobalData( "_cash", 0 )
 end
