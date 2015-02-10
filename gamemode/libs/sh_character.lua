@@ -220,6 +220,8 @@ if ( SERVER ) then
 		pl:SetTeam( faction.index )
 		pl:SetModel( characterTab._model )
 		
+		
+		
 		pl.characterID = charID
 		pl:SetNetworkValue( "characterID", charID )
 		pl:SetNetworkValue( "characterLoaded", true )

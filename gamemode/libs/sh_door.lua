@@ -1,3 +1,6 @@
+if ( !catherine.data ) then
+	catherine.util.Include( "sv_data.lua" )
+end
 catherine.door = catherine.door or { }
 
 local META = FindMetaTable( "Player" )
@@ -98,13 +101,11 @@ if ( SERVER ) then
 		end
 	end
 	
-	catherine.door.LoadData( )
-	
 	hook.Add( "DataSave", "catherine.door.DataSave", function( )
 		catherine.door.SaveData( )
 	end )
 	
-	hook.Add( "DataLoad", "catherine.door.DataLoad", function( )
+	hook.Add( "InitPostEntity", "catherine.door.InitPostEntity", function( )
 		catherine.door.LoadData( )
 	end )
 else

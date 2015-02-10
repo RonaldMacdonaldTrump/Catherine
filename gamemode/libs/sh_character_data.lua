@@ -5,17 +5,19 @@ catherine.character.characterDatas = catherine.character.characterDatas or { }
 
 if ( SERVER ) then
 	catherine.character.DataTransferCurTime = catherine.character.DataTransferCurTime or CurTime( ) + catherine.configs.transferInterval
+	catherine.character.NextHPAPSaveTime = catherine.character.NextHPAPSaveTime or CurTime( ) + 20
+	
 	hook.Add( "CharacterLoaded", "catherine.character.CharacterLoaded", function( pl, charID )
 		catherine.character.RegisterCharacterDatas( pl, charID )
-		--[[
-		local health = catherine.character.GetCharData( pl, "health", 100 )
-		local armor = catherine.character.GetCharData( pl, "armor", 0 )
 		
+		local health = catherine.character.GetCharData( pl, "health", 500 )
+		local armor = catherine.character.GetCharData( pl, "armor", 255 )
+
 		pl:SetHealth( health )
 		pl:SetArmor( armor )
 		
 		catherine.character.SetCharData( pl, "health", pl:Health( ) )
-		catherine.character.SetCharData( pl, "armor", pl:Armor( ) )--]]
+		catherine.character.SetCharData( pl, "armor", pl:Armor( ) )
 	end )
 	
 	hook.Add( "PreCharacterLoadStart", "catherine.character.PreCharacterLoadStart", function( pl, prviouscharID )
@@ -40,11 +42,16 @@ if ( SERVER ) then
 			end
 			catherine.character.DataTransferCurTime = CurTime( ) + catherine.configs.transferInterval
 		end
+		if ( catherine.character.NextHPAPSaveTime <= CurTime( ) ) then
+			for k, v in pairs( player.GetAll( ) ) do
+				if ( !v:IsCharacterLoaded( ) ) then continue end
+				catherine.character.SetCharData( v, "health", v:Health( ), true )
+				catherine.character.SetCharData( v, "armor", v:Armor( ), true )
+			end
+			catherine.character.NextHPAPSaveTime = CurTime( ) + 20
+		end
 	end )
-	
-	//catherine.character.SaveAllToDataBases( )
-	
-	
+
 	function catherine.character.TransferToCharacterTable( pl, charID )
 		if ( !IsValid( pl ) or !charID ) then return end
 		if ( !catherine.character.characterDatas[ pl:SteamID( ) ] ) then return end

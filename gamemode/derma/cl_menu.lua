@@ -110,6 +110,7 @@ function PANEL:Paint( w, h )
 	
 	draw.RoundedBox( 0, 10, h * 0.8 - 30, 10 + ( w * 0.15 ), 65, Color( 235, 235, 235, 235 ) )
 	draw.SimpleText( LocalPlayer( ):Name( ), "catherine_font01_25", 10 + ( w * 0.15 ) / 2, h * 0.8, Color( 50, 50, 50, 255 ), 1, 1 )
+	draw.SimpleText( catherine.cash.GetName( LocalPlayer( ):GetCash( ) ), "catherine_font01_25", ScrW( ) - 15, 15, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 function PANEL:Think( )
