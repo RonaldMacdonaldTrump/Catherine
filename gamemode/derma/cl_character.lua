@@ -284,6 +284,16 @@ function PANEL:LoadCharacter_Init( )
 				self:Close( )
 			end
 			
+			local delete = vgui.Create( "catherine.vgui.button", panel )
+			delete:SetPos( panel:GetWide( ) - ( 100 * 2 ), 5 )
+			delete:SetSize( 80, 70 )
+			delete:SetStr( "Delete" )
+			delete:SetFont( "catherine_font01_30" )
+			delete:SetOutlineColor( Color( 255, 255, 255, 255 ) )
+			delete.Click = function( )
+				netstream.Start( "catherine.character.DeleteCharacter", v1._id )
+			end
+			
 			dpanelList:AddItem( panel )
 			
 			base = base + 85

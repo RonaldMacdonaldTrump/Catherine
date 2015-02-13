@@ -90,15 +90,25 @@ function GM:PlayerHealthChanged( pl )
 end
 
 function GM:PlayerHurt( pl )
+	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
 	return true
 end
 
-function GM:PlayerDeathSound( ply )
+function GM:PlayerDeathSound( pl )
+	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
 	return true
 end
 
 function GM:Initialize( )
 
+end
+
+function GM:PlayerShouldTakeDamage( )
+	return true
+end
+
+function GM:GetFallDamage( _, speed )
+	return ( speed / 8 )
 end
 
 function GM:InitPostEntity( )

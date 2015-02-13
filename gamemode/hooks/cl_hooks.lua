@@ -46,6 +46,18 @@ function GM:CalcView( pl, pos, ang, fov )
 		view.fov = fov
 		return view
 	end
+
+	if ( !pl:Alive( ) ) then
+		local view = { }
+		local ent = pl:GetRagdollEntity( )
+		if ( !IsValid( ent ) ) then return end
+		local att = ent:GetAttachment( ent:LookupAttachment( "eyes" ) )
+
+		view.origin = att.Pos
+		view.angles = att.Ang
+		
+		return view
+	end
 end
 
 function GM:HUDDrawTargetID( )
@@ -106,6 +118,8 @@ function GM:HUDPaint( )
 	surface.SetDrawColor( 0, 0, 0, 255 )
 	surface.SetMaterial( Material( "catherine/vignette.png" ) )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )
+	
+	draw.SimpleText( "Catherine Development Version", "catherine_font01_20", scrW - 10, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	
 	catherine.bar.Draw( )
 	

@@ -24,10 +24,25 @@ if ( SERVER ) then
 	hook.Add("PlayerSwitchWeapon", "player_PlayerSwitchWeapon", function( pl, old, new )
 		pl:SetWeaponRaised( true, new )
 	end )
+	
+	local velo = FindMetaTable("Entity").GetVelocity
+	local v = FindMetaTable("Vector").Length2D
+	function META:IsRunning( )
+		return v( velo( self ) ) >= ( self:GetRunSpeed( ) - 5 )
+	end
 else
 
 end
 
 function META:GetWeaponRaised( )
 	return self:GetNetworkValue( "weaponRaised", false )
+end
+
+function META:GetGender( )
+	local model = self:GetModel( )
+	if ( model:find( "male" ) ) then
+		return "male"
+	else
+		return "female"
+	end
 end

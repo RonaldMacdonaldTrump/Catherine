@@ -226,7 +226,22 @@ if ( SERVER ) then
 		pl:SetNetworkValue( "characterID", charID )
 		pl:SetNetworkValue( "characterLoaded", true )
 		
+		catherine.character.RegisterCharacterDatas( pl, charID )
+		
 		hook.Run( "CharacterLoaded", pl, charID )
+	end
+	
+	function catherine.character.Delete( pl, charID )
+		if ( pl.characterID == charID ) then
+			print( "You can't delete using character!" )
+			return
+		end
+		catherine.database.Query( "DELETE FROM `catherine_characters` WHERE _steamID = '" .. pl:SteamID( ) .. "' AND _id = '" .. charID .. "'", function( )
+			catherine.util.Print( Color( 255, 0, 0 ), "Character delete! - " .. pl:SteamID( ) .. " / " .. charID )
+			catherine.character.LoadAllByDataBases( function( )
+				catherine.character.SendCharacterLists( pl )
+			end )
+		end )
 	end
 
 	function catherine.character.SendCharacterLists( pl )
@@ -322,7 +337,7 @@ if ( SERVER ) then
 	
 
 
-	function catherine.character.LoadAllByDataBases( )
+	function catherine.character.LoadAllByDataBases( func )
 		catherine.database.GetTable_All( "catherine_characters", function( data )
 			if ( #data == 0 ) then catherine.character.buffers = { } return end
 			catherine.character.buffers = { }
@@ -344,6 +359,9 @@ if ( SERVER ) then
 				end
 			end
 			catherine.character.buffers = buffer
+			if ( func ) then
+				func( )
+			end
 			catherine.util.Print( Color( 255, 255, 0 ), "catherine framework has loaded " .. catherine.character.CountBufferCharacters( ) .. "'s characters." )
 		end )
 	end
@@ -373,6 +391,10 @@ if ( SERVER ) then
 	netstream.Hook( "catherine.character.LoadCharacter", function( pl, data )
 		catherine.character.Load( pl, data )
 	end )
+	
+	netstream.Hook( "catherine.character.DeleteCharacter", function( pl, data )
+		catherine.character.Delete( pl, data )
+	end )
 else
 	catherine.character.LocalCharacters = catherine.character.LocalCharacters or nil
 	
@@ -397,5 +419,11 @@ else
 
 	netstream.Hook( "catherine.character.SendCharacterLists", function( data )
 		catherine.character.LocalCharacters = data
+		
+		if ( IsValid( catherine.vgui.character ) ) then
+			if ( catherine.vgui.character.loadCharacter ) then
+				catherine.vgui.character:LoadCharacter_Init( )
+			end
+		end
 	end )
 end

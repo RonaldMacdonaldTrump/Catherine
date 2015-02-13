@@ -13,6 +13,7 @@ function DownloadListAdd( path )
 end
 
 DownloadListAdd( "materials/catherine" )
+DownloadListAdd( "materials/catherine_hl2rp" )
 
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )

@@ -8,8 +8,6 @@ if ( SERVER ) then
 	catherine.character.NextHPAPSaveTime = catherine.character.NextHPAPSaveTime or CurTime( ) + 20
 	
 	hook.Add( "CharacterLoaded", "catherine.character.CharacterLoaded", function( pl, charID )
-		catherine.character.RegisterCharacterDatas( pl, charID )
-		
 		local health = catherine.character.GetCharData( pl, "health", 500 )
 		local armor = catherine.character.GetCharData( pl, "armor", 255 )
 
@@ -170,6 +168,7 @@ else
 	
 	netstream.Hook( "catherine.character.SetCharData", function( data )
 		catherine.character.characterDatas[ data[ 1 ] ] = catherine.character.characterDatas[ data[ 1 ] ] or { }
+		catherine.character.characterDatas[ data[ 1 ] ][ "_charData" ] = catherine.character.characterDatas[ data[ 1 ] ][ "_charData" ] or { }
 		catherine.character.characterDatas[ data[ 1 ] ][ "_charData" ][ data[ 2 ] ] = data[ 3 ]
 	end )
 	
@@ -199,4 +198,8 @@ end
 
 function META:SetCharacterGlobalData( key, value, nosync )
 	return catherine.character.SetGlobalData( self, key, value, nosync )
+end
+
+function META:GetCharData( key, default )
+	return catherine.character.GetCharData( self, key, default )
 end
