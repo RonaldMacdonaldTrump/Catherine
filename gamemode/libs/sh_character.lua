@@ -306,6 +306,7 @@ if ( SERVER ) then
 		return nil
 	end
 	
+	
 	function catherine.character.SaveAllToDataBases( )
 		local characterCount = catherine.character.CountBufferCharacters( )
 		if ( characterCount == 0 ) then return end
@@ -322,20 +323,23 @@ if ( SERVER ) then
 						catherine.util.Print( Color( 255, 0, 0 ), "ERROR - Can't save character! - " .. math.Round( ( progress / characterCount ), 2 ) * 100 .. "%" )
 						continue
 					end
+					--[[ // Timer has deleted.
 					local timerUniqueID = "catherine.character.timer.SaveCharacters_" .. charID
 					timer.Create( timerUniqueID, time, 1, function( )
 						catherine.database.Update( "_steamID = '" .. steamID .. "' AND _id = '" .. charID .. "'", v1, "catherine_characters", function( )
 							progress = progress + 1
 							catherine.util.Print( Color( 255, 255, 0 ), "Save complete! - " .. math.Round( ( progress / characterCount ), 2 ) * 100 .. "%" )
 						end )
+					end )--]]
+					catherine.database.Update( "_steamID = '" .. steamID .. "' AND _id = '" .. charID .. "'", v1, "catherine_characters", function( )
+						catherine.util.Print( Color( 255, 255, 0 ), "Save complete! - " .. charID )
 					end )
-					time = time + 0.02
+					
+					break
 				end
 			end
 		end
 	end
-	
-
 
 	function catherine.character.LoadAllByDataBases( func )
 		catherine.database.GetTable_All( "catherine_characters", function( data )
@@ -371,6 +375,14 @@ if ( SERVER ) then
 			catherine.character.SaveAllToDataBases( )
 			catherine.character.SaveCurTime = CurTime( ) + catherine.configs.saveInterval
 		end
+	end )
+	
+	hook.Add( "DataSave", "catherine.character.DataSave", function( )
+		for k, v in pairs( player.GetAll( ) ) do
+			catherine.character.TransferToCharacterTable( v, v.characterID )
+		end
+		
+		catherine.character.SaveAllToDataBases( )
 	end )
 
 	function catherine.character.CountBufferCharacters( )

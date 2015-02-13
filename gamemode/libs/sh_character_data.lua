@@ -6,7 +6,7 @@ catherine.character.characterDatas = catherine.character.characterDatas or { }
 if ( SERVER ) then
 	catherine.character.DataTransferCurTime = catherine.character.DataTransferCurTime or CurTime( ) + catherine.configs.transferInterval
 	catherine.character.NextHPAPSaveTime = catherine.character.NextHPAPSaveTime or CurTime( ) + 20
-	
+
 	hook.Add( "CharacterLoaded", "catherine.character.CharacterLoaded", function( pl, charID )
 		local health = catherine.character.GetCharData( pl, "health", 500 )
 		local armor = catherine.character.GetCharData( pl, "armor", 255 )

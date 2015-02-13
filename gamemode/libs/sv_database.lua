@@ -113,7 +113,6 @@ function catherine.database.Update( cre, data, tab, func )
 			if ( t == "table" ) then
 				v = "'" .. util.TableToJSON( v ) .. "'"
 			elseif ( t == "string" ) then
-				print(v)
 				v = "'" .. catherine.database.Escape( v ) .. "'"
 			end
 		end

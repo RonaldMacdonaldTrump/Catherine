@@ -27,6 +27,10 @@ if ( SERVER ) then
 	function META:SetDoorTitle( title )
 		catherine.door.SetDoorTitle( self, title )
 	end
+	
+	function META2:SetDoorOwner( pl )
+		catherine.door.SetDoorOwner( self, pl )
+	end
 
 	function catherine.door.Buy( pl )
 		local ent = pl:GetEyeTrace( 70 ).Entity
@@ -36,12 +40,12 @@ if ( SERVER ) then
 		if ( !ent:IsDoor( ) ) then
 			return catherine.util.Notify( pl, "Please look valid door!" )
 		end
-		if ( ent:GetOwner( ) != NULL ) then
-			return catherine.util.Notify( pl, "This door has already buyed." )
+		if ( ent:GetNetworkValue( "owner" ) != nil ) then
+			return catherine.util.Notify( pl, "This door has already bought by unknown guy." )
 		end
 		if ( pl:GetCash( ) >= catherine.configs.doorCost ) then
-			ent:SetOwner( pl )
-			catherine.util.Notify( pl, "You are buyed this door." )
+			ent:SetDoorOwner( pl )
+			catherine.util.Notify( pl, "You have purchased this door." )
 			pl:TakeCash( catherine.configs.doorCost )
 		elseif ( pl:GetCash( ) < catherine.configs.doorCost ) then
 			catherine.util.Notify( pl, "You need " .. catherine.cash.GetName( catherine.configs.doorCost - pl:GetCash( ) ) .. "(s) more!" )
@@ -56,12 +60,12 @@ if ( SERVER ) then
 		if ( !ent:IsDoor( ) ) then
 			return catherine.util.Notify( pl, "Please look valid door!" )
 		end
-		if ( ent:GetOwner( ) != pl ) then
+		if ( ent:GetNetworkValue( "owner" ) != pl ) then
 			return catherine.util.Notify( pl, "You do not have permission!" )
 		end
-		ent:SetOwner( NULL )
+		ent:SetDoorOwner( nil )
 		pl:GiveCash( catherine.configs.doorSellCost )
-		catherine.util.Notify( pl, "You are solded this door." )
+		catherine.util.Notify( pl, "You are sold this door." )
 	end
 	
 	function catherine.door.SetDoorTitle( pl, title )
@@ -69,10 +73,21 @@ if ( SERVER ) then
 		local ent = pl:GetEyeTrace( 70 ).Entity
 		if ( !IsValid( ent ) ) then return catherine.util.Notify( pl, "Please look valid entity!" ) end
 		if ( !ent:IsDoor( ) ) then return catherine.util.Notify( pl, "Please look valid door!" ) end
-		if ( ent:GetOwner( ) != pl ) then return catherine.util.Notify( pl, "You do not have permission!" ) end
+		if ( ent:GetNetworkValue( "owner" ) != pl ) then return catherine.util.Notify( pl, "You do not have permission!" ) end
 		ent:SetNetworkValue( "title", title )
+		catherine.util.Notify( pl, "You are setting this door title to \"" .. title .. "\"" )
 	end
 	
+	function catherine.door.SetDoorOwner( ent, pl )
+		if ( !IsValid( ent ) ) then
+			return catherine.util.Notify( pl, "Please look valid entity!" )
+		end
+		if ( !ent:IsDoor( ) ) then
+			return catherine.util.Notify( pl, "Please look valid door!" )
+		end
+		ent:SetNetworkValue( "owner", pl )
+	end
+
 	function catherine.door.SaveData( )
 		local data = { }
 		for k, v in pairs( ents.GetAll( ) ) do
@@ -116,9 +131,9 @@ else
 		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 		local title = ent:GetNetworkValue( "title", "A Door." )
 		local haveOwner = nil
-		if ( ent:GetOwner( ) == NULL ) then haveOwner = false else haveOwner = true end
+		if ( ent:GetNetworkValue( "owner" ) == nil ) then haveOwner = false else haveOwner = true end
 		local tw, th = surface.GetTextSize( title )
-		draw.SimpleText( ( haveOwner and "This door has been buyed!" ) or "This door can buy.", "catherine_font02_20", position.x, position.y + 20, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ( haveOwner and "This door has already been purchased." ) or "This door can purchase.", "catherine_font02_20", position.x, position.y + 20, Color( 255, 255, 255, a ), 1, 1 )
 		draw.SimpleText( ent:GetNetworkValue( "title", "A Door." ), "catherine_font02_25", position.x, position.y, Color( 255, 255, 255, a ), 1, 1 )
 	end )
 end
