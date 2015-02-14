@@ -17,6 +17,8 @@ catherine.configs.transferInterval = 100
 catherine.configs.giveHand = true
 catherine.configs.giveKey = true
 
+catherine.configs.spawnTime = 10
+
 catherine.configs.characterMenuMusic = "music/hl2_song19.mp3"
 
 catherine.configs.baseInventoryWeight = 10

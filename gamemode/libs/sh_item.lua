@@ -155,6 +155,7 @@ if ( SERVER ) then
 		ent.itemTable = itemTab
 		ent.itemID = itemTab.uniqueID
 		ent:SetNetworkValue( "itemData", itemTab.itemData or { } )
+		ent:SetItemUniqueID( itemTab.uniqueID )
 		
 		local phyO = ent:GetPhysicsObject()
 		if ( IsValid( phyO ) ) then
@@ -200,5 +201,16 @@ else
 	
 	netstream.Hook( "catherine.item.EntityUseMenu", function( data )
 		catherine.item.OpenEntityUseMenu( data )
+	end )
+	
+	local toscreen = FindMetaTable("Vector").ToScreen
+	
+	hook.Add( "DrawEntityInformation", "catherine.item.DrawEntityInformation", function( ent, alpha )
+		if ( ent:GetClass( ) != "catherine_item" ) then return end
+		local itemTab = catherine.item.FindByID( ent:GetItemUniqueID( ) )
+		if ( !itemTab ) then return end
+		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
+		draw.SimpleText( itemTab.name, "catherine_font02_20", position.x, position.y, Color( 255, 255, 255, alpha ), 1, 1 )
+		draw.SimpleText( itemTab.desc, "catherine_font02_15", position.x, position.y + 20, Color( 255, 255, 255, alpha ), 1, 1 )
 	end )
 end

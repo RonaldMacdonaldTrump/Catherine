@@ -105,8 +105,10 @@ function GM:HUDDrawScoreBoard( )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )
 
 	surface.SetDrawColor( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha )
-	surface.SetMaterial( Material( "catherine/logo.png" ) )
-	surface.DrawTexturedRect( scrW / 2 - 512 / 2, scrH / 2 - 256 / 2, 512, 256 )
+	surface.SetMaterial( Material( "catherine/logo2.png" ) )
+	surface.DrawTexturedRect( scrW / 2 - 512 / 2, scrH / 2 - 356 / 2, 512, 356 )
+	
+	draw.SimpleText( "Ver 0.1", "catherine_font01_15", 15, scrH - 20, Color( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha ), TEXT_ALIGN_LEFT, 1 )
 
 	draw.SimpleText( catherine.errorText, "catherine_font01_40", scrW / 2, scrH - 70, Color( 255, 0, 0, catherine.alpha ), 1, 1 )
 end
@@ -121,8 +123,9 @@ function GM:HUDPaint( )
 	
 	draw.SimpleText( "Catherine Development Version", "catherine_font01_20", scrW - 10, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	
+	catherine.hud.Draw( )
 	catherine.bar.Draw( )
-	
+
 	if ( LocalPlayer( ):IsCharacterLoaded( ) and catherine.nextRefresh < CurTime( ) ) then
 		local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
 		if ( IsValid( ent ) ) then catherine.entityCache[ ent ] = true

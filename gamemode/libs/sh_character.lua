@@ -212,16 +212,17 @@ if ( SERVER ) then
 			print("Faction error")
 			return
 		end
-
+		
+		pl.isCharacterLoading = true
+		
+		pl:SetNoDraw( false )
 		pl:KillSilent( )
 		pl:Spawn( )
 		pl:StripWeapons( )
-		
+
 		pl:SetTeam( faction.index )
 		pl:SetModel( characterTab._model )
-		
-		
-		
+
 		pl.characterID = charID
 		pl:SetNetworkValue( "characterID", charID )
 		pl:SetNetworkValue( "characterLoaded", true )
@@ -229,7 +230,16 @@ if ( SERVER ) then
 		catherine.character.RegisterCharacterDatas( pl, charID )
 		
 		hook.Run( "CharacterLoaded", pl, charID )
+		
+		pl.isCharacterLoading = nil
 	end
+	
+	hook.Add( "PlayerSpawned", "catherine.character.PlayerSpawned", function( pl )
+		if ( !pl:IsCharacterLoaded( ) ) then return end
+		local characterTab = catherine.character.GetCharacterTableByID( pl.characterID )
+		if ( !characterTab ) then return end
+		pl:SetModel( characterTab._model )
+	end )
 	
 	function catherine.character.Delete( pl, charID )
 		if ( pl.characterID == charID ) then

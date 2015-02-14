@@ -7,7 +7,7 @@ if ( SERVER ) then
 		catherine.character.SetCharData( pl, "stamina", stamina )
 	end )
 	
-	hook.Add( "PlayerSpawn", "catherine.character.PlayerSpawn", function( pl )
+	hook.Add( "PlayerSpawn", "catherine.character.PlayerSpawn_2", function( pl )
 		catherine.character.SetCharData( pl, "stamina", 100 )
 	end )
 

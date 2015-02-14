@@ -5,14 +5,14 @@ function GM:GetGameDescription( )
 end
 
 function GM:PlayerSpray( pl )
-	return true
+	return hook.Run( "PlayerCantSpray", pl )
 end
 
 function GM:PlayerSpawn( pl )
 	pl:SetNoDraw( false )
 	player_manager.SetPlayerClass( pl, "catherine_player" )
 	BaseClass.PlayerSpawn( self, pl )
-	pl:SetWeaponRaised( false )
+	hook.Run( "PlayerSpawned", pl )
 end
 
 function GM:KeyPress( pl, key )
@@ -30,10 +30,13 @@ function GM:KeyRelease( pl, key )
 	end
 end
 
-function GM:PlayerInitialSpawn( pl )
+function GM:PlayerSpawned( pl )
+	if ( pl:IsCharacterLoaded( ) or pl.isCharacterLoading ) then return end
 	pl:SetNoDraw( true )
 	pl:KillSilent( )
-	
+end
+
+function GM:PlayerInitialSpawn( pl )
 	local function stap01( )
 		if ( !catherine.database.Connected ) then
 			netstream.Start( pl, "catherine.LoadingStatus", { false, false, "Catherine has not connected by MySQL!", 0 } )
@@ -85,10 +88,6 @@ function GM:PlayerInitialSpawn( pl )
 	end )
 end
 
-function GM:PlayerHealthChanged( pl )
-	return GAMEMODE:PlayerHurt( pl )
-end
-
 function GM:PlayerHurt( pl )
 	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
 	return true
@@ -99,8 +98,19 @@ function GM:PlayerDeathSound( pl )
 	return true
 end
 
-function GM:Initialize( )
+function GM:PlayerDeath( pl )
+	pl.catherine_nextSpawn = CurTime( ) + catherine.configs.spawnTime
+	pl:SetNetworkValue( "nextSpawnTime", pl.catherine_nextSpawn )
+end
 
+function GM:PlayerDeathThink( pl )
+	if ( pl.catherine_nextSpawn <= CurTime( ) ) then
+		pl:Spawn( )
+	end
+end
+
+function GM:Initialize( )
+	hook.Run( "GMInit" )
 end
 
 function GM:PlayerShouldTakeDamage( )
@@ -118,3 +128,5 @@ end
 function GM:ShutDown( )
 	hook.Run( "DataSave" )
 end
+
+function GM:PlayerCantSpray( pl ) end
