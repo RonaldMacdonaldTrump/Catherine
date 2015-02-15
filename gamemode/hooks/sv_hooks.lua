@@ -104,6 +104,7 @@ function GM:PlayerDeath( pl )
 end
 
 function GM:PlayerDeathThink( pl )
+	if ( !pl.catherine_nextSpawn ) then return end
 	if ( pl.catherine_nextSpawn <= CurTime( ) ) then
 		pl:Spawn( )
 	end

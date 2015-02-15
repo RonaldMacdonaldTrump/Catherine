@@ -21,11 +21,12 @@ Base.func.equip = {
 			catherine.item.GiveToCharacter( pl, tab.uniqueID )
 		end
 		local weapon = pl:Give( tab.weaponClass )
-		local newData = { }
+		local newData = data or { }
 		newData.equiped = true
 		if ( IsValid( weapon ) ) then
 			pl:SelectWeapon( tab.weaponClass )
-			//pl:SetClip1( 100)
+			//weapon:SetClip1( newData.clipOne or 0 )
+			//weapon:SetClip2( newData.clipTwo or 0 )
 		end
 		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, itemData = newData } )
 	end,

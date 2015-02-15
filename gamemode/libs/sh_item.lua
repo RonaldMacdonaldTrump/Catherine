@@ -53,7 +53,7 @@ function catherine.item.Register( tab, isBase )
 			return !tab.cantDrop
 		end
 	}
-	tab.funcBuf = table.Copy( tab.func )
+	tab.funcBuf = table.Copy( tab.func or { } )
 	tab.func = tab.funcBuffer
 	tab.func = table.Merge( tab.func, tab.funcBuf )
 	
@@ -211,6 +211,11 @@ else
 		if ( !itemTab ) then return end
 		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 		draw.SimpleText( itemTab.name, "catherine_font02_20", position.x, position.y, Color( 255, 255, 255, alpha ), 1, 1 )
-		draw.SimpleText( itemTab.desc, "catherine_font02_15", position.x, position.y + 20, Color( 255, 255, 255, alpha ), 1, 1 )
+		if ( itemTab.GetDesc ) then
+			local desc = itemTab:GetDesc( LocalPlayer( ), itemTab, ent:GetNetworkValue( "itemData", { } ) )
+			draw.SimpleText( desc, "catherine_font02_15", position.x, position.y + 20, Color( 255, 255, 255, alpha ), 1, 1 )
+		else
+			draw.SimpleText( itemTab.desc, "catherine_font02_15", position.x, position.y + 20, Color( 255, 255, 255, alpha ), 1, 1 )
+		end
 	end )
 end
