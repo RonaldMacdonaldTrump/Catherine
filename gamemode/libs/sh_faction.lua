@@ -32,6 +32,17 @@ function catherine.faction.FindByID( id )
 	return nil
 end
 
+function catherine.faction.FindByIndex( index )
+	if ( !index ) then return nil end
+	for k, v in pairs( catherine.faction.Lists ) do
+		if ( v.index == index ) then
+			return v
+		end
+	end
+	
+	return nil
+end
+
 function catherine.faction.Include( dir )
 	local files = file.Find( dir .. "/factions/*", "LUA" )
 	for k, v in pairs( files ) do

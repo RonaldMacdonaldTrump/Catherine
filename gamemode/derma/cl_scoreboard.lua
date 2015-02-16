@@ -1,23 +1,16 @@
-concommand.Add("sc_open", function( )
-	if ( IsValid( catherine.vgui.scoreboard ) ) then
-		catherine.vgui.scoreboard:Close( )
-		catherine.vgui.scoreboard = vgui.Create( "catherine.vgui.scoreboard" )
-	else
-		catherine.vgui.scoreboard = vgui.Create( "catherine.vgui.scoreboard" )
-	end
-end)
-
 local PANEL = { }
 
 function PANEL:Init( )
 	local LP = LocalPlayer( )
 	
 	self.w = ScrW( ) * 0.5
-	self.h = ScrH( ) * 0.7
+	self.h = ScrH( ) * 0.85
 	self.x = ScrW( ) / 2 - self.w / 2
 	self.y = ScrH( ) / 2 - self.h / 2
 
 	self.menuName = "SCOREBOARD"
+	self.playerLists = nil
+	self.playerCount = #player.GetAll( )
 	
 	self:SetSize( self.w, self.h )
 	self:SetPos( self.x, self.y )
@@ -31,9 +24,17 @@ function PANEL:Init( )
 		surface.SetMaterial( Material( "gui/gradient_up" ) )
 		surface.DrawTexturedRect( 0, 25, w, h )
 
-		draw.RoundedBox( 0, 0, 0, surface.GetTextSize( self.menuName ) + 25, 25, Color( 255, 255, 255, 235 ) )
+		draw.RoundedBox( 0, 0, 0, surface.GetTextSize( self.menuName ) + 30, 25, Color( 255, 255, 255, 235 ) )
 		
 		draw.SimpleText( self.menuName, "catherine_font01_25", 5, 0, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		
+		draw.SimpleText( GetHostName( ), "catherine_font01_25", 10, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		
+		draw.SimpleText( #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_font01_25", w - 10, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		
+		surface.SetDrawColor( 50, 50, 50, 235 )
+		surface.SetMaterial( Material( "gui/gradient" ) )
+		surface.DrawTexturedRect( 10, 55, w - 20, 1 )
 	end
 
 	self.CloseMenu = vgui.Create( "catherine.vgui.button", self )
@@ -46,8 +47,8 @@ function PANEL:Init( )
 	end
 	
 	self.Lists = vgui.Create( "DPanelList", self )
-	self.Lists:SetPos( 10, 80 )
-	self.Lists:SetSize( self.w - 20, self.h - 90 )
+	self.Lists:SetPos( 10, 65 )
+	self.Lists:SetSize( self.w - 20, self.h - 75 )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
@@ -55,13 +56,33 @@ function PANEL:Init( )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 	end
 	
+	self:SortPlayerLists( )
 end
 
-function PANEL:RefreshInventory( )
-	if ( !self.inv ) then return end
+function PANEL:RefreshPanel( )
+	self.playerCount = #player.GetAll( )
+	self:SortPlayerLists( )
+end
+
+function PANEL:SortPlayerLists( )
+	self.playerLists = { }
+	
+	for k, v in pairs( player.GetAll( ) ) do
+		if ( !v:IsCharacterLoaded( ) ) then continue end
+		local factionTab = catherine.faction.FindByIndex( v:Team( ) )
+		if ( !factionTab ) then continue end
+		self.playerLists[ factionTab.name ] = self.playerLists[ factionTab.name ] or { }
+		self.playerLists[ factionTab.name ][ #self.playerLists[ factionTab.name ] + 1 ] = v
+	end
+	
+	self:RefreshPlayerLists( )
+end
+
+function PANEL:RefreshPlayerLists( )
+	if ( !self.playerLists ) then return end
 	self.Lists:Clear( )
-	local has = { }
-	for k, v in pairs( self.inv ) do
+	
+	for k, v in pairs( self.playerLists ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( k )
@@ -78,49 +99,28 @@ function PANEL:RefreshInventory( )
 		form:AddItem( dpanelList )
 		
 		for k1, v1 in pairs( v ) do
-			local itemTab = catherine.item.FindByID( v1.uniqueID )
-			local spawnIcon = vgui.Create( "SpawnIcon" )
-			spawnIcon:SetSize( 64, 64 )
-			spawnIcon:SetModel( itemTab.model )
-			spawnIcon:SetToolTip( "Name : " .. itemTab.name .. "\nDesc : " .. itemTab.desc .. "\nCost : " .. itemTab.cost )
-			spawnIcon.DoClick = function( )
-				catherine.item.OpenMenu( v1.uniqueID )
-			end
-			spawnIcon.DoRightClick = function( )
-				for k1, v1 in pairs( itemTab.func ) do
-					for k2, v2 in pairs( v1 ) do
-						if ( k2 == "ismenuRightclickFunc" and v2 == true ) then
-							netstream.Start( "catherine.item.RunFunction_Menu", { k1, v1.uniqueID } )
-							return
-						end
-					end
-				end
-			end
-			spawnIcon.PaintOver = function( pnl, w, h )
-				surface.SetDrawColor( Color( 50, 50, 50, 255 ) )
-				draw.NoTexture( )
-				surface.DrawLine( 0, 5, 5, 0 )
-				
-				draw.RoundedBox( 0, 0, 5, 1, 10, Color( 50, 50, 50, 255 ) )
-				draw.RoundedBox( 0, 5, 0, 10, 1, Color( 50, 50, 50, 255 ) )
-				
-				surface.SetDrawColor( Color( 50, 50, 50, 255 ) )
-				draw.NoTexture( )
-				surface.DrawLine( w, h - 6, w - 6, h )
-				
-				draw.RoundedBox( 0, w - 1, h - 15, 1, 10, Color( 50, 50, 50, 255 ) )
-				draw.RoundedBox( 0, w - 15, h - 1, 10, 1, Color( 50, 50, 50, 255 ) )
-
-				if ( LocalPlayer( ):IsEquiped( v1.uniqueID ) ) then
-					surface.SetDrawColor( 255, 255, 255, 255 )
-					surface.SetMaterial( Material( "icon16/accept.png" ) )
-					surface.DrawTexturedRect( 5, 5, 16, 16 )
+			local panel = vgui.Create( "DPanel" )
+			panel:SetSize( dpanelList:GetWide( ), 50 )
+			panel.Paint = function( pnl, w, h )
+				if ( !IsValid( v1 ) ) then
+					self:RefreshPanel( )
+					return
 				end
 				
-				draw.SimpleText( v1.count, "catherine_font01_15", 5, h - 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+				
+				draw.SimpleText( v1:Name( ), "catherine_font01_20", 50, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.SimpleText( v1:Desc( ), "catherine_font01_15", 50, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				
+				draw.SimpleText( v1:Ping( ), "catherine_font01_25", w - 30, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			end
 			
-			dpanelList:AddItem( spawnIcon )
+			local spawnIcon = vgui.Create( "SpawnIcon", panel )
+			spawnIcon:SetPos( 5, 5 )
+			spawnIcon:SetSize( 40, 40 )
+			spawnIcon:SetModel( v1:GetModel( ) )
+			
+			dpanelList:AddItem( panel )
 		end
 		self.Lists:AddItem( form )
 	end

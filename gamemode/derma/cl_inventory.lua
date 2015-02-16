@@ -1,12 +1,3 @@
-concommand.Add("inv_open", function( )
-	if ( IsValid( catherine.vgui.inventory ) ) then
-		catherine.vgui.inventory:Close( )
-		catherine.vgui.inventory = vgui.Create( "catherine.vgui.inventory" )
-	else
-		catherine.vgui.inventory = vgui.Create( "catherine.vgui.inventory" )
-	end
-end)
-
 local PANEL = { }
 
 function PANEL:Init( )

@@ -2,7 +2,7 @@ if ( SERVER ) then
 	local GetVelocity = FindMetaTable( "Entity" ).GetVelocity
 	local Length2D = FindMetaTable( "Vector" ).Length2D
 	
-	hook.Add( "CharacterLoaded", "catherine.character.CharacterLoaded", function( pl, charID )
+	hook.Add( "CharacterLoaded", "catherine.character.CharacterLoaded_2", function( pl, charID )
 		local stamina = catherine.character.GetCharData( pl, "stamina", 100 )
 		catherine.character.SetCharData( pl, "stamina", stamina )
 	end )

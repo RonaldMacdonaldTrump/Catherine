@@ -5,33 +5,41 @@ catherine.character.characterDatas = catherine.character.characterDatas or { }
 
 if ( SERVER ) then
 	catherine.character.DataTransferCurTime = catherine.character.DataTransferCurTime or CurTime( ) + catherine.configs.transferInterval
-	catherine.character.NextHPAPSaveTime = catherine.character.NextHPAPSaveTime or CurTime( ) + 20
+	//catherine.character.NextHPAPSaveTime = catherine.character.NextHPAPSaveTime or CurTime( ) + 20
 
+	// Health, armor loaded by Character Data.
 	hook.Add( "CharacterLoaded", "catherine.character.CharacterLoaded", function( pl, charID )
+		
 		local health = catherine.character.GetCharData( pl, "health", 500 )
 		local armor = catherine.character.GetCharData( pl, "armor", 255 )
 
 		pl:SetHealth( health )
 		pl:SetArmor( armor )
-		
+
 		catherine.character.SetCharData( pl, "health", pl:Health( ) )
 		catherine.character.SetCharData( pl, "armor", pl:Armor( ) )
 	end )
-	
+
+	// Character Data create and save Health, armor.
 	hook.Add( "PreCharacterLoadStart", "catherine.character.PreCharacterLoadStart", function( pl, prviouscharID )
-		if ( !prviouscharID ) then 
-			return print( "Not need previous character data clear!" )
-		end
+		// If you have previous character id?, return it.
+		if ( !prviouscharID ) then return end
+		
+		catherine.character.SetCharData( pl, "health", pl:Health( ) )
+		catherine.character.SetCharData( pl, "armor", pl:Armor( ) )
+
 		catherine.character.TransferToCharacterTable( pl, prviouscharID )
-		netstream.Start( nil, "catherine.character.ClearCharacterDatas", pl:SteamID( ) )
+		catherine.character.ClearCharacterDatas( pl )
 	end )
 	
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected_02", function( pl )
+		catherine.character.SetCharData( pl, "health", pl:Health( ) )
+		catherine.character.SetCharData( pl, "armor", pl:Armor( ) )
+		
 		catherine.character.TransferToCharacterTable( pl, pl.characterID )
-		catherine.character.characterDatas[ pl:SteamID( ) ] = nil
-		netstream.Start( nil, "catherine.character.ClearCharacterDatas", pl:SteamID( ) )
+		catherine.character.ClearCharacterDatas( pl )
 	end )
-	
+
 	hook.Add( "Tick", "catherine.character.Tick", function( )
 		if ( catherine.character.DataTransferCurTime <= CurTime( ) ) then
 			for k, v in pairs( player.GetAll( ) ) do
@@ -40,6 +48,7 @@ if ( SERVER ) then
 			end
 			catherine.character.DataTransferCurTime = CurTime( ) + catherine.configs.transferInterval
 		end
+		--[[ // Optimization ; ^ㅡ^
 		if ( catherine.character.NextHPAPSaveTime <= CurTime( ) ) then
 			for k, v in pairs( player.GetAll( ) ) do
 				if ( !v:IsCharacterLoaded( ) ) then continue end
@@ -47,7 +56,7 @@ if ( SERVER ) then
 				catherine.character.SetCharData( v, "armor", v:Armor( ), true )
 			end
 			catherine.character.NextHPAPSaveTime = CurTime( ) + 20
-		end
+		end--]]
 	end )
 
 	function catherine.character.TransferToCharacterTable( pl, charID )
@@ -77,6 +86,12 @@ if ( SERVER ) then
 		catherine.character.buffers[ pl:SteamID( ) ][ found ] = b
 	end
 
+	function catherine.character.ClearCharacterDatas( pl )
+		if ( !IsValid( pl ) ) then return end
+		catherine.character.characterDatas[ pl:SteamID( ) ] = nil
+		netstream.Start( nil, "catherine.character.ClearCharacterDatas", pl:SteamID( ) )	
+	end
+	
 	function catherine.character.RegisterCharacterDatas( pl, charID, nosync )
 		local globalDatas = catherine.character.GetGlobalDatas( pl, charID )
 		if ( !globalDatas ) then return end

@@ -165,6 +165,8 @@ end
 
 function GM:AddMenu( )
 	catherine.RegisterMenuItem( "Inventory", "catherine.vgui.inventory", "Open the your inventory." )
+	catherine.RegisterMenuItem( "Scoreboard", "catherine.vgui.scoreboard", "Open the your scoreboard." )
+	
 end
 
 function GM:ScoreboardShow()
