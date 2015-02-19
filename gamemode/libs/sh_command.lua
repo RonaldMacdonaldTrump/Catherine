@@ -60,7 +60,7 @@ if ( SERVER ) then
 		cmdTab.runFunc( pl, args )
 	end
 	
-	hook.Add( "PlayerSay", "catherine.command.PlayerSay", function( pl, text )
+	function catherine.command.DoByText( pl, text )
 		if ( text:sub( 1, 1 ) == "/" ) then
 			local toArgs = catherine.command.TransferToArgsTab( text )
 			local id = toArgs[ 1 ]:sub( 2, #toArgs[ 1 ] )
@@ -68,8 +68,8 @@ if ( SERVER ) then
 			local result = catherine.command.Run( pl, id, toArgs )
 			if ( result ) then
 				catherine.util.Notify( pl, result )
-				return ""
+				return
 			end
 		end
-	end )
+	end
 end

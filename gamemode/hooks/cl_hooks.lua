@@ -14,7 +14,8 @@ catherine.hudHide = {
 	"CHudAmmo",
 	"CHudSecondaryAmmo",
 	"CHudCrosshair",
-	"CHudDamageIndicator"
+	"CHudDamageIndicator",
+	"CHudChat"
 }
 catherine.entityCache = { }
 catherine.nextRefresh = catherine.nextRefresh or CurTime( )
@@ -106,7 +107,7 @@ function GM:HUDDrawScoreBoard( )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )
 
 	surface.SetDrawColor( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha )
-	surface.SetMaterial( Material( "catherine/logo2.png" ) )
+	surface.SetMaterial( Material( "catherine/logo.png" ) )
 	surface.DrawTexturedRect( scrW / 2 - 512 / 2, scrH / 2 - 356 / 2, 512, 356 )
 	
 	draw.SimpleText( "Ver 0.1", "catherine_font01_15", 15, scrH - 20, Color( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha ), TEXT_ALIGN_LEFT, 1 )

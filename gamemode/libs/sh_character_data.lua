@@ -10,7 +10,7 @@ if ( SERVER ) then
 	// Health, armor loaded by Character Data.
 	hook.Add( "CharacterLoaded", "catherine.character.CharacterLoaded", function( pl, charID )
 		
-		local health = catherine.character.GetCharData( pl, "health", 500 )
+		local health = catherine.character.GetCharData( pl, "health", 100 )
 		local armor = catherine.character.GetCharData( pl, "armor", 255 )
 
 		pl:SetHealth( health )

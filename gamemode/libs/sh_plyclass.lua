@@ -37,11 +37,6 @@ PLAYER.UnDuckSpeed = 0.1
 PLAYER.WalkSpeed = catherine.configs.playerDefaultWalkSpeed
 PLAYER.RunSpeed	= catherine.configs.playerDefaultRunSpeed
 
-
-function PLAYER:Loadout()
-
-end
-
 local META = FindMetaTable( "Player" )
 
 do

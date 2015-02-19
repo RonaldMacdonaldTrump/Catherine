@@ -41,14 +41,16 @@ function catherine.bar.Draw( )
 	end
 end
 
-catherine.bar.Add( function( )
-	return LocalPlayer( ):Health( )
-end, function( )
-	return LocalPlayer( ):GetMaxHealth( )
-end, "", Color( 255, 0, 150 ), "health" )
+do
+	catherine.bar.Add( function( )
+		return LocalPlayer( ):Health( )
+	end, function( )
+		return LocalPlayer( ):GetMaxHealth( )
+	end, "", Color( 255, 0, 150 ), "health" )
 
-catherine.bar.Add( function( )
-	return LocalPlayer( ):Armor( )
-end, function( )
-	return 255
-end, "", Color( 255, 255, 150 ), "armor" )
+	catherine.bar.Add( function( )
+		return LocalPlayer( ):Armor( )
+	end, function( )
+		return 255
+	end, "", Color( 255, 255, 150 ), "armor" )
+end

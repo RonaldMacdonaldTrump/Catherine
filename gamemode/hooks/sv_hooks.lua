@@ -1,5 +1,3 @@
-DEFINE_BASECLASS( "gamemode_base" )
-
 function GM:GetGameDescription( )
 	return "Catherine - ".. ( Schema and Schema.Name or "Error" )
 end
@@ -9,9 +7,7 @@ function GM:PlayerSpray( pl )
 end
 
 function GM:PlayerSpawn( pl )
-	pl:SetNoDraw( false )
 	player_manager.SetPlayerClass( pl, "catherine_player" )
-	BaseClass.PlayerSpawn( self, pl )
 	hook.Run( "PlayerSpawned", pl )
 end
 
@@ -24,19 +20,21 @@ function GM:KeyPress( pl, key )
 	end
 end
 
+function GM:PlayerSay( pl, text )
+	local newText = hook.Run( "PostPlayerSay", pl, text ) or text
+	if ( newText == "" ) then return end
+	catherine.chat.Progress( pl, newText )
+end
+
 function GM:KeyRelease( pl, key )
 	if ( key == IN_RELOAD ) then
 		timer.Destroy( "Catherine_toggleweaponRaised_" .. pl:SteamID( ) )
 	end
 end
 
-function GM:PlayerSpawned( pl )
-	if ( pl:IsCharacterLoaded( ) or pl.isCharacterLoading ) then return end
-	pl:SetNoDraw( true )
-	pl:KillSilent( )
-end
-
 function GM:PlayerInitialSpawn( pl )
+	pl:KillSilent( )
+	
 	local function stap01( )
 		if ( !catherine.database.Connected ) then
 			netstream.Start( pl, "catherine.LoadingStatus", { false, false, "Catherine has not connected by MySQL!", 0 } )
@@ -99,17 +97,24 @@ function GM:PlayerDeathSound( pl )
 end
 
 function GM:PlayerDeath( pl )
-	catherine.util.ProgressBar( pl, "You are dead...", catherine.configs.spawnTime )
 	pl.catherine_nextSpawn = CurTime( ) + catherine.configs.spawnTime
+	catherine.util.ProgressBar( pl, "You are now respawning.", catherine.configs.spawnTime )
 	pl:SetNetworkValue( "nextSpawnTime", pl.catherine_nextSpawn )
 	pl:SetNetworkValue( "deathTime", CurTime( ) )
 end
 
 function GM:PlayerDeathThink( pl )
-	if ( !pl.catherine_nextSpawn ) then return end
+	if ( !pl.catherine_nextSpawn ) then
+		pl:Spawn( )
+		return
+	end
 	if ( pl.catherine_nextSpawn <= CurTime( ) ) then
 		pl:Spawn( )
+		
+		return true
 	end
+	
+	return false
 end
 
 function GM:Initialize( )
