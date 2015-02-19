@@ -16,13 +16,6 @@ function META:GetInvMaxWeight( )
 	return catherine.inventory.GetInvMaxWeight( self )
 end
 
-if ( SERVER ) then
-	function META:IsEquiped( itemID )
-		return catherine.inventory.Equiped( self, itemID )
-	end
-else
-	function META:IsEquiped( itemID )
-		return catherine.inventory.Equiped( itemID )
-	end
+function META:IsEquiped( itemID )
+	return ( SERVER and catherine.inventory.Equiped( self, itemID ) ) or catherine.inventory.Equiped( itemID )
 end
-

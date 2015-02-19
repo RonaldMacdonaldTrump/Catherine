@@ -1,13 +1,15 @@
 catherine.faction = catherine.faction or { }
 catherine.faction.Lists = { }
+local META = FindMetaTable( "Player" )
 
 function catherine.faction.GetAll( )
 	return catherine.faction.Lists
 end
 
 function catherine.faction.Register( tab )
-	catherine.faction.Lists[ tab.index or #catherine.faction.Lists + 1 ] = tab
-	team.SetUp( tab.index or #catherine.faction.Lists + 1, tab.name, tab.color )
+	tab.index = tab.index or #catherine.faction.Lists + 1
+	catherine.faction.Lists[ tab.index ] = tab
+	team.SetUp( tab.index, tab.name, tab.color )
 end
 
 function catherine.faction.FindByName( name )
@@ -56,42 +58,34 @@ end
 
 if ( SERVER ) then
 	function catherine.faction.AddWhiteList( pl, id )
-		local whiteLists = table.Copy( catherine.catherine_data.GetcatherineData( pl, "whitelists", { } ) )
 		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData ) then return end
-		if ( !factionData.isWhitelist ) then return end
+		if ( !factionData or ( factionData and !factionData.isWhitelist ) ) then return end
+		if ( catherine.faction.HasWhiteList( pl, id ) ) then return end
+		local whiteLists = table.Copy( catherine.catherine_data.GetcatherineData( pl, "whitelists", { } ) )
 		whiteLists[ #whiteLists + 1 ] = id
 		catherine.catherine_data.SetcatherineData( pl, "whitelists", whiteLists, false, true )
 	end
 	
 	function catherine.faction.RemoveWhiteList( pl, id )
-		local whiteLists = table.Copy( catherine.catherine_data.GetcatherineData( pl, "whitelists", { } ) )
 		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData ) then return end
-		if ( !factionData.isWhitelist ) then return end
+		if ( !factionData or ( factionData and !factionData.isWhitelist ) ) then return end
+		local whiteLists = table.Copy( catherine.catherine_data.GetcatherineData( pl, "whitelists", { } ) )
 		for k, v in pairs( whiteLists ) do
 			if ( v == id ) then
 				table.remove( whiteLists, k )
-				continue
 			end
 		end
 		catherine.catherine_data.SetcatherineData( pl, "whitelists", whiteLists, false, true )
 	end
 	
-	function catherine.faction.HasWhiteList( pl, id )
-		local whiteLists = table.Copy( catherine.catherine_data.GetcatherineData( pl, "whitelists", { } ) )
-		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData ) then return false end
-		
-		for k, v in pairs( whiteLists ) do
-			if ( v == id ) then
-				return true
-			end
-		end
-		
-		return false
+	function META:AddWhiteList( id )
+		catherine.faction.AddWhiteList( self, id )
 	end
-
+	
+	function META:RemoveWhiteList( id )
+		catherine.faction.RemoveWhiteList( self, id )
+	end
+	
 	concommand.Add( "addwhitelist", function( pl, cmd, args )
 		catherine.faction.AddWhiteList( pl, args[ 1 ] )
 	end )
@@ -99,21 +93,17 @@ if ( SERVER ) then
 	concommand.Add( "removewhitelist", function( pl, cmd, args )
 		catherine.faction.RemoveWhiteList( pl, args[ 1 ] )
 	end )
-else
-	function catherine.faction.HasWhiteList( id )
-		if ( !id ) then return false end
-		local whiteLists = table.Copy( catherine.catherine_data.GetcatherineData( "whitelists", { } ) )
-		if ( !whiteLists ) then return false end
-		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData ) then return false end
-		for k, v in pairs( whiteLists ) do
-			if ( v == id ) then
-				return true
-			end
-		end
-		
-		return false
-	end
+end
+
+function catherine.faction.HasWhiteList( pl, id )
+	local whiteLists = table.Copy( catherine.catherine_data.GetcatherineData( pl, "whitelists", { } ) )
+	local factionData = catherine.faction.FindByID( id )
+	if ( !factionData ) then return false end
+	return table.HasValue( whiteLists, id )
+end
+
+function META:HasWhiteList( id )
+	return catherine.faction.HasWhiteList( self, id )
 end
 
 catherine.faction.Include( catherine.FolderName .. "/gamemode" )

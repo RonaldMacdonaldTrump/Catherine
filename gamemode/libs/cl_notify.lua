@@ -1,40 +1,33 @@
 catherine.notify = catherine.notify or { }
 catherine.notify.Lists = { }
 
-function catherine.notify.Add( text, time )
-	local scrW, scrH = ScrW( ), ScrH( )
-	time = time or 5
-	
-	local notify = vgui.Create( "DPanel" )
-	notify:ParentToHUD( )
-	notify:SetSize( scrW * 0.5, 20 )
-	notify:SetPos( scrW / 2 - notify:GetWide( ) / 2, scrH - ( ( 25 * ( #catherine.notify.Lists + 1 ) ) + 5 ) )
-	notify.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 235 ) )
-		
-		draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
-		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
-	end
+function catherine.notify.Add( message, time, sound, icon )
+	surface.PlaySound( sound or "buttons/button24.wav" )
+	catherine.notify.Lists[ #catherine.notify.Lists + 1 ] = {
+		message = message,
+		endTime = CurTime( ) + time,
+		icon = icon,
+		x = ScrW( ) / 2 - ( ScrW( ) * 0.4 ) / 2,
+		y = ( ScrH( ) - 10 ) - ( ( #catherine.notify.Lists + 1 ) * 25 ),
+		w = ScrW( ) * 0.4,
+		h = 20,
+		alpha = 0
+	}
+end
 
-	local message = vgui.Create( "DLabel", notify )
-	message:SetColor( Color( 255, 255, 255, 255 ) )
-	message:SetFont( "catherine_font01_15" )
-	message:SetText( text )
-	message:SizeToContents( )
-	message:Center( )
-	
-	catherine.notify.Lists[ #catherine.notify.Lists + 1 ] = notify
-	
-	timer.Create( "Catherine.notify.FadeTimer_" .. #catherine.notify.Lists, time, 1, function( )
-		for k, v in pairs( catherine.notify.Lists ) do
-			if ( v == notify ) then
+function catherine.notify.Draw( )
+	if ( #catherine.notify.Lists == 0 ) then return end
+	for k, v in pairs( catherine.notify.Lists ) do
+		if ( v.endTime <= CurTime( ) ) then
+			v.alpha = Lerp( 0.05, v.alpha, 0 )
+			if ( math.Round( v.alpha ) <= 0 ) then
 				table.remove( catherine.notify.Lists, k )
 			end
+		else
+			v.alpha = Lerp( 0.05, v.alpha, 255 )
 		end
-		notify:AlphaTo( 0, 0.5, 0 )
-		timer.Simple( 0.5, function( )
-			notify:Remove( )
-			notify = nil
-		end )
-	end )
+		v.y = Lerp( 0.05, v.y, ( ScrH( ) - 10 ) - ( ( k ) * 25 ) )
+		draw.RoundedBox( 0, v.x, v.y, v.w, v.h, Color( 235, 235, 235, v.alpha ) )
+		draw.SimpleText( v.message, "catherine_font01_15", v.x + v.w / 2, v.y + v.h / 2, Color( 50, 50, 50, v.alpha ), 1, 1 )
+	end
 end

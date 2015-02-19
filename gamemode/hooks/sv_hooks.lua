@@ -99,8 +99,10 @@ function GM:PlayerDeathSound( pl )
 end
 
 function GM:PlayerDeath( pl )
+	catherine.util.ProgressBar( pl, "You are dead...", catherine.configs.spawnTime )
 	pl.catherine_nextSpawn = CurTime( ) + catherine.configs.spawnTime
 	pl:SetNetworkValue( "nextSpawnTime", pl.catherine_nextSpawn )
+	pl:SetNetworkValue( "deathTime", CurTime( ) )
 end
 
 function GM:PlayerDeathThink( pl )

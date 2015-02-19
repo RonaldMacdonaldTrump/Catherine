@@ -13,7 +13,8 @@ catherine.hudHide = {
 	"CHudBattery",
 	"CHudAmmo",
 	"CHudSecondaryAmmo",
-	"CHudCrosshair"
+	"CHudCrosshair",
+	"CHudDamageIndicator"
 }
 catherine.entityCache = { }
 catherine.nextRefresh = catherine.nextRefresh or CurTime( )
@@ -125,6 +126,7 @@ function GM:HUDPaint( )
 	
 	catherine.hud.Draw( )
 	catherine.bar.Draw( )
+	catherine.notify.Draw( )
 
 	if ( LocalPlayer( ):IsCharacterLoaded( ) and catherine.nextRefresh < CurTime( ) ) then
 		local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
@@ -177,6 +179,23 @@ function GM:ScoreboardShow()
 		catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )
 		gui.EnableScreenClicker( true )
 	end
+end
+
+function GM:RenderScreenspaceEffects( )
+	local data = hook.Run( "GetCustomColorData", LocalPlayer( ) ) or { }
+	
+	local tab = { }
+	tab[ "$pp_colour_addr" ] = data.addr or 0
+	tab[ "$pp_colour_addg" ] = data.addg or 0
+	tab[ "$pp_colour_addb" ] = data.addb or 0
+	tab[ "$pp_colour_brightness" ] = data.brightness or 0
+	tab[ "$pp_colour_contrast" ] = data.contrast or 1
+	tab[ "$pp_colour_colour" ] = data.colour or 0.9
+	tab[ "$pp_colour_mulr" ] = data.mulr or 0
+	tab[ "$pp_colour_mulg" ] = data.mulg or 0
+	tab[ "$pp_colour_mulb" ] = data.mulb or 0
+	
+	DrawColorModify( tab )
 end
 
 netstream.Hook( "catherine.LoadingStatus", function( data )

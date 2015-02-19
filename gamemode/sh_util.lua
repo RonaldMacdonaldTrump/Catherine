@@ -48,18 +48,37 @@ end
 catherine.util.IncludeInDir( "libs/external", true )
 
 if ( SERVER ) then
-	function catherine.util.Notify( pl, message )
+	function catherine.util.Notify( pl, message, time, icon )
+		if ( !IsValid( pl ) or !message ) then return end
+		netstream.Start( pl, "catherine.util.Notify", { message, time, icon } )
+	end
+	
+	function catherine.util.ProgressBar( pl, message, time )
+		if ( !IsValid( pl ) or !message ) then return end
+		netstream.Start( pl, "catherine.util.ProgressBar", { message, time } )
+	end
+	
+	function catherine.util.NotifyAll( message, time, icon )
 		if ( !message ) then return end
-		netstream.Start( pl, "catherine.util.NotifySend", message )
+		netstream.Start( nil, "catherine.util.Notify", { message, time, icon } )
 	end
 else
-	netstream.Hook( "catherine.util.NotifySend", function( data )
-		catherine.util.Notify( data )
+	netstream.Hook( "catherine.util.Notify", function( data )
+		catherine.util.Notify( data[ 1 ], data[ 2 ], data[ 3 ] )
 	end )
 	
-	function catherine.util.Notify( message )
+	netstream.Hook( "catherine.util.ProgressBar", function( data )
+		catherine.util.ProgressBar( data[ 1 ], data[ 2 ] )
+	end )
+	
+	function catherine.util.Notify( message, time, sound, icon )
 		if ( !message ) then return end
-		catherine.notify.Add( message, 5 )
+		catherine.notify.Add( message, time or 5, sound, icon )
+	end
+	
+	function catherine.util.ProgressBar( message, endTime )
+		if ( !message or !endTime ) then return end
+		catherine.hud.ProgressBarAdd( message, endTime )
 	end
 	
 	function catherine.util.BlurDraw( x, y, w, h, amount )
@@ -79,4 +98,3 @@ else
 		end
 	end
 end
-
