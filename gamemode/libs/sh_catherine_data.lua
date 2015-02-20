@@ -7,12 +7,8 @@ if ( SERVER ) then
 		if ( !catherine.catherine_data.buffers[ pl:SteamID( ) ] ) then return end
 		catherine.catherine_data.SaveToMySQL( pl )
 		catherine.catherine_data.buffers[ pl:SteamID( ) ] = nil
-		print("Init!")
-		// Init z;
 	end )
-	
-	//PrintTable(catherine.catherine_data.buffers)
-	
+
 	function catherine.catherine_data.RegisterByMySQL( pl, isLoading )
 		if ( !IsValid( pl ) ) then return end
 		catherine.database.GetTable( "_steamID = '" .. pl:SteamID( ) .. "'", "catherine_players", function( data )
@@ -52,11 +48,6 @@ if ( SERVER ) then
 			catherine.catherine_data.SaveToMySQL( pl )
 		end
 	end
---[[
-	catherine.catherine_data.SetcatherineData( player.GetByID( 1 ), "test", nil )
-	catherine.catherine_data.SetcatherineData( player.GetByID( 1 ), "zz", nil )
-	catherine.catherine_data.SetcatherineData( player.GetByID( 1 ), "gg", nil )--]]
-	//catherine.catherine_data.SaveToMySQL( player.GetByID( 1 ) )
 
 	function catherine.catherine_data.GetcatherineData( pl, key, default )
 		if ( !IsValid( pl ) or !key ) then return default end
@@ -81,4 +72,3 @@ else
 		catherine.catherine_data.localData = data
 	end )
 end
-

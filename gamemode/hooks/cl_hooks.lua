@@ -48,18 +48,6 @@ function GM:CalcView( pl, pos, ang, fov )
 		view.fov = fov
 		return view
 	end
-
-	if ( !pl:Alive( ) ) then
-		local view = { }
-		local ent = pl:GetRagdollEntity( )
-		if ( !IsValid( ent ) ) then return end
-		local att = ent:GetAttachment( ent:LookupAttachment( "eyes" ) )
-
-		view.origin = att.Pos
-		view.angles = att.Ang
-		
-		return view
-	end
 end
 
 function GM:HUDDrawTargetID( )
@@ -67,19 +55,40 @@ function GM:HUDDrawTargetID( )
 end
 
 function GM:DrawEntityInformation( ent, alpha )
-	if ( ent:IsPlayer( ) ) then
+	local entPlayer = ent:GetNetworkValue( "player" )
+	if ( ent:IsPlayer( ) and ent:Alive( ) ) then
 		local lp = LocalPlayer( )
-		local position = toscreen( ent:EyePos( ) )
+		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 		local x, y = position.x, position.y - 100
 		local x2, y2 = 0, 0
 		
-		draw.SimpleText( ent:Name( ), "catherine_font02_25", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
+		local targetInformation = hook.Run( "GetTargetInformation", lp, ent )
+		draw.SimpleText( targetInformation[ 1 ], "catherine_font02_25", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
 		y = y + 20
-		draw.SimpleText( ent:Desc( ), "catherine_font02_15", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
+		draw.SimpleText( targetInformation[ 2 ], "catherine_font02_15", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
 		y = y + 15
 		
-		hook.Run( "PlayerInformationDraw", x, y, alpha )
+		hook.Run( "PlayerInformationDraw", ent, x, y, alpha )
+	elseif ( entPlayer and entPlayer:IsPlayer( ) ) then
+		local entFix = Entity( ent:GetNetworkValue( "ragdollID" ) )
+		local lp = LocalPlayer( )
+		local position = toscreen( entFix:LocalToWorld( entFix:OBBCenter( ) ) )
+		local x, y = position.x, position.y - 100
+		local x2, y2 = 0, 0
+		
+		local targetInformation = hook.Run( "GetTargetInformation", lp, entPlayer )
+		draw.SimpleText( targetInformation[ 1 ], "catherine_font02_25", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
+		y = y + 20
+		draw.SimpleText( targetInformation[ 2 ], "catherine_font02_15", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
+		y = y + 15
+		
+		hook.Run( "PlayerInformationDraw", entPlayer, x, y, alpha )
 	end
+end
+
+function GM:PlayerInformationDraw( pl, x, y, alpha )
+	if ( pl:Alive( ) ) then return end
+	x, y = draw.SimpleText( "Her / She is going to hell.", "catherine_font02_25", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
 end
 
 function GM:HUDDrawScoreBoard( )
@@ -108,7 +117,7 @@ function GM:HUDDrawScoreBoard( )
 
 	surface.SetDrawColor( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha )
 	surface.SetMaterial( Material( "catherine/logo.png" ) )
-	surface.DrawTexturedRect( scrW / 2 - 512 / 2, scrH / 2 - 356 / 2, 512, 356 )
+	surface.DrawTexturedRect( scrW / 2 - 512 / 2, scrH / 2 - 256 / 2, 512, 256 )
 	
 	draw.SimpleText( "Ver 0.1", "catherine_font01_15", 15, scrH - 20, Color( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha ), TEXT_ALIGN_LEFT, 1 )
 
@@ -130,7 +139,15 @@ function GM:HUDPaint( )
 	catherine.notify.Draw( )
 
 	if ( LocalPlayer( ):IsCharacterLoaded( ) and catherine.nextRefresh < CurTime( ) ) then
-		local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
+		local ent
+
+		local trace = { }
+		trace.start = LocalPlayer( ):GetShootPos( )
+		trace.endpos = trace.start + LocalPlayer( ):GetAimVector() * 160
+		trace.filter = LocalPlayer( )
+
+		ent = util.TraceLine( trace ).Entity
+
 		if ( IsValid( ent ) ) then catherine.entityCache[ ent ] = true
 		else catherine.entityCache[ ent ] = nil end
 		catherine.nextRefresh = CurTime( ) + 0.5
@@ -169,7 +186,14 @@ end
 function GM:AddMenu( )
 	catherine.RegisterMenuItem( "Inventory", "catherine.vgui.inventory", "Open the your inventory." )
 	catherine.RegisterMenuItem( "Scoreboard", "catherine.vgui.scoreboard", "Open the your scoreboard." )
-	
+end
+
+function GM:RunCinematicIntro_Information( )
+	return {
+		title = Schema.Title,
+		desc = Schema.Desc,
+		author = "The roleplaying schema development and design by " .. Schema.Author .. "."
+	}
 end
 
 function GM:ScoreboardShow()

@@ -23,5 +23,3 @@ function catherine.data.Get( key, default, ignoreMap, bufferGet )
 	end
 	return util.JSONToTable( data )
 end
-
-//catherine.data.Set( "door", { 1, 6, 6, 1} )

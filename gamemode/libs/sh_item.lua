@@ -183,7 +183,7 @@ else
 	
 	function catherine.item.OpenEntityUseMenu( data )
 		local ent = data[ 1 ]
-		local itemID = data[ 2 ] // to do remove.;
+		local itemID = data[ 2 ]
 		if ( !IsValid( ent ) or !IsValid( LocalPlayer( ):GetEyeTrace( ).Entity ) ) then return end
 		local itemTab = catherine.item.FindByID( itemID )
 		if ( !itemTab ) then return end

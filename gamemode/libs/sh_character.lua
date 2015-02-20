@@ -20,6 +20,14 @@ do
 
 		return "Error Desc"
 	end
+	
+	function playerMeta:ID( )
+		if ( self:IsCharacterLoaded( ) ) then
+			return self:GetCharacterGlobalData( "_id", 0 )
+		end
+
+		return "Error ID"
+	end
 
 	playerMeta.Nick = playerMeta.Name
 	playerMeta.GetName = playerMeta.Name
@@ -59,7 +67,8 @@ if ( SERVER ) then
 	catherine.character.RegisterGlobal( {
 		id = "id",
 		field = "_id",
-		static = true
+		static = true,
+		isNetwork = true
 	} )
 	
 	catherine.character.RegisterGlobal( {
@@ -222,6 +231,10 @@ if ( SERVER ) then
 		pl:SetTeam( faction.index )
 		pl:SetModel( characterTab._model )
 		
+		if ( !pl.characterID ) then
+			netstream.Start( pl, "catherine.hud.CinematicIntro_Init" )
+		end
+		
 		pl.characterID = charID
 		pl:SetNetworkValue( "characterID", charID )
 		pl:SetNetworkValue( "characterLoaded", true )
@@ -351,6 +364,7 @@ if ( SERVER ) then
 		end
 	end
 
+	
 	function catherine.character.LoadAllByDataBases( func )
 		catherine.database.GetTable_All( "catherine_characters", function( data )
 			if ( #data == 0 ) then catherine.character.buffers = { } return end
@@ -379,7 +393,7 @@ if ( SERVER ) then
 			catherine.util.Print( Color( 255, 255, 0 ), "catherine framework has loaded " .. catherine.character.CountBufferCharacters( ) .. "'s characters." )
 		end )
 	end
-	
+
 	hook.Add( "Tick", "catherine.character.Tick", function( )
 		if ( catherine.character.SaveCurTime <= CurTime( ) ) then
 			catherine.character.SaveAllToDataBases( )

@@ -7,8 +7,20 @@ function GM:PlayerSpray( pl )
 end
 
 function GM:PlayerSpawn( pl )
-	player_manager.SetPlayerClass( pl, "catherine_player" )
+	if ( IsValid( pl.dummy ) ) then
+		pl.dummy:Remove( )
+	end
+	pl:SetNoDraw( false )
+	pl:Freeze( false )
+	pl:SetColor( Color( 255, 255, 255, 255 ) )
+	player_manager.SetPlayerClass( pl, "player_sandbox" )
 	hook.Run( "PlayerSpawned", pl )
+end
+
+function GM:PlayerDisconnected( pl )
+	if ( IsValid( pl.dummy ) ) then
+		pl.dummy:Remove( )
+	end
 end
 
 function GM:KeyPress( pl, key )
@@ -33,8 +45,10 @@ function GM:KeyRelease( pl, key )
 end
 
 function GM:PlayerInitialSpawn( pl )
-	pl:KillSilent( )
-	
+	timer.Simple( 1, function( )
+		pl:SetNoDraw( true )
+	end )
+
 	local function stap01( )
 		if ( !catherine.database.Connected ) then
 			netstream.Start( pl, "catherine.LoadingStatus", { false, false, "Catherine has not connected by MySQL!", 0 } )
@@ -81,12 +95,14 @@ function GM:PlayerInitialSpawn( pl )
 			netstream.Start( pl, "catherine.LoadingStatus", { false, true, 1, 0.1 } )
 			timer.Simple( 4, function( )
 				stap01( )
+				pl:SetNoDraw( true )
 			end )
 		end
 	end )
 end
 
 function GM:PlayerHurt( pl )
+	pl.autoHealthrecoverStart = true
 	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
 	return true
 end
@@ -96,25 +112,51 @@ function GM:PlayerDeathSound( pl )
 	return true
 end
 
+function GM:DoPlayerDeath( pl )
+	pl:SetNoDraw( true )
+	pl:Freeze( true )
+end
+
 function GM:PlayerDeath( pl )
-	pl.catherine_nextSpawn = CurTime( ) + catherine.configs.spawnTime
+	pl.dummy = ents.Create( "prop_ragdoll" )
+	pl.dummy:SetAngles( pl:GetAngles( ) )
+	pl.dummy:SetModel( pl:GetModel( ) )
+	pl.dummy:SetPos( pl:GetPos( ) )
+	pl.dummy:Spawn( )
+	pl.dummy:Activate( )
+	pl.dummy:SetCollisionGroup( COLLISION_GROUP_WEAPON )
+	pl.dummy.player = self
+	pl.dummy:SetNetworkValue( "player", pl )
+	pl.dummy:SetNetworkValue( "ragdollID", pl.dummy:EntIndex( ) )
+	pl.dummy:CallOnRemove( "RecoverPlayer", function( )
+		if ( !IsValid( pl ) ) then return end
+		pl:Spawn( )
+		pl.dummy:Remove( )
+	end )
+	
+	timer.Create( "catherine.timer.Respawn_" .. pl:SteamID( ), catherine.configs.spawnTime, 1, function( )
+		if ( !IsValid( pl ) ) then return end
+		pl:Spawn( )
+	end )
+		
+	pl.autoHealthrecoverStart = false
 	catherine.util.ProgressBar( pl, "You are now respawning.", catherine.configs.spawnTime )
-	pl:SetNetworkValue( "nextSpawnTime", pl.catherine_nextSpawn )
+	pl:SetNetworkValue( "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
 	pl:SetNetworkValue( "deathTime", CurTime( ) )
 end
 
-function GM:PlayerDeathThink( pl )
-	if ( !pl.catherine_nextSpawn ) then
-		pl:Spawn( )
-		return
+function GM:Tick( )
+	// Health auto recover system.
+	for k, v in pairs( player.GetAll( ) ) do
+		if ( !v:IsCharacterLoaded( ) ) then continue end
+		if ( !v.autoHealthrecoverStart ) then continue end
+		if ( !v.autoHealthrecoverCur ) then v.autoHealthrecoverCur = CurTime( ) + 3 end
+		if ( math.Round( v:Health( ) ) >= v:GetMaxHealth( ) ) then v.autoHealthrecoverStart = false end
+		if ( v.autoHealthrecoverCur <= CurTime( ) ) then
+			v:SetHealth( math.Clamp( v:Health( ) + 1, 0, v:GetMaxHealth( ) ) )
+			v.autoHealthrecoverCur = CurTime( ) + 3
+		end
 	end
-	if ( pl.catherine_nextSpawn <= CurTime( ) ) then
-		pl:Spawn( )
-		
-		return true
-	end
-	
-	return false
 end
 
 function GM:Initialize( )
@@ -125,7 +167,7 @@ function GM:PlayerShouldTakeDamage( )
 	return true
 end
 
-function GM:GetFallDamage( _, speed )
+function GM:GetFallDamage( pl, speed )
 	return ( speed / 8 )
 end
 

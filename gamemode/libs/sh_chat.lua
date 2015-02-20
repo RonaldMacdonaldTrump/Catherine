@@ -37,7 +37,7 @@ end
 catherine.chat.RegisterClass( {
 	class = "ic",
 	doChat = function( pl, text )
-		chat.AddText( Color( 255, 255, 255 ), pl:Name( ) .. " : " .. text )
+		chat.AddText( Color( 255, 255, 255 ), pl:Name( ) .. " 님의 말 : " .. text )
 	end,
 	canHearRange = 300
 } )
@@ -80,7 +80,7 @@ catherine.chat.RegisterClass( {
 catherine.chat.RegisterClass( {
 	class = "looc",
 	doChat = function( pl, text )
-		chat.AddText( Color( 250, 255, 40 ), "[LOOC] ", pl:Name( ), color_white, " : ".. text )
+		chat.AddText( Color( 250, 255, 40 ), "[LOOC] ", pl, color_white, " : ".. text )
 	end,
 	canHearRange = 600,
 	command = {

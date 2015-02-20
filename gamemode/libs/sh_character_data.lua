@@ -11,7 +11,7 @@ if ( SERVER ) then
 	hook.Add( "CharacterLoaded", "catherine.character.CharacterLoaded", function( pl, charID )
 		
 		local health = catherine.character.GetCharData( pl, "health", 100 )
-		local armor = catherine.character.GetCharData( pl, "armor", 255 )
+		local armor = catherine.character.GetCharData( pl, "armor", 0 )
 
 		pl:SetHealth( health )
 		pl:SetArmor( armor )
@@ -33,8 +33,14 @@ if ( SERVER ) then
 	end )
 	
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected_02", function( pl )
-		catherine.character.SetCharData( pl, "health", pl:Health( ) )
-		catherine.character.SetCharData( pl, "armor", pl:Armor( ) )
+		if ( !pl:Alive( ) ) then
+			catherine.character.SetCharData( pl, "health", pl:GetMaxHealth( ) )
+			catherine.character.SetCharData( pl, "armor", 0 )
+		else
+			catherine.character.SetCharData( pl, "health", pl:Health( ) )
+			catherine.character.SetCharData( pl, "armor", pl:Armor( ) )
+		end
+		
 		
 		catherine.character.TransferToCharacterTable( pl, pl.characterID )
 		catherine.character.ClearCharacterDatas( pl )

@@ -6,7 +6,9 @@ function catherine.schema.Initialization( )
 		Author = "L7D, Fristet",
 		Desc = "A catherine schema.",
 		UniqueID = GM.FolderName,
-		FolderName = GM.FolderName
+		FolderName = GM.FolderName,
+		Title = "A Good Schema",
+		Desc = "Good"
 	}
 	catherine.util.IncludeInDir( "schema/libs" )
 	catherine.util.Include( "schema/sh_schema.lua" )
