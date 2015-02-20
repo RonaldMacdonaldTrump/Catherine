@@ -1,6 +1,3 @@
---[[
-
---]]
 catherine.chat = catherine.chat or { }
 catherine.chat.Classes = { }
 
@@ -41,7 +38,10 @@ catherine.chat.RegisterClass( {
 		local nameText = name[ 1 ] == "Unknown..." and name[ 2 ] or name[ 1 ]
 		chat.AddText( Color( 255, 255, 255 ), nameText .. " 님의 말 : " .. text )
 	end,
-	canHearRange = 300
+	canHearRange = 300,
+	canRun = function( pl )
+		return pl:Alive( )
+	end
 } )
 
 catherine.chat.RegisterClass( {
@@ -49,8 +49,33 @@ catherine.chat.RegisterClass( {
 	doChat = function( pl, text )
 		chat.AddText( Color( 255, 150, 255 ), "** " .. pl:Name( ) .. " " .. text )
 	end,
-	global = true,
-	command = { "/me", "/ME" }
+	command = { "/me" },
+	canHearRange = 1500,
+	canRun = function( pl )
+		return pl:Alive( )
+	end
+} )
+
+catherine.chat.RegisterClass( {
+	class = "it",
+	doChat = function( pl, text )
+		chat.AddText( Color( 255, 150, 0 ), "*** " .. pl:Name( ) .. " " .. text )
+	end,
+	command = { "/it" },
+	canHearRange = 1000,
+	canRun = function( pl )
+		return pl:Alive( )
+	end
+} )
+
+catherine.chat.RegisterClass( {
+	class = "pm",
+	doChat = function( pl, text, ex )
+		chat.AddText( Color( 255, 255, 0 ), pl:Name( ) .. " 님이 " .. ex[ 1 ]:Name( ) .. " 님에게 귓속말 : " .. text )
+	end,
+	canRun = function( pl )
+		return pl:Alive( )
+	end
 } )
 
 catherine.chat.RegisterClass( {
@@ -61,7 +86,10 @@ catherine.chat.RegisterClass( {
 		chat.AddText( Color( 255, 255, 255 ), nameText .. " 님의 외침 : " .. text )
 	end,
 	canHearRange = 600,
-	command = { "/y", "/yell" }
+	command = { "/y", "/yell" },
+	canRun = function( pl )
+		return pl:Alive( )
+	end
 } )
 
 catherine.chat.RegisterClass( {
@@ -72,7 +100,10 @@ catherine.chat.RegisterClass( {
 		chat.AddText( Color( 255, 255, 255 ), nameText .. " 님의 속삭임 : " .. text )
 	end,
 	canHearRange = 150,
-	command = { "/w", "/whisper" }
+	command = { "/w", "/whisper" },
+	canRun = function( pl )
+		return pl:Alive( )
+	end
 } )
 
 catherine.chat.RegisterClass( {
@@ -103,24 +134,52 @@ catherine.chat.RegisterClass( {
 	}
 } )
 
+catherine.command.Register( {
+	command = "pm",
+	syntax = "[name] [text]",
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			if ( args[ 2 ] ) then
+				local player = catherine.util.FindPlayerByName( args[ 1 ] )
+				if ( IsValid( player ) ) then
+					catherine.chat.Send( pl, "pm", args[ 2 ], { pl, player }, player )
+				else
+					catherine.util.Notify( pl, "Can't found player!" )
+				end
+			else
+				catherine.util.Notify( pl, "Please input second value!" )
+			end
+		else
+			catherine.util.Notify( pl, "Please input first value!" )
+		end
+	end
+} )
+
 if ( SERVER ) then
 	netstream.Hook( "catherine.chat.Run", function( pl, data )
 		hook.Run( "PlayerSay", pl, data, true )
 	end )
 	
-	function catherine.chat.Send( pl, class, text, target )
-		target = target or { pl }
+	function catherine.chat.Send( pl, class, text, target, ... )
+		local targetB = { }
+		if ( type( target ) == "table" ) then targetB = { pl, target } else targetB = pl end
 		local classTab = catherine.chat.FindByClass( class )
 		if ( !classTab ) then return end
-		if ( classTab.global ) then
-			for k, v in pairs( player.GetAll( ) ) do
-				if ( !v:IsCharacterLoaded( ) ) then continue end
-				netstream.Start( v, "catherine.chat.Receive", { pl, class, text } )
-			end
-		else
-			local target = catherine.chat.GetTarget( pl, class )
+		if ( type( targetB ) == "table" ) then
 			for k, v in pairs( target ) do
-				netstream.Start( v, "catherine.chat.Receive", { pl, class, text } )
+				netstream.Start( v, "catherine.chat.Receive", { pl, class, text, { ... } } )
+			end
+		elseif ( type( targetB ) == "Player" ) then
+			if ( classTab.global ) then
+				for k, v in pairs( player.GetAll( ) ) do
+					if ( !v:IsCharacterLoaded( ) ) then continue end
+					netstream.Start( v, "catherine.chat.Receive", { pl, class, text, { ... } } )
+				end
+			else
+				local targetEx = catherine.chat.GetTarget( pl, class )
+				for k, v in pairs( targetEx ) do
+					netstream.Start( v, "catherine.chat.Receive", { pl, class, text, { ... } } )
+				end
 			end
 		end
 	end
@@ -145,14 +204,25 @@ if ( SERVER ) then
 	function catherine.chat.Progress( pl, text )
 		local class = catherine.chat.FetchClassByText( text )
 		local classTab = catherine.chat.FindByClass( class )
-
-		for k, v in pairs( classTab.command or { } ) do
+		if ( !classTab ) then return end
+		local commandTable = classTab.command or { }
+		if ( #commandTable > 1 ) then
+			table.sort( classTab.command, function( a, b )
+				return #a > #b
+			end )
+		end
+		for k, v in pairs( commandTable ) do
 			local textLower = text:lower( )
-			if ( string.Left( textLower, #v ) == v ) then
+			if ( string.sub( textLower, 0, #v ) == v:lower( ) ) then
 				text = string.Replace( text, v, "" )
+				break
 			end
 		end
 		
+		if ( classTab.canRun and ( classTab.canRun( pl ) == false ) ) then
+			catherine.util.Notify( pl, "You can run this work now!" )
+			return
+		end
 		catherine.chat.Send( pl, class, text )
 		catherine.command.DoByText( pl, text )
 		// insert something ... ;0
@@ -164,9 +234,9 @@ else
 	catherine.chat.msg = catherine.chat.msg or { }
 	
 	netstream.Hook( "catherine.chat.Receive", function( data )
-		local speaker, class, text = data[ 1 ], data[ 2 ], data[ 3 ]
+		local speaker, class, text, ex = data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ]
 		local class = catherine.chat.FindByClass( class )
-		class.doChat( speaker, text )
+		class.doChat( speaker, text, ex )
 	end )
 	
 	local CHATBox_w, CHATBox_h = ScrW( ) * 0.3, ScrH( ) * 0.3

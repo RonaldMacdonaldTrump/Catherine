@@ -12,6 +12,7 @@ function GM:PlayerSpawn( pl )
 	end
 	pl:SetNoDraw( false )
 	pl:Freeze( false )
+	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	player_manager.SetPlayerClass( pl, "player_sandbox" )
 	hook.Run( "PlayerSpawned", pl )
@@ -101,6 +102,59 @@ function GM:PlayerInitialSpawn( pl )
 	end )
 end
 
+function GM:PlayerNoClip( pl, bool )
+	if ( pl:IsAdmin( ) ) then
+		if ( pl:GetMoveType( ) == MOVETYPE_WALK ) then
+			pl:SetNoDraw( true )
+			pl:DrawShadow( false )
+			pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
+			pl:SetNetworkValue( "nocliping", true )
+		else
+			pl:SetNoDraw( false )
+			pl:DrawShadow( true )
+			pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
+			pl:SetNetworkValue( "nocliping", false )
+		end
+	end
+	return pl:IsAdmin( )
+end
+
+function GM:PlayerGiveSWEP( pl )
+	return pl:IsAdmin( )
+end
+
+function GM:PlayerSpawnSWEP( pl )
+	return pl:IsAdmin( )
+end
+
+function GM:PlayerSpawnEffect( pl )
+	return pl:IsAdmin( )
+end
+
+function GM:PlayerSpawnNPC( pl )
+	return pl:IsAdmin( )
+end
+
+function GM:PlayerSpawnObject( pl )
+	return pl:HasFlag( "ex" )
+end
+
+function GM:PlayerSpawnProp( pl )
+	return pl:HasFlag( "ex" )
+end
+
+function GM:PlayerSpawnRagdoll( pl )
+	return pl:IsAdmin( )
+end
+
+function GM:PlayerSpawnVehicle( pl )
+	return pl:IsAdmin( )
+end
+
+function GM:PlayerSpawnSENT( pl )
+	return pl:IsAdmin( )
+end
+
 function GM:PlayerHurt( pl )
 	pl.autoHealthrecoverStart = true
 	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
@@ -168,7 +222,8 @@ function GM:PlayerShouldTakeDamage( )
 end
 
 function GM:GetFallDamage( pl, speed )
-	return ( speed / 8 )
+	speed = speed - 580
+	return speed * 0.8
 end
 
 function GM:InitPostEntity( )

@@ -38,6 +38,8 @@ if ( SERVER ) then
 	catherine.character.globals = { }
 	catherine.character.SaveCurTime = catherine.character.SaveCurTime or CurTime( ) + catherine.configs.saveInterval
 	
+	
+	
 	function catherine.character.GetGlobalListsAll( )
 		return catherine.character.globals
 	end
@@ -333,7 +335,6 @@ if ( SERVER ) then
 	function catherine.character.SaveAllToDataBases( )
 		local characterCount = catherine.character.CountBufferCharacters( )
 		if ( characterCount == 0 ) then return end
-		catherine.util.Print( Color( 255, 255, 0 ), "Now catherine framework start working saveing characters! - " .. characterCount )
 		local progress = 0
 		local time = 0
 		local buffer = table.Copy( catherine.character.buffers )
@@ -355,13 +356,14 @@ if ( SERVER ) then
 						end )
 					end )--]]
 					catherine.database.Update( "_steamID = '" .. steamID .. "' AND _id = '" .. charID .. "'", v1, "catherine_characters", function( )
-						catherine.util.Print( Color( 255, 255, 0 ), "Save complete! - " .. charID )
+
 					end )
-					
 					break
 				end
 			end
 		end
+		
+		catherine.util.Print( Color( 0, 255, 0 ), "Catherine framework has saved characters to MySQL! [" .. characterCount .. "'s character]" )
 	end
 
 	
@@ -390,17 +392,17 @@ if ( SERVER ) then
 			if ( func ) then
 				func( )
 			end
-			catherine.util.Print( Color( 255, 255, 0 ), "catherine framework has loaded " .. catherine.character.CountBufferCharacters( ) .. "'s characters." )
+			catherine.util.Print( Color( 0, 255, 0 ), "Catherine framework has loaded characters to MySQL! [" .. catherine.character.CountBufferCharacters( ) .. "'s character]" )
 		end )
 	end
 
-	hook.Add( "Tick", "catherine.character.Tick", function( )
+	hook.Add( "Think", "catherine.character.Think", function( )
 		if ( catherine.character.SaveCurTime <= CurTime( ) ) then
 			catherine.character.SaveAllToDataBases( )
 			catherine.character.SaveCurTime = CurTime( ) + catherine.configs.saveInterval
 		end
 	end )
-	
+
 	hook.Add( "DataSave", "catherine.character.DataSave", function( )
 		for k, v in pairs( player.GetAll( ) ) do
 			catherine.character.TransferToCharacterTable( v, v.characterID )

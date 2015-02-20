@@ -70,7 +70,10 @@ function GM:DrawEntityInformation( ent, alpha )
 		
 		hook.Run( "PlayerInformationDraw", ent, x, y, alpha )
 	elseif ( entPlayer and entPlayer:IsPlayer( ) ) then
-		local entFix = Entity( ent:GetNetworkValue( "ragdollID" ) )
+		local ragdollID = ent:GetNetworkValue( "ragdollID", nil )
+		if ( !ragdollID ) then return end
+		local entFix = Entity( ragdollID )
+		if ( !IsValid( entFix ) ) then return end
 		local lp = LocalPlayer( )
 		local position = toscreen( entFix:LocalToWorld( entFix:OBBCenter( ) ) )
 		local x, y = position.x, position.y - 100

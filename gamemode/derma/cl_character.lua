@@ -423,20 +423,18 @@ end
 function PANEL:GetFactionList( )
 	local faction = { }
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
-		if ( v.isWhitelist and ( !LocalPlayer( ):HasFaction( v.uniqueID ) ) ) then continue end
+		if ( v.isWhitelist and LocalPlayer( ):HasWhiteList( v.uniqueID ) == false ) then continue end
 		faction[ #faction + 1 ] = v
 	end
-	
 	return faction
 end
 
 function PANEL:RefreshPanelList( )
 	local faction = { }
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
-		if ( v.isWhitelist and ( !LocalPlayer( ):HasFaction( v.uniqueID ) ) ) then continue end
+		if ( v.isWhitelist and LocalPlayer( ):HasWhiteList( v.uniqueID ) == false ) then continue end
 		faction[ #faction + 1 ] = v
 	end
-	
 	return faction
 end
 

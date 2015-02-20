@@ -54,15 +54,17 @@ if ( SERVER ) then
 		if ( !catherine.catherine_data.buffers[ pl:SteamID( ) ] ) then return default end
 		return catherine.catherine_data.buffers[ pl:SteamID( ) ][ key ] or default
 	end
+	
+	
 else
 	catherine.catherine_data.localData = catherine.catherine_data.localData or nil
 	
 	function catherine.catherine_data.GetcatherineData( key, default )
 		if ( !key ) then return default end
 		if ( !catherine.catherine_data.localData ) then return default end
-		return catherine.catherine_data.localData[ key ]
+		return catherine.catherine_data.localData[ key ] or default
 	end
-	
+
 	netstream.Hook( "catherine.catherine_data.SetcatherineData", function( data )
 		catherine.catherine_data.localData = catherine.catherine_data.localData or { }
 		catherine.catherine_data.localData[ data[ 1 ] ] = data[ 2 ]

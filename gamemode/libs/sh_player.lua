@@ -51,14 +51,6 @@ if ( SERVER ) then
 			end
 		end )
 
-		for i = 0, self.ragdoll:GetPhysicsObjectCount() do
-			local physicsObject = self.ragdoll:GetPhysicsObjectNum(i)
-
-			if (IsValid(physicsObject)) then
-				physicsObject:SetVelocity(self:GetVelocity() * 1.25)
-			end
-		end
-
 		local weap = { }
 		for k, v in pairs( self:GetWeapons( ) ) do
 			weap[#weap + 1] = v:GetClass( )
@@ -86,14 +78,6 @@ if ( SERVER ) then
 			self:DropToFloor( )
 			self:SetNotSolid( false )
 			
-			if (isValid) then
-				local physicsObject = self.ragdoll:GetPhysicsObject()
-
-				if (IsValid(physicsObject)) then
-					self:SetVelocity(physicsObject:GetVelocity())
-				end
-			end
-
 			for k, v in pairs( self:GetNetworkValue( "weap", { } ) ) do
 				self:Give( v )
 			end
@@ -114,10 +98,10 @@ function META:GetWeaponRaised( )
 end
 
 function META:GetGender( )
-	local model = self:GetModel( )
-	if ( model:find( "male" ) ) then
-		return "male"
-	else
+	local model = self:GetModel( ):lower( )
+	if ( model:find( "female" ) ) then
 		return "female"
+	else
+		return "male"
 	end
 end

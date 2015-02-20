@@ -40,8 +40,6 @@ if ( SERVER ) then
 			catherine.character.SetCharData( pl, "health", pl:Health( ) )
 			catherine.character.SetCharData( pl, "armor", pl:Armor( ) )
 		end
-		
-		
 		catherine.character.TransferToCharacterTable( pl, pl.characterID )
 		catherine.character.ClearCharacterDatas( pl )
 	end )

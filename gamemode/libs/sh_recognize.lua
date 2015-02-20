@@ -9,7 +9,6 @@ end
 
 if ( SERVER ) then
 	function catherine.recognize.DoKnow( pl, talkCode, target )
-		print(target )
 		target = target or { }
 		
 		local classTab = catherine.chat.FindByClass( talkCode )
@@ -71,15 +70,10 @@ function catherine.recognize.IsKnowTarget( pl, target )
 end
 
 function GM:GetTargetInformation( pl, target )
-	if ( pl == target ) then
-		return { target:Name( ), target:Desc( ) }
+	if ( pl == target ) then return { target:Name( ), target:Desc( ) } end
+	if ( catherine.recognize.IsKnowTarget( pl, target ) ) then return { target:Name( ), target:Desc( ) }
+	else return { "Unknown...", target:Desc( ) }
 	end
-	if ( catherine.recognize.IsKnowTarget( pl, target ) ) then
-		return { target:Name( ), target:Desc( ) }
-	else
-		return { "Unknown...", target:Desc( ) }
-	end
-	
 	return { "Unknown...", target:Desc( ) }
 end
 

@@ -83,6 +83,7 @@ function PANEL:RefreshPlayerLists( )
 	self.Lists:Clear( )
 	
 	for k, v in pairs( self.playerLists ) do
+		local hF = 0
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( k )
@@ -121,7 +122,13 @@ function PANEL:RefreshPlayerLists( )
 			spawnIcon:SetModel( v1:GetModel( ) )
 			
 			dpanelList:AddItem( panel )
+			
+			hF = hF + 50
 		end
+		
+		hF = hF + 10
+		form:SetSize( self.Lists:GetWide( ), hF )
+		dpanelList:SetSize( form:GetWide( ), form:GetTall( ) )
 		self.Lists:AddItem( form )
 	end
 end
