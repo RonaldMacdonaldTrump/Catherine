@@ -87,8 +87,10 @@ function GM:DrawEntityInformation( ent, alpha )
 end
 
 function GM:PlayerInformationDraw( pl, x, y, alpha )
-	if ( pl:Alive( ) ) then return end
-	x, y = draw.SimpleText( "Her / She is going to hell.", "catherine_font02_25", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
+	if ( !pl:Alive( ) ) then
+		local gText = ( pl:GetGender( ) == "male" and "He" ) or "She"
+		draw.SimpleText( gText .. " has going to hell, RIP.", "catherine_font02_15", x, y, Color( 255, 150, 150, alpha ), 1, 1 )
+	end
 end
 
 function GM:HUDDrawScoreBoard( )

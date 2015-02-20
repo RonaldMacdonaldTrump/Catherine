@@ -37,15 +37,28 @@ end
 catherine.chat.RegisterClass( {
 	class = "ic",
 	doChat = function( pl, text )
-		chat.AddText( Color( 255, 255, 255 ), pl:Name( ) .. " 님의 말 : " .. text )
+		local name = hook.Run( "GetTargetInformation", LocalPlayer( ), pl )
+		local nameText = name[ 1 ] == "Unknown..." and name[ 2 ] or name[ 1 ]
+		chat.AddText( Color( 255, 255, 255 ), nameText .. " 님의 말 : " .. text )
 	end,
 	canHearRange = 300
 } )
 
 catherine.chat.RegisterClass( {
+	class = "me",
+	doChat = function( pl, text )
+		chat.AddText( Color( 255, 150, 255 ), "** " .. pl:Name( ) .. " " .. text )
+	end,
+	global = true,
+	command = { "/me", "/ME" }
+} )
+
+catherine.chat.RegisterClass( {
 	class = "yell",
 	doChat = function( pl, text )
-		chat.AddText( Color( 255, 255, 255 ), pl:Name( ) .. " 님의 외침 : " .. text )
+		local name = hook.Run( "GetTargetInformation", LocalPlayer( ), pl )
+		local nameText = name[ 1 ] == "Unknown..." and name[ 2 ] or name[ 1 ]
+		chat.AddText( Color( 255, 255, 255 ), nameText .. " 님의 외침 : " .. text )
 	end,
 	canHearRange = 600,
 	command = { "/y", "/yell" }
@@ -54,7 +67,9 @@ catherine.chat.RegisterClass( {
 catherine.chat.RegisterClass( {
 	class = "whisper",
 	doChat = function( pl, text )
-		chat.AddText( Color( 255, 255, 255 ), pl:Name( ) .. " 님의 속삭임 : " .. text )
+		local name = hook.Run( "GetTargetInformation", LocalPlayer( ), pl )
+		local nameText = name[ 1 ] == "Unknown..." and name[ 2 ] or name[ 1 ]
+		chat.AddText( Color( 255, 255, 255 ), nameText .. " 님의 속삭임 : " .. text )
 	end,
 	canHearRange = 150,
 	command = { "/w", "/whisper" }
@@ -162,7 +177,7 @@ else
 	function PANEL:Init( )
 		self:SetDrawBackground( false )
 		self.start = CurTime( )
-		self.finish = CurTime( ) + 10
+		self.finish = CurTime( ) + 15
 	end
 
 	function PANEL:SetMaxWidth( w )
@@ -213,7 +228,7 @@ else
 		self.markup = catherine.markup.Parse( data, self.maxWidth )
 
 		function self.markup:DrawText( text, font, x, y, color, hAlign, vAlign, alpha )
-			draw.SimpleText( text, font, x, y, color, hAlign, vAlign, 1 )
+			draw.SimpleTextOutlined( text, font, x, y, color, hAlign, vAlign, 1, Color( 0, 0, 0, 255 ) )
 		end
 
 		self:SetSize( self.markup:GetWidth( ), self.markup:GetHeight( ) )
@@ -225,6 +240,10 @@ else
 		if ( self.start and self.finish ) then alpha = math.Clamp( 255 - math.TimeFraction( self.start, self.finish, CurTime( ) ) * 255, 0, 255 ) end
 		if ( catherine.chat.isOpened ) then alpha = 255 end
 		self:SetAlpha( alpha )
+		surface.SetDrawColor( 50, 50, 50, alpha )
+		surface.SetMaterial( Material( "gui/gradient" ) )
+		surface.DrawTexturedRect( 0, 0, w, h )
+		
 		if ( alpha > 0 ) then
 			self.markup:Draw( 1, 0, 0, 0 )
 		end
@@ -264,10 +283,9 @@ else
 	function catherine.chat.AddText( ... )
 		local msg = vgui.Create( "catherine.vgui.ChatMarkUp" )
 		msg:Dock( TOP )
-		msg:SetFont( "catherine_font01_15" )
+		msg:SetFont( "catherine_font01_17" )
 		msg:SetMaxWidth( CHATBox_w - 16 )
 		msg:Run( ... )
-		
 		catherine.chat.msg[ #catherine.chat.msg + 1 ] = msg
 		
 		if ( catherine.chat.backpanel ) then
@@ -339,3 +357,5 @@ else
 		catherine.chat.CreateBase( )
 	end
 end
+
+hook.Remove( "PlayerSay", "ULXMeCheck" )

@@ -15,11 +15,13 @@ if ( SERVER ) then
 		local classTab = catherine.chat.FindByClass( talkCode )
 		if ( !classTab or ( classTab and !classTab.canHearRange ) ) then return end
 		
-		for k, v in pairs( player.GetAll( ) ) do
-			if ( !v:IsCharacterLoaded( ) ) then continue end
-			if ( !v:Alive( ) or v == pl ) then continue end
-			if ( pl:GetPos( ):Distance( v:GetPos( ) ) <= classTab.canHearRange and !catherine.recognize.IsKnowTarget( pl, target ) ) then
-				target[ #target + 1 ] = v
+		if ( type( target ) == "table" ) then
+			for k, v in pairs( player.GetAll( ) ) do
+				if ( !v:IsCharacterLoaded( ) ) then continue end
+				if ( !v:Alive( ) or v == pl ) then continue end
+				if ( pl:GetPos( ):Distance( v:GetPos( ) ) <= classTab.canHearRange and !catherine.recognize.IsKnowTarget( pl, v ) ) then
+					target[ #target + 1 ] = v
+				end
 			end
 		end
 		
@@ -69,6 +71,9 @@ function catherine.recognize.IsKnowTarget( pl, target )
 end
 
 function GM:GetTargetInformation( pl, target )
+	if ( pl == target ) then
+		return { target:Name( ), target:Desc( ) }
+	end
 	if ( catherine.recognize.IsKnowTarget( pl, target ) ) then
 		return { target:Name( ), target:Desc( ) }
 	else
