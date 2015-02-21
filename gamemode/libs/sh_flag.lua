@@ -26,35 +26,48 @@ if ( SERVER ) then
 	function catherine.flag.Give( pl, target, code )
 		if ( !IsValid( pl ) or !IsValid( target ) ) then catherine.util.Notify( pl, "Player is not valid!" ) return end
 		local flagData = table.Copy( catherine.character.GetCharData( target, "flags", { } ) )
-		if ( type( code ) == "string" ) then
-			local flagTab = catherine.flag.FindByCode( code )
-			if ( !flagTab or catherine.flag.Has( target, code ) ) then catherine.util.Notify( pl, "That player already have that flag!" ) return end
-			flagData[ #flagData + 1 ] = code
-		elseif ( type( code ) == "table" ) then
-			for k, v in pairs( code ) do
-				local flagTab = catherine.flag.FindByCode( v )
-				if ( !flagTab or catherine.flag.Has( target, v ) ) then continue end
+		local add = { }
+		for k, v in pairs( code ) do
+			local flagTab = catherine.flag.FindByCode( v )
+			if ( !flagTab or catherine.flag.Has( target, v ) ) then continue end
+			add[ #add + 1 ] = v
+		end
+		
+		// Merge
+		for k, v in pairs( add ) do
+			if ( !table.HasValue( flagData, v ) ) then
 				flagData[ #flagData + 1 ] = v
+				hook.Run( "FlagGive", target, v )
 			end
 		end
-		catherine.character.SetCharData( target, "flags", flagData )
-		hook.Run( "FlagGived", target, code )
-		catherine.util.NotifyAll( pl:Name( ) .. " 님이 " .. target:Name( ) .. " 님에게 " .. code .. " 플레그를 주셨습니다." )
+		if ( #add >= 1 ) then
+			catherine.character.SetCharData( target, "flags", flagData )
+			catherine.util.NotifyAll( pl:Name( ) .. " 님이 " .. target:Name( ) .. " 님에게 " .. ( type( code ) == "string" and code or table.concat( code, ", " ) ) .. " 플레그를 주셨습니다." )
+		else
+			catherine.util.Notify( pl, "That player already have that flag!" )
+		end
 	end
 	
 	function catherine.flag.Take( pl, target, code )
 		if ( !IsValid( pl ) or !IsValid( target ) ) then catherine.util.Notify( pl, "Player is not valid!" ) return end
-		local flagTab = catherine.flag.FindByCode( code )
-		if ( !flagTab or !catherine.flag.Has( target, code ) ) then catherine.util.Notify( pl, "That player hasen't have flag." ) return end
 		local flagData = table.Copy( catherine.character.GetCharData( target, "flags", { } ) )
-		for k, v in pairs( flagData ) do
-			if ( v == code ) then
-				table.remove( flagData, k )
+		local remove = 0
+		for k, v in pairs( code ) do
+			if ( table.HasValue( flagData, v ) ) then
+				local flagTab = catherine.flag.FindByCode( v )
+				if ( !flagTab ) then catherine.util.Notify( pl, v .. " is not valid flag!" ) continue end
+				print(v,"remove")
+				remove = remove + 1
+				hook.Run( "FlagTake", target, v )
+				table.RemoveByValue( flagData, v )
 			end
 		end
-		catherine.character.SetCharData( target, "flags", flagData )
-		
-		catherine.util.NotifyAll( pl:Name( ) .. " 님이 " .. target:Name( ) .. " 님의 " .. code .. " 플레그를 뺏으셨습니다." )
+		if ( remove != 0 ) then
+			catherine.character.SetCharData( target, "flags", flagData )
+			catherine.util.NotifyAll( pl:Name( ) .. " 님이 " .. target:Name( ) .. " 님의 " .. ( type( code ) == "string" and code or table.concat( code, ", " ) ) .. " 플레그를 뺏으셨습니다." )
+		else
+			catherine.util.Notify( pl, "That player not have flag!" )
+		end
 	end
 	
 	function META:GiveFlag( code )
@@ -83,7 +96,7 @@ if ( SERVER ) then
 		end
 	end )
 	
-	hook.Add( "FlagGived", "catherine.flag.FlagGived", function( pl, code )
+	hook.Add( "FlagGive", "catherine.flag.FlagGive", function( pl, code )
 		if ( code == "p" ) then
 			pl:Give( "weapon_physgun" )
 		end
@@ -92,7 +105,7 @@ if ( SERVER ) then
 		end
 	end )
 	
-	hook.Add( "FlagTaked", "catherine.flag.FlagTaked", function( pl, code )
+	hook.Add( "FlagTake", "catherine.flag.FlagTake", function( pl, code )
 		if ( code == "p" ) then
 			pl:StripWeapon( "weapon_physgun" )
 		end
@@ -111,7 +124,8 @@ catherine.command.Register( {
 	syntax = "[player]",
 	runFunc = function( pl, args )
 		local player = catherine.util.FindPlayerByName( args[ 1 ] )
-		catherine.flag.Give( pl, player, args[ 2 ] )
+		local argsF = string.Explode( ",", args[ 2 ] )
+		catherine.flag.Give( pl, player, argsF )
 	end
 } )
 
@@ -120,7 +134,8 @@ catherine.command.Register( {
 	syntax = "[player]",
 	runFunc = function( pl, args )
 		local player = catherine.util.FindPlayerByName( args[ 1 ] )
-		catherine.flag.Take( pl, player, args[ 2 ] )
+		local argsF = string.Explode( ",", args[ 2 ] )
+		catherine.flag.Take( pl, player, argsF )
 	end
 } )
 

@@ -1,11 +1,10 @@
-catherine.loading = catherine.loading or false
+catherine.loaded = catherine.loaded or false
+catherine.loaded2 = catherine.loaded2 or false
 catherine.errorText = catherine.errorText or ""
 catherine.alpha = catherine.alpha or 255
-catherine.color = catherine.color or 0
-catherine.textColor = catherine.textColor or 255
-catherine.loadingStarting = catherine.loadingStarting or false
 catherine.progressBar = catherine.progressBar or 0
 catherine.percent = catherine.percent or 0
+
 catherine.menuList = catherine.menuList or { }
 catherine.locationRandom = catherine.locationRandom or table.Random( catherine.configs.locationRandom )
 catherine.hudHide = {
@@ -98,51 +97,42 @@ end
 
 function GM:HUDDrawScoreBoard( )
 	local scrW, scrH = ScrW( ), ScrH( )
-	if ( catherine.loading ) then
-		if ( catherine.loadingStarting ) then
-			catherine.alpha = Lerp( 0.01, catherine.alpha, 255 )
-			catherine.color = Lerp( 0.01, catherine.color, 0 )
-			catherine.textColor = Lerp( 0.01, catherine.textColor, 255 )
-		else
-			catherine.color = Lerp( 0.01, catherine.color, 255 )
-			catherine.alpha = Lerp( 0.01, catherine.alpha, 255 )
-			catherine.textColor = Lerp( 0.01, catherine.textColor, 50 )
-		end
+	if ( !catherine.loaded ) then
+		catherine.alpha = Lerp( 0.01, catherine.alpha, 255 )
 	else
 		catherine.alpha = Lerp( 0.005, catherine.alpha, 0 )
 	end
 	
-	catherine.progressBar = Lerp( 0.05, catherine.progressBar, ( scrW - 20 ) * catherine.percent )
+	catherine.progressBar = Lerp( 0.05, catherine.progressBar, ( scrW - 40 ) * catherine.percent )
 
-	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( catherine.color, catherine.color, catherine.color, catherine.alpha ) )
+	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, catherine.alpha ) )
 	
-	surface.SetDrawColor( catherine.color - 55, catherine.color - 55, catherine.color - 55, catherine.alpha )
+	surface.SetDrawColor( 200, 200, 200, catherine.alpha )
 	surface.SetMaterial( Material( "gui/gradient_up" ) )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )
 
-	surface.SetDrawColor( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha )
-	surface.SetMaterial( Material( "catherine/logo.png" ) )
+	surface.SetDrawColor( 0, 0, 0, catherine.alpha )
+	surface.SetMaterial( Material( "catherine/catherine_logo.png" ) )
 	surface.DrawTexturedRect( scrW / 2 - 512 / 2, scrH / 2 - 256 / 2, 512, 256 )
 	
-	draw.SimpleText( "Ver 0.1", "catherine_font01_15", 15, scrH - 20, Color( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha ), TEXT_ALIGN_LEFT, 1 )
-
-	draw.SimpleText( catherine.errorText, "catherine_font01_40", scrW / 2, scrH - 70, Color( 255, 0, 0, catherine.alpha ), 1, 1 )
+	//draw.SimpleText( "Ver 0.1", "catherine_font01_15", 15, scrH - 20, Color( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha ), TEXT_ALIGN_LEFT, 1 )
+	draw.RoundedBox( 0, 20, scrH - 15, scrW - 40, 3, Color( 50, 50, 50, catherine.alpha ) )
+	draw.RoundedBox( 0, 20, scrH - 15, catherine.progressBar, 3, Color( 255, 255, 255, catherine.alpha ) )
+	draw.SimpleText( catherine.errorText, "catherine_font01_40", scrW / 2, scrH - 70, Color( 50, 50, 50, catherine.alpha ), 1, 1 )
 end
 
 function GM:HUDPaint( )
 	if ( IsValid( catherine.vgui.character ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 	
-	surface.SetDrawColor( 0, 0, 0, 255 )
-	surface.SetMaterial( Material( "catherine/vignette.png" ) )
-	surface.DrawTexturedRect( 0, 0, scrW, scrH )
-	
 	draw.SimpleText( "Catherine Development Version", "catherine_font01_20", scrW - 10, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	
 	catherine.hud.Draw( )
 	catherine.bar.Draw( )
 	catherine.notify.Draw( )
-
+	catherine.wep.Draw( LocalPlayer( ) )
+	
+	if ( !LocalPlayer( ):Alive( ) ) then return end
 	if ( LocalPlayer( ):IsCharacterLoaded( ) and catherine.nextRefresh < CurTime( ) ) then
 		local ent
 
@@ -229,21 +219,10 @@ function GM:RenderScreenspaceEffects( )
 end
 
 netstream.Hook( "catherine.LoadingStatus", function( data )
-	if ( data[ 2 ] == true ) then
-		if ( data[ 1 ] == true ) then
-			catherine.loading = true
-			catherine.loadingStarting = false
-		elseif ( data[ 1 ] == false ) then
-			catherine.loading = true
-			catherine.loadingStarting = true
-		end
-	elseif ( data[ 2 ] == false ) then
-		catherine.loading = true
-		catherine.errorText = data[ 3 ] or ""
-	end
-	catherine.percent = data[ 4 ]
-	if ( data[ 5 ] == true ) then
-		catherine.loading = false
-		catherine.loadingStarting = false
+	catherine.loaded = data[ 1 ]
+	catherine.percent = data[ 2 ]
+	if ( data[ 3 ] and data[ 3 ] != "" ) then
+		catherine.errorText = data[ 3 ]
+		catherine.percent = 0
 	end
 end )
