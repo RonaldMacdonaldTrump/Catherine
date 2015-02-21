@@ -26,7 +26,7 @@ catherine.configs.baseInventoryWeight = 10
 catherine.configs.database_module = "mysqloo"
 catherine.configs.database_host = "127.0.0.1"
 catherine.configs.database_id = "root"
-catherine.configs.database_pwd = "DVujKY9PGt4dRD2y"
+catherine.configs.database_pwd = ""
 catherine.configs.database_name = "catherine"
 catherine.configs.database_port = 3306
 

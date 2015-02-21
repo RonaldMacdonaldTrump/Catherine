@@ -16,7 +16,6 @@ if ( SERVER ) then
 			local data = data[ 1 ][ "_catherineData" ]
 			catherine.catherine_data.buffers[ pl:SteamID( ) ] = util.JSONToTable( data )
 			catherine.catherine_data.SendToPlayer( pl )
-			print("Transfer finished")
 		end )
 	end
 	
@@ -32,9 +31,7 @@ if ( SERVER ) then
 		local data = {
 			_catherineData = util.TableToJSON( catherine.catherine_data.buffers[ pl:SteamID( ) ] )
 		}
-		catherine.database.Update( "_steamID = '" .. pl:SteamID( ) .. "'", data, "catherine_players", function( )
-			print("Save finished")
-		end )
+		catherine.database.Update( "_steamID = '" .. pl:SteamID( ) .. "'", data, "catherine_players" )
 	end
 	
 	function catherine.catherine_data.SetcatherineData( pl, key, value, nosync, save )

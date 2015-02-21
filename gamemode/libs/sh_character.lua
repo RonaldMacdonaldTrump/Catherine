@@ -263,9 +263,14 @@ if ( SERVER ) then
 		end
 		catherine.database.Query( "DELETE FROM `catherine_characters` WHERE _steamID = '" .. pl:SteamID( ) .. "' AND _id = '" .. charID .. "'", function( )
 			catherine.util.Print( Color( 255, 0, 0 ), "Character delete! - " .. pl:SteamID( ) .. " / " .. charID )
-			catherine.character.LoadAllByDataBases( function( )
-				catherine.character.SendCharacterLists( pl )
-			end )
+			for k, v in pairs( catherine.character.buffers[ pl:SteamID( ) ] ) do
+				if ( v._id == charID ) then
+					table.remove( catherine.character.buffers[ pl:SteamID( ) ], k )
+				end
+			end
+			
+			catherine.character.SaveAllToDataBases( )
+			catherine.character.SendCharacterLists( pl )
 		end )
 	end
 

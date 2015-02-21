@@ -14,8 +14,19 @@ function GM:PlayerSpawn( pl )
 	pl:Freeze( false )
 	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
-	player_manager.SetPlayerClass( pl, "player_sandbox" )
+	pl:SetupHands( )
+	player_manager.SetPlayerClass( pl, "catherine_player" )
 	hook.Run( "PlayerSpawned", pl )
+end
+
+function GM:PlayerSetHandsModel( pl, ent )
+	local model = player_manager.TranslateToPlayerModelName( pl:GetModel( ) )
+	local info = player_manager.TranslatePlayerHands( model )
+	if ( info ) then
+		ent:SetModel( info.model )
+		ent:SetSkin( info.skin )
+		ent:SetBodyGroups( info.body )
+	end
 end
 
 function GM:PlayerDisconnected( pl )
