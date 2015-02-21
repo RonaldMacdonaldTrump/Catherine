@@ -49,10 +49,6 @@ function GM:CalcView( pl, pos, ang, fov )
 	end
 end
 
-function GM:HUDDrawTargetID( )
-	
-end
-
 function GM:DrawEntityInformation( ent, alpha )
 	local entPlayer = ent:GetNetworkValue( "player" )
 	if ( ent:IsPlayer( ) and ent:Alive( ) ) then
@@ -115,24 +111,15 @@ function GM:HUDDrawScoreBoard( )
 	surface.SetMaterial( Material( "catherine/catherine_logo.png" ) )
 	surface.DrawTexturedRect( scrW / 2 - 512 / 2, scrH / 2 - 256 / 2, 512, 256 )
 	
-	//draw.SimpleText( "Ver 0.1", "catherine_font01_15", 15, scrH - 20, Color( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha ), TEXT_ALIGN_LEFT, 1 )
-	draw.RoundedBox( 0, 20, scrH - 15, scrW - 40, 3, Color( 50, 50, 50, catherine.alpha ) )
-	draw.RoundedBox( 0, 20, scrH - 15, catherine.progressBar, 3, Color( 255, 255, 255, catherine.alpha ) )
-	draw.SimpleText( catherine.errorText, "catherine_font01_40", scrW / 2, scrH - 70, Color( 50, 50, 50, catherine.alpha ), 1, 1 )
+	draw.SimpleText( "Catherine version 0.2 - Development version", "catherine_font01_15", 15, 20, Color( 50, 50, 50, catherine.alpha ), TEXT_ALIGN_LEFT, 1 )
+	if ( catherine.percent != 0 ) then
+		draw.RoundedBox( 0, 20, scrH - 15, scrW - 40, 3, Color( 50, 50, 50, catherine.alpha ) )
+		draw.RoundedBox( 0, 20, scrH - 15, catherine.progressBar, 3, Color( 255, 255, 255, catherine.alpha ) )
+	end
+	draw.SimpleText( catherine.errorText, "catherine_font01_25", scrW / 2, scrH - 25, Color( 80, 80, 80, catherine.alpha ), 1, 1 )
 end
 
-function GM:HUDPaint( )
-	if ( IsValid( catherine.vgui.character ) ) then return end
-	local scrW, scrH = ScrW( ), ScrH( )
-	
-	draw.SimpleText( "Catherine Development Version", "catherine_font01_20", scrW - 10, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
-	
-	catherine.hud.Draw( )
-	catherine.bar.Draw( )
-	catherine.notify.Draw( )
-	catherine.wep.Draw( LocalPlayer( ) )
-	
-	if ( !LocalPlayer( ):Alive( ) ) then return end
+function GM:ProgressEntityCache( )
 	if ( LocalPlayer( ):IsCharacterLoaded( ) and catherine.nextRefresh < CurTime( ) ) then
 		local ent
 
@@ -157,6 +144,19 @@ function GM:HUDPaint( )
 		if ( math.Round( a ) <= 0 ) then catherine.entityCache[ k ] = nil end
 		hook.Run( "DrawEntityInformation", k, a )
 	end
+end
+
+function GM:HUDPaint( )
+	if ( IsValid( catherine.vgui.character ) ) then return end
+	catherine.hud.Draw( )
+	catherine.bar.Draw( )
+	catherine.notify.Draw( )
+	catherine.wep.Draw( LocalPlayer( ) )
+	
+	if ( !LocalPlayer( ):Alive( ) ) then return end
+	hook.Run( "ProgressEntityCache" )
+	
+	draw.SimpleText( "Catherine Development Version", "catherine_font01_20", ScrW( ) - 10, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePos, eyeAng )

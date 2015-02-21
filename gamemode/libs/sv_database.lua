@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `catherine_players` (
 --]]
 catherine.database = catherine.database or { }
 catherine.database.Connected = catherine.database.Connected or false
+catherine.database.ErrorMessage = catherine.database.ErrorMessage or ""
 catherine.database.object = catherine.database.object or nil
 catherine.database[ "mysqloo" ] = {
 	ConnectFunc = function( )
@@ -37,6 +38,7 @@ catherine.database[ "mysqloo" ] = {
 		catherine.database.object.onConnectionFailed = function( _, err )
 			catherine.util.Print( Color( 255, 0, 0 ), "Catherine has connect failed by MySQL!!! - " .. err )
 			catherine.database.Connected = false
+			catherine.database.ErrorMessage = err
 		end
 		catherine.database.object:connect( )
 	end,

@@ -1,5 +1,5 @@
 function GM:GetGameDescription( )
-	return "Catherine - ".. ( Schema and Schema.Name or "Error" )
+	return "Catherine - ".. ( Schema and Schema.Name or "Unknown" )
 end
 
 function GM:PlayerSpray( pl )
@@ -51,9 +51,7 @@ function GM:PlayerSay( pl, text )
 end
 
 function GM:KeyRelease( pl, key )
-	if ( key == IN_RELOAD ) then
-		timer.Destroy( "Catherine_toggleweaponRaised_" .. pl:SteamID( ) )
-	end
+	if ( key == IN_RELOAD ) then timer.Destroy( "Catherine_toggleweaponRaised_" .. pl:SteamID( ) ) end
 end
 
 function GM:PlayerInitialSpawn( pl )
@@ -63,7 +61,7 @@ function GM:PlayerInitialSpawn( pl )
 
 	local function init( )
 		if ( !catherine.database.Connected ) then
-			netstream.Start( pl, "catherine.LoadingStatus", { false, 0, "Catherine has not connected by MySQL!!!" } )
+			netstream.Start( pl, "catherine.LoadingStatus", { false, 0, "MySQL Error : " .. catherine.database.ErrorMessage } )
 			return
 		end
 		netstream.Start( pl, "catherine.LoadingStatus", { false, 0.1 } )
@@ -102,7 +100,6 @@ function GM:PlayerInitialSpawn( pl )
 	timer.Create( "catherine.loading.WaitLocalPlayer_" .. pl:SteamID( ), 2, 0, function( )
 		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
 			timer.Destroy( "catherine.loading.WaitLocalPlayer_" .. pl:SteamID( ) )
-			netstream.Start( pl, "catherine.LoadingStatus", { false, 1 } )
 			timer.Simple( 6, function( )
 				init( )
 				pl:SetNoDraw( true )
@@ -181,6 +178,7 @@ function GM:DoPlayerDeath( pl )
 end
 
 function GM:PlayerDeath( pl )
+	// Fake death body.
 	pl.dummy = ents.Create( "prop_ragdoll" )
 	pl.dummy:SetAngles( pl:GetAngles( ) )
 	pl.dummy:SetModel( pl:GetModel( ) )
@@ -223,16 +221,15 @@ function GM:Tick( )
 end
 
 function GM:Initialize( )
-	hook.Run( "GMInit" )
+	hook.Run( "GMInitialize" )
 end
 
 function GM:PlayerShouldTakeDamage( )
 	return true
 end
 
-function GM:GetFallDamage( pl, speed )
-	speed = speed - 580
-	return speed * 0.8
+function GM:GetFallDamage( pl, spd )
+	return ( spd - 580 ) * 0.8
 end
 
 function GM:InitPostEntity( )

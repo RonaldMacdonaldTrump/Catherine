@@ -3,16 +3,34 @@ catherine.hud.ProgressBar = catherine.hud.ProgressBar or nil
 catherine.hud.CinematicIntro = catherine.hud.CinematicIntro or nil
 catherine.hud.clip1 = catherine.hud.clip1 or 0
 catherine.hud.pre = catherine.hud.pre or 0
+catherine.hud.vAlpha = catherine.hud.vAlpha or 0
 
 netstream.Hook( "catherine.hud.CinematicIntro_Init", function( )
 	catherine.hud.CinematicIntroInit( )
 end )
 
 function catherine.hud.Draw( )
+	catherine.hud.Vignette( )
 	catherine.hud.ScreenDamageDraw( )
 	catherine.hud.AmmoDraw( )
 	catherine.hud.ProgressBarDraw( )
 	catherine.hud.CinematicIntroDraw( )
+end
+
+function catherine.hud.Vignette( )
+	local a = 255
+	local data = { }
+	data.start = LocalPlayer( ):GetPos( )
+	data.endpos = data.start + Vector( 0, 0, 2000 )
+	local tr = util.TraceLine( data )
+	if ( !tr.Hit or tr.HitSky ) then a = 125 end
+	catherine.hud.vAlpha = math.Approach( catherine.hud.vAlpha, a, FrameTime( ) * 90 )
+	
+	for i = 1, 3 do
+		surface.SetDrawColor( 0, 0, 0, catherine.hud.vAlpha )
+		surface.SetMaterial( Material( "catherine/vignette.png" ) )
+		surface.DrawTexturedRect( 0, 0, ScrW( ), ScrH( ) )
+	end
 end
 
 function catherine.hud.ScreenDamageDraw( ) end
