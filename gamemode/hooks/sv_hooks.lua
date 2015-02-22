@@ -103,6 +103,7 @@ function GM:PlayerInitialSpawn( pl )
 			timer.Simple( 6, function( )
 				init( )
 				pl:SetNoDraw( true )
+				hook.Run( "RunInitSpawnFunc", pl )
 			end )
 		end
 	end )
@@ -178,7 +179,7 @@ function GM:DoPlayerDeath( pl )
 end
 
 function GM:PlayerDeath( pl )
-	// Fake death body.
+	// Spaen fake death body.
 	pl.dummy = ents.Create( "prop_ragdoll" )
 	pl.dummy:SetAngles( pl:GetAngles( ) )
 	pl.dummy:SetModel( pl:GetModel( ) )
@@ -192,6 +193,7 @@ function GM:PlayerDeath( pl )
 	pl.dummy:CallOnRemove( "RecoverPlayer", function( )
 		if ( !IsValid( pl ) ) then return end
 		pl:Spawn( )
+		if ( !IsValid( pl.dummy ) ) then return end
 		pl.dummy:Remove( )
 	end )
 	
@@ -212,10 +214,11 @@ function GM:Tick( )
 		if ( !v:IsCharacterLoaded( ) ) then continue end
 		if ( !v.autoHealthrecoverStart ) then continue end
 		if ( !v.autoHealthrecoverCur ) then v.autoHealthrecoverCur = CurTime( ) + 3 end
-		if ( math.Round( v:Health( ) ) >= v:GetMaxHealth( ) ) then v.autoHealthrecoverStart = false end
+		if ( math.Round( v:Health( ) ) >= v:GetMaxHealth( ) ) then v.autoHealthrecoverStart = false hook.Run( "HealthFullRecovered", v ) end
 		if ( v.autoHealthrecoverCur <= CurTime( ) ) then
 			v:SetHealth( math.Clamp( v:Health( ) + 1, 0, v:GetMaxHealth( ) ) )
 			v.autoHealthrecoverCur = CurTime( ) + 3
+			hook.Run( "HealthRecovering", v )
 		end
 	end
 end
@@ -229,7 +232,8 @@ function GM:PlayerShouldTakeDamage( )
 end
 
 function GM:GetFallDamage( pl, spd )
-	return ( spd - 580 ) * 0.8
+	local custom = hook.Run( "GetCustomFallDamage", pl, spd )
+	return custom or ( spd - 580 ) * 0.8
 end
 
 function GM:InitPostEntity( )
