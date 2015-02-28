@@ -33,7 +33,6 @@ if ( SERVER ) then
 			add[ #add + 1 ] = v
 		end
 		
-		// Merge
 		for k, v in pairs( add ) do
 			if ( !table.HasValue( flagData, v ) ) then
 				flagData[ #flagData + 1 ] = v
@@ -42,7 +41,7 @@ if ( SERVER ) then
 		end
 		if ( #add >= 1 ) then
 			catherine.character.SetCharData( target, "flags", flagData )
-			catherine.util.NotifyAll( pl:Name( ) .. " 님이 " .. target:Name( ) .. " 님에게 " .. ( type( code ) == "string" and code or table.concat( code, ", " ) ) .. " 플레그를 주셨습니다." )
+			catherine.util.NotifyAll( pl:Name( ) .. " has set " .. target:Name( ) .. "'s flags to " .. ( type( code ) == "string" and code or table.concat( code, ", " ) ) .. "." )
 		else
 			catherine.util.Notify( pl, "That player already have that flag!" )
 		end
@@ -56,7 +55,6 @@ if ( SERVER ) then
 			if ( table.HasValue( flagData, v ) ) then
 				local flagTab = catherine.flag.FindByCode( v )
 				if ( !flagTab ) then catherine.util.Notify( pl, v .. " is not valid flag!" ) continue end
-				print(v,"remove")
 				remove = remove + 1
 				hook.Run( "FlagTake", target, v )
 				table.RemoveByValue( flagData, v )
@@ -64,7 +62,7 @@ if ( SERVER ) then
 		end
 		if ( remove != 0 ) then
 			catherine.character.SetCharData( target, "flags", flagData )
-			catherine.util.NotifyAll( pl:Name( ) .. " 님이 " .. target:Name( ) .. " 님의 " .. ( type( code ) == "string" and code or table.concat( code, ", " ) ) .. " 플레그를 뺏으셨습니다." )
+			catherine.util.NotifyAll( pl:Name( ) .. " has set " .. target:Name( ) .. "'s flags to " .. ( type( code ) == "string" and code or table.concat( code, ", " ) ) .. "." )
 		else
 			catherine.util.Notify( pl, "That player not have flag!" )
 		end

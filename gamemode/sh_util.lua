@@ -48,13 +48,15 @@ end
 catherine.util.IncludeInDir( "libs/external", true )
 
 if ( SERVER ) then
+	catherine.util.StringQuerys = catherine.util.StringQuerys or { }
+	
 	function catherine.util.Notify( pl, message, time, icon )
 		if ( !IsValid( pl ) or !message ) then return end
 		netstream.Start( pl, "catherine.util.Notify", { message, time, icon } )
 	end
 	
 	function catherine.util.ProgressBar( pl, message, time )
-		if ( !IsValid( pl ) or !message ) then return end
+		if ( !IsValid( pl ) or !message or !time ) then return end
 		netstream.Start( pl, "catherine.util.ProgressBar", { message, time } )
 	end
 	
@@ -62,7 +64,28 @@ if ( SERVER ) then
 		if ( !message ) then return end
 		netstream.Start( nil, "catherine.util.Notify", { message, time, icon } )
 	end
+	
+	function catherine.util.UniqueStringReceiver( pl, id, title, msg, defV, func )
+		if ( !IsValid( pl ) or !id or !title or !msg or !func ) then return end
+		if ( !defV ) then defV = "" end
+		catherine.util.StringQuerys[ pl:SteamID( ) ] = catherine.util.StringQuerys[ pl:SteamID( ) ] or { }
+		catherine.util.StringQuerys[ pl:SteamID( ) ][ id ] = { id, title, msg, func }
+		netstream.Start( pl, "catherine.util.UniqueStringReceiver", { id, title, msg, defV } )
+	end
+	
+	netstream.Hook( "catherine.util.UniqueStringReceiver_Receive", function( caller, data )
+		local id = data[ 1 ]
+		if ( !catherine.util.StringQuerys[ caller:SteamID( ) ] or !catherine.util.StringQuerys[ caller:SteamID( ) ][ id ] ) then return end
+		catherine.util.StringQuerys[ caller:SteamID( ) ][ id ][ 4 ]( caller, data[ 2 ] )
+		catherine.util.StringQuerys[ caller:SteamID( ) ][ id ] = nil
+	end )
 else
+	netstream.Hook( "catherine.util.UniqueStringReceiver", function( data )
+		 Derma_StringRequest( data[ 2 ], data[ 3 ], data[ 4 ], function( val )
+			netstream.Start( "catherine.util.UniqueStringReceiver_Receive", { data[ 1 ], val } )
+		 end, function( ) end, "OK", "NO" )
+	end )
+	
 	netstream.Hook( "catherine.util.Notify", function( data )
 		catherine.util.Notify( data[ 1 ], data[ 2 ], data[ 3 ] )
 	end )

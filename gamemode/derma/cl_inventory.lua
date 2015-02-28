@@ -103,10 +103,17 @@ function PANEL:RefreshInventory( )
 		
 		for k1, v1 in pairs( v ) do
 			local itemTab = catherine.item.FindByID( v1.uniqueID )
+			local desc = itemTab.GetDesc and itemTab:GetDesc( LocalPlayer( ), itemTab, LocalPlayer( ):GetInvItemDatas( v1.uniqueID ) ) or ""
+			local data = LocalPlayer( ):GetInvItemDatas( v1.uniqueID )
+			local paintFunc = function( )
+				if ( !itemTab.DrawOverAll ) then return end
+				itemTab:DrawOverAll( LocalPlayer( ), 64, 64, data )
+			end
+			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( 64, 64 )
 			spawnIcon:SetModel( itemTab.model )
-			spawnIcon:SetToolTip( "Name : " .. itemTab.name .. "\nDesc : " .. itemTab.desc .. "\nCost : " .. itemTab.cost )
+			spawnIcon:SetToolTip( "Name : " .. itemTab.name .. "\nDesc : " .. itemTab.desc .. "\nCost : " .. itemTab.cost .. "\n" .. desc  )
 			spawnIcon.DoClick = function( )
 				catherine.item.OpenMenu( v1.uniqueID )
 			end
@@ -141,7 +148,11 @@ function PANEL:RefreshInventory( )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
 				
+				
+				
 				draw.SimpleText( v1.count, "catherine_font01_15", 5, h - 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				
+				paintFunc( )
 			end
 			
 			dpanelList:AddItem( spawnIcon )

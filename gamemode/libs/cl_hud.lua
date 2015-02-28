@@ -10,7 +10,7 @@ netstream.Hook( "catherine.hud.CinematicIntro_Init", function( )
 end )
 
 function catherine.hud.Draw( )
-	catherine.hud.Vignette( )
+	//catherine.hud.Vignette( )
 	catherine.hud.ScreenDamageDraw( )
 	catherine.hud.AmmoDraw( )
 	catherine.hud.ProgressBarDraw( )

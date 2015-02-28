@@ -16,6 +16,32 @@ function META:GetInvMaxWeight( )
 	return catherine.inventory.GetInvMaxWeight( self )
 end
 
-function META:IsEquiped( itemID )
-	return ( SERVER and catherine.inventory.Equiped( self, itemID ) ) or catherine.inventory.Equiped( itemID )
+if ( SERVER ) then
+	function META:SetInvItemData( itemID, id, val )
+		catherine.inventory.SetInvItemData( self, itemID, id, val )
+	end
+	
+	function META:GetInvItemData( itemID, id, def )
+		return catherine.inventory.GetInvItemDataByID( self, itemID, id, def )
+	end
+	
+	function META:IsEquiped( itemID )
+		return catherine.inventory.Equiped( self, itemID )
+	end
+	
+	function META:GetInvItemDatas( itemID )
+		return catherine.inventory.GetInvItemDatas( self, itemID )
+	end
+else
+	function META:GetInvItemData( itemID, id, def )
+		return catherine.inventory.GetInvItemDataByID( itemID, id, def )
+	end
+	
+	function META:IsEquiped( itemID )
+		return catherine.inventory.Equiped( itemID )
+	end
+	
+	function META:GetInvItemDatas( itemID )
+		return catherine.inventory.GetInvItemDatas( itemID )
+	end
 end
