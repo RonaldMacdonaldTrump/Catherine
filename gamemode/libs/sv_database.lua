@@ -108,7 +108,7 @@ function catherine.database.Update( cre, data, tab, func )
 	if ( !catherine.database.Connected or !catherine.database.object ) then return end
 	local sqlStr = "UPDATE `" .. tab .. "` SET "
 
-	for k, v in pairs(data) do
+	for k, v in pairs( data ) do
 		sqlStr = sqlStr .. catherine.database.Escape( k ) .. " = "
 		if ( type( k ) == "string" ) then
 			local t = type( v )

@@ -19,6 +19,11 @@ function GM:PlayerSpawn( pl )
 	hook.Run( "PlayerSpawned", pl )
 end
 
+function GM:PlayerSpawned( pl )
+	if ( !pl:IsCharacterLoaded( ) ) then return end
+	hook.Run( "DefaultWeaponGive", pl )
+end
+
 function GM:PlayerSetHandsModel( pl, ent )
 	local model = player_manager.TranslateToPlayerModelName( pl:GetModel( ) )
 	local info = player_manager.TranslatePlayerHands( model )
@@ -42,6 +47,11 @@ function GM:KeyPress( pl, key )
 			pl:ToggleWeaponRaised( )
 		end )
 	end
+end
+
+function GM:DefaultWeaponGive( pl )
+	pl:Give( "catherine_fist" )
+	pl:Give( "catherine_key" )
 end
 
 function GM:PlayerSay( pl, text )

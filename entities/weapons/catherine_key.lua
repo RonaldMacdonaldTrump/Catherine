@@ -28,13 +28,17 @@ function SWEP:PrimaryAttack( )
 	if ( !ent:IsDoor( ) or ent.Locked ) then return end
 	if ( ent:GetOwner( ) == pl:GetCharacterID( ) or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
 	
-	ent.Locked = true
-	ent:Fire( "lock" )
+	catherine.util.ProgressBar( pl, "You are locking this door.", 4 )
 	
-	ent:EmitSoundEx( "doors/door_latch1.wav", 1 )
+	timer.Simple( 4, function( )
+		ent.Locked = true
+		ent:Fire( "lock" )
+		
+		ent:EmitSoundEx( "doors/door_latch1.wav", 1 )
+	end )
 	
-	self:SetNextPrimaryFire( CurTime( ) + 1 )
-	self:SetNextSecondaryFire( CurTime( ) + 1 )
+	self:SetNextPrimaryFire( CurTime( ) + 4 )
+	self:SetNextSecondaryFire( CurTime( ) + 4 )
 end
 
 function SWEP:SecondaryAttack( )
@@ -47,11 +51,12 @@ function SWEP:SecondaryAttack( )
 	if ( !ent:IsDoor( ) or !ent.Locked ) then return end
 	if ( ent:GetOwner( ) == pl:GetCharacterID( ) or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
 
-	ent.Locked = false
-	ent:Fire( "unlock" )
+	catherine.util.ProgressBar( pl, "You are unlocking this door.", 4 )
 	
-	ent:EmitSoundEx( "doors/door_latch1.wav", 1 )
-	
-	self:SetNextPrimaryFire( CurTime( ) + 1 )
-	self:SetNextSecondaryFire( CurTime( ) + 1 )
+	timer.Simple( 4, function( )
+		ent.Locked = false
+		ent:Fire( "unlock" )
+		
+		ent:EmitSoundEx( "doors/door_latch1.wav", 1 )
+	end )
 end

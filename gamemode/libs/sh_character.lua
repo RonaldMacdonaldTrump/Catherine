@@ -232,7 +232,7 @@ if ( SERVER ) then
 		
 		pl:SetTeam( faction.index )
 		pl:SetModel( characterTab._model )
-		
+
 		if ( !pl.characterID ) then
 			netstream.Start( pl, "catherine.hud.CinematicIntro_Init" )
 		end
