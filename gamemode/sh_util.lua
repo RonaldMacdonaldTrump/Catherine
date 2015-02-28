@@ -60,6 +60,11 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.util.ProgressBar", { message, time } )
 	end
 	
+	function catherine.util.PlaySound( pl, dir )
+		if ( !dir ) then return end
+		netstream.Start( pl or nil, "catherine.util.PlaySound", dir )
+	end
+	
 	function catherine.util.NotifyAll( message, time, icon )
 		if ( !message ) then return end
 		netstream.Start( nil, "catherine.util.Notify", { message, time, icon } )
@@ -86,6 +91,10 @@ else
 		 end, function( ) end, "OK", "NO" )
 	end )
 	
+	netstream.Hook( "catherine.util.PlaySound", function( data )
+		surface.PlaySound( data )
+	end )
+
 	netstream.Hook( "catherine.util.Notify", function( data )
 		catherine.util.Notify( data[ 1 ], data[ 2 ], data[ 3 ] )
 	end )

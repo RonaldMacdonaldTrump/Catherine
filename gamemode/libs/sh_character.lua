@@ -147,6 +147,12 @@ if ( SERVER ) then
 	} )
 	
 	catherine.character.RegisterGlobal( {
+		id = "registerTime",
+		field = "_registerTime",
+		default = os.time( )
+	} )
+	
+	catherine.character.RegisterGlobal( {
 		id = "faction",
 		field = "_faction",
 		default = "citizen",
@@ -228,7 +234,6 @@ if ( SERVER ) then
 
 		pl:KillSilent( )
 		pl:Spawn( )
-		pl:StripWeapons( )
 		
 		pl:SetTeam( faction.index )
 		pl:SetModel( characterTab._model )

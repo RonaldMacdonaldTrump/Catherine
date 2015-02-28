@@ -120,7 +120,8 @@ catherine.chat.RegisterClass( {
 	global = true,
 	command = {
 		"/ooc", "//"
-	}
+	},
+	noSpace = true
 } )
 
 catherine.chat.RegisterClass( {
@@ -131,7 +132,8 @@ catherine.chat.RegisterClass( {
 	canHearRange = 600,
 	command = {
 		"/looc", ".//", "[["
-	}
+	},
+	noSpace = true
 } )
 
 catherine.command.Register( {
@@ -205,27 +207,68 @@ if ( SERVER ) then
 		local class = catherine.chat.FetchClassByText( text )
 		local classTab = catherine.chat.FindByClass( class )
 		if ( !classTab ) then return end
-		local commandTable = classTab.command or { }
-		if ( #commandTable > 1 ) then
+		local commandT = classTab.command or { }
+		if ( type( commandT ) == "table" and #commandT > 1 ) then
 			table.sort( classTab.command, function( a, b )
 				return #a > #b
 			end )
 		end
-		for k, v in pairs( commandTable ) do
-			local textLower = text:lower( )
-			if ( string.sub( textLower, 0, #v ) == v:lower( ) ) then
-				text = string.Replace( text, v, "" )
-				break
+		
+		local fix = ""
+		local isFin = false
+		local noSpace = classTab.noSpace
+		if ( type( commandT ) == "table" ) then
+			for k, v in ipairs( commandT ) do
+				if ( text:sub( 1, #v + ( noSpace and 0 or 1 ) ) == v .. ( noSpace and "" or " " ) ) then
+					isFin = true
+					fix = v .. ( noSpace and "" or " " )
+					break
+				end
+			end
+		elseif ( type( commandT ) == "string" ) then
+			isFin = text:sub( 1, #commandT + ( noSpace and 1 or 0 ) ) == commandT .. ( noSpace and "" or " " )
+			fix = commandT .. ( noSpace and "" or " " )
+		end
+
+		if ( isFin ) then
+			text = text:sub( #fix + 1 )
+			if ( noSpace and text:sub( 1, 1 ):match( "%s" ) ) then
+				text = text:sub( 2 )
 			end
 		end
-		
+
 		if ( classTab.canRun and ( classTab.canRun( pl ) == false ) ) then
 			catherine.util.Notify( pl, "You can run this work now!" )
 			return
 		end
-		catherine.chat.Send( pl, class, text )
-		catherine.command.DoByText( pl, text )
-		// insert something ... ;0
+		
+		local adjustInfo = {
+			text = text,
+			class = class
+		}
+		
+		if ( catherine.command.IsCommand( adjustInfo.text ) ) then
+			catherine.command.DoByText( pl, adjustInfo.text )
+			return
+		end
+		local adjustTransfer = hook.Run( "ChatAdjust", pl, adjustInfo )
+		catherine.chat.Send( pl, class, ( adjustTransfer and adjustTransfer.text ) or text )
+		hook.Run( "PostChated", pl, adjustTransfer or adjustInfo )
+	end
+	
+	function catherine.chat.RunByClass( pl, class, text, target )
+		if ( !target ) then target = pl end
+		local classTab = catherine.chat.FindByClass( class )
+		if ( !classTab ) then return end
+		
+		local adjustInfo = {
+			text = text,
+			class = class
+		}
+
+		local adjustTransfer = hook.Run( "ChatAdjust", pl, adjustInfo ) or nil
+		catherine.chat.Send( pl, class, adjustTransfer.text or text, target )
+		hook.Run( "PostChated", pl, adjustTransfer or text )
 	end
 else
 	catherine.chat.backpanel = catherine.chat.backpanel or nil

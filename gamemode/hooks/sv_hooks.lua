@@ -55,7 +55,8 @@ function GM:DefaultWeaponGive( pl )
 end
 
 function GM:PlayerSay( pl, text )
-	local newText = hook.Run( "PostPlayerSay", pl, text ) or text
+	local class = catherine.chat.FetchClassByText( text )
+	local newText = hook.Run( "PostPlayerSay", pl, class, text ) or text
 	if ( newText == "" ) then return end
 	catherine.chat.Progress( pl, newText )
 end

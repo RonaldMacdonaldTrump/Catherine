@@ -105,3 +105,13 @@ function META:GetGender( )
 		return "male"
 	end
 end
+
+function player.GetAllByLoaded( )
+	local players = { }
+	for k, v in pairs( player.GetAll( ) ) do
+		if ( !v:IsCharacterLoaded( ) ) then continue end
+		players[ #players + 1 ] = v
+	end
+	
+	return players
+end

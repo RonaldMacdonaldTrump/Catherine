@@ -18,6 +18,20 @@ function catherine.command.FindByCMD( id )
 	return nil
 end
 
+function catherine.command.IsCommand( text )
+	if ( text:sub( 1, 1 ) == "/" ) then
+		local toArgs = catherine.command.TransferToArgsTab( text )
+		local id = toArgs[ 1 ]:sub( 2, #toArgs[ 1 ] )
+		if ( catherine.command.Lists[ id ] ) then
+			return true
+		else
+			return false
+		end
+	else
+		return false
+	end
+end
+
 function catherine.command.TransferToArgsTab( text )
 	local skip, args, curstr = 0, { }, ""
 	
@@ -70,6 +84,8 @@ if ( SERVER ) then
 				catherine.util.Notify( pl, result )
 				return
 			end
+			
+			return ""
 		end
 	end
 end
