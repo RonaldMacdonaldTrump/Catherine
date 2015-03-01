@@ -275,6 +275,7 @@ else
 	catherine.chat.chatpanel = catherine.chat.chatpanel or nil
 	catherine.chat.isOpened = catherine.chat.isOpened or false
 	catherine.chat.msg = catherine.chat.msg or { }
+	catherine.chat.history = catherine.chat.history or { }
 	
 	netstream.Hook( "catherine.chat.Receive", function( data )
 		local speaker, class, text, ex = data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ]
@@ -432,6 +433,23 @@ else
 		
 		local self = catherine.chat.chatpanel
 		
+		local initHistoryKey = #catherine.chat.history + 1
+		local onEnterFunc = function( pnl )
+			local text = pnl:GetText( )
+			if ( text != "" ) then
+				netstream.Start( "catherine.chat.Run", text:sub( 1 ) )
+				catherine.chat.history[ #catherine.chat.history + 1 ] = text:sub( 1 )
+				if ( #catherine.chat.history > 10 ) then
+					table.remove( catherine.chat.history, 1 )
+				end
+			end
+			catherine.chat.isOpened = false
+			
+			self:Remove( )
+			self = nil
+			hook.Run( "FinishChat" )
+		end
+		
 		self = vgui.Create( "EditablePanel", self )
 		self:SetPos( CHATBox_x, CHATBox_y + CHATBox_h - 25 )
 		self:SetSize( CHATBox_w, 25 )
@@ -440,15 +458,7 @@ else
 		self.textEnt = vgui.Create( "DTextEntry", self )
 		self.textEnt:Dock( FILL )
 		self.textEnt.OnEnter = function( pnl )
-			local text = pnl:GetText( )
-			if ( text != "" ) then
-				netstream.Start( "catherine.chat.Run", text:sub( 1 ) )
-			end
-			catherine.chat.isOpened = false
-			
-			self:Remove( )
-			self = nil
-			hook.Run( "FinishChat" )
+			onEnterFunc( pnl )
 		end
 		self.textEnt:SetAllowNonAsciiCharacters( true )
 		self.textEnt.Paint = function( pnl, w, h )
@@ -459,6 +469,21 @@ else
 		end
 		self.textEnt.OnTextChanged = function( pnl )
 			hook.Run( "ChatTextChanged", pnl:GetText( ) )
+		end
+		self.textEnt.OnKeyCodeTyped = function( pnl, code )
+			if ( code == KEY_ENTER ) then
+				onEnterFunc( pnl )
+			elseif ( code == KEY_UP ) then
+				if ( initHistoryKey > 1 ) then
+					initHistoryKey = initHistoryKey - 1
+					pnl:SetText( catherine.chat.history[ initHistoryKey ] )
+				end
+			elseif ( code == KEY_DOWN ) then
+				if ( initHistoryKey < #catherine.chat.history ) then
+					initHistoryKey = initHistoryKey + 1
+					pnl:SetText( catherine.chat.history[ initHistoryKey ] )
+				end
+			end
 		end
 
 		self:MakePopup( )
