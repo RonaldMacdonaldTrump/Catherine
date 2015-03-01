@@ -237,6 +237,8 @@ if ( SERVER ) then
 		
 		pl:SetTeam( faction.index )
 		pl:SetModel( characterTab._model )
+		
+		hook.Run( "DefaultWeaponGive", pl )
 
 		if ( !pl.characterID ) then
 			netstream.Start( pl, "catherine.hud.CinematicIntro_Init" )
@@ -470,6 +472,7 @@ else
 		
 		if ( IsValid( catherine.vgui.character ) ) then
 			if ( catherine.vgui.character.loadCharacter ) then
+				catherine.vgui.character:LoadCharacter_Refresh( )
 				catherine.vgui.character:LoadCharacter_Init( )
 			end
 		end

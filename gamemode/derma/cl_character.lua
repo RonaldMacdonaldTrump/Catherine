@@ -1,11 +1,3 @@
-concommand.Add("char_open", function( )
-	if ( IsValid( catherine.vgui.character ) ) then
-		catherine.vgui.character:Close( )
-		catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
-	else
-		catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
-	end
-end)
 local PANEL = { }
 
 function PANEL:Init( )
@@ -34,10 +26,8 @@ function PANEL:Init( )
 	
 		catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 	
-		draw.RoundedBox( 0, 0, h - 45, w, 50, Color( 40, 40, 40, self.alpha ) )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, 150 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, self.alpha / 1.5 ) )
 
-		
 		if ( !self.createCharacter and !self.loadCharacter ) then
 			self.schemaImageAlpha = Lerp( 0.03, self.schemaImageAlpha, 255 )
 		else
@@ -64,6 +54,11 @@ function PANEL:Init( )
 			self:CreateCharacter_Init( )
 			self:NextStage( )
 		end
+		
+		if ( self.loadCharacter ) then
+			self:LoadCharacter_Refresh( )
+			self.loadCharacter = nil
+		end
 	end
 	
 	self.LoadCharacter = vgui.Create( "catherine.vgui.button", self )
@@ -73,7 +68,8 @@ function PANEL:Init( )
 	self.LoadCharacter:SetOutlineColor( Color( 255, 255, 255, 255 ) )
 	self.LoadCharacter:RunFadeInAnimation( 0.3, 1 )
 	self.LoadCharacter.Click = function( )
-		if ( !self.createCharacter and !self.loadCharacter ) then 
+		if ( !self.createCharacter ) then 
+			self:LoadCharacter_Refresh( )
 			self:LoadCharacter_Init( )
 		end
 	end
@@ -143,15 +139,10 @@ function PANEL:Init( )
 		self.CharcreateModelPreview:RunAnimation( )
 	end
 	
-	self.CharacterList = vgui.Create( "DPanelList", self )
-	self.CharacterList:SetPos( 10, 120 )
-	self.CharacterList:SetSize( self.w - 20, self.h - ( 170 ) - 10  )	
-	self.CharacterList:SetSpacing( 5 )
-	self.CharacterList:EnableHorizontal( false )
-	self.CharacterList:EnableVerticalScrollbar( true )	
-	self.CharacterList.Paint = function( pnl, w, h )
-
-	end
+	self.CharacterPanel = vgui.Create( "DPanel", self )
+	self.CharacterPanel:SetPos( 10, 120 )
+	self.CharacterPanel:SetSize( self.w - 20, self.h - ( 170 ) - 10  )	
+	self.CharacterPanel:SetDrawBackground( false )
 end
 
 function PANEL:PrintErrorMessage( msg )
@@ -163,7 +154,7 @@ function PANEL:Think( )
 		self.Previous:SetVisible( false )
 		self.Next:SetVisible( false )
 		self.Cancel:SetVisible( false )
-		self.CharacterList:SetVisible( false )
+		self.CharacterPanel:SetVisible( false )
 		return
 	else
 		if ( self.createCharacter ) then
@@ -172,7 +163,7 @@ function PANEL:Think( )
 			self.Cancel:SetVisible( true )
 		end
 		if ( self.loadCharacter ) then
-			self.CharacterList:SetVisible( true )
+			self.CharacterPanel:SetVisible( true )
 		end
 	end
 	
@@ -180,17 +171,17 @@ function PANEL:Think( )
 		self.Previous:SetVisible( true )
 		self.Next:SetVisible( true )
 		self.Cancel:SetVisible( true )
-		self.CharacterList:SetVisible( false )
+		self.CharacterPanel:SetVisible( false )
 	elseif ( !self.createCharacter and !self.loadCharacter ) then
 		self.Previous:SetVisible( false )
 		self.Next:SetVisible( false )
 		self.Cancel:SetVisible( false )
-		self.CharacterList:SetVisible( false )
+		self.CharacterPanel:SetVisible( false )
 	elseif ( !self.createCharacter and self.loadCharacter ) then
 		self.Previous:SetVisible( false )
 		self.Next:SetVisible( false )
 		self.Cancel:SetVisible( true )
-		self.CharacterList:SetVisible( true )
+		self.CharacterPanel:SetVisible( true )
 	end
 	
 	if ( self.createCharacter ) then
@@ -224,85 +215,143 @@ function PANEL:CreateCharacter_Init( )
 	self.createCharacter.maxProgress = #self.createCharacter.progressList
 end
 
+function PANEL:ManageTargets( pnl, pos, a )
+	if ( !pnl.targetPos or !pnl.targetA ) then
+		pnl.targetPos = pos pnl.targetA = a
+	end;
+	pnl.targetPos = Lerp( 0.2, pnl.targetPos, pos )
+	pnl.targetA = Lerp( 0.2, pnl.targetA, a )
+	pnl:SetPos( pnl.targetPos, 0 )
+	pnl:SetAlpha( pnl.targetA )
+end;
+
+function PANEL:LoadCharacter_Refresh( )
+	if ( !self.loadCharacter ) then return end
+	for k, v in pairs( self.loadCharacter.Lists ) do
+		if ( !IsValid( v.panel ) ) then continue end
+		v.panel:Remove( )
+		v.panel = nil
+	end
+end
+
 function PANEL:LoadCharacter_Init( )
-	self.loadCharacter = { }
-	self.CharacterList:Clear( )
 	if ( !catherine.character.LocalCharacters ) then return end
-	local transfer = { }
+	self.loadCharacter = { }
+	self.loadCharacter.Lists = { }
+	self.loadCharacter.curr = 1
+	
+	local baseW, baseH = 300, ScrH( ) * 0.75
+	local scrW, scrH = ScrW( ), ScrH( )
+
 	for k, v in pairs( catherine.character.LocalCharacters ) do
-		local factionData = catherine.faction.FindByID( v._faction )
-		if ( !factionData ) then continue end
-		transfer[ factionData.name ] = transfer[ factionData.name ] or { }
-		transfer[ factionData.name ][ #transfer[ factionData.name ] + 1 ] = v
+		self.loadCharacter.Lists[ #self.loadCharacter.Lists + 1 ] = { characterDatas = v, panel = nil }
 	end
 
-	for k, v in pairs( transfer ) do
-		local form = vgui.Create( "DForm" )
-		form:SetSize( self.CharacterList:GetWide( ), 0 )
-		form:SetName( k )
-		form.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, 20, Color( 80, 80, 80, 255 ) )
+	local function SetTargetPanelPos( pnl, pos, a )
+		if ( !IsValid( pnl ) ) then return end
+		if ( !pnl.targetPos or !pnl.targetA ) then
+			pnl.targetPos = pos pnl.targetA = a
+		end;
+		pnl.targetPos = Lerp( 0.2, pnl.targetPos, pos )
+		pnl.targetA = Lerp( 0.2, pnl.targetA, a )
+		pnl:SetPos( pnl.targetPos, 0 )
+		pnl:SetAlpha( pnl.targetA )
+	end
+	
+	
+	for k, v in pairs( self.loadCharacter.Lists ) do
+		local factionData = catherine.faction.FindByID( v.characterDatas._faction )
+		v.panel = vgui.Create( "DPanel", self.CharacterPanel )
+		v.panel:SetSize( baseW, baseH )
+		v.panel.x = 0
+		v.panel.y = 0
+		v.panel:Center( )
+		v.panel.Paint = function( pnl, w, h )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 255 ) )
+			draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
+			draw.RoundedBox( 0, 0, 30, w, 1, Color( 255, 255, 255, 255 ) )
+			draw.SimpleText( v.characterDatas._name, "catherine_font01_20", w / 2, h - 90, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( v.characterDatas._desc, "catherine_font01_15", w / 2, h - 70, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( factionData.name, "catherine_font01_20", w / 2, 15, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 		
-		local dpanelList = vgui.Create( "DPanelList", form )
-		dpanelList:SetSize( form:GetWide( ), form:GetTall( ) )
-		dpanelList:SetSpacing( 5 )
-		dpanelList:EnableHorizontal( true )
-		dpanelList:EnableVerticalScrollbar( false )	
-		
-		form:AddItem( dpanelList )
-		
-		local base = 0
-		
-		for k1, v1 in pairs( v ) do
-			local panel = vgui.Create( "DPanel" )
-			panel:SetSize( self.CharacterList:GetWide( ), 80 )
-			panel.Paint = function( pnl, w, h )
-				draw.SimpleText( v1._name, "catherine_font01_30", 80, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
-				draw.SimpleText( v1._desc, "catherine_font01_20", 80, 50, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
-				
-				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
-			end
-			
-			local model = vgui.Create( "SpawnIcon", panel )
-			model:SetSize( 70, 70 )
-			model:SetPos( 5, 5 )
-			model:SetModel( v1._model )
-			model:SetToolTip( false )
-			model.PaintOver = function( pnl, w, h )
-			
-			end
-			
-			local load = vgui.Create( "catherine.vgui.button", panel )
-			load:SetPos( panel:GetWide( ) - 100, 5 )
-			load:SetSize( 80, 70 )
-			load:SetStr( "Load" )
-			load:SetFont( "catherine_font01_30" )
-			load:SetOutlineColor( Color( 255, 255, 255, 255 ) )
-			load.Click = function( )
-				netstream.Start( "catherine.character.LoadCharacter", v1._id )
-				self:Close( )
-			end
-			
-			local delete = vgui.Create( "catherine.vgui.button", panel )
-			delete:SetPos( panel:GetWide( ) - ( 100 * 2 ), 5 )
-			delete:SetSize( 80, 70 )
-			delete:SetStr( "Delete" )
-			delete:SetFont( "catherine_font01_30" )
-			delete:SetOutlineColor( Color( 255, 255, 255, 255 ) )
-			delete.Click = function( )
-				netstream.Start( "catherine.character.DeleteCharacter", v1._id )
-			end
-			
-			dpanelList:AddItem( panel )
-			
-			base = base + 85
+		v.panel.button = vgui.Create( "DButton", v.panel )
+		v.panel.button:SetSize( v.panel:GetWide( ), v.panel:GetTall( ) )
+		v.panel.button:Center( )
+		v.panel.button:SetText( "" )
+		v.panel.button:SetDrawBackground( false )
+		v.panel.button.DoClick = function( )
+			self.loadCharacter.curr = k
 		end
 		
-		form:SetSize( self.CharacterList:GetWide( ), base )
-		dpanelList:SetSize( form:GetWide( ), form:GetTall( ) )
+		v.panel.useCharacter = vgui.Create( "DButton", v.panel )
+		v.panel.useCharacter:SetSize( 16, 16 )
+		v.panel.useCharacter:SetPos( v.panel:GetWide( ) * 0.3, v.panel:GetTall( ) - 30 )
+		v.panel.useCharacter:SetText( "" )
+		v.panel.useCharacter:SetToolTip( "Use this character." )
+		v.panel.useCharacter.Paint = function( pnl, w, h )
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface.SetMaterial( Material( "icon16/accept.png" ) )
+			surface.DrawTexturedRect( 0, 0, w, h )
+		end
+		v.panel.useCharacter.DoClick = function( )
+			netstream.Start( "catherine.character.LoadCharacter", v.characterDatas._id )
+			self:Close( )
+		end
 		
-		self.CharacterList:AddItem( form )
+		v.panel.deleteCharacter = vgui.Create( "DButton", v.panel )
+		v.panel.deleteCharacter:SetSize( 16, 16 )
+		v.panel.deleteCharacter:SetPos( v.panel:GetWide( ) * 0.6, v.panel:GetTall( ) - 30 )
+		v.panel.deleteCharacter:SetText( "" )
+		v.panel.deleteCharacter:SetToolTip( "Delete this character." )
+		v.panel.deleteCharacter.Paint = function( pnl, w, h )
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface.SetMaterial( Material( "icon16/delete.png" ) )
+			surface.DrawTexturedRect( 0, 0, w, h )
+		end
+		v.panel.deleteCharacter.DoClick = function( )
+			Derma_Query( "Are you sure delete this character?", "Delete Character", "Yes", function( )
+				netstream.Start( "catherine.character.DeleteCharacter", v.characterDatas._id )
+			end, "No", function( ) end )
+		end
+		
+		v.panel.model = vgui.Create( "DModelPanel", v.panel )
+		v.panel.model:SetSize( v.panel:GetWide( ), v.panel:GetTall( ) )
+		v.panel.model:SetPos( 0, 0 - 80 )
+		v.panel.model:MoveToBack( )
+		v.panel.model:SetModel( v.characterDatas._model )
+		v.panel.model:SetDrawBackground( false )
+		v.panel.model:SetFOV( 40 )
+		v.panel.model.LayoutEntity = function( pnl, ent )
+			ent:SetAngles( Angle( 0, 45, 0 ) )
+			if ( k == self.loadCharacter.curr ) then 
+				pnl:RunAnimation( )
+			end
+		end
+	end
+
+	self.CharacterPanel.Think = function( )
+		if ( !self.loadCharacter ) then return end
+		if ( self.loadCharacter.curr == 0 ) then self.loadCharacter.curr = 1 end
+		if ( !self.loadCharacter.Lists[ self.loadCharacter.curr ] ) then return end
+		
+		local uniquePanel = self.loadCharacter.Lists[ self.loadCharacter.curr ].panel
+		SetTargetPanelPos( uniquePanel, self.CharacterPanel:GetWide( ) / 2 - uniquePanel:GetWide( ) / 2, 255 )
+			
+		local right, left = uniquePanel.x + uniquePanel:GetWide( ) + 24, uniquePanel.x - 24
+		for i = self.loadCharacter.curr - 1, 1, -1 do
+			local prevPanel = self.loadCharacter.Lists[ i ].panel
+			if ( !IsValid( prevPanel ) ) then continue end
+			SetTargetPanelPos( prevPanel, left - prevPanel:GetWide( ), ( 255 / self.loadCharacter.curr ) * i )
+			left = prevPanel.x - 24
+		end
+		
+		for k, v in pairs( self.loadCharacter.Lists ) do
+			if ( k > self.loadCharacter.curr ) then
+				SetTargetPanelPos( v.panel, right, ( 255 / ( ( #self.loadCharacter.Lists + 1 ) - self.loadCharacter.curr ) ) * ( ( #self.loadCharacter.Lists + 1 ) - k ) )
+				right = v.panel.x + v.panel:GetWide( ) + 24
+			end
+		end
 	end
 end
 
@@ -318,6 +367,7 @@ function PANEL:CancelStage( )
 			end )
 		end
 	elseif ( self.loadCharacter ) then
+		self:LoadCharacter_Refresh( )
 		self.loadCharacter = nil
 	end
 end
