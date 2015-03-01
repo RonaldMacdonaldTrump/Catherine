@@ -113,6 +113,12 @@ else
 		catherine.hud.ProgressBarAdd( message, endTime )
 	end
 	
+	function catherine.util.GetAlphaFromDistance( base, x, max )
+		if ( !base or !x or !max ) then return 255 end
+		local dist = x:Distance( base )
+		return ( 1 - ( dist / max ) ) * 255
+	end
+	
 	function catherine.util.BlurDraw( x, y, w, h, amount )
 		local blur = Material( "pp/blurscreen" )
 		amount = amount or 5

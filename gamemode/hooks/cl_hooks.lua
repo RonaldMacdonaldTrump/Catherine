@@ -24,6 +24,7 @@ for i = 15, 64 do
 	surface.CreateFont( "catherine_font01_" .. i, { font = "Segoe UI", size = i, weight = 1000, antialias = true } )
 	surface.CreateFont( "catherine_font02_" .. i, { font = "Segoe UI", size = i, weight = 1000, antialias = true, outline = true } )
 end
+surface.CreateFont( "catherine_font03", { font = "Segoe UI", size = 150, weight = 1000 } )
 
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hudHide ) do

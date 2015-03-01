@@ -69,6 +69,8 @@ if ( SERVER ) then
 				if ( !IsValid( v ) ) then continue end
 				v:SyncNetworkValues( pl )
 			end
+			
+			hook.Run( "EntityDataLoaded", pl )
 		end )
 	end )
 	

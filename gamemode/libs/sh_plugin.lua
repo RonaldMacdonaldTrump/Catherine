@@ -5,16 +5,18 @@ function catherine.plugin.LoadAll( dir )
 	local _, folders = file.Find( dir .. "/gamemode/plugins/*", "LUA" )
 
 	for k, v in pairs( folders ) do
-		PLUGIN = catherine.plugin.Get( v ) or { }
+		Plugin = catherine.plugin.Get( v ) or { }
 		
 		local Pdir = dir .. "/gamemode/plugins/" .. v
 		if ( file.Exists( Pdir .. "/sh_plugin.lua", "LUA" ) ) then
 			catherine.util.Include( Pdir .. "/sh_plugin.lua" )
 			catherine.item.Include( Pdir )
-			catherine.plugin.List[ v ] = PLUGIN
+			catherine.util.IncludeInDir( Pdir .. "/libs" )
+			catherine.util.IncludeInDir( Pdir .. "/derma" )
+			catherine.plugin.List[ v ] = Plugin
 		end
 		
-		PLUGIN = nil
+		Plugin = nil
 	end
 end
 

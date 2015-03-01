@@ -49,7 +49,7 @@ function catherine.command.TransferToArgsTab( text )
 				curstr = curstr .. k
 			end
 		elseif ( k == " " and curstr != "" ) then
-			args[#args + 1] = curstr
+			args[ #args + 1 ] = curstr
 			curstr = ""
 		else
 			if ( k == " " and curstr == "" ) then continue end
@@ -58,7 +58,7 @@ function catherine.command.TransferToArgsTab( text )
 	end
 
 	if ( curstr != "" ) then
-		args[#args + 1] = curstr
+		args[ #args + 1 ] = curstr
 	end
 
 	return args
@@ -68,8 +68,7 @@ if ( SERVER ) then
 	function catherine.command.Run( pl, id, args )
 		local cmdTab = catherine.command.FindByCMD( id )
 		if ( !cmdTab ) then return "Command not found!" end
-		if ( cmdTab.canAdmin and !pl:IsAdmin( ) ) then return end
-		if ( cmdTab.canSUAdmin and !pl:IsSuperAdmin( ) ) then return end
+		if ( cmdTab.canRun and cmdTab.canRun( pl, id ) == false ) then return "You do not have permission." end
 		if ( !cmdTab.runFunc ) then return end
 		cmdTab.runFunc( pl, args )
 	end
