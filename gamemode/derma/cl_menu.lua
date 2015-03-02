@@ -1,147 +1,110 @@
-function catherine.RegisterMenuItem( text, vgui, desc )
-	catherine.menuList[ text ] = { text = text, vgui = vgui, desc = desc }
-end
-
 local PANEL = { }
 
 function PANEL:Init( )
-	self.w = ScrW( )
-	self.h = ScrH( )
-
+	if ( IsValid( catherine.vgui.menu ) ) then
+		catherine.vgui.menu:Remove( )
+	end
+	catherine.vgui.menu = self
+	
+	self.player = LocalPlayer( )
+	self.w, self.h = ScrW( ), ScrH( )
+	self.menuItems = { }
+	self.lastmenuPnl = nil
+	self.lastmenuName = ""
+	self.closeing = false
 	self.blurAmount = 0
-	self.currMenu = nil
-	self.lastSelect = nil
+	
+	gui.EnableScreenClicker( true )
 	
 	self:SetSize( self.w, self.h )
 	self:Center( )
 	self:SetTitle( "" )
 	self:ShowCloseButton( false )
 	self:SetDraggable( false )
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.1, 0 )
 	
-	self.CloseMenu = vgui.Create( "catherine.vgui.button", self )
-	self.CloseMenu:SetSize( self.w * 0.15, 30 )
-	self.CloseMenu:SetPos( 15, 15 )
-	self.CloseMenu:SetOutlineColor( Color( 0, 0, 0, 255 ) )
-	self.CloseMenu:SetTextColor( Color( 0, 0, 0, 255 ) )
-	self.CloseMenu:SetStr( "Close Menu" )
-	self.CloseMenu.Click = function( ) self:Close( ) end
-	
-	self.Character = vgui.Create( "catherine.vgui.button", self )
-	self.Character:SetSize( self.w * 0.15, 30 )
-	self.Character:SetPos( 15, 50 )
-	self.Character:SetOutlineColor( Color( 0, 0, 0, 255 ) )
-	self.Character:SetTextColor( Color( 0, 0, 0, 255 ) )
-	self.Character:SetStr( "Character" )
-	self.Character.Click = function( )
-		if ( IsValid( catherine.vgui.character ) ) then
-			catherine.vgui.character:Close( )
-			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
-		else
-			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+	self.ListsBase = vgui.Create( "DPanel", self )
+	self.ListsBase:SetSize( self.w, 50 )
+	self.ListsBase:SetPos( 0, self.h )
+	self.ListsBase:MoveTo( 0, self.h - self.ListsBase:GetTall( ), 0.2, 0.1, nil, function( )
+		hook.Run( "AddMenuItem", self.menuItems )
+		
+		local delta = 0
+		for k, v in pairs( self.menuItems ) do
+			local itemPnl = self:AddMenuItem( k, v )
+			itemPnl:SetAlpha( 0 )
+			itemPnl:AlphaTo( 255, 0.2, delta )
+			delta = delta + 0.05
 		end
-		self:Close( )
-	end
-
-	self.Lists = vgui.Create( "DPanelList", self )
-	self.Lists:SetPos( 5, self.h - 45 )
-	self.Lists:SetSize( self.w - 10, 40 )
-	self.Lists:SetSpacing( 3 )
-	self.Lists:EnableHorizontal( true )
-	self.Lists:EnableVerticalScrollbar( false )	
-	self.Lists.Paint = function( pnl, w, h ) end
+	end )
 	
-	self.CharcreateModelPreview = vgui.Create( "DModelPanel", self )
-	self.CharcreateModelPreview:SetSize( self.w * 0.15 + 10, self.h * 0.55 )
-	self.CharcreateModelPreview:SetPos( 10, self.h * 0.2 )
-	self.CharcreateModelPreview.OnCursorEntered = function() 
-	end
-	self.CharcreateModelPreview.OnCursorExited = function() 
-	end
-	self.CharcreateModelPreview:SetDisabled( true )
-	self.CharcreateModelPreview:SetCursor( "none" )
-	self.CharcreateModelPreview:MoveToBack( )
-	self.CharcreateModelPreview:SetModel( LocalPlayer( ):GetModel( ) )
-	self.CharcreateModelPreview:SetVisible( true )
-	self.CharcreateModelPreview:SetFOV( 40 )
-	self.CharcreateModelPreview.LayoutEntity = function( pnl, entity )
-		entity:SetAngles( Angle( 0, 45, 0 ) )
-		self.CharcreateModelPreview:RunAnimation( )
-	end
-	self.CharcreateModelPreview.PaintOver = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
-		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
-	end
+	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
+	self.ListsBase.Lists:SetSize( 0, self.ListsBase:GetTall( ) )
+end
 
-	hook.Run( "AddMenu" )
+function PANEL:AddMenuItem( name, func )
+	local textW = surface.GetTextSize( name )
+	local item = vgui.Create( "DButton" )
+	item:SetText( name )
+	item:SetFont( "catherine_font01_20" )
+	item:SetTextColor( Color( 50, 50, 50 ) )
+	item:SetSize( textW + 30, self.ListsBase:GetTall( ) )
+	item.Paint = function( pnl, w, h )
+		if ( self.lastmenuName == name ) then
+			draw.RoundedBox( 0, 0, 0, w, 10, Color( 50, 50, 50, 255 ) )
+		end
+	end
+	item.DoClick = function( pnl )
+		if ( self.lastmenuName == name ) then
+			if ( IsValid( self.lastmenuPnl ) ) then
+				self.lastmenuPnl:Close( )
+				self.lastmenuPnl = nil
+				self.lastmenuName = ""
+			else
+				self.lastmenuPnl = func( self, pnl )
+				self.lastmenuName = name
+			end
+		else
+			if ( IsValid( self.lastmenuPnl ) ) then
+				self.lastmenuPnl:Close( )
+				self.lastmenuPnl = func( self, pnl )
+				self.lastmenuName = name
+			else
+				self.lastmenuPnl = func( self, pnl )
+				self.lastmenuName = name
+			end
+		end
+	end
 	
-	self:MenuInit( )
+	self.ListsBase.Lists:AddPanel( item )
+	self.ListsBase.Lists:SetWide( math.min( self.ListsBase.Lists:GetWide( ) + item:GetWide( ), self.w ) )
+	self.ListsBase.Lists:SetPos( self.w / 2 - self.ListsBase.Lists:GetWide( ) / 2, 0 )
+	
+	return item
 end
 
 function PANEL:Paint( w, h )
-	self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
-	
-	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
-	
-	draw.RoundedBox( 0, 0, h - 50, w, 50, Color( 235, 235, 235, 235 ) )
-	draw.RoundedBox( 0, 10, 10, w * 0.15 + 10, 75, Color( 235, 235, 235, 235 ) )
-	draw.RoundedBox( 0, 10, h * 0.8 - 30, 10 + ( w * 0.15 ), 65, Color( 235, 235, 235, 235 ) )
-	
-	draw.SimpleText( LocalPlayer( ):Name( ), "catherine_font01_25", 10 + ( w * 0.15 ) / 2, h * 0.8, Color( 50, 50, 50, 255 ), 1, 1 )
-	draw.SimpleText( catherine.cash.GetName( LocalPlayer( ):GetCash( ) ), "catherine_font01_25", ScrW( ) - 15, 15, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
-end
-
-function PANEL:MenuInit( )
-	self.Lists:Clear( )
-	for k, v in pairs( catherine.menuList ) do
-		local panel = vgui.Create( "catherine.vgui.button", self )
-		panel:SetSize( 100, self.Lists:GetTall( ) )
-		panel:SetOutlineColor( Color( 0, 0, 0, 255 ) )
-		panel:SetStr( v.text )
-		panel:SetTextColor( Color( 0, 0, 0, 255 ) )
-		panel:SetToolTip( v.desc )
-		panel.Click = function( )
-			local function createMenu( )
-				self.currMenu = vgui.Create( v.vgui, self )
-				self.currMenu:SetPos( self.currMenu.x, ScrH( ) )
-				self.currMenu:MoveTo( self.currMenu.x, self.h / 2 - self.currMenu.h / 2, 0.3, 0 )
-				self.lastSelect = k
-			end
-			
-			if ( self.lastSelect and ( self.lastSelect == k ) ) then
-				if ( IsValid( self.currMenu ) ) then
-					self.currMenu:MoveTo( self.currMenu.x, ScrH( ), 0.3, 0, nil, function( )
-						if ( IsValid( self.currMenu ) ) then
-							self.currMenu:Remove( )
-							self.currMenu = nil
-							self.lastSelect = k
-						end
-					end )
-				else
-					createMenu( )
-				end
-			else
-				if ( self.currMenu ) then
-					self.currMenu:MoveTo( self.currMenu.x, ScrH( ), 0.3, 0, nil, function( )
-						if ( IsValid( self.currMenu ) ) then
-							self.currMenu:Remove( )
-							self.currMenu = nil
-							createMenu( )
-						end
-					end )
-				else
-					createMenu( )
-				end
-			end
-		end
-		self.Lists:AddItem( panel )
+	if ( self.closeing ) then
+		self.blurAmount = Lerp( 0.03, self.blurAmount, 0 )
+	else
+		self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
 	end
+	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
+	draw.SimpleText( catherine.cash.GetName( LocalPlayer( ):GetCash( ) ), "catherine_font01_25", w - 15, h - 70, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 function PANEL:Close( )
-	self:Remove( )
-	self = nil
-	catherine.vgui.menu = nil
-	gui.EnableScreenClicker( false )
+	self.closeing = true
+	if ( IsValid( self.lastmenuPnl ) ) then
+		self.lastmenuPnl:Close( )
+	end
+	self.ListsBase:MoveTo( self.w / 2 - self.ListsBase:GetWide( ) / 2, self.h, 0.2, 0, nil, function( anim, pnl )
+		if ( !IsValid( self ) ) then return end
+		self:Remove( )
+		self = nil
+		gui.EnableScreenClicker( false )
+	end )
 end
 
 vgui.Register( "catherine.vgui.menu", PANEL, "DFrame" )

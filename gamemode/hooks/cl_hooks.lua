@@ -4,8 +4,6 @@ catherine.errorText = catherine.errorText or ""
 catherine.alpha = catherine.alpha or 255
 catherine.progressBar = catherine.progressBar or 0
 catherine.percent = catherine.percent or 0
-
-catherine.menuList = catherine.menuList or { }
 catherine.locationRandom = catherine.locationRandom or table.Random( catherine.configs.locationRandom )
 catherine.hudHide = {
 	"CHudHealth",
@@ -177,11 +175,6 @@ function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePo
 
 	viewModel:SetAngles( eyeAng )
 	return oldEyePos, eyeAng
-end
-
-function GM:AddMenu( )
-	catherine.RegisterMenuItem( "Inventory", "catherine.vgui.inventory", "Open the your inventory." )
-	catherine.RegisterMenuItem( "Scoreboard", "catherine.vgui.scoreboard", "Open the your scoreboard." )
 end
 
 function GM:RunCinematicIntro_Information( )

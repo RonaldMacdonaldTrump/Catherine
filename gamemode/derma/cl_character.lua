@@ -681,3 +681,10 @@ function PANEL:Paint( w, h )
 end
 
 vgui.Register( "catherine.character.create.stageTwo", PANEL, "DPanel" )
+
+hook.Add( "AddMenuItem", "catherine.vgui.character", function( tab )
+	tab[ "Character" ] = function( menuPnl, itemPnl )
+		local pnl = vgui.Create( "catherine.vgui.character" )
+		menuPnl:Close( )
+	end
+end )

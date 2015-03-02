@@ -180,7 +180,7 @@ else
 		catherine.character.characterDatas[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
 		if ( data[ 2 ] == "_inv" ) then
 			if ( IsValid( catherine.vgui.inventory ) ) then
-				catherine.vgui.inventory:InitInventory( )
+				catherine.vgui.inventory:InitializeInv( )
 			end
 		end
 	end )
