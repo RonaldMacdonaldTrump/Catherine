@@ -45,6 +45,11 @@ function catherine.util.FindPlayerByName( name )
 	return nil
 end
 
+function catherine.util.GetUniqueName( name )
+	if ( !name ) then return nil end
+	return name:sub( 4, -5 )
+end
+
 catherine.util.IncludeInDir( "libs/external", true )
 
 if ( SERVER ) then

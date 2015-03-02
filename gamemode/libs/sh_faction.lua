@@ -49,7 +49,7 @@ function catherine.faction.Include( dir )
 	local files = file.Find( dir .. "/factions/*", "LUA" )
 	for k, v in pairs( files ) do
 		Faction = { }
-		Faction.uniqueID = string.sub( v, 4, -5 )
+		Faction.uniqueID = catherine.util.GetUniqueName( v )
 		catherine.util.Include( dir .. "/factions/" .. v )
 		catherine.faction.Register( Faction )
 		Faction = nil
