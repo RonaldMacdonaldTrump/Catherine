@@ -1,6 +1,9 @@
 local PANEL = { }
 
 function PANEL:Init( )
+
+	catherine.vgui.character = self
+	
 	local LP = LocalPlayer( )
 	
 	self.w = ScrW( )
@@ -684,7 +687,7 @@ vgui.Register( "catherine.character.create.stageTwo", PANEL, "DPanel" )
 
 hook.Add( "AddMenuItem", "catherine.vgui.character", function( tab )
 	tab[ "Character" ] = function( menuPnl, itemPnl )
-		local pnl = vgui.Create( "catherine.vgui.character" )
+		vgui.Create( "catherine.vgui.character" )
 		menuPnl:Close( )
 	end
 end )
