@@ -26,10 +26,10 @@ end
 
 function PANEL:MenuPaint( w, h )
 	self.invWeightAni = Lerp( 0.03, self.invWeightAni, math.min( ( self.invWeight / self.invMaxWeight ), 1 ) * w - 20 )
-	
+
 	draw.RoundedBox( 0, 10, 35, w - 20, 20, Color( 100, 100, 100, 255 ) )
 	draw.RoundedBox( 0, 10, 35, self.invWeightAni, 20, Color( 150, 150, 150, 255 ) )
-	
+
 	draw.SimpleText( self.invWeight .. " kg / " .. self.invMaxWeight .. " kg", "catherine_font01_15", w / 2, 35 + 20 / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 end
 

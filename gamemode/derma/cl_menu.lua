@@ -13,9 +13,7 @@ function PANEL:Init( )
 	self.lastmenuName = ""
 	self.closeing = false
 	self.blurAmount = 0
-	
-	gui.EnableScreenClicker( true )
-	
+
 	self:SetSize( self.w, self.h )
 	self:Center( )
 	self:SetTitle( "" )
@@ -23,6 +21,7 @@ function PANEL:Init( )
 	self:SetDraggable( false )
 	self:SetAlpha( 0 )
 	self:AlphaTo( 255, 0.1, 0 )
+	self:MakePopup( )
 	
 	self.ListsBase = vgui.Create( "DPanel", self )
 	self.ListsBase:SetSize( self.w, 50 )
@@ -84,6 +83,11 @@ function PANEL:AddMenuItem( name, func )
 	return item
 end
 
+function PANEL:OnKeyCodePressed( key )
+	if ( key != KEY_TAB ) then return end
+	self:Close( )
+end
+
 function PANEL:Paint( w, h )
 	if ( self.closeing ) then
 		self.blurAmount = Lerp( 0.03, self.blurAmount, 0 )
@@ -95,6 +99,8 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:Close( )
+	CloseDermaMenus( )
+	gui.EnableScreenClicker( false )
 	self.closeing = true
 	if ( IsValid( self.lastmenuPnl ) ) then
 		self.lastmenuPnl:Close( )
@@ -103,7 +109,6 @@ function PANEL:Close( )
 		if ( !IsValid( self ) ) then return end
 		self:Remove( )
 		self = nil
-		gui.EnableScreenClicker( false )
 	end )
 end
 

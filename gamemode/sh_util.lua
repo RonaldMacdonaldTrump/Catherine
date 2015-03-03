@@ -27,7 +27,7 @@ end
 
 function catherine.util.IncludeInDir( dir, iscatherine )
 	if ( !dir ) then return end
-	if ( ( !iscatherine or string.find( dir, "schema/" ) ) and !Schema ) then return end
+	if ( ( !iscatherine or string.find( dir, "schema/" ) ) and !Schema ) then print("Return" ) return end
 	local dir2 = ( ( iscatherine and "catherine" ) or Schema.FolderName ) .. "/gamemode/" .. dir .. "/*.lua"
 	for k, v in pairs( file.Find( dir2, "LUA" ) ) do
 		catherine.util.Include( dir .. "/" .. v )
@@ -116,6 +116,19 @@ else
 	function catherine.util.ProgressBar( message, endTime )
 		if ( !message or !endTime ) then return end
 		catherine.hud.ProgressBarAdd( message, endTime )
+	end
+	
+	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )
+		if ( !message or !font or !x or !y ) then return end
+		if ( !xA or !yA ) then xA = 1 yA = 1 end
+		if ( !backgroundBor ) then backgroundBor = 5 end
+		if ( !col ) then col = Color( 255, 255, 255, 255 ) end
+		if ( !backgroundCol ) then backgroundCol = Color( 50, 50, 50, 255 ) end
+		surface.SetFont( font )
+		local textW, textH = surface.GetTextSize( message )
+		
+		draw.RoundedBox( 0, x - ( textW / 2 ) - ( backgroundBor ), y - ( textH / 2 ) - ( backgroundBor ), textW + ( backgroundBor * 2 ), textH + ( backgroundBor * 2 ), backgroundCol )
+		draw.SimpleText( message, font, x, y, col, xA, yA )
 	end
 	
 	function catherine.util.GetAlphaFromDistance( base, x, max )
