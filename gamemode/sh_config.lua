@@ -23,13 +23,6 @@ catherine.configs.characterMenuMusic = "music/hl2_song19.mp3"
 
 catherine.configs.baseInventoryWeight = 10
 
-catherine.configs.database_module = "mysqloo"
-catherine.configs.database_host = "127.0.0.1"
-catherine.configs.database_id = "root"
-catherine.configs.database_pwd = ""
-catherine.configs.database_name = "catherine"
-catherine.configs.database_port = 3306
-
 catherine.configs.characterNameMaxLen = 30
 catherine.configs.characterNameMinLen = 10
 

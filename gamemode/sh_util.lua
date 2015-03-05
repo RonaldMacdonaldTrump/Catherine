@@ -1,33 +1,26 @@
 catherine.util = catherine.util or { }
 
-function catherine.util.Print( color, message )
-	if ( !color ) then
-		color = Color( 255, 255, 255 )
-	end
+function catherine.util.Print( col, message )
+	if ( !col ) then col = Color( 255, 255, 255 ) end
 	if ( !message ) then return end
-	MsgC( color, "[Catherine] " .. message .. "\n" )
+	MsgC( col, "[Catherine] " .. message .. "\n" )
 end
 
-function catherine.util.Include( dir, types )
+function catherine.util.Include( dir, typ )
 	if ( !dir ) then return end
-	local lowerDir = string.lower( dir )
-	if ( SERVER and ( types == "SERVER" or string.find( lowerDir, "sv_" ) ) ) then
-		include( dir )
-	elseif ( types == "CLIENT" or string.find( lowerDir, "cl_" ) ) then
-		if ( SERVER ) then
-			AddCSLuaFile( dir )
-		else
-			include( dir )
-		end
-	elseif ( types == "SHARED" or string.find( lowerDir, "sh_" ) ) then
-		AddCSLuaFile( dir )
-		include( dir )
+	dir = dir:lower( )
+	if ( SERVER and ( typ == "SERVER" or dir:find( "sv_" ) ) ) then include( dir )
+	elseif ( typ == "CLIENT" or dir:find( "cl_" ) ) then
+		if ( SERVER ) then AddCSLuaFile( dir )
+		else include( dir ) end
+	elseif ( typ == "SHARED" or dir:find( "sh_" ) ) then
+		AddCSLuaFile( dir ) include( dir )
 	end
 end
 
 function catherine.util.IncludeInDir( dir, iscatherine )
 	if ( !dir ) then return end
-	if ( ( !iscatherine or string.find( dir, "schema/" ) ) and !Schema ) then print("Return" ) return end
+	if ( ( !iscatherine or dir:find( "schema/" ) ) and !Schema ) then return end
 	local dir2 = ( ( iscatherine and "catherine" ) or Schema.FolderName ) .. "/gamemode/" .. dir .. "/*.lua"
 	for k, v in pairs( file.Find( dir2, "LUA" ) ) do
 		catherine.util.Include( dir .. "/" .. v )
@@ -37,7 +30,7 @@ end
 function catherine.util.FindPlayerByName( name )
 	if ( !name ) then return nil end
 	for k, v in pairs( player.GetAll( ) ) do
-		if ( string.match( string.lower( v:Name( ) ), string.lower( name ) ) ) then
+		if ( v:Name( ):lower( ):match( name:lower( ) ) ) then
 			return v
 		end
 	end
@@ -67,7 +60,7 @@ if ( SERVER ) then
 	
 	function catherine.util.PlaySound( pl, dir )
 		if ( !dir ) then return end
-		netstream.Start( pl or nil, "catherine.util.PlaySound", dir )
+		netstream.Start( pl, "catherine.util.PlaySound", dir )
 	end
 	
 	function catherine.util.NotifyAll( message, time, icon )
@@ -90,6 +83,8 @@ if ( SERVER ) then
 		catherine.util.StringQuerys[ caller:SteamID( ) ][ id ] = nil
 	end )
 else
+	catherine.util.blurTexture = Material( "pp/blurscreen" )
+	
 	netstream.Hook( "catherine.util.UniqueStringReceiver", function( data )
 		 Derma_StringRequest( data[ 2 ], data[ 3 ], data[ 4 ], function( val )
 			netstream.Start( "catherine.util.UniqueStringReceiver_Receive", { data[ 1 ], val } )
@@ -133,22 +128,20 @@ else
 	
 	function catherine.util.GetAlphaFromDistance( base, x, max )
 		if ( !base or !x or !max ) then return 255 end
-		local dist = x:Distance( base )
-		return ( 1 - ( dist / max ) ) * 255
+		return ( 1 - ( ( x:Distance( base ) ) / max ) ) * 255
 	end
 	
 	function catherine.util.BlurDraw( x, y, w, h, amount )
-		local blur = Material( "pp/blurscreen" )
 		amount = amount or 5
-		surface.SetMaterial( blur )
+		surface.SetMaterial( catherine.util.blurTexture )
 		surface.SetDrawColor( 255, 255, 255 )
 		
 		local x2, y2 = x / ScrW( ), y / ScrH( )
 		local w2, h2 = ( x + w ) / ScrW( ), ( y + h ) / ScrH( )
 
 		for i = -0.2, 1, 0.2 do
-			blur:SetFloat( "$blur", i * amount )
-			blur:Recompute( )
+			catherine.util.blurTexture:SetFloat( "$blur", i * amount )
+			catherine.util.blurTexture:Recompute( )
 			render.UpdateScreenEffectTexture( )
 			surface.DrawTexturedRectUV( x, y, w, h, x2, y2, w2, h2 )
 		end

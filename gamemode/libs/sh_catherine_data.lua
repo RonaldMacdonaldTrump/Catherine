@@ -5,16 +5,15 @@ if ( SERVER ) then
 	
 	hook.Add( "PlayerDisconnected", "catherine.catherine_data.PlayerDisconnected", function( pl )
 		if ( !catherine.catherine_data.buffers[ pl:SteamID( ) ] ) then return end
-		catherine.catherine_data.SaveToMySQL( pl )
+		catherine.catherine_data.Save( pl )
 		catherine.catherine_data.buffers[ pl:SteamID( ) ] = nil
 	end )
 
 	function catherine.catherine_data.RegisterByMySQL( pl, isLoading )
 		if ( !IsValid( pl ) ) then return end
-		catherine.database.GetTable( "_steamID = '" .. pl:SteamID( ) .. "'", "catherine_players", function( data )
+		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
 			if ( #data == 0 ) then return end
-			local data = data[ 1 ][ "_catherineData" ]
-			catherine.catherine_data.buffers[ pl:SteamID( ) ] = util.JSONToTable( data )
+			catherine.catherine_data.buffers[ pl:SteamID( ) ] = util.JSONToTable( data[ 1 ][ "_catherineData" ] )
 			catherine.catherine_data.SendToPlayer( pl )
 		end )
 	end
@@ -25,13 +24,11 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.catherine_data.SendcatherineData", catherine.catherine_data.buffers[ pl:SteamID( ) ] )
 	end
 
-	function catherine.catherine_data.SaveToMySQL( pl )
-		if ( !IsValid( pl ) ) then return end
-		if ( !catherine.catherine_data.buffers[ pl:SteamID( ) ] ) then return end
-		local data = {
+	function catherine.catherine_data.Save( pl )
+		if ( !IsValid( pl ) or !catherine.catherine_data.buffers[ pl:SteamID( ) ] ) then return end
+		catherine.database.UpdateDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", {
 			_catherineData = util.TableToJSON( catherine.catherine_data.buffers[ pl:SteamID( ) ] )
-		}
-		catherine.database.Update( "_steamID = '" .. pl:SteamID( ) .. "'", data, "catherine_players" )
+		} )
 	end
 	
 	function catherine.catherine_data.SetcatherineData( pl, key, value, nosync, save )
@@ -42,7 +39,7 @@ if ( SERVER ) then
 			netstream.Start( pl, "catherine.catherine_data.SetcatherineData", { key, value } )
 		end
 		if ( save ) then
-			catherine.catherine_data.SaveToMySQL( pl )
+			catherine.catherine_data.Save( pl )
 		end
 	end
 
@@ -51,8 +48,6 @@ if ( SERVER ) then
 		if ( !catherine.catherine_data.buffers[ pl:SteamID( ) ] ) then return default end
 		return catherine.catherine_data.buffers[ pl:SteamID( ) ][ key ] or default
 	end
-	
-	
 else
 	catherine.catherine_data.localData = catherine.catherine_data.localData or nil
 	

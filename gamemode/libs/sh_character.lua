@@ -192,8 +192,8 @@ if ( SERVER ) then
 			if ( v.replaceFunc ) then newvalue = v.replaceFunc( data ) or value end
 			character[ v.field ] = newvalue
 		end
-		catherine.database.Insert( character, "catherine_characters", function( )
-			catherine.database.GetTable( "_steamID = '" .. pl:SteamID( ) .. "' AND _name = '" .. data.name .. "'", "catherine_characters", function( result )
+		catherine.database.InsertDatas( "catherine_characters", character, function( )
+			catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. pl:SteamID( ) .. "' AND _name = '" .. data.name .. "'", function( result )
 				for k, v in pairs( result[ 1 ] ) do
 					local globaldata = catherine.character.GetGlobalByField( k )
 					if ( globaldata and globaldata.needpon and type( v ) == "string" ) then
@@ -262,7 +262,6 @@ if ( SERVER ) then
 		pl:SetModel( characterTab._model )
 	end )
 
-	
 	function catherine.character.Delete( pl, charID )
 		if ( pl.characterID == charID ) then
 			print( "You can't delete using character!" )
@@ -342,8 +341,7 @@ if ( SERVER ) then
 		
 		return nil
 	end
-	
-	
+
 	function catherine.character.SaveAllToDataBases( )
 		local characterCount = catherine.character.CountBufferCharacters( )
 		if ( characterCount == 0 ) then return end
@@ -359,17 +357,7 @@ if ( SERVER ) then
 						catherine.util.Print( Color( 255, 0, 0 ), "ERROR - Can't save character! - " .. math.Round( ( progress / characterCount ), 2 ) * 100 .. "%" )
 						continue
 					end
-					--[[ // Timer has deleted.
-					local timerUniqueID = "catherine.character.timer.SaveCharacters_" .. charID
-					timer.Create( timerUniqueID, time, 1, function( )
-						catherine.database.Update( "_steamID = '" .. steamID .. "' AND _id = '" .. charID .. "'", v1, "catherine_characters", function( )
-							progress = progress + 1
-							catherine.util.Print( Color( 255, 255, 0 ), "Save complete! - " .. math.Round( ( progress / characterCount ), 2 ) * 100 .. "%" )
-						end )
-					end )--]]
-					catherine.database.Update( "_steamID = '" .. steamID .. "' AND _id = '" .. charID .. "'", v1, "catherine_characters", function( )
-
-					end )
+					catherine.database.UpdateDatas( "catherine_characters", "_steamID = '" .. steamID .. "' AND _id = '" .. charID .. "'", v1 )
 					break
 				end
 			end
@@ -378,10 +366,9 @@ if ( SERVER ) then
 		catherine.util.Print( Color( 0, 255, 0 ), "Catherine framework has saved characters to MySQL! [" .. characterCount .. "'s character]" )
 	end
 
-	
 	function catherine.character.LoadAllByDataBases( func )
-		catherine.database.GetTable_All( "catherine_characters", function( data )
-			if ( #data == 0 ) then catherine.character.buffers = { } return end
+		catherine.database.GetDatas( "catherine_characters", nil, function( data )
+			if ( !data or #data == 0 ) then catherine.character.buffers = { } return end
 			catherine.character.buffers = { }
 			local buffer = { }
 			local curretCount = { }
@@ -413,6 +400,10 @@ if ( SERVER ) then
 			catherine.character.SaveAllToDataBases( )
 			catherine.character.SaveCurTime = CurTime( ) + catherine.configs.saveInterval
 		end
+	end )
+
+	hook.Add( "DatabaseConnected", "catherine.character.DatabaseConnected", function( )
+		catherine.character.LoadAllByDataBases( )
 	end )
 
 	hook.Add( "DataSave", "catherine.character.DataSave", function( )
