@@ -58,25 +58,20 @@ end
 
 if ( SERVER ) then
 	function catherine.faction.AddWhiteList( pl, id )
+		if ( !IsValid( pl ) or !id ) then return end
 		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData or ( factionData and !factionData.isWhitelist ) ) then return end
-		if ( catherine.faction.HasWhiteList( pl, id ) ) then return end
-		local whiteLists = table.Copy( catherine.catherine_data.GetcatherineData( pl, "whitelists", { } ) )
+		if ( !factionData or ( factionData and !factionData.isWhitelist ) or catherine.faction.HasWhiteList( pl, id ) ) then return end
+		local whiteLists = table.Copy( catherine.catData.Get( pl, "whitelists", { } ) )
 		whiteLists[ #whiteLists + 1 ] = id
-		catherine.catherine_data.SetcatherineData( pl, "whitelists", whiteLists, false, true )
+		catherine.catData.Set( pl, "whitelists", whiteLists, false, true )
 	end
 	
-
 	function catherine.faction.RemoveWhiteList( pl, id )
 		local factionData = catherine.faction.FindByID( id )
 		if ( !factionData or ( factionData and !factionData.isWhitelist ) ) then return end
-		local whiteLists = table.Copy( catherine.catherine_data.GetcatherineData( pl, "whitelists", { } ) )
-		for k, v in pairs( whiteLists ) do
-			if ( v == id ) then
-				table.remove( whiteLists, k )
-			end
-		end
-		catherine.catherine_data.SetcatherineData( pl, "whitelists", whiteLists, false, true )
+		local whiteLists = table.Copy( catherine.catData.Get( pl, "whitelists", { } ) )
+		table.RemoveByValue( whiteLists, id )
+		catherine.catData.Set( pl, "whitelists", whiteLists, false, true )
 	end
 	
 	function META:AddWhiteList( id )
@@ -94,13 +89,11 @@ if ( SERVER ) then
 	concommand.Add( "removewhitelist", function( pl, cmd, args )
 		catherine.faction.RemoveWhiteList( pl, args[ 1 ] )
 	end )
-	
-	
+
 	function catherine.faction.HasWhiteList( pl, id )
-		local whiteLists = catherine.catherine_data.GetcatherineData( pl, "whitelists", { } )
 		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData ) then return false end
-		if ( !factionData.isWhitelist ) then return true end
+		if ( !factionData or !factionData.isWhitelist ) then return false end
+		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
 		return table.HasValue( whiteLists, id )
 	end
 	
@@ -109,10 +102,10 @@ if ( SERVER ) then
 	end
 else
 	function catherine.faction.HasWhiteList( id )
-		local whiteLists = catherine.catherine_data.GetcatherineData( "whitelists", { } )
+		if ( !id ) then return false end
 		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData ) then return false end
-		if ( !factionData.isWhitelist ) then return true end
+		if ( !factionData or !factionData.isWhitelist ) then return false end
+		local whiteLists = catherine.catData.Get( "whitelists", { } )
 		return table.HasValue( whiteLists, id )
 	end
 

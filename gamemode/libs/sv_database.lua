@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `catherine_players` (
 	`_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 	`_steamName` varchar(70) NOT NULL,
 	`_steamID` varchar(20) NOT NULL,
-	`_catherineData` text,
+	`_catData` text,
 	PRIMARY KEY (`_id`)
 );
 ]]
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `catherine_players` (
 	`_id` INTEGER PRIMARY KEY,
 	`_steamName` TEXT,
 	`_steamID` TEXT,
-	`_catherineData` TEXT
+	`_catData` TEXT
 );
 ]]
 
