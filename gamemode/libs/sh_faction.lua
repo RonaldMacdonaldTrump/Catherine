@@ -14,7 +14,7 @@ end
 
 function catherine.faction.FindByName( name )
 	if ( !name ) then return nil end
-	for k, v in pairs( catherine.faction.Lists ) do
+	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.name == name ) then
 			return v
 		end
@@ -25,7 +25,7 @@ end
 
 function catherine.faction.FindByID( id )
 	if ( !id ) then return nil end
-	for k, v in pairs( catherine.faction.Lists ) do
+	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.uniqueID == id ) then
 			return v
 		end
@@ -36,7 +36,7 @@ end
 
 function catherine.faction.FindByIndex( index )
 	if ( !index ) then return nil end
-	for k, v in pairs( catherine.faction.Lists ) do
+	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.index == index ) then
 			return v
 		end
@@ -96,10 +96,6 @@ if ( SERVER ) then
 		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
 		return table.HasValue( whiteLists, id )
 	end
-	
-	function META:HasWhiteList( id )
-		return catherine.faction.HasWhiteList( self, id )
-	end
 else
 	function catherine.faction.HasWhiteList( id )
 		if ( !id ) then return false end
@@ -108,10 +104,14 @@ else
 		local whiteLists = catherine.catData.Get( "whitelists", { } )
 		return table.HasValue( whiteLists, id )
 	end
-
-	function META:HasWhiteList( id )
-		return catherine.faction.HasWhiteList( id )
-	end
 end
 
 catherine.faction.Include( catherine.FolderName .. "/gamemode" )
+
+function META:HasWhiteList( id )
+	if ( SERVER ) then
+		return catherine.faction.HasWhiteList( self, id )
+	else
+		return catherine.faction.HasWhiteList( id )
+	end
+end

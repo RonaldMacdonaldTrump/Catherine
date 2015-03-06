@@ -12,8 +12,7 @@ if ( SERVER ) then
 	end )
 
 	hook.Add( "Think", "catherine.stamina.Think", function( )
-		for k, v in pairs( player.GetAll( ) ) do
-			if ( !v:IsCharacterLoaded( ) ) then continue end
+		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			if ( v:GetMoveType( ) == MOVETYPE_NOCLIP ) then continue end
 			local speed = Length2D( GetVelocity( v ) )
 			if ( !v.nextStaminaDown or !v.nextStaminaUp ) then
