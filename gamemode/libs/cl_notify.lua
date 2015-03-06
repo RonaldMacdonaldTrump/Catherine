@@ -28,6 +28,6 @@ function catherine.notify.Draw( )
 		end
 		v.y = Lerp( 0.05, v.y, ( ScrH( ) - 10 ) - ( ( k ) * 25 ) )
 		draw.RoundedBox( 0, v.x, v.y, v.w, v.h, Color( 235, 235, 235, v.alpha ) )
-		draw.SimpleText( v.message, "catherine_font01_15", v.x + v.w / 2, v.y + v.h / 2, Color( 50, 50, 50, v.alpha ), 1, 1 )
+		draw.SimpleText( v.message, "catherine_normal15", v.x + v.w / 2, v.y + v.h / 2, Color( 50, 50, 50, v.alpha ), 1, 1 )
 	end
 end

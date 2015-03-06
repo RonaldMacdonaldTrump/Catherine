@@ -133,8 +133,8 @@ else
 		local haveOwner = nil
 		if ( ent:GetNetworkValue( "owner" ) == nil ) then haveOwner = false else haveOwner = true end
 		local tw, th = surface.GetTextSize( title )
-		draw.SimpleText( ( haveOwner and "This door has already been purchased." ) or "This door can purchase.", "catherine_font02_20", position.x, position.y + 20, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( ent:GetNetworkValue( "title", "A Door." ), "catherine_font02_25", position.x, position.y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ( haveOwner and "This door has already been purchased." ) or "This door can purchase.", "catherine_outline15", position.x, position.y + 20, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent:GetNetworkValue( "title", "A Door." ), "catherine_outline20", position.x, position.y, Color( 255, 255, 255, a ), 1, 1 )
 	end )
 end
 

@@ -210,12 +210,12 @@ else
 		local itemTab = catherine.item.FindByID( ent:GetItemUniqueID( ) )
 		if ( !itemTab ) then return end
 		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
-		draw.SimpleText( itemTab.name, "catherine_font02_20", position.x, position.y, Color( 255, 255, 255, alpha ), 1, 1 )
+		draw.SimpleText( itemTab.name, "catherine_outline20", position.x, position.y, Color( 255, 255, 255, alpha ), 1, 1 )
 		if ( itemTab.GetDesc ) then
 			local desc = itemTab:GetDesc( LocalPlayer( ), itemTab, ent:GetNetworkValue( "itemData", { } ) )
-			draw.SimpleText( desc, "catherine_font02_15", position.x, position.y + 20, Color( 255, 255, 255, alpha ), 1, 1 )
+			draw.SimpleText( desc, "catherine_outline15", position.x, position.y + 20, Color( 255, 255, 255, alpha ), 1, 1 )
 		else
-			draw.SimpleText( itemTab.desc, "catherine_font02_15", position.x, position.y + 20, Color( 255, 255, 255, alpha ), 1, 1 )
+			draw.SimpleText( itemTab.desc, "catherine_outline15", position.x, position.y + 20, Color( 255, 255, 255, alpha ), 1, 1 )
 		end
 	end )
 end

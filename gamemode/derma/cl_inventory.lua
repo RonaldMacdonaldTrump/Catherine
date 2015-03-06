@@ -30,7 +30,7 @@ function PANEL:MenuPaint( w, h )
 	draw.RoundedBox( 0, 10, 35, w - 20, 20, Color( 100, 100, 100, 255 ) )
 	draw.RoundedBox( 0, 10, 35, self.invWeightAni, 20, Color( 150, 150, 150, 255 ) )
 
-	draw.SimpleText( self.invWeight .. " kg / " .. self.invMaxWeight .. " kg", "catherine_font01_15", w / 2, 35 + 20 / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+	draw.SimpleText( self.invWeight .. " kg / " .. self.invMaxWeight .. " kg", "catherine_normal15", w / 2, 35 + 20 / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 end
 
 function PANEL:InitializeInv( )
@@ -117,7 +117,7 @@ function PANEL:Refresh( )
 					surface.SetMaterial( Material( "icon16/accept.png" ) )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
-				draw.SimpleText( v1.count, "catherine_font01_15", 5, h - 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.SimpleText( v1.count, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				paintFunc( )
 			end
 			lists:AddItem( spawnIcon )

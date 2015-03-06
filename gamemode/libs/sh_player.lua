@@ -22,7 +22,7 @@ if ( SERVER ) then
 	end
 	
 	hook.Add("PlayerSwitchWeapon", "player_PlayerSwitchWeapon", function( pl, old, new )
-		pl:SetWeaponRaised( true, new )
+		pl:SetWeaponRaised( false, new )
 	end )
 	
 	local velo = FindMetaTable("Entity").GetVelocity

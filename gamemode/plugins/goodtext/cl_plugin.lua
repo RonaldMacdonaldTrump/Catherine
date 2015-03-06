@@ -13,7 +13,7 @@ netstream.Hook( "catherine.plugin.goodtext.RemoveText", function( data )
 end )
 
 function Plugin:DrawText( data )
-	local object = catherine.markup.Parse( "<font=catherine_font03>" .. data.text .. "</font>" )
+	local object = catherine.markup.Parse( "<font=catherine_goodtext>" .. data.text .. "</font>" )
 	function object:DrawText( text, font, x, y, col, hA, vA, a )
 		col.a = a
 		draw.SimpleText( text, font, x, y, col, 0, 1, 2, Color( 0, 0, 0, a ) )
@@ -39,3 +39,5 @@ function Plugin:PostDrawTranslucentRenderables( )
 		end
 	end
 end
+
+catherine.font.Add( "catherine_goodtext", catherine.font.FontString, 150, 1000, true )

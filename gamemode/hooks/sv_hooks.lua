@@ -84,7 +84,7 @@ function GM:PlayerInitialSpawn( pl )
 				{
 					_steamName = pl:SteamName( ),
 					_steamID = pl:SteamID( ),
-					_catherineData = "[]"
+					_catData = "[]"
 				}, 
 				function( )
 					netstream.Start( pl, "catherine.LoadingStatus", { false, 0.7 } )

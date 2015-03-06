@@ -2,7 +2,7 @@ local BUTTON = { }
 
 function BUTTON:Init( )
 	local rgb = Color
-	self.Font = "catherine_font01_20"
+	self.Font = "catherine_normal20"
 	self.Text = ""
 	self.Status = true
 	self.CursorIsOn = false

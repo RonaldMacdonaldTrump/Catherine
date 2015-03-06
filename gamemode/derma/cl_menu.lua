@@ -46,7 +46,7 @@ function PANEL:AddMenuItem( name, func )
 	local textW = surface.GetTextSize( name )
 	local item = vgui.Create( "DButton" )
 	item:SetText( name )
-	item:SetFont( "catherine_font01_20" )
+	item:SetFont( "catherine_button20" )
 	item:SetTextColor( Color( 50, 50, 50 ) )
 	item:SetSize( textW + 30, self.ListsBase:GetTall( ) )
 	item.Paint = function( pnl, w, h )
@@ -95,7 +95,7 @@ function PANEL:Paint( w, h )
 		self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
 	end
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
-	draw.SimpleText( catherine.cash.GetName( LocalPlayer( ):GetCash( ) ), "catherine_font01_25", w - 15, h - 70, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( catherine.cash.GetName( LocalPlayer( ):GetCash( ) ), "catherine_normal25", w - 15, h - 70, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 function PANEL:Close( )

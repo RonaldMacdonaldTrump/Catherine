@@ -40,7 +40,7 @@ function PANEL:Paint( w, h )
 	surface.SetMaterial( Material( "gui/gradient_up" ) )
 	surface.DrawTexturedRect( 0, 25, w, h )
 
-	draw.SimpleText( self.name, "catherine_font01_25", 0, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	draw.SimpleText( self.name, "catherine_menuTitle", 0, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 	self:MenuPaint( w, h )
 end
 

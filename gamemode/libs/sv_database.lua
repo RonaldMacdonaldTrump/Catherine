@@ -161,7 +161,6 @@ catherine.database.query = catherine.database.query or catherine.database.module
 catherine.database.escape = catherine.database.escape or catherine.database.modules.sqlite.escape
 
 function catherine.database.Connect( func )
-	if ( catherine.database.Connected ) then return end
 	local modules = catherine.database.modules[ catherine.database.information.db_module ]
 	if ( !modules ) then
 		catherine.util.Print( Color( 255, 255, 0 ), "Unknown MySQL module, using SQLite." )
@@ -211,3 +210,14 @@ end
 if ( !catherine.database.Connected ) then
 	catherine.database.Connect( )
 end
+
+concommand.Add( "cat_db_init", function( pl )
+	if ( IsValid( pl ) and !pl:IsSuperAdmin( ) ) then
+		catherine.util.Notify( pl, "You do not have permission!" )
+		return
+	end
+	catherine.database.Query( DROP_TABLES, function( )
+		catherine.util.Print( Color( 255, 0, 0 ), "Database has initialized." )
+		catherine.database.Connect( )
+	end )
+end )
