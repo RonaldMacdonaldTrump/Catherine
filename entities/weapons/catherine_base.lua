@@ -25,3 +25,14 @@ end
 
 function SWEP:Reload( )
 end
+
+/*local addAngle = 0
+
+function SWEP:GetViewModelPosition( pos, ang )
+	if ( self:GetHoldType( ) == "normal" ) then
+		addAngle = math.Clamp( addAngle + FrameTime( ), 0, 10 )
+	else
+		addAngle = math.Clamp( addAngle - FrameTime( ), 0, 10 )
+	end
+	return pos, ang + Angle( 0, addAngle, 0 )
+end*/

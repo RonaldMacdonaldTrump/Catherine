@@ -1,9 +1,13 @@
 local META = FindMetaTable( "Player" )
 
+local weaponRaise = { }
+weaponRaise.BanList = { "catherine_key" }
+
 if ( SERVER ) then
 	function META:SetWeaponRaised( bool, weapon )
 		if ( !IsValid( self ) or !self:IsCharacterLoaded( ) ) then return end
 		weapon = weapon or self:GetActiveWeapon( )
+		if ( table.HasValue( weaponRaise.BanList, weapon:GetClass( ) ) ) then return end
 		self:SetNetworkValue( "weaponRaised", bool )
 		if ( IsValid( weapon ) ) then
 			local time = 9999999999

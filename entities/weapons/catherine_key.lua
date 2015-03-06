@@ -11,6 +11,9 @@ function SWEP:Deploy( )
 	if ( CLIENT ) or !IsValid( pl ) then return true end
 	
 	pl:DrawWorldModel( false )
+	
+	pl:SetNetworkValue( "weaponRaised", true )
+	
 	return true
 end
 
@@ -26,15 +29,19 @@ function SWEP:PrimaryAttack( )
 	local ent = pl:GetEyeTrace( 70 ).Entity
 	
 	if ( !ent:IsDoor( ) or ent.Locked ) then return end
-	if ( ent:GetOwner( ) == pl:GetCharacterID( ) or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
+	if ( ent:GetDoorOwner( ) != pl or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
 	
 	catherine.util.ProgressBar( pl, "You are locking this door.", 4 )
+	
+	pl:Freeze( true )
 	
 	timer.Simple( 4, function( )
 		ent.Locked = true
 		ent:Fire( "lock" )
 		
-		ent:EmitSoundEx( "doors/door_latch1.wav", 1 )
+		ent:EmitSound( "doors/door_latch1.wav", 1 )
+		
+		pl:Freeze( false )
 	end )
 	
 	self:SetNextPrimaryFire( CurTime( ) + 4 )
@@ -49,14 +56,18 @@ function SWEP:SecondaryAttack( )
 	local ent = pl:GetEyeTrace( 70 ).Entity
 	
 	if ( !ent:IsDoor( ) or !ent.Locked ) then return end
-	if ( ent:GetOwner( ) == pl:GetCharacterID( ) or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
-
+	if ( ent:GetDoorOwner( ) != pl or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
+	
 	catherine.util.ProgressBar( pl, "You are unlocking this door.", 4 )
+	
+	pl:Freeze( true )
 	
 	timer.Simple( 4, function( )
 		ent.Locked = false
 		ent:Fire( "unlock" )
 		
-		ent:EmitSoundEx( "doors/door_latch1.wav", 1 )
+		ent:EmitSound( "doors/door_latch1.wav", 1 )
+		
+		pl:Freeze( false )
 	end )
 end

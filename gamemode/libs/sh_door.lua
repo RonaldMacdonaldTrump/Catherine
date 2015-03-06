@@ -31,6 +31,10 @@ if ( SERVER ) then
 	function META2:SetDoorOwner( pl )
 		catherine.door.SetDoorOwner( self, pl )
 	end
+	
+	function META2:GetDoorOwner( ent )
+		return catherine.door.GetDoorOwner( self )
+	end
 
 	function catherine.door.Buy( pl )
 		local ent = pl:GetEyeTrace( 70 ).Entity
@@ -86,6 +90,16 @@ if ( SERVER ) then
 			return catherine.util.Notify( pl, "Please look valid door!" )
 		end
 		ent:SetNetworkValue( "owner", pl )
+	end
+	
+	function catherine.door.GetDoorOwner( ent )
+		if ( !IsValid( ent ) ) then
+			return catherine.util.Notify( pl, "Please look valid entity!" )
+		end
+		if ( !ent:IsDoor( ) ) then
+			return catherine.util.Notify( pl, "Please look valid door!" )
+		end
+		return ent:GetNetworkValue( "owner", nil )
 	end
 
 	function catherine.door.SaveData( )
