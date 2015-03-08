@@ -1,32 +1,33 @@
 AddCSLuaFile( )
 
 SWEP.Base = "catherine_base"
-SWEP.HoldType = "fist"
 SWEP.PrintName = "Fists"
+SWEP.HoldType = "normal"
 SWEP.Slot = 1
 SWEP.SlotPos = 1
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
-SWEP.ViewModelFOV	= 52
+SWEP.DrawHUD = false
 
 SWEP.ViewModel	= "models/weapons/c_arms_citizen.mdl"
 SWEP.WorldModel	= ""
+SWEP.ViewModelFOV = 50
 
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
 SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = ""
 SWEP.Primary.Damage = 5
-SWEP.Primary.Delay = 0.75
+SWEP.Primary.Delay = 1
 
 SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = ""
-SWEP.Secondary.Delay = 0.15
+SWEP.Secondary.Delay = 0.5
 
 SWEP.HitDistance = 48
-
+SWEP.LowerAngles = Angle( 0, 5, -15 )
 SWEP.UseHands = false
 
 function SWEP:Precache()
@@ -40,80 +41,67 @@ end
 
 function SWEP:PrimaryAttack( )
 	local pl = self.Owner
-	if ( !IsFirstTimePredicted( ) ) then
-		return
-	end
-	if ( CLIENT ) then
-		return
-	end
-	local staminaDown = math.Clamp( catherine.character.GetCharData( pl, "stamina", 100 ) - 0, 0, 100 )
-	if ( staminaDown < 10 ) then
-		return
+	if ( !IsFirstTimePredicted( ) ) then return end
+	if ( CLIENT ) then return end
+	local stamina = math.Clamp( catherine.character.GetCharData( pl, "stamina", 100 ) - 0, 0, 100 )
+	if ( !pl:GetWeaponRaised( ) and stamina < 10 ) then return
 	else
-		catherine.character.SetCharData( pl, "stamina", staminaDown )
+		catherine.character.SetCharData( pl, "stamina", stamina )
+		
 		pl:SetAnimation( PLAYER_ATTACK1 )
 		
 		local viewModel = pl:GetViewModel( )
 		viewModel:SendViewModelMatchingSequence( viewModel:LookupSequence( "fists_idle_0" .. math.random( 1, 2 ) ) )
 		
 		timer.Simple( 0.1, function( )
-			local animTable = { "fists_left", "fists_right" }
-			viewModel:SendViewModelMatchingSequence( viewModel:LookupSequence( table.Random( animTable ) ) )
+			viewModel:SendViewModelMatchingSequence( viewModel:LookupSequence( table.Random( { "fists_left", "fists_right" } ) ) )
 		end )
 		
 		self:EmitSound( "npc/vort/claw_swing" .. math.random( 1, 2 ) .. ".wav" )
 		pl:SendLua( "surface.PlaySound(\"npc/vort/claw_swing" .. math.random( 1, 2 ) .. ".wav\")" )
 		
-		timer.Simple( 0, function( )
-			pl:LagCompensation( true )
-			local trace = util.TraceLine( {
-				start = pl:GetShootPos( ),
-				endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * self.HitDistance,
-				filter = pl
-			} )
-			if ( trace.Hit ) then
-				self:EmitSound( "Flesh.ImpactHard" )
-				pl:SendLua( "surface.PlaySound( \"Flesh.ImpactHard\" )" )
-				if ( trace.Entity:IsPlayer( ) ) then
-					local damageInfo = DamageInfo( )
-					damageInfo:SetAttacker( pl )
-					damageInfo:SetInflictor( self )
-					damageInfo:SetDamage( math.random( 8, 12 ) )
-					trace.Entity:TakeDamageInfo( damageInfo )
-				end
+		pl:LagCompensation( true )
+		local tr = util.TraceLine( {
+			start = pl:GetShootPos( ),
+			endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * self.HitDistance,
+			filter = pl
+		} )
+		
+		if ( tr.Hit ) then
+			self:EmitSound( "Flesh.ImpactHard" )
+			pl:SendLua( "surface.PlaySound( \"Flesh.ImpactHard\" )" )
+			if ( tr.Entity:IsPlayer( ) ) then
+				local damageInfo = DamageInfo( )
+				damageInfo:SetAttacker( pl )
+				damageInfo:SetInflictor( self )
+				damageInfo:SetDamage( math.random( 8, 12 ) )
+				tr.Entity:TakeDamageInfo( damageInfo )
 			end
-			pl:LagCompensation( false )
-		end )
+		end
+		pl:LagCompensation( false )
 	end
+	
 	self:SetNextPrimaryFire( CurTime( ) + self.Primary.Delay )
 end
 
 function SWEP:SecondaryAttack( )
+	if ( !IsFirstTimePredicted( ) ) then return end
 	local pl = self.Owner
-	if ( !IsFirstTimePredicted( ) ) then
-		return
-	end
-	local trace = util.TraceLine( {
+	local tr = util.TraceLine( {
 		start = pl:GetShootPos( ),
 		endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * self.HitDistance,
 		filter = pl
 	} )
-	if ( trace.Hit and trace.Entity:IsDoor( ) ) then
-		if ( trace.MatType == MAT_WOOD ) then
-			self:EmitSound( "physics/wood/wood_box_impact_soft2.wav" )
-		elseif ( trace.MatType == MAT_METAL ) then
-			self:EmitSound( "physics/metal/metal_box_impact_soft2.wav" )
-		else
-			self:EmitSound( "physics/concrete/concrete_impact_soft3.wav" )
-		end
+	
+	if ( tr.Hit and tr.Entity:IsDoor( ) ) then
+		self:EmitSound( "physics/wood/wood_crate_impact_hard2.wav" )
 	end
+	
 	self:SetNextSecondaryFire( CurTime( ) + self.Secondary.Delay )
 end
 
-function SWEP:Deploy()
-	if ( !IsValid( self.Owner ) ) then
-		return
-	end
+function SWEP:Deploy( )
+	if ( !IsValid( self.Owner ) ) then return end
 
 	local viewModel = self.Owner:GetViewModel()
 	viewModel:SendViewModelMatchingSequence( viewModel:LookupSequence( "fists_draw" ) )
@@ -127,12 +115,4 @@ end
 
 function SWEP:Initialize( )
 	self:SetWeaponHoldType( self.HoldType )
-end
-
-function SWEP:CanPrimaryAttack( )
-	return true
-end
-
-function SWEP:CanSecondaryAttack( )
-	return true
 end

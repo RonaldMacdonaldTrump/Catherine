@@ -10,7 +10,7 @@ netstream.Hook( "catherine.hud.CinematicIntro_Init", function( )
 end )
 
 function catherine.hud.Draw( )
-	//catherine.hud.Vignette( )
+	catherine.hud.Vignette( )
 	catherine.hud.ScreenDamageDraw( )
 	catherine.hud.AmmoDraw( )
 	catherine.hud.ProgressBarDraw( )
@@ -38,6 +38,7 @@ function catherine.hud.ScreenDamageDraw( ) end
 function catherine.hud.AmmoDraw( )
 	local wep = LocalPlayer( ):GetActiveWeapon( )
 	if ( !IsValid( wep ) ) then return end
+	if ( wep.DrawHUD == false ) then return end
 	local clip1 = wep:Clip1( )
 	local pre = LocalPlayer( ):GetAmmoCount( wep:GetPrimaryAmmoType( ) )
 	//local sec = LocalPlayer( ):GetAmmoCount( wep:GetSecondaryAmmoType( ) ) -- ^ㅡ^;
@@ -116,7 +117,7 @@ function GM:GetCustomColorData( pl )
 		local fraction = 1 - math.TimeFraction( LocalPlayer( ):GetNetworkValue( "deathTime", 0 ), LocalPlayer( ):GetNetworkValue( "nextSpawnTime", 0 ), CurTime( ) )
 		data.colour = math.Clamp( fraction, 0, 0.9 )
 	else
-		data.contrast = math.max( ( LocalPlayer( ):Health( ) / LocalPlayer( ):GetMaxHealth( ) ), 0.3 )
+		data.contrast = math.max( math.min( LocalPlayer( ):Health( ) / LocalPlayer( ):GetMaxHealth( ), 1 ), 0.3 )
 	end
 	
 	return data

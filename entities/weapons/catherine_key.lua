@@ -3,16 +3,18 @@ AddCSLuaFile( )
 SWEP.Base = "catherine_base"
 SWEP.HoldType = "normal"
 SWEP.PrintName = "Key"
-SWEP.ViewModel = "models/weapons/v_hands.mdl"
+SWEP.ViewModel = "models/weapons/v_punch.mdl"
 SWEP.WorldModel = ""
+SWEP.AlwaysLowered = true
+SWEP.CanFireLowered = true
+SWEP.DrawHUD = false
 
 function SWEP:Deploy( )
 	local pl = self.Owner
-	if ( CLIENT ) or !IsValid( pl ) then return true end
+	if ( CLIENT or !IsValid( pl ) ) then return true end
 	
 	pl:DrawWorldModel( false )
-	
-	pl:SetNetworkValue( "weaponRaised", true )
+	pl:DrawViewModel( false )
 	
 	return true
 end
@@ -38,14 +40,11 @@ function SWEP:PrimaryAttack( )
 	timer.Simple( 4, function( )
 		ent.Locked = true
 		ent:Fire( "lock" )
-		
-		ent:EmitSound( "doors/door_latch1.wav", 1 )
-		
+		ent:EmitSound( "doors/door_latch3.wav" )
 		pl:Freeze( false )
 	end )
 	
 	self:SetNextPrimaryFire( CurTime( ) + 4 )
-	self:SetNextSecondaryFire( CurTime( ) + 4 )
 end
 
 function SWEP:SecondaryAttack( )
@@ -65,9 +64,9 @@ function SWEP:SecondaryAttack( )
 	timer.Simple( 4, function( )
 		ent.Locked = false
 		ent:Fire( "unlock" )
-		
-		ent:EmitSound( "doors/door_latch1.wav", 1 )
-		
+		ent:EmitSound( "doors/door_latch3.wav" )
 		pl:Freeze( false )
 	end )
+	
+	self:SetNextSecondaryFire( CurTime( ) + 4 )
 end
