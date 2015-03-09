@@ -2,7 +2,8 @@ catherine.character = catherine.character or { }
 catherine.character.globalVars = { }
 
 function catherine.character.RegisterGlobalVar( id, tab )
-	catherine.character.globalVars[ id ] = tab
+	table.Merge( tab, { id = id } )
+	catherine.character.globalVars[ #catherine.character.globalVars + 1 ] = tab
 end
 
 function catherine.character.GetGlobalVarAll( )
@@ -10,7 +11,15 @@ function catherine.character.GetGlobalVarAll( )
 end
 
 function catherine.character.FindGlobalVarByID( id )
-	return catherine.character.globalVars[ id ]
+	if ( !id ) then return nil end
+	
+	for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
+		if ( v.id == id ) then
+			return v
+		end
+	end
+	
+	return nil
 end
 
 function catherine.character.FindGlobalVarByField( field )
@@ -78,7 +87,7 @@ catherine.character.RegisterGlobalVar( "desc", {
 
 catherine.character.RegisterGlobalVar( "model", {
 	field = "_model",
-	//doNetwork = true, -- Must need? i don't know.. ^-^;
+	//doNetwork = true, -- 이거 꼭 필요함..?, 나도 몰려.... ^-^;
 	default = "models/breen.mdl",
 	checkValid = function( data )
 		if ( file.Exists( data, "GAME" ) ) then
@@ -92,10 +101,11 @@ catherine.character.RegisterGlobalVar( "model", {
 catherine.character.RegisterGlobalVar( "att", {
 	field = "_att",
 	doNetwork = true,
-	default = "[]", // ^-^;
+	default = "[]", // 흠..;
 	checkValid = function( data )
 		// to do;
-	end
+	end,
+	needTransfer = true
 } )
 
 catherine.character.RegisterGlobalVar( "schema", {
@@ -109,7 +119,7 @@ catherine.character.RegisterGlobalVar( "schema", {
 catherine.character.RegisterGlobalVar( "registerTime", {
 	field = "_registerTime",
 	static = true,
-	default = function( )
+	default = function( ) // 이게 꼭 함수로 작성되어야 하나..;
 		return os.time( )
 	end
 } )
@@ -125,19 +135,21 @@ catherine.character.RegisterGlobalVar( "steamID", {
 catherine.character.RegisterGlobalVar( "charVar", {
 	field = "_charVar",
 	doNetwork = true,
-	default = "[]"
+	default = "[]",
+	needTransfer = true
 } )
 
 catherine.character.RegisterGlobalVar( "inventory", {
 	field = "_inv",
 	doNetwork = true,
-	default = "[]"
+	default = "[]",
+	needTransfer = true
 } )
 
 catherine.character.RegisterGlobalVar( "gender", {
 	field = "_gender",
 	doNetwork = true,
-	default = "male" // to do;
+	default = "male" // 나중에 추가할것 --;
 } )
 
 catherine.character.RegisterGlobalVar( "cash", {
@@ -151,7 +163,12 @@ catherine.character.RegisterGlobalVar( "faction", {
 	default = "citizen"
 } )
 
+//PrintTable(catherine.character.globalVars)
+
 if ( SERVER ) then
+	catherine.character.Buffers = catherine.character.Buffers or { }
+	catherine.character.Loaded = catherine.character.Loaded or { }
+	catherine.character.networkingVars = catherine.character.networkingVars or { }
 	
 	function catherine.character.Create( pl, data )
 		if ( !IsValid( pl ) or !data ) then return end
@@ -159,28 +176,299 @@ if ( SERVER ) then
 		local characterVars = { }
 		for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
 			local var = nil
+			
 			if ( type( v.default ) == "function" ) then
 				var = v.default( pl )
 			else
 				var = v.default
 			end
-			
-			if ( data[ v.field ] ) then
-				var = data[ v.field ]
+
+			if ( data[ v.id ] ) then
+				var = data[ v.id ]
 				if ( v.checkValid ) then
 					local success, reason = v.checkValid( var )
 					
 					if ( success == false ) then
-						
-						
+						print(success,reason)
+						//netstream.Start( pl, "catherine.character.CreateResult", { success, reason } )
+						return
 					end
 				end
 			end
+			
+			characterVars[ v.field ] = var
 		end
+		
+		catherine.database.InsertDatas( "catherine_characters", characterVars, function( )
+			catherine.character.SendCharacterLists( pl )
+		end )
+	end
+	
+	function catherine.character.SyncCharacterBuffer( pl )
+		if ( !IsValid( pl ) ) then return end
+		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
+			if ( !data ) then return end
+			catherine.character.Buffers[ pl:SteamID( ) ] = data
+		end )
 	end
 
-else
+	function catherine.character.Use( pl, id )
+		if ( !IsValid( pl ) or !id ) then return end
+		if ( !catherine.character.Buffers[ pl:SteamID( ) ] ) then return end
+		
+		if ( pl:GetCharacterID( ) != nil ) then
+			catherine.character.SavePlayerCharacter( pl )
+			//catherine.character.DisconnectNetworking( pl )
+			catherine.character.SetLoadedCharacterByID( pl, pl:GetCharacterID( ), nil )
+			
+			// 이전 캐릭터 데이터 클리어..
+			
+		end
+		
+		if ( pl:GetCharacterID( ) == id ) then
+			//netstream.Start( pl, "catherine.character.UseResult", { false, "You can't use same character!" } )
+			//return
+		end
+		
+		local function useCharacter( data )
+			local factionTab = catherine.faction.FindByID( data._faction )
+			if ( !factionTab ) then
+				print("Faction error")
+				return
+			end
+			// 초기화;
+			pl:KillSilent( )
+			pl:Spawn( )
+			pl:SetTeam( factionTab.index )
+			pl:SetModel( data._model )
+			pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
+			pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
+			pl:Give( "catherine_fist" )
+			pl:Give( "catherine_key" )
+			
+			catherine.character.InitializeNetworking( pl, id, data )
+			pl:SetNetworkValue( "characterID", id )
+			pl:SetNetworkValue( "characterLoaded", true )
+			
+			print("Loaded - " .. id )
+		end
+		
+		local characterData = nil
+		
+		for k, v in pairs( catherine.character.Buffers[ pl:SteamID( ) ] ) do
+			for k1, v1 in pairs( v ) do
+				if ( k1 == "_id" and v1 == id ) then
+					characterData = catherine.character.TransferJSON( v )
+				end
+			end
+		end
 
+		if ( !characterData ) then return end
+		
+		//PrintTable(characterData)
+
+		catherine.character.SetLoadedCharacterByID( pl, id, characterData )
+		useCharacter( characterData )
+
+		--[[
+		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
+			if ( !data ) then return end
+			local foundCharacter = nil
+
+			for k, v in pairs( data ) do
+				for k1, v1 in pairs( v ) do
+					if ( k1 == "_id" and v1 == id ) then
+						foundCharacter = v
+						break
+					end
+				end
+			end
+			
+			if ( !foundCharacter ) then
+				netstream.Start( pl, "catherine.character.UseResult", { false, "Can't find character!" } )
+				return
+			end
+			
+			for k1, v1 in pairs( foundCharacter ) do
+				local globalVarTab =  catherine.character.FindGlobalVarByField( k1 )
+				if ( globalVarTab and !globalVarTab.needTransfer ) then continue end
+				foundCharacter[ k1 ] = util.JSONToTable( v1 )
+			end
+			
+			//PrintTable(foundCharacter)
+
+			catherine.character.SetLoadedCharacterByID( pl, id, foundCharacter )
+			useCharacter( )
+		end )--]]
+	end
+	
+	function catherine.character.SetLoadedCharacterByID( pl, id, data )
+		if ( !IsValid( pl ) or !id ) then return end
+		catherine.character.Loaded[ tostring( id ) ] = data
+	end
+	
+	function catherine.character.TransferJSON( data )
+		if ( !data ) then return nil end
+		for k, v in pairs( data ) do
+			local globalVarTab =  catherine.character.FindGlobalVarByField( k )
+			if ( globalVarTab and !globalVarTab.needTransfer ) then continue end
+			data[ k ] = util.JSONToTable( v )
+		end
+		
+		return data
+	end
+	
+	function catherine.character.InitializeNetworking( pl, id, data )
+		if ( !IsValid( pl ) or !id or !data ) then return end
+		catherine.character.networkingVars[ pl:SteamID( ) ] = { }
+		
+		for k, v in pairs( data ) do
+			local globalVarTab =  catherine.character.FindGlobalVarByField( k )
+			if ( globalVarTab and !globalVarTab.doNetwork ) then continue end
+			catherine.character.networkingVars[ pl:SteamID( ) ][ k ] = v
+		end
+		
+		netstream.Start( nil, "catherine.character.InitializeNetworking", { pl:SteamID( ), catherine.character.networkingVars[ pl:SteamID( ) ] } )
+	end
+	
+	// 이게 꼭 필요한가여... 아닌거가튼데.. --;
+	function catherine.character.DisconnectNetworking( pl )
+		if ( !IsValid( pl ) ) then return end
+		catherine.character.networkingVars[ pl:SteamID( ) ] = nil
+	end
+	
+	function catherine.character.GetLoadedCharacterByID( pl, id )
+		if ( !IsValid( pl ) or !id ) then return end
+		return catherine.character.Loaded[ tostring( id ) ]
+	end
+
+	function catherine.character.SavePlayerCharacter( pl )
+		if ( !IsValid( pl ) ) then return end
+		local id = pl:GetCharacterID( )
+		local character = table.Copy( catherine.character.GetLoadedCharacterByID( pl, id ) )
+		if ( !character or !id ) then return end
+		
+		local characterVars = { }
+		for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
+			for k1, v1 in pairs( character ) do
+				characterVars[ k1 ] = v.needTransfer and util.TableToJSON( v1 ) or v1
+			end
+		end
+
+		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. pl:SteamID( ) .. "'", characterVars, function( data )
+			catherine.character.SyncCharacterBuffer( pl )
+			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl:Name( ) .. "'s [" .. id .. "] character." )
+		end )
+	end
+	
+	function catherine.character.SendCharacterLists( pl )
+		if ( !IsValid( pl ) ) then return end
+		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
+			if ( !data ) then return end
+			
+			for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
+				for k1, v1 in pairs( data ) do
+					if ( !v.needTransfer ) then continue end
+					data[ k1 ][ v.field ] = util.JSONToTable( data[ k1 ][ v.field ] )
+				end
+			end
+			
+			catherine.character.Buffers[ pl:SteamID( ) ] = data
+			
+			netstream.Start( pl, "catherine.character.Lists", data )
+		end )
+	end
+	
+	function catherine.character.MergeNetworkingVarsByLoaded( pl )
+		if ( !IsValid( pl ) ) then return end
+		table.Merge( catherine.character.Loaded[ tostring( pl:GetCharacterID( ) ) ], catherine.character.networkingVars[ pl:SteamID( ) ] )
+	end
+	//catherine.character.Loaded={}
+	//PrintTable(catherine.character.Loaded)
+	//catherine.character.SavePlayerCharacter( player.GetByID( 1 ) )
+	//catherine.character.SavePlayerCharacter(  player.GetByID( 1 ) )
+	//catherine.character.SendCharacterLists( player.GetByID( 1 ) )
+	//catherine.character.Use( player.GetByID( 1 ), 1 )
+	//catherine.character.Create( player.GetByID( 1 ), { name = "Left 7 Dead Character", desc = "zzzzzzzzzzzzzzzzzzzzzzzz" } )
+
+	
+	// 나중에 static 예외처리 추가바람... --;
+	function catherine.character.SetGlobalVar( pl, key, value, noSync )
+		if ( !IsValid( pl ) and !key ) then return default end
+		if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or catherine.character.networkingVars[ pl:SteamID( ) ][ key ] == nil ) then return end
+		catherine.character.networkingVars[ pl:SteamID( ) ][ key ] = value
+		if ( !noSync ) then
+			netstream.Start( nil, "catherine.character.SetNetworkingVar", { pl:SteamID( ), key, value } )
+		end
+		catherine.character.MergeNetworkingVarsByLoaded( pl )
+	end
+
+	function catherine.character.SetCharacterVar( pl, key, value, noSync )
+		if ( !IsValid( pl ) and !key ) then return default end
+		if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or !catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ] ) then return end
+		catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ][ key ] = value
+		if ( !noSync ) then
+			netstream.Start( nil, "catherine.character.SetNetworkingCharVar", { pl:SteamID( ), key, value } )
+		end
+		catherine.character.MergeNetworkingVarsByLoaded( pl )
+	end
+	
+	//catherine.character.SetGlobalVar( player.GetByID( 1 ), "_name", "L7D!" )
+	
+	
+	//catherine.character.MergeNetworkingVarsByLoaded( player.GetByID( 1 ) )
+else
+	catherine.character.localCharacters = catherine.character.localCharacters or { }
+	catherine.character.networkingVars = catherine.character.networkingVars or { }
+	
+	
+	
+	netstream.Hook( "catherine.character.CreateResult", function( data )
+	
+		if ( data[ 1 ] == true ) then
+			if ( IsValid( catherine.vgui.character ) ) then
+				print("Fin!")
+			end
+		else
+			Derma_Message( data[ 2 ], "Character Create Error", "OK" )
+		end
+	end )
+	
+	netstream.Hook( "catherine.character.InitializeNetworking", function( data )
+		catherine.character.networkingVars[ data[ 1 ] ] = data[ 2 ]
+	end )
+	
+	netstream.Hook( "catherine.character.SetNetworkingVar", function( data )
+		catherine.character.networkingVars[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
+	end )
+	
+	netstream.Hook( "catherine.character.SetNetworkingCharVar", function( data )
+		catherine.character.networkingVars[ data[ 1 ] ][ "_charVar" ][ data[ 2 ] ] = data[ 3 ]
+	end )
+
+	netstream.Hook( "catherine.character.UseResult", function( data )
+		if ( data[ 1 ] == true ) then
+			if ( IsValid( catherine.vgui.character ) ) then
+				catherine.vgui.character:Close( )
+			end
+		else
+			Derma_Message( data[ 2 ], "Character Use Error", "OK" )
+		end
+	end )
+	
+	netstream.Hook( "catherine.character.Lists", function( data )
+		catherine.character.localCharacters = data
+	end )
+	
+	//PrintTable(catherine.character.networkingVars)
+end
+
+//PrintTable(catherine.character.networkingVars)
+
+function catherine.character.GetGlobalVar( pl, key, default )
+	if ( !IsValid( pl ) and !key ) then return default end
+	if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or catherine.character.networkingVars[ pl:SteamID( ) ][ key ] == nil ) then return default end
+	return catherine.character.networkingVars[ pl:SteamID( ) ][ key ] or default
 end
 
 /*

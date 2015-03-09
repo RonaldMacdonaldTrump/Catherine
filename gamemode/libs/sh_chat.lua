@@ -397,7 +397,7 @@ else
 	function catherine.chat.AddText( ... )
 		local msg = vgui.Create( "catherine.vgui.ChatMarkUp" )
 		msg:Dock( TOP )
-		msg:SetFont( "catherine_font01_17" )
+		msg:SetFont( "catherine_normal15" )
 		msg:SetMaxWidth( CHATBox_w - 16 )
 		msg:Run( ... )
 		catherine.chat.msg[ #catherine.chat.msg + 1 ] = msg

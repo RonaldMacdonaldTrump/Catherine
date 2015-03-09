@@ -34,10 +34,6 @@ function catherine.bar.Draw( )
 		v.y = Lerp( 0.03, v.y, -10 + count * 15 )
 		draw.RoundedBox( 0, 5, v.y, ScrW( ) * 0.3, 10, Color( 230, 230, 230, v.alpha - 20 ) )
 		draw.RoundedBox( 0, 5, v.y, v.ani, 10, Color( v.color.r, v.color.g, v.color.b, v.alpha ) )
-		--[[
-		if ( percent != 0 ) then
-			draw.SimpleText( v.text or "", "catherine_font01_15", 5 + ScrW( ) * 0.3 / 2, v.y + 20 / 2, Color( 0, 0, 0, 255 ), 1, 1 )
-		end--]]
 	end
 end
 

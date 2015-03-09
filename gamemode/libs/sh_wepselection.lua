@@ -20,7 +20,7 @@ else
 		for k, v in pairs( pl:GetWeapons( ) ) do
 			if ( k != catherine.wep.latestSlot ) then continue end
 			if ( v.Instructions and v.Instructions:find( "%S" ) ) then
-				catherine.wep.markup = markup.Parse( "<font=catherine_font02_15>" .. v.Instructions .. "</font>" )
+				catherine.wep.markup = markup.Parse( "<font=catherine_outline15>" .. v.Instructions .. "</font>" )
 				return
 			else
 				catherine.wep.markup = nil
@@ -37,7 +37,7 @@ else
 			if ( k == catherine.wep.latestSlot ) then color = Color( 255, 150, 150 ) end
 			color.a = math.Clamp( 255 - math.TimeFraction( catherine.wep.showTime, catherine.wep.noShowTime, CurTime( ) ) * 255, 0, 255 )
 			
-			draw.SimpleText( v:GetPrintName( ), "catherine_font02_25", defx, defy + ( k * 25 ), color, TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( v:GetPrintName( ), "catherine_outline20", defx, defy + ( k * 25 ), color, TEXT_ALIGN_LEFT, 1 )
 			if ( k == catherine.wep.latestSlot and catherine.wep.markup ) then
 				catherine.wep.markup:Draw( defx + 128, defy + 24, 0, 1, color.a )
 			end

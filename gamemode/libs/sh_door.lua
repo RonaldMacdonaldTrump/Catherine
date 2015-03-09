@@ -31,6 +31,10 @@ if ( SERVER ) then
 	function META2:SetDoorOwner( pl )
 		catherine.door.SetDoorOwner( self, pl )
 	end
+	
+	function META2:GetDoorOwner( ent )
+		return catherine.door.GetDoorOwner( self )
+	end
 
 	function catherine.door.Buy( pl )
 		local ent = pl:GetEyeTrace( 70 ).Entity
@@ -87,6 +91,16 @@ if ( SERVER ) then
 		end
 		ent:SetNetworkValue( "owner", pl )
 	end
+	
+	function catherine.door.GetDoorOwner( ent )
+		if ( !IsValid( ent ) ) then
+			return catherine.util.Notify( pl, "Please look valid entity!" )
+		end
+		if ( !ent:IsDoor( ) ) then
+			return catherine.util.Notify( pl, "Please look valid door!" )
+		end
+		return ent:GetNetworkValue( "owner", nil )
+	end
 
 	function catherine.door.SaveData( )
 		local data = { }
@@ -133,8 +147,8 @@ else
 		local haveOwner = nil
 		if ( ent:GetNetworkValue( "owner" ) == nil ) then haveOwner = false else haveOwner = true end
 		local tw, th = surface.GetTextSize( title )
-		draw.SimpleText( ( haveOwner and "This door has already been purchased." ) or "This door can purchase.", "catherine_font02_20", position.x, position.y + 20, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( ent:GetNetworkValue( "title", "A Door." ), "catherine_font02_25", position.x, position.y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ( haveOwner and "This door has already been purchased." ) or "This door can purchase.", "catherine_outline15", position.x, position.y + 20, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent:GetNetworkValue( "title", "A Door." ), "catherine_outline20", position.x, position.y, Color( 255, 255, 255, a ), 1, 1 )
 	end )
 end
 
