@@ -154,15 +154,27 @@ catherine.character.RegisterGlobalVar( "faction", {
 if ( SERVER ) then
 	
 	function catherine.character.Create( pl, data )
-	
-		local characterVars = { }
+		if ( !IsValid( pl ) or !data ) then return end
 		
+		local characterVars = { }
 		for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
 			local var = nil
 			if ( type( v.default ) == "function" ) then
 				var = v.default( pl )
 			else
 				var = v.default
+			end
+			
+			if ( data[ v.field ] ) then
+				var = data[ v.field ]
+				if ( v.checkValid ) then
+					local success, reason = v.checkValid( var )
+					
+					if ( success == false ) then
+						
+						
+					end
+				end
 			end
 		end
 	end
