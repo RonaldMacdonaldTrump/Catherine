@@ -1,5 +1,177 @@
 catherine.character = catherine.character or { }
+catherine.character.globalVars = { }
 
+function catherine.character.RegisterGlobalVar( id, tab )
+	catherine.character.globalVars[ id ] = tab
+end
+
+function catherine.character.GetGlobalVarAll( )
+	return catherine.character.globalVars
+end
+
+function catherine.character.FindGlobalVarByID( id )
+	return catherine.character.globalVars[ id ]
+end
+
+function catherine.character.FindGlobalVarByField( field )
+	if ( !field ) then return nil end
+	
+	for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
+		if ( v.field == field ) then
+			return v
+		end
+	end
+	
+	return nil
+end
+
+--[[
+
+CREATE TABLE IF NOT EXISTS `catherine_characters` (
+	`_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+	`_name` varchar(70) NOT NULL,
+	`_desc` tinytext NOT NULL,
+	`_model` varchar(160) NOT NULL,
+	`_att` varchar(180) DEFAULT NULL,
+	`_schema` varchar(24) NOT NULL,
+	`_registerTime` int(11) unsigned NOT NULL,
+	`_steamID` varchar(20) NOT NULL,
+	`_charData` text,
+	`_inv` text,
+	`_gender` varchar(50),
+	`_cash` int(11) unsigned DEFAULT NULL,
+	`_faction` varchar(50) NOT NULL,
+	PRIMARY KEY (`_id`)
+);
+
+--]]
+
+catherine.character.RegisterGlobalVar( "id", {
+	field = "_id",
+	doNetwork = true,
+	static = true
+} )
+
+catherine.character.RegisterGlobalVar( "name", {
+	field = "_name",
+	doNetwork = true,
+	default = "Johnson",
+	checkValid = function( data )
+		if ( data:len( ) >= catherine.configs.characterNameMinLen and data:len( ) < catherine.configs.characterNameMaxLen ) then
+			return true
+		end
+		return false, "can't make! - name"
+	end
+} )
+
+catherine.character.RegisterGlobalVar( "desc", {
+	field = "_desc",
+	doNetwork = true,
+	default = "No desc.",
+	checkValid = function( data )
+		if ( data:len( ) >= catherine.configs.characterDescMinLen and data:len( ) < catherine.configs.characterDescMaxLen ) then
+			return true
+		end
+		return false, "can't make! - desc"
+	end
+} )
+
+catherine.character.RegisterGlobalVar( "model", {
+	field = "_model",
+	//doNetwork = true, -- Must need? i don't know.. ^-^;
+	default = "models/breen.mdl",
+	checkValid = function( data )
+		if ( file.Exists( data, "GAME" ) ) then
+			return true
+		end
+		
+		return false, "can't make! - model"
+	end
+} )
+
+catherine.character.RegisterGlobalVar( "att", {
+	field = "_att",
+	doNetwork = true,
+	default = "[]", // ^-^;
+	checkValid = function( data )
+		// to do;
+	end
+} )
+
+catherine.character.RegisterGlobalVar( "schema", {
+	field = "_schema",
+	static = true,
+	default = function( )
+		return catherine.schema.GetUniqueID( )
+	end
+} )
+
+catherine.character.RegisterGlobalVar( "registerTime", {
+	field = "_registerTime",
+	static = true,
+	default = function( )
+		return os.time( )
+	end
+} )
+
+catherine.character.RegisterGlobalVar( "steamID", {
+	field = "_steamID",
+	static = true,
+	default = function( pl )
+		return pl:SteamID( )
+	end
+} )
+
+catherine.character.RegisterGlobalVar( "charVar", {
+	field = "_charVar",
+	doNetwork = true,
+	default = "[]"
+} )
+
+catherine.character.RegisterGlobalVar( "inventory", {
+	field = "_inv",
+	doNetwork = true,
+	default = "[]"
+} )
+
+catherine.character.RegisterGlobalVar( "gender", {
+	field = "_gender",
+	doNetwork = true,
+	default = "male" // to do;
+} )
+
+catherine.character.RegisterGlobalVar( "cash", {
+	field = "_cash",
+	doNetwork = true,
+	default = catherine.configs.defaultCash
+} )
+
+catherine.character.RegisterGlobalVar( "faction", {
+	field = "_faction",
+	default = "citizen"
+} )
+
+if ( SERVER ) then
+	
+	function catherine.character.Create( pl, data )
+	
+		local characterVars = { }
+		
+		for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
+			local var = nil
+			if ( type( v.default ) == "function" ) then
+				var = v.default( pl )
+			else
+				var = v.default
+			end
+		end
+	end
+
+else
+
+end
+
+/*
 do
 	local playerMeta = FindMetaTable( "Player" )
 	playerMeta.RealName = playerMeta.RealName or playerMeta.Name
@@ -469,3 +641,4 @@ else
 		end
 	end )
 end
+*/
