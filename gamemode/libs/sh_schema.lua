@@ -4,11 +4,12 @@ function catherine.schema.Initialization( )
 	Schema = Schema or {
 		Name = "Catherine Schema",
 		Author = "L7D, Fristet",
-		Desc = "A catherine schema.",
 		UniqueID = GM.FolderName,
 		FolderName = GM.FolderName,
-		Title = "A Good Schema",
-		Desc = "Good"
+		Title = "Schema",
+		Desc = "Good",
+		IntroTitle = "A Schema",
+		IntroDesc = "Welcome..."
 	}
 	catherine.util.IncludeInDir( "schema/libs" )
 	catherine.util.IncludeInDir( "schema/derma" )

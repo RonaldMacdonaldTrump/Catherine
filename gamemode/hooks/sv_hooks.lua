@@ -87,12 +87,12 @@ function GM:PlayerNoClip( pl, bool )
 			pl:SetNoDraw( true )
 			pl:DrawShadow( false )
 			pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
-			pl:SetNetworkValue( "nocliping", true )
+			catherine.network.SetNetVar( pl, "nocliping", true )
 		else
 			pl:SetNoDraw( false )
 			pl:DrawShadow( true )
 			pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
-			pl:SetNetworkValue( "nocliping", false )
+			catherine.network.SetNetVar( pl, "nocliping", false )
 		end
 	end
 	return pl:IsAdmin( )
@@ -160,8 +160,8 @@ function GM:PlayerDeath( pl )
 	pl.dummy:Activate( )
 	pl.dummy:SetCollisionGroup( COLLISION_GROUP_WEAPON )
 	pl.dummy.player = self
-	pl.dummy:SetNetworkValue( "player", pl )
-	pl.dummy:SetNetworkValue( "ragdollID", pl.dummy:EntIndex( ) )
+	catherine.network.SetNetVar( pl.dummy, "player", pl )
+	catherine.network.SetNetVar( pl.dummy, "ragdollID", pl.dummy:EntIndex( ) )
 	pl.dummy:CallOnRemove( "RecoverPlayer", function( )
 		if ( !IsValid( pl ) ) then return end
 		pl:Spawn( )
@@ -176,8 +176,8 @@ function GM:PlayerDeath( pl )
 		
 	pl.autoHealthrecoverStart = false
 	catherine.util.ProgressBar( pl, "You are now respawning.", catherine.configs.spawnTime )
-	pl:SetNetworkValue( "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
-	pl:SetNetworkValue( "deathTime", CurTime( ) )
+	catherine.network.SetNetVar( pl, "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
+	catherine.network.SetNetVar( pl, "deathTime", CurTime( ) )
 end
 
 function GM:Tick( )

@@ -41,10 +41,10 @@ if ( SERVER ) then
 		local recognize = table.Copy( catherine.character.GetCharData( pl, "recognize", { } ) )
 		if ( type( target ) == "table" ) then
 			for k, v in pairs( target ) do
-				recognize[ #recognize + 1 ] = v:ID( )
+				recognize[ #recognize + 1 ] = v:GetCharacterID( )
 			end
 		elseif ( type( target ) == "Player" ) then
-			recognize[ #recognize + 1 ] = target:ID( )
+			recognize[ #recognize + 1 ] = target:GetCharacterID( )
 		end
 		catherine.character.SetCharData( pl, "recognize", recognize )
 	end
@@ -66,7 +66,7 @@ function catherine.recognize.IsKnowTarget( pl, target )
 	if ( !IsValid( pl ) or !IsValid( target ) ) then return false end
 	local recognize = catherine.character.GetCharData( pl, "recognize", { } )
 	if ( !recognize ) then return false end
-	return table.HasValue( recognize, target:ID( ) )
+	return table.HasValue( recognize, target:GetCharacterID( ) )
 end
 
 function GM:GetTargetInformation( pl, target )

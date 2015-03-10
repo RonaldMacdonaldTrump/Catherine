@@ -3,14 +3,19 @@ AddCSLuaFile( )
 SWEP.Base = "catherine_base"
 SWEP.HoldType = "normal"
 SWEP.PrintName = "Key"
-SWEP.ViewModel = "models/weapons/v_hands.mdl"
+SWEP.ViewModel = "models/weapons/v_punch.mdl"
 SWEP.WorldModel = ""
+SWEP.AlwaysLowered = true
+SWEP.CanFireLowered = true
+SWEP.DrawHUD = false
 
 function SWEP:Deploy( )
 	local pl = self.Owner
-	if ( CLIENT ) or !IsValid( pl ) then return true end
+	if ( CLIENT or !IsValid( pl ) ) then return true end
 	
 	pl:DrawWorldModel( false )
+	pl:DrawViewModel( false )
+	
 	return true
 end
 
@@ -26,19 +31,20 @@ function SWEP:PrimaryAttack( )
 	local ent = pl:GetEyeTrace( 70 ).Entity
 	
 	if ( !ent:IsDoor( ) or ent.Locked ) then return end
-	if ( ent:GetOwner( ) == pl:GetCharacterID( ) or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
+	if ( catherine.door.GetDoorOwner( ent ) != pl or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
 	
 	catherine.util.ProgressBar( pl, "You are locking this door.", 4 )
+	
+	pl:Freeze( true )
 	
 	timer.Simple( 4, function( )
 		ent.Locked = true
 		ent:Fire( "lock" )
-		
-		ent:EmitSoundEx( "doors/door_latch1.wav", 1 )
+		ent:EmitSound( "doors/door_latch3.wav" )
+		pl:Freeze( false )
 	end )
 	
 	self:SetNextPrimaryFire( CurTime( ) + 4 )
-	self:SetNextSecondaryFire( CurTime( ) + 4 )
 end
 
 function SWEP:SecondaryAttack( )
@@ -49,14 +55,18 @@ function SWEP:SecondaryAttack( )
 	local ent = pl:GetEyeTrace( 70 ).Entity
 	
 	if ( !ent:IsDoor( ) or !ent.Locked ) then return end
-	if ( ent:GetOwner( ) == pl:GetCharacterID( ) or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
-
+	if ( catherine.door.GetDoorOwner( ent ) != pl or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
+	
 	catherine.util.ProgressBar( pl, "You are unlocking this door.", 4 )
+	
+	pl:Freeze( true )
 	
 	timer.Simple( 4, function( )
 		ent.Locked = false
 		ent:Fire( "unlock" )
-		
-		ent:EmitSoundEx( "doors/door_latch1.wav", 1 )
+		ent:EmitSound( "doors/door_latch3.wav" )
+		pl:Freeze( false )
 	end )
+	
+	self:SetNextSecondaryFire( CurTime( ) + 4 )
 end

@@ -179,8 +179,8 @@ end
 
 function GM:RunCinematicIntro_Information( )
 	return {
-		title = Schema.Title,
-		desc = Schema.Desc,
+		title = Schema.IntroTitle,
+		desc = Schema.IntroDesc,
 		author = "The roleplaying schema development and design by " .. Schema.Author .. "."
 	}
 end

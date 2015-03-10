@@ -147,7 +147,7 @@ if ( SERVER ) then
 	catherine.character.Buffers = catherine.character.Buffers or { }
 	catherine.character.Loaded = catherine.character.Loaded or { }
 	catherine.character.SaveCurTime = catherine.character.SaveCurTime or CurTime( ) + catherine.configs.saveInterval
-	
+
 	function catherine.character.Create( pl, data )
 		if ( !IsValid( pl ) or !data ) then return end
 		
@@ -167,8 +167,8 @@ if ( SERVER ) then
 					local success, reason = v.checkValid( var )
 					
 					if ( success == false ) then
-						print(success,reason)
-						//netstream.Start( pl, "catherine.character.CreateResult", { success, reason } )
+						//print(success,reason)
+						netstream.Start( pl, "catherine.character.CreateResult", { success, reason } )
 						return
 					end
 				end
@@ -177,7 +177,11 @@ if ( SERVER ) then
 			characterVars[ v.field ] = var
 		end
 		
+		PrintTable(characterVars)
+
 		catherine.database.InsertDatas( "catherine_characters", characterVars, function( )
+			print( "Created - L7D" )
+			netstream.Start( pl, "catherine.character.CreateResult", { true } )
 			catherine.character.SendCharacterLists( pl )
 		end )
 	end
@@ -203,8 +207,8 @@ if ( SERVER ) then
 		end
 		
 		if ( pl:GetCharacterID( ) == id ) then
-			//netstream.Start( pl, "catherine.character.UseResult", { false, "You can't use same character!" } )
-			//return
+			netstream.Start( pl, "catherine.character.UseResult", { false, "You can't use same character!" } )
+			return
 		end
 		
 		local function useCharacter( data )
@@ -228,6 +232,8 @@ if ( SERVER ) then
 			catherine.network.SetNetVar( pl, "charID", id )
 			catherine.network.SetNetVar( pl, "charLoaded", true )
 			
+			netstream.Start( pl, "catherine.character.UseResult", { true } )
+			
 			print("Loaded - " .. id )
 		end
 
@@ -236,7 +242,7 @@ if ( SERVER ) then
 		for k, v in pairs( catherine.character.Buffers[ pl:SteamID( ) ] ) do
 			for k1, v1 in pairs( v ) do
 				if ( k1 == "_id" and v1 == id ) then
-					characterData = catherine.character.TransferJSON( v )
+					characterData = v
 				end
 			end
 		end
@@ -298,20 +304,17 @@ if ( SERVER ) then
 	function catherine.character.SavePlayerCharacter( pl )
 		if ( !IsValid( pl ) ) then return end
 		local id = pl:GetCharacterID( )
-		local character = table.Copy( catherine.character.GetLoadedCharacterByID( pl, id ) )
-		if ( !character or !id ) then return end
-		
-		local characterVars = { }
-		for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
-			for k1, v1 in pairs( character ) do
-				characterVars[ k1 ] = v.needTransfer and util.TableToJSON( v1 ) or v1
-			end
-		end
-
-		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. pl:SteamID( ) .. "'", characterVars, function( data )
+		local character = catherine.character.GetLoadedCharacterByID( pl, id )
+		if ( !character ) then return end
+		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. pl:SteamID( ) .. "'", character, function( data )
 			catherine.character.SyncCharacterBuffer( pl )
 			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl:Name( ) .. "'s [" .. id .. "] character." )
 		end )
+	end
+	
+	function catherine.character.OpenPanel( pl )
+		if ( !IsValid( pl ) ) then return end
+		netstream.Start( pl, "catherine.character.OpenPanel" )
 	end
 	
 	function catherine.character.SendCharacterLists( pl, func )
@@ -322,6 +325,7 @@ if ( SERVER ) then
 				if ( func ) then
 					func( )
 				end
+				return
 			end
 			
 			for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
@@ -353,7 +357,14 @@ if ( SERVER ) then
 		end
 	end
 	
+	function catherine.character.PlayerDisconnected( pl )
+		catherine.character.SavePlayerCharacter( pl )
+		catherine.character.SetLoadedCharacterByID( pl, pl:GetCharacterID( ), nil )
+		catherine.character.DisconnectNetworking( pl )
+	end
+	
 	hook.Add( "Think", "catherine.character.Think", catherine.character.Think )
+	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected", catherine.character.PlayerDisconnected )
 	
 	//catherine.character.Loaded={}
 	//PrintTable(catherine.character.Loaded)
@@ -384,17 +395,44 @@ if ( SERVER ) then
 		end
 		catherine.character.MergeNetworkingVarsByLoaded( pl )
 	end
+	
+	netstream.Hook( "catherine.character.Create", function( caller, data )
+		catherine.character.Create( caller, data )
+		//PrintTable(data)
+	end )
+	
+	netstream.Hook( "catherine.character.Use", function( caller, data )
+		catherine.character.Use( caller, data )
+	end )
+	
+	netstream.Hook( "catherine.character.Delete", function( caller, data )
+		// 나중에;.
+	end )
 else
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
 	
 	netstream.Hook( "catherine.character.CreateResult", function( data )
 		if ( data[ 1 ] == true ) then
-			if ( IsValid( catherine.vgui.character ) ) then
-				print("Fin!")
+			if ( IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.createData.currentStage ) ) then
+				catherine.vgui.character.createData.currentStage:AlphaTo( 0, 0.2, 0, function( _, pnl )
+					pnl:Remove( )
+					pnl = nil
+					catherine.vgui.character:BackToMainMenu( )
+				end )
+				
+				
 			end
 		else
 			Derma_Message( data[ 2 ], "Character Create Error", "OK" )
 		end
+	end )
+	
+	netstream.Hook( "catherine.character.OpenPanel", function( data )
+		if ( IsValid( catherine.vgui.character ) ) then
+			catherine.vgui.character:Close( )
+		end
+		
+		catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
 	end )
 	
 	netstream.Hook( "catherine.character.InitializeNetworking", function( data )
@@ -442,4 +480,19 @@ end
 
 function META:IsCharacterLoaded( )
 	return catherine.network.GetNetVar( self, "charLoaded", false )
+end
+do
+	META.RealName = META.RealName or META.Name
+	META.SteamName = META.RealName
+
+	function META:Name( )
+		return catherine.character.GetGlobalVar( self, "_name", self:SteamName( ) )
+	end
+	
+	function META:Desc( )
+		return catherine.character.GetGlobalVar( self, "_desc", "....." )
+	end
+	
+	META.Nick = META.Name
+	META.GetName = META.Name
 end

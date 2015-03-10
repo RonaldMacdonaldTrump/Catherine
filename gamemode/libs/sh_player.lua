@@ -17,7 +17,7 @@ if ( SERVER ) then
 						catherine.database.InsertDatas( "catherine_players", { // 플레이어 데이터를 데이터베이스에 삽입..
 							_steamName = pl:SteamName( ),
 							_steamID = pl:SteamID( ),
-							_catherineData = "[]"
+							_catData = { }
 						}, function( )
 							catherine.character.SendCharacterLists( pl, function( ) // 캐릭터 리스트 전송..
 								netstream.Start( pl, "catherine.LoadingStatus", { false, 0.7 } )
@@ -25,6 +25,7 @@ if ( SERVER ) then
 								netstream.Start( pl, "catherine.LoadingStatus", { false, 1 } )
 								timer.Simple( 1, function( )
 									netstream.Start( pl, "catherine.LoadingStatus", { true, 1 } ) // 로딩 성공! ^-^!;
+									catherine.character.OpenPanel( pl )
 									if ( func ) then
 										func( )
 									end
@@ -38,6 +39,7 @@ if ( SERVER ) then
 							netstream.Start( pl, "catherine.LoadingStatus", { false, 1 } )
 							timer.Simple( 1, function( )
 								netstream.Start( pl, "catherine.LoadingStatus", { true, 1 } ) // 로딩 성공! ^-^!;
+								catherine.character.OpenPanel( pl )
 								if ( func ) then
 									func( )
 								end
@@ -52,10 +54,10 @@ if ( SERVER ) then
 	function META:SetWeaponRaised( bool, weapon )
 		if ( !IsValid( self ) or !self:IsCharacterLoaded( ) ) then return end
 		weapon = weapon or self:GetActiveWeapon( )
-		if ( weapon.AlwaysLowered ) then self:SetNetworkValue( "weaponRaised", false ) return end
-		self:SetNetworkValue( "weaponRaised", bool )
+		if ( weapon.AlwaysLowered ) then catherine.network.SetNetVar( self, "weaponRaised", false ) return end
+		catherine.network.SetNetVar( self, "weaponRaised", bool )
 		if ( IsValid( weapon ) ) then
-			local time = 9999999999
+			local time = 9999999
 			if ( bool or weapon.CanFireLowered ) then time = 0.9 end
 			weapon:SetNextPrimaryFire( CurTime( ) + time )
 			weapon:SetNextSecondaryFire( CurTime( ) + time )
@@ -83,6 +85,8 @@ if ( SERVER ) then
 	function META:IsRagdolled( )
 		return IsValid( self.ragdoll )
 	end
+	
+	/* // Error;
 	
 	function META:ForceRagdoll( )
 		self.ragdoll = ents.Create( "prop_ragdoll" )
@@ -138,12 +142,16 @@ if ( SERVER ) then
 			end
 		end
 	end
+	
+	*/
 else
 
 end
 
 function META:GetWeaponRaised( )
-	return self:GetNetworkValue( "weaponRaised", false )
+	
+	//print(catherine.network.GetNetVar( self, "weaponRaised", false ))
+	return catherine.network.GetNetVar( self, "weaponRaised", false )
 end
 
 function META:GetGender( )

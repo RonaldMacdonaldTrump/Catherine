@@ -95,7 +95,7 @@ function PANEL:Paint( w, h )
 		self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
 	end
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
-	draw.SimpleText( catherine.cash.GetName( LocalPlayer( ):GetCash( ) ), "catherine_font01_25", w - 15, h - 70, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( catherine.cash.GetName( catherine.cash.Get( LocalPlayer( )	) ), "catherine_font01_25", w - 15, h - 70, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 function PANEL:Close( )

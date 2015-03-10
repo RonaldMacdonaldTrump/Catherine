@@ -19,7 +19,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.network.SyncAllVars( pl, func )
-		netstream.Start( pl, "catherine.network.SyncVars", { catherine.network.entityVars, catherine.network.globalVars } )
+		netstream.Start( pl, "catherine.network.SyncAllVars", { catherine.network.entityVars, catherine.network.globalVars } )
 		if ( func ) then
 			func( )
 		end
@@ -35,6 +35,13 @@ if ( SERVER ) then
 			netstream.Start( nil, "catherine.network.ClearNetGlobalVar", key )
 		end
 	end
+	
+	function catherine.network.PlayerDisconnected( pl )
+		catherine.network.entityVars[ pl:EntIndex( ) ] = nil
+		netstream.Start( nil, "catherine.network.ClearNetVar", pl:EntIndex( ) )
+	end
+	
+	hook.Add( "PlayerDisconnected", "catherine.network.PlayerDisconnected", catherine.network.PlayerDisconnected )
 else
 	netstream.Hook( "catherine.network.SetNetVar", function( data )
 		catherine.network.entityVars[ data[ 1 ] ] = catherine.network.entityVars[ data[ 1 ] ] or { }
@@ -53,7 +60,7 @@ else
 		catherine.network.globalVars[ data ] = nil
 	end )
 	
-	netstream.Hook( "catherine.network.SyncVars", function( data )
+	netstream.Hook( "catherine.network.SyncAllVars", function( data )
 		catherine.network.entityVars = data[ 1 ]
 		catherine.network.globalVars = data[ 2 ]
 	end )
@@ -62,11 +69,11 @@ end
 function catherine.network.GetNetVar( ent, key, default )
 	if ( !IsValid( ent ) or !key ) then return default end
 	if ( SERVER ) then
-		if ( !ent.Vars ) then return default end
-		return ent.Vars[ key ] or default
+		if ( !catherine.network.entityVars[ ent:EntIndex( ) ] ) then return default end
+		return catherine.network.entityVars[ ent:EntIndex( ) ][ key ] or default
 	else
-		if ( !catherine.network.localVars[ ent:EntIndex( ) ] ) then return default end
-		return catherine.network.localVars[ ent:EntIndex( ) ][ key ] or default
+		if ( !catherine.network.entityVars[ ent:EntIndex( ) ] ) then return default end
+		return catherine.network.entityVars[ ent:EntIndex( ) ][ key ] or default
 	end
 end
 

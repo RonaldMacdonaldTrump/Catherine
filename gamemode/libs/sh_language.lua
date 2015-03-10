@@ -26,8 +26,8 @@ if ( SERVER ) then
 		local uniqueID = "english"
 		if ( IsValid( pl ) ) then uniqueID = pl:GetInfo( "cat_convar_language" ) end
 		local lists = catherine.language.Lists[ uniqueID ]
-		if ( !lists or !lists[ key ] ) then return "Error" end
-		return string.format( lists[ key ], ... )
+		if ( !lists or !lists.datas ) then return "Error" end
+		return string.format( lists.datas[ key ], ... )
 	end
 else
 	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", "english", true, true )
@@ -35,7 +35,7 @@ else
 	function catherine.language.GetValue( key, ... )
 		local uniqueID = CAT_CONVAR_LANGUAGE:GetString( )
 		local lists = catherine.language.Lists[ uniqueID ]
-		if ( !lists or !lists[ key ] ) then return "Error" end
-		return string.format( lists[ key ], ... )
+		if ( !lists or !lists.datas ) then return "Error" end
+		return string.format( lists.datas[ key ], ... )
 	end
 end
