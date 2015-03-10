@@ -1,6 +1,54 @@
+catherine.player = catherine.player or { }
+
 local META = FindMetaTable( "Player" )
 
 if ( SERVER ) then
+	function catherine.player.Initialize( pl, func )
+		if ( !catherine.database.Connected ) then // 데이터베이스가 연결되지 않음?
+			netstream.Start( pl, "catherine.LoadingStatus", { false, 0, "MySQL Error : " .. catherine.database.ErrorMsg } ) // 에러 메세지 전송;
+			return
+		end
+		catherine.network.SyncAllVars( pl, function( ) // 현재 네트워킹 된 글로벌, 엔티티 값 전송..^-^
+			netstream.Start( pl, "catherine.LoadingStatus", { false, 0.4 } )
+			catherine.character.GetCurrentNetworking( pl, function( ) // 현재 네트워킹된 캐릭터 값 전송..^-^
+				netstream.Start( pl, "catherine.LoadingStatus", { false, 0.5 } )
+				catherine.database.GetDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", function( data ) // 플레이어 데이터베이스 값 체크..
+					if ( !data or #data == 0 ) then
+						catherine.database.InsertDatas( "catherine_players", { // 플레이어 데이터를 데이터베이스에 삽입..
+							_steamName = pl:SteamName( ),
+							_steamID = pl:SteamID( ),
+							_catherineData = "[]"
+						}, function( )
+							catherine.character.SendCharacterLists( pl, function( ) // 캐릭터 리스트 전송..
+								netstream.Start( pl, "catherine.LoadingStatus", { false, 0.7 } )
+								catherine.catData.Load( pl ) // cat(CAT - Catherine) 데이터 전송;
+								netstream.Start( pl, "catherine.LoadingStatus", { false, 1 } )
+								timer.Simple( 1, function( )
+									netstream.Start( pl, "catherine.LoadingStatus", { true, 1 } ) // 로딩 성공! ^-^!;
+									if ( func ) then
+										func( )
+									end
+								end )
+							end )
+						end )
+					else
+						catherine.character.SendCharacterLists( pl, function( ) // 캐릭터 리스트 전송..
+							netstream.Start( pl, "catherine.LoadingStatus", { false, 0.7 } )
+							catherine.catData.Load( pl ) // cat(CAT - Catherine) 데이터 전송;
+							netstream.Start( pl, "catherine.LoadingStatus", { false, 1 } )
+							timer.Simple( 1, function( )
+								netstream.Start( pl, "catherine.LoadingStatus", { true, 1 } ) // 로딩 성공! ^-^!;
+								if ( func ) then
+									func( )
+								end
+							end )
+						end )
+					end
+				end )
+			end )
+		end )
+	end
+	
 	function META:SetWeaponRaised( bool, weapon )
 		if ( !IsValid( self ) or !self:IsCharacterLoaded( ) ) then return end
 		weapon = weapon or self:GetActiveWeapon( )
@@ -9,7 +57,6 @@ if ( SERVER ) then
 		if ( IsValid( weapon ) ) then
 			local time = 9999999999
 			if ( bool or weapon.CanFireLowered ) then time = 0.9 end
-			print(time)
 			weapon:SetNextPrimaryFire( CurTime( ) + time )
 			weapon:SetNextSecondaryFire( CurTime( ) + time )
 		end
