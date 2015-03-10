@@ -1,4 +1,10 @@
-catherine.loaded = catherine.loaded or false
+catherine.loading = catherine.loading or {
+	status = false,
+	errorMsg = nil,
+	alpha = 255,
+	rotate = 0,
+	msg = ""
+}
 catherine.loaded2 = catherine.loaded2 or false
 catherine.errorText = catherine.errorText or ""
 catherine.alpha = catherine.alpha or 255
@@ -18,11 +24,6 @@ catherine.entityCache = { }
 catherine.nextRefresh = catherine.nextRefresh or CurTime( )
 local toscreen = FindMetaTable("Vector").ToScreen
 
-for i = 15, 64 do
-	surface.CreateFont( "catherine_font01_" .. i, { font = "Segoe UI", size = i, weight = 1000, antialias = true } )
-	surface.CreateFont( "catherine_font02_" .. i, { font = "Segoe UI", size = i, weight = 1000, antialias = true, outline = true } )
-end
-surface.CreateFont( "catherine_font03", { font = "Segoe UI", size = 150, weight = 1000 } )
 
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hudHide ) do
@@ -90,32 +91,48 @@ function GM:PlayerInformationDraw( pl, x, y, alpha )
 	end
 end
 
+catherine.loading.status = false
+
 function GM:HUDDrawScoreBoard( )
 	local scrW, scrH = ScrW( ), ScrH( )
-	if ( !catherine.loaded ) then
-		catherine.alpha = Lerp( 0.01, catherine.alpha, 255 )
+	local a = catherine.loading.alpha
+	if ( !catherine.loading.status ) then
+		catherine.loading.alpha = Lerp( 0.01, catherine.loading.alpha, 255 )
 	else
-		catherine.alpha = Lerp( 0.005, catherine.alpha, 0 )
+		catherine.loading.alpha = Lerp( 0.008, catherine.loading.alpha, 0 )
 	end
 	
-	catherine.progressBar = Lerp( 0.05, catherine.progressBar, ( scrW - 40 ) * catherine.percent )
-
-	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, catherine.alpha ) )
+	catherine.loading.rotate = math.Approach( catherine.loading.rotate, catherine.loading.rotate - 3, 3 )
 	
-	surface.SetDrawColor( 200, 200, 200, catherine.alpha )
+	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 235, 235, 235, a ) )
+	
+	surface.SetDrawColor( 150, 150, 150, a )
 	surface.SetMaterial( Material( "gui/gradient_up" ) )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )
 
-	surface.SetDrawColor( 0, 0, 0, catherine.alpha )
-	surface.SetMaterial( Material( "catherine/catherine_logo.png" ) )
+	surface.SetDrawColor( 255, 255, 255, a )
+	surface.SetMaterial( Material( "CAT/logo67.png" ) )
 	surface.DrawTexturedRect( scrW / 2 - 512 / 2, scrH / 2 - 256 / 2, 512, 256 )
 	
-	draw.SimpleText( "Catherine version 0.2 - Development version", "catherine_font01_15", 15, 20, Color( 50, 50, 50, catherine.alpha ), TEXT_ALIGN_LEFT, 1 )
-	if ( catherine.percent != 0 ) then
-		draw.RoundedBox( 0, 20, scrH - 15, scrW - 40, 3, Color( 50, 50, 50, catherine.alpha ) )
-		draw.RoundedBox( 0, 20, scrH - 15, catherine.progressBar, 3, Color( 255, 255, 255, catherine.alpha ) )
+	draw.SimpleText( "Ver 0.2", "catherine_font01_15", 15, 20, Color( 50, 50, 50, a ), TEXT_ALIGN_LEFT, 1 )
+
+	if ( catherine.loading.errorMsg ) then
+		draw.NoTexture( )
+		surface.SetDrawColor( 255, 0, 0, catherine.loading.alpha - 55 )
+		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, 90, 360, 100 )
+		
+		draw.SimpleText( catherine.loading.errorMsg, "catherine_font01_20", 100, scrH - 50, Color( 80, 80, 80, a ), TEXT_ALIGN_LEFT, 1 )
+	else
+		draw.NoTexture( )
+		surface.SetDrawColor( 90, 90, 90, catherine.loading.alpha - 55 )
+		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, 90, 360, 100 )
+		
+		draw.NoTexture( )
+		surface.SetDrawColor( 255, 255, 255, catherine.loading.alpha )
+		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, catherine.loading.rotate, 100, 100 )
+	
+		draw.SimpleText( catherine.loading.msg, "catherine_font01_15", 100, scrH - 50, Color( 80, 80, 80, a ), TEXT_ALIGN_LEFT, 1 )
 	end
-	draw.SimpleText( catherine.errorText, "catherine_font01_25", scrW / 2, scrH - 25, Color( 80, 80, 80, catherine.alpha ), 1, 1 )
 end
 
 function GM:ProgressEntityCache( )
@@ -213,10 +230,10 @@ function GM:RenderScreenspaceEffects( )
 end
 
 netstream.Hook( "catherine.LoadingStatus", function( data )
-	catherine.loaded = data[ 1 ]
-	catherine.percent = data[ 2 ]
-	if ( data[ 3 ] and data[ 3 ] != "" ) then
-		catherine.errorText = data[ 3 ]
-		catherine.percent = 0
+	catherine.loading.status = data[ 1 ]
+	catherine.loading.msg = data[ 2 ]
+	if ( data[ 3 ] == true ) then
+		catherine.loading.errorMsg = data[ 2 ]
+		catherine.loading.msg = ""
 	end
 end )

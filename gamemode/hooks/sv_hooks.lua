@@ -73,7 +73,7 @@ function GM:PlayerInitialSpawn( pl )
 	timer.Create( "catherine.loading.WaitLocalPlayer_" .. pl:SteamID( ), 1, 0, function( )
 		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
 			timer.Destroy( "catherine.loading.WaitLocalPlayer_" .. pl:SteamID( ) )
-			timer.Simple( 4, function( )
+			timer.Simple( 3, function( )
 				catherine.player.Initialize( pl ) // 초기화 실행 ^-^!
 				pl:SetNoDraw( true )
 			end )

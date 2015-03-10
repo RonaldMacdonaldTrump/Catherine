@@ -28,7 +28,7 @@ function catherine.hud.Vignette( )
 	
 	for i = 1, 3 do
 		surface.SetDrawColor( 0, 0, 0, catherine.hud.vAlpha )
-		surface.SetMaterial( Material( "catherine/vignette.png" ) )
+		surface.SetMaterial( Material( "CAT/vignette.png" ) )
 		surface.DrawTexturedRect( 0, 0, ScrW( ), ScrH( ) )
 	end
 end

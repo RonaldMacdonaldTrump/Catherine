@@ -56,7 +56,7 @@ local DROP_TABLES = [[
 catherine.database = catherine.database or { modules = { } }
 catherine.util.Include( "catherine/gamemode/sv_database_config.lua" )
 catherine.database.Connected = catherine.database.Connected or false
-catherine.database.ErrorMsg = catherine.database.ErrorMsg or "Can't connect to database !!!"
+catherine.database.ErrorMsg = catherine.database.ErrorMsg or "데이터베이스에 접속되지 않았습니다."
 catherine.database.object = catherine.database.object or nil
 catherine.database.modules[ "mysqloo" ] = {
 	connect = function( func )
