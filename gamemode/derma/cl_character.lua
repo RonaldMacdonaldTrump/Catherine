@@ -554,6 +554,7 @@ function PANEL:Init( )
 				else
 					table.Merge( self.parent.createData.datas, self.data )
 					netstream.Start( "catherine.character.Create", self.parent.createData.datas )
+					return
 				end
 			end
 		end

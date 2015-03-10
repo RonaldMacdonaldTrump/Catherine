@@ -91,8 +91,6 @@ function GM:PlayerInformationDraw( pl, x, y, alpha )
 	end
 end
 
-catherine.loading.status = false
-
 function GM:HUDDrawScoreBoard( )
 	local scrW, scrH = ScrW( ), ScrH( )
 	local a = catherine.loading.alpha
