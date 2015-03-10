@@ -24,10 +24,7 @@ catherine.entityCache = { }
 catherine.nextRefresh = catherine.nextRefresh or CurTime( )
 local toscreen = FindMetaTable("Vector").ToScreen
 
-<<<<<<< HEAD
-=======
 
->>>>>>> dev
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hudHide ) do
 		if ( v == name ) then
@@ -61,9 +58,9 @@ function GM:DrawEntityInformation( ent, alpha )
 		local x2, y2 = 0, 0
 		
 		local targetInformation = hook.Run( "GetTargetInformation", lp, ent )
-		draw.SimpleText( targetInformation[ 1 ], "catherine_outline20", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
+		draw.SimpleText( targetInformation[ 1 ], "catherine_font02_25", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
 		y = y + 20
-		draw.SimpleText( targetInformation[ 2 ], "catherine_outline15", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
+		draw.SimpleText( targetInformation[ 2 ], "catherine_font02_15", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
 		y = y + 15
 		
 		hook.Run( "PlayerInformationDraw", ent, x, y, alpha )
@@ -78,9 +75,9 @@ function GM:DrawEntityInformation( ent, alpha )
 		local x2, y2 = 0, 0
 		
 		local targetInformation = hook.Run( "GetTargetInformation", lp, entPlayer )
-		draw.SimpleText( targetInformation[ 1 ], "catherine_outline20", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
+		draw.SimpleText( targetInformation[ 1 ], "catherine_font02_25", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
 		y = y + 20
-		draw.SimpleText( targetInformation[ 2 ], "catherine_outline15", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
+		draw.SimpleText( targetInformation[ 2 ], "catherine_font02_15", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
 		y = y + 15
 		
 		hook.Run( "PlayerInformationDraw", entPlayer, x, y, alpha )
@@ -90,7 +87,7 @@ end
 function GM:PlayerInformationDraw( pl, x, y, alpha )
 	if ( !pl:Alive( ) ) then
 		local gText = ( pl:GetGender( ) == "male" and "He" ) or "She"
-		draw.SimpleText( gText .. " was going to hell, RIP.", "catherine_outline15", x, y, Color( 255, 150, 150, alpha ), 1, 1 )
+		draw.SimpleText( gText .. " was going to hell, RIP.", "catherine_font02_15", x, y, Color( 255, 150, 150, alpha ), 1, 1 )
 	end
 end
 
@@ -117,14 +114,6 @@ function GM:HUDDrawScoreBoard( )
 	surface.SetMaterial( Material( "CAT/logo67.png" ) )
 	surface.DrawTexturedRect( scrW / 2 - 512 / 2, scrH / 2 - 256 / 2, 512, 256 )
 	
-<<<<<<< HEAD
-	draw.SimpleText( "Catherine version 0.2 - Development version", "catherine_normal20", 15, 20, Color( 50, 50, 50, catherine.alpha ), TEXT_ALIGN_LEFT, 1 )
-	if ( catherine.percent != 0 ) then
-		draw.RoundedBox( 0, 20, scrH - 15, scrW - 40, 3, Color( 50, 50, 50, catherine.alpha ) )
-		draw.RoundedBox( 0, 20, scrH - 15, catherine.progressBar, 3, Color( 255, 255, 255, catherine.alpha ) )
-	end
-	draw.SimpleText( catherine.errorText, "catherine_normal25", scrW / 2, scrH - 25, Color( 80, 80, 80, catherine.alpha ), 1, 1 )
-=======
 	draw.SimpleText( "Ver 0.2", "catherine_font01_15", 15, 20, Color( 50, 50, 50, a ), TEXT_ALIGN_LEFT, 1 )
 
 	if ( catherine.loading.errorMsg ) then
@@ -144,7 +133,6 @@ function GM:HUDDrawScoreBoard( )
 	
 		draw.SimpleText( catherine.loading.msg, "catherine_font01_15", 100, scrH - 50, Color( 80, 80, 80, a ), TEXT_ALIGN_LEFT, 1 )
 	end
->>>>>>> dev
 end
 
 function GM:ProgressEntityCache( )
@@ -184,7 +172,7 @@ function GM:HUDPaint( )
 	if ( !LocalPlayer( ):Alive( ) ) then return end
 	hook.Run( "ProgressEntityCache" )
 	
-	draw.SimpleText( "Catherine Development Version", "catherine_normal20", ScrW( ) - 10, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( "Catherine Development Version", "catherine_font01_20", ScrW( ) - 10, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePos, eyeAng )

@@ -57,20 +57,11 @@ if ( SERVER ) then
 	function META:SetWeaponRaised( bool, weapon )
 		if ( !IsValid( self ) or !self:IsCharacterLoaded( ) ) then return end
 		weapon = weapon or self:GetActiveWeapon( )
-<<<<<<< HEAD
-		if ( weapon.AlwaysLowered ) then self:SetNetworkValue( "weaponRaised", false ) return end
-		self:SetNetworkValue( "weaponRaised", bool )
-		if ( IsValid( weapon ) ) then
-			local time = 9999999999
-			if ( bool or weapon.CanFireLowered ) then time = 0.9 end
-			print(time)
-=======
 		if ( weapon.AlwaysLowered ) then catherine.network.SetNetVar( self, "weaponRaised", false ) return end
 		catherine.network.SetNetVar( self, "weaponRaised", bool )
 		if ( IsValid( weapon ) ) then
 			local time = 9999999
 			if ( bool or weapon.CanFireLowered ) then time = 0.9 end
->>>>>>> dev
 			weapon:SetNextPrimaryFire( CurTime( ) + time )
 			weapon:SetNextSecondaryFire( CurTime( ) + time )
 		end

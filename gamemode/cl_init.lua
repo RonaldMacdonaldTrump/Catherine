@@ -18,7 +18,7 @@ function Derma_Message( strText, strTitle, strButtonText )
 			draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
 			
-			draw.SimpleText( strText, "catherine_normal25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( strText, "catherine_font01_25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 
 	local ButtonPanel = vgui.Create( "DPanel", Window )
@@ -30,13 +30,8 @@ function Derma_Message( strText, strTitle, strButtonText )
 	Okay:SetPos( 5, 5 )
 	Okay:SetSize( 50, 20 )
 	Okay:SetStr( strButtonText or "OK" )
-<<<<<<< HEAD
-	Okay:SetFont( "catherine_normal15" )
-	Okay:SetOutlineColor( Color( 255, 255, 255, 255 ) )
-=======
 	Okay:SetStrColor( Color( 255, 255, 255, 255 ) )
 	Okay:SetStrFont( "catherine_font01_15" )
->>>>>>> dev
 	Okay.Click = function( )
 		Window:Close()
 	end

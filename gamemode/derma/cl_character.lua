@@ -116,56 +116,6 @@ function PANEL:Init( )
 	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.disconnect
 	
-<<<<<<< HEAD
-	self.Previous = vgui.Create( "catherine.vgui.button", self )
-	self.Previous:SetPos( self.w * 0.2, 50 )
-	self.Previous:SetSize( 30, 30 )
-	self.Previous:SetStr( "<" )
-	self.Previous:SetFont( "catherine_normal30" )
-	self.Previous.Click = function( )
-		self:PreviousStage( )
-	end
-	
-	self.Cancel = vgui.Create( "catherine.vgui.button", self )
-	self.Cancel:SetPos( self.w / 2 - ( 30 / 2 ), 50 )
-	self.Cancel:SetSize( 30, 30 )
-	self.Cancel:SetStr( "X" )
-	self.Cancel:SetFont( "catherine_normal30" )
-	self.Cancel.Click = function( )
-		self:CancelStage( )
-	end
-	
-	self.Next = vgui.Create( "catherine.vgui.button", self )
-	self.Next:SetPos( self.w * 0.8, 50 )
-	self.Next:SetSize( 30, 30 )
-	self.Next:SetStr( ">" )
-	self.Next:SetFont( "catherine_normal30" )
-	self.Next.Click = function( )
-		self:NextStage( )
-	end
-	
-	self.CharcreateModelPreview = vgui.Create( "DModelPanel", self )
-	self.CharcreateModelPreview:SetSize( self.w * 0.35, self.h * 0.8 )
-	self.CharcreateModelPreview:SetPos( self.w, self.h * 0.1 )
-	self.CharcreateModelPreview.OnCursorEntered = function() 
-	end
-	self.CharcreateModelPreview.OnCursorExited = function() 
-	end
-	self.CharcreateModelPreview:SetDisabled( false )
-	self.CharcreateModelPreview:SetCursor( "none" )
-	self.CharcreateModelPreview:MoveToBack( )
-	self.CharcreateModelPreview:SetVisible( false )
-	self.CharcreateModelPreview:SetFOV( 60 )
-	self.CharcreateModelPreview.LayoutEntity = function( pnl, entity )
-		entity:SetAngles( Angle( 0, 45, 0 ) )
-		self.CharcreateModelPreview:RunAnimation( )
-	end
-	
-	self.CharacterPanel = vgui.Create( "DPanel", self )
-	self.CharacterPanel:SetPos( 10, 120 )
-	self.CharacterPanel:SetSize( self.w - 20, self.h - ( 170 ) - 10  )	
-	self.CharacterPanel:SetDrawBackground( false )
-=======
 	self.back = vgui.Create( "catherine.vgui.button", self )
 	self.back:SetPos( 30, 30 )
 	self.back:SetSize( self.w * 0.2, 30 )
@@ -177,7 +127,6 @@ function PANEL:Init( )
 		if ( self.mode == 0 ) then return end
 		self:BackToMainMenu( )
 	end
->>>>>>> dev
 end
 
 function PANEL:CreateCharacterPanel( )
@@ -227,9 +176,9 @@ function PANEL:UseCharacterPanel( )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 255 ) )
 			draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
 			draw.RoundedBox( 0, 0, 30, w, 1, Color( 255, 255, 255, 255 ) )
-			draw.SimpleText( v.characterDatas._name, "catherine_normal20", w / 2, h - 90, Color( 255, 255, 255, 255 ), 1, 1 )
-			draw.SimpleText( v.characterDatas._desc, "catherine_normal15", w / 2, h - 70, Color( 255, 255, 255, 255 ), 1, 1 )
-			draw.SimpleText( factionData.name, "catherine_normal20", w / 2, 15, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( v.characterDatas._name, "catherine_font01_20", w / 2, h - 90, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( v.characterDatas._desc, "catherine_font01_15", w / 2, h - 70, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( factionData.name, "catherine_font01_20", w / 2, 15, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 		
 		v.panel.button = vgui.Create( "DButton", v.panel )
@@ -392,22 +341,6 @@ function PANEL:Init( )
 	self.errorMsg = nil
 	self.factionList = self:GetFactionList( )
 	
-<<<<<<< HEAD
-	self.FactionLabel = vgui.Create( "DLabel", self )
-	self.FactionLabel:SetPos( 10, 10 )
-	self.FactionLabel:SetColor( Color( 255, 255, 255, 255 ) )
-	self.FactionLabel:SetFont( "catherine_normal30" )
-	self.FactionLabel:SetText( "Faction" )
-	self.FactionLabel:SizeToContents( )
-	
-	self.FactionSelect = vgui.Create( "DComboBox", self )
-	self.FactionSelect:SetPos( 40 + self.FactionLabel:GetSize( ), 10 )
-	self.FactionSelect:SetSize( self.w - ( 40 + self.FactionLabel:GetSize( ) ), 30 )
-	self.FactionSelect.OnSelect = function( _, index, value, data )
-		local factionData = catherine.faction.FindByID( data )
-		if ( factionData.image ) then
-			self:SetFactionImage( factionData.image )
-=======
 	self:SetSize( self.w, self.h )
 	self:SetPos( self.parent.w, self.parent.h / 2 - self.h / 2 )
 	self:MoveTo( self.parent.w / 2 - self.w / 2, self.parent.h / 2 - self.h / 2, 0.5, 0 )
@@ -445,7 +378,6 @@ function PANEL:Init( )
 		model.LayoutEntity = function( pnl, entity )
 			entity:SetAngles( Angle( 0, 45, 0 ) )
 			pnl:RunAnimation( )
->>>>>>> dev
 		end
 		
 		local button = vgui.Create( "DButton", panel )
@@ -511,40 +443,6 @@ vgui.Register( "catherine.character.stageOne", PANEL, "DPanel" )
 local PANEL = { }
 
 function PANEL:Init( )
-<<<<<<< HEAD
-	self.data = { name = "", desc = "", model = "" }
-	self.w, self.h = 512, 312
-	self.selectedModel = nil
-	
-	self.NameLabel = vgui.Create( "DLabel", self )
-	self.NameLabel:SetPos( 10, self.h * 0.1 - 20 / 2 )
-	self.NameLabel:SetColor( Color( 255, 255, 255, 255 ) )
-	self.NameLabel:SetFont( "catherine_normal20" )
-	self.NameLabel:SetText( "Character Name" )
-	self.NameLabel:SizeToContents( )
-	
-	self.DescLabel = vgui.Create( "DLabel", self )
-	self.DescLabel:SetPos( 10, self.h * 0.1 + 30 )
-	self.DescLabel:SetColor( Color( 255, 255, 255, 255 ) )
-	self.DescLabel:SetFont( "catherine_normal20" )
-	self.DescLabel:SetText( "Character Description" )
-	self.DescLabel:SizeToContents( )
-	
-	self.ModelLabel = vgui.Create( "DLabel", self )
-	self.ModelLabel:SetPos( 10, self.h * 0.35 - 20 / 2 )
-	self.ModelLabel:SetColor( Color( 255, 255, 255, 255 ) )
-	self.ModelLabel:SetFont( "catherine_normal20" )
-	self.ModelLabel:SetText( "Character Model" )
-	self.ModelLabel:SizeToContents( )
-	
-	self.Name = vgui.Create( "DTextEntry", self )
-	self.Name:SetPos( 40 + self.NameLabel:GetSize( ), self.h * 0.1 - 20 / 2 )
-	self.Name:SetSize( self.w - ( 40 + self.NameLabel:GetSize( ) ) - 20, 20 )	
-	self.Name:SetFont( "catherine_good15" )
-	self.Name:SetText( "" )
-	self.Name:SetAllowNonAsciiCharacters( true )
-	self.Name.Paint = function( pnl, w, h )
-=======
 	self.parent = self:GetParent( )
 	self.w, self.h = self.parent.w * 0.6, self.parent.h * 0.6
 	self.data = {
@@ -579,7 +477,6 @@ function PANEL:Init( )
 	self.nameEnt:SetText( "" )
 	self.nameEnt:SetAllowNonAsciiCharacters( true )
 	self.nameEnt.Paint = function( pnl, w, h )
->>>>>>> dev
 		draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
 		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
 		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 0 ) )
@@ -588,15 +485,6 @@ function PANEL:Init( )
 		self.data.name = pnl:GetText( )
 	end
 	
-<<<<<<< HEAD
-	self.Desc = vgui.Create( "DTextEntry", self )
-	self.Desc:SetPos( 40 + self.DescLabel:GetSize( ), ( self.h * 0.1 + 30 ) )
-	self.Desc:SetSize( self.w - ( 40 + self.DescLabel:GetSize( ) ) - 20, 20 )	
-	self.Desc:SetFont( "catherine_good15" )
-	self.Desc:SetText( "" )
-	self.Desc:SetAllowNonAsciiCharacters( true )
-	self.Desc.Paint = function( pnl, w, h )
-=======
 	self.desc = vgui.Create( "DLabel", self )
 	self.desc:SetPos( 20, 110 )
 	self.desc:SetColor( Color( 255, 255, 255, 255 ) )
@@ -611,7 +499,6 @@ function PANEL:Init( )
 	self.descEnt:SetText( "" )
 	self.descEnt:SetAllowNonAsciiCharacters( true )
 	self.descEnt.Paint = function( pnl, w, h )
->>>>>>> dev
 		draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
 		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
 		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 0 ) )

@@ -31,11 +31,7 @@ function SWEP:PrimaryAttack( )
 	local ent = pl:GetEyeTrace( 70 ).Entity
 	
 	if ( !ent:IsDoor( ) or ent.Locked ) then return end
-<<<<<<< HEAD
-	if ( ent:GetDoorOwner( ) != pl or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
-=======
 	if ( catherine.door.GetDoorOwner( ent ) != pl or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
->>>>>>> dev
 	
 	catherine.util.ProgressBar( pl, "You are locking this door.", 4 )
 	
@@ -59,11 +55,7 @@ function SWEP:SecondaryAttack( )
 	local ent = pl:GetEyeTrace( 70 ).Entity
 	
 	if ( !ent:IsDoor( ) or !ent.Locked ) then return end
-<<<<<<< HEAD
-	if ( ent:GetDoorOwner( ) != pl or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
-=======
 	if ( catherine.door.GetDoorOwner( ent ) != pl or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
->>>>>>> dev
 	
 	catherine.util.ProgressBar( pl, "You are unlocking this door.", 4 )
 	

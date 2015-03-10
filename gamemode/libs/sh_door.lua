@@ -15,29 +15,6 @@ function META:IsDoor( )
 end
 
 if ( SERVER ) then
-<<<<<<< HEAD
-	function META:BuyDoor( )
-		catherine.door.Buy( self )
-	end
-
-	function META:SellDoor( )
-		catherine.door.Sell( self )
-	end
-
-	function META:SetDoorTitle( title )
-		catherine.door.SetDoorTitle( self, title )
-	end
-	
-	function META2:SetDoorOwner( pl )
-		catherine.door.SetDoorOwner( self, pl )
-	end
-	
-	function META2:GetDoorOwner( ent )
-		return catherine.door.GetDoorOwner( self )
-	end
-
-=======
->>>>>>> dev
 	function catherine.door.Buy( pl )
 		local ent = pl:GetEyeTrace( 70 ).Entity
 		if ( !IsValid( ent ) ) then
@@ -103,16 +80,6 @@ if ( SERVER ) then
 		end
 		return catherine.network.GetNetVar( ent, "owner", nil )
 	end
-	
-	function catherine.door.GetDoorOwner( ent )
-		if ( !IsValid( ent ) ) then
-			return catherine.util.Notify( pl, "Please look valid entity!" )
-		end
-		if ( !ent:IsDoor( ) ) then
-			return catherine.util.Notify( pl, "Please look valid door!" )
-		end
-		return ent:GetNetworkValue( "owner", nil )
-	end
 
 	function catherine.door.SaveData( )
 		local data = { }
@@ -155,17 +122,8 @@ else
 	hook.Add( "DrawEntityInformation", "catherine.door.DrawEntityInformation", function( ent, a )
 		if ( !ent:IsDoor( ) ) then return end
 		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
-<<<<<<< HEAD
-		local title = ent:GetNetworkValue( "title", "A Door." )
-		local haveOwner = nil
-		if ( ent:GetNetworkValue( "owner" ) == nil ) then haveOwner = false else haveOwner = true end
-		local tw, th = surface.GetTextSize( title )
-		draw.SimpleText( ( haveOwner and "This door has already been purchased." ) or "This door can purchase.", "catherine_outline15", position.x, position.y + 20, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( ent:GetNetworkValue( "title", "A Door." ), "catherine_outline20", position.x, position.y, Color( 255, 255, 255, a ), 1, 1 )
-=======
 		draw.SimpleText( catherine.network.GetNetVar( ent, "owner", nil ) == nil and "This door can purchase." or "This door has already been purchased.", "catherine_outline15", position.x, position.y + 20, Color( 255, 255, 255, a ), 1, 1 )
 		draw.SimpleText( catherine.network.GetNetVar( ent, "title", "Door" ), "catherine_outline20", position.x, position.y, Color( 255, 255, 255, a ), 1, 1 )
->>>>>>> dev
 	end )
 end
 

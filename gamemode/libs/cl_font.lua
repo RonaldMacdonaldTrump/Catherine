@@ -38,10 +38,7 @@ catherine.font.Add( "catherine_normal15", catherine.font.FontString, 15, 1000 )
 catherine.font.Add( "catherine_normal20", catherine.font.FontString, 20, 1000 )
 catherine.font.Add( "catherine_normal25", catherine.font.FontString, 25, 1000 )
 catherine.font.Add( "catherine_normal30", catherine.font.FontString, 30, 1000 )
-<<<<<<< HEAD
-=======
 catherine.font.Add( "catherine_normal50", catherine.font.FontString, 50, 1000 )
->>>>>>> dev
 catherine.font.Add( "catherine_schema_title", catherine.font.FontString, 50, 1000 )
 catherine.font.Add( "catherine_good15", catherine.font.FontString, 15, 1000 )
 catherine.font.Add( "catherine_hostname", catherine.font.FontString, 25, 1000 )

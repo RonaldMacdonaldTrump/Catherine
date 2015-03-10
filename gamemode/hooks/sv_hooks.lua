@@ -70,47 +70,6 @@ function GM:PlayerInitialSpawn( pl )
 		pl:SetNoDraw( true )
 	end )
 
-<<<<<<< HEAD
-	local function init( )
-		if ( !catherine.database.Connected ) then
-			netstream.Start( pl, "catherine.LoadingStatus", { false, 0, "MySQL Error : " .. catherine.database.ErrorMsg } )
-			return
-		end
-		netstream.Start( pl, "catherine.LoadingStatus", { false, 0.1 } )
-		catherine.character.SendCurrentCharacterDatas( pl )
-		netstream.Start( pl, "catherine.LoadingStatus", { false, 0.2 } )
-		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
-			if ( !data or #data == 0 ) then
-				catherine.database.InsertDatas( "catherine_players",
-				{
-					_steamName = pl:SteamName( ),
-					_steamID = pl:SteamID( ),
-					_catData = "[]"
-				}, 
-				function( )
-					netstream.Start( pl, "catherine.LoadingStatus", { false, 0.7 } )
-					catherine.catData.Load( pl )
-					netstream.Start( pl, "catherine.LoadingStatus", { false, 1 } )
-					timer.Simple( 1, function( )
-						netstream.Start( pl, "catherine.LoadingStatus", { true, 1 } )
-						catherine.character.SendCharacterLists( pl )
-						catherine.character.SendCharacterPanel( pl )
-					end )
-				end )
-			else
-				catherine.catData.Load( pl )
-				netstream.Start( pl, "catherine.LoadingStatus", { false, 1 } )
-				timer.Simple( 1, function( )
-					netstream.Start( pl, "catherine.LoadingStatus", { true, 1 } )
-					catherine.character.SendCharacterLists( pl )
-					catherine.character.SendCharacterPanel( pl )
-				end )
-			end
-		end )
-	end
-
-=======
->>>>>>> dev
 	timer.Create( "catherine.loading.WaitLocalPlayer_" .. pl:SteamID( ), 1, 0, function( )
 		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
 			timer.Destroy( "catherine.loading.WaitLocalPlayer_" .. pl:SteamID( ) )
