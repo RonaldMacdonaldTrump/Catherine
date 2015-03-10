@@ -1,30 +1,37 @@
-
-catherine.loading = catherine.loading or false
+catherine.loading = catherine.loading or {
+	status = false,
+	errorMsg = nil,
+	alpha = 255,
+	rotate = 0,
+	msg = ""
+}
+catherine.loaded2 = catherine.loaded2 or false
 catherine.errorText = catherine.errorText or ""
 catherine.alpha = catherine.alpha or 255
-catherine.color = catherine.color or 0
-catherine.textColor = catherine.textColor or 255
-catherine.loadingStarting = catherine.loadingStarting or false
 catherine.progressBar = catherine.progressBar or 0
 catherine.percent = catherine.percent or 0
-catherine.menuList = catherine.menuList or { }
 catherine.locationRandom = catherine.locationRandom or table.Random( catherine.configs.locationRandom )
+catherine.hudHide = {
+	"CHudHealth",
+	"CHudBattery",
+	"CHudAmmo",
+	"CHudSecondaryAmmo",
+	"CHudCrosshair",
+	"CHudDamageIndicator",
+	"CHudChat"
+}
+catherine.entityCache = { }
+catherine.nextRefresh = catherine.nextRefresh or CurTime( )
+local toscreen = FindMetaTable("Vector").ToScreen
 
 
-for i = 15, 64 do
-	surface.CreateFont( "catherine_font01_" .. i, { font = "Segoe UI", size = i, weight = 1000, antialias = true } )
-	surface.CreateFont( "catherine_font02_" .. i, { font = "Segoe UI", size = i, weight = 1000, antialias = true, outline = true } )
-end
-
-function GM:HUDShouldDraw( element )
-	if ( element == "CHudHealth" or element == "CHudBattery" or element == "CHudAmmo" or element == "CHudSecondaryAmmo" ) then
-		return false
+function GM:HUDShouldDraw( name )
+	for k, v in pairs( catherine.hudHide ) do
+		if ( v == name ) then
+			return false
+		end
 	end
 	
-	if ( element == "CHudCrosshair" ) then
-		return false
-	end
-
 	return true
 end
 
@@ -42,98 +49,128 @@ function GM:CalcView( pl, pos, ang, fov )
 	end
 end
 
-local nextRefresh = 0
-
-local entity = nil
-local entityIDCache = { }
-
-function GM:HUDDrawTargetID( )
-	local scrW, scrH = ScrW( ), ScrH( )
-	if ( LocalPlayer( ):IsCharacterLoaded( ) and nextRefresh < CurTime( ) ) then
-		nextRefresh = CurTime( ) + 0.5
-		local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
-		if ( IsValid( ent ) ) then
-			entityIDCache[ ent ] = true
-		else
-			entityIDCache[ ent ] = nil
-		end
-	end
-	
-	for k, v in pairs( entityIDCache ) do
-		if ( !IsValid( k ) ) then entityIDCache[ k ] = nil continue end
-		local distance = k:GetPos( ):Distance( LocalPlayer( ):GetPos( ) )
-		local a = Lerp( 0.03, k.alpha or 0, 255 - ( distance ) )
-		k.alpha = a
-
-		if ( math.Round( a ) <= 0 ) then
-			entityIDCache[ k ] = nil
-		end
-
-		hook.Run( "DrawEntityInformation", k, a )
-	end
-end
-
-local toscreen = FindMetaTable("Vector").ToScreen
-
 function GM:DrawEntityInformation( ent, alpha )
-	if ( ent:IsPlayer( ) ) then
+	local entPlayer = ent:GetNetworkValue( "player" )
+	if ( ent:IsPlayer( ) and ent:Alive( ) ) then
 		local lp = LocalPlayer( )
-		local position = toscreen(ent:EyePos())
+		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 		local x, y = position.x, position.y - 100
 		local x2, y2 = 0, 0
 		
-		draw.SimpleText( ent:Name( ), "catherine_font02_25", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
-		
+		local targetInformation = hook.Run( "GetTargetInformation", lp, ent )
+		draw.SimpleText( targetInformation[ 1 ], "catherine_normal25", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
 		y = y + 20
-		
-		draw.SimpleText( ent:Desc( ), "catherine_font02_15", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
-		
+		draw.SimpleText( targetInformation[ 2 ], "catherine_normal15", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
 		y = y + 15
 		
-		hook.Run( "PlayerInformationDraw", x, y, alpha )
+		hook.Run( "PlayerInformationDraw", ent, x, y, alpha )
+	elseif ( entPlayer and entPlayer:IsPlayer( ) ) then
+		local ragdollID = ent:GetNetworkValue( "ragdollID", nil )
+		if ( !ragdollID ) then return end
+		local entFix = Entity( ragdollID )
+		if ( !IsValid( entFix ) ) then return end
+		local lp = LocalPlayer( )
+		local position = toscreen( entFix:LocalToWorld( entFix:OBBCenter( ) ) )
+		local x, y = position.x, position.y - 100
+		local x2, y2 = 0, 0
+		
+		local targetInformation = hook.Run( "GetTargetInformation", lp, entPlayer )
+		draw.SimpleText( targetInformation[ 1 ], "catherine_normal25", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
+		y = y + 20
+		draw.SimpleText( targetInformation[ 2 ], "catherine_normal15", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
+		y = y + 15
+		
+		hook.Run( "PlayerInformationDraw", entPlayer, x, y, alpha )
+	end
+end
+
+function GM:PlayerInformationDraw( pl, x, y, alpha )
+	if ( !pl:Alive( ) ) then
+		local gText = ( pl:GetGender( ) == "male" and "He" ) or "She"
+		draw.SimpleText( gText .. " was going to hell, RIP.", "catherine_normal15", x, y, Color( 255, 150, 150, alpha ), 1, 1 )
 	end
 end
 
 function GM:HUDDrawScoreBoard( )
 	local scrW, scrH = ScrW( ), ScrH( )
-	if ( catherine.loading ) then
-		if ( catherine.loadingStarting ) then
-			catherine.alpha = Lerp( 0.01, catherine.alpha, 255 )
-			catherine.color = Lerp( 0.01, catherine.color, 0 )
-			catherine.textColor = Lerp( 0.01, catherine.textColor, 255 )
-		else
-			catherine.color = Lerp( 0.01, catherine.color, 255 )
-			catherine.alpha = Lerp( 0.01, catherine.alpha, 255 )
-			catherine.textColor = Lerp( 0.01, catherine.textColor, 50 )
-		end
+	local a = catherine.loading.alpha
+	if ( !catherine.loading.status ) then
+		catherine.loading.alpha = Lerp( 0.01, catherine.loading.alpha, 255 )
 	else
-		catherine.alpha = Lerp( 0.005, catherine.alpha, 0 )
+		catherine.loading.alpha = Lerp( 0.008, catherine.loading.alpha, 0 )
 	end
 	
-	catherine.progressBar = Lerp( 0.05, catherine.progressBar, ( scrW - 20 ) * catherine.percent )
-
-	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( catherine.color, catherine.color, catherine.color, catherine.alpha ) )
+	catherine.loading.rotate = math.Approach( catherine.loading.rotate, catherine.loading.rotate - 3, 3 )
 	
-	surface.SetDrawColor( catherine.color - 55, catherine.color - 55, catherine.color - 55, catherine.alpha )
+	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 235, 235, 235, a ) )
+	
+	surface.SetDrawColor( 150, 150, 150, a )
 	surface.SetMaterial( Material( "gui/gradient_up" ) )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )
 
-	surface.SetDrawColor( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha )
-	surface.SetMaterial( Material( "catherine/logo.png" ) )
+	surface.SetDrawColor( 255, 255, 255, a )
+	surface.SetMaterial( Material( "CAT/logo67.png" ) )
 	surface.DrawTexturedRect( scrW / 2 - 512 / 2, scrH / 2 - 256 / 2, 512, 256 )
 	
-	//draw.RoundedBox( 0, 10, scrH - 20, scrW - 20, 10, Color( catherine.textColor * 2, catherine.textColor * 2, catherine.textColor * 2, catherine.alpha ) )
-	//draw.RoundedBox( 0, 10, scrH - 20, catherine.progressBar, 10, Color( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha ) )
+	draw.SimpleText( "Ver 0.2", "catherine_normal15", 15, 20, Color( 50, 50, 50, a ), TEXT_ALIGN_LEFT, 1 )
+
+	if ( catherine.loading.errorMsg ) then
+		draw.NoTexture( )
+		surface.SetDrawColor( 255, 0, 0, catherine.loading.alpha - 55 )
+		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, 90, 360, 100 )
+		
+		draw.SimpleText( catherine.loading.errorMsg, "catherine_normal20", 100, scrH - 50, Color( 80, 80, 80, a ), TEXT_ALIGN_LEFT, 1 )
+	else
+		draw.NoTexture( )
+		surface.SetDrawColor( 90, 90, 90, catherine.loading.alpha - 55 )
+		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, 90, 360, 100 )
+		
+		draw.NoTexture( )
+		surface.SetDrawColor( 255, 255, 255, catherine.loading.alpha )
+		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, catherine.loading.rotate, 100, 100 )
 	
-	draw.SimpleText( catherine.errorText, "catherine_font01_40", scrW / 2, scrH - 70, Color( catherine.textColor, catherine.textColor, catherine.textColor, catherine.alpha ), 1, 1 )
+		draw.SimpleText( catherine.loading.msg, "catherine_normal15", 100, scrH - 50, Color( 80, 80, 80, a ), TEXT_ALIGN_LEFT, 1 )
+	end
+end
+
+function GM:ProgressEntityCache( )
+	if ( LocalPlayer( ):IsCharacterLoaded( ) and catherine.nextRefresh < CurTime( ) ) then
+		local ent
+
+		local trace = { }
+		trace.start = LocalPlayer( ):GetShootPos( )
+		trace.endpos = trace.start + LocalPlayer( ):GetAimVector() * 160
+		trace.filter = LocalPlayer( )
+
+		ent = util.TraceLine( trace ).Entity
+
+		if ( IsValid( ent ) ) then catherine.entityCache[ ent ] = true
+		else catherine.entityCache[ ent ] = nil end
+		catherine.nextRefresh = CurTime( ) + 0.5
+	end
+	
+	for k, v in pairs( catherine.entityCache ) do
+		if ( !IsValid( k ) ) then catherine.entityCache[ k ] = nil continue end
+		local distance = k:GetPos( ):Distance( LocalPlayer( ):GetPos( ) )
+		local a = Lerp( 0.03, k.alpha or 0, 255 - ( distance ) )
+		k.alpha = a
+
+		if ( math.Round( a ) <= 0 ) then catherine.entityCache[ k ] = nil end
+		hook.Run( "DrawEntityInformation", k, a )
+	end
 end
 
 function GM:HUDPaint( )
-	surface.SetDrawColor( 0, 0, 0, 255 )
-	surface.SetMaterial( Material( "catherine/vignette.png" ) )
-	surface.DrawTexturedRect( 0, 0, ScrW( ), ScrH( ) )
-	
+	if ( IsValid( catherine.vgui.character ) ) then return end
+	catherine.hud.Draw( )
 	catherine.bar.Draw( )
+	catherine.notify.Draw( )
+	catherine.wep.Draw( LocalPlayer( ) )
+	
+	if ( !LocalPlayer( ):Alive( ) ) then return end
+	hook.Run( "ProgressEntityCache" )
+	
+	draw.SimpleText( "Catherine Development Version", "catherine_normal20", ScrW( ) - 10, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePos, eyeAng )
@@ -155,26 +192,46 @@ function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePo
 	return oldEyePos, eyeAng
 end
 
-function GM:AddMenu( )
-	catherine.RegisterMenuItem( "Inventory", "catherine.vgui.inventory", "Open the your inventory." )
+function GM:RunCinematicIntro_Information( )
+	return {
+		title = Schema.IntroTitle,
+		desc = Schema.IntroDesc,
+		author = "The roleplaying schema development and design by " .. Schema.Author .. "."
+	}
+end
+
+function GM:ScoreboardShow()
+	if ( IsValid( catherine.vgui.menu ) ) then
+		catherine.vgui.menu:Close( )
+		gui.EnableScreenClicker( false )
+	else
+		catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )
+		gui.EnableScreenClicker( true )
+	end
+end
+
+function GM:RenderScreenspaceEffects( )
+	local data = hook.Run( "GetCustomColorData", LocalPlayer( ) ) or { }
+	
+	local tab = { }
+	tab[ "$pp_colour_addr" ] = data.addr or 0
+	tab[ "$pp_colour_addg" ] = data.addg or 0
+	tab[ "$pp_colour_addb" ] = data.addb or 0
+	tab[ "$pp_colour_brightness" ] = data.brightness or 0
+	tab[ "$pp_colour_contrast" ] = data.contrast or 1
+	tab[ "$pp_colour_colour" ] = data.colour or 0.9
+	tab[ "$pp_colour_mulr" ] = data.mulr or 0
+	tab[ "$pp_colour_mulg" ] = data.mulg or 0
+	tab[ "$pp_colour_mulb" ] = data.mulb or 0
+	
+	DrawColorModify( tab )
 end
 
 netstream.Hook( "catherine.LoadingStatus", function( data )
-	if ( data[ 2 ] == true ) then
-		if ( data[ 1 ] == true ) then
-			catherine.loading = true
-			catherine.loadingStarting = false
-		elseif ( data[ 1 ] == false ) then
-			catherine.loading = true
-			catherine.loadingStarting = true
-		end
-	elseif ( data[ 2 ] == false ) then
-		catherine.loading = true
-		catherine.errorText = data[ 3 ] or ""
-	end
-	catherine.percent = data[ 4 ]
-	if ( data[ 5 ] == true ) then
-		catherine.loading = false
-		catherine.loadingStarting = false
+	catherine.loading.status = data[ 1 ]
+	catherine.loading.msg = data[ 2 ]
+	if ( data[ 3 ] == true ) then
+		catherine.loading.errorMsg = data[ 2 ]
+		catherine.loading.msg = ""
 	end
 end )

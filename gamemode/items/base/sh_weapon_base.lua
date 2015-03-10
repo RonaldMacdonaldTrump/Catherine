@@ -21,11 +21,12 @@ Base.func.equip = {
 			catherine.item.GiveToCharacter( pl, tab.uniqueID )
 		end
 		local weapon = pl:Give( tab.weaponClass )
-		local newData = { }
+		local newData = data or { }
 		newData.equiped = true
 		if ( IsValid( weapon ) ) then
 			pl:SelectWeapon( tab.weaponClass )
-			//pl:SetClip1( 100)
+			//weapon:SetClip1( newData.clipOne or 0 )
+			//weapon:SetClip2( newData.clipTwo or 0 )
 		end
 		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, itemData = newData } )
 	end,
@@ -80,7 +81,7 @@ Base.func.drop = {
 if ( SERVER ) then
 	hook.Add( "PlayerSpawn", "weapon_base_PlayerSpawn", function( pl )
 		if ( !pl:IsCharacterLoaded( ) ) then return end
-		local inv = catherine.inventory.GetInv( pl )
+		local inv = catherine.inventory.GetInv( pl ) or { }
 		for k, v in pairs( inv ) do
 			for k1, v1 in pairs( v ) do
 				local equiped = catherine.inventory.Equiped( pl, k )
@@ -94,7 +95,7 @@ if ( SERVER ) then
 	
 	hook.Add( "CharacterLoaded", "weapon_base_CharacterLoaded", function( pl )
 		if ( !pl:IsCharacterLoaded( ) ) then return end
-		local inv = catherine.inventory.GetInv( pl )
+		local inv = catherine.inventory.GetInv( pl ) or { }
 		for k, v in pairs( inv ) do
 			for k1, v1 in pairs( v ) do
 				local equiped = catherine.inventory.Equiped( pl, k )

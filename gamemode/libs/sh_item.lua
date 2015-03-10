@@ -53,7 +53,7 @@ function catherine.item.Register( tab, isBase )
 			return !tab.cantDrop
 		end
 	}
-	tab.funcBuf = table.Copy( tab.func )
+	tab.funcBuf = table.Copy( tab.func or { } )
 	tab.func = tab.funcBuffer
 	tab.func = table.Merge( tab.func, tab.funcBuf )
 	
@@ -72,7 +72,7 @@ function catherine.item.Include( dir )
 	local baseFiles = file.Find( dir .. "/items/base/*", "LUA" )
 	for k, v in pairs( baseFiles ) do
 		Base = { }
-		Base.uniqueID = string.sub( v, 4, -5 )
+		Base.uniqueID = catherine.util.GetUniqueName( v )
 		catherine.util.Include( dir .. "/items/base/" .. v )
 		catherine.item.Register( Base, true )
 		Base = nil
@@ -84,7 +84,7 @@ function catherine.item.Include( dir )
 		local itemFile = file.Find( dir .. "/items/" .. v .. "/*", "LUA" )
 		for k1, v1 in pairs( itemFile ) do
 			Item = { }
-			Item.uniqueID = string.sub( v1, 4, -5 )
+			Item.uniqueID = catherine.util.GetUniqueName( v1 )
 			catherine.util.Include( dir .. "/items/" .. v .. "/" .. v1 )
 			catherine.item.Register( Item )
 			Item = nil
@@ -103,7 +103,7 @@ if ( SERVER ) then
 		if ( !itemData ) then itemData = { } end
 		if ( !itemTab.func[ funcName ] ) then return end
 		if ( !itemTab.func[ funcName ].func ) then return end
-		local data = catherine.inventory.GetInvItemData( pl, itemTab.uniqueID )
+		local data = catherine.inventory.GetInvItemDatas( pl, itemTab.uniqueID )
 		itemTab.func[ funcName ].func( pl, itemTab, data or { } )
 	end
 	
@@ -154,7 +154,8 @@ if ( SERVER ) then
 		ent:PhysicsInit( SOLID_VPHYSICS )
 		ent.itemTable = itemTab
 		ent.itemID = itemTab.uniqueID
-		ent:SetNetworkValue( "itemData", itemTab.itemData or { } )
+		catherine.network.SetNetVar( ent, "itemData", itemTab.itemData or { } )
+		ent:SetItemUniqueID( itemTab.uniqueID )
 		
 		local phyO = ent:GetPhysicsObject()
 		if ( IsValid( phyO ) ) then
@@ -182,7 +183,7 @@ else
 	
 	function catherine.item.OpenEntityUseMenu( data )
 		local ent = data[ 1 ]
-		local itemID = data[ 2 ] // to do remove.;
+		local itemID = data[ 2 ]
 		if ( !IsValid( ent ) or !IsValid( LocalPlayer( ):GetEyeTrace( ).Entity ) ) then return end
 		local itemTab = catherine.item.FindByID( itemID )
 		if ( !itemTab ) then return end
@@ -200,5 +201,21 @@ else
 	
 	netstream.Hook( "catherine.item.EntityUseMenu", function( data )
 		catherine.item.OpenEntityUseMenu( data )
+	end )
+	
+	local toscreen = FindMetaTable("Vector").ToScreen
+	
+	hook.Add( "DrawEntityInformation", "catherine.item.DrawEntityInformation", function( ent, alpha )
+		if ( ent:GetClass( ) != "catherine_item" ) then return end
+		local itemTab = catherine.item.FindByID( ent:GetItemUniqueID( ) )
+		if ( !itemTab ) then return end
+		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
+		draw.SimpleText( itemTab.name, "catherine_outline20", position.x, position.y, Color( 255, 255, 255, alpha ), 1, 1 )
+		if ( itemTab.GetDesc ) then
+			local desc = itemTab:GetDesc( LocalPlayer( ), itemTab, catherine.network.GetNetVar( ent, "itemData", { } ) )
+			draw.SimpleText( desc, "catherine_outline15", position.x, position.y + 20, Color( 255, 255, 255, alpha ), 1, 1 )
+		else
+			draw.SimpleText( itemTab.desc, "catherine_outline15", position.x, position.y + 20, Color( 255, 255, 255, alpha ), 1, 1 )
+		end
 	end )
 end

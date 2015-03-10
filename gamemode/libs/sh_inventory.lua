@@ -33,12 +33,26 @@ if ( SERVER ) then
 		return #inv[ itemID ]
 	end
 	
-	function catherine.inventory.GetInvItemData( pl, itemID )
-		if ( !catherine.inventory.HasItem( pl, itemID ) ) then return nil end
+	function catherine.inventory.GetInvItemDatas( pl, itemID )
+		if ( !catherine.inventory.HasItem( pl, itemID ) ) then return { } end
 		local inv = catherine.inventory.GetInv( pl )
-		if ( !inv ) then return nil end
-		if ( !inv[ itemID ] ) then return nil end
+		if ( !inv[ itemID ][ "itemData" ] ) then return { } end
 		return inv[ itemID ][ "itemData" ]
+	end
+	
+	function catherine.inventory.GetInvItemDataByID( pl, itemID, id, def )
+		local data = catherine.inventory.GetInvItemDatas( pl, itemID )
+		if ( !data ) then return nil end
+		return data[ id ] or def
+	end
+	
+	function catherine.inventory.SetInvItemData( pl, itemID, id, val )
+		if ( !catherine.inventory.HasItem( pl, itemID ) or val == nil ) then return end
+		local inv = catherine.inventory.GetInv( pl )
+		if ( !inv or !inv[ itemID ] or !inv[ itemID ][ "itemData" ] or inv[ itemID ][ "itemData" ][ id ] == nil ) then return end
+		inv[ itemID ][ "itemData" ][ id ] = val
+		
+		catherine.character.SetGlobalData( pl, "_inv", inv )
 	end
 
 	function catherine.inventory.Update( pl, types, data )
@@ -117,6 +131,13 @@ if ( SERVER ) then
 		return weight
 	end
 else
+	function catherine.inventory.GetInvHasItemCount( itemID )
+		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
+		if ( !inv or !itemID ) then return 0 end
+		if ( !inv[ itemID ] ) then return 0 end
+		return inv[ itemID ].count
+	end
+	
 	function catherine.inventory.GetInvWeight( ) // need change.;
 		local inv = catherine.character.GetGlobalData( LocalPlayer( ), "_inv" )
 		if ( !inv ) then return 0 end
@@ -130,12 +151,17 @@ else
 		end
 		return weight
 	end
-	
-	function catherine.inventory.GetInvHasItemCount( itemID )
+
+	function catherine.inventory.GetInvItemDatas( itemID )
+		if ( !catherine.inventory.HasItem( itemID ) ) then return { } end
 		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
-		if ( !inv or !itemID ) then return 0 end
-		if ( !inv[ itemID ] ) then return 0 end
-		return inv[ itemID ].count
+		if ( !inv[ itemID ][ "itemData" ] ) then return { } end
+		return inv[ itemID ][ "itemData" ]
+	end
+	
+	function catherine.inventory.GetInvItemDataByID( pl, itemID, id, def )
+		local data = catherine.inventory.GetInvItemDatas( itemID )
+		return data[ id ] or def
 	end
 	
 	function catherine.inventory.GetInvMaxWeight( )
@@ -150,6 +176,16 @@ else
 		end
 		
 		return weight
+	end
+	
+	function catherine.inventory.HasItem( itemID )
+		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
+		if ( !inv or !itemID ) then return false end
+		if ( inv[ itemID ] ) then
+			return true
+		else
+			return false
+		end
 	end
 
 	function catherine.inventory.Equiped( itemID )

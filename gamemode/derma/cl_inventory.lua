@@ -1,99 +1,60 @@
-concommand.Add("inv_open", function( )
-	if ( IsValid( catherine.vgui.inventory ) ) then
-		catherine.vgui.inventory:Close( )
-		catherine.vgui.inventory = vgui.Create( "catherine.vgui.inventory" )
-	else
-		catherine.vgui.inventory = vgui.Create( "catherine.vgui.inventory" )
-	end
-end)
-
 local PANEL = { }
 
 function PANEL:Init( )
-	local LP = LocalPlayer( )
+	catherine.vgui.inventory = self
 	
-	self.w = ScrW( ) * 0.5
-	self.h = ScrH( ) * 0.7
-	self.x = ScrW( ) / 2 - self.w / 2
-	self.y = ScrH( ) / 2 - self.h / 2
 	self.inv = nil
 	self.invWeightAni = 0
+	self.invWeight = 0
+	self.invMaxWeight = 0
 	
-	self.menuName = "INVENTORY"
-	
-	self.invWeight = LocalPlayer( ):GetInvWeight( )
-	self.invMaxWeight = LocalPlayer( ):GetInvMaxWeight( )
-	
-	self:SetSize( self.w, self.h )
-	self:SetPos( self.x, self.y )
-	self:SetTitle( "" )
-	self:ShowCloseButton( false )
-	self:SetDraggable( false )
-	self.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 25, w, h, Color( 255, 255, 255, 235 ) )
-		
-		surface.SetDrawColor( 200, 200, 200, 235 )
-		surface.SetMaterial( Material( "gui/gradient_up" ) )
-		surface.DrawTexturedRect( 0, 25, w, h )
-		
-		self.invWeightAni = Lerp( 0.03, self.invWeightAni, math.min( ( self.invWeight / self.invMaxWeight ), 1 ) * w - 20 )
-		
-		draw.RoundedBox( 0, 10, 40, w - 20, 30, Color( 100, 100, 100, 255 ) )
-		draw.RoundedBox( 0, 10, 40, self.invWeightAni, 30, Color( 150, 150, 150, 255 ) )
-		
-		draw.SimpleText( self.invWeight .. " kg / " .. self.invMaxWeight .. " kg", "catherine_font01_20", w / 2, 40 + 30 / 2, Color( 255, 255, 255, 255 ), 1, 1 )
-		
-		draw.RoundedBox( 0, 0, 0, surface.GetTextSize( self.menuName ) + 25, 25, Color( 255, 255, 255, 235 ) )
-		
-		draw.SimpleText( self.menuName, "catherine_font01_25", 5, 0, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-	end
+	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
+	self:SetMenuName( "Bag" )
 
-	self.CloseMenu = vgui.Create( "catherine.vgui.button", self )
-	self.CloseMenu:SetSize( 30, 25 )
-	self.CloseMenu:SetPos( self.w - 30, 0 )
-	self.CloseMenu:SetOutlineColor( Color( 255, 0, 0, 255 ) )
-	self.CloseMenu:SetStr( "X" )
-	self.CloseMenu.Click = function( )
-		self:Close( )
-	end
-	
 	self.Lists = vgui.Create( "DPanelList", self )
-	self.Lists:SetPos( 10, 80 )
-	self.Lists:SetSize( self.w - 20, self.h - 90 )
+	self.Lists:SetPos( 10, 65 )
+	self.Lists:SetSize( self.w - 20, self.h - 75 )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
 	self.Lists.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 	end
-	
-	self:InitInventory( )
+
+	self:InitializeInv( )
 end
 
-function PANEL:InitInventory( )
-	local inv = LocalPlayer( ):GetInv( )
+function PANEL:MenuPaint( w, h )
+	self.invWeightAni = Lerp( 0.03, self.invWeightAni, math.min( ( self.invWeight / self.invMaxWeight ), 1 ) * w - 20 )
+
+	draw.RoundedBox( 0, 10, 35, w - 20, 20, Color( 100, 100, 100, 255 ) )
+	draw.RoundedBox( 0, 10, 35, self.invWeightAni, 20, Color( 150, 150, 150, 255 ) )
+
+	draw.SimpleText( self.invWeight .. " kg / " .. self.invMaxWeight .. " kg", "catherine_normal15", w / 2, 35 + 20 / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+end
+
+function PANEL:InitializeInv( )
+	local inv = self.player:GetInv( )
 	if ( !inv ) then return end
-	local categoryTab = { }
+	local tab = { }
+	
 	for k, v in pairs( inv ) do
 		local itemTab = catherine.item.FindByID( k )
-		categoryTab[ itemTab.category ] = categoryTab[ itemTab.category ] or { }
-		categoryTab[ itemTab.category ][ v.uniqueID ] = v
+		local category = itemTab.category or "Other"
+		tab[ category ] = tab[ category ] or { }
+		tab[ category ][ v.uniqueID ] = v
 	end
 	
-	self.inv = categoryTab
-	
-	self.invWeight = LocalPlayer( ):GetInvWeight( )
-	self.invMaxWeight = LocalPlayer( ):GetInvMaxWeight( )
+	self.inv = tab
+	self.invWeight = self.player:GetInvWeight( )
+	self.invMaxWeight = self.player:GetInvMaxWeight( )
 
-	self:RefreshInventory( )
-	
-	catherine.vgui.inventory = self
+	self:Refresh( )
 end
 
-function PANEL:RefreshInventory( )
+function PANEL:Refresh( )
 	if ( !self.inv ) then return end
 	self.Lists:Clear( )
-	local has = { }
 	for k, v in pairs( self.inv ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
@@ -102,20 +63,27 @@ function PANEL:RefreshInventory( )
 			draw.RoundedBox( 0, 0, 0, w, 20, Color( 150, 150, 150, 255 ) )
 		end
 
-		local dpanelList = vgui.Create( "DPanelList", form )
-		dpanelList:SetSize( form:GetWide( ), form:GetTall( ) )
-		dpanelList:SetSpacing( 3 )
-		dpanelList:EnableHorizontal( true )
-		dpanelList:EnableVerticalScrollbar( false )	
+		local lists = vgui.Create( "DPanelList", form )
+		lists:SetSize( form:GetWide( ), form:GetTall( ) )
+		lists:SetSpacing( 3 )
+		lists:EnableHorizontal( true )
+		lists:EnableVerticalScrollbar( false )	
 		
-		form:AddItem( dpanelList )
+		form:AddItem( lists )
 		
 		for k1, v1 in pairs( v ) do
 			local itemTab = catherine.item.FindByID( v1.uniqueID )
+			local itemData = self.player:GetInvItemDatas( v1.uniqueID )
+			local itemDesc = itemTab.GetDesc and itemTab:GetDesc( self.player, itemTab, itemData ) or ""
+			local paintFunc = function( )
+				if ( !itemTab.DrawOverAll ) then return end
+				itemTab:DrawOverAll( self.player, 64, 64, data )
+			end
+			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( 64, 64 )
 			spawnIcon:SetModel( itemTab.model )
-			spawnIcon:SetToolTip( "Name : " .. itemTab.name .. "\nDesc : " .. itemTab.desc .. "\nCost : " .. itemTab.cost )
+			spawnIcon:SetToolTip( "Name : " .. itemTab.name .. "\nDescription : " .. itemTab.desc .. "\nCost : " .. itemTab.cost .. "\n" .. itemDesc  )
 			spawnIcon.DoClick = function( )
 				catherine.item.OpenMenu( v1.uniqueID )
 			end
@@ -144,25 +112,25 @@ function PANEL:RefreshInventory( )
 				draw.RoundedBox( 0, w - 1, h - 15, 1, 10, Color( 50, 50, 50, 255 ) )
 				draw.RoundedBox( 0, w - 15, h - 1, 10, 1, Color( 50, 50, 50, 255 ) )
 
-				if ( LocalPlayer( ):IsEquiped( v1.uniqueID ) ) then
+				if ( self.player:IsEquiped( v1.uniqueID ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
 					surface.SetMaterial( Material( "icon16/accept.png" ) )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
-				
-				draw.SimpleText( v1.count, "catherine_font01_15", 5, h - 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.SimpleText( v1.count, "catherine_normal15", 5, h - 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				paintFunc( )
 			end
-			
-			dpanelList:AddItem( spawnIcon )
+			lists:AddItem( spawnIcon )
 		end
 		self.Lists:AddItem( form )
 	end
 end
 
-function PANEL:Close( )
-	self:Remove( )
-	self = nil
-	catherine.vgui.inventory = nil
-end
+vgui.Register( "catherine.vgui.inventory", PANEL, "catherine.vgui.menuBase" )
 
-vgui.Register( "catherine.vgui.inventory", PANEL, "DFrame" )
+
+hook.Add( "AddMenuItem", "catherine.vgui.inventory", function( tab )
+	tab[ "Bag" ] = function( menuPnl, itemPnl )
+		return vgui.Create( "catherine.vgui.inventory", menuPnl )
+	end
+end )

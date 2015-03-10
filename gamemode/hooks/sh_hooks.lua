@@ -3,22 +3,22 @@
 	https://github.com/Chessnut/NutScript
 --]]
 
-Weapon_HolyType = {}
-Weapon_HolyType[ "" ] = "normal"
-Weapon_HolyType[ "physgun" ] = "smg"
-Weapon_HolyType[ "ar2" ] = "smg"
-Weapon_HolyType[ "crossbow" ] = "shotgun"
-Weapon_HolyType[ "rpg" ] = "shotgun"
-Weapon_HolyType[ "slam" ] = "normal"
-Weapon_HolyType[ "grenade" ] = "normal"
-Weapon_HolyType[ "fist" ] = "normal"
-Weapon_HolyType[ "melee2" ] = "melee"
-Weapon_HolyType[ "passive" ] = "normal"
-Weapon_HolyType[ "knife" ] = "melee"
-Weapon_HolyType[ "duel" ] = "pistol"
-Weapon_HolyType[ "camera" ] = "smg"
-Weapon_HolyType[ "magic" ] = "normal"
-Weapon_HolyType[ "revolver" ] = "pistol"
+Weapon_HoldType = {}
+Weapon_HoldType[ "" ] = "normal"
+Weapon_HoldType[ "physgun" ] = "smg"
+Weapon_HoldType[ "ar2" ] = "smg"
+Weapon_HoldType[ "crossbow" ] = "shotgun"
+Weapon_HoldType[ "rpg" ] = "shotgun"
+Weapon_HoldType[ "slam" ] = "normal"
+Weapon_HoldType[ "grenade" ] = "normal"
+Weapon_HoldType[ "fist" ] = "normal"
+Weapon_HoldType[ "melee2" ] = "melee"
+Weapon_HoldType[ "passive" ] = "normal"
+Weapon_HoldType[ "knife" ] = "melee"
+Weapon_HoldType[ "duel" ] = "pistol"
+Weapon_HoldType[ "camera" ] = "smg"
+Weapon_HoldType[ "magic" ] = "normal"
+Weapon_HoldType[ "revolver" ] = "pistol"
 
 PlayerHoldType = {}
 PlayerHoldType[ "" ] = "normal"
@@ -85,7 +85,7 @@ function GM:TranslateActivity(pl, act)
 		if ( pl:OnGround( ) ) then
 			if ( IsValid( weapon ) ) then
 				subClass = weapon:GetHoldType( )
-				subClass = Weapon_HolyType[subClass] or subClass
+				subClass = Weapon_HoldType[subClass] or subClass
 			end
 
 			if ( animTab[ subClass ] and animTab[ subClass ][ act ] ) then
@@ -113,7 +113,7 @@ function GM:DoAnimationEvent(pl, event, data)
 
 		if (IsValid(weapon)) then
 			local holdType = weapon:GetHoldType()
-			holdType = Weapon_HolyType[holdType] or holdType
+			holdType = Weapon_HoldType[holdType] or holdType
 
 			local animation = catherine.anim[class][holdType]
 
