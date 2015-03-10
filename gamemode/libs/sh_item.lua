@@ -154,7 +154,7 @@ if ( SERVER ) then
 		ent:PhysicsInit( SOLID_VPHYSICS )
 		ent.itemTable = itemTab
 		ent.itemID = itemTab.uniqueID
-		ent:SetNetworkValue( "itemData", itemTab.itemData or { } )
+		catherine.network.SetNetVar( ent, "itemData", itemTab.itemData or { } )
 		ent:SetItemUniqueID( itemTab.uniqueID )
 		
 		local phyO = ent:GetPhysicsObject()
@@ -212,7 +212,11 @@ else
 		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 		draw.SimpleText( itemTab.name, "catherine_outline20", position.x, position.y, Color( 255, 255, 255, alpha ), 1, 1 )
 		if ( itemTab.GetDesc ) then
+<<<<<<< HEAD
 			local desc = itemTab:GetDesc( LocalPlayer( ), itemTab, ent:GetNetworkValue( "itemData", { } ) )
+=======
+			local desc = itemTab:GetDesc( LocalPlayer( ), itemTab, catherine.network.GetNetVar( ent, "itemData", { } ) )
+>>>>>>> dev
 			draw.SimpleText( desc, "catherine_outline15", position.x, position.y + 20, Color( 255, 255, 255, alpha ), 1, 1 )
 		else
 			draw.SimpleText( itemTab.desc, "catherine_outline15", position.x, position.y + 20, Color( 255, 255, 255, alpha ), 1, 1 )

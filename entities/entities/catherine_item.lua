@@ -26,7 +26,7 @@ if ( SERVER ) then
 	end
 	
 	function ENT:SetItemUniqueID( id )
-		self:SetNetworkValue( "itemUniqueID", id )
+		catherine.network.SetNetVar( self, "itemUniqueID", id )
 	end
 
 	function ENT:Use( pl )

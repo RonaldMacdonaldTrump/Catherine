@@ -1,22 +1,30 @@
+concommand.Add( "char_open", function( )
+	if ( IsValid( catherine.vgui.character ) ) then
+		catherine.vgui.character:Close( )
+	end
+	
+	catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+end )
+
+concommand.Add( "char_close", function( )
+	if ( IsValid( catherine.vgui.character ) ) then
+		catherine.vgui.character:Close( )
+	end
+end )
+
 local PANEL = { }
 
 function PANEL:Init( )
-
 	catherine.vgui.character = self
 	
-	local LP = LocalPlayer( )
-	
-	self.w = ScrW( )
-	self.h = ScrH( )
-
-	self.blur = Material( "pp/blurscreen" )
-	self.status = nil
+	self.player = LocalPlayer( )
+	self.w, self.h = ScrW( ), ScrH( )
 	self.blurAmount = 0
-	self.schemaImageAlpha = 0
-	self.alpha = 0
-	
+	self.mainAlpha = 0
 	self.music = CreateSound( LocalPlayer( ), catherine.configs.characterMenuMusic )
 	self.music:Play( )
+	self.mainButtons = { }
+	self.mode = 0
 	
 	self:SetSize( self.w, self.h )
 	self:Center( )
@@ -29,75 +37,86 @@ function PANEL:Init( )
 	
 		catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 	
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, self.alpha / 1.5 ) )
-
-		if ( !self.createCharacter and !self.loadCharacter ) then
-			self.schemaImageAlpha = Lerp( 0.03, self.schemaImageAlpha, 255 )
+		if ( self.mode == 0 ) then
+			self.mainAlpha = Lerp( 0.03, self.mainAlpha, 255 )
 		else
-			self.schemaImageAlpha = Lerp( 0.03, self.schemaImageAlpha, 0 )
+			self.mainAlpha = Lerp( 0.05, self.mainAlpha, 0 )
 		end
 		
-		self.alpha = Lerp( 0.01, self.alpha, 255 )
+		surface.SetDrawColor( 50, 50, 50, self.mainAlpha - 5 )
+		surface.SetMaterial( Material( "gui/gradient" ) )
+		surface.DrawTexturedRect( 0, h * 0.7 - 70, w * 0.4, 240 )
 
-		if ( catherine.configs.schemaImage != nil and catherine.configs.schemaImage != "" ) then
-			surface.SetDrawColor( 255, 255, 255, self.schemaImageAlpha )
-			surface.SetMaterial( Material( catherine.configs.schemaImage ) )
-			surface.DrawTexturedRect( w / 2 - 512 / 2, h / 2 - 256 / 2, 512, 256 )
-		end
-	end
-
-	self.NewCharacter = vgui.Create( "catherine.vgui.button", self )
-	self.NewCharacter:SetPos( 5, self.h - 35 )
-	self.NewCharacter:SetSize( self.w * 0.2, 30 )
-	self.NewCharacter:SetStr( "Create" )
-	self.NewCharacter:SetOutlineColor( Color( 255, 255, 255, 255 ) )
-	self.NewCharacter:RunFadeInAnimation( 0.3, 1 )
-	self.NewCharacter.Click = function( )
-		if ( !self.createCharacter and !self.loadCharacter ) then 
-			self:CreateCharacter_Init( )
-			self:NextStage( )
-		end
+		surface.SetDrawColor( 255, 255, 255, self.mainAlpha )
+		surface.SetMaterial( Material( "gui/gradient" ) )
+		surface.DrawTexturedRect( 0, h * 0.7 - 70, w * 0.4, 2 )
 		
-		if ( self.loadCharacter ) then
-			self:LoadCharacter_Refresh( )
-			self.loadCharacter = nil
-		end
+		surface.SetDrawColor( 255, 255, 255, self.mainAlpha )
+		surface.SetMaterial( Material( "gui/gradient" ) )
+		surface.DrawTexturedRect( 0, ( h * 0.7 - 70 + 240 ) - 2, w * 0.4, 2 )
+
+		draw.SimpleText( Schema.Title, "catherine_normal30", 30, h * 0.7 - 60, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+		draw.SimpleText( Schema.Desc, "catherine_normal20", 30, h * 0.7 - 30, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 	end
-	
-	self.LoadCharacter = vgui.Create( "catherine.vgui.button", self )
-	self.LoadCharacter:SetPos( 10 + self.w * 0.2, self.h - 35 )
-	self.LoadCharacter:SetSize( self.w * 0.2, 30 )
-	self.LoadCharacter:SetStr( "Load" )
-	self.LoadCharacter:SetOutlineColor( Color( 255, 255, 255, 255 ) )
-	self.LoadCharacter:RunFadeInAnimation( 0.3, 1 )
-	self.LoadCharacter.Click = function( )
-		if ( !self.createCharacter ) then 
-			self:LoadCharacter_Refresh( )
-			self:LoadCharacter_Init( )
-		end
+
+	self.createCharacter = vgui.Create( "catherine.vgui.button", self )
+	self.createCharacter:SetPos( 30, self.h * 0.7 )
+	self.createCharacter:SetSize( self.w * 0.2, 30 )
+	self.createCharacter:SetStr( "Create character" )
+	self.createCharacter:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.createCharacter.Click = function( )
+		self:JoinMenu( function( )
+			self:CreateCharacterPanel( )
+		end )
 	end
+	self.mainButtons[ #self.mainButtons + 1 ] = self.createCharacter
 	
-	self.Disconnect = vgui.Create( "catherine.vgui.button", self )
-	self.Disconnect:SetPos( self.w - self.w * 0.2 - 5, self.h - 35 )
-	self.Disconnect:SetSize( self.w * 0.2, 30 )
-	self.Disconnect:SetStr( "Disconnect" )
-	self.Disconnect:RunFadeInAnimation( 0.3, 1 )
-	self.Disconnect.PaintOverAll = function( )
-		if ( LocalPlayer( ):IsCharacterLoaded( ) ) then
-			self.Disconnect:SetStr( "Close" )
+	self.useCharacter = vgui.Create( "catherine.vgui.button", self )
+	self.useCharacter:SetPos( 30, self.h * 0.7 + 40 )
+	self.useCharacter:SetSize( self.w * 0.2, 30 )
+	self.useCharacter:SetStr( "Load character" )
+	self.useCharacter:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.useCharacter.Click = function( )
+		self:JoinMenu( function( )
+			self:UseCharacterPanel( )
+		end )
+	end
+	self.mainButtons[ #self.mainButtons + 1 ] = self.useCharacter
+	
+	self.changeLog = vgui.Create( "catherine.vgui.button", self )
+	self.changeLog:SetPos( 30, self.h * 0.7 + 80 )
+	self.changeLog:SetSize( self.w * 0.2, 30 )
+	self.changeLog:SetStr( "Change Log" )
+	self.changeLog:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.changeLog.Click = function( )
+		gui.OpenURL( "http://github.com/L7D/catherine/commits/0.2" )
+	end
+	self.mainButtons[ #self.mainButtons + 1 ] = self.changeLog
+	
+	self.disconnect = vgui.Create( "catherine.vgui.button", self )
+	self.disconnect:SetPos( 30, self.h * 0.7 + 120 )
+	self.disconnect:SetSize( self.w * 0.2, 30 )
+	self.disconnect:SetStr( "" )
+	self.disconnect.PaintOverAll = function( pnl )
+		if ( self.player:IsCharacterLoaded( ) ) then
+			pnl:SetStr( "Close" )
 		else
-			self.Disconnect:SetStr( "Disconnect" )
+			pnl:SetStr( "Disconnect" )
 		end
 	end
-	self.Disconnect:SetOutlineColor( Color( 255, 255, 255, 255 ) )
-	self.Disconnect.Click = function( )
-		if ( LocalPlayer( ):IsCharacterLoaded( ) ) then
+	self.disconnect:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.disconnect.Click = function( )
+		if ( self.player:IsCharacterLoaded( ) ) then
 			self:Close( )
 		else
-			RunConsoleCommand( "disconnect" )
+			self:JoinMenu( function( )
+				RunConsoleCommand( "disconnect" )
+			end )
 		end
 	end
+	self.mainButtons[ #self.mainButtons + 1 ] = self.disconnect
 	
+<<<<<<< HEAD
 	self.Previous = vgui.Create( "catherine.vgui.button", self )
 	self.Previous:SetPos( self.w * 0.2, 50 )
 	self.Previous:SetSize( 30, 30 )
@@ -146,107 +165,43 @@ function PANEL:Init( )
 	self.CharacterPanel:SetPos( 10, 120 )
 	self.CharacterPanel:SetSize( self.w - 20, self.h - ( 170 ) - 10  )	
 	self.CharacterPanel:SetDrawBackground( false )
-end
-
-function PANEL:PrintErrorMessage( msg )
-	Derma_Message( msg )
-end
-
-function PANEL:Think( )
-	if ( !self.createCharacter and !self.loadCharacter ) then
-		self.Previous:SetVisible( false )
-		self.Next:SetVisible( false )
-		self.Cancel:SetVisible( false )
-		self.CharacterPanel:SetVisible( false )
-		return
-	else
-		if ( self.createCharacter ) then
-			self.Previous:SetVisible( true )
-			self.Next:SetVisible( true )
-			self.Cancel:SetVisible( true )
-		end
-		if ( self.loadCharacter ) then
-			self.CharacterPanel:SetVisible( true )
-		end
+=======
+	self.back = vgui.Create( "catherine.vgui.button", self )
+	self.back:SetPos( 30, 30 )
+	self.back:SetSize( self.w * 0.2, 30 )
+	self.back:SetStr( "Back to main" )
+	self.back:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.back:SetVisible( false )
+	self.back:SetAlpha( 0 )
+	self.back.Click = function( )
+		if ( self.mode == 0 ) then return end
+		self:BackToMainMenu( )
 	end
-	
-	if ( self.createCharacter ) then
-		self.Previous:SetVisible( true )
-		self.Next:SetVisible( true )
-		self.Cancel:SetVisible( true )
-		self.CharacterPanel:SetVisible( false )
-	elseif ( !self.createCharacter and !self.loadCharacter ) then
-		self.Previous:SetVisible( false )
-		self.Next:SetVisible( false )
-		self.Cancel:SetVisible( false )
-		self.CharacterPanel:SetVisible( false )
-	elseif ( !self.createCharacter and self.loadCharacter ) then
-		self.Previous:SetVisible( false )
-		self.Next:SetVisible( false )
-		self.Cancel:SetVisible( true )
-		self.CharacterPanel:SetVisible( true )
-	end
-	
-	if ( self.createCharacter ) then
-		if ( self.createCharacter.currProgress == 1 ) then
-			self.Previous:SetStatus( false )
-		else
-			self.Previous:SetStatus( true )
-		end
-		
-		if ( self.createCharacter.currProgress == #self.createCharacter.progressList ) then
-
-		else
-			self.Next:SetStatus( true )
-		end
-	end
+>>>>>>> dev
 end
 
-function PANEL:CreateCharacter_Init( )
-	self.createCharacter = { }
-	self.createCharacter.progressList = {
-		"catherine.character.create.stageOne",
-		"catherine.character.create.stageTwo"
-	}
-	self.createCharacter.data = { 
-		name = "",
-		faction = "",
-		desc = "",
-		model = ""
-	}
-	self.createCharacter.currProgress = 0
-	self.createCharacter.maxProgress = #self.createCharacter.progressList
+function PANEL:CreateCharacterPanel( )
+	self.createData = { datas = { } }
+	self.createData.currentStage = vgui.Create( "catherine.character.stageOne", self )
 end
 
-function PANEL:ManageTargets( pnl, pos, a )
-	if ( !pnl.targetPos or !pnl.targetA ) then
-		pnl.targetPos = pos pnl.targetA = a
-	end;
-	pnl.targetPos = Lerp( 0.2, pnl.targetPos, pos )
-	pnl.targetA = Lerp( 0.2, pnl.targetA, a )
-	pnl:SetPos( pnl.targetPos, 0 )
-	pnl:SetAlpha( pnl.targetA )
-end;
-
-function PANEL:LoadCharacter_Refresh( )
-	if ( !self.loadCharacter ) then return end
-	for k, v in pairs( self.loadCharacter.Lists ) do
-		if ( !IsValid( v.panel ) ) then continue end
-		v.panel:Remove( )
-		v.panel = nil
-	end
-end
-
-function PANEL:LoadCharacter_Init( )
-	if ( !catherine.character.LocalCharacters ) then return end
+function PANEL:UseCharacterPanel( )
+	if ( !catherine.character.localCharacters ) then return end
 	self.loadCharacter = { }
 	self.loadCharacter.Lists = { }
 	self.loadCharacter.curr = 1
 	
-	local baseW, baseH = 300, ScrH( ) * 0.75
+	local baseW, baseH = 300, ScrH( ) * 0.85
 	local scrW, scrH = ScrW( ), ScrH( )
-
-	for k, v in pairs( catherine.character.LocalCharacters ) do
+	
+	self.CharacterPanel = vgui.Create( "DPanel", self )
+	self.CharacterPanel:SetPos( 0, 90 )
+	self.CharacterPanel:SetSize( self.w - 20, self.h - ( 120 ) )
+	self.CharacterPanel:SetAlpha( 0 )
+	self.CharacterPanel:AlphaTo( 255, 0.2, 0 )
+	self.CharacterPanel:SetDrawBackground( false )
+	
+	for k, v in pairs( catherine.character.localCharacters ) do
 		self.loadCharacter.Lists[ #self.loadCharacter.Lists + 1 ] = { characterDatas = v, panel = nil }
 	end
 
@@ -260,8 +215,7 @@ function PANEL:LoadCharacter_Init( )
 		pnl:SetPos( pnl.targetPos, 0 )
 		pnl:SetAlpha( pnl.targetA )
 	end
-	
-	
+
 	for k, v in pairs( self.loadCharacter.Lists ) do
 		local factionData = catherine.faction.FindByID( v.characterDatas._faction )
 		v.panel = vgui.Create( "DPanel", self.CharacterPanel )
@@ -298,8 +252,7 @@ function PANEL:LoadCharacter_Init( )
 			surface.DrawTexturedRect( 0, 0, w, h )
 		end
 		v.panel.useCharacter.DoClick = function( )
-			netstream.Start( "catherine.character.LoadCharacter", v.characterDatas._id )
-			self:Close( )
+			netstream.Start( "catherine.character.Use", v.characterDatas._id )
 		end
 		
 		v.panel.deleteCharacter = vgui.Create( "DButton", v.panel )
@@ -314,7 +267,7 @@ function PANEL:LoadCharacter_Init( )
 		end
 		v.panel.deleteCharacter.DoClick = function( )
 			Derma_Query( "Are you sure delete this character?", "Delete Character", "Yes", function( )
-				netstream.Start( "catherine.character.DeleteCharacter", v.characterDatas._id )
+				netstream.Start( "catherine.character.Delete", v.characterDatas._id )
 			end, "No", function( ) end )
 		end
 		
@@ -358,78 +311,63 @@ function PANEL:LoadCharacter_Init( )
 	end
 end
 
-function PANEL:CancelStage( )
-	if ( self.createCharacter ) then
-		if ( IsValid( self.createCharacter.activePanel ) ) then
-			self.createCharacter.activePanel:AlphaTo( 0, 0.3, 0 )
-			timer.Simple( 0.3, function( )
-				if ( !IsValid( self.createCharacter.activePanel ) ) then return end
-				self.createCharacter.activePanel:Remove( )
-				self.createCharacter.activePanel = nil
-				self.createCharacter = nil
-			end )
-		end
-	elseif ( self.loadCharacter ) then
-		self:LoadCharacter_Refresh( )
-		self.loadCharacter = nil
-	end
-end
+function PANEL:BackToMainMenu( )
+	if ( self.mode == 0 ) then return end
+	
+	local delta = 0
+	for k, v in pairs( self.mainButtons ) do
+		if ( !IsValid( v ) ) then continue end
+		v:SetVisible( true )
+		v:AlphaTo( 255, 0.2, delta, nil, function( )
 
-function PANEL:NextStage( )
-	if ( !self.createCharacter ) then return end
-	if ( self.createCharacter.currProgress < self.createCharacter.maxProgress ) then
-		if ( !self.createCharacter.activePanel ) then
-			self.createCharacter.currProgress = self.createCharacter.currProgress + 1
-			self.createCharacter.activePanel = vgui.Create( self.createCharacter.progressList[ self.createCharacter.currProgress ], self )
-			self.createCharacter.activePanel:SetSize( 512, 312 )
-			self.createCharacter.activePanel:SetAlpha( 0 )
-			self.createCharacter.activePanel:AlphaTo( 255, 0.3, 0 )
-			self.createCharacter.activePanel:SetPos( ScrW( ) / 2 - self.createCharacter.activePanel:GetWide( ) / 2, ScrH( ) / 2 - self.createCharacter.activePanel:GetTall( ) / 2 )
-		else
-			if ( !self.createCharacter.activePanel:CanContinue( ) ) then return end
-			self.createCharacter.currProgress = self.createCharacter.currProgress + 1
-			self.createCharacter.activePanel:AlphaTo( 0, 0.3, 0 )
-			self.createCharacter.activePanel:OnContinue( )
-			timer.Simple( 0.3, function( )
-				if ( !IsValid( self.createCharacter.activePanel ) ) then return end
-				self.createCharacter.activePanel:Remove( )
-				self.createCharacter.activePanel = nil
-				
-				self.createCharacter.activePanel = vgui.Create( self.createCharacter.progressList[ self.createCharacter.currProgress ], self )
-				self.createCharacter.activePanel:SetSize( 512, 312 )
-				self.createCharacter.activePanel:SetPos( ScrW( ) / 2 - self.createCharacter.activePanel:GetWide( ) / 2, ScrH( ) / 2 - self.createCharacter.activePanel:GetTall( ) / 2 )
-				self.createCharacter.activePanel:SetAlpha( 0 )
-				self.createCharacter.activePanel:AlphaTo( 255, 0.3, 0 )
-			end )
-		end
-	else
-		if ( self.createCharacter.currProgress == #self.createCharacter.progressList ) then
-			if ( self.createCharacter.activePanel:CanContinue( ) ) then
-				self.createCharacter.activePanel:OnContinue( )
-				netstream.Start( "catherine.character.RegisterCharacter", self.createCharacter.data )
-			end
-		end
+		end )
+		delta = delta + 0.05
 	end
-end
-
-function PANEL:PreviousStage( )
-	if ( !self.createCharacter ) then return end
-	if ( self.createCharacter.currProgress > 1 ) then
-		self.createCharacter.currProgress = self.createCharacter.currProgress - 1
-		self.createCharacter.activePanel:AlphaTo( 0, 0.3, 0 )
-		timer.Simple( 0.3, function( )
-			if ( !IsValid( self.createCharacter.activePanel ) ) then return end
-			self.createCharacter.activePanel:Remove( )
-			self.createCharacter.activePanel = nil
-			
-			self.createCharacter.activePanel = vgui.Create( self.createCharacter.progressList[ self.createCharacter.currProgress ], self )
-			self.createCharacter.activePanel:SetSize( 512, 312 )
-			self.createCharacter.activePanel:SetPos( ScrW( ) / 2 - self.createCharacter.activePanel:GetWide( ) / 2, ScrH( ) / 2 - self.createCharacter.activePanel:GetTall( ) / 2 )
-			self.createCharacter.activePanel:SetAlpha( 0 )
-			self.createCharacter.activePanel:AlphaTo( 255, 0.3, 0 )
-			self.createCharacter.activePanel:OnPrevious( )
+	
+	self.back:AlphaTo( 0, 0.2, 0 )
+	timer.Simple( 0.2, function( )
+		self.back:SetVisible( false )
+	end )
+	
+	self.mode = 0
+	
+	if ( self.createData and IsValid( self.createData.currentStage ) ) then
+		self.createData.currentStage:AlphaTo( 0, 0.2, 0, function( _, pnl )
+			pnl:Remove( )
+			pnl = nil
 		end )
 	end
+	
+	if ( self.loadCharacter and IsValid( self.CharacterPanel ) ) then
+		self.CharacterPanel:AlphaTo( 0, 0.2, 0, function( _, pnl )
+			pnl:Remove( )
+			pnl = nil
+		end )
+	end
+end
+
+function PANEL:JoinMenu( func )
+	if ( self.mode == 1 ) then return end
+	
+	local delta = 0
+	for k, v in pairs( self.mainButtons ) do
+		if ( !IsValid( v ) ) then continue end
+		v:AlphaTo( 0, 0.2, delta )
+		timer.Simple( 0.2 + delta, function( )
+			v:SetVisible( false )
+		end )
+		delta = delta + 0.1
+	end
+	
+	self.back:SetVisible( true )
+	self.back:AlphaTo( 255, 0.2, delta )
+	self.mode = 1
+	
+	timer.Simple( 0.2 + delta, function( )
+		if ( func ) then
+			func( )
+		end
+	end )
 end
 
 function PANEL:Close( )
@@ -445,11 +383,16 @@ vgui.Register( "catherine.vgui.character", PANEL, "DFrame" )
 local PANEL = { }
 
 function PANEL:Init( )
-	self.faction = ""
-	self.w, self.h = 512, 312
+	self.parent = self:GetParent( )
+	self.w, self.h = self.parent.w * 0.6, self.parent.h * 0.6
+	self.data = {
+		faction = nil
+	}
 	self.factionImage = nil
+	self.errorMsg = nil
 	self.factionList = self:GetFactionList( )
 	
+<<<<<<< HEAD
 	self.FactionLabel = vgui.Create( "DLabel", self )
 	self.FactionLabel:SetPos( 10, 10 )
 	self.FactionLabel:SetColor( Color( 255, 255, 255, 255 ) )
@@ -464,83 +407,111 @@ function PANEL:Init( )
 		local factionData = catherine.faction.FindByID( data )
 		if ( factionData.image ) then
 			self:SetFactionImage( factionData.image )
-		end
-		self.faction = data
-	end
+=======
+	self:SetSize( self.w, self.h )
+	self:SetPos( self.parent.w, self.parent.h / 2 - self.h / 2 )
+	self:MoveTo( self.parent.w / 2 - self.w / 2, self.parent.h / 2 - self.h / 2, 0.5, 0 )
+	
+	self.label01 = vgui.Create( "DLabel", self )
+	self.label01:SetPos( 20, 10 )
+	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
+	self.label01:SetFont( "catherine_normal50" )
+	self.label01:SetText( "Faction" )
+	self.label01:SizeToContents( )
+	
+	self.Lists = vgui.Create( "DHorizontalScroller", self )
+	self.Lists:SetPos( 10, 70 )
+	self.Lists:SetSize( 0, self.h - 120 )
 	
 	for k, v in pairs( self.factionList ) do
-		self.FactionSelect:AddChoice( v.name, v.uniqueID )
+		local panel = vgui.Create( "DPanel" )
+		panel:SetSize( 200, self.Lists:GetTall( ) )
+		panel.Paint = function( pnl, w, h )
+			if ( self.data.faction == v.uniqueID ) then
+				draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+				draw.SimpleText( v.name, "catherine_normal25", w / 2, h - 30, Color( 50, 50, 50, 255 ), 1, 1 )
+				return
+			end
+			draw.SimpleText( v.name, "catherine_normal25", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
+		end
+		
+		local model = vgui.Create( "DModelPanel", panel )
+		model:SetSize( panel:GetWide( ), panel:GetTall( ) - 60 )
+		model:SetCursor( "none" )
+		model:MoveToBack( )
+		model:SetModel( table.Random( v.models ) )
+		model:SetVisible( true )
+		model:SetFOV( 40 )
+		model.LayoutEntity = function( pnl, entity )
+			entity:SetAngles( Angle( 0, 45, 0 ) )
+			pnl:RunAnimation( )
+>>>>>>> dev
+		end
+		
+		local button = vgui.Create( "DButton", panel )
+		button:Dock( FILL )
+		button:SetText( "" )
+		button.DoClick = function( pnl )
+			self.data.faction = v.uniqueID
+		end
+		button:SetDrawBackground( false )
+		
+		self.Lists:AddPanel( panel )
+		self.Lists:SetSize( self.Lists:GetWide( ) + 200, self.Lists:GetTall( ) )
+		self.Lists:SetPos( self.w / 2 - self.Lists:GetWide( ) / 2, 70 )
 	end
+	
+	self.nextStage = vgui.Create( "catherine.vgui.button", self )
+	self.nextStage:SetPos( self.w - self.w * 0.2 - 40, self.h - 50 )
+	self.nextStage:SetSize( self.w * 0.2, 30 )
+	self.nextStage:SetStr( "Continue" )
+	self.nextStage:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.nextStage.Click = function( )
+		if ( self.data.faction ) then
+			if ( catherine.faction.FindByID( self.data.faction ) ) then
+				self.parent.createData.datas.faction = self.data.faction
+				self:MoveTo( 0 - self.w, self.parent.h / 2 - self.h / 2, 0.5, 0, nil, function( )
+					self:Remove( )
+					self.parent.createData.currentStage = vgui.Create( "catherine.character.stageTwo", self.parent )
+				end )
+			else
+				self:SetErrorMessage( "Faction is not valid!" )
+			end
+		else
+			self:SetErrorMessage( "Please select faction!" )
+		end
+	end
+end
+
+function PANEL:SetErrorMessage( msg )
+	self.errorMsg = msg
+	surface.PlaySound( "buttons/button1.wav" )
 end
 
 function PANEL:GetFactionList( )
 	local faction = { }
+	
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
-		if ( v.isWhitelist and LocalPlayer( ):HasWhiteList( v.uniqueID ) == false ) then continue end
+		if ( v.isWhitelist and catherine.faction.HasWhiteList( v.uniqueID ) == false ) then continue end
 		faction[ #faction + 1 ] = v
 	end
+	
 	return faction
-end
-
-function PANEL:RefreshPanelList( )
-	local faction = { }
-	for k, v in pairs( catherine.faction.GetAll( ) ) do
-		if ( v.isWhitelist and LocalPlayer( ):HasWhiteList( v.uniqueID ) == false ) then continue end
-		faction[ #faction + 1 ] = v
-	end
-	return faction
-end
-
-function PANEL:SetFactionImage( image )
-	self.factionImage = Material( image )
-end
-
-function PANEL:GetFactionImage( )
-	return self.factionImage
-end
-
-function PANEL:CanContinue( )
-	if ( self.faction == "" ) then
-		self:GetParent( ):PrintErrorMessage( "Please select faction!" )
-		return false
-	end
-	if ( !catherine.faction.FindByID( self.faction ) ) then
-		self:GetParent( ):PrintErrorMessage( "Faction is not valid!" )
-		return false
-	end
-
-	return true
-end
-
-function PANEL:OnContinue( )
-	self:GetParent( ).createCharacter.data.faction = self.faction
-end
-
-function PANEL:OnPrevious( )
-	local factionData = catherine.faction.FindByID( self:GetParent( ).createCharacter.data.faction )
-	if ( !factionData ) then return end
-	self.FactionSelect:ChooseOption( factionData.name, factionData.index )
-	self:SetFactionImage( factionData.image )
-	self.faction = factionData.uniqueID
 end
 
 function PANEL:Paint( w, h )
-	draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
-	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
-	
-	local factionImage = self:GetFactionImage( )
-	if ( factionImage ) then
-		surface.SetDrawColor( 255, 255, 255, 255 )
-		surface.SetMaterial( factionImage )
-		surface.DrawTexturedRect( w / 2 - 512 / 2, 50, 512, 256 )
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 200 ) )
+	if ( self.errorMsg ) then
+		catherine.util.DrawCoolText( self.errorMsg, "catherine_normal20", w / 2, h - 25, Color( 255, 255, 255, 255 ), 1, 1, Color( 150, 0, 0, 255 ) )
 	end
 end
 
-vgui.Register( "catherine.character.create.stageOne", PANEL, "DPanel" )
+vgui.Register( "catherine.character.stageOne", PANEL, "DPanel" )
 
 local PANEL = { }
 
 function PANEL:Init( )
+<<<<<<< HEAD
 	self.data = { name = "", desc = "", model = "" }
 	self.w, self.h = 512, 312
 	self.selectedModel = nil
@@ -573,14 +544,51 @@ function PANEL:Init( )
 	self.Name:SetText( "" )
 	self.Name:SetAllowNonAsciiCharacters( true )
 	self.Name.Paint = function( pnl, w, h )
+=======
+	self.parent = self:GetParent( )
+	self.w, self.h = self.parent.w * 0.6, self.parent.h * 0.6
+	self.data = {
+		name = "",
+		desc = "",
+		model = ""
+	}
+	self.errorMsg = nil
+	
+	self:SetSize( self.w, self.h )
+	self:SetPos( self.parent.w, self.parent.h / 2 - self.h / 2 )
+	self:MoveTo( self.parent.w / 2 - self.w / 2, self.parent.h / 2 - self.h / 2, 0.5, 0 )
+	
+	self.label01 = vgui.Create( "DLabel", self )
+	self.label01:SetPos( 20, 10 )
+	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
+	self.label01:SetFont( "catherine_normal50" )
+	self.label01:SetText( "Character Information" )
+	self.label01:SizeToContents( )
+	
+	self.name = vgui.Create( "DLabel", self )
+	self.name:SetPos( 20, 70 )
+	self.name:SetColor( Color( 255, 255, 255, 255 ) )
+	self.name:SetFont( "catherine_normal20" )
+	self.name:SetText( "Name" )
+	self.name:SizeToContents( )
+	
+	self.nameEnt = vgui.Create( "DTextEntry", self )
+	self.nameEnt:SetPos( 40 + self.name:GetSize( ), 70 )
+	self.nameEnt:SetSize( self.w - ( 40 + self.name:GetSize( ) ) - 20, 20 )	
+	self.nameEnt:SetFont( "catherine_normal15" )
+	self.nameEnt:SetText( "" )
+	self.nameEnt:SetAllowNonAsciiCharacters( true )
+	self.nameEnt.Paint = function( pnl, w, h )
+>>>>>>> dev
 		draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
 		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
 		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 0 ) )
 	end
-	self.Name.OnTextChanged = function( pnl )
+	self.nameEnt.OnTextChanged = function( pnl )
 		self.data.name = pnl:GetText( )
 	end
 	
+<<<<<<< HEAD
 	self.Desc = vgui.Create( "DTextEntry", self )
 	self.Desc:SetPos( 40 + self.DescLabel:GetSize( ), ( self.h * 0.1 + 30 ) )
 	self.Desc:SetSize( self.w - ( 40 + self.DescLabel:GetSize( ) ) - 20, 20 )	
@@ -588,102 +596,96 @@ function PANEL:Init( )
 	self.Desc:SetText( "" )
 	self.Desc:SetAllowNonAsciiCharacters( true )
 	self.Desc.Paint = function( pnl, w, h )
+=======
+	self.desc = vgui.Create( "DLabel", self )
+	self.desc:SetPos( 20, 110 )
+	self.desc:SetColor( Color( 255, 255, 255, 255 ) )
+	self.desc:SetFont( "catherine_normal20" )
+	self.desc:SetText( "Description" )
+	self.desc:SizeToContents( )
+	
+	self.descEnt = vgui.Create( "DTextEntry", self )
+	self.descEnt:SetPos( 40 + self.desc:GetSize( ), 110 )
+	self.descEnt:SetSize( self.w - ( 40 + self.desc:GetSize( ) ) - 20, 20 )	
+	self.descEnt:SetFont( "catherine_normal15" )
+	self.descEnt:SetText( "" )
+	self.descEnt:SetAllowNonAsciiCharacters( true )
+	self.descEnt.Paint = function( pnl, w, h )
+>>>>>>> dev
 		draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
 		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
 		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 0 ) )
 	end
-	self.Desc.OnTextChanged = function( pnl )
+	self.descEnt.OnTextChanged = function( pnl )
 		self.data.desc = pnl:GetText( )
 	end
 	
-	self.ModelList = vgui.Create( "DPanelList", self )
-	self.ModelList:SetPos( 10, self.h * 0.45 )
-	self.ModelList:SetSize( self.w - 20, self.h - ( self.h * 0.45 ) - 10  )	
-	self.ModelList:SetSpacing( 5 )
-	self.ModelList:EnableHorizontal( true )
-	self.ModelList:EnableVerticalScrollbar( false )	
-	self.ModelList.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
-		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
+	self.model = vgui.Create( "DPanelList", self )
+	self.model:SetPos( 20, 150 )
+	self.model:SetSize( self.w - 40, self.h - 190 )
+	self.model:SetSpacing( 5 )
+	self.model:EnableHorizontal( true )
+	self.model:EnableVerticalScrollbar( false )
+	
+	local factionTab = catherine.faction.FindByID( self.parent.createData.datas.faction )
+	
+	if ( factionTab ) then
+		for k, v in pairs( factionTab.models ) do
+			local spawnIcon = vgui.Create( "SpawnIcon" )
+			spawnIcon:SetSize( 64, 64 )
+			spawnIcon:SetModel( v )
+			spawnIcon:SetToolTip( false )
+			spawnIcon.PaintOver = function( pnl, w, h )
+				if ( self.data.model != v ) then return end
+				surface.SetDrawColor( 255, 255, 255, 255 )
+				surface.SetMaterial( Material( "icon16/accept.png" ) )
+				surface.DrawTexturedRect( 5, 5, 16, 16 )
+			end
+			spawnIcon.DoClick = function( pnl )
+				self.data.model = v
+			end
+			
+			self.model:AddItem( spawnIcon )
+		end
+	else
+		self:SetErrorMessage( "Not valid faction!" )
 	end
 	
-	self:RefreshModelList( )
-end
-
-function PANEL:OnContinue( )
-	self:GetParent( ).createCharacter.data.name = self.data.name
-	self:GetParent( ).createCharacter.data.desc = self.data.desc
-	self:GetParent( ).createCharacter.data.model = self.data.model
-end
-
-function PANEL:OnPrevious( )
-	self.Name:SetText( self:GetParent( ).createCharacter.data.name )
-	self.Desc:SetText( self:GetParent( ).createCharacter.data.desc )
-end
-
-function PANEL:CanContinue( )
-	if ( self.data.name == "" ) then
-		self:GetParent( ):PrintErrorMessage( "Please input name!" )
-		return false
-	end
-	if ( self.data.desc == "" ) then
-		self:GetParent( ):PrintErrorMessage( "Please input desc!" )
-		return false
-	end
-	if ( self.data.model == "" ) then
-		self:GetParent( ):PrintErrorMessage( "Please select model!" )
-		return false
-	end
-	if ( string.len( self.data.name ) > catherine.configs.characterNameMaxLen ) then
-		self:GetParent( ):PrintErrorMessage( "Name is too long!, please input under " .. catherine.configs.characterNameMaxLen .. " len!" )
-		return false
-	end
-	if ( string.len( self.data.name ) < catherine.configs.characterNameMinLen ) then
-		self:GetParent( ):PrintErrorMessage( "Name is too short!, please input up " .. catherine.configs.characterNameMinLen .. " len!" )
-		return false
-	end
-	if ( string.len( self.data.desc ) > catherine.configs.characterDescMaxLen ) then
-		self:GetParent( ):PrintErrorMessage( "Desc is too long!, please input under " .. catherine.configs.characterDescMaxLen .. " len!" )
-		return false
-	end
-	if ( string.len( self.data.desc ) < catherine.configs.characterDescMinLen ) then
-		self:GetParent( ):PrintErrorMessage( "Desc is too short!, please input up " .. catherine.configs.characterDescMaxLen .. " len!" )
-		return false
-	end
-
-	return true
-end
-
-function PANEL:RefreshModelList( )
-	local data = self:GetParent().createCharacter.data
-	self.ModelList:Clear( )
-	local factionData = catherine.faction.FindByID( data.faction )
-	if ( !factionData ) then return end
-	for k, v in pairs( factionData.models ) do
-		local spawnIcon = vgui.Create( "SpawnIcon" )
-		spawnIcon:SetSize( 64, 64 )
-		spawnIcon:SetModel( v )
-		spawnIcon.DoClick = function( )
-			self.data.model = v
-			self.selectedModel = k
-		end
-		spawnIcon.PaintOver = function( pnl, w, h )
-			if ( !self.selectedModel ) then return end
-			if ( self.selectedModel == k ) then
-				draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 0, 0, 255 ) )
-				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 0, 0, 255 ) )
+	self.nextStage = vgui.Create( "catherine.vgui.button", self )
+	self.nextStage:SetPos( self.w - self.w * 0.2 - 40, self.h - 50 )
+	self.nextStage:SetSize( self.w * 0.2, 30 )
+	self.nextStage:SetStr( "Create Character" )
+	self.nextStage:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.nextStage.Click = function( )
+		for k, v in pairs( self.data ) do
+			local vars = catherine.character.FindGlobalVarByID( k )
+			if ( vars and vars.checkValid ) then
+				local success, reason = vars.checkValid( self.data[ vars.id ] )
+				if ( success == false ) then
+					self:SetErrorMessage( reason )
+					return
+				else
+					table.Merge( self.parent.createData.datas, self.data )
+					netstream.Start( "catherine.character.Create", self.parent.createData.datas )
+				end
 			end
 		end
-		self.ModelList:AddItem( spawnIcon )
 	end
+end
+
+function PANEL:SetErrorMessage( msg )
+	self.errorMsg = msg
+	surface.PlaySound( "buttons/button1.wav" )
 end
 
 function PANEL:Paint( w, h )
-	draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
-	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 200 ) )
+	if ( self.errorMsg ) then
+		catherine.util.DrawCoolText( self.errorMsg, "catherine_normal20", w / 2, h - 25, Color( 255, 255, 255, 255 ), 1, 1, Color( 150, 0, 0, 255 ) )
+	end
 end
 
-vgui.Register( "catherine.character.create.stageTwo", PANEL, "DPanel" )
+vgui.Register( "catherine.character.stageTwo", PANEL, "DPanel" )
 
 hook.Add( "AddMenuItem", "catherine.vgui.character", function( tab )
 	tab[ "Character" ] = function( menuPnl, itemPnl )

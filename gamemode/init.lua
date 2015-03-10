@@ -12,8 +12,7 @@ function DownloadListAdd( path )
 	end
 end
 
-DownloadListAdd( "materials/catherine" )
-DownloadListAdd( "materials/catherine_hl2rp" )
+DownloadListAdd( "materials/CAT" )
 
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )

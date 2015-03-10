@@ -26,16 +26,12 @@ function ENT:SetCash( amount )
 		self:Remove( )
 		return
 	end
-	self:SetNetworkValue( "Cash", amount )
+	catherine.network.SetNetVar( self, "cash", amount )
 end
---[[
-function ENT:GetCash( )
-	return self:GetNetworkValue( "Cash", 0 )
-end
---]]
+
 function ENT:Use( activator )
-	activator:GiveCash( self:GetNetworkValue( "Cash", 0 ) )
-	activator:ChatPrint( "You got a " .. catherine.cash.GetName( self:GetNetworkValue( "Cash", 0 ) ) .. "s!" )
+	activator:GiveCash( catherine.network.GetNetVar( self, "cash", 0 ) )
+	activator:ChatPrint( "You got a " .. catherine.cash.GetName( catherine.network.GetNetVar( self, "cash", 0 ) ) .. "s!" )
 	self:Bomb( )
 	self:Remove( )
 end

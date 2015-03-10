@@ -90,9 +90,14 @@ function PANEL:Init( )
 	self.sendReport:SetPos( 10, self.h - 40 )
 	self.sendReport:SetSize( self.w - 20, 30 )
 	self.sendReport:SetStr( "Send This Report!" )
+<<<<<<< HEAD
 	self.sendReport:SetOutlineColor( Color( 50, 50, 50 ) )
 	self.sendReport:SetTextColor( Color( 50, 50, 50 ) )
 	self.sendReport:SetFont( "catherine_normal25" )
+=======
+	self.sendReport:SetStrColor( Color( 50, 50, 50 ) )
+	self.sendReport:SetStrFont( "catherine_font01_20" )
+>>>>>>> dev
 	self.sendReport.Click = function( )
 		Derma_Query( "Are your sure send this report?", "WARNING", "Yes", function( )
 			self:SendReport( )

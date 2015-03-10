@@ -1,6 +1,6 @@
-local BUTTON = { }
+local PANEL = { }
 
-function BUTTON:Init( )
+function PANEL:Init( )
 	local rgb = Color
 	self.Font = "catherine_normal20"
 	self.Text = ""
@@ -9,17 +9,16 @@ function BUTTON:Init( )
 	self.ButtonPressed = false
 	self.ButtonPressing = false
 	self.PressingCurTime = nil
+	self.IsCoolText = false
 	
-	self.outlineColorDraw = Color( 0, 0, 0, 0 )
-	self.outlineColorOriginal = Color( 0, 0, 0, 0 )
-	self.outlineColor = Color( 0, 0, 0, 0 )
-	self.textColor = Color( 255, 255, 255, 255 )
+	self.gradientColor_original = Color( 255, 255, 255, 200 )
+	self.gradientColor = Color( 255, 255, 255, 0 )
+	self.textColor = Color( 50, 50, 50, 255 )
 	
 	self:SetText( "" )
-	self:SetFont( self.Font )
 end
 
-function BUTTON:Think( )
+function PANEL:Think( )
 	if ( self.ButtonPressed ) then
 		self.ButtonPressing = true
 		self:IsPressing( )
@@ -29,116 +28,104 @@ function BUTTON:Think( )
 	end
 end
 
-function BUTTON:SetOutlineColor( col )
-	self.outlineColorOriginal = col
+function PANEL:SetGradientColor( col )
+	self.gradientColor_original = col
+	self.gradientColor = Color( col.r, col.g, col.b, 0 )
 end
 
-function BUTTON:SetTextColor( col )
+function PANEL:SetCoolText( bool )
+	self.IsCoolText = bool
+end
+
+function PANEL:SetStrColor( col )
 	self.textColor = col
 end
 
-function BUTTON:SetStr( str )
+function PANEL:SetStr( str )
 	self.Text = str
 end
 
-function BUTTON:GetStr( )
+function PANEL:GetStr( )
 	return self.Text
 end
 
-function BUTTON:SetFont( font )
+function PANEL:SetStrFont( font )
 	self.Font = font
 end
 
-function BUTTON:CursorOn( ) end
+function PANEL:CursorOn( ) end
 
-function BUTTON:CursorNotOn( ) end
+function PANEL:CursorNotOn( ) end
 
-function BUTTON:SetThemeChangeTime( time )
-	self.ChangeTime = time
-end
-
-function BUTTON:OnCursorEntered( )
+function PANEL:OnCursorEntered( )
 	self.CursorIsOn = true
 	self:CursorOn( )
 end
 
-function BUTTON:OnCursorExited( )
+function PANEL:OnCursorExited( )
 	self.CursorIsOn = false
 	self:CursorNotOn( )
 end
 
-function BUTTON:OnMousePressed( )
+function PANEL:OnMousePressed( )
 	self.ButtonPressed = true
 	self:OnPress( )
 	self:DoClick( )
 end
 
-function BUTTON:OnMouseReleased( )
+function PANEL:OnMouseReleased( )
 	self.ButtonPressed = false
 	self:OnRelease( )
 end
 
-function BUTTON:OnPress( ) end
+function PANEL:OnPress( ) end
 
-function BUTTON:OnRelease( ) end
+function PANEL:OnRelease( ) end
 
-function BUTTON:IsPressing( ) end
+function PANEL:IsPressing( ) end
 
-function BUTTON:IsNotPressing( ) end
+function PANEL:IsNotPressing( ) end
 
-function BUTTON:RunFadeInAnimation( time, delay )
+function PANEL:RunFadeInAnimation( time, delay )
 	self:SetAlpha( 0 )
 	self:AlphaTo( 255, time or 0.1, delay or 0 )
 end
 
-function BUTTON:SetStatus( bool )
+function PANEL:SetStatus( bool )
 	self.Status = bool
-	if ( bool == true ) then
+	if ( bool ) then
 		self:SetAlpha( 255 )
 	else
 		self:SetAlpha( 50 )
 	end
 end
 
-function BUTTON:Click( ) end
+function PANEL:Click( ) end
 
-function BUTTON:DoClick( )
-	surface.PlaySound( "buttons/lightswitch2.wav" )
+function PANEL:DoClick( )
 	if ( !self.Status ) then return end
 	self:Click( func )
 end
 
-function BUTTON:PaintOverAll( w, h ) end
+function PANEL:PaintOverAll( w, h ) end
 
-function BUTTON:Paint( w, h )
+function PANEL:Paint( w, h )
 	if ( self.CursorIsOn ) then
-		self.outlineColor = self.outlineColorOriginal
+		self.gradientColor.r = Lerp( 0.05, self.gradientColor.r, self.gradientColor_original.r )
+		self.gradientColor.g = Lerp( 0.05, self.gradientColor.g, self.gradientColor_original.g )
+		self.gradientColor.b = Lerp( 0.05, self.gradientColor.b, self.gradientColor_original.b )
+		self.gradientColor.a = Lerp( 0.05, self.gradientColor.a, self.gradientColor_original.a )
 	else
-		self.outlineColor = Color( 0, 0, 0, 0 )
+		self.gradientColor.a = Lerp( 0.05, self.gradientColor.a, 0 )
 	end
 	
-	self.outlineColorDraw.r = Lerp( 0.03, self.outlineColorDraw.r, self.outlineColor.r )
-	self.outlineColorDraw.g = Lerp( 0.03, self.outlineColorDraw.g, self.outlineColor.g )
-	self.outlineColorDraw.b = Lerp( 0.03, self.outlineColorDraw.b, self.outlineColor.b )
-	self.outlineColorDraw.a = Lerp( 0.03, self.outlineColorDraw.a, self.outlineColor.a )
-
-	surface.SetDrawColor( self.outlineColorDraw )
-	draw.NoTexture( )
-	surface.DrawLine( 0, 5, 5, 0 )
-	
-	draw.RoundedBox( 0, 0, 5, 1, 10, self.outlineColorDraw )
-	draw.RoundedBox( 0, 5, 0, 10, 1, self.outlineColorDraw )
-	
-	surface.SetDrawColor( self.outlineColorDraw )
-	draw.NoTexture( )
-	surface.DrawLine( w, h - 6, w - 6, h )
-	
-	draw.RoundedBox( 0, w - 1, h - 15, 1, 10, self.outlineColorDraw )
-	draw.RoundedBox( 0, w - 15, h - 1, 10, 1, self.outlineColorDraw )
+	surface.SetDrawColor( Color( self.gradientColor.r, self.gradientColor.g, self.gradientColor.b, self.gradientColor.a ) )
+	surface.SetMaterial( Material( "gui/center_gradient" ) )
+	surface.DrawTexturedRect( 0, h - 2, w, 2 )
 	
 	draw.SimpleText( self.Text, self.Font, w / 2, h / 2, self.textColor, 1, 1 )
-
+	
 	self:PaintOverAll( w, h )
 end
 
-vgui.Register( "catherine.vgui.button", BUTTON, "DButton" )
+vgui.Register( "catherine.vgui.button", PANEL, "DButton" )

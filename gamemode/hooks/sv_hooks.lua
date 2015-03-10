@@ -70,6 +70,7 @@ function GM:PlayerInitialSpawn( pl )
 		pl:SetNoDraw( true )
 	end )
 
+<<<<<<< HEAD
 	local function init( )
 		if ( !catherine.database.Connected ) then
 			netstream.Start( pl, "catherine.LoadingStatus", { false, 0, "MySQL Error : " .. catherine.database.ErrorMsg } )
@@ -108,13 +109,14 @@ function GM:PlayerInitialSpawn( pl )
 		end )
 	end
 
+=======
+>>>>>>> dev
 	timer.Create( "catherine.loading.WaitLocalPlayer_" .. pl:SteamID( ), 1, 0, function( )
 		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
 			timer.Destroy( "catherine.loading.WaitLocalPlayer_" .. pl:SteamID( ) )
-			timer.Simple( 4, function( )
-				init( )
+			timer.Simple( 3, function( )
+				catherine.player.Initialize( pl ) // 초기화 실행 ^-^!
 				pl:SetNoDraw( true )
-				hook.Run( "RunInitSpawnFunc", pl )
 			end )
 		end
 	end )
@@ -126,12 +128,12 @@ function GM:PlayerNoClip( pl, bool )
 			pl:SetNoDraw( true )
 			pl:DrawShadow( false )
 			pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
-			pl:SetNetworkValue( "nocliping", true )
+			catherine.network.SetNetVar( pl, "nocliping", true )
 		else
 			pl:SetNoDraw( false )
 			pl:DrawShadow( true )
 			pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
-			pl:SetNetworkValue( "nocliping", false )
+			catherine.network.SetNetVar( pl, "nocliping", false )
 		end
 	end
 	return pl:IsAdmin( )
@@ -199,8 +201,8 @@ function GM:PlayerDeath( pl )
 	pl.dummy:Activate( )
 	pl.dummy:SetCollisionGroup( COLLISION_GROUP_WEAPON )
 	pl.dummy.player = self
-	pl.dummy:SetNetworkValue( "player", pl )
-	pl.dummy:SetNetworkValue( "ragdollID", pl.dummy:EntIndex( ) )
+	catherine.network.SetNetVar( pl.dummy, "player", pl )
+	catherine.network.SetNetVar( pl.dummy, "ragdollID", pl.dummy:EntIndex( ) )
 	pl.dummy:CallOnRemove( "RecoverPlayer", function( )
 		if ( !IsValid( pl ) ) then return end
 		pl:Spawn( )
@@ -215,8 +217,8 @@ function GM:PlayerDeath( pl )
 		
 	pl.autoHealthrecoverStart = false
 	catherine.util.ProgressBar( pl, "You are now respawning.", catherine.configs.spawnTime )
-	pl:SetNetworkValue( "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
-	pl:SetNetworkValue( "deathTime", CurTime( ) )
+	catherine.network.SetNetVar( pl, "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
+	catherine.network.SetNetVar( pl, "deathTime", CurTime( ) )
 end
 
 function GM:Tick( )
