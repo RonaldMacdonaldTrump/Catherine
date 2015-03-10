@@ -23,8 +23,8 @@ function PANEL:Init( )
 end
 
 function PANEL:MenuPaint( w, h )
-	draw.SimpleText( GetHostName( ), "catherine_font01_25", 10, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_font01_25", w - 10, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( GetHostName( ), "catherine_normal25", 10, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_normal25", w - 10, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 function PANEL:RefreshPanel( )
@@ -81,9 +81,8 @@ function PANEL:RefreshPlayerLists( )
 				
 				draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
 				
-				draw.SimpleText( v1:Name( ), "catherine_font01_20", 50, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-				draw.SimpleText( ( know == true and v1:Desc( ) or "You don't know this guy." ), "catherine_font01_15", 50, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-				//draw.SimpleText( v1:Ping( ), "catherine_font01_25", w - 30, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+				draw.SimpleText( v1:Name( ), "catherine_normal20", 50, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.SimpleText( ( know == true and v1:Desc( ) or "You don't know this guy." ), "catherine_normal15", 50, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 			end
 			
 			local spawnIcon = vgui.Create( "SpawnIcon", panel )

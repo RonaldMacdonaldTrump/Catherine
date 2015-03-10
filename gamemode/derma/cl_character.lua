@@ -176,9 +176,9 @@ function PANEL:UseCharacterPanel( )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 255 ) )
 			draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
 			draw.RoundedBox( 0, 0, 30, w, 1, Color( 255, 255, 255, 255 ) )
-			draw.SimpleText( v.characterDatas._name, "catherine_font01_20", w / 2, h - 90, Color( 255, 255, 255, 255 ), 1, 1 )
-			draw.SimpleText( v.characterDatas._desc, "catherine_font01_15", w / 2, h - 70, Color( 255, 255, 255, 255 ), 1, 1 )
-			draw.SimpleText( factionData.name, "catherine_font01_20", w / 2, 15, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( v.characterDatas._name, "catherine_normal20", w / 2, h - 90, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( v.characterDatas._desc, "catherine_normal15", w / 2, h - 70, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( factionData.name, "catherine_normal20", w / 2, 15, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 		
 		v.panel.button = vgui.Create( "DButton", v.panel )
