@@ -1,10 +1,21 @@
 catherine.data = catherine.data or { }
 catherine.data.buffer = catherine.data.buffer or { }
 
-function catherine.data.Set( key, value, ignoreMap )
-	local dir = "catherine/" .. key .. "/" .. ( ( !ignoreMap and game.GetMap( ) .. "/" ) or "" ) .. "data.txt"
-	local data = util.TableToJSON( value )
+function catherine.data.DataLoad( )
 	file.CreateDir( "catherine" )
+	file.CreateDir( "catherine/globals" )
+	file.CreateDir( "catherine/" .. catherine.schema.GetUniqueID( ) )
+end
+
+hook.Add( "DataLoad", "catherine.data.DataLoad", catherine.data.DataLoad )
+
+function catherine.data.Set( key, value, ignoreMap, isGlobal )
+	local dir = "catherine/" .. ( isGlobal and "globals/" or catherine.schema.GetUniqueID( ) .. "/" ) .. 
+	file.CreateDir( dir .. key )
+	dir = dir .. key .. "/"
+
+	local dir = "catherine/".. key .. "/" .. ( ( !ignoreMap and game.GetMap( ) .. "/" ) or "" ) .. "data.txt"
+	local data = util.TableToJSON( value )
 	file.CreateDir( "catherine/" .. key )
 	if ( !ignoreMap ) then
 		file.CreateDir( "catherine/" .. key .. "/" .. game.GetMap( ) )

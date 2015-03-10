@@ -196,11 +196,10 @@ if ( SERVER ) then
 		
 		if ( pl:GetCharacterID( ) != nil ) then
 			catherine.character.SavePlayerCharacter( pl )
-			//catherine.character.DisconnectNetworking( pl )
+			//catherine.character.DisconnectNetworking( pl ) -- 꼭 필요한지 몰르겠즘;; T-T
 			catherine.character.SetLoadedCharacterByID( pl, pl:GetCharacterID( ), nil )
 			
 			// 이전 캐릭터 데이터 클리어..
-			
 		end
 		
 		if ( pl:GetCharacterID( ) == id ) then
@@ -225,13 +224,13 @@ if ( SERVER ) then
 			pl:Give( "catherine_key" )
 			
 			catherine.character.InitializeNetworking( pl, id, data )
-			
-			pl:SetNetworkValue( "characterID", id )
-			pl:SetNetworkValue( "characterLoaded", true )
+
+			catherine.network.SetNetVar( pl, "charID", id )
+			catherine.network.SetNetVar( pl, "charLoaded", true )
 			
 			print("Loaded - " .. id )
 		end
-		
+
 		local characterData = nil
 		
 		for k, v in pairs( catherine.character.Buffers[ pl:SteamID( ) ] ) do
@@ -243,42 +242,9 @@ if ( SERVER ) then
 		end
 
 		if ( !characterData ) then return end
-		
-		//PrintTable(characterData)
 
 		catherine.character.SetLoadedCharacterByID( pl, id, characterData )
 		useCharacter( characterData )
-
-		--[[
-		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
-			if ( !data ) then return end
-			local foundCharacter = nil
-
-			for k, v in pairs( data ) do
-				for k1, v1 in pairs( v ) do
-					if ( k1 == "_id" and v1 == id ) then
-						foundCharacter = v
-						break
-					end
-				end
-			end
-			
-			if ( !foundCharacter ) then
-				netstream.Start( pl, "catherine.character.UseResult", { false, "Can't find character!" } )
-				return
-			end
-			
-			for k1, v1 in pairs( foundCharacter ) do
-				local globalVarTab =  catherine.character.FindGlobalVarByField( k1 )
-				if ( globalVarTab and !globalVarTab.needTransfer ) then continue end
-				foundCharacter[ k1 ] = util.JSONToTable( v1 )
-			end
-			
-			//PrintTable(foundCharacter)
-
-			catherine.character.SetLoadedCharacterByID( pl, id, foundCharacter )
-			useCharacter( )
-		end )--]]
 	end
 	
 	function catherine.character.SetLoadedCharacterByID( pl, id, data )
@@ -466,4 +432,14 @@ function catherine.character.GetGlobalVar( pl, key, default )
 	if ( !IsValid( pl ) and !key ) then return default end
 	if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or catherine.character.networkingVars[ pl:SteamID( ) ][ key ] == nil ) then return default end
 	return catherine.character.networkingVars[ pl:SteamID( ) ][ key ] or default
+end
+
+local META = FindMetaTable( "Player" )
+
+function META:GetCharacterID( )
+	return catherine.network.GetNetVar( self, "charID", 0 )
+end
+
+function META:IsCharacterLoaded( )
+	return catherine.network.GetNetVar( self, "charLoaded", false )
 end
