@@ -1,6 +1,6 @@
 "catherine"
 {
 	"base"		"sandbox"
-	"title"			"Catherine"
-	"version"		"0.1"
+	"title"		"Catherine"
+	"author"	"L7D"
 }
