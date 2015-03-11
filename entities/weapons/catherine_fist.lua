@@ -43,10 +43,10 @@ function SWEP:PrimaryAttack( )
 	local pl = self.Owner
 	if ( !IsFirstTimePredicted( ) ) then return end
 	if ( CLIENT ) then return end
-	local stamina = math.Clamp( catherine.character.GetCharData( pl, "stamina", 100 ) - 0, 0, 100 )
+	local stamina = math.Clamp( catherine.character.GetCharacterVar( pl, "stamina", 100 ) - 10, 0, 100 )
 	if ( !pl:GetWeaponRaised( ) and stamina < 10 ) then return
 	else
-		catherine.character.SetCharData( pl, "stamina", stamina )
+		catherine.character.SetCharacterVar( pl, "stamina", stamina )
 		
 		pl:SetAnimation( PLAYER_ATTACK1 )
 		

@@ -1,6 +1,3 @@
---[[
-
---]]
 catherine.recognize = catherine.recognize or { }
 
 function GM:ShowTeam( pl )
@@ -38,7 +35,7 @@ if ( SERVER ) then
 	
 	function catherine.recognize.DoDataSave( pl, target )
 		if ( catherine.recognize.IsKnowTarget( pl, target ) ) then return end
-		local recognize = table.Copy( catherine.character.GetCharData( pl, "recognize", { } ) )
+		local recognize = table.Copy( catherine.character.GetCharacterVar( pl, "recognize", { } ) )
 		if ( type( target ) == "table" ) then
 			for k, v in pairs( target ) do
 				recognize[ #recognize + 1 ] = v:GetCharacterID( )
@@ -46,11 +43,11 @@ if ( SERVER ) then
 		elseif ( type( target ) == "Player" ) then
 			recognize[ #recognize + 1 ] = target:GetCharacterID( )
 		end
-		catherine.character.SetCharData( pl, "recognize", recognize )
+		catherine.character.SetCharacterVar( pl, "recognize", recognize )
 	end
 	
 	function catherine.recognize.Init( pl )
-		catherine.character.SetCharData( pl, "recognize", { } )
+		catherine.character.SetCharacterVar( pl, "recognize", { } )
 	end
 	
 	netstream.Hook( "catherine.recognize.DoKnow", function( pl, data )
@@ -64,7 +61,7 @@ end
 
 function catherine.recognize.IsKnowTarget( pl, target )
 	if ( !IsValid( pl ) or !IsValid( target ) ) then return false end
-	local recognize = catherine.character.GetCharData( pl, "recognize", { } )
+	local recognize = catherine.character.GetCharacterVar( pl, "recognize", { } )
 	if ( !recognize ) then return false end
 	return table.HasValue( recognize, target:GetCharacterID( ) )
 end

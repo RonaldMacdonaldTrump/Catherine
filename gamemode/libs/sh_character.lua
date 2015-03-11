@@ -81,7 +81,7 @@ catherine.character.RegisterGlobalVar( "model", {
 catherine.character.RegisterGlobalVar( "att", {
 	field = "_att",
 	doNetwork = true,
-	default = "[]", // 흠..;
+	default = "[]",
 	checkValid = function( data )
 		// to do;
 	end,
@@ -99,7 +99,7 @@ catherine.character.RegisterGlobalVar( "schema", {
 catherine.character.RegisterGlobalVar( "registerTime", {
 	field = "_registerTime",
 	static = true,
-	default = function( ) // 이게 꼭 함수로 작성되어야 하나..;
+	default = function( )
 		return os.time( )
 	end
 } )
@@ -129,7 +129,7 @@ catherine.character.RegisterGlobalVar( "inventory", {
 catherine.character.RegisterGlobalVar( "gender", {
 	field = "_gender",
 	doNetwork = true,
-	default = "male" // 나중에 추가할것 --;
+	default = "male"
 } )
 
 catherine.character.RegisterGlobalVar( "cash", {
@@ -167,7 +167,6 @@ if ( SERVER ) then
 					local success, reason = v.checkValid( var )
 					
 					if ( success == false ) then
-						//print(success,reason)
 						netstream.Start( pl, "catherine.character.CreateResult", { success, reason } )
 						return
 					end
@@ -176,8 +175,6 @@ if ( SERVER ) then
 			
 			characterVars[ v.field ] = var
 		end
-		
-		PrintTable(characterVars)
 
 		catherine.database.InsertDatas( "catherine_characters", characterVars, function( )
 			print( "Created - L7D" )
@@ -200,10 +197,8 @@ if ( SERVER ) then
 		
 		if ( pl:GetCharacterID( ) != nil ) then
 			catherine.character.SavePlayerCharacter( pl )
-			//catherine.character.DisconnectNetworking( pl ) -- 꼭 필요한지 몰르겠즘;; T-T
 			catherine.character.SetLoadedCharacterByID( pl, pl:GetCharacterID( ), nil )
-			
-			// 이전 캐릭터 데이터 클리어..
+			// Previous character data clear...
 		end
 		
 		if ( pl:GetCharacterID( ) == id ) then
@@ -217,7 +212,8 @@ if ( SERVER ) then
 				print("Faction error")
 				return
 			end
-			// 초기화;
+			
+			// Init;
 			pl:KillSilent( )
 			pl:Spawn( )
 			pl:SetTeam( factionTab.index )
@@ -289,8 +285,7 @@ if ( SERVER ) then
 			func( )
 		end
 	end
-	
-	// 이게 꼭 필요한가여... 아닌거가튼데.. --;
+
 	function catherine.character.DisconnectNetworking( pl )
 		if ( !IsValid( pl ) ) then return end
 		catherine.character.networkingVars[ pl:SteamID( ) ] = nil
@@ -345,9 +340,11 @@ if ( SERVER ) then
 	
 	function catherine.character.MergeNetworkingVarsByLoaded( pl )
 		if ( !IsValid( pl ) ) then return end
-		table.Merge( catherine.character.Loaded[ tostring( pl:GetCharacterID( ) ) ], catherine.character.networkingVars[ pl:SteamID( ) ] )
+		local id = pl:GetCharacterID( )
+		if ( !catherine.character.Loaded[ tostring( id ) ] or !catherine.character.networkingVars[ pl:SteamID( ) ] ) then return end
+		table.Merge( catherine.character.Loaded[ tostring( id ) ], catherine.character.networkingVars[ pl:SteamID( ) ] )
 	end
-	
+
 	function catherine.character.Think( )
 		if ( catherine.character.SaveCurTime <= CurTime( ) ) then
 			for k, v in pairs( player.GetAllByLoaded( ) ) do
@@ -365,17 +362,8 @@ if ( SERVER ) then
 	
 	hook.Add( "Think", "catherine.character.Think", catherine.character.Think )
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected", catherine.character.PlayerDisconnected )
-	
-	//catherine.character.Loaded={}
-	//PrintTable(catherine.character.Loaded)
-	//catherine.character.SavePlayerCharacter( player.GetByID( 1 ) )
-	//catherine.character.SavePlayerCharacter(  player.GetByID( 1 ) )
-	//catherine.character.SendCharacterLists( player.GetByID( 1 ) )
-	//catherine.character.Use( player.GetByID( 1 ), 1 )
-	//catherine.character.Create( player.GetByID( 1 ), { name = "Left 7 Dead Character", desc = "zzzzzzzzzzzzzzzzzzzzzzzz" } )
 
-	
-	// 나중에 static 예외처리 추가바람... --;
+	// static 예외 처리 추가바람;;
 	function catherine.character.SetGlobalVar( pl, key, value, noSync )
 		if ( !IsValid( pl ) and !key ) then return default end
 		if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or catherine.character.networkingVars[ pl:SteamID( ) ][ key ] == nil ) then return end
@@ -398,7 +386,6 @@ if ( SERVER ) then
 	
 	netstream.Hook( "catherine.character.Create", function( caller, data )
 		catherine.character.Create( caller, data )
-		//PrintTable(data)
 	end )
 	
 	netstream.Hook( "catherine.character.Use", function( caller, data )
@@ -406,7 +393,7 @@ if ( SERVER ) then
 	end )
 	
 	netstream.Hook( "catherine.character.Delete", function( caller, data )
-		// 나중에;.
+		// TO DO
 	end )
 else
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
@@ -470,6 +457,12 @@ function catherine.character.GetGlobalVar( pl, key, default )
 	if ( !IsValid( pl ) and !key ) then return default end
 	if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or catherine.character.networkingVars[ pl:SteamID( ) ][ key ] == nil ) then return default end
 	return catherine.character.networkingVars[ pl:SteamID( ) ][ key ] or default
+end
+
+function catherine.character.GetCharacterVar( pl, key, default )
+	if ( !IsValid( pl ) and !key ) then return default end
+	if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or !catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ] ) then return default end
+	return catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ][ key ] or default
 end
 
 local META = FindMetaTable( "Player" )
