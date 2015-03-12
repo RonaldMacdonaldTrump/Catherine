@@ -48,6 +48,22 @@ function catherine.util.GetUniqueName( name )
 	return name:sub( 4, -5 )
 end
 
+function catherine.util.FolderDirectoryTranslate( dir )
+	if ( !dir ) then return end
+	if ( dir:sub( 1, 1 ) != "/" ) then
+		dir = "/" .. dir
+	end
+	local ex = string.Explode( "/", dir )
+	
+	for k, v in pairs( ex ) do
+		if ( v == "" ) then
+			table.remove( ex, k )
+		end
+	end
+	
+	return ex
+end
+
 catherine.util.IncludeInDir( "libs/external", true )
 
 if ( SERVER ) then
