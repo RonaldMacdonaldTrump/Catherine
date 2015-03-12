@@ -6,12 +6,6 @@ concommand.Add( "char_open", function( )
 	catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
 end )
 
-concommand.Add( "char_close", function( )
-	if ( IsValid( catherine.vgui.character ) ) then
-		catherine.vgui.character:Close( )
-	end
-end )
-
 local PANEL = { }
 
 function PANEL:Init( )
@@ -21,7 +15,7 @@ function PANEL:Init( )
 	self.w, self.h = ScrW( ), ScrH( )
 	self.blurAmount = 0
 	self.mainAlpha = 0
-	self.music = CreateSound( LocalPlayer( ), catherine.configs.characterMenuMusic )
+	self.music = CreateSound( self.player, catherine.configs.characterMenuMusic )
 	self.music:Play( )
 	self.mainButtons = { }
 	self.mode = 0
@@ -55,6 +49,7 @@ function PANEL:Init( )
 		surface.SetMaterial( Material( "gui/gradient" ) )
 		surface.DrawTexturedRect( 0, ( h * 0.7 - 70 + 240 ) - 2, w * 0.4, 2 )
 
+		if ( !Schema ) then return end
 		draw.SimpleText( Schema.Title, "catherine_normal30", 30, h * 0.7 - 60, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 		draw.SimpleText( Schema.Desc, "catherine_normal20", 30, h * 0.7 - 30, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 	end
@@ -89,7 +84,7 @@ function PANEL:Init( )
 	self.changeLog:SetStr( "Change Log" )
 	self.changeLog:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.changeLog.Click = function( )
-		gui.OpenURL( "http://github.com/L7D/catherine/commits/0.2" )
+		gui.OpenURL( "http://github.com/L7D/Catherine/commits" )
 	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.changeLog
 	
@@ -109,9 +104,11 @@ function PANEL:Init( )
 		if ( self.player:IsCharacterLoaded( ) ) then
 			self:Close( )
 		else
-			self:JoinMenu( function( )
-				RunConsoleCommand( "disconnect" )
-			end )
+			Derma_Query( "Are you sure disconnect from server?", "Disconnect from server", "Yes", function( )
+				self:JoinMenu( function( )
+					RunConsoleCommand( "disconnect" )
+				end )
+			end, "No", function( ) end )
 		end
 	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.disconnect
@@ -135,13 +132,14 @@ function PANEL:CreateCharacterPanel( )
 end
 
 function PANEL:UseCharacterPanel( )
-	if ( !catherine.character.localCharacters ) then return end
-	self.loadCharacter = { }
-	self.loadCharacter.Lists = { }
-	self.loadCharacter.curr = 1
-	
+	self.loadCharacter = { Lists = { }, curr = 1 }
+
 	local baseW, baseH = 300, ScrH( ) * 0.85
 	local scrW, scrH = ScrW( ), ScrH( )
+	
+	for k, v in pairs( catherine.character.localCharacters ) do
+		self.loadCharacter.Lists[ #self.loadCharacter.Lists + 1 ] = { characterDatas = v, panel = nil }
+	end
 	
 	self.CharacterPanel = vgui.Create( "DPanel", self )
 	self.CharacterPanel:SetPos( 0, 90 )
@@ -149,9 +147,10 @@ function PANEL:UseCharacterPanel( )
 	self.CharacterPanel:SetAlpha( 0 )
 	self.CharacterPanel:AlphaTo( 255, 0.2, 0 )
 	self.CharacterPanel:SetDrawBackground( false )
-	
-	for k, v in pairs( catherine.character.localCharacters ) do
-		self.loadCharacter.Lists[ #self.loadCharacter.Lists + 1 ] = { characterDatas = v, panel = nil }
+	self.CharacterPanel.Paint = function( pnl, w, h )
+		if ( #self.loadCharacter.Lists == 0 ) then
+			draw.SimpleText( "You don't have any characters!", "catherine_normal30", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+		end
 	end
 
 	local function SetTargetPanelPos( pnl, pos, a )
@@ -173,12 +172,12 @@ function PANEL:UseCharacterPanel( )
 		v.panel.y = 0
 		v.panel:Center( )
 		v.panel.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 255 ) )
-			draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
-			draw.RoundedBox( 0, 0, 30, w, 1, Color( 255, 255, 255, 255 ) )
-			draw.SimpleText( v.characterDatas._name, "catherine_normal20", w / 2, h - 90, Color( 255, 255, 255, 255 ), 1, 1 )
-			draw.SimpleText( v.characterDatas._desc, "catherine_normal15", w / 2, h - 70, Color( 255, 255, 255, 255 ), 1, 1 )
-			draw.SimpleText( factionData.name, "catherine_normal20", w / 2, 15, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
+			//draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
+			//draw.RoundedBox( 0, 0, 30, w, 1, Color( 255, 255, 255, 255 ) )
+			draw.SimpleText( v.characterDatas._name, "catherine_normal20", w / 2, h - 90, Color( 0, 0, 0, 255 ), 1, 1 )
+			draw.SimpleText( v.characterDatas._desc, "catherine_normal15", w / 2, h - 70, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( factionData.name, "catherine_normal20", w / 2, 15, Color( 0, 0, 0, 255 ), 1, 1 )
 		end
 		
 		v.panel.button = vgui.Create( "DButton", v.panel )
@@ -262,7 +261,6 @@ end
 
 function PANEL:BackToMainMenu( )
 	if ( self.mode == 0 ) then return end
-	
 	local delta = 0
 	for k, v in pairs( self.mainButtons ) do
 		if ( !IsValid( v ) ) then continue end
@@ -321,9 +319,10 @@ end
 
 function PANEL:Close( )
 	self.music:FadeOut( 3 )
-	self:Remove( )
-	self = nil
-	catherine.vgui.character = nil
+	self:AlphaTo( 0, 0.2, 0, function( )
+		self:Remove( )
+		self = nil
+	end )
 end
 
 vgui.Register( "catherine.vgui.character", PANEL, "DFrame" )
@@ -333,21 +332,18 @@ local PANEL = { }
 
 function PANEL:Init( )
 	self.parent = self:GetParent( )
-	self.w, self.h = self.parent.w * 0.6, self.parent.h * 0.6
-	self.data = {
-		faction = nil
-	}
-	self.factionImage = nil
+	self.w, self.h = self.parent.w * 0.8, self.parent.h * 0.6
+	self.data = { faction = nil }
 	self.errorMsg = nil
 	self.factionList = self:GetFactionList( )
 	
 	self:SetSize( self.w, self.h )
 	self:SetPos( self.parent.w, self.parent.h / 2 - self.h / 2 )
-	self:MoveTo( self.parent.w / 2 - self.w / 2, self.parent.h / 2 - self.h / 2, 0.5, 0 )
+	self:MoveTo( self.parent.w / 2 - self.w / 2, self.parent.h / 2 - self.h / 2, 0.3, 0 )
 	
 	self.label01 = vgui.Create( "DLabel", self )
 	self.label01:SetPos( 20, 10 )
-	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
+	self.label01:SetColor( Color( 50, 50, 50, 255 ) )
 	self.label01:SetFont( "catherine_normal50" )
 	self.label01:SetText( "Faction" )
 	self.label01:SizeToContents( )
@@ -361,11 +357,11 @@ function PANEL:Init( )
 		panel:SetSize( 200, self.Lists:GetTall( ) )
 		panel.Paint = function( pnl, w, h )
 			if ( self.data.faction == v.uniqueID ) then
-				draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
-				draw.SimpleText( v.name, "catherine_normal25", w / 2, h - 30, Color( 50, 50, 50, 255 ), 1, 1 )
+				draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 235 ) )
+				draw.SimpleText( v.name, "catherine_normal25", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
 				return
 			end
-			draw.SimpleText( v.name, "catherine_normal25", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( v.name, "catherine_normal25", w / 2, h - 30, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
 		
 		local model = vgui.Create( "DModelPanel", panel )
@@ -394,15 +390,16 @@ function PANEL:Init( )
 	end
 	
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
-	self.nextStage:SetPos( self.w - self.w * 0.2 - 40, self.h - 50 )
+	self.nextStage:SetPos( self.w - self.w * 0.2 - 40, 20 )
 	self.nextStage:SetSize( self.w * 0.2, 30 )
 	self.nextStage:SetStr( "Continue" )
-	self.nextStage:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.nextStage:SetStrColor( Color( 50, 50, 50, 255 ) )
+	self.nextStage:SetGradientColor( Color( 50, 50, 50, 255 ) )
 	self.nextStage.Click = function( )
 		if ( self.data.faction ) then
 			if ( catherine.faction.FindByID( self.data.faction ) ) then
 				self.parent.createData.datas.faction = self.data.faction
-				self:MoveTo( 0 - self.w, self.parent.h / 2 - self.h / 2, 0.5, 0, nil, function( )
+				self:MoveTo( 0 - self.w, self.parent.h / 2 - self.h / 2, 0.3, 0, nil, function( )
 					self:Remove( )
 					self.parent.createData.currentStage = vgui.Create( "catherine.character.stageTwo", self.parent )
 				end )
@@ -417,7 +414,7 @@ end
 
 function PANEL:SetErrorMessage( msg )
 	self.errorMsg = msg
-	surface.PlaySound( "buttons/button1.wav" )
+	surface.PlaySound( "buttons/button2.wav" )
 end
 
 function PANEL:GetFactionList( )
@@ -432,9 +429,9 @@ function PANEL:GetFactionList( )
 end
 
 function PANEL:Paint( w, h )
-	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 200 ) )
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
 	if ( self.errorMsg ) then
-		catherine.util.DrawCoolText( self.errorMsg, "catherine_normal20", w / 2, h - 25, Color( 255, 255, 255, 255 ), 1, 1, Color( 150, 0, 0, 255 ) )
+		catherine.util.DrawCoolText( self.errorMsg, "catherine_normal20", w / 2, h - 25 )
 	end
 end
 
@@ -444,7 +441,7 @@ local PANEL = { }
 
 function PANEL:Init( )
 	self.parent = self:GetParent( )
-	self.w, self.h = self.parent.w * 0.6, self.parent.h * 0.6
+	self.w, self.h = self.parent.w * 0.8, self.parent.h * 0.6
 	self.data = {
 		name = "",
 		desc = "",
@@ -454,18 +451,18 @@ function PANEL:Init( )
 	
 	self:SetSize( self.w, self.h )
 	self:SetPos( self.parent.w, self.parent.h / 2 - self.h / 2 )
-	self:MoveTo( self.parent.w / 2 - self.w / 2, self.parent.h / 2 - self.h / 2, 0.5, 0 )
+	self:MoveTo( self.parent.w / 2 - self.w / 2, self.parent.h / 2 - self.h / 2, 0.3, 0 )
 	
 	self.label01 = vgui.Create( "DLabel", self )
 	self.label01:SetPos( 20, 10 )
-	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
+	self.label01:SetColor( Color( 50, 50, 50, 255 ) )
 	self.label01:SetFont( "catherine_normal50" )
 	self.label01:SetText( "Character Information" )
 	self.label01:SizeToContents( )
 	
 	self.name = vgui.Create( "DLabel", self )
 	self.name:SetPos( 20, 70 )
-	self.name:SetColor( Color( 255, 255, 255, 255 ) )
+	self.name:SetColor( Color( 50, 50, 50, 255 ) )
 	self.name:SetFont( "catherine_normal20" )
 	self.name:SetText( "Name" )
 	self.name:SizeToContents( )
@@ -477,9 +474,9 @@ function PANEL:Init( )
 	self.nameEnt:SetText( "" )
 	self.nameEnt:SetAllowNonAsciiCharacters( true )
 	self.nameEnt.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
-		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
-		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 0 ) )
+		draw.RoundedBox( 0, 0, 0, w, 1, Color( 50, 50, 50, 255 ) )
+		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
+		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
 	end
 	self.nameEnt.OnTextChanged = function( pnl )
 		self.data.name = pnl:GetText( )
@@ -487,7 +484,7 @@ function PANEL:Init( )
 	
 	self.desc = vgui.Create( "DLabel", self )
 	self.desc:SetPos( 20, 110 )
-	self.desc:SetColor( Color( 255, 255, 255, 255 ) )
+	self.desc:SetColor( Color( 50, 50, 50, 255 ) )
 	self.desc:SetFont( "catherine_normal20" )
 	self.desc:SetText( "Description" )
 	self.desc:SizeToContents( )
@@ -499,9 +496,9 @@ function PANEL:Init( )
 	self.descEnt:SetText( "" )
 	self.descEnt:SetAllowNonAsciiCharacters( true )
 	self.descEnt.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
-		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
-		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 0 ) )
+		draw.RoundedBox( 0, 0, 0, w, 1, Color( 50, 50, 50, 255 ) )
+		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
+		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
 	end
 	self.descEnt.OnTextChanged = function( pnl )
 		self.data.desc = pnl:GetText( )
@@ -535,14 +532,15 @@ function PANEL:Init( )
 			self.model:AddItem( spawnIcon )
 		end
 	else
-		self:SetErrorMessage( "Not valid faction!" )
+		self:SetErrorMessage( "Faction is not valid!" )
 	end
 	
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
-	self.nextStage:SetPos( self.w - self.w * 0.2 - 40, self.h - 50 )
+	self.nextStage:SetPos( self.w - self.w * 0.2 - 40, 20 )
 	self.nextStage:SetSize( self.w * 0.2, 30 )
-	self.nextStage:SetStr( "Create Character" )
-	self.nextStage:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.nextStage:SetStr( "Create character" )
+	self.nextStage:SetStrColor( Color( 50, 50, 50, 255 ) )
+	self.nextStage:SetGradientColor( Color( 50, 50, 50, 255 ) )
 	self.nextStage.Click = function( )
 		for k, v in pairs( self.data ) do
 			local vars = catherine.character.FindGlobalVarByID( k )
@@ -563,13 +561,13 @@ end
 
 function PANEL:SetErrorMessage( msg )
 	self.errorMsg = msg
-	surface.PlaySound( "buttons/button1.wav" )
+	surface.PlaySound( "buttons/button2.wav" )
 end
 
 function PANEL:Paint( w, h )
-	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 200 ) )
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
 	if ( self.errorMsg ) then
-		catherine.util.DrawCoolText( self.errorMsg, "catherine_normal20", w / 2, h - 25, Color( 255, 255, 255, 255 ), 1, 1, Color( 150, 0, 0, 255 ) )
+		catherine.util.DrawCoolText( self.errorMsg, "catherine_normal20", w / 2, h - 25 )
 	end
 end
 

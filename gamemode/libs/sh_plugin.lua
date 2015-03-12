@@ -14,7 +14,7 @@ function catherine.plugin.LoadAll( dir )
 			local findLibs = file.Find( Pdir .. "/libs/*.lua", "LUA" )
 			
 			catherine.util.Include( Pdir .. "/sh_plugin.lua" )
-			catherine.item.Include( Pdir )
+			//catherine.item.Include( Pdir )
 			
 			for k1, v1 in pairs( findDermas ) do
 				catherine.util.Include( Pdir .. "/derma/" .. v1 )

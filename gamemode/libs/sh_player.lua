@@ -4,26 +4,21 @@ local META = FindMetaTable( "Player" )
 
 if ( SERVER ) then
 	function catherine.player.Initialize( pl, func )
-		if ( !catherine.database.Connected ) then // 데이터베이스가 연결되지 않음?
-			netstream.Start( pl, "catherine.LoadingStatus", { false, "DataBase ERROR : " .. catherine.database.ErrorMsg, true } ) // 에러 메세지 전송;
+		if ( !catherine.database.Connected ) then
+			netstream.Start( pl, "catherine.LoadingStatus", { false, "DataBase ERROR : " .. catherine.database.ErrorMsg, true } )
 			return
 		end
-		catherine.network.SyncAllVars( pl, function( ) // 현재 네트워킹 된 글로벌, 엔티티 값 전송..^-^
-			//netstream.Start( pl, "catherine.LoadingStatus", { false, "네트워킹 하는 중 ..." } )
-			catherine.character.GetCurrentNetworking( pl, function( ) // 현재 네트워킹된 캐릭터 값 전송..^-^
-				//netstream.Start( pl, "catherine.LoadingStatus", { false, "캐릭터 네트워킹 중 ..." } )
-				catherine.database.GetDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", function( data ) // 플레이어 데이터베이스 값 체크..
+		if ( !Schema and catherine.network.GetNetGlobalVar( "notSetSchema", false ) == true ) then
+			netstream.Start( pl, "catherine.LoadingStatus", { false, "Can't load Schema table!!! please check your '+gamemode' command!", true } )
+			return
+		end
+		catherine.network.SyncAllVars( pl, function( )
+			catherine.character.GetCurrentNetworking( pl, function( )
+				catherine.database.GetDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
 					if ( !data or #data == 0 ) then
-						//netstream.Start( pl, "catherine.LoadingStatus", { false, "플레이어 데이터베이스 초기화 하는 중 ..." } )
-						catherine.database.InsertDatas( "catherine_players", { // 플레이어 데이터를 데이터베이스에 삽입..
-							_steamName = pl:SteamName( ),
-							_steamID = pl:SteamID( ),
-							_catData = { }
-						}, function( )
-							//netstream.Start( pl, "catherine.LoadingStatus", { false, "캐릭터 목록을 불러오는 중 ..." } )
-							catherine.character.SendCharacterLists( pl, function( ) // 캐릭터 리스트 전송..
-								//netstream.Start( pl, "catherine.LoadingStatus", { false, "기타 데이터를 불러오는 중 ..." } )
-								catherine.catData.Load( pl ) // cat(CAT - Catherine) 데이터 전송;
+						catherine.player.DoQueryInitialize( pl, function( )
+							catherine.character.SendCharacterLists( pl, function( )
+								catherine.catData.Load( pl )
 								netstream.Start( pl, "catherine.LoadingStatus", { false, "Framework loaded!" } )
 								timer.Simple( 1, function( )
 									netstream.Start( pl, "catherine.LoadingStatus", { true, "" } )
@@ -35,10 +30,8 @@ if ( SERVER ) then
 							end )
 						end )
 					else
-						//netstream.Start( pl, "catherine.LoadingStatus", { false, "캐릭터 목록을 불러오는 중 ..." } )
-						catherine.character.SendCharacterLists( pl, function( ) // 캐릭터 리스트 전송..
-							//netstream.Start( pl, "catherine.LoadingStatus", { false, "기타 데이터를 불러오는 중 ..." } )
-							catherine.catData.Load( pl ) // cat(CAT - Catherine) 데이터 전송;
+						catherine.character.SendCharacterLists( pl, function( )
+							catherine.catData.Load( pl )
 							netstream.Start( pl, "catherine.LoadingStatus", { false, "Framework loaded!" } )
 							timer.Simple( 1, function( )
 								netstream.Start( pl, "catherine.LoadingStatus", { true, "" } )
@@ -51,6 +44,17 @@ if ( SERVER ) then
 					end
 				end )
 			end )
+		end )
+	end
+	
+	function catherine.player.DoQueryInitialize( pl, func )
+		if ( !IsValid( pl ) ) then return end
+		catherine.database.InsertDatas( "catherine_players", {
+			_steamName = pl:SteamName( ),
+			_steamID = pl:SteamID( ),
+			_catData = { }
+		}, function( )
+			if ( func ) then func( ) end
 		end )
 	end
 	
@@ -84,11 +88,7 @@ if ( SERVER ) then
 	function META:IsRunning( )
 		return v( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
 	end
-	
-	function META:IsRagdolled( )
-		return IsValid( self.ragdoll )
-	end
-	
+
 	/* // Error;
 	
 	function META:ForceRagdoll( )

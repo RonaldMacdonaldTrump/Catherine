@@ -26,7 +26,7 @@ function PANEL:Init( )
 	self.warningLabel:SetPos( 10, 30 )
 	self.warningLabel:SetColor( Color( 255, 50, 50 ) )
 	self.warningLabel:SetFont( "catherine_normal20" )
-	self.warningLabel:SetText( "Never send spam report, please :) ..." )
+	self.warningLabel:SetText( "Don't send spam report, please :) ..." )
 	self.warningLabel:SizeToContents( )
 	
 	self.vguis[ #self.vguis + 1 ] = self.warningLabel

@@ -5,12 +5,6 @@ catherine.loading = catherine.loading or {
 	rotate = 0,
 	msg = ""
 }
-catherine.loaded2 = catherine.loaded2 or false
-catherine.errorText = catherine.errorText or ""
-catherine.alpha = catherine.alpha or 255
-catherine.progressBar = catherine.progressBar or 0
-catherine.percent = catherine.percent or 0
-catherine.locationRandom = catherine.locationRandom or table.Random( catherine.configs.locationRandom )
 catherine.hudHide = {
 	"CHudHealth",
 	"CHudBattery",
@@ -36,17 +30,7 @@ function GM:HUDShouldDraw( name )
 end
 
 function GM:CalcView( pl, pos, ang, fov )
-	if ( IsValid( catherine.vgui.character ) ) then
-		local sin = math.sin( CurTime( ) / 4 )
-		local sin2 = math.sin( CurTime( ) / 5 )
-		viewSin = ( 10 / 1 ) * sin
-		viewSin2 = ( 10 / 1 ) * sin2
-		local view = { }
-		view.origin = catherine.locationRandom.pos
-		view.angles = Angle( catherine.locationRandom.ang.p + ( viewSin / 2 ), catherine.locationRandom.ang.y + ( viewSin2 / 2 ), catherine.locationRandom.ang.r ) 
-		view.fov = fov
-		return view
-	end
+
 end
 
 function GM:DrawEntityInformation( ent, alpha )

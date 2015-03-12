@@ -1,5 +1,5 @@
 catherine.data = catherine.data or { }
-catherine.data.buffer = catherine.data.buffer or { }
+catherine.data.Buffer = catherine.data.Buffer or { }
 
 function catherine.data.DataLoad( )
 	file.CreateDir( "catherine" )
@@ -10,27 +10,22 @@ end
 hook.Add( "DataLoad", "catherine.data.DataLoad", catherine.data.DataLoad )
 
 function catherine.data.Set( key, value, ignoreMap, isGlobal )
-	local dir = "catherine/" .. ( isGlobal and "globals/" or catherine.schema.GetUniqueID( ) .. "/" ) .. 
-	file.CreateDir( dir .. key )
-	dir = dir .. key .. "/"
-
-	local dir = "catherine/".. key .. "/" .. ( ( !ignoreMap and game.GetMap( ) .. "/" ) or "" ) .. "data.txt"
-	local data = util.TableToJSON( value )
-	file.CreateDir( "catherine/" .. key )
+	local dir = "catherine/" .. ( isGlobal and "globals/" or catherine.schema.GetUniqueID( ) .. "/" ) .. key .. "/"
 	if ( !ignoreMap ) then
-		file.CreateDir( "catherine/" .. key .. "/" .. game.GetMap( ) )
+		dir = dir .. game.GetMap( )
+		file.CreateDir( dir )
 	end
-	file.Write( dir, data )
-	catherine.data.buffer[ key ] = value
+	local data = util.TableToJSON( value )
+	file.Write( dir .. "/data.txt", data )
+	catherine.data.Buffer[ key ] = value
 end
 
-function catherine.data.Get( key, default, ignoreMap, bufferGet )
-	local dir = "catherine/" .. key .. "/" .. ( ( !ignoreMap and game.GetMap( ) .. "/" ) or "" ) .. "data.txt"
+function catherine.data.Get( key, default, ignoreMap, isGlobal, isBuffer )
+	local dir = "catherine/" .. ( isGlobal and "globals/" or catherine.schema.GetUniqueID( ) .. "/" ) .. key .. "/" .. ( !ignoreMap and game.GetMap( ) or "" ) .. "/data.txt"
 	local data = file.Read( dir, "DATA" ) or nil
 	if ( !data ) then return default end
-
-	if ( bufferGet ) then
-		return catherine.data.buffer[ key ] or default
+	if ( isBuffer ) then
+		return catherine.data.Buffer[ key ] or default
 	end
 	return util.JSONToTable( data )
 end

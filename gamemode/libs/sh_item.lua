@@ -1,3 +1,4 @@
+/* // have a bug, sorry;
 catherine.item = catherine.item or { }
 catherine.item.bases = { }
 catherine.item.items = { }
@@ -217,3 +218,4 @@ else
 		end
 	end )
 end
+*/

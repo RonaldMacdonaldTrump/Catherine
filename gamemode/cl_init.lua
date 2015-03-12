@@ -12,12 +12,10 @@ function Derma_Message( strText, strTitle, strButtonText )
 		Window:SetBackgroundBlur( true )
 		Window:SetDrawOnTop( true )
 		Window.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 235 ) )
-			
-			draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
-			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
-			
-			draw.SimpleText( strText, "catherine_normal25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
+
+			draw.SimpleText( strTitle or "", "catherine_normal20", 30, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( strText, "catherine_normal25", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
 
 	local ButtonPanel = vgui.Create( "DPanel", Window )
@@ -27,17 +25,18 @@ function Derma_Message( strText, strTitle, strButtonText )
 		
 	local Okay = vgui.Create( "catherine.vgui.button", ButtonPanel )
 	Okay:SetPos( 5, 5 )
-	Okay:SetSize( 50, 20 )
+	Okay:SetSize( 100, 25 )
 	Okay:SetStr( strButtonText or "OK" )
-	Okay:SetStrColor( Color( 255, 255, 255, 255 ) )
-	Okay:SetStrFont( "catherine_normal15" )
+	Okay:SetStrColor( Color( 50, 50, 50, 255 ) )
+	Okay:SetGradientColor( Color( 50, 50, 50, 255 ) )
+	Okay:SetStrFont( "catherine_normal20" )
 	Okay.Click = function( )
 		Window:Close()
 	end
 		
 	ButtonPanel:SetWide( Okay:GetWide() + 10 )
 
-	Window:SetSize( ScrW( ), ScrH( ) * 0.2 )
+	Window:SetSize( ScrW( ), ScrH( ) * 0.15 )
 	Window:Center()
 
 	ButtonPanel:CenterHorizontal()

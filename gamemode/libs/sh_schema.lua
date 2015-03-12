@@ -2,12 +2,12 @@ catherine.schema = catherine.schema or { }
 
 function catherine.schema.Initialization( )
 	Schema = Schema or {
-		Name = "Catherine Schema",
-		Author = "L7D, Fristet",
+		Name = "Example Schema",
+		Author = "L7D",
 		UniqueID = GM.FolderName,
 		FolderName = GM.FolderName,
-		Title = "Schema",
-		Desc = "Good",
+		Title = "Example",
+		Desc = "A schema.",
 		IntroTitle = "A Schema",
 		IntroDesc = "Welcome..."
 	}
@@ -18,7 +18,7 @@ function catherine.schema.Initialization( )
 	
 	catherine.util.Include( "schema/sh_schema.lua" )
 	catherine.faction.Include( Schema.FolderName .. "/gamemode/schema" )
-	catherine.item.Include( Schema.FolderName .. "/gamemode/schema" )
+	//catherine.item.Include( Schema.FolderName .. "/gamemode/schema" )
 	
 	hook.Run( "SchemaInit" )
 end

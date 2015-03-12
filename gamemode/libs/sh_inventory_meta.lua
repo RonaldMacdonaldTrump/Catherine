@@ -1,3 +1,4 @@
+/* // have a bug, sorry;
 local META = FindMetaTable( "Player" )
 
 function META:GetInv( )
@@ -45,3 +46,4 @@ else
 		return catherine.inventory.GetInvItemDatas( itemID )
 	end
 end
+*/

@@ -1,3 +1,4 @@
+/* // have a bug, sorry;
 catherine.inventory = catherine.inventory or { }
 
 if ( SERVER ) then
@@ -218,3 +219,5 @@ end
 function catherine.inventory.GetInv( pl )
 	return catherine.character.GetGlobalData( pl, "_inv", nil )
 end
+
+*/

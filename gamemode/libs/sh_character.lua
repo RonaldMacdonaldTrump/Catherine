@@ -35,7 +35,6 @@ function catherine.character.FindGlobalVarByField( field )
 	return nil
 end
 
-
 catherine.character.RegisterGlobalVar( "id", {
 	field = "_id",
 	doNetwork = true,
@@ -50,7 +49,7 @@ catherine.character.RegisterGlobalVar( "name", {
 		if ( data:len( ) >= catherine.configs.characterNameMinLen and data:len( ) < catherine.configs.characterNameMaxLen ) then
 			return true
 		end
-		return false, "can't make! - name"
+		return false, "The character name must be at least " .. catherine.configs.characterNameMinLen .." characters long and up to " .. catherine.configs.characterNameMaxLen .. " characters!"
 	end
 } )
 
@@ -62,7 +61,7 @@ catherine.character.RegisterGlobalVar( "desc", {
 		if ( data:len( ) >= catherine.configs.characterDescMinLen and data:len( ) < catherine.configs.characterDescMaxLen ) then
 			return true
 		end
-		return false, "can't make! - desc"
+		return false, "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long and up to " .. catherine.configs.characterDescMaxLen .. " characters!"
 	end
 } )
 
@@ -70,11 +69,10 @@ catherine.character.RegisterGlobalVar( "model", {
 	field = "_model",
 	default = "models/breen.mdl",
 	checkValid = function( data )
-		if ( file.Exists( data, "GAME" ) ) then
-			return true
+		if ( data == "" ) then
+			return false, "Please select character model!"
 		end
-		
-		return false, "can't make! - model"
+		return true
 	end
 } )
 
@@ -177,7 +175,7 @@ if ( SERVER ) then
 		end
 
 		catherine.database.InsertDatas( "catherine_characters", characterVars, function( )
-			print( "Created - L7D" )
+			catherine.util.Print( Color( 0, 255, 0 ), "Character created! [" .. pl:SteamName( ) .. "]" )
 			netstream.Start( pl, "catherine.character.CreateResult", { true } )
 			catherine.character.SendCharacterLists( pl )
 		end )
@@ -190,18 +188,32 @@ if ( SERVER ) then
 			catherine.character.Buffers[ pl:SteamID( ) ] = data
 		end )
 	end
+	
+	function catherine.character.Delete( pl, id )
+		if ( !IsValid( pl ) ) then return end
+		if ( pl:GetCharacterID( ) == id ) then
+			netstream.Start( pl, "catherine.character.DeleteResult", { false, "You can't delete using character!" } )
+			return
+		end
+		catherine.database.Query( "DELETE FROM `catherine_characters` WHERE _steamID = '" .. pl:SteamID( ) .. "' AND _id = '" .. id .. "'", function( data )
+			catherine.character.SendCharacterLists( pl, function( )
+				netstream.Start( pl, "catherine.character.DeleteResult", { true } )
+			end )
+		end )
+	end
 
 	function catherine.character.Use( pl, id )
 		if ( !IsValid( pl ) or !id ) then return end
 		if ( !catherine.character.Buffers[ pl:SteamID( ) ] ) then return end
+		local prevID = pl:GetCharacterID( )
 		
-		if ( pl:GetCharacterID( ) != nil ) then
+		if ( prevID != nil ) then
 			catherine.character.SavePlayerCharacter( pl )
 			catherine.character.SetLoadedCharacterByID( pl, pl:GetCharacterID( ), nil )
 			// Previous character data clear...
 		end
 		
-		if ( pl:GetCharacterID( ) == id ) then
+		if ( prevID == id ) then
 			netstream.Start( pl, "catherine.character.UseResult", { false, "You can't use same character!" } )
 			return
 		end
@@ -209,7 +221,7 @@ if ( SERVER ) then
 		local function useCharacter( data )
 			local factionTab = catherine.faction.FindByID( data._faction )
 			if ( !factionTab ) then
-				print("Faction error")
+				netstream.Start( pl, "catherine.character.UseResult", { false, "Faction is not valid!" } )
 				return
 			end
 			
@@ -224,13 +236,17 @@ if ( SERVER ) then
 			pl:Give( "catherine_key" )
 			
 			catherine.character.InitializeNetworking( pl, id, data )
+			
+			if ( prevID == nil ) then
+				netstream.Start( pl, "catherine.hud.CinematicIntro_Init" )
+			end
 
 			catherine.network.SetNetVar( pl, "charID", id )
 			catherine.network.SetNetVar( pl, "charLoaded", true )
 			
 			netstream.Start( pl, "catherine.character.UseResult", { true } )
 			
-			print("Loaded - " .. id )
+			catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [ " .. pl:SteamName( ) .. " ]" .. ( prevID or "None" ) .. " -> " .. id )
 		end
 
 		local characterData = nil
@@ -317,6 +333,7 @@ if ( SERVER ) then
 		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
 			if ( !data ) then
 				catherine.character.Buffers[ pl:SteamID( ) ] = { }
+				netstream.Start( pl, "catherine.character.Lists", data )
 				if ( func ) then
 					func( )
 				end
@@ -354,6 +371,12 @@ if ( SERVER ) then
 		end
 	end
 	
+	function catherine.character.DataSave( )
+		for k, v in pairs( player.GetAllByLoaded( ) ) do
+			catherine.character.SavePlayerCharacter( v )
+		end
+	end
+	
 	function catherine.character.PlayerDisconnected( pl )
 		catherine.character.SavePlayerCharacter( pl )
 		catherine.character.SetLoadedCharacterByID( pl, pl:GetCharacterID( ), nil )
@@ -362,6 +385,7 @@ if ( SERVER ) then
 	
 	hook.Add( "Think", "catherine.character.Think", catherine.character.Think )
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected", catherine.character.PlayerDisconnected )
+	hook.Add( "DataSave", "catherine.character.DataSave", catherine.character.DataSave )
 
 	// static 예외 처리 추가바람;;
 	function catherine.character.SetGlobalVar( pl, key, value, noSync )
@@ -393,7 +417,7 @@ if ( SERVER ) then
 	end )
 	
 	netstream.Hook( "catherine.character.Delete", function( caller, data )
-		// TO DO
+		catherine.character.Delete( caller, data )
 	end )
 else
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
@@ -406,8 +430,6 @@ else
 					pnl = nil
 					catherine.vgui.character:BackToMainMenu( )
 				end )
-				
-				
 			end
 		else
 			Derma_Message( data[ 2 ], "Character Create Error", "OK" )
@@ -418,7 +440,6 @@ else
 		if ( IsValid( catherine.vgui.character ) ) then
 			catherine.vgui.character:Close( )
 		end
-		
 		catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
 	end )
 	
@@ -448,6 +469,17 @@ else
 		end
 	end )
 	
+	netstream.Hook( "catherine.character.DeleteResult", function( data )
+		if ( data[ 1 ] == true ) then
+			if ( IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.CharacterPanel ) ) then
+				catherine.vgui.character.CharacterPanel:Remove( )
+				catherine.vgui.character:UseCharacterPanel( )
+			end
+		else
+			Derma_Message( data[ 2 ], "Character Delete Error", "OK" )
+		end
+	end )
+	
 	netstream.Hook( "catherine.character.Lists", function( data )
 		catherine.character.localCharacters = data
 	end )
@@ -468,12 +500,13 @@ end
 local META = FindMetaTable( "Player" )
 
 function META:GetCharacterID( )
-	return catherine.network.GetNetVar( self, "charID", 0 )
+	return catherine.network.GetNetVar( self, "charID", nil )
 end
 
 function META:IsCharacterLoaded( )
 	return catherine.network.GetNetVar( self, "charLoaded", false )
 end
+
 do
 	META.RealName = META.RealName or META.Name
 	META.SteamName = META.RealName

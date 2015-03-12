@@ -186,7 +186,7 @@ function catherine.database.InsertDatas( tab, data, func )
 end
 
 function catherine.database.UpdateDatas( tab, cre, newData, func )
-	if ( !catherine.database.Connected or !tab or !data or !cre ) then return end
+	if ( !catherine.database.Connected or !tab or !newData or !cre ) then return end
 	local query = "UPDATE `" .. tab .. "` SET "
 	for k, v in pairs( newData ) do
 		query = query .. k .. " = '" .. catherine.database.escape( v ) .. "', "

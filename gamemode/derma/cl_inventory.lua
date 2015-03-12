@@ -1,3 +1,4 @@
+/* // have a bug, sorry;
 local PANEL = { }
 
 function PANEL:Init( )
@@ -133,4 +134,4 @@ hook.Add( "AddMenuItem", "catherine.vgui.inventory", function( tab )
 	tab[ "Bag" ] = function( menuPnl, itemPnl )
 		return vgui.Create( "catherine.vgui.inventory", menuPnl )
 	end
-end )
+end )*/

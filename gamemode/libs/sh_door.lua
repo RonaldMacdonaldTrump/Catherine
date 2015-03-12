@@ -130,7 +130,6 @@ end
 catherine.command.Register( {
 	command = "doorbuy",
 	syntax = "[none]",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		catherine.door.Buy( pl )
 	end
@@ -139,7 +138,6 @@ catherine.command.Register( {
 catherine.command.Register( {
 	command = "doorsell",
 	syntax = "[none]",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		catherine.door.Sell( pl )
 	end
@@ -148,7 +146,6 @@ catherine.command.Register( {
 catherine.command.Register( {
 	command = "doorsettitle",
 	syntax = "[text]",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		catherine.door.Buy( pl )
 	end

@@ -20,7 +20,7 @@ if ( SERVER ) then
 				v.nextStaminaUp = CurTime( ) + 3
 			end
 			if ( v:IsRunning( ) and v.nextStaminaDown <= CurTime( ) ) then
-				local staminaDown = math.Clamp( catherine.character.GetCharacterVar( v, "stamina", 100 ) - 10, 0, 100 )
+				local staminaDown = math.Clamp( catherine.character.GetCharacterVar( v, "stamina", 100 ) - 5, 0, 100 )
 				if ( staminaDown < 10 ) then
 					v.runSpeed = v:GetRunSpeed( )
 					v:SetRunSpeed( v:GetWalkSpeed( ) )
