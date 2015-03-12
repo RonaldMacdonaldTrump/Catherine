@@ -71,8 +71,7 @@ end
 function catherine.item.Include( dir )
 	local baseFiles = file.Find( dir .. "/items/base/*", "LUA" )
 	for k, v in pairs( baseFiles ) do
-		Base = { }
-		Base.uniqueID = catherine.util.GetUniqueName( v )
+		Base = { uniqueID = catherine.util.GetUniqueName( v ) }
 		catherine.util.Include( dir .. "/items/base/" .. v )
 		catherine.item.Register( Base, true )
 		Base = nil
@@ -83,8 +82,7 @@ function catherine.item.Include( dir )
 		if ( v == "base" ) then continue end
 		local itemFile = file.Find( dir .. "/items/" .. v .. "/*", "LUA" )
 		for k1, v1 in pairs( itemFile ) do
-			Item = { }
-			Item.uniqueID = catherine.util.GetUniqueName( v1 )
+			Item = { uniqueID = catherine.util.GetUniqueName( v1 ) }
 			catherine.util.Include( dir .. "/items/" .. v .. "/" .. v1 )
 			catherine.item.Register( Item )
 			Item = nil

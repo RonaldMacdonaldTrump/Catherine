@@ -23,10 +23,10 @@ function catherine.util.Include( dir, typ )
 	end
 end
 
-function catherine.util.IncludeInDir( dir, iscatherine )
+function catherine.util.IncludeInDir( dir, isFramework )
 	if ( !dir ) then return end
-	if ( ( !iscatherine or dir:find( "schema/" ) ) and !Schema ) then return end
-	local dir2 = ( ( iscatherine and "catherine" ) or Schema.FolderName ) .. "/gamemode/" .. dir .. "/*.lua"
+	if ( ( !isFramework or dir:find( "schema/" ) ) and !Schema ) then return end
+	local dir2 = ( ( isFramework and "catherine" ) or Schema.FolderName ) .. "/gamemode/" .. dir .. "/*.lua"
 	for k, v in pairs( file.Find( dir2, "LUA" ) ) do
 		catherine.util.Include( dir .. "/" .. v )
 	end
