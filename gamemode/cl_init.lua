@@ -1,4 +1,3 @@
-
 catherine = catherine or GM
 catherine.vgui = catherine.vgui or { }
 
@@ -47,5 +46,4 @@ function Derma_Message( strText, strTitle, strButtonText )
 	Window:MakePopup()
 	Window:DoModal()
 	return Window
-
 end

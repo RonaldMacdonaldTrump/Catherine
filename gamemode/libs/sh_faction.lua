@@ -1,6 +1,5 @@
 catherine.faction = catherine.faction or { }
 catherine.faction.Lists = { }
-local META = FindMetaTable( "Player" )
 
 function catherine.faction.GetAll( )
 	return catherine.faction.Lists
@@ -56,24 +55,29 @@ function catherine.faction.Include( dir )
 	end
 end
 
+catherine.faction.Include( catherine.FolderName .. "/gamemode" )
+
 if ( SERVER ) then
 	function catherine.faction.AddWhiteList( pl, id )
-		if ( !IsValid( pl ) or !id ) then return end
+		if ( !IsValid( pl ) or !id ) then return false, "player or faction id is not valid!" end
 		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData or ( factionData and !factionData.isWhitelist ) or catherine.faction.HasWhiteList( pl, id ) ) then return end
-		local whiteLists = table.Copy( catherine.catData.Get( pl, "whitelists", { } ) )
+		if ( !factionData or ( factionData and !factionData.isWhitelist ) or catherine.faction.HasWhiteList( pl, id ) ) then return false, "faction is not whitelist or player already has whitelist!" end
+		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
 		whiteLists[ #whiteLists + 1 ] = id
 		catherine.catData.Set( pl, "whitelists", whiteLists, false, true )
+		return true
 	end
 	
 	function catherine.faction.RemoveWhiteList( pl, id )
+		if ( !IsValid( pl ) or !id ) then return false, "player or faction id is not valid!" end
 		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData or ( factionData and !factionData.isWhitelist ) ) then return end
-		local whiteLists = table.Copy( catherine.catData.Get( pl, "whitelists", { } ) )
+		if ( !factionData or ( factionData and !factionData.isWhitelist ) ) then return false, "faction is not whitelist!" end
+		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
 		table.RemoveByValue( whiteLists, id )
 		catherine.catData.Set( pl, "whitelists", whiteLists, false, true )
 	end
 	
+	/*
 	function META:AddWhiteList( id )
 		catherine.faction.AddWhiteList( self, id )
 	end
@@ -89,7 +93,8 @@ if ( SERVER ) then
 	concommand.Add( "removewhitelist", function( pl, cmd, args )
 		catherine.faction.RemoveWhiteList( pl, args[ 1 ] )
 	end )
-
+	*/
+	
 	function catherine.faction.HasWhiteList( pl, id )
 		local factionData = catherine.faction.FindByID( id )
 		if ( !factionData or !factionData.isWhitelist ) then return false end
@@ -106,7 +111,7 @@ else
 	end
 end
 
-catherine.faction.Include( catherine.FolderName .. "/gamemode" )
+local META = FindMetaTable( "Player" )
 
 function META:HasWhiteList( id )
 	if ( SERVER ) then
@@ -115,3 +120,57 @@ function META:HasWhiteList( id )
 		return catherine.faction.HasWhiteList( id )
 	end
 end
+
+catherine.command.Register( {
+	command = "plygivewhitelist",
+	syntax = "[name] [faction unique name]",
+	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			if ( args[ 2 ] ) then
+				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				if ( IsValid( target ) and target:IsPlayer( ) ) then
+					local success, reason = catherine.faction.AddWhiteList( pl, args[ 2 ] )
+					if ( success ) then
+						catherine.util.Notify( pl, catherine.language.GetValue( pl, "Faction_AddMessage01" ) )
+					else
+						catherine.util.Notify( pl, reason or catherine.language.GetValue( pl, "UnknownError" ) )
+					end
+				else
+					catherine.util.Notify( pl, catherine.language.GetValue( pl, "UnknownPlayerError" ) )
+				end
+			else
+				catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 2 ) )
+			end
+		else
+			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+		end
+	end
+} )
+
+catherine.command.Register( {
+	command = "plytakewhitelist",
+	syntax = "[name] [faction unique name]",
+	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			if ( args[ 2 ] ) then
+				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				if ( IsValid( target ) and target:IsPlayer( ) ) then
+					local success, reason = catherine.faction.RemoveWhiteList( pl, args[ 2 ] )
+					if ( success ) then
+						catherine.util.Notify( pl, catherine.language.GetValue( pl, "Faction_RemoveMessage01" ) )
+					else
+						catherine.util.Notify( pl, reason or catherine.language.GetValue( pl, "UnknownError" ) )
+					end
+				else
+					catherine.util.Notify( pl, catherine.language.GetValue( pl, "UnknownPlayerError" ) )
+				end
+			else
+				catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 2 ) )
+			end
+		else
+			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+		end
+	end
+} )

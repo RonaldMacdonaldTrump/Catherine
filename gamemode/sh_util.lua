@@ -1,20 +1,25 @@
 catherine.util = catherine.util or { }
 
 function catherine.util.Print( col, message )
-	if ( !col ) then col = Color( 255, 255, 255 ) end
 	if ( !message ) then return end
-	MsgC( col, "[Catherine] " .. message .. "\n" )
+	if ( !col ) then col = Color( 255, 255, 255 ) end
+	MsgC( col, "[CAT] " .. message .. "\n" )
 end
 
 function catherine.util.Include( dir, typ )
 	if ( !dir ) then return end
 	dir = dir:lower( )
-	if ( SERVER and ( typ == "SERVER" or dir:find( "sv_" ) ) ) then include( dir )
+	if ( SERVER and ( typ == "SERVER" or dir:find( "sv_" ) ) ) then 
+		include( dir )
 	elseif ( typ == "CLIENT" or dir:find( "cl_" ) ) then
-		if ( SERVER ) then AddCSLuaFile( dir )
-		else include( dir ) end
+		if ( SERVER ) then 
+			AddCSLuaFile( dir )
+		else 
+			include( dir )
+		end
 	elseif ( typ == "SHARED" or dir:find( "sh_" ) ) then
-		AddCSLuaFile( dir ) include( dir )
+		AddCSLuaFile( dir )
+		include( dir )
 	end
 end
 
@@ -68,6 +73,19 @@ if ( SERVER ) then
 		netstream.Start( nil, "catherine.util.Notify", { message, time, icon } )
 	end
 	
+	function catherine.util.AddResourceByFolder( dir )
+		if ( !dir ) then return end
+		local files, dirs = file.Find( dir .. "/*", "GAME" )
+		for _, v in pairs( dirs ) do
+			if ( v != ".svn" ) then   
+				catherine.util.AddResourceByFolder( dir .. "/" .. v )
+			end
+		end
+		for k, v in pairs( files ) do
+			resource.AddFile( dir .. "/" .. v )
+		end
+	end
+
 	function catherine.util.UniqueStringReceiver( pl, id, title, msg, defV, func )
 		if ( !IsValid( pl ) or !id or !title or !msg or !func ) then return end
 		if ( !defV ) then defV = "" end

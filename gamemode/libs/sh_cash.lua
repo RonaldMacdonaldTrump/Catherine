@@ -15,6 +15,7 @@ end
 catherine.command.Register( {
 	command = "chargivecash",
 	syntax = "[name] [int]",
+	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
