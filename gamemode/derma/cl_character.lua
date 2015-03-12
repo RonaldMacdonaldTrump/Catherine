@@ -1,11 +1,3 @@
-concommand.Add( "char_open", function( )
-	if ( IsValid( catherine.vgui.character ) ) then
-		catherine.vgui.character:Close( )
-	end
-	
-	catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
-end )
-
 local PANEL = { }
 
 function PANEL:Init( )
@@ -132,6 +124,8 @@ function PANEL:CreateCharacterPanel( )
 end
 
 function PANEL:UseCharacterPanel( )
+	if ( !catherine.character.localCharacters ) then return end
+	
 	self.loadCharacter = { Lists = { }, curr = 1 }
 
 	local baseW, baseH = 300, ScrH( ) * 0.85
@@ -173,8 +167,6 @@ function PANEL:UseCharacterPanel( )
 		v.panel:Center( )
 		v.panel.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
-			//draw.RoundedBox( 0, 0, 0, w, 1, Color( 255, 255, 255, 255 ) )
-			//draw.RoundedBox( 0, 0, 30, w, 1, Color( 255, 255, 255, 255 ) )
 			draw.SimpleText( v.characterDatas._name, "catherine_normal20", w / 2, h - 90, Color( 0, 0, 0, 255 ), 1, 1 )
 			draw.SimpleText( v.characterDatas._desc, "catherine_normal15", w / 2, h - 70, Color( 50, 50, 50, 255 ), 1, 1 )
 			draw.SimpleText( factionData.name, "catherine_normal20", w / 2, 15, Color( 0, 0, 0, 255 ), 1, 1 )

@@ -113,8 +113,8 @@ function GM:GetCustomColorData( pl )
 	local data = { }
 	
 	if ( !pl:Alive( ) ) then
-		local spawnTime = LocalPlayer( ):GetNetworkValue( "nextSpawnTime", 0 )
-		local fraction = 1 - math.TimeFraction( LocalPlayer( ):GetNetworkValue( "deathTime", 0 ), LocalPlayer( ):GetNetworkValue( "nextSpawnTime", 0 ), CurTime( ) )
+		local spawnTime = catherine.network.GetNetVar( LocalPlayer( ), "nextSpawnTime", 0 )
+		local fraction = 1 - math.TimeFraction( catherine.network.GetNetVar( LocalPlayer( ), "deathTime", 0 ), catherine.network.GetNetVar( LocalPlayer( ), "nextSpawnTime", 0 ), CurTime( ) )
 		data.colour = math.Clamp( fraction, 0, 0.9 )
 	else
 		data.contrast = math.max( math.min( LocalPlayer( ):Health( ) / LocalPlayer( ):GetMaxHealth( ), 1 ), 0.3 )

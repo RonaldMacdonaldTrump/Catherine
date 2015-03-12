@@ -10,7 +10,7 @@ function catherine.item.Register( tab, isBase )
 	end
 	if ( tab.base ) then
 		local base = catherine.item.bases[ tab.base ]
-		if ( !base ) then print("Base missing!") return end
+		if ( !base ) then return end
 		tab = table.Inherit( tab, base )
 	end
 	
@@ -143,8 +143,8 @@ if ( SERVER ) then
 	function catherine.item.Spawn( itemTab, pos, ang, pl )
 		if ( !itemTab ) then return end
 		if ( type( itemTab ) == "string" ) then itemTab = catherine.item.FindByID( itemTab ) end
-		if ( !itemTab ) then print("2") return end
-		if ( !pos ) then print("1") return end
+		if ( !itemTab ) then return end
+		if ( !pos ) then return end
 		local ent = ents.Create( "catherine_item" )
 		ent:SetPos( Vector( pos.x, pos.y, pos.z + 10 ) )
 		ent:SetAngles( ang or Angle( ) )

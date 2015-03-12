@@ -18,14 +18,14 @@ function catherine.flag.FindByCode( code )
 end
 
 function catherine.flag.Has( pl, code )
-	local flagData = catherine.character.GetCharData( pl, "flags", { } )
+	local flagData = catherine.character.GetCharacterVar( pl, "flags", { } )
 	return table.HasValue( flagData, code )
 end
 
 if ( SERVER ) then
 	function catherine.flag.Give( pl, target, code )
 		if ( !IsValid( pl ) or !IsValid( target ) ) then catherine.util.Notify( pl, "Player is not valid!" ) return end
-		local flagData = table.Copy( catherine.character.GetCharData( target, "flags", { } ) )
+		local flagData = table.Copy( catherine.character.GetCharacterVar( target, "flags", { } ) )
 		local add = { }
 		for k, v in pairs( code ) do
 			local flagTab = catherine.flag.FindByCode( v )
@@ -40,7 +40,7 @@ if ( SERVER ) then
 			end
 		end
 		if ( #add >= 1 ) then
-			catherine.character.SetCharData( target, "flags", flagData )
+			catherine.character.SetCharacterVar( target, "flags", flagData )
 			catherine.util.NotifyAll( pl:Name( ) .. " has set " .. target:Name( ) .. "'s flags to " .. ( type( code ) == "string" and code or table.concat( code, ", " ) ) .. "." )
 		else
 			catherine.util.Notify( pl, "That player already have that flag!" )
@@ -49,7 +49,7 @@ if ( SERVER ) then
 	
 	function catherine.flag.Take( pl, target, code )
 		if ( !IsValid( pl ) or !IsValid( target ) ) then catherine.util.Notify( pl, "Player is not valid!" ) return end
-		local flagData = table.Copy( catherine.character.GetCharData( target, "flags", { } ) )
+		local flagData = table.Copy( catherine.character.GetCharacterVar( target, "flags", { } ) )
 		local remove = 0
 		for k, v in pairs( code ) do
 			if ( table.HasValue( flagData, v ) ) then
@@ -61,7 +61,7 @@ if ( SERVER ) then
 			end
 		end
 		if ( remove != 0 ) then
-			catherine.character.SetCharData( target, "flags", flagData )
+			catherine.character.SetCharacterVar( target, "flags", flagData )
 			catherine.util.NotifyAll( pl:Name( ) .. " has set " .. target:Name( ) .. "'s flags to " .. ( type( code ) == "string" and code or table.concat( code, ", " ) ) .. "." )
 		else
 			catherine.util.Notify( pl, "That player not have flag!" )

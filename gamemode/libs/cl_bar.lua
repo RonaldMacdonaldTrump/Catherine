@@ -15,10 +15,8 @@ function catherine.bar.Add( target, targetMax, text, color, uniqueID )
 end
 
 function catherine.bar.Draw( )
+	if ( !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 	local count = 0
-	if ( !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then
-		return
-	end
 	for k, v in pairs( catherine.bar.Lists ) do
 		if ( !v.target or !v.targetMax ) then continue end
 		local percent = ( math.min( v.target( ) / v.targetMax( ), 1 ) )
@@ -27,9 +25,7 @@ function catherine.bar.Draw( )
 		else
 			count = count + 1
 			v.alpha = Lerp( 0.03, v.alpha, 255 )
-			
 		end
-		
 		v.ani = Lerp( 0.03, v.ani, ( ScrW( ) * 0.3 ) * percent )
 		v.y = Lerp( 0.03, v.y, -10 + count * 15 )
 		draw.RoundedBox( 0, 5, v.y, ScrW( ) * 0.3, 10, Color( 230, 230, 230, v.alpha - 20 ) )
