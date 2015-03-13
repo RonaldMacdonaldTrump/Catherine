@@ -14,8 +14,8 @@ catherine.hudHide = {
 	"CHudDamageIndicator",
 	"CHudChat"
 }
-catherine.entityCache = { }
-catherine.nextRefresh = catherine.nextRefresh or CurTime( )
+catherine.entityCaches = { }
+catherine.nextCacheDo = CurTime( )
 local toscreen = FindMetaTable("Vector").ToScreen
 
 
@@ -25,15 +25,24 @@ function GM:HUDShouldDraw( name )
 			return false
 		end
 	end
-	
 	return true
 end
 
-function GM:CalcView( pl, pos, ang, fov )
+function GM:CalcView( pl, pos, ang, fov ) end
 
-end
-
-function GM:DrawEntityInformation( ent, alpha )
+function GM:DrawEntityTargetID( pl, ent, a )
+	if ( ent:IsPlayer( ) ) then
+		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
+		local x, y, x2, y2 = pos.x, pos.y - 100, 0, 0
+		local playerName, playerDesc = hook.Run( "GetPlayerInformation", pl, ent )
+		draw.SimpleText( playerName, "catherine_normal25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		y = y + 20
+		draw.SimpleText( playerDesc, "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		y = y + 15
+		
+		hook.Run( "PlayerInformationDraw", pl, ent, x, y, a )
+	end
+/* // have bug.
 	local entPlayer = ent:GetNetworkValue( "player" )
 	if ( ent:IsPlayer( ) and ent:Alive( ) ) then
 		local lp = LocalPlayer( )
@@ -66,12 +75,13 @@ function GM:DrawEntityInformation( ent, alpha )
 		
 		hook.Run( "PlayerInformationDraw", entPlayer, x, y, alpha )
 	end
+*/
 end
 
-function GM:PlayerInformationDraw( pl, x, y, alpha )
+function GM:PlayerInformationDraw( pl, target, x, y, a )
 	if ( !pl:Alive( ) ) then
-		local gText = ( pl:GetGender( ) == "male" and "He" ) or "She"
-		draw.SimpleText( gText .. " was going to hell, RIP.", "catherine_normal15", x, y, Color( 255, 150, 150, alpha ), 1, 1 )
+		local gender = ( pl:GetGender( ) == "male" and catherine.configs.maleName ) or catherine.configs.femaleName
+		draw.SimpleText( gender .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
 	end
 end
 
@@ -117,44 +127,47 @@ function GM:HUDDrawScoreBoard( )
 	end
 end
 
-function GM:ProgressEntityCache( )
-	if ( LocalPlayer( ):IsCharacterLoaded( ) and catherine.nextRefresh < CurTime( ) ) then
-		local ent
-
-		local trace = { }
-		trace.start = LocalPlayer( ):GetShootPos( )
-		trace.endpos = trace.start + LocalPlayer( ):GetAimVector() * 160
-		trace.filter = LocalPlayer( )
-
-		ent = util.TraceLine( trace ).Entity
-
-		if ( IsValid( ent ) ) then catherine.entityCache[ ent ] = true
-		else catherine.entityCache[ ent ] = nil end
-		catherine.nextRefresh = CurTime( ) + 0.5
+function GM:ProgressEntityTargetID( pl )
+	if ( pl:IsCharacterLoaded( ) and catherine.nextCacheDo <= CurTime( ) ) then
+		local tr = { }
+		tr.start = pl:GetShootPos( )
+		tr.endpos = tr.start + pl:GetAimVector( ) * 160
+		tr.filter = pl
+		local ent = util.TraceLine( tr ).Entity
+		if ( IsValid( ent ) ) then 
+			catherine.entityCaches[ ent ] = true
+		else 
+			catherine.entityCaches[ ent ] = nil
+		end
+		catherine.nextCacheDo = CurTime( ) + 0.5
 	end
 	
-	for k, v in pairs( catherine.entityCache ) do
-		if ( !IsValid( k ) ) then catherine.entityCache[ k ] = nil continue end
-		local distance = k:GetPos( ):Distance( LocalPlayer( ):GetPos( ) )
-		local a = Lerp( 0.03, k.alpha or 0, 255 - ( distance ) )
+	for k, v in pairs( catherine.entityCaches ) do
+		if ( !IsValid( k ) ) then 
+			catherine.entityCaches[ k ] = nil
+			continue
+		end
+		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k:GetPos( ), LocalPlayer( ):GetPos( ), 412 ) )
 		k.alpha = a
-
-		if ( math.Round( a ) <= 0 ) then catherine.entityCache[ k ] = nil end
-		hook.Run( "DrawEntityInformation", k, a )
+		if ( math.Round( a ) <= 0 ) then
+			catherine.entityCaches[ k ] = nil
+		end
+		hook.Run( "DrawEntityTargetID", pl, k, a )
 	end
 end
 
 function GM:HUDPaint( )
 	if ( IsValid( catherine.vgui.character ) ) then return end
+	local pl = LocalPlayer( )
 	catherine.hud.Draw( )
 	catherine.bar.Draw( )
 	catherine.notify.Draw( )
-	catherine.wep.Draw( LocalPlayer( ) )
+	catherine.wep.Draw( pl )
 	
-	if ( !LocalPlayer( ):Alive( ) ) then return end
-	hook.Run( "ProgressEntityCache" )
-	
-	draw.SimpleText( "Catherine Development Version", "catherine_normal20", ScrW( ) - 10, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	if ( pl:Alive( ) ) then
+		hook.Run( "ProgressEntityTargetID", pl )
+		draw.SimpleText( "Catherine Development Version", "catherine_normal20", ScrW( ) - 10, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	end
 end
 
 function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePos, eyeAng )
@@ -195,7 +208,7 @@ function GM:ScoreboardShow()
 end
 
 function GM:RenderScreenspaceEffects( )
-	local data = hook.Run( "GetCustomColorData", LocalPlayer( ) ) or { }
+	local data = hook.Run( "PostRenderScreenColor", LocalPlayer( ) ) or { }
 	
 	local tab = { }
 	tab[ "$pp_colour_addr" ] = data.addr or 0

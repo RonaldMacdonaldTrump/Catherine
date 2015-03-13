@@ -1,6 +1,7 @@
 catherine.network = catherine.network or { }
 catherine.network.globalVars = catherine.network.globalVars or { }
 catherine.network.entityVars = catherine.network.entityVars or { }
+local META = FindMetaTable( "Entity" )
 
 // 새로운 네트워킹 시스템; ^-^; 2015-03-10 학교 컴실에서..
 
@@ -34,6 +35,10 @@ if ( SERVER ) then
 		if ( value == nil ) then
 			netstream.Start( nil, "catherine.network.ClearNetGlobalVar", key )
 		end
+	end
+	
+	function META:SetNetVar( key, value, noSync )
+		catherine.network.SetNetVar( self, key, value, noSync )
 	end
 	
 	function catherine.network.PlayerDisconnected( pl )
@@ -80,4 +85,8 @@ end
 function catherine.network.GetNetGlobalVar( key, default )
 	if ( !key ) then return default end
 	return catherine.network.globalVars[ key ] or default
+end
+
+function META:GetNetVar( key, default )
+	return catherine.network.GetNetVar( self, key, default )
 end

@@ -35,15 +35,15 @@ if ( SERVER ) then
 	
 	function catherine.recognize.DoDataSave( pl, target )
 		if ( catherine.recognize.IsKnowTarget( pl, target ) ) then return end
-		local recognize = table.Copy( catherine.character.GetCharacterVar( pl, "recognize", { } ) )
+		local recognizeLists = catherine.character.GetCharacterVar( pl, "recognize", { } )
 		if ( type( target ) == "table" ) then
 			for k, v in pairs( target ) do
-				recognize[ #recognize + 1 ] = v:GetCharacterID( )
+				recognizeLists[ #recognizeLists + 1 ] = v:GetCharacterID( )
 			end
 		elseif ( type( target ) == "Player" ) then
-			recognize[ #recognize + 1 ] = target:GetCharacterID( )
+			recognizeLists[ #recognizeLists + 1 ] = target:GetCharacterID( )
 		end
-		catherine.character.SetCharacterVar( pl, "recognize", recognize )
+		catherine.character.SetCharacterVar( pl, "recognize", recognizeLists )
 	end
 	
 	function catherine.recognize.Init( pl )
@@ -57,31 +57,16 @@ if ( SERVER ) then
 	hook.Add( "PlayerDeath", "catherine.recognize.PlayerDeath", function( pl )
 		catherine.recognize.Init( pl )
 	end )
-end
-
-function catherine.recognize.IsKnowTarget( pl, target )
-	if ( !IsValid( pl ) or !IsValid( target ) ) then return false end
-	local recognize = catherine.character.GetCharacterVar( pl, "recognize", { } )
-	if ( !recognize ) then return false end
-	return table.HasValue( recognize, target:GetCharacterID( ) )
-end
-
-function GM:GetTargetInformation( pl, target )
-	if ( pl == target ) then return { target:Name( ), target:Desc( ) } end
-	if ( catherine.recognize.IsKnowTarget( pl, target ) ) then return { target:Name( ), target:Desc( ) }
-	else return { "Unknown...", target:Desc( ) }
-	end
-	return { "Unknown...", target:Desc( ) }
-end
-
-if ( CLIENT ) then
+else
 	netstream.Hook( "catherine.ShowTeam", function( )
 		local Menu = DermaMenu( )
-		local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
-		
 		Menu:AddOption( "Recognize for looking player.", function( )
-			if ( !IsValid( ent ) ) then return end
-			netstream.Start( "catherine.recognize.DoKnow", { "ic", ent } )
+			local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
+			if ( IsValid( ent ) ) then
+				netstream.Start( "catherine.recognize.DoKnow", { "ic", ent } )
+			else
+				catherine.notify.Add( "Please look player!", 5 )
+			end
 		end )
 		Menu:AddOption( "All characters within talking range", function( )
 			netstream.Start( "catherine.recognize.DoKnow", { "ic" } )
@@ -95,4 +80,32 @@ if ( CLIENT ) then
 		Menu:Open( )
 		Menu:Center( )
 	end )
+end
+
+function catherine.recognize.IsKnowTarget( pl, target )
+	if ( !IsValid( pl ) or !IsValid( target ) ) then return false end
+	local recognizeLists = catherine.character.GetCharacterVar( pl, "recognize", { } )
+	return table.HasValue( recognizeLists, target:GetCharacterID( ) )
+end
+
+local META = FindMetaTable( "Player" )
+
+function META:IsKnow( target )
+	return catherine.recognize.IsKnowTarget( self, target )
+end
+
+function GM:GetPlayerInformation( pl, target )
+	if ( pl == target ) then
+		return pl:Name( ), pl:Desc( )
+	end
+	
+	if ( pl:IsKnow( target ) ) then
+		return pl:Name( ), pl:Desc( )
+	end
+	
+	return hook.Run( "GetUnknownTargetName", pl, target ), pl:Desc( )
+end
+
+function GM:GetUnknownTargetName( pl, target )
+	return "Unknown"
 end

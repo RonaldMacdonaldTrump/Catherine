@@ -2,31 +2,33 @@ AddCSLuaFile( )
 
 DEFINE_BASECLASS( "base_gmodentity" )
 
-ENT.PrintName = "Catherine Item"
-ENT.Author = "L7D, Fristet"
 ENT.Type = "anim"
+ENT.PrintName = "Catherine Item"
+ENT.Author = "L7D"
+ENT.Spawnable = false
+ENT.AdminSpawnable = false
 
 if ( SERVER ) then
-	function ENT:Initialize()
+	function ENT:Initialize( )
 		self:SetModel( "models/props_junk/watermelon01.mdl" )
 		self:SetSolid( SOLID_VPHYSICS )
 		self:PhysicsInit( SOLID_VPHYSICS )
 		self:SetMoveType( MOVETYPE_VPHYSICS )
 		self:SetUseType( SIMPLE_USE )
-		self:SetHealth( 100 )
+		self:SetHealth( 40 )
 		
-		local physicsObject = self:GetPhysicsObject( )
-
-		if ( IsValid( physicsObject ) ) then
-			physicsObject:EnableMotion( true )
-			physicsObject:Wake( )
-		else
-			self:PhysicsInitBox( Vector( -2, -2, -2 ), Vector( 2, 2, 2 ) )
+		local physObject = self:GetPhysicsObject( )
+		if ( IsValid( physObject ) ) then
+			physObject:EnableMotion( true )
+			physObject:Wake( )
 		end
+		self:PhysicsInitBox( Vector( -2, -2, -2 ), Vector( 2, 2, 2 ) )
 	end
-	
-	function ENT:SetItemUniqueID( id )
-		catherine.network.SetNetVar( self, "itemUniqueID", id )
+
+	function ENT:InitializeItem( itemTable )
+		if ( !itemTable ) then catherine.util.ErrorPrint( "Failed to initialize item entity! [ cat_item.lua ]" ) return end
+		self:SetNetVar( "uniqueID", itemTable.uniqueID )
+		self:SetNetVar( "itemTable", itemTable )
 	end
 
 	function ENT:Use( pl )
@@ -39,13 +41,11 @@ if ( SERVER ) then
 		eff:SetOrigin( self:GetPos( ) )
 		eff:SetScale( 8 )
 		util.Effect( "GlassImpact", eff, true, true )
-		
 		self:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav" )
 	end
 
 	function ENT:OnTakeDamage( dmg )
 		self:SetHealth( math.max( self:Health( ) - dmg:GetDamage( ), 0 ) )
-		
 		if ( self:Health( ) <= 0 ) then
 			self:Bomb( )
 			self:Remove( )
@@ -55,6 +55,10 @@ else
 
 end
 
+function ENT:GetItemTable( )
+	return self:GetNetVar( "itemTable", nil )
+end
+
 function ENT:GetItemUniqueID( )
-	return self:GetNetworkValue( "itemUniqueID", nil )
+	return self:GetNetVar( "uniqueID", nil )
 end

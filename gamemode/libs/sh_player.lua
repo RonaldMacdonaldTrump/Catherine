@@ -13,7 +13,7 @@ if ( SERVER ) then
 			return
 		end
 		catherine.network.SyncAllVars( pl, function( )
-			catherine.character.GetCurrentNetworking( pl, function( )
+			catherine.character.SendCurrentNetworking( pl, function( )
 				catherine.database.GetDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
 					if ( !data or #data == 0 ) then
 						catherine.player.DoQueryInitialize( pl, function( )

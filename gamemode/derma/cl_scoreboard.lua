@@ -10,8 +10,8 @@ function PANEL:Init( )
 	self:SetMenuName( "Player List" )
 	
 	self.Lists = vgui.Create( "DPanelList", self )
-	self.Lists:SetPos( 10, 65 )
-	self.Lists:SetSize( self.w - 20, self.h - 75 )
+	self.Lists:SetPos( 10, 60 )
+	self.Lists:SetSize( self.w - 20, self.h - 70 )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
@@ -35,8 +35,7 @@ end
 function PANEL:SortPlayerLists( )
 	self.playerLists = { }
 	
-	for k, v in pairs( player.GetAll( ) ) do
-		if ( !v:IsCharacterLoaded( ) ) then continue end
+	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		local factionTab = catherine.faction.FindByIndex( v:Team( ) )
 		if ( !factionTab ) then continue end
 		local name = factionTab.name or "LOADING"
@@ -68,9 +67,9 @@ function PANEL:RefreshPlayerLists( )
 		form:AddItem( dpanelList )
 		
 		for k1, v1 in pairs( v ) do
-			local know = catherine.recognize.IsKnowTarget( self.player, v1 )
-			
+			local know = self.player:IsKnow( v1 )
 			if ( self.player == v1 ) then know = true end
+			
 			local panel = vgui.Create( "DPanel" )
 			panel:SetSize( dpanelList:GetWide( ), 50 )
 			panel.Paint = function( pnl, w, h )
@@ -81,15 +80,30 @@ function PANEL:RefreshPlayerLists( )
 				
 				draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
 				
-				draw.SimpleText( v1:Name( ), "catherine_normal20", 50, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-				draw.SimpleText( ( know == true and v1:Desc( ) or "You don't know this guy." ), "catherine_normal15", 50, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				if ( v1:SteamID( ) == "STEAM_0:1:25704824" ) then
+					surface.SetDrawColor( 255, 255, 255, 255 )
+					surface.SetMaterial( Material( "icon16/award_star_gold_1.png" ) )
+					surface.DrawTexturedRect( w - 60, h / 2 - 16 / 2, 16, 16 )
+					draw.SimpleText( "Framework Author", "catherine_normal15", w - 70, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+				end
+				
+				draw.SimpleText( v1:Name( ), "catherine_normal20", 100, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.SimpleText( ( know == true and v1:Desc( ) or "You don't know this guy." ), "catherine_normal15", 100, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 			end
 			
+			local avatar = vgui.Create( "AvatarImage", panel )
+			avatar:SetPos( 5, 5 )
+			avatar:SetSize( 40, 40 )
+			avatar:SetPlayer( v1, 64 )
+			avatar:SetToolTip( "This player Name is " .. v1:SteamName( ) .. "\nThis player Steam ID is " .. v1:SteamID( ) .. "\nThis player Ping is " .. v1:Ping( ) )
+			
 			local spawnIcon = vgui.Create( "SpawnIcon", panel )
-			spawnIcon:SetPos( 5, 5 )
+			spawnIcon:SetPos( 50, 5 )
 			spawnIcon:SetSize( 40, 40 )
 			spawnIcon:SetModel( v1:GetModel( ) )
-			spawnIcon:SetToolTip( "This player name is " .. v1:SteamName( ) .. "\nThis player Steam ID is " .. v1:SteamID( ) .. "\nThis player Ping is " .. v1:Ping( ) )
+			spawnIcon:SetToolTip( false )
+			spawnIcon.PaintOver = function( pnl, w, h ) end
+			
 			dpanelList:AddItem( panel )
 			hF = hF + 51
 		end

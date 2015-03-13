@@ -6,6 +6,11 @@ function catherine.util.Print( col, message )
 	MsgC( col, "[CAT] " .. message .. "\n" )
 end
 
+function catherine.util.ErrorPrint( message )
+	if ( !message ) then return end
+	MsgC( Color( 0, 255, 255 ), "[CAT LUA ERROR] " .. message .. "\n" )
+end
+
 function catherine.util.Include( dir, typ )
 	if ( !dir ) then return end
 	dir = dir:lower( )
@@ -39,7 +44,6 @@ function catherine.util.FindPlayerByName( name )
 			return v
 		end
 	end
-	
 	return nil
 end
 
@@ -48,19 +52,22 @@ function catherine.util.GetUniqueName( name )
 	return name:sub( 4, -5 )
 end
 
+function catherine.util.GetRealTime( )
+	local one, dst, hour = os.date( "*t" ), os.date( "%p" ), os.date( "%I" )
+	return one.year .. "-" .. one.month .. "-" .. one.day .. " | " .. dst .. " " .. hour .. ":" .. os.date( "%M" )
+end
+
 function catherine.util.FolderDirectoryTranslate( dir )
 	if ( !dir ) then return end
 	if ( dir:sub( 1, 1 ) != "/" ) then
 		dir = "/" .. dir
 	end
 	local ex = string.Explode( "/", dir )
-	
 	for k, v in pairs( ex ) do
 		if ( v == "" ) then
 			table.remove( ex, k )
 		end
 	end
-	
 	return ex
 end
 
