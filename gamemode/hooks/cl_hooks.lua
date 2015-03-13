@@ -25,13 +25,10 @@ function GM:HUDShouldDraw( name )
 			return false
 		end
 	end
-	
 	return true
 end
 
-function GM:CalcView( pl, pos, ang, fov )
-
-end
+function GM:CalcView( pl, pos, ang, fov ) end
 
 function GM:DrawEntityTargetID( pl, ent, a )
 	if ( ent:IsPlayer( ) ) then
@@ -83,8 +80,8 @@ end
 
 function GM:PlayerInformationDraw( pl, target, x, y, a )
 	if ( !pl:Alive( ) ) then
-		local gText = ( pl:GetGender( ) == "male" and "He" ) or "She"
-		draw.SimpleText( gText .. " was going to hell, RIP.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
+		local gender = ( pl:GetGender( ) == "male" and catherine.configs.maleName ) or catherine.configs.femaleName
+		draw.SimpleText( gender .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
 	end
 end
 
@@ -129,9 +126,6 @@ function GM:HUDDrawScoreBoard( )
 		draw.SimpleText( catherine.loading.msg, "catherine_normal15", 100, scrH - 50, Color( 80, 80, 80, a ), TEXT_ALIGN_LEFT, 1 )
 	end
 end
-
-catherine.entityCaches = { }
-catherine.nextCacheDo = CurTime( )
 
 function GM:ProgressEntityTargetID( pl )
 	if ( pl:IsCharacterLoaded( ) and catherine.nextCacheDo <= CurTime( ) ) then

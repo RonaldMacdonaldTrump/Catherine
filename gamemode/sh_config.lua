@@ -20,5 +20,6 @@ catherine.configs.characterNameMinLen = 10
 catherine.configs.characterDescMaxLen = 54
 catherine.configs.characterDescMinLen = 10
 
+// Test
 catherine.configs.maleName = "He"
 catherine.configs.femaleName = "She"
