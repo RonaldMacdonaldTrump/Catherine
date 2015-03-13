@@ -6,6 +6,11 @@ function catherine.util.Print( col, message )
 	MsgC( col, "[CAT] " .. message .. "\n" )
 end
 
+function catherine.util.ErrorPrint( message )
+	if ( !message ) then return end
+	MsgC( Color( 0, 255, 255 ), "[CAT LUA ERROR] " .. message .. "\n" )
+end
+
 function catherine.util.Include( dir, typ )
 	if ( !dir ) then return end
 	dir = dir:lower( )
