@@ -52,6 +52,11 @@ function catherine.util.GetUniqueName( name )
 	return name:sub( 4, -5 )
 end
 
+function catherine.util.GetRealTime( )
+	local one, dst, hour = os.date( "*t" ), os.date( "%p" ), os.date( "%I" )
+	return one.year .. "-" .. one.month .. "-" .. one.day .. " | " .. dst .. " " .. hour .. ":" .. os.date( "%M" )
+end
+
 function catherine.util.FolderDirectoryTranslate( dir )
 	if ( !dir ) then return end
 	if ( dir:sub( 1, 1 ) != "/" ) then

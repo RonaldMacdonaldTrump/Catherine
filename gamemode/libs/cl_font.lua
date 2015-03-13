@@ -1,6 +1,6 @@
 catherine.font = catherine.font or { }
 catherine.font.Lists = catherine.font.Lists or { }
-catherine.font.FontString = catherine.font.FontString or ""
+catherine.font.FontString = catherine.font.FontString or "Segoe UI"
 
 function catherine.font.Add( uniqueID, font, size, weight, outline )
 	local isValid = catherine.font.GetByID( uniqueID )
@@ -31,13 +31,15 @@ function catherine.font.GetByID( id )
 	return nil
 end
 
-catherine.font.FontString = "Segoe UI"
+catherine.font.FontString = "Segoe UI Bold"
 catherine.font.Add( "catherine_menuTitle", catherine.font.FontString, 20, 1000 )
 catherine.font.Add( "catherine_button20", catherine.font.FontString, 20, 1000 )
 catherine.font.Add( "catherine_normal15", catherine.font.FontString, 15, 1000 )
 catherine.font.Add( "catherine_normal20", catherine.font.FontString, 20, 1000 )
 catherine.font.Add( "catherine_normal25", catherine.font.FontString, 25, 1000 )
 catherine.font.Add( "catherine_normal30", catherine.font.FontString, 30, 1000 )
+catherine.font.Add( "catherine_normal35", catherine.font.FontString, 35, 1000 )
+catherine.font.Add( "catherine_normal40", catherine.font.FontString, 40, 1000 )
 catherine.font.Add( "catherine_normal50", catherine.font.FontString, 50, 1000 )
 catherine.font.Add( "catherine_schema_title", catherine.font.FontString, 50, 1000 )
 catherine.font.Add( "catherine_good15", catherine.font.FontString, 15, 1000 )

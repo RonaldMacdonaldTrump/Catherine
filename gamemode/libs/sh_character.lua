@@ -143,7 +143,6 @@ catherine.character.RegisterGlobalVar( "faction", {
 
 if ( SERVER ) then
 	catherine.character.Buffers = catherine.character.Buffers or { }
-	catherine.character.Loaded = catherine.character.Loaded or { }
 	catherine.character.SaveCurTime = catherine.character.SaveCurTime or CurTime( ) + catherine.configs.saveInterval
 
 	function catherine.character.Create( pl, data )
@@ -211,63 +210,58 @@ if ( SERVER ) then
 			netstream.Start( pl, "catherine.character.UseResult", { false, "You can't use same character!" } )
 			return
 		end
-		
+
 		if ( prevID != nil ) then
 			catherine.character.SavePlayerCharacter( pl )
-			catherine.character.SetLoadedCharacterByID( prevID, nil )
-			// Previous character data clear...
+			catherine.character.DisconnectNetworking( pl )
 		end
 
-		local function useCharacter( data )
-			local factionTab = catherine.faction.FindByID( data._faction )
-			if ( !factionTab ) then
-				netstream.Start( pl, "catherine.character.UseResult", { false, "Faction is not valid!" } )
-				return
-			end
-			
-			// Init;
-			pl:KillSilent( )
-			pl:Spawn( )
-			pl:SetTeam( factionTab.index )
-			pl:SetModel( data._model )
-			pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
-			pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
-			
-			hook.Run( "PostWeaponGive", pl )
-			
-			catherine.character.InitializeNetworking( pl, id, data )
-			
-			if ( prevID == nil ) then
-				netstream.Start( pl, "catherine.hud.CinematicIntro_Init" )
-			end
-
-			pl:SetNetVar( "charID", id )
-			pl:SetNetVar( "charLoaded", true )
-			
-			netstream.Start( pl, "catherine.character.UseResult", { true } )
-			
-			catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [ " .. pl:SteamName( ) .. " ]" .. ( prevID or "None" ) .. " -> " .. id )
+		local characterData = catherine.character.GetTargetCharacterByID( pl, id )
+		if ( !characterData ) then
+			netstream.Start( pl, "catherine.character.UseResult", { false, "Character is not valid!" } )
+			return
 		end
 
-		local characterData = nil
+		local factionTab = catherine.faction.FindByID( characterData._faction )
+		if ( !factionTab ) then
+			netstream.Start( pl, "catherine.character.UseResult", { false, "Faction is not valid!" } )
+			return
+		end
 		
+		pl:KillSilent( )
+		pl:Spawn( )
+		pl:SetTeam( factionTab.index )
+		pl:SetModel( characterData._model )
+		pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
+		pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
+		
+		hook.Run( "PostWeaponGive", pl )
+
+		catherine.character.InitializeNetworking( pl, id, characterData )
+		
+		if ( prevID == nil ) then
+			netstream.Start( pl, "catherine.hud.CinematicIntro_Init" )
+		end
+
+		pl:SetNetVar( "charID", id )
+		pl:SetNetVar( "charLoaded", true )
+		
+		netstream.Start( pl, "catherine.character.UseResult", { true } )
+		
+		catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [ " .. pl:SteamName( ) .. " ]" .. ( prevID or "None" ) .. " -> " .. id )
+	end
+
+	function catherine.character.GetTargetCharacterByID( pl, id )
+		if ( !IsValid( pl ) or !id ) then return nil end
 		for k, v in pairs( catherine.character.Buffers[ pl:SteamID( ) ] ) do
 			for k1, v1 in pairs( v ) do
 				if ( k1 == "_id" and v1 == id ) then
-					characterData = v
+					return catherine.character.TransferJSON( v )
 				end
 			end
 		end
-
-		if ( !characterData ) then return end
-
-		catherine.character.SetLoadedCharacterByID( pl, id, characterData )
-		useCharacter( characterData )
-	end
-	
-	function catherine.character.SetLoadedCharacterByID( pl, id, data )
-		if ( !IsValid( pl ) or !id ) then return end
-		catherine.character.Loaded[ tostring( id ) ] = data
+		
+		return nil
 	end
 	
 	function catherine.character.TransferJSON( data )
@@ -275,6 +269,7 @@ if ( SERVER ) then
 		for k, v in pairs( data ) do
 			local globalVarTab = catherine.character.FindGlobalVarByField( k )
 			if ( globalVarTab and !globalVarTab.needTransfer ) then continue end
+			if ( type( v ) == "table" ) then continue end
 			data[ k ] = util.JSONToTable( v )
 		end
 		
@@ -293,29 +288,30 @@ if ( SERVER ) then
 		
 		netstream.Start( nil, "catherine.character.InitializeNetworking", { pl:SteamID( ), catherine.character.networkingVars[ pl:SteamID( ) ] } )
 	end
-	
-	function catherine.character.GetCurrentNetworking( pl, func )
+
+	function catherine.character.SendCurrentNetworking( pl, func )
 		if ( !IsValid( pl ) ) then return end
-		netstream.Start( nil, "catherine.character.GetCurrentNetworking", catherine.character.networkingVars )
+		netstream.Start( pl, "catherine.character.SendCurrentNetworking", catherine.character.networkingVars )
 		if ( func ) then
 			func( )
 		end
+	end
+	
+	function catherine.character.GetPlayerNetworking( pl )
+		if ( !IsValid( pl ) ) then return end
+		return catherine.character.networkingVars[ pl:SteamID( ) ]
 	end
 
 	function catherine.character.DisconnectNetworking( pl )
 		if ( !IsValid( pl ) ) then return end
 		catherine.character.networkingVars[ pl:SteamID( ) ] = nil
-	end
-	
-	function catherine.character.GetLoadedCharacterByID( pl, id )
-		if ( !IsValid( pl ) or !id ) then return end
-		return catherine.character.Loaded[ tostring( id ) ]
+		netstream.Start( nil, "catherine.character.DisconnectNetworking", pl:SteamID( ) )
 	end
 
 	function catherine.character.SavePlayerCharacter( pl )
 		if ( !IsValid( pl ) ) then return end
 		local id = pl:GetCharacterID( )
-		local character = catherine.character.GetLoadedCharacterByID( pl, id )
+		local character = catherine.character.GetPlayerNetworking( pl )
 		if ( !character ) then return end
 		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. pl:SteamID( ) .. "'", character, function( data )
 			catherine.character.SyncCharacterBuffer( pl )
@@ -333,7 +329,7 @@ if ( SERVER ) then
 		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
 			if ( !data ) then
 				catherine.character.Buffers[ pl:SteamID( ) ] = { }
-				netstream.Start( pl, "catherine.character.Lists", data )
+				netstream.Start( pl, "catherine.character.Lists", { } )
 				if ( func ) then
 					func( )
 				end
@@ -355,13 +351,6 @@ if ( SERVER ) then
 		end )
 	end
 	
-	function catherine.character.MergeNetworkingVarsByLoaded( pl )
-		if ( !IsValid( pl ) ) then return end
-		local id = pl:GetCharacterID( )
-		if ( !catherine.character.Loaded[ tostring( id ) ] or !catherine.character.networkingVars[ pl:SteamID( ) ] ) then return end
-		table.Merge( catherine.character.Loaded[ tostring( id ) ], catherine.character.networkingVars[ pl:SteamID( ) ] )
-	end
-
 	function catherine.character.Think( )
 		if ( catherine.character.SaveCurTime <= CurTime( ) ) then
 			for k, v in pairs( player.GetAllByLoaded( ) ) do
@@ -379,7 +368,6 @@ if ( SERVER ) then
 	
 	function catherine.character.PlayerDisconnected( pl )
 		catherine.character.SavePlayerCharacter( pl )
-		catherine.character.SetLoadedCharacterByID( pl, pl:GetCharacterID( ), nil )
 		catherine.character.DisconnectNetworking( pl )
 	end
 	
@@ -395,7 +383,6 @@ if ( SERVER ) then
 		if ( !noSync ) then
 			netstream.Start( nil, "catherine.character.SetNetworkingVar", { pl:SteamID( ), key, value } )
 		end
-		catherine.character.MergeNetworkingVarsByLoaded( pl )
 	end
 
 	function catherine.character.SetCharacterVar( pl, key, value, noSync )
@@ -405,9 +392,8 @@ if ( SERVER ) then
 		if ( !noSync ) then
 			netstream.Start( nil, "catherine.character.SetNetworkingCharVar", { pl:SteamID( ), key, value } )
 		end
-		catherine.character.MergeNetworkingVarsByLoaded( pl )
 	end
-	
+
 	netstream.Hook( "catherine.character.Create", function( caller, data )
 		catherine.character.Create( caller, data )
 	end )
@@ -447,7 +433,11 @@ else
 		catherine.character.networkingVars[ data[ 1 ] ] = data[ 2 ]
 	end )
 	
-	netstream.Hook( "catherine.character.GetCurrentNetworking", function( data )
+	netstream.Hook( "catherine.character.DisconnectNetworking", function( data )
+		catherine.character.networkingVars[ data ] = nil
+	end )
+
+	netstream.Hook( "catherine.character.SendCurrentNetworking", function( data )
 		catherine.character.networkingVars = data
 	end )
 	
@@ -465,7 +455,7 @@ else
 				catherine.vgui.character:Close( )
 			end
 		else
-			Derma_Message( data[ 2 ], "Character Use Error", "OK" )
+			Derma_Message( data[ 2 ], "Error", "OK" )
 		end
 	end )
 	
@@ -476,7 +466,7 @@ else
 				catherine.vgui.character:UseCharacterPanel( )
 			end
 		else
-			Derma_Message( data[ 2 ], "Character Delete Error", "OK" )
+			Derma_Message( data[ 2 ], "Error", "OK" )
 		end
 	end )
 	
@@ -493,7 +483,7 @@ end
 
 function catherine.character.GetCharacterVar( pl, key, default )
 	if ( !IsValid( pl ) and !key ) then return default end
-	if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or !catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ] ) then return default end
+	if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or !catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ] or catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ][ key ] == nil ) then return default end
 	return catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ][ key ] or default
 end
 
@@ -517,6 +507,14 @@ do
 	
 	function META:Desc( )
 		return catherine.character.GetGlobalVar( self, "_desc", "....." )
+	end
+	
+	function META:Faction( )
+		return catherine.character.GetGlobalVar( self, "_faction", "citizen" )
+	end
+	
+	function META:FactionName( )
+		return team.GetName( self:Team( ) )
 	end
 	
 	META.Nick = META.Name

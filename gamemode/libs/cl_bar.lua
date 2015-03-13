@@ -9,7 +9,7 @@ function catherine.bar.Add( target, targetMax, text, color, uniqueID )
 		color = color,
 		uniqueID = uniqueID,
 		ani = 0,
-		y = -10 + ( #catherine.bar.Lists + 1 ) * 15,
+		y = -7 + ( #catherine.bar.Lists + 1 ) * 12,
 		alpha = 0
 	}
 end
@@ -27,9 +27,9 @@ function catherine.bar.Draw( )
 			v.alpha = Lerp( 0.03, v.alpha, 255 )
 		end
 		v.ani = Lerp( 0.03, v.ani, ( ScrW( ) * 0.3 ) * percent )
-		v.y = Lerp( 0.03, v.y, -10 + count * 15 )
-		draw.RoundedBox( 0, 5, v.y, ScrW( ) * 0.3, 10, Color( 230, 230, 230, v.alpha - 20 ) )
-		draw.RoundedBox( 0, 5, v.y, v.ani, 10, Color( v.color.r, v.color.g, v.color.b, v.alpha ) )
+		v.y = Lerp( 0.03, v.y, -7 + count * 12 )
+		draw.RoundedBox( 0, 5, v.y, ScrW( ) * 0.3, 7, Color( 230, 230, 230, v.alpha - 20 ) )
+		draw.RoundedBox( 0, 5, v.y, v.ani, 7, Color( v.color.r, v.color.g, v.color.b, v.alpha ) )
 	end
 end
 

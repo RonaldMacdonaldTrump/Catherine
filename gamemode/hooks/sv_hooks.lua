@@ -16,7 +16,7 @@ function GM:PlayerSpawn( pl )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	pl:SetupHands( )
 	player_manager.SetPlayerClass( pl, "catherine_player" )
-	if ( pl:IsCharacterLoaded( ) )
+	if ( pl:IsCharacterLoaded( ) ) then
 		hook.Run( "PlayerSpawnedInCharacter", pl )
 	end
 end
