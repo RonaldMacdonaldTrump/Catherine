@@ -44,7 +44,6 @@ function catherine.util.FindPlayerByName( name )
 			return v
 		end
 	end
-	
 	return nil
 end
 
@@ -59,13 +58,11 @@ function catherine.util.FolderDirectoryTranslate( dir )
 		dir = "/" .. dir
 	end
 	local ex = string.Explode( "/", dir )
-	
 	for k, v in pairs( ex ) do
 		if ( v == "" ) then
 			table.remove( ex, k )
 		end
 	end
-	
 	return ex
 end
 

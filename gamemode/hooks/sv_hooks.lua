@@ -16,12 +16,13 @@ function GM:PlayerSpawn( pl )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	pl:SetupHands( )
 	player_manager.SetPlayerClass( pl, "catherine_player" )
-	hook.Run( "PlayerSpawned", pl )
+	if ( pl:IsCharacterLoaded( ) )
+		hook.Run( "PlayerSpawnedInCharacter", pl )
+	end
 end
 
-function GM:PlayerSpawned( pl )
-	if ( !pl:IsCharacterLoaded( ) ) then return end
-	hook.Run( "DefaultWeaponGive", pl )
+function GM:PlayerSpawnedInCharacter( pl )
+	hook.Run( "PostWeaponGive", pl )
 end
 
 function GM:PlayerSetHandsModel( pl, ent )
@@ -42,14 +43,14 @@ end
 
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Create("Catherine_toggleweaponRaised_" .. pl:SteamID( ), 1, 1, function()
+		timer.Create("Catherine.timer.weapontoggle." .. pl:SteamID( ), 1, 1, function()
 			if ( !IsValid( pl ) ) then return end
 			pl:ToggleWeaponRaised( )
 		end )
 	end
 end
 
-function GM:DefaultWeaponGive( pl )
+function GM:PostWeaponGive( pl )
 	pl:Give( "catherine_fist" )
 	pl:Give( "catherine_key" )
 end
@@ -62,7 +63,9 @@ function GM:PlayerSay( pl, text )
 end
 
 function GM:KeyRelease( pl, key )
-	if ( key == IN_RELOAD ) then timer.Destroy( "Catherine_toggleweaponRaised_" .. pl:SteamID( ) ) end
+	if ( key == IN_RELOAD ) then 
+		timer.Remove( "Catherine.timer.weapontoggle." .. pl:SteamID( ) )
+	end
 end
 
 function GM:PlayerInitialSpawn( pl )
@@ -70,9 +73,9 @@ function GM:PlayerInitialSpawn( pl )
 		pl:SetNoDraw( true )
 	end )
 
-	timer.Create( "catherine.loading.WaitLocalPlayer_" .. pl:SteamID( ), 1, 0, function( )
+	timer.Create( "Catherine.timer.waitPlayer." .. pl:SteamID( ), 1, 0, function( )
 		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
-			timer.Destroy( "catherine.loading.WaitLocalPlayer_" .. pl:SteamID( ) )
+			timer.Remove( "Catherine.timer.waitPlayer." .. pl:SteamID( ) )
 			timer.Simple( 3, function( )
 				catherine.player.Initialize( pl ) // 초기화 실행 ^-^!
 				pl:SetNoDraw( true )

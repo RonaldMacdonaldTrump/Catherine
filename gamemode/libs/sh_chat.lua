@@ -34,14 +34,14 @@ end
 catherine.chat.RegisterClass( {
 	class = "ic",
 	doChat = function( pl, text )
-		local name = hook.Run( "GetTargetInformation", LocalPlayer( ), pl )
-		local nameText = name[ 1 ] == "Unknown..." and name[ 2 ] or name[ 1 ]
-		chat.AddText( Color( 255, 255, 255 ), nameText .. " 님의 말 : " .. text )
+		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
+		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
+			name = desc
+		end
+		chat.AddText( Color( 255, 255, 255 ), name .. " says '" .. text .. "'" )
 	end,
 	canHearRange = 300,
-	canRun = function( pl )
-		return pl:Alive( )
-	end
+	canRun = function( pl ) return pl:Alive( ) end
 } )
 
 catherine.chat.RegisterClass( {
@@ -51,9 +51,7 @@ catherine.chat.RegisterClass( {
 	end,
 	command = { "/me" },
 	canHearRange = 1500,
-	canRun = function( pl )
-		return pl:Alive( )
-	end
+	canRun = function( pl ) return pl:Alive( ) end
 } )
 
 catherine.chat.RegisterClass( {
@@ -63,47 +61,43 @@ catherine.chat.RegisterClass( {
 	end,
 	command = { "/it" },
 	canHearRange = 1000,
-	canRun = function( pl )
-		return pl:Alive( )
-	end
+	canRun = function( pl ) return pl:Alive( ) end
 } )
 
 catherine.chat.RegisterClass( {
 	class = "pm",
 	doChat = function( pl, text, ex )
-		chat.AddText( Color( 255, 255, 0 ), pl:Name( ) .. " 님이 " .. ex[ 1 ]:Name( ) .. " 님에게 귓속말 : " .. text )
+		chat.AddText( Color( 255, 255, 0 ), "[PM] " .. pl:Name( ) .. " : " .. text )
 	end,
-	canRun = function( pl )
-		return pl:Alive( )
-	end
+	canRun = function( pl ) return pl:Alive( ) end
 } )
 
 catherine.chat.RegisterClass( {
 	class = "yell",
 	doChat = function( pl, text )
-		local name = hook.Run( "GetTargetInformation", LocalPlayer( ), pl )
-		local nameText = name[ 1 ] == "Unknown..." and name[ 2 ] or name[ 1 ]
-		chat.AddText( Color( 255, 255, 255 ), nameText .. " 님의 외침 : " .. text )
+		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
+		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
+			name = desc
+		end
+		chat.AddText( Color( 255, 255, 255 ), name .. " yells '" .. text .. "'" )
 	end,
 	canHearRange = 600,
 	command = { "/y", "/yell" },
-	canRun = function( pl )
-		return pl:Alive( )
-	end
+	canRun = function( pl ) return pl:Alive( ) end
 } )
 
 catherine.chat.RegisterClass( {
 	class = "whisper",
 	doChat = function( pl, text )
-		local name = hook.Run( "GetTargetInformation", LocalPlayer( ), pl )
-		local nameText = name[ 1 ] == "Unknown..." and name[ 2 ] or name[ 1 ]
-		chat.AddText( Color( 255, 255, 255 ), nameText .. " 님의 속삭임 : " .. text )
+		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
+		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
+			name = desc
+		end
+		chat.AddText( Color( 255, 255, 255 ), name .. " whispers '" .. text .. "'" )
 	end,
 	canHearRange = 150,
 	command = { "/w", "/whisper" },
-	canRun = function( pl )
-		return pl:Alive( )
-	end
+	canRun = function( pl ) return pl:Alive( ) end
 } )
 
 catherine.chat.RegisterClass( {

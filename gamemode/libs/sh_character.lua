@@ -207,17 +207,17 @@ if ( SERVER ) then
 		if ( !catherine.character.Buffers[ pl:SteamID( ) ] ) then return end
 		local prevID = pl:GetCharacterID( )
 		
-		if ( prevID != nil ) then
-			catherine.character.SavePlayerCharacter( pl )
-			catherine.character.SetLoadedCharacterByID( pl, pl:GetCharacterID( ), nil )
-			// Previous character data clear...
-		end
-		
 		if ( prevID == id ) then
 			netstream.Start( pl, "catherine.character.UseResult", { false, "You can't use same character!" } )
 			return
 		end
 		
+		if ( prevID != nil ) then
+			catherine.character.SavePlayerCharacter( pl )
+			catherine.character.SetLoadedCharacterByID( prevID, nil )
+			// Previous character data clear...
+		end
+
 		local function useCharacter( data )
 			local factionTab = catherine.faction.FindByID( data._faction )
 			if ( !factionTab ) then
@@ -232,8 +232,8 @@ if ( SERVER ) then
 			pl:SetModel( data._model )
 			pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
 			pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
-			pl:Give( "catherine_fist" )
-			pl:Give( "catherine_key" )
+			
+			hook.Run( "PostWeaponGive", pl )
 			
 			catherine.character.InitializeNetworking( pl, id, data )
 			
@@ -241,8 +241,8 @@ if ( SERVER ) then
 				netstream.Start( pl, "catherine.hud.CinematicIntro_Init" )
 			end
 
-			catherine.network.SetNetVar( pl, "charID", id )
-			catherine.network.SetNetVar( pl, "charLoaded", true )
+			pl:SetNetVar( "charID", id )
+			pl:SetNetVar( "charLoaded", true )
 			
 			netstream.Start( pl, "catherine.character.UseResult", { true } )
 			
@@ -500,11 +500,11 @@ end
 local META = FindMetaTable( "Player" )
 
 function META:GetCharacterID( )
-	return catherine.network.GetNetVar( self, "charID", nil )
+	return self:GetNetVar( "charID", nil )
 end
 
 function META:IsCharacterLoaded( )
-	return catherine.network.GetNetVar( self, "charLoaded", false )
+	return self:GetNetVar( "charLoaded", false )
 end
 
 do
