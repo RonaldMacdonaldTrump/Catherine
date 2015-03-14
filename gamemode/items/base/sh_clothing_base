@@ -54,3 +54,7 @@ Base.func.unequip = {
 		return false
 	end
 }
+hook.Add( "CharacterLoaded", "clothing_base_CharacterLoaded", function( pl )
+	if ( !pl:IsCharacterLoaded( ) ) then return end
+	catherine.character.SetCharacterData( pl, "permaModel", pl:GetModel( ) )
+end )
