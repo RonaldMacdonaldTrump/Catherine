@@ -246,6 +246,8 @@ if ( SERVER ) then
 		pl:SetNetVar( "charID", id )
 		pl:SetNetVar( "charLoaded", true )
 		
+		hook.Run( "CharacterLoaded", pl, id )
+		
 		netstream.Start( pl, "catherine.character.UseResult", { true } )
 		
 		catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [ " .. pl:SteamName( ) .. " ]" .. ( prevID or "None" ) .. " -> " .. id )
