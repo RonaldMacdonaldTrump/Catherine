@@ -77,7 +77,7 @@ Base.func.drop = {
 	viewCre = function( tab, ent, key )
 		return !tab.cantDrop
 	end
-}--]]
+
 
 if ( SERVER ) then
 	hook.Add( "PlayerSpawn", "weapon_base_PlayerSpawn", function( pl )
@@ -108,3 +108,5 @@ if ( SERVER ) then
 		end
 	end )
 end
+
+}--]]
