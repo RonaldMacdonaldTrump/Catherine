@@ -1,7 +1,7 @@
 Lang.name = "English"
 Lang.datas = {
-	[ "test" ] = "This is english language.",
-	[ "test2" ] = "This is %s language.",
+	[ "test" ] = "This is the english language.",
+	[ "test2" ] = "This is the %s language.",
 	
 	
 	
@@ -10,14 +10,14 @@ Lang.datas = {
 	
 	
 	// Cash ^-^;
-	[ "Cash_GiveMessage01" ] = "당신은 %s 님에게 %s 를 주셨습니다.",
+	[ "Cash_GiveMessage01" ] = "You gave %s cash to %s.",
 	
 	// Faction ^-^;
 	[ "Faction_AddMessage01" ] = "Give faction",
 	[ "Faction_RemoveMessage01" ] = "Take faction",
 	
-	[ "UnknownError" ] = "알 수 없는 오류 입니다.",
-	[ "UnknownPlayerError" ] = "올바르지 않은 캐릭터 이름을 입력했습니다!",
-	[ "ArgError" ] = "%s 번째 값을 입력하세요!"
+	[ "UnknownError" ] = "Unknown error.",
+	[ "UnknownPlayerError" ] = "You have entered an invalid character name!",
+	[ "ArgError" ] = "Please input value %s of your argument."
 	
 }
