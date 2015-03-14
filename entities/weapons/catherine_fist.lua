@@ -2,14 +2,13 @@ AddCSLuaFile( )
 
 SWEP.Base = "catherine_base"
 SWEP.PrintName = "Fists"
-SWEP.HoldType = "normal"
+SWEP.HoldType = "fist"
 SWEP.Slot = 1
 SWEP.SlotPos = 1
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 SWEP.DrawHUD = false
-
-SWEP.ViewModel	= "models/weapons/c_arms_citizen.mdl"
+SWEP.ViewModel = Model( "models/weapons/c_arms_cstrike.mdl" )
 SWEP.WorldModel	= ""
 SWEP.ViewModelFOV = 50
 
@@ -30,13 +29,22 @@ SWEP.HitDistance = 48
 SWEP.LowerAngles = Angle( 0, 5, -15 )
 SWEP.UseHands = false
 
-function SWEP:Precache()
+function SWEP:Precache( )
 	util.PrecacheSound( "npc/vort/claw_swing1.wav" )
 	util.PrecacheSound( "npc/vort/claw_swing2.wav" )
 	util.PrecacheSound( "physics/plastic/plastic_box_impact_hard1.wav" )	
 	util.PrecacheSound( "physics/plastic/plastic_box_impact_hard2.wav" )	
 	util.PrecacheSound( "physics/plastic/plastic_box_impact_hard3.wav" )	
 	util.PrecacheSound( "physics/plastic/plastic_box_impact_hard4.wav" )	
+end
+
+function SWEP:PreDrawViewModel( viewMdl, wep, pl )
+	local fists = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl:GetModel( ) ) )
+	if ( fists and fists.model ) then
+		viewMdl:SetModel( fists.model )
+		viewMdl:SetSkin( fists.skin )
+		viewMdl:SetBodyGroups( fists.body )
+	end
 end
 
 function SWEP:PrimaryAttack( )
@@ -114,5 +122,6 @@ function SWEP:Deploy( )
 end
 
 function SWEP:Initialize( )
-	self:SetWeaponHoldType( self.HoldType )
+	self:SetHoldType( self.HoldType )
+	self.LastHand = 0
 end

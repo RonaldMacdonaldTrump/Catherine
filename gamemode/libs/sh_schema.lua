@@ -18,7 +18,7 @@ function catherine.schema.Initialization( )
 	
 	catherine.util.Include( "schema/sh_schema.lua" )
 	catherine.faction.Include( Schema.FolderName .. "/gamemode/schema" )
-	//catherine.item.Include( Schema.FolderName .. "/gamemode/schema" )
+	catherine.item.Include( Schema.FolderName .. "/gamemode/schema" )
 	
 	hook.Run( "SchemaInit" )
 end

@@ -18,7 +18,6 @@ catherine.entityCaches = { }
 catherine.nextCacheDo = CurTime( )
 local toscreen = FindMetaTable("Vector").ToScreen
 
-
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hudHide ) do
 		if ( v == name ) then
@@ -147,7 +146,7 @@ function GM:ProgressEntityTargetID( pl )
 			catherine.entityCaches[ k ] = nil
 			continue
 		end
-		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k:GetPos( ), LocalPlayer( ):GetPos( ), 412 ) )
+		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k:GetPos( ), pl:GetPos( ), 412 ) )
 		k.alpha = a
 		if ( math.Round( a ) <= 0 ) then
 			catherine.entityCaches[ k ] = nil

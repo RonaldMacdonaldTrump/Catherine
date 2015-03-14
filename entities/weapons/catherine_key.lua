@@ -1,13 +1,22 @@
 AddCSLuaFile( )
 
 SWEP.Base = "catherine_base"
-SWEP.HoldType = "normal"
+SWEP.HoldType = "fist"
 SWEP.PrintName = "Key"
-SWEP.ViewModel = "models/weapons/v_punch.mdl"
+SWEP.ViewModel = Model( "models/weapons/c_arms_cstrike.mdl" )
 SWEP.WorldModel = ""
 SWEP.AlwaysLowered = true
 SWEP.CanFireLowered = true
 SWEP.DrawHUD = false
+
+function SWEP:PreDrawViewModel( viewMdl, wep, pl )
+	local fists = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl:GetModel( ) ) )
+	if ( fists and fists.model ) then
+		viewMdl:SetModel( fists.model )
+		viewMdl:SetSkin( fists.skin )
+		viewMdl:SetBodyGroups( fists.body )
+	end
+end
 
 function SWEP:Deploy( )
 	local pl = self.Owner
@@ -20,7 +29,7 @@ function SWEP:Deploy( )
 end
 
 function SWEP:Initialize( )
-	self:SetWeaponHoldType( self.HoldType )
+	self:SetHoldType( self.HoldType )
 end
 
 function SWEP:PrimaryAttack( )

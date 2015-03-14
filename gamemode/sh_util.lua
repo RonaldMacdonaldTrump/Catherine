@@ -71,6 +71,50 @@ function catherine.util.FolderDirectoryTranslate( dir )
 	return ex
 end
 
+local holdTypes = {
+	weapon_physgun = "smg",
+	weapon_physcannon = "smg",
+	weapon_stunstick = "melee",
+	weapon_crowbar = "melee",
+	weapon_stunstick = "melee",
+	weapon_357 = "pistol",
+	weapon_pistol = "pistol",
+	weapon_smg1 = "smg",
+	weapon_ar2 = "smg",
+	weapon_crossbow = "smg",
+	weapon_shotgun = "shotgun",
+	weapon_frag = "grenade",
+	weapon_slam = "grenade",
+	weapon_rpg = "shotgun",
+	weapon_bugbait = "melee",
+	weapon_annabelle = "shotgun",
+	gmod_tool = "pistol"
+}
+
+local translateHoldType = {
+	melee2 = "melee",
+	fist = "melee",
+	knife = "melee",
+	ar2 = "smg",
+	physgun = "smg",
+	crossbow = "smg",
+	slam = "grenade",
+	passive = "normal",
+	rpg = "shotgun"
+}
+
+function catherine.util.GetHoldType( wep )
+	local holdType = holdTypes[ wep:GetClass( ) ]
+
+	if ( holdType ) then
+		return holdType
+	elseif ( wep.HoldType ) then
+		return translateHoldType[ wep.HoldType ] or wep.HoldType
+	else
+		return "normal"
+	end
+end
+
 catherine.util.IncludeInDir( "libs/external", true )
 
 if ( SERVER ) then

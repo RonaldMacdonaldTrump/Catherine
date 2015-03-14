@@ -33,136 +33,118 @@ PlayerHoldType[ "knife" ] = "normal"
 PlayerHoldType[ "duel" ] = "normal"
 PlayerHoldType[ "bugbait" ] = "normal"
 
-function GM:TranslateActivity(pl, act)
-	local model = pl:GetModel( ):lower( )
-	local class = catherine.anim.getModelClass( model )
-	local weapon = pl:GetActiveWeapon( )
-	local animTab = catherine.anim[ class ]
-	
-	if ( class == "player" ) then
-		if ( IsValid( weapon ) and pl:OnGround( ) ) then
-			if ( model:find("zombie") ) then
-				local tree = catherine.anim.zombie
+local Length2D = FindMetaTable("Vector").Length2D
+local NormalHoldTypes = {
+	normal = true,
+	fist = true,
+	melee = true,
+	revolver = true,
+	pistol = true,
+	slam = true,
+	knife = true,
+	grenade = true
+}
+WEAPON_LOWERED = 1
+WEAPON_RAISED = 2
 
-				if ( model:find("fast") ) then
-					tree = catherine.anim.fastZombie
-				end
+function GM:CalcMainActivity( pl, velo )
+	local mdl = pl:GetModel( ):lower( )
+	local class = catherine.anim.GetModelAnimation( mdl )
+	local wep = pl:GetActiveWeapon( )
+	local holdType = "normal"
+	local status = WEAPON_LOWERED
+	local act = "idle"
 
-				if ( tree[ act ] ) then
-					return tree[ act ]
-				end
-			end
-
-			local holdType = weapon:GetHoldType( )
-			local value = PlayerHoldType[ holdType ] or "passive"
-			local tree = catherine.anim.player[ value ]
-
-			if ( tree and tree[ act ] ) then
-				return tree[ act ]
-			end
-		end
-
-		return self.BaseClass:TranslateActivity( pl, act )
+	if ( Length2D( velo ) >= catherine.configs.playerDefaultRunSpeed - 10 ) then
+		act = "run"
+	elseif ( Length2D( velo ) >= 5 ) then
+		act = "walk"
 	end
 
-	if ( animTab ) then
-		local subClass = "normal"
+	if ( IsValid( wep ) ) then
+		holdType = catherine.util.GetHoldType( wep )
 
-		if ( pl:InVehicle( ) and animTab.vehicle ) then
-			local vehicle = pl:GetVehicle( )
-			if ( vehicle and IsValid( vehicle ) ) then
-				local act = animTab.vehicle[ vehicle:GetClass( ) ][ pl:GetWeaponRaised( ) and 2 or 1 ]
-				
-				if ( type( act ) == "string" ) then
-					pl.Calcseq = pl:LookupSequence( act )
-					return
+		if ( wep.AlwaysRaised or catherine.configs.alwaysRaised[ wep:GetClass( ) ]) then
+			status = WEAPON_RAISED
+		end
+	end
+
+	if ( pl:GetWeaponRaised( ) ) then
+		status = WEAPON_RAISED
+	end
+
+	if ( mdl:find( "/player" ) or mdl:find( "/playermodel" ) or class == "player" ) then
+		local calcIdle, calcOver = self.BaseClass:CalcMainActivity( pl, velo )
+
+		if ( status == WEAPON_LOWERED ) then
+			if ( pl:Crouching( ) ) then
+				act = act.."_crouch"
+			end
+
+			if ( !pl:OnGround( ) ) then
+				act = "jump"
+			end
+
+			if ( !NormalHoldTypes[ holdType ] ) then
+				calcIdle = _G[ "ACT_HL2MP_" .. act:upper( ) .. "_PASSIVE" ]
+			else
+				if ( act == "jump" ) then
+					calcIdle = ACT_HL2MP_JUMP_PASSIVE
 				else
-					return act
+					calcIdle = _G[ "ACT_HL2MP_" .. act:upper( ) ]
 				end
 			end
 		end
-		
-		if ( pl:OnGround( ) ) then
-			if ( IsValid( weapon ) ) then
-				subClass = weapon:GetHoldType( )
-				subClass = Weapon_HoldType[subClass] or subClass
-			end
 
-			if ( animTab[ subClass ] and animTab[ subClass ][ act ] ) then
-				local act2 = animTab[ subClass ][ act ][ pl:GetWeaponRaised( ) and 2 or 1 ]
-				if ( type( act2 ) == "string" ) then
-					pl.Calcseq = pl:LookupSequence(act2)
-					return
-				end
-				return act2
-			end
-		elseif ( animTab.glide ) then
-			return animTab.glide
-		end
+		pl.CalcIdle = calcIdle
+		pl.CalcOver = calcOver
+
+		return pl.CalcIdle, pl.CalcOver
 	end
-end
---[[
-function GM:DoAnimationEvent(pl, event, data)
-	local model = pl:GetModel():lower()
-	local class = catherine.anim.getModelClass(model)
+	
+	if ( pl:IsCharacterLoaded( ) and pl:Alive( ) ) then
+		pl.CalcOver = -1
 
-	if (class == "player") then
-		return self.BaseClass:DoAnimationEvent(pl, event, data)
-	else
-		local weapon = pl:GetActiveWeapon()
+		if ( pl:Crouching( ) ) then
+			act = act .. "_crouch"
+		end
 
-		if (IsValid(weapon)) then
-			local holdType = weapon:GetHoldType()
-			holdType = Weapon_HoldType[holdType] or holdType
+		local aniClass = catherine.anim[ class ]
 
-			local animation = catherine.anim[class][holdType]
+		if ( !aniClass ) then
+			class = "citizen_male"
+		end
 
-			if (event == PLAYERANIMEVENT_ATTACK_PRIMARY) then
-				pl:AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, animation.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true)
+		if ( !aniClass[ holdType ] ) then
+			holdType = "normal"
+		end
 
-				return ACT_VM_PRIMARYATTACK
-			elseif (event == PLAYERANIMEVENT_ATTACK_SECONDARY) then
-				pl:AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, animation.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true)
+		if ( !aniClass[ holdType ][ act ] ) then
+			act = "idle"
+		end
 
-				return ACT_VM_SECONDARYATTACK
-			elseif (event == PLAYERANIMEVENT_RELOAD) then
-				pl:AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, animation.reload or ACT_GESTURE_RELOAD_SMG1, true)
+		local ani = aniClass[ holdType ][ act ]
+		local val = ACT_IDLE
 
-				return ACT_INVALID
-			elseif (event == PLAYERANIMEVENT_JUMP) then
-				pl.m_bJumping = true
-				pl.m_bFistJumpFrame = true
-				pl.m_flJumpStartTime = CurTime()
-
-				pl:AnimRestartMainSequence()
-
-				return ACT_INVALID
-			elseif (event == PLAYERANIMEVENT_CANCEL_RELOAD) then
-				pl:AnimResetGestureSlot(GESTURE_SLOT_ATTACK_AND_RELOAD)
-
-				return ACT_INVALID
+		if ( !pl:OnGround( ) ) then
+			pl.CalcIdle = aniClass.glide or ACT_GLIDE
+		elseif ( pl:InVehicle( ) ) then
+			pl.CalcIdle = aniClass.normal.idle_crouch[ 1 ]
+		elseif ( ani ) then
+			val = ani[ status ]
+			if ( type( val ) == "string" ) then
+				pl.CalcOver = pl:LookupSequence( val )
+			else
+				pl.CalcIdle = val
 			end
 		end
+
+		if ( CLIENT ) then
+			pl:SetIK( false )
+		end
+
+		local norm = math.NormalizeAngle( velo:Angle( ).yaw - pl:EyeAngles( ).y)
+		pl:SetPoseParameter( "move_yaw", norm )
+		return pl.CalcIdle or ACT_IDLE, pl.CalcOver or -1
 	end
-
-	return ACT_INVALID
 end
-
-function GM:CalcMainActivity(pl, velocity)
-	local eyeAngles = pl:EyeAngles()
-	local yaw = velocity:Angle().yaw
-	local normalized = math.NormalizeAngle(yaw - eyeAngles.y)
-
-	pl:SetPoseParameter("move_yaw", normalized)
-
-	if (CLIENT) then
-		pl:SetIK(false)
-	end
-
-	local oldSeqOverride = pl.CalcSeqOverride
-	local seqIdeal, seqOverride = self.BaseClass:CalcMainActivity(pl, velocity)
-	--pl.CalcSeqOverride is being -1 after this line.
-
-	return seqIdeal, pl.nutForceSeq or oldSeqOverride or pl.CalcSeqOverride
-end
---]]

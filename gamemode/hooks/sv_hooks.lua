@@ -1,5 +1,5 @@
 function GM:GetGameDescription( )
-	return "Catherine - ".. ( Schema and Schema.Name or "Unknown" )
+	return "CAT - ".. ( Schema and Schema.Name or "Unknown" )
 end
 
 function GM:PlayerSpray( pl )
@@ -77,7 +77,7 @@ function GM:PlayerInitialSpawn( pl )
 		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
 			timer.Remove( "Catherine.timer.waitPlayer." .. pl:SteamID( ) )
 			timer.Simple( 3, function( )
-				catherine.player.Initialize( pl ) // 초기화 실행 ^-^!
+				catherine.player.Initialize( pl )
 				pl:SetNoDraw( true )
 			end )
 		end

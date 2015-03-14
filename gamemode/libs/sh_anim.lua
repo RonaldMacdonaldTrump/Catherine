@@ -1,315 +1,296 @@
 --[[
-	This code has brought by nutscript.
+	This code has brought by Nutscript!.
 	https://github.com/Chessnut/NutScript
 --]]
 catherine.anim = catherine.anim or { }
+catherine.anim.Classes = catherine.anim.Classes or { }
+
+function catherine.anim.SetModelAnimation( class, mdl )
+	catherine.anim.Classes[ mdl:lower( ) ] = class
+end
+
+function catherine.anim.GetModelAnimation( mdl )
+	mdl = mdl:lower( )
+	return catherine.anim.Classes[ mdl ] or ( mdl:find( "female" ) and "citizen_female" or "citizen_male" )
+end
+
+local pre = {
+	"male", "female"
+}
+
+for i = 1, 2 do
+	for k, v in pairs( file.Find("models/humans/group01/" .. pre[ i ] .. "_*.mdl", "GAME" ) ) do
+		catherine.anim.SetModelAnimation( "citizen_" .. pre[ i ], "models/humans/group01/" .. v )
+	end
+
+	for k, v in pairs( file.Find("models/humans/group02/" .. pre[ i ] .. "_*.mdl", "GAME" ) ) do
+		catherine.anim.SetModelAnimation( "citizen_" .. pre[ i ], "models/humans/group02/" .. v )
+	end
+
+	for k, v in pairs( file.Find("models/humans/group03/" .. pre[ i ] .. "_*.mdl", "GAME" ) ) do
+		catherine.anim.SetModelAnimation( "citizen_" .. pre[ i ], "models/humans/group03/" .. v )
+	end
+
+	for k, v in pairs( file.Find("models/humans/group04/" .. pre[ i ] .. "_*.mdl", "GAME" ) ) do
+		catherine.anim.SetModelAnimation( "citizen_" .. pre[ i ], "models/humans/group04/" .. v )
+	end
+end
+
+catherine.anim.SetModelAnimation( "citizen_female", "models/mossman.mdl" )
+catherine.anim.SetModelAnimation( "citizen_female", "models/alyx.mdl" )
+catherine.anim.SetModelAnimation( "metrocop", "models/police.mdl" )
+catherine.anim.SetModelAnimation( "overwatch", "models/combine_super_soldier.mdl" )
+catherine.anim.SetModelAnimation( "overwatch", "models/combine_soldier_prisonguard.mdl" )
+catherine.anim.SetModelAnimation( "overwatch", "models/combine_soldier.mdl" )
+catherine.anim.SetModelAnimation( "vort", "models/vortigaunt.mdl" )
+catherine.anim.SetModelAnimation( "vort", "models/vortigaunt_slave.mdl" )
+catherine.anim.SetModelAnimation( "metrocop", "models/dpfilms/metropolice/playermodels/pm_skull_police.mdl" )
+
 catherine.anim.citizen_male = {
 	normal = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_COVER_LOW},
-		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK_AIM_RIFLE_STIMULATED},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
-		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN_AIM_RIFLE_STIMULATED}
+		idle = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
+		walk = {ACT_WALK, ACT_WALK_AIM_RIFLE_STIMULATED},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
+		run = {ACT_RUN, ACT_RUN_AIM_RIFLE_STIMULATED}
 	},
 	pistol = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_RANGE_ATTACK_PISTOL},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_PISTOL_LOW, ACT_RANGE_AIM_PISTOL_LOW},
-		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK_AIM_RIFLE_STIMULATED},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
-		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN_AIM_RIFLE_STIMULATED},
+		idle = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
+		walk = {ACT_WALK, ACT_WALK_AIM_RIFLE_STIMULATED},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
+		run = {ACT_RUN, ACT_RUN_AIM_RIFLE_STIMULATED},
 		attack = ACT_GESTURE_RANGE_ATTACK_PISTOL,
 		reload = ACT_RELOAD_PISTOL
 	},
 	smg = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE_SMG1_RELAXED, ACT_IDLE_ANGRY_SMG1},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_SMG1_LOW, ACT_RANGE_AIM_SMG1_LOW},
-		[ACT_MP_WALK] = {ACT_WALK_RIFLE_RELAXED, ACT_WALK_AIM_RIFLE_STIMULATED},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH_RIFLE, ACT_WALK_CROUCH_AIM_RIFLE},
-		[ACT_MP_RUN] = {ACT_RUN_RIFLE_RELAXED, ACT_RUN_AIM_RIFLE_STIMULATED},
+		idle = {ACT_IDLE_SMG1_RELAXED, ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
+		walk = {ACT_WALK_RIFLE_RELAXED, ACT_WALK_AIM_RIFLE_STIMULATED},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
+		run = {ACT_RUN_RIFLE_RELAXED, ACT_RUN_AIM_RIFLE_STIMULATED},
 		attack = ACT_GESTURE_RANGE_ATTACK_SMG1,
 		reload = ACT_GESTURE_RELOAD_SMG1
 	},
 	shotgun = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE_SHOTGUN_RELAXED, ACT_IDLE_ANGRY_SMG1},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_SMG1_LOW, ACT_RANGE_AIM_SMG1_LOW},
-		[ACT_MP_WALK] = {ACT_WALK_RIFLE_RELAXED, ACT_WALK_AIM_RIFLE_STIMULATED},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH_RIFLE, ACT_WALK_CROUCH_RIFLE},
-		[ACT_MP_RUN] = {ACT_RUN_RIFLE_RELAXED, ACT_RUN_AIM_RIFLE_STIMULATED},
+		idle = {ACT_IDLE_SHOTGUN_RELAXED, ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
+		walk = {ACT_WALK_RIFLE_RELAXED, ACT_WALK_AIM_RIFLE_STIMULATED},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
+		run = {ACT_RUN_RIFLE_RELAXED, ACT_RUN_AIM_RIFLE_STIMULATED},
 		attack = ACT_GESTURE_RANGE_ATTACK_SHOTGUN
 	},
 	grenade = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_MANNEDGUN},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_COVER_PISTOL_LOW},
-		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK_AIM_RIFLE_STIMULATED},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
-		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN_RIFLE_STIMULATED},
+		idle = {ACT_IDLE, ACT_IDLE_MANNEDGUN},
+		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
+		walk = {ACT_WALK, ACT_WALK_AIM_RIFLE},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
+		run = {ACT_RUN, ACT_RUN_AIM_RIFLE_STIMULATED},
 		attack = ACT_RANGE_ATTACK_THROW
 	},
 	melee = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE_SUITCASE, ACT_IDLE_ANGRY_MELEE},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_COVER_LOW},
-		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK_AIM_RIFLE},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
-		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN},
+		idle = {ACT_IDLE_SUITCASE, ACT_IDLE_ANGRY_MELEE},
+		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
+		walk = {ACT_WALK, ACT_WALK_AIM_RIFLE},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
+		run = {ACT_RUN, ACT_RUN},
 		attack = ACT_MELEE_ATTACK_SWING
 	},
-	glide = ACT_GLIDE,
-	vehicle = {
-		["prop_vehicle_prisoner_pod"] = {"sitchair1", Vector(0, 0, -25), Angle()},
-		["prop_vehicle_jeep"] = {"sitchair1", Vector(12, 0, -18), Angle()}
-	},
+	glide = ACT_GLIDE
 }
+
 catherine.anim.citizen_female = {
 	normal = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_MANNEDGUN},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_COVER_LOW},
-		[ACT_MP_WALK] = {ACT_WALK, ACT_RANGE_AIM_SMG1_LOW},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
-		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN_AIM_RIFLE_STIMULATED}
+		idle = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
+		walk = {ACT_WALK, ACT_WALK_AIM_RIFLE_STIMULATED},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
+		run = {ACT_RUN, ACT_RUN_AIM_RIFLE_STIMULATED}
 	},
 	pistol = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE_PISTOL, ACT_IDLE_ANGRY_PISTOL},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_RANGE_AIM_SMG1_LOW},
-		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK_AIM_PISTOL},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
-		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN_AIM_PISTOL},
+		idle = {ACT_IDLE_PISTOL, ACT_IDLE_ANGRY_PISTOL},
+		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
+		walk = {ACT_WALK, ACT_WALK_AIM_PISTOL},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_PISTOL},
+		run = {ACT_RUN, ACT_RUN_AIM_PISTOL},
 		attack = ACT_GESTURE_RANGE_ATTACK_PISTOL,
 		reload = ACT_RELOAD_PISTOL
 	},
 	smg = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE_SMG1_RELAXED, ACT_IDLE_ANGRY_SMG1},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_RANGE_AIM_SMG1_LOW},
-		[ACT_MP_WALK] = {ACT_WALK_RIFLE_RELAXED, ACT_WALK_AIM_RIFLE_STIMULATED},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH_RIFLE, ACT_WALK_CROUCH_AIM_RIFLE},
-		[ACT_MP_RUN] = {ACT_RUN_RIFLE_RELAXED, ACT_RUN_AIM_RIFLE_STIMULATED},
+		idle = {ACT_IDLE_SMG1_RELAXED, ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
+		walk = {ACT_WALK_RIFLE_RELAXED, ACT_WALK_AIM_RIFLE_STIMULATED},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
+		run = {ACT_RUN_RIFLE_RELAXED, ACT_RUN_AIM_RIFLE_STIMULATED},
 		attack = ACT_GESTURE_RANGE_ATTACK_SMG1,
 		reload = ACT_GESTURE_RELOAD_SMG1
 	},
 	shotgun = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE_SHOTGUN_RELAXED, ACT_IDLE_ANGRY_SMG1},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_RANGE_AIM_SMG1_LOW},
-		[ACT_MP_WALK] = {ACT_WALK_RIFLE_RELAXED, ACT_WALK_AIM_RIFLE_STIMULATED},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH_RIFLE, ACT_WALK_CROUCH_AIM_RIFLE},
-		[ACT_MP_RUN] = {ACT_RUN_RIFLE_RELAXED, ACT_RUN_AIM_RIFLE_STIMULATED},
+		idle = {ACT_IDLE_SHOTGUN_RELAXED, ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
+		walk = {ACT_WALK_RIFLE_RELAXED, ACT_WALK_AIM_RIFLE_STIMULATED},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
+		run = {ACT_RUN_RIFLE_RELAXED, ACT_RUN_AIM_RIFLE_STIMULATED},
 		attack = ACT_GESTURE_RANGE_ATTACK_SHOTGUN
 	},
 	grenade = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_MANNEDGUN},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_RANGE_AIM_SMG1_LOW},
-		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK_AIM_PISTOL},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
-		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN_AIM_PISTOL},
+		idle = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
+		walk = {ACT_WALK, ACT_WALK_AIM_RIFLE_STIMULATED},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE},
+		run = {ACT_RUN, ACT_RUN_AIM_RIFLE_STIMULATED},
 		attack = ACT_RANGE_ATTACK_THROW
 	},
 	melee = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE_SUITCASE, ACT_IDLE_ANGRY_MELEE},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_COVER_LOW},
-		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK_AIM_RIFLE},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
-		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN},
+		idle = {ACT_IDLE, ACT_IDLE_MANNEDGUN},
+		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
+		walk = {ACT_WALK, ACT_WALK_AIM_RIFLE},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
+		run = {ACT_RUN, ACT_RUN},
 		attack = ACT_MELEE_ATTACK_SWING
 	},
-	glide = ACT_GLIDE,
-	vehicle = {
-		["prop_vehicle_prisoner_pod"] = {"sitchair1", Vector(0, 0, -25), Angle()},
-		["prop_vehicle_jeep"] = {"sitchair1", Vector(12, 0, -18), Angle()}
-	},
+	glide = ACT_GLIDE
 }
+
 catherine.anim.metrocop = {
 	normal = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_PISTOL_LOW, ACT_COVER_SMG1_LOW},
-		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK_AIM_RIFLE},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
-		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN}
+		idle = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {ACT_COVER_PISTOL_LOW, ACT_COVER_SMG1_LOW},
+		walk = {ACT_WALK, ACT_WALK_AIM_RIFLE},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
+		run = {ACT_RUN, ACT_RUN}
 	},
 	pistol = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE_PISTOL, ACT_IDLE_ANGRY_PISTOL},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_PISTOL_LOW, ACT_COVER_PISTOL_LOW},
-		[ACT_MP_WALK] = {ACT_WALK_PISTOL, ACT_WALK_AIM_PISTOL},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
-		[ACT_MP_RUN] = {ACT_RUN_PISTOL, ACT_RUN_AIM_PISTOL},
-		attack = ACT_GESTURE_RANGE_ATTACK_PISTOL,
-		reload = ACT_GESTURE_RELOAD_PISTOL
+		idle = {ACT_IDLE_PISTOL, ACT_IDLE_ANGRY_PISTOL},
+		idle_crouch = {ACT_COVER_PISTOL_LOW, ACT_COVER_PISTOL_LOW},
+		walk = {ACT_WALK_PISTOL, ACT_WALK_AIM_PISTOL},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
+		run = {ACT_RUN_PISTOL, ACT_RUN_AIM_PISTOL},
+		attack = ACT_RANGE_ATTACK_PISTOL,
+		reload = ACT_RELOAD_PISTOL
 	},
 	smg = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE_SMG1, ACT_IDLE_ANGRY_SMG1},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_SMG1_LOW, ACT_COVER_SMG1_LOW},
-		[ACT_MP_WALK] = {ACT_WALK_RIFLE, ACT_WALK_AIM_RIFLE},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
-		[ACT_MP_RUN] = {ACT_RUN_RIFLE, ACT_RUN_AIM_RIFLE}
+		idle = {ACT_IDLE_SMG1, ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {ACT_COVER_SMG1_LOW, ACT_COVER_SMG1_LOW},
+		walk = {ACT_WALK_RIFLE, ACT_WALK_AIM_RIFLE},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
+		run = {ACT_RUN_RIFLE, ACT_RUN_AIM_RIFLE}
 	},
 	shotgun = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE_SMG1, ACT_IDLE_ANGRY_SMG1},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_SMG1_LOW, ACT_COVER_SMG1_LOW},
-		[ACT_MP_WALK] = {ACT_WALK_RIFLE, ACT_WALK_AIM_RIFLE},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
-		[ACT_MP_RUN] = {ACT_RUN_RIFLE, ACT_RUN_AIM_RIFLE}
+		idle = {ACT_IDLE_SMG1, ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {ACT_COVER_SMG1_LOW, ACT_COVER_SMG1_LOW},
+		walk = {ACT_WALK_RIFLE, ACT_WALK_AIM_RIFLE},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
+		run = {ACT_RUN_RIFLE, ACT_RUN_AIM_RIFLE_STIMULATED}
 	},
 	grenade = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_ANGRY_MELEE},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_PISTOL_LOW, ACT_COVER_PISTOL_LOW},
-		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK_ANGRY},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
-		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN},
+		idle = {ACT_IDLE, ACT_IDLE_ANGRY_MELEE},
+		idle_crouch = {ACT_COVER_PISTOL_LOW, ACT_COVER_PISTOL_LOW},
+		walk = {ACT_WALK, ACT_WALK_ANGRY},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
+		run = {ACT_RUN, ACT_RUN},
 		attack = ACT_COMBINE_THROW_GRENADE
 	},
 	melee = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_ANGRY_MELEE},
-		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_PISTOL_LOW, ACT_COVER_PISTOL_LOW},
-		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK_ANGRY},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
-		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN},
+		idle = {ACT_IDLE, ACT_IDLE_ANGRY_MELEE},
+		idle_crouch = {ACT_COVER_PISTOL_LOW, ACT_COVER_PISTOL_LOW},
+		walk = {ACT_WALK, ACT_WALK_ANGRY},
+		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
+		run = {ACT_RUN, ACT_RUN},
 		attack = ACT_MELEE_ATTACK_SWING_GESTURE
 	},
 	glide = ACT_GLIDE
 }
+
 catherine.anim.overwatch = {
 	normal = {
-		[ACT_MP_STAND_IDLE] = {"idle_unarmed", "man_gun"},
-		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {"walkunarmed_all", ACT_WALK_RIFLE},
-		[ACT_MP_CROUCHWALK] = {"crouch_walkall", "crouch_walkall"},
-		[ACT_MP_RUN] = {"runall", ACT_RUN_AIM_RIFLE}
+		idle = {"idle_unarmed", "man_gun"},
+		idle_crouch = {"crouchidle", "crouchidle"},
+		walk = {ACT_WALK_RIFLE, ACT_WALK_RIFLE},
+		walk_crouch = {"crouch_walkall", "crouch_walkall"},
+		run = {"runall", ACT_RUN_AIM_RIFLE}
 	},
 	pistol = {
-		[ACT_MP_STAND_IDLE] = {"idle_unarmed", ACT_IDLE_ANGRY_SMG1},
-		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {"walkunarmed_all", ACT_WALK_RIFLE},
-		[ACT_MP_CROUCHWALK] = {"crouch_walkall", "crouch_walkall"},
-		[ACT_MP_RUN] = {"runall", ACT_RUN_AIM_RIFLE}
+		idle = {"idle_unarmed", ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {"crouchidle", "crouchidle"},
+		walk = {"walkunarmed_all", ACT_WALK_RIFLE},
+		walk_crouch = {"crouch_walkall", "crouch_walkall"},
+		run = {"runall", ACT_RUN_AIM_RIFLE}
 	},
 	smg = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE_SMG1, ACT_IDLE_ANGRY_SMG1},
-		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK_RIFLE, ACT_WALK_AIM_RIFLE},
-		[ACT_MP_CROUCHWALK] = {"crouch_walkall", "crouch_walkall"},
-		[ACT_MP_RUN] = {ACT_RUN_RIFLE, ACT_RUN_AIM_RIFLE}
+		idle = {ACT_IDLE_SMG1, ACT_IDLE_ANGRY_SMG1},
+		idle_crouch = {"crouchidle", "crouchidle"},
+		walk = {ACT_WALK_RIFLE, ACT_WALK_AIM_RIFLE},
+		walk_crouch = {"crouch_walkall", "crouch_walkall"},
+		run = {ACT_RUN_RIFLE, ACT_RUN_AIM_RIFLE}
 	},
 	shotgun = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE_SMG1, ACT_IDLE_ANGRY_SHOTGUN},
-		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK_RIFLE, ACT_WALK_AIM_SHOTGUN},
-		[ACT_MP_CROUCHWALK] = {"crouch_walkall", "crouch_walkall"},
-		[ACT_MP_RUN] = {ACT_RUN_RIFLE, ACT_RUN_AIM_SHOTGUN}
+		idle = {ACT_IDLE_SMG1, ACT_IDLE_ANGRY_SHOTGUN},
+		idle_crouch = {"crouchidle", "crouchidle"},
+		walk = {ACT_WALK_RIFLE, ACT_WALK_AIM_SHOTGUN},
+		walk_crouch = {"crouch_walkall", "crouch_walkall"},
+		run = {ACT_RUN_RIFLE, ACT_RUN_AIM_SHOTGUN}
 	},
 	grenade = {
-		[ACT_MP_STAND_IDLE] = {"idle_unarmed", "man_gun"},
-		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {"walkunarmed_all", ACT_WALK_RIFLE},
-		[ACT_MP_CROUCHWALK] = {"crouch_walkall", "crouch_walkall"},
-		[ACT_MP_RUN] = {"runall", ACT_RUN_AIM_RIFLE}
+		idle = {"idle_unarmed", "man_gun"},
+		idle_crouch = {"crouchidle", "crouchidle"},
+		walk = {"walkunarmed_all", ACT_WALK_RIFLE},
+		walk_crouch = {"crouch_walkall", "crouch_walkall"},
+		run = {"runall", ACT_RUN_AIM_RIFLE}
 	},
 	melee = {
-		[ACT_MP_STAND_IDLE] = {"idle_unarmed", "man_gun"},
-		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {"walkunarmed_all", ACT_WALK_RIFLE},
-		[ACT_MP_CROUCHWALK] = {"crouch_walkall", "crouch_walkall"},
-		[ACT_MP_RUN] = {"runall", ACT_RUN_AIM_RIFLE},
+		idle = {"idle_unarmed", "man_gun"},
+		idle_crouch = {"crouchidle", "crouchidle"},
+		walk = {"walkunarmed_all", ACT_WALK_RIFLE},
+		walk_crouch = {"crouch_walkall", "crouch_walkall"},
+		run = {"runall", ACT_RUN_AIM_RIFLE},
 		attack = ACT_MELEE_ATTACK_SWING_GESTURE
 	},
 	glide = ACT_GLIDE
 }
+
 catherine.anim.vort = {
 	normal = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "actionidle"},
-		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN}
+		idle = {ACT_IDLE, "actionidle"},
+		idle_crouch = {"crouchidle", "crouchidle"},
+		walk = {ACT_WALK, "walk_all_holdgun"},
+		walk_crouch = {ACT_WALK, "walk_all_holdgun"},
+		run = {ACT_RUN, ACT_RUN}
 	},
 	pistol = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "tcidle"},
-		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_RUN] = {ACT_RUN, "run_all_tc"}
+		idle = {ACT_IDLE, "tcidle"},
+		idle_crouch = {"crouchidle", "crouchidle"},
+		walk = {ACT_WALK, "walk_all_holdgun"},
+		walk_crouch = {ACT_WALK, "walk_all_holdgun"},
+		run = {ACT_RUN, "run_all_tc"}
 	},
 	smg = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "tcidle"},
-		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_RUN] = {ACT_RUN, "run_all_tc"}
+		idle = {ACT_IDLE, "tcidle"},
+		idle_crouch = {"crouchidle", "crouchidle"},
+		walk = {ACT_WALK, "walk_all_holdgun"},
+		walk_crouch = {ACT_WALK, "walk_all_holdgun"},
+		run = {ACT_RUN, "run_all_tc"}
 	},
 	shotgun = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "tcidle"},
-		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_RUN] = {ACT_RUN, "run_all_tc"}
+		idle = {ACT_IDLE, "tcidle"},
+		idle_crouch = {"crouchidle", "crouchidle"},
+		walk = {ACT_WALK, "walk_all_holdgun"},
+		walk_crouch = {ACT_WALK, "walk_all_holdgun"},
+		run = {ACT_RUN, "run_all_tc"}
 	},
 	grenade = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "tcidle"},
-		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_RUN] = {ACT_RUN, "run_all_tc"}
+		idle = {ACT_IDLE, "tcidle"},
+		idle_crouch = {"crouchidle", "crouchidle"},
+		walk = {ACT_WALK, "walk_all_holdgun"},
+		walk_crouch = {ACT_WALK, "walk_all_holdgun"},
+		run = {ACT_RUN, "run_all_tc"}
 	},
 	melee = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "tcidle"},
-		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_RUN] = {ACT_RUN, "run_all_tc"}
+		idle = {ACT_IDLE, "tcidle"},
+		idle_crouch = {"crouchidle", "crouchidle"},
+		walk = {ACT_WALK, "walk_all_holdgun"},
+		walk_crouch = {ACT_WALK, "walk_all_holdgun"},
+		run = {ACT_RUN, "run_all_tc"}
 	},
 	glide = ACT_GLIDE
 }
-catherine.anim.player = {
-	normal = {
-		[ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE,
-		[ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH,
-		[ACT_MP_WALK] = ACT_HL2MP_WALK,
-		[ACT_MP_RUN] = ACT_HL2MP_RUN
-	},
-	passive = {
-		[ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE_PASSIVE,
-		[ACT_MP_WALK] = ACT_HL2MP_WALK_PASSIVE,
-		[ACT_MP_CROUCHWALK] = ACT_HL2MP_WALK_CROUCH_PASSIVE,
-		[ACT_MP_RUN] = ACT_HL2MP_RUN_PASSIVE
-	}
-}
-catherine.anim.zombie = {
-	[ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE_ZOMBIE,
-	[ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH_ZOMBIE,
-	[ACT_MP_CROUCHWALK] = ACT_HL2MP_WALK_CROUCH_ZOMBIE_01,
-	[ACT_MP_WALK] = ACT_HL2MP_WALK_ZOMBIE_02,
-	[ACT_MP_RUN] = ACT_HL2MP_RUN_ZOMBIE
-}
-catherine.anim.fastZombie = {
-	[ACT_MP_STAND_IDLE] = ACT_HL2MP_WALK_ZOMBIE,
-	[ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH_ZOMBIE,
-	[ACT_MP_CROUCHWALK] = ACT_HL2MP_WALK_CROUCH_ZOMBIE_05,
-	[ACT_MP_WALK] = ACT_HL2MP_WALK_ZOMBIE_06,
-	[ACT_MP_RUN] = ACT_HL2MP_RUN_ZOMBIE_FAST
-}
-
-local modelList = {}
-
-function catherine.anim.setModelClass( model, class )
-	modelList[ model:lower( ) ] = class
-end
-
-function catherine.anim.getModelClass( model )
-	model = model:lower( )
-	if ( model:find( "/player" ) ) then
-		return "player"
-	end
-
-	local class = modelList[ model ] or "citizen_male"
-
-	if ( class == "citizen_male" and ( model:find("female" or model:find( "alyx" ) or model:find( "mossman" ) ) ) ) then
-		class = "citizen_female"
-	end
-	
-	return class
-end
-
-catherine.anim.setModelClass( "models/police.mdl", "metrocop" )
-catherine.anim.setModelClass( "models/combine_super_soldier.mdl", "overwatch" )
-catherine.anim.setModelClass( "models/combine_soldier_prisonGuard.mdl", "overwatch" )
-catherine.anim.setModelClass( "models/combine_soldier.mdl", "overwatch" )
-catherine.anim.setModelClass( "models/vortigaunt.mdl", "vort" )
-catherine.anim.setModelClass( "models/vortigaunt_blue.mdl", "vort" )
-catherine.anim.setModelClass( "models/vortigaunt_doctor.mdl", "vort" )
-catherine.anim.setModelClass( "models/vortigaunt_slave.mdl", "vort" )

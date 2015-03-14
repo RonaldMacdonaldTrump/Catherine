@@ -10,6 +10,7 @@ Base.itemData = {
 	clipOne = 0,
 	clipTwo = 0
 }
+--[[
 Base.func = { }
 Base.func.equip = {
 	text = "Equip this weapon",
@@ -76,7 +77,7 @@ Base.func.drop = {
 	viewCre = function( tab, ent, key )
 		return !tab.cantDrop
 	end
-}
+}--]]
 
 if ( SERVER ) then
 	hook.Add( "PlayerSpawn", "weapon_base_PlayerSpawn", function( pl )

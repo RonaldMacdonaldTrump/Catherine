@@ -1,3 +1,85 @@
+catherine.item = catherine.item or { }
+catherine.item.bases = { }
+catherine.item.items = { }
+
+function catherine.item.Register( itemTable, isBase )
+	if ( isBase ) then
+		catherine.item.bases[ itemTable.uniqueID ] = itemTable
+		return
+	end
+	
+	if ( itemTable.base ) then
+		local base = catherine.item.bases[ itemTable.base ]
+		if ( !base ) then return end
+		itemTable = table.Inherit( itemTable, base )
+	end
+	
+	itemTable.name = itemTable.name or "Item Name"
+	itemTable.desc = itemTable.desc or "Item Desc"
+	itemTable.weight = itemTable.weight or 0
+	itemTable.cost = itemTable.cost or 0
+	itemTable.category = itemTable.category or "Other"
+	itemTable.func = itemTable.func or { 
+		take = {
+			text = "Take",
+			viewIsEntity = true,
+			func = function( pl, tab, data )
+
+			end,
+			viewCre = function( tab, ent, data )
+
+			end
+		},
+		drop = {
+			text = "Drop",
+			viewIsMenu = true,
+			func = function( pl, tab, data )
+				
+			end,
+			viewCre = function( tab, ent, data )
+
+			end
+		}
+	}
+	
+	catherine.item.items[ itemTable.uniqueID ] = itemTable
+end
+
+function catherine.item.FindByID( id )
+	return catherine.item.items[ id ]
+end
+
+function catherine.item.FindBaseByID( id )
+	return catherine.item.bases[ id ]
+end
+
+function catherine.item.Include( dir )
+	local baseFiles = file.Find( dir .. "/items/base/*", "LUA" )
+	for k, v in pairs( baseFiles ) do
+		Base = { uniqueID = catherine.util.GetUniqueName( v ) }
+		catherine.util.Include( dir .. "/items/base/" .. v )
+		catherine.item.Register( Base, true )
+		Base = nil
+	end
+
+	local itemFiles, itemFolders = file.Find( dir .. "/items/*", "LUA" )
+	for k, v in pairs( itemFolders ) do
+		if ( v == "base" ) then continue end
+		local itemFile = file.Find( dir .. "/items/" .. v .. "/*", "LUA" )
+		for k1, v1 in pairs( itemFile ) do
+			Item = { uniqueID = catherine.util.GetUniqueName( v1 ) }
+			catherine.util.Include( dir .. "/items/" .. v .. "/" .. v1 )
+			catherine.item.Register( Item )
+			Item = nil
+		end
+	end
+end
+
+catherine.item.Include( catherine.FolderName .. "/gamemode" )
+
+
+
+//PrintTable(catherine.item.bases)
 /* // have a bug, sorry;
 catherine.item = catherine.item or { }
 catherine.item.bases = { }

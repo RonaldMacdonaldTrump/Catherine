@@ -119,7 +119,7 @@ if ( SERVER ) then
 else
 	local toscreen = FindMetaTable("Vector").ToScreen
 	
-	hook.Add( "DrawEntityInformation", "catherine.door.DrawEntityInformation", function( ent, a )
+	hook.Add( "DrawEntityTargetID", "catherine.door.DrawEntityTargetID", function( pl, ent, a )
 		if ( !ent:IsDoor( ) ) then return end
 		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 		draw.SimpleText( catherine.network.GetNetVar( ent, "owner", nil ) == nil and "This door can purchase." or "This door has already been purchased.", "catherine_outline15", position.x, position.y + 20, Color( 255, 255, 255, a ), 1, 1 )
@@ -147,6 +147,6 @@ catherine.command.Register( {
 	command = "doorsettitle",
 	syntax = "[text]",
 	runFunc = function( pl, args )
-		catherine.door.Buy( pl )
+		catherine.door.SetDoorTitle( pl, args[ 1 ] )
 	end
 } )

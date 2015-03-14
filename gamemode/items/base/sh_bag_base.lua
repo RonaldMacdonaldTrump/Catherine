@@ -7,4 +7,3 @@ Base.weight = 0
 Base.weightPlus = 10
 Base.isBag = true
 Base.itemData = { }
-Base.func = { }

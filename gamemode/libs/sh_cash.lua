@@ -68,5 +68,5 @@ if ( SERVER ) then
 end
 
 function catherine.cash.Get( pl )
-	return catherine.character.GetGlobalVar( pl, "_cash", 0 )
+	return tonumber( catherine.character.GetGlobalVar( pl, "_cash", 0 ) )
 end

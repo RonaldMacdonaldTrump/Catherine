@@ -117,6 +117,8 @@ function PANEL:Init( )
 		if ( self.mode == 0 ) then return end
 		self:BackToMainMenu( )
 	end
+	
+	self:PlayMusic( )
 end
 
 function PANEL:PlayMusic( )
