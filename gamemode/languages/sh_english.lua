@@ -1,7 +1,7 @@
 Lang.name = "English"
 Lang.datas = {
-	[ "test" ] = "This is the english language.",
-	[ "test2" ] = "This is the %s language.",
+	[ "test" ] = "This is english language.",
+	[ "test2" ] = "This is %s language.",
 	
 	
 	
@@ -10,14 +10,14 @@ Lang.datas = {
 	
 	
 	// Cash ^-^;
-	[ "Cash_GiveMessage01" ] = "You gave %s cash to %s.",
+	[ "Cash_GiveMessage01" ] = "You have given %s to %s",
 	
 	// Faction ^-^;
-	[ "Faction_AddMessage01" ] = "Give faction",
+	[ "Faction_AddMessage01" ] = "Set faction",
 	[ "Faction_RemoveMessage01" ] = "Take faction",
 	
-	[ "UnknownError" ] = "Unknown error.",
-	[ "UnknownPlayerError" ] = "You have entered an invalid character name!",
-	[ "ArgError" ] = "Please input value %s of your argument."
+	[ "UnknownError" ] = "Unknown Error",
+	[ "UnknownPlayerError" ] = "You are not giving a valid character name!",
+	[ "ArgError" ] = "%s Please enter the second argument!"
 	
 }
