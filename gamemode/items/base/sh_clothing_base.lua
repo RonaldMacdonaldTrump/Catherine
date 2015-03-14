@@ -54,7 +54,12 @@ Base.func.unequip = {
 		return false
 	end
 }
-hook.Add( "CharacterLoaded", "clothing_base_CharacterLoaded", function( pl )
-	if ( !pl:IsCharacterLoaded( ) ) then return end
-	catherine.character.SetCharacterData( pl, "permaModel", pl:GetModel( ) )
-end )
+--]]
+if ( SERVER ) then
+	hook.Add( "CharacterLoaded", "clothing_base_CharacterLoaded", function( pl )
+		local permaModel = catherine.character.GetCharacterData( pl, "permaModel", nil )
+		if ( permaModel == nil ) then
+			catherine.character.SetCharacterData( pl, "permaModel", pl:GetModel( ) )
+		end
+	end )
+end
