@@ -7,7 +7,7 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			Plugin:AddText( pl, args[ 1 ], tonumber( args[ 2 ] ) )
-			catherine.util.Notify( pl, "You are added text to that place!" )
+			catherine.util.Notify( pl, "You have added text to your desired location!" )
 		else
 			catherine.util.Notify( pl, "args[ 1 ] is missing!" )
 		end
@@ -22,9 +22,9 @@ catherine.command.Register( {
 		if ( !args[ 1 ] ) then args[ 1 ] = 256 end
 		local count = Plugin:RemoveText( pl:GetShootPos( ), args[ 1 ] )
 		if ( count == 0 ) then
-			catherine.util.Notify( pl, "No texts that place!" )
+			catherine.util.Notify( pl, "There are no texts at that location." )
 		else
-			catherine.util.Notify( pl, "You are removed " .. count .. "'s texts!" )
+			catherine.util.Notify( pl, "You have removed " .. count .. "'s texts!" )
 		end
 	end
 } )
