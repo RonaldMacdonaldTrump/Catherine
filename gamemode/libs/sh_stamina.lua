@@ -2,12 +2,12 @@ if ( SERVER ) then
 	local GetVelocity = FindMetaTable( "Entity" ).GetVelocity
 	local Length2D = FindMetaTable( "Vector" ).Length2D
 	
-	hook.Add( "CharacterLoaded", "catherine.character.CharacterLoaded_2", function( pl, charID )
+	hook.Add( "PlayerSpawnedInCharacter", "catherine.stamina.PlayerSpawnedInCharacter", function( pl, charID )
 		local stamina = catherine.character.GetCharacterVar( pl, "stamina", 100 )
 		catherine.character.SetCharacterVar( pl, "stamina", stamina )
 	end )
 	
-	hook.Add( "PlayerSpawn", "catherine.character.PlayerSpawn_2", function( pl )
+	hook.Add( "PlayerSpawn", "catherine.stamina.PlayerSpawn", function( pl )
 		catherine.character.SetCharacterVar( pl, "stamina", 100 )
 	end )
 

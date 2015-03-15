@@ -78,36 +78,4 @@ Base.func.drop = {
 	viewCre = function( tab, ent, key )
 		return !tab.cantDrop
 	end
-
-
-if ( SERVER ) then
-	hook.Add( "PlayerSpawn", "weapon_base_PlayerSpawn", function( pl )
-		if ( !pl:IsCharacterLoaded( ) ) then return end
-		local inv = catherine.inventory.GetInv( pl ) or { }
-		for k, v in pairs( inv ) do
-			for k1, v1 in pairs( v ) do
-				local equiped = catherine.inventory.Equiped( pl, k )
-				local itemTab = catherine.item.FindByID( k )
-				if ( equiped ) then
-					catherine.item.RunFunction( pl, "equip", itemTab )
-				end
-			end
-		end
-	end )
-	
-	hook.Add( "CharacterLoaded", "weapon_base_CharacterLoaded", function( pl )
-		if ( !pl:IsCharacterLoaded( ) ) then return end
-		local inv = catherine.inventory.GetInv( pl ) or { }
-		for k, v in pairs( inv ) do
-			for k1, v1 in pairs( v ) do
-				local equiped = catherine.inventory.Equiped( pl, k )
-				local itemTab = catherine.item.FindByID( k )
-				if ( equiped ) then
-					catherine.item.RunFunction( pl, "equip", itemTab )
-				end
-			end
-		end
-	end )
-end
-
 }--]]

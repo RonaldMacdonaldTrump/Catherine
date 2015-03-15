@@ -76,7 +76,7 @@ if ( SERVER ) then
 		catherine.flag.Take( self, code )
 	end
 	
-	hook.Add( "CharacterLoaded", "catherine.flag.CharacterLoaded", function( pl )
+	hook.Add( "PlayerSpawnedInCharacter", "catherine.flag.PlayerSpawnedInCharacter", function( pl )
 		if ( pl:HasFlag( "p" ) ) then
 			pl:Give( "weapon_physgun" )
 		end

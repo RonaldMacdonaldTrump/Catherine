@@ -138,6 +138,7 @@ catherine.character.RegisterGlobalVar( "cash", {
 
 catherine.character.RegisterGlobalVar( "faction", {
 	field = "_faction",
+	doNetwork = true,
 	default = "citizen"
 } )
 
@@ -246,7 +247,7 @@ if ( SERVER ) then
 		pl:SetNetVar( "charID", id )
 		pl:SetNetVar( "charLoaded", true )
 		
-		hook.Run( "CharacterLoaded", pl, id )
+		hook.Run( "PlayerSpawnedInCharacter", pl, id )
 		
 		netstream.Start( pl, "catherine.character.UseResult", { true } )
 		
