@@ -35,6 +35,7 @@ if ( SERVER ) then
 	function catherine.update.PlayerAuthed( )
 		if ( catherine.update.Checked ) then return end
 		catherine.update.Check( )
+		catherine.update.Checked = true
 	end
 	hook.Add( "PlayerAuthed", "catherine.update.PlayerAuthed", catherine.update.PlayerAuthed )
 	
