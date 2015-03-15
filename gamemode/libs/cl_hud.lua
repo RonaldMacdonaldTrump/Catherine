@@ -109,7 +109,7 @@ function catherine.hud.ProgressBarDraw( )
 	draw.SimpleText( catherine.hud.ProgressBar.message or "", "catherine_normal20", scrW / 2, scrH / 2, Color( 30, 30, 30, 255 ), 1, 1 )
 end
 
-function GM:GetCustomColorData( pl )
+function GM:PostRenderScreenColor( pl )
 	local data = { }
 	
 	if ( !pl:Alive( ) ) then

@@ -80,7 +80,11 @@ if ( SERVER ) then
 	end
 	
 	hook.Add("PlayerSwitchWeapon", "player_PlayerSwitchWeapon", function( pl, old, new )
-		pl:SetWeaponRaised( false, new )
+		if ( !new.AlwaysRaised and !catherine.configs.alwaysRaised[ new:GetClass( ) ] ) then
+			pl:SetWeaponRaised( false, new )
+		else
+			pl:SetWeaponRaised( true, new )
+		end
 	end )
 	
 	local velo = FindMetaTable("Entity").GetVelocity

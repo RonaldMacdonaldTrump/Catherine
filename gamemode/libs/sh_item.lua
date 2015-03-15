@@ -2,6 +2,8 @@ catherine.item = catherine.item or { }
 catherine.item.bases = { }
 catherine.item.items = { }
 
+// WARNING! : This codes still developing!
+
 function catherine.item.Register( itemTable, isBase )
 	if ( isBase ) then
 		catherine.item.bases[ itemTable.uniqueID ] = itemTable
@@ -24,7 +26,7 @@ function catherine.item.Register( itemTable, isBase )
 			text = "Take",
 			viewIsEntity = true,
 			func = function( pl, tab, data )
-
+				return true
 			end,
 			viewCre = function( tab, ent, data )
 
@@ -41,7 +43,7 @@ function catherine.item.Register( itemTable, isBase )
 			end
 		}
 	}
-	
+
 	catherine.item.items[ itemTable.uniqueID ] = itemTable
 end
 
@@ -77,7 +79,81 @@ end
 
 catherine.item.Include( catherine.FolderName .. "/gamemode" )
 
-
+if ( SERVER ) then
+	function catherine.item.RunFunction( pl, itemID, funcID, ent )
+		if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) or !itemID or !funcID ) then print( "args error") return end
+		local itemTable = catherine.item.FindByID( itemID )
+		if ( !itemTable ) then print("Not valid item!" )return end
+		if ( !itemTable.func or !itemTable.func[ funcID ] ) then print("func error") return end
+		local success = itemTable.func[ funcID ].func( pl, itemTable )
+		if ( success and IsValid( ent ) ) then
+			ent:Remove( )
+		end
+	end
+	
+	function catherine.item.Give( pl, itemID, amount )
+		if ( !IsValid( pl ) or !itemID ) then return end
+		if ( !amount ) then amount = 1 end
+		for i = 1, amount do
+			
+		end
+	end
+	
+	function catherine.item.Take( pl, invUniqueID )
+		if ( !IsValid( pl ) or !invUniqueID ) then return end
+		
+	end
+	
+	function catherine.item.Spawn( pl, itemID, pos, ang )
+		if ( !IsValid( pl ) or !itemID or !pos ) then return end
+		local itemTable = catherine.item.FindByID( itemID )
+		if ( !itemTable ) then return end
+		local ent = ents.Create( "cat_item" )
+		ent:SetPos( Vector( pos.x, pos.y, pos.z + 10 ) )
+		ent:SetAngles( ang or Angle( ) )
+		ent:Spawn( )
+		ent:SetModel( itemTable.model or "models/props_junk/watermelon01.mdl" )
+		ent:PhysicsInit( SOLID_VPHYSICS )
+		ent:InitializeItem( itemID )
+		
+		local physObject = ent:GetPhysicsObject( )
+		if ( IsValid( physObject ) ) then
+			physObject:EnableMotion( true )
+			physObject:Wake( )
+		end
+	end
+	
+	netstream.Hook( "catherine.item.RunFunction", function( pl, data )
+		catherine.item.RunFunction( pl, data[ 1 ], data[ 2 ], data[ 3 ] )
+	end )
+	
+	concommand.Add( "itemCreate", function( pl, cmd, args )
+		//catherine.item.Spawn( pl, args[ 1 ], pl:GetEyeTraceNoCursor( ).HitPos )
+	end )
+else
+	
+	function catherine.item.OpenEntityUseMenu( data )
+		local ent = data[ 1 ]
+		local itemID = data[ 2 ]
+		if ( !IsValid( ent ) or !IsValid( LocalPlayer( ):GetEyeTrace( ).Entity ) ) then return end
+		local itemTable = catherine.item.FindByID( itemID )
+		if ( !itemTable ) then return end
+		local menu = DermaMenu( )
+		for k, v in pairs( itemTable.func ) do
+			if ( !v.viewIsEntity ) then continue end
+			if ( v.showFunc and v.showFunc( LocalPlayer( ), itemTable ) == false ) then continue end
+			menu:AddOption( v.text or "ERROR", function( )
+				netstream.Start( "catherine.item.RunFunction", { itemID, k, ent } )
+			end ):SetImage( "icon16/information.png" )
+		end
+		menu:Open( )
+		menu:Center( )
+	end
+	
+	netstream.Hook( "catherine.item.EntityUseMenu", function( data )
+		catherine.item.OpenEntityUseMenu( data )
+	end )
+end
 
 //PrintTable(catherine.item.bases)
 /* // have a bug, sorry;

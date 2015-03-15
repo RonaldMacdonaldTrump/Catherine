@@ -10,6 +10,7 @@ Base.itemData = {
 	clipOne = 0,
 	clipTwo = 0
 }
+
 --[[
 Base.func = { }
 Base.func.equip = {
