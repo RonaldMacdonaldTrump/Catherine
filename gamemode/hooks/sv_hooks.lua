@@ -47,7 +47,52 @@ function GM:KeyPress( pl, key )
 			if ( !IsValid( pl ) ) then return end
 			pl:ToggleWeaponRaised( )
 		end )
+	elseif ( key == IN_USE ) then
+		local tr = { }
+		tr.start = pl:GetShootPos( )
+		tr.endpos = tr.start + pl:GetAimVector() * 60
+		tr.filter = pl
+		local ent = util.TraceLine( tr ).Entity
+		if ( IsValid( ent ) and ent:IsDoor( ) ) then
+			local function IsChildDoor( )
+				local currDoorIndex = ent:EntIndex( )
+				local prevEnt, nextEnt = Entity( currDoorIndex - 1 ), Entity( currDoorIndex + 1 )
+				if ( IsValid( prevEnt ) and prevEnt:IsDoor( ) or IsValid( nextEnt ) and nextEnt:IsDoor( ) ) then
+					return true
+				end
+				return false
+			end
+			if ( pl.canUseDoor == nil ) then pl.canUseDoor = true end
+			if ( !pl.doorSpamCount ) then pl.doorSpamCount = 0 end
+			if ( pl.lookingDoorEntity == nil ) then pl.lookingDoorEntity = ent end
+			pl.doorSpamCount = pl.doorSpamCount + 1
+			
+			if ( ( pl.lookingDoorEntity == ent or IsChildDoor ) and pl.doorSpamCount >= 10 ) then
+				pl.lookingDoorEntity = nil
+				pl.doorSpamCount = 0
+				pl.canUseDoor = false
+				catherine.util.Notify( pl, "Do not door-spam!" )
+				timer.Create( "Catherine.timer.doorSpamDelay", 1, 1, function( )
+					pl.canUseDoor = true
+				end )
+				timer.Remove( "Catherine.timer.doorSpamInit" )
+			elseif ( pl.lookingDoorEntity != ent ) then
+				pl.lookingDoorEntity = ent
+				pl.doorSpamCount = 1
+			end
+			timer.Remove( "Catherine.timer.doorSpamInit" )
+			timer.Create( "Catherine.timer.doorSpamInit", 1, 1, function( )
+				pl.canUseDoor = true
+				pl.doorSpamCount = 0
+			end )
+		end
 	end
+end
+function GM:PlayerUse( pl, ent )
+	if ( ent:IsDoor( ) ) then
+		return pl.canUseDoor
+	end
+	return true
 end
 
 function GM:PostWeaponGive( pl )
@@ -199,7 +244,7 @@ function GM:Tick( )
 end
 
 function GM:Initialize( )
-	hook.Run( "GMInitialize" )
+	hook.Run( "GamemodeInitialized" )
 end
 
 function GM:PlayerShouldTakeDamage( )
