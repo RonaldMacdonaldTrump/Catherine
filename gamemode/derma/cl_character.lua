@@ -97,7 +97,7 @@ function PANEL:Init( )
 		if ( self.player:IsCharacterLoaded( ) ) then
 			self:Close( )
 		else
-			Derma_Query( "Are you sure disconnect from server?", "Disconnect from server", "Yes", function( )
+			Derma_Query( "Are you sure you want to disconnect from the server?", "Disconnect from server", "Yes", function( )
 				self:JoinMenu( function( )
 					RunConsoleCommand( "disconnect" )
 				end )
@@ -213,7 +213,7 @@ function PANEL:UseCharacterPanel( )
 			surface.DrawTexturedRect( 0, 0, w, h )
 		end
 		v.panel.deleteCharacter.DoClick = function( )
-			Derma_Query( "Are you sure delete this character?", "Delete Character", "Yes", function( )
+			Derma_Query( "Are you sure you want to delete this character?", "Delete Character", "Yes", function( )
 				netstream.Start( "catherine.character.Delete", v.characterDatas._id )
 			end, "No", function( ) end )
 		end
@@ -418,7 +418,7 @@ function PANEL:Init( )
 				self:PrintErrorMessage( "Faction is not valid!" )
 			end
 		else
-			self:PrintErrorMessage( "Please select faction!" )
+			self:PrintErrorMessage( "Please select a faction!" )
 		end
 	end
 end
