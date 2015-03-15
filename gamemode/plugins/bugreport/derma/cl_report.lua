@@ -93,7 +93,7 @@ function PANEL:Init( )
 	self.sendReport:SetStrColor( Color( 50, 50, 50 ) )
 	self.sendReport:SetStrFont( "catherine_normal20" )
 	self.sendReport.Click = function( )
-		Derma_Query( "Are your sure send this report?", "WARNING", "Yes", function( )
+		Derma_Query( "Are you sure you want to send this report?", "WARNING", "Yes", function( )
 			self:SendReport( )
 			end, "No",
 			function( )
@@ -105,7 +105,7 @@ function PANEL:Init( )
 	self.vguis[ #self.vguis + 1 ] = self.sendReport
 	
 	if ( self.player:GetNWBool( "catherine.plugin.bugreport.Cooltime" ) == true ) then
-		self:SetNotify( false, "You have report already, please wait.", true )
+		self:SetNotify( false, "You have sent a report, please wait.", true )
 	end
 end
 
