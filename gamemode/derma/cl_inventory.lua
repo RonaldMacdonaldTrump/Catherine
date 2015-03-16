@@ -88,7 +88,7 @@ function PANEL:Refresh( )
 			--]]
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
-				if ( catherine.inventory.IsEquiped( v1.uniqueID ) ) then
+				if ( catherine.inventory.IsEquipped( v1.uniqueID ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
 					surface.SetMaterial( Material( "icon16/accept.png" ) )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )

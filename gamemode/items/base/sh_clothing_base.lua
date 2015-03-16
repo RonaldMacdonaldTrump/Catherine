@@ -1,4 +1,4 @@
-Base.uniqueID = "clothing_base"
+/*Base.uniqueID = "clothing_base"
 Base.name = "Clothing Base"
 Base.desc = "cloth base"
 Base.category = "Clothing"
@@ -30,7 +30,7 @@ Base.func.equip = {
 		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, itemData = newData } )
 	end,
 	showFunc = function( pl, tab, key )
-		if ( pl:IsEquiped( tab.uniqueID ) ) then
+		if ( pl:IsEquipped( tab.uniqueID ) ) then
 			return false
 		end
 		return true
@@ -48,7 +48,7 @@ Base.func.unequip = {
 		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, itemData = newData } )
 	end,
 	showFunc = function( pl, tab, key )
-		if ( pl:IsEquiped( tab.uniqueID ) ) then
+		if ( pl:IsEquipped( tab.uniqueID ) ) then
 			return true
 		end
 		return false
@@ -63,3 +63,4 @@ if ( SERVER ) then
 		end
 	end )
 end
+*/

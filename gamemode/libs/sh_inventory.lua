@@ -57,7 +57,7 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.inventory.IsEquiped( pl, uniqueID )
+	function catherine.inventory.IsEquipped( pl, uniqueID )
 		local itemData = catherine.inventory.GetItemData( pl, uniqueID )
 		return itemData.equiped
 	end
@@ -127,7 +127,7 @@ else
 		return inventory[ uniqueID ]
 	end
 	
-	function catherine.inventory.IsEquiped( uniqueID )
+	function catherine.inventory.IsEquipped( uniqueID )
 		local itemData = catherine.inventory.GetItemData( uniqueID )
 		return itemData.equiped
 	end

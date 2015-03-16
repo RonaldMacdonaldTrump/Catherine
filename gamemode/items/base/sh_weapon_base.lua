@@ -39,7 +39,7 @@ Base.func.equip = {
 		} )
 	end,
 	canLook = function( pl, itemTable )
-		return !catherine.inventory.IsEquiped( itemTable.uniqueID )
+		return !catherine.inventory.IsEquipped( itemTable.uniqueID )
 	end
 }
 Base.func.unequip = {
@@ -59,7 +59,7 @@ Base.func.unequip = {
 		} )
 	end,
 	canLook = function( pl, itemTable )
-		return catherine.inventory.IsEquiped( itemTable.uniqueID )
+		return catherine.inventory.IsEquipped( itemTable.uniqueID )
 	end
 }
 
@@ -67,7 +67,7 @@ if ( SERVER ) then
 	catherine.item.RegisterNyanHook( "PlayerSpawnedInCharacter", "catherine.item.hooks.weapon_base.PlayerSpawnedInCharacter", function( pl )
 		local inventory = catherine.inventory.Get( pl )
 		for k, v in pairs( inventory ) do
-			if ( catherine.inventory.IsEquiped( pl, k ) ) then
+			if ( catherine.inventory.IsEquipped( pl, k ) ) then
 				catherine.item.RunFunction( pl, k, "equip" )
 			end
 		end
@@ -76,7 +76,7 @@ if ( SERVER ) then
 	catherine.item.RegisterNyanHook( "PlayerDeath", "catherine.item.hooks.weapon_base.PlayerDeath", function( pl )
 		local inventory = catherine.inventory.Get( pl )
 		for k, v in pairs( inventory ) do
-			if ( catherine.inventory.IsEquiped( pl, k ) ) then
+			if ( catherine.inventory.IsEquipped( pl, k ) ) then
 				catherine.item.RunFunction( pl, k, "unequip" )
 				catherine.item.Spawn( pl, k, pl:GetPos( ) )
 				catherine.item.Take( pl, k )
