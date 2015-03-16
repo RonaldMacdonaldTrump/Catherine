@@ -10,7 +10,6 @@ function PANEL:Init( )
 	self:SetMenuSize( ScrW( ) * 0.5, ScrH( ) * 0.5 )
 	self:SetMenuName( "Version" )
 
-	if ( !self.player:IsSuperAdmin( ) ) then return end
 	self.check = vgui.Create( "catherine.vgui.button", self )
 	self.check:SetPos( self.w - ( self.w * 0.2 ) - 10, 30 )
 	self.check:SetSize( self.w * 0.2, 30 )
@@ -82,6 +81,7 @@ end
 vgui.Register( "catherine.vgui.version", PANEL, "catherine.vgui.menuBase" )
 
 hook.Add( "AddMenuItem", "catherine.vgui.version", function( tab )
+	if ( !LocalPlayer( ):IsSuperAdmin( ) ) then return end
 	tab[ "Version" ] = function( menuPnl, itemPnl )
 		return vgui.Create( "catherine.vgui.version", menuPnl )
 	end

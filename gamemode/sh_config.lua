@@ -26,3 +26,4 @@ catherine.configs.alwaysRaised = {
 // Test
 catherine.configs.maleName = "He"
 catherine.configs.femaleName = "She"
+catherine.configs.spaceString = "kg"

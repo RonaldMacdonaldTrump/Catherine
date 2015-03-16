@@ -1,223 +1,164 @@
-/* // have a bug, sorry;
 catherine.inventory = catherine.inventory or { }
+local META = FindMetaTable( "Player" )
 
 if ( SERVER ) then
-	function catherine.inventory.HasItem( pl, itemID )
-		local inv = catherine.inventory.GetInv( pl )
-		if ( !inv or !itemID ) then return false end
-		if ( inv[ itemID ] ) then
-			return true
-		else
-			return false
-		end
-	end
+	CAT_INV_ACTION_ADD = 1
+	CAT_INV_ACTION_REMOVE = 2
+	CAT_INV_ACTION_UPDATE = 3
 	
-	function catherine.inventory.GetInvHasItemCount( pl, itemID )
-		local inv = catherine.inventory.GetInv( pl )
-		if ( !inv or !itemID ) then return 0 end
-		if ( !inv[ itemID ] ) then return 0 end
-		return inv[ itemID ].count
-	end
-	
-	function catherine.inventory.Equiped( pl, itemID )
-		local inv = catherine.inventory.GetInv( pl )
-		if ( !inv or !itemID ) then return false end
-		if ( !inv[ itemID ] ) then return false end
-		return inv[ itemID ][ "itemData" ].equiped
-	end
-	
-	function catherine.inventory.GetInvLast( pl, itemID )
-		local inv = catherine.inventory.GetInv( pl )
+	function catherine.inventory.Work( pl, workID, data )
+		if ( !IsValid( pl ) or !workID or !data ) then return end
 		
-		if ( !inv or !itemID ) then return nil end
-		if ( !inv[ itemID ] ) then return 1 end
-		return #inv[ itemID ]
-	end
-	
-	function catherine.inventory.GetInvItemDatas( pl, itemID )
-		if ( !catherine.inventory.HasItem( pl, itemID ) ) then return { } end
-		local inv = catherine.inventory.GetInv( pl )
-		if ( !inv[ itemID ][ "itemData" ] ) then return { } end
-		return inv[ itemID ][ "itemData" ]
-	end
-	
-	function catherine.inventory.GetInvItemDataByID( pl, itemID, id, def )
-		local data = catherine.inventory.GetInvItemDatas( pl, itemID )
-		if ( !data ) then return nil end
-		return data[ id ] or def
-	end
-	
-	function catherine.inventory.SetInvItemData( pl, itemID, id, val )
-		if ( !catherine.inventory.HasItem( pl, itemID ) or val == nil ) then return end
-		local inv = catherine.inventory.GetInv( pl )
-		if ( !inv or !inv[ itemID ] or !inv[ itemID ][ "itemData" ] or inv[ itemID ][ "itemData" ][ id ] == nil ) then return end
-		inv[ itemID ][ "itemData" ][ id ] = val
-		
-		catherine.character.SetGlobalData( pl, "_inv", inv )
-	end
-
-	function catherine.inventory.Update( pl, types, data )
-		local inv = table.Copy( catherine.inventory.GetInv( pl ) )
-		
-		if ( types == "add" ) then
-			if ( !data.uniqueID ) then return end
-			if ( inv[ data.uniqueID ] ) then
-				local newData = {
-					uniqueID = inv[ data.uniqueID ].uniqueID,
-					count = inv[ data.uniqueID ].count + 1,
-					itemData = inv[ data.uniqueID ].itemData
+		if ( workID == CAT_INV_ACTION_ADD ) then
+			local inventory = catherine.inventory.Get( pl )
+			local uniqueID = data.uniqueID
+			local int = math.max( data.int or 1, 1 ) or 1
+			if ( catherine.inventory.HasItem( pl, uniqueID ) ) then
+				inventory[ uniqueID ] = {
+					uniqueID = inventory[ uniqueID ].uniqueID,
+					int = inventory[ uniqueID ].int + int,
+					itemData = inventory[ uniqueID ].itemData
 				}
-				inv[ data.uniqueID ] = newData
+				catherine.character.SetGlobalVar( pl, "_inv", inventory )
 			else
-				local newData = {
-					uniqueID = data.uniqueID,
-					count = 1,
+				inventory[ uniqueID ] = {
+					uniqueID = uniqueID,
+					int = int,
 					itemData = data.itemData
 				}
-				inv[ data.uniqueID ] = newData
+				catherine.character.SetGlobalVar( pl, "_inv", inventory )
 			end
-			catherine.character.SetGlobalData( pl, "_inv", inv )
-		elseif ( types == "updateData" ) then
-			if ( !data.uniqueID ) then return end
-			if ( !inv[ data.uniqueID ] ) then return end
-			
-			local dataBuffer = { }
-			dataBuffer = table.Copy( inv[ data.uniqueID ][ "itemData" ] )
-			data.itemData = table.Merge( dataBuffer, data.itemData )
-			inv[ data.uniqueID ][ "itemData" ] = data.itemData
-			catherine.character.SetGlobalData( pl, "_inv", inv )
-		elseif ( types == "remove" ) then
-			if ( !data ) then return end
-			if ( !inv[ data ] ) then return end
-			
-			inv[ data ].count = inv[ data ].count - 1
-			if ( inv[ data ].count == 0 ) then
-				inv[ data ] = nil
+		elseif ( workID == CAT_INV_ACTION_REMOVE ) then
+			if ( !catherine.inventory.HasItem( pl, data ) ) then return end
+			local inventory = catherine.inventory.Get( pl )
+			local int = math.max( inventory[ data ].int - 1, 0 )
+			if ( int != 0 ) then
+				inventory[ data ] = {
+					uniqueID = inventory[ data ].uniqueID,
+					int = int,
+					itemData = inventory[ data ].itemData
+				}
+			else
+				inventory[ data ] = nil
 			end
-			catherine.character.SetGlobalData( pl, "_inv", inv )
+			catherine.character.SetGlobalVar( pl, "_inv", inventory )
+		elseif ( workID == CAT_INV_ACTION_UPDATE ) then
+			local uniqueID = data.uniqueID
+			if ( !catherine.inventory.HasItem( pl, uniqueID ) ) then return end
+			local inventory = catherine.inventory.Get( pl )
+			inventory[ uniqueID ] = {
+				uniqueID = inventory[ uniqueID ].uniqueID,
+				int = inventory[ uniqueID ].int,
+				itemData = table.Merge( inventory[ uniqueID ].itemData, data.newData or { } )
+			}
+			catherine.character.SetGlobalVar( pl, "_inv", inventory )
+		else
+			catherine.util.ErrorPrint( "Bad function id! - catherine.inventory.Work( )" )
 		end
-	end
-
-	function catherine.inventory.Init( pl )
-		if ( !IsValid( pl ) ) then return end
-		catherine.character.SetGlobalData( pl, "_inv", { } )
 	end
 	
-	function catherine.inventory.GetInvWeight( pl )
-		local inv = catherine.character.GetGlobalData( pl, "_inv" )
-		if ( !inv ) then return 0 end
-		
-		local weight = 0
-		for k, v in pairs( inv ) do
-			local itemTab = catherine.item.FindByID( k )
-			if ( !itemTab ) then continue end
-			
-			weight = weight + ( ( itemTab.weight or 0 ) * v.count )
-		end
-		
-		return weight
+	function catherine.inventory.IsEquiped( pl, uniqueID )
+		local itemData = catherine.inventory.GetItemData( pl, uniqueID )
+		return itemData.equiped
 	end
 	
-	function catherine.inventory.GetInvMaxWeight( pl )
-		local weight = catherine.configs.baseInventoryWeight
-		
-		for k, v in pairs( catherine.item.items ) do
-			if ( v.isBag ) then
-				local count = catherine.inventory.GetInvHasItemCount( pl, v.uniqueID )
-				
-				weight = weight + ( v.weightPlus * count )
+	function catherine.inventory.HasItem( pl, uniqueID )
+		if ( !IsValid( pl ) or !uniqueID ) then return false end
+		local inventory = catherine.inventory.Get( pl )
+		return inventory[ uniqueID ]
+	end
+	
+	function catherine.inventory.Get( pl )
+		return catherine.character.GetGlobalVar( pl, "_inv", { } )
+	end
+	
+	function catherine.inventory.GetItemInt( pl, uniqueID )
+		if ( !IsValid( pl ) or !uniqueID ) then return 0 end
+		local inventory = catherine.inventory.Get( pl )
+		if ( !inventory[ uniqueID ] ) then return 0 end
+		return inventory[ uniqueID ].int or 0
+	end
+	
+	function catherine.inventory.GetWeights( pl )
+		local inventory = catherine.inventory.Get( pl )
+		local invWeight, invMaxWeight = 0, catherine.configs.baseInventoryWeight
+		for k, v in pairs( inventory ) do
+			local itemInt = catherine.inventory.GetItemInt( pl, k )
+			local itemTable = catherine.item.FindByID( k )
+			if ( itemTable.isBag ) then
+				invMaxWeight = invMaxWeight + ( itemTable.weightPlus or 0 )
 			end
+			invWeight = invWeight + itemInt * ( itemTable.weight or 1 )
 		end
-		
-		return weight
+		return invWeight, invMaxWeight
+	end
+	
+	function catherine.inventory.HasSpace( pl )
+		local invWeight, invMaxWeight = catherine.inventory.GetWeights( pl )
+		return invWeight < invMaxWeight
+	end
+	
+	function catherine.inventory.GetItemData( pl, uniqueID )
+		if ( !IsValid( pl ) or !uniqueID ) then return { } end
+		local inventory = catherine.inventory.Get( pl )
+		if ( !inventory[ uniqueID ] ) then return { } end
+		return inventory[ uniqueID ].itemData or { }
+	end
+	
+	function META:HasInvSpace( )
+		return catherine.inventory.HasSpace( self )
 	end
 else
-	function catherine.inventory.GetInvHasItemCount( itemID )
-		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
-		if ( !inv or !itemID ) then return 0 end
-		if ( !inv[ itemID ] ) then return 0 end
-		return inv[ itemID ].count
-	end
-	
-	function catherine.inventory.GetInvWeight( ) // need change.;
-		local inv = catherine.character.GetGlobalData( LocalPlayer( ), "_inv" )
-		if ( !inv ) then return 0 end
-		
-		local weight = 0
-		for k, v in pairs( inv ) do
-			local itemTab = catherine.item.FindByID( v.uniqueID )
-			if ( !itemTab ) then continue end
-			
-			weight = weight + ( ( itemTab.weight or 0 ) * v.count )
-		end
-		return weight
+
+	function catherine.inventory.Get( )
+		return catherine.character.GetGlobalVar( LocalPlayer( ), "_inv", { } )
 	end
 
-	function catherine.inventory.GetInvItemDatas( itemID )
-		if ( !catherine.inventory.HasItem( itemID ) ) then return { } end
-		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
-		if ( !inv[ itemID ][ "itemData" ] ) then return { } end
-		return inv[ itemID ][ "itemData" ]
+	function catherine.inventory.GetItemInt( uniqueID )
+		if ( !uniqueID ) then return 0 end
+		local inventory = catherine.inventory.Get( )
+		if ( !inventory[ uniqueID ] ) then return 0 end
+		return inventory[ uniqueID ].int or 0
 	end
 	
-	function catherine.inventory.GetInvItemDataByID( pl, itemID, id, def )
-		local data = catherine.inventory.GetInvItemDatas( itemID )
-		return data[ id ] or def
+	function catherine.inventory.HasItem( uniqueID )
+		if ( !uniqueID ) then return false end
+		local inventory = catherine.inventory.Get( )
+		return inventory[ uniqueID ]
 	end
 	
-	function catherine.inventory.GetInvMaxWeight( )
-		local weight = catherine.configs.baseInventoryWeight
-		
-		for k, v in pairs( catherine.item.items ) do
-			if ( v.isBag ) then
-				local count = catherine.inventory.GetInvHasItemCount( v.uniqueID )
-				
-				weight = weight + ( v.weightPlus * count )
+	function catherine.inventory.IsEquiped( uniqueID )
+		local itemData = catherine.inventory.GetItemData( uniqueID )
+		return itemData.equiped
+	end
+
+	function catherine.inventory.GetWeights( )
+		local inventory = catherine.inventory.Get( )
+		local invWeight, invMaxWeight = 0, catherine.configs.baseInventoryWeight
+		for k, v in pairs( inventory ) do
+			local itemInt = catherine.inventory.GetItemInt( k )
+			local itemTable = catherine.item.FindByID( k )
+			if ( itemTable.isBag ) then
+				invMaxWeight = invMaxWeight + ( itemTable.weightPlus or 0 )
 			end
+			invWeight = invWeight + itemInt * ( itemTable.weight or 1 )
 		end
-		
-		return weight
+		return invWeight, invMaxWeight
 	end
 	
-	function catherine.inventory.HasItem( itemID )
-		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
-		if ( !inv or !itemID ) then return false end
-		if ( inv[ itemID ] ) then
-			return true
-		else
-			return false
-		end
-	end
-
-	function catherine.inventory.Equiped( itemID )
-		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
-		if ( !inv or !itemID ) then return false end
-		local key = catherine.inventory.GetInvLast( itemID )
-		if ( !inv[ itemID ] ) then return false end
-		if ( inv[ itemID ][ "itemData" ].equiped ) then
-			return true
-		else
-			return false
-		end
+	function catherine.inventory.GetItemData( uniqueID )
+		if ( !uniqueID ) then return { } end
+		local inventory = catherine.inventory.Get( )
+		if ( !inventory[ uniqueID ] ) then return { } end
+		return inventory[ uniqueID ].itemData or { }
 	end
 	
-	function catherine.inventory.GetItemCount( itemID )
-		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
-		if ( !inv or !itemID ) then return 0 end
-		if ( !inv[ itemID ] ) then return 0 end
-		return inv[ itemID ].count or 0
+	function catherine.inventory.HasSpace( )
+		local invWeight, invMaxWeight = catherine.inventory.GetWeights( )
+		return invWeight < invMaxWeight
 	end
 	
-	function catherine.inventory.GetInvLast( itemID )
-		local inv = catherine.inventory.GetInv( LocalPlayer( ) )
-		if ( !inv or !itemID ) then return nil end
-		if ( !inv[ itemID ] ) then return 1 end
-		return #inv[ itemID ]
+	function META:HasInvSpace( )
+		return catherine.inventory.HasSpace( )
 	end
 end
-
-function catherine.inventory.GetInv( pl )
-	return catherine.character.GetGlobalData( pl, "_inv", nil )
-end
-
-*/

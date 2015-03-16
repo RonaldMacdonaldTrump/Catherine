@@ -4,78 +4,90 @@ Base.desc = "A Weapon!"
 Base.category = "Weapon"
 Base.cost = 0
 Base.weight = 0
+Base.isWeapon = true
 Base.weaponClass = "weapon_smg1"
 Base.itemData = {
-	equiped = false,
-	clipOne = 0,
-	clipTwo = 0
+	equiped = false
 }
-
---[[
 Base.func = { }
 Base.func.equip = {
-	text = "Equip this weapon",
-	viewIsEntity = true,
-	viewIsMenu = true,
-	ismenuRightclickFunc = true,
-	func = function( pl, tab, data )
-		if ( !pl:HasItem( tab.uniqueID ) ) then
-			catherine.item.GiveToCharacter( pl, tab.uniqueID )
+	text = "Equip",
+	canShowIsWorld = true,
+	canShowIsMenu = true,
+	func = function( pl, itemTable, isMenu )
+		if ( !catherine.inventory.HasSpace( pl ) and type( isMenu ) == "Entity" ) then
+			catherine.util.Notify( pl, "You don't have inventory space!" )
+			return
 		end
-		local weapon = pl:Give( tab.weaponClass )
-		local newData = data or { }
-		newData.equiped = true
-		if ( IsValid( weapon ) ) then
-			pl:SelectWeapon( tab.weaponClass )
-			//weapon:SetClip1( newData.clipOne or 0 )
-			//weapon:SetClip2( newData.clipTwo or 0 )
+		if ( type( isMenu ) == "Entity" ) then
+			catherine.item.Give( pl, itemTable.uniqueID )
+			isMenu:Remove( )
 		end
-		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, itemData = newData } )
+		
+		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
+		itemData.equiped = true
+		
+		local wep = pl:Give( itemTable.weaponClass )
+		if ( IsValid( wep ) ) then
+			pl:SelectWeapon( itemTable.weaponClass )
+			wep:SetClip1( 0 )
+		end
+		
+		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
+			uniqueID = itemTable.uniqueID,
+			newData = itemData
+		} )
 	end,
-	showFunc = function( pl, tab, key )
-		if ( pl:IsEquiped( tab.uniqueID ) ) then
-			return false
-		end
-		return true
+	canLook = function( pl, itemTable )
+		return !catherine.inventory.IsEquiped( itemTable.uniqueID )
 	end
 }
 Base.func.unequip = {
-	text = "Unequip this weapon",
-	viewIsMenu = true,
-	func = function( pl, tab, key )
-		if ( pl:HasWeapon( tab.weaponClass ) ) then
-			pl:StripWeapon( tab.weaponClass )
+	text = "Unequip",
+	canShowIsMenu = true,
+	func = function( pl, itemTable, isMenu )
+		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
+		itemData.equiped = false
+		
+		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
+			pl:StripWeapon( itemTable.weaponClass )
 		end
-		local newData = { }
-		newData.equiped = false
-		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, itemData = newData } )
+		
+		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
+			uniqueID = itemTable.uniqueID,
+			newData = itemData
+		} )
 	end,
-	showFunc = function( pl, tab, key )
-		if ( pl:IsEquiped( tab.uniqueID ) ) then
-			return true
-		end
-		return false
+	canLook = function( pl, itemTable )
+		return catherine.inventory.IsEquiped( itemTable.uniqueID )
 	end
 }
-Base.func.drop = {
-	text = "Drop this weapon",
-	viewIsMenu = true,
-	func = function( pl, tab, key )
-		local eyeTrace = pl:GetEyeTrace( )
-		if ( pl:GetPos( ):Distance( eyeTrace.HitPos ) > 100 ) then
-			catherine.util.Notify( pl, "You can't drop this item far away!" )
-			return
+
+if ( SERVER ) then
+	catherine.item.RegisterNyanHook( "PlayerSpawnedInCharacter", "catherine.item.hooks.weapon_base.PlayerSpawnedInCharacter", function( pl )
+		local inventory = catherine.inventory.Get( pl )
+		for k, v in pairs( inventory ) do
+			if ( catherine.inventory.IsEquiped( pl, k ) ) then
+				catherine.item.RunFunction( pl, k, "equip" )
+			end
 		end
-		if ( pl:HasWeapon( tab.weaponClass ) ) then
-			pl:StripWeapon( tab.weaponClass )
+	end )
+	
+	catherine.item.RegisterNyanHook( "PlayerDeath", "catherine.item.hooks.weapon_base.PlayerDeath", function( pl )
+		local inventory = catherine.inventory.Get( pl )
+		for k, v in pairs( inventory ) do
+			if ( catherine.inventory.IsEquiped( pl, k ) ) then
+				catherine.item.RunFunction( pl, k, "unequip" )
+				catherine.item.Spawn( pl, k, pl:GetPos( ) )
+				catherine.item.Take( pl, k )
+			end
 		end
-		local newData = { }
-		newData.equiped = false
-		catherine.item.Spawn( tab, eyeTrace.HitPos )
-		catherine.inventory.Update( pl, "remove", tab.uniqueID )
-		catherine.inventory.Update( pl, "updateData", { uniqueID = tab.uniqueID, itemData = newData } )
-	end,
-	viewCre = function( tab, ent, key )
-		return !tab.cantDrop
-	end
-}--]]
+	end )
+
+	catherine.item.RegisterNyanHook( "ItemDroped", "catherine.item.hooks.weapon_base.ItemDroped", function( pl, itemTable )
+		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
+			pl:StripWeapon( itemTable.weaponClass )
+		end
+		catherine.item.RunFunction( pl, itemTable.uniqueID, "unequip" )
+	end )
+end

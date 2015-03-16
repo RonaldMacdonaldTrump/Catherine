@@ -313,6 +313,7 @@ if ( SERVER ) then
 
 	function catherine.character.SavePlayerCharacter( pl )
 		if ( !IsValid( pl ) ) then return end
+		hook.Run( "PostCharacterSave", pl )
 		local id = pl:GetCharacterID( )
 		local character = catherine.character.GetPlayerNetworking( pl )
 		if ( !character ) then return end
@@ -362,7 +363,7 @@ if ( SERVER ) then
 			catherine.character.SaveCurTime = CurTime( ) + catherine.configs.saveInterval
 		end
 	end
-	
+
 	function catherine.character.DataSave( )
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			catherine.character.SavePlayerCharacter( v )
@@ -446,6 +447,10 @@ else
 	
 	netstream.Hook( "catherine.character.SetNetworkingVar", function( data )
 		catherine.character.networkingVars[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
+		
+		if ( IsValid( catherine.vgui.inventory ) ) then
+			catherine.vgui.inventory:InitializeInv( )
+		end
 	end )
 	
 	netstream.Hook( "catherine.character.SetNetworkingCharVar", function( data )
