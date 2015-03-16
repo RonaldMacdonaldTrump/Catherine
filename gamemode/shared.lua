@@ -15,7 +15,8 @@ catherine.util.IncludeInDir( "plugins", true )
 if ( SERVER and game.IsDedicated( ) ) then
 	concommand.Remove( "gm_save" )
 	
-	concommand.Add( "gm_save", function( pl, cmd, args )
-		chat.AddText( "You are not allowed to do that, administrators have been notified." )
+	concommand.Add( "gm_save", function( pl )
+		if ( !IsValid( pl ) ) then return end
+		catherine.util.Notify( pl, "You are not allowed to do that" )
 	end )
 end

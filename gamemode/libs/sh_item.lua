@@ -1,6 +1,6 @@
 catherine.item = catherine.item or { }
-catherine.item.bases = { }
-catherine.item.items = { }
+catherine.item.bases = catherine.item.bases or { }
+catherine.item.items = catherine.item.items or { }
 
 function catherine.item.Register( itemTable, isBase )
 	if ( isBase ) then
@@ -53,7 +53,7 @@ function catherine.item.Register( itemTable, isBase )
 					catherine.util.Notify( pl, "Can't!" )
 					return
 				end
-				catherine.item.Spawn( pl, itemTable.uniqueID, eyeTr.HitPos )
+				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemTable.uniqueID )
 				hook.Run( "ItemDroped", pl, itemTable )
 			end,
@@ -129,9 +129,10 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) or !itemID ) then return end
 		catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemID )
 	end
+
 	
-	function catherine.item.Spawn( pl, itemID, pos, ang )
-		if ( !IsValid( pl ) or !itemID or !pos ) then return end
+	function catherine.item.Spawn( itemID, pos, ang )
+		if ( !itemID or !pos ) then return end
 		local itemTable = catherine.item.FindByID( itemID )
 		if ( !itemTable ) then return end
 		local ent = ents.Create( "cat_item" )
@@ -197,9 +198,10 @@ catherine.command.Register( {
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
-			catherine.item.Spawn( pl, args[ 1 ], pl:GetEyeTrace( ).HitPos )
+			catherine.item.Spawn( args[ 1 ], pl:GetEyeTrace( ).HitPos )
 		else
 			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
 		end
 	end
 } )
+
