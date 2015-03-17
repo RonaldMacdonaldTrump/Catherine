@@ -10,7 +10,6 @@ CREATE TABLE IF NOT EXISTS `catherine_characters` (
 	`_steamID` varchar(20) NOT NULL,
 	`_charVar` text,
 	`_inv` text,
-	`_gender` varchar(50),
 	`_cash` int(11) unsigned DEFAULT NULL,
 	`_faction` varchar(50) NOT NULL,
 	PRIMARY KEY (`_id`)
@@ -36,7 +35,6 @@ CREATE TABLE IF NOT EXISTS `catherine_characters` (
 	`_steamID` TEXT,
 	`_charVar` TEXT,
 	`_inv` TEXT,
-	`_gender` TEXT,
 	`_cash` INTEGER,
 	`_faction` TEXT
 );

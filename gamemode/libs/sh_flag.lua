@@ -3,6 +3,7 @@ catherine.flag.Lists = { }
 local META = FindMetaTable( "Player" )
 
 function catherine.flag.Register( id, desc, flagTable )
+	if ( !flagTable ) then flagTable = { } end
 	table.Merge( flagTable, { id = id, desc = desc } )
 	catherine.flag.Lists[ #catherine.flag.Lists + 1 ] = flagTable
 end
@@ -74,3 +75,5 @@ catherine.flag.Register( "t", "Access to toolgun.", {
 	end
 } )
 catherine.flag.Register( "e", "Access to prop spawn." )
+
+//print(player.GetByID(1):HasFlag( "p" ))

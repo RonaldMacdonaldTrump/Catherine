@@ -184,22 +184,12 @@ end
 
 function GM:PlayerHurt( pl )
 	pl.autoHealthrecoverStart = true
-	local gender = pl:GetGender( ):lower( )
-	local result = "male"
-	if ( gender == catherine.configs.femaleName:lower( ) ) then
-		result = "female"
-	end
-	pl:EmitSound( "vo/npc/" .. result .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
+	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
 	return true
 end
 
 function GM:PlayerDeathSound( pl )
-	local gender = pl:GetGender( ):lower( )
-	local result = "male"
-	if ( gender == catherine.configs.femaleName:lower( ) ) then
-		result = "female"
-	end
-	pl:EmitSound( "vo/npc/" .. result .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
 	return true
 end
 

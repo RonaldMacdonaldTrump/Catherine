@@ -160,14 +160,12 @@ function META:GetWeaponRaised( )
 end
 
 function META:GetGender( )
-	return catherine.character.GetGlobalVar( self, "_gender", catherine.configs.maleName )
---[[ // old
 	local model = self:GetModel( ):lower( )
-	if ( model:find( "female" ) ) then
+	if ( model:find( "female" ) or model:find( "alyx" ) or model:find( "mossman" ) ) then
 		return "female"
 	else
 		return "male"
-	end--]]
+	end
 end
 
 function player.GetAllByLoaded( )

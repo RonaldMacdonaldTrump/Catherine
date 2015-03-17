@@ -124,18 +124,6 @@ catherine.character.RegisterGlobalVar( "inventory", {
 	needTransfer = true
 } )
 
-catherine.character.RegisterGlobalVar( "gender", {
-	field = "_gender",
-	doNetwork = true,
-	default = "",
-	checkValid = function( data )
-		if ( data == "" ) then
-			return false, "Please select character gender!"
-		end
-		return true
-	end
-} )
-
 catherine.character.RegisterGlobalVar( "cash", {
 	field = "_cash",
 	doNetwork = true,

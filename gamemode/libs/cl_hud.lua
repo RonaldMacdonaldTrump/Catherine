@@ -26,11 +26,9 @@ function catherine.hud.Vignette( )
 	if ( !tr.Hit or tr.HitSky ) then a = 125 end
 	catherine.hud.vAlpha = math.Approach( catherine.hud.vAlpha, a, FrameTime( ) * 90 )
 	
-	for i = 1, 3 do
-		surface.SetDrawColor( 0, 0, 0, catherine.hud.vAlpha )
-		surface.SetMaterial( Material( "CAT/vignette.png" ) )
-		surface.DrawTexturedRect( 0, 0, ScrW( ), ScrH( ) )
-	end
+	surface.SetDrawColor( 0, 0, 0, catherine.hud.vAlpha )
+	surface.SetMaterial( Material( "CAT/vignette.png" ) )
+	surface.DrawTexturedRect( 0, 0, ScrW( ), ScrH( ) )
 end
 
 function catherine.hud.ScreenDamageDraw( ) end
@@ -120,7 +118,7 @@ function GM:PostRenderScreenColor( pl )
 		data.contrast = math.max( math.min( LocalPlayer( ):Health( ) / LocalPlayer( ):GetMaxHealth( ), 1 ), 0.3 )
 	end
 	
-	hook( "OnRenderScreenColor", pl, data )
+	hook.Run( "OnRenderScreenColor", pl, data )
 	
 	return data
 end

@@ -23,11 +23,4 @@ catherine.configs.alwaysRaised = {
 	weapon_physgun = true,
 	gmod_tool = true
 }
-// Test
-catherine.configs.maleName = "Male"
-catherine.configs.femaleName = "Female"
-
-catherine.configs.maleID = 1 // DO NOT CHANGE THIS
-catherine.configs.femaleID = 2 // DO NOT CHANGE THIS
-
 catherine.configs.spaceString = "kg"

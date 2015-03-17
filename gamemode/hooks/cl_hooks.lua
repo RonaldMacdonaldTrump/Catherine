@@ -45,7 +45,7 @@ end
 
 function GM:PlayerInformationDraw( pl, target, x, y, a )
 	if ( !pl:Alive( ) ) then
-		local gender = ( pl:GetGender( ) == catherine.configs.maleName and catherine.configs.maleName ) or catherine.configs.femaleName
+		local gender = ( pl:GetGender( ) == "male" and "He" ) or "She"
 		draw.SimpleText( gender .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
 	end
 end
@@ -68,10 +68,10 @@ function GM:HUDDrawScoreBoard( )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )
 
 	surface.SetDrawColor( 255, 255, 255, a )
-	surface.SetMaterial( Material( "CAT/logo67.png" ) )
+	surface.SetMaterial( Material( "CAT/logos/1.png" ) )
 	surface.DrawTexturedRect( scrW / 2 - 512 / 2, scrH / 2 - 256 / 2, 512, 256 )
 	
-	draw.SimpleText( "Ver 0.2", "catherine_normal15", 15, 20, Color( 50, 50, 50, a ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( "Version " .. catherine.update.VERSION, "catherine_normal15", 15, 20, Color( 50, 50, 50, a ), TEXT_ALIGN_LEFT, 1 )
 
 	if ( catherine.loading.errorMsg ) then
 		draw.NoTexture( )
@@ -88,7 +88,7 @@ function GM:HUDDrawScoreBoard( )
 		surface.SetDrawColor( 255, 255, 255, catherine.loading.alpha )
 		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, catherine.loading.rotate, 100, 100 )
 	
-		draw.SimpleText( catherine.loading.msg, "catherine_normal15", 100, scrH - 50, Color( 80, 80, 80, a ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( catherine.loading.msg, "catherine_normal20", 100, scrH - 50, Color( 80, 80, 80, a ), TEXT_ALIGN_LEFT, 1 )
 	end
 end
 
@@ -131,7 +131,11 @@ function GM:HUDPaint( )
 	
 	if ( pl:Alive( ) ) then
 		hook.Run( "ProgressEntityTargetID", pl )
-		draw.SimpleText( "Catherine Development Version", "catherine_normal20", ScrW( ) - 10, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		local currVer = catherine.update.VERSION
+		local latestVer = GetGlobalString( "catherine.update.LATESTVERSION", nil )
+		if ( currVer != latestVer ) then
+			draw.SimpleText( "Your Catherine framework has need update!", "catherine_normal20", ScrW( ) - 10, 20, Color( 150, 255, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		end
 	end
 end
 
