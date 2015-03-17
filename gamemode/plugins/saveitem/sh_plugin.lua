@@ -6,11 +6,11 @@ Plugin.desc = "Good stuff."
 
 if ( SERVER ) then
 	function Plugin:SaveItems( )
-		// 아이팀 데이터 까지 저장되게 수정할것;
 		local data = { }
 		for k, v in pairs( ents.FindByClass( "cat_item" ) ) do
 			data[ #data + 1 ] = {
 				uniqueID = v:GetItemUniqueID( ),
+				itemData = v:GetItemData( ),
 				pos = v:GetPos( ),
 				ang = v:GetAngles( )
 			}
@@ -23,7 +23,7 @@ if ( SERVER ) then
 		local data = catherine.data.Get( "items", { } )
 
 		for k, v in pairs( data ) do
-			catherine.item.Spawn( v.uniqueID, v.pos, v.ang )
+			catherine.item.Spawn( v.uniqueID, v.pos, v.ang, v.itemData )
 		end
 	end
 	

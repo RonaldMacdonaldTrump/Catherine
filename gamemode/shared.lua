@@ -1,6 +1,7 @@
 DeriveGamemode( "sandbox" )
 
 catherine.Name = "Catherine"
+catherine.Desc = "A free role-playing framework for Garry's Mod."
 catherine.Author = "L7D"
 
 AddCSLuaFile( "sh_util.lua" )

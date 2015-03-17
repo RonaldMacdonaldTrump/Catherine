@@ -3,7 +3,7 @@ function GM:GetGameDescription( )
 end
 
 function GM:PlayerSpray( pl )
-	return hook.Run( "PlayerCantSpray", pl )
+	return !hook.Run( "PlayerCanSpray", pl )
 end
 
 function GM:PlayerSpawn( pl )
@@ -163,11 +163,11 @@ function GM:PlayerSpawnNPC( pl )
 end
 
 function GM:PlayerSpawnObject( pl )
-	return pl:HasFlag( "ex" )
+	return pl:HasFlag( "e" )
 end
 
 function GM:PlayerSpawnProp( pl )
-	return pl:HasFlag( "ex" )
+	return pl:HasFlag( "e" )
 end
 
 function GM:PlayerSpawnRagdoll( pl )

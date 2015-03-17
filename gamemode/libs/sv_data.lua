@@ -1,5 +1,4 @@
-catherine.data = catherine.data or { }
-catherine.data.Buffer = catherine.data.Buffer or { }
+catherine.data = catherine.data or { Buffer = { } }
 
 function catherine.data.DataLoad( )
 	file.CreateDir( "catherine" )

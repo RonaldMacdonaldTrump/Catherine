@@ -29,7 +29,6 @@ function PANEL:Init( )
 	self:InitializeInv( )
 end
 
-
 function PANEL:InitializeInv( )
 	local inventory = catherine.inventory.Get( )
 	local tab = { }
@@ -66,26 +65,18 @@ function PANEL:Refresh( )
 		form:AddItem( lists )
 		
 		for k1, v1 in pairs( v ) do
+			local w, h = 64, 64
 			local itemTable = catherine.item.FindByID( v1.uniqueID )
-
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( self.player, itemTable, self.player:GetInvItemData( itemTable.uniqueID ) ) or nil
 			local spawnIcon = vgui.Create( "SpawnIcon" )
-			spawnIcon:SetSize( 64, 64 )
+			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( itemTable.model )
-			spawnIcon:SetToolTip( "Name : " .. itemTable.name .. "\nDescription : " .. itemTable.desc .. "\nCost : " .. itemTable.cost )
+			spawnIcon:SetToolTip( "Name : " .. itemTable.name .. "\nDescription : " .. itemTable.desc .. "\nCost : " .. itemTable.cost .. ( itemDesc and "\n" .. itemDesc or "" ) )
 			spawnIcon.DoClick = function( )
 				catherine.item.OpenMenuUse( v1.uniqueID )
 			end
 			spawnIcon.DoRightClick = function( )
-			--[[
-				for k1, v1 in pairs( itemTab.func ) do
-					for k2, v2 in pairs( v1 ) do
-						if ( k2 == "ismenuRightclickFunc" and v2 == true ) then
-							netstream.Start( "catherine.item.RunFunction_Menu", { k1, v1.uniqueID } )
-							return
-						end
-					end
-				end
-			--]]
+
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
 				if ( catherine.inventory.IsEquipped( v1.uniqueID ) ) then
@@ -93,7 +84,12 @@ function PANEL:Refresh( )
 					surface.SetMaterial( Material( "icon16/accept.png" ) )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
-				draw.SimpleText( v1.int, "catherine_normal15", 5, h - 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				if ( itemTable.DrawInformation ) then
+					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemData( itemTable.uniqueID ) )
+				end
+				if ( v1.int > 1 ) then
+					draw.SimpleText( v1.int, "catherine_normal15", 5, h - 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				end
 			end
 			lists:AddItem( spawnIcon )
 		end

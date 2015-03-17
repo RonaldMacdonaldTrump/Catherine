@@ -124,12 +124,6 @@ catherine.character.RegisterGlobalVar( "inventory", {
 	needTransfer = true
 } )
 
-catherine.character.RegisterGlobalVar( "gender", {
-	field = "_gender",
-	doNetwork = true,
-	default = "male"
-} )
-
 catherine.character.RegisterGlobalVar( "cash", {
 	field = "_cash",
 	doNetwork = true,
@@ -503,6 +497,14 @@ end
 
 function META:IsCharacterLoaded( )
 	return self:GetNetVar( "charLoaded", false )
+end
+
+function META:GetCharacterGlobalVar( key, default )
+	return catherine.character.GetGlobalVar( self, key, default )
+end
+
+function META:GetCharacterVar( key, default )
+	return catherine.character.GetCharacterVar( self, key, default )
 end
 
 do

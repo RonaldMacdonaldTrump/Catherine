@@ -105,8 +105,30 @@ if ( SERVER ) then
 		return inventory[ uniqueID ].itemData or { }
 	end
 	
+	function catherine.inventory.SetItemData( pl, uniqueID, key, newData )
+		if ( !IsValid( pl ) or !uniqueID or !key or newData == nil ) then return end
+		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
+		itemData[ key ] = newData
+		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
+			uniqueID = uniqueID,
+			newData = itemData
+		} )
+	end
+	
 	function META:HasInvSpace( )
 		return catherine.inventory.HasSpace( self )
+	end
+	
+	function META:HasItem( uniqueID )
+		return catherine.inventory.HasItem( self, uniqueID )
+	end
+	
+	function META:GetInvItemData( uniqueID )
+		return catherine.inventory.GetItemData( self, uniqueID )
+	end
+	
+	function META:SetInvItemData( uniqueID, key, newData )
+		return catherine.inventory.SetItemData( self, uniqueID, key, newData )
 	end
 else
 
@@ -160,5 +182,13 @@ else
 	
 	function META:HasInvSpace( )
 		return catherine.inventory.HasSpace( )
+	end
+	
+	function META:HasItem( uniqueID )
+		return catherine.inventory.HasItem( uniqueID )
+	end
+	
+	function META:GetInvItemData( uniqueID )
+		return catherine.inventory.GetItemData( uniqueID )
 	end
 end

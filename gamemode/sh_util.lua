@@ -125,6 +125,11 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.util.Notify", { message, time, icon } )
 	end
 	
+	function catherine.util.NotifyUseLanguage( pl, message, ... )
+		if ( !IsValid( pl ) or !message ) then return end
+		netstream.Start( pl, "catherine.util.Notify", { catherine.language.GetValue( pl, message, ... ) } )
+	end
+	
 	function catherine.util.ProgressBar( pl, message, time )
 		if ( !IsValid( pl ) or !message or !time ) then return end
 		netstream.Start( pl, "catherine.util.ProgressBar", { message, time } )
