@@ -7,15 +7,14 @@ function catherine.item.Register( itemTable, isBase )
 		catherine.item.bases[ itemTable.uniqueID ] = itemTable
 		return
 	end
-	
 	if ( itemTable.base ) then
 		local base = catherine.item.bases[ itemTable.base ]
 		if ( !base ) then return end
 		itemTable = table.Inherit( itemTable, base )
 	end
 	
-	itemTable.name = itemTable.name or "Item Name"
-	itemTable.desc = itemTable.desc or "Item Desc"
+	itemTable.name = itemTable.name or "A Name"
+	itemTable.desc = itemTable.desc or "A Desc"
 	itemTable.weight = itemTable.weight or 0
 	itemTable.itemData = itemTable.itemData or { }
 	itemTable.cost = itemTable.cost or 0
@@ -53,7 +52,7 @@ function catherine.item.Register( itemTable, isBase )
 					catherine.util.Notify( pl, "Can't!" )
 					return
 				end
-				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos )
+				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, { } ) // ITEM DATA :!
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemTable.uniqueID )
 				hook.Run( "ItemDroped", pl, itemTable )
 			end,
@@ -130,8 +129,7 @@ if ( SERVER ) then
 		catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemID )
 	end
 
-	
-	function catherine.item.Spawn( itemID, pos, ang )
+	function catherine.item.Spawn( itemID, pos, ang, itemData )
 		if ( !itemID or !pos ) then return end
 		local itemTable = catherine.item.FindByID( itemID )
 		if ( !itemTable ) then return end
@@ -141,7 +139,7 @@ if ( SERVER ) then
 		ent:Spawn( )
 		ent:SetModel( itemTable.model or "models/props_junk/watermelon01.mdl" )
 		ent:PhysicsInit( SOLID_VPHYSICS )
-		ent:InitializeItem( itemID )
+		ent:InitializeItem( itemID, itemData or { } )
 		
 		local physObject = ent:GetPhysicsObject( )
 		if ( IsValid( physObject ) ) then
@@ -204,4 +202,3 @@ catherine.command.Register( {
 		end
 	end
 } )
-

@@ -25,9 +25,10 @@ if ( SERVER ) then
 		self:PhysicsInitBox( Vector( -2, -2, -2 ), Vector( 2, 2, 2 ) )
 	end
 
-	function ENT:InitializeItem( itemID )
+	function ENT:InitializeItem( itemID, itemData )
 		//if ( !itemTable ) then catherine.util.ErrorPrint( "Failed to initialize item entity! [ cat_item.lua ]" ) return end
 		self:SetNetVar( "uniqueID", itemID )
+		self:SetNetVar( "itemData", itemData )
 	end
 
 	function ENT:Use( pl )
@@ -60,4 +61,8 @@ end
 
 function ENT:GetItemUniqueID( )
 	return self:GetNetVar( "uniqueID", nil )
+end
+
+function ENT:GetItemData( )
+	return self:GetNetVar( "itemData", { } )
 end
