@@ -3,7 +3,7 @@ function GM:GetGameDescription( )
 end
 
 function GM:PlayerSpray( pl )
-	return hook.Run( "PlayerCantSpray", pl )
+	return !hook.Run( "PlayerCanSpray", pl )
 end
 
 function GM:PlayerSpawn( pl )
@@ -163,11 +163,11 @@ function GM:PlayerSpawnNPC( pl )
 end
 
 function GM:PlayerSpawnObject( pl )
-	return pl:HasFlag( "ex" )
+	return pl:HasFlag( "e" )
 end
 
 function GM:PlayerSpawnProp( pl )
-	return pl:HasFlag( "ex" )
+	return pl:HasFlag( "e" )
 end
 
 function GM:PlayerSpawnRagdoll( pl )
@@ -184,12 +184,22 @@ end
 
 function GM:PlayerHurt( pl )
 	pl.autoHealthrecoverStart = true
-	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
+	local gender = pl:GetGender( ):lower( )
+	local result = "male"
+	if ( gender == catherine.configs.femaleName:lower( ) ) then
+		result = "female"
+	end
+	pl:EmitSound( "vo/npc/" .. result .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
 	return true
 end
 
 function GM:PlayerDeathSound( pl )
-	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+	local gender = pl:GetGender( ):lower( )
+	local result = "male"
+	if ( gender == catherine.configs.femaleName:lower( ) ) then
+		result = "female"
+	end
+	pl:EmitSound( "vo/npc/" .. result .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
 	return true
 end
 

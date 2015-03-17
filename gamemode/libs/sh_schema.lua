@@ -20,7 +20,7 @@ function catherine.schema.Initialization( )
 	catherine.faction.Include( Schema.FolderName .. "/gamemode/schema" )
 	catherine.item.Include( Schema.FolderName .. "/gamemode/schema" )
 	
-	hook.Run( "SchemaInit" )
+	hook.Run( "SchemaInitialized" )
 end
 
 function catherine.schema.GetUniqueID( )
@@ -28,7 +28,7 @@ function catherine.schema.GetUniqueID( )
 	return Schema.UniqueID or "catherine"
 end
 
-hook.catherineHookCall = hook.catherineHookCall or hook.Call
+hook.NyanHookRun = hook.NyanHookRun or hook.Call
 
 function hook.Call( name, gm, ... )
 	if ( name == "PlayerSpawn" ) then
@@ -49,5 +49,5 @@ function hook.Call( name, gm, ... )
 		if ( func == nil ) then return end
 		return func
 	end
-	return hook.catherineHookCall( name, gm, ... )
+	return hook.NyanHookRun( name, gm, ... )
 end

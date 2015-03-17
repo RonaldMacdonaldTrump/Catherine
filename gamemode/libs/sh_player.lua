@@ -156,16 +156,18 @@ else
 end
 
 function META:GetWeaponRaised( )
-	return catherine.network.GetNetVar( self, "weaponRaised", false )
+	return self:GetNetVar( "weaponRaised", false )
 end
 
 function META:GetGender( )
+	return catherine.character.GetGlobalVar( self, "_gender", catherine.configs.maleName )
+--[[ // old
 	local model = self:GetModel( ):lower( )
 	if ( model:find( "female" ) ) then
 		return "female"
 	else
 		return "male"
-	end
+	end--]]
 end
 
 function player.GetAllByLoaded( )
@@ -174,6 +176,5 @@ function player.GetAllByLoaded( )
 		if ( !v:IsCharacterLoaded( ) ) then continue end
 		players[ #players + 1 ] = v
 	end
-	
 	return players
 end

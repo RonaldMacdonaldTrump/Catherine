@@ -24,6 +24,10 @@ catherine.configs.alwaysRaised = {
 	gmod_tool = true
 }
 // Test
-catherine.configs.maleName = "He"
-catherine.configs.femaleName = "She"
+catherine.configs.maleName = "Male"
+catherine.configs.femaleName = "Female"
+
+catherine.configs.maleID = 1 // DO NOT CHANGE THIS
+catherine.configs.femaleID = 2 // DO NOT CHANGE THIS
+
 catherine.configs.spaceString = "kg"

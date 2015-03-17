@@ -82,7 +82,7 @@ function catherine.hud.CinematicIntroDraw( )
 	if ( catherine.hud.CinematicIntro.thirdTextTime + 6 <= CurTime( ) ) then catherine.hud.CinematicIntro.second = true catherine.hud.CinematicIntro.endIng = true end
 	if ( catherine.hud.CinematicIntro.firstTextTime <= CurTime( ) and !catherine.hud.CinematicIntro.first ) then catherine.hud.CinematicIntro.firstalpha = Lerp( 0.03, catherine.hud.CinematicIntro.firstalpha, 255 ) end
 	if ( catherine.hud.CinematicIntro.secondTextTime <= CurTime( ) and !catherine.hud.CinematicIntro.first ) then catherine.hud.CinematicIntro.secondalpha = Lerp( 0.03, catherine.hud.CinematicIntro.secondalpha, 255 ) end
-	local information = hook.Run( "RunCinematicIntro_Information" )
+	local information = hook.Run( "GetSchemaInformation" )
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 50, 50, 50, catherine.hud.CinematicIntro.backalpha ) )
 	draw.SimpleText( information.title, "catherine_schema_title", scrW / 2, scrH / 2, Color( 255, 255, 255, catherine.hud.CinematicIntro.firstalpha ), 1, 1 )
 	draw.SimpleText( information.desc, "catherine_normal30", scrW / 2, scrH / 2 + 50, Color( 255, 255, 255, catherine.hud.CinematicIntro.secondalpha ), 1, 1 )
@@ -119,6 +119,8 @@ function GM:PostRenderScreenColor( pl )
 	else
 		data.contrast = math.max( math.min( LocalPlayer( ):Health( ) / LocalPlayer( ):GetMaxHealth( ), 1 ), 0.3 )
 	end
+	
+	hook( "OnRenderScreenColor", pl, data )
 	
 	return data
 end

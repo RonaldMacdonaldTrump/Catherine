@@ -41,45 +41,11 @@ function GM:DrawEntityTargetID( pl, ent, a )
 		
 		hook.Run( "PlayerInformationDraw", pl, ent, x, y, a )
 	end
-/* // have bug.
-	local entPlayer = ent:GetNetworkValue( "player" )
-	if ( ent:IsPlayer( ) and ent:Alive( ) ) then
-		local lp = LocalPlayer( )
-		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
-		local x, y = position.x, position.y - 100
-		local x2, y2 = 0, 0
-		
-		local targetInformation = hook.Run( "GetTargetInformation", lp, ent )
-		draw.SimpleText( targetInformation[ 1 ], "catherine_normal25", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
-		y = y + 20
-		draw.SimpleText( targetInformation[ 2 ], "catherine_normal15", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
-		y = y + 15
-		
-		hook.Run( "PlayerInformationDraw", ent, x, y, alpha )
-	elseif ( entPlayer and entPlayer:IsPlayer( ) ) then
-		local ragdollID = ent:GetNetworkValue( "ragdollID", nil )
-		if ( !ragdollID ) then return end
-		local entFix = Entity( ragdollID )
-		if ( !IsValid( entFix ) ) then return end
-		local lp = LocalPlayer( )
-		local position = toscreen( entFix:LocalToWorld( entFix:OBBCenter( ) ) )
-		local x, y = position.x, position.y - 100
-		local x2, y2 = 0, 0
-		
-		local targetInformation = hook.Run( "GetTargetInformation", lp, entPlayer )
-		draw.SimpleText( targetInformation[ 1 ], "catherine_normal25", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
-		y = y + 20
-		draw.SimpleText( targetInformation[ 2 ], "catherine_normal15", x, y, Color( 255, 255, 255, alpha ), 1, 1 )
-		y = y + 15
-		
-		hook.Run( "PlayerInformationDraw", entPlayer, x, y, alpha )
-	end
-*/
 end
 
 function GM:PlayerInformationDraw( pl, target, x, y, a )
 	if ( !pl:Alive( ) ) then
-		local gender = ( pl:GetGender( ) == "male" and catherine.configs.maleName ) or catherine.configs.femaleName
+		local gender = ( pl:GetGender( ) == catherine.configs.maleName and catherine.configs.maleName ) or catherine.configs.femaleName
 		draw.SimpleText( gender .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
 	end
 end
@@ -188,11 +154,11 @@ function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePo
 	return oldEyePos, eyeAng
 end
 
-function GM:RunCinematicIntro_Information( )
+function GM:GetSchemaInformation( )
 	return {
-		title = Schema.IntroTitle,
-		desc = Schema.IntroDesc,
-		author = "The roleplaying schema development and design by " .. Schema.Author .. "."
+		title = catherine.Name,
+		desc = catherine.Desc,
+		author = "A framework design and development by L7D."
 	}
 end
 

@@ -56,7 +56,7 @@ local DROP_TABLES = [[
 catherine.database = catherine.database or { modules = { } }
 catherine.util.Include( "catherine/gamemode/sv_database_config.lua" )
 catherine.database.Connected = catherine.database.Connected or false
-catherine.database.ErrorMsg = catherine.database.ErrorMsg or "데이터베이스에 접속되지 않았습니다."
+catherine.database.ErrorMsg = catherine.database.ErrorMsg or "Server has not connected to Database."
 catherine.database.object = catherine.database.object or nil
 catherine.database.modules[ "mysqloo" ] = {
 	connect = function( func )
@@ -65,7 +65,6 @@ catherine.database.modules[ "mysqloo" ] = {
 			return
 		end
 		local function initialize( )
-			-- Automatic initialize ^ㅡ^;
 			local queries = string.Explode( ";", CREATE_TABLES_USING_MYSQL )
 			for i = 1, 2 do
 				catherine.database.query( queries[ i ] )
@@ -130,7 +129,7 @@ catherine.database.modules[ "sqlite" ] = {
 	connect = function( func )
 		catherine.database.Connected = true
 		catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using SQLite." )
-		catherine.database.query( CREATE_TABLES_USING_SQLITE ) -- Automatic initialize ^ㅡ^;
+		catherine.database.query( CREATE_TABLES_USING_SQLITE )
 		if ( func ) then
 			func( )
 		end

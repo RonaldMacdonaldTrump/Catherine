@@ -334,7 +334,7 @@ local PANEL = { }
 function PANEL:Init( )
 	self.parent = self:GetParent( )
 	self.w, self.h = self.parent.w * 0.8, self.parent.h * 0.6
-	self.data = { faction = nil }
+	self.data = { faction = nil, gender = nil }
 	self.factionList = self:GetFactionList( )
 	self.progressPercent, self.progressPercentAni = 0, 0
 	
@@ -406,16 +406,26 @@ function PANEL:Init( )
 	self.nextStage:SetGradientColor( Color( 50, 50, 50, 150 ) )
 	self.nextStage.Click = function( )
 		if ( self.data.faction ) then
-			if ( catherine.faction.FindByID( self.data.faction ) ) then
-				self.parent.createData.datas.faction = self.data.faction
-				self:AlphaTo( 0, 0.3, 0 )
-				self:MoveTo( 0 - self.w, self.parent.h / 2 - self.h / 2, 0.3, 0, nil, function( )
-					self:Remove( )
-					self.parent.createData.currentStageInt = self.parent.createData.currentStageInt + 1
-					self.parent.createData.currentStage = vgui.Create( "catherine.character.stageTwo", self.parent )
-				end )
+			if ( self.data.gender ) then
+				local factionTable = catherine.faction.FindByID( self.data.faction )
+				if ( factionTable ) then
+					if ( factionTable.models[ self.data.gender ] ) then
+						self.parent.createData.datas.gender = self.data.gender
+						self.parent.createData.datas.faction = self.data.faction
+						self:AlphaTo( 0, 0.3, 0 )
+						self:MoveTo( 0 - self.w, self.parent.h / 2 - self.h / 2, 0.3, 0, nil, function( )
+							self:Remove( )
+							self.parent.createData.currentStageInt = self.parent.createData.currentStageInt + 1
+							self.parent.createData.currentStage = vgui.Create( "catherine.character.stageTwo", self.parent )
+						end )
+					else
+						self:PrintErrorMessage( "Gender is not valid!" )
+					end
+				else
+					self:PrintErrorMessage( "Faction is not valid!" )
+				end
 			else
-				self:PrintErrorMessage( "Faction is not valid!" )
+				self:PrintErrorMessage( "Please select a gender!" )
 			end
 		else
 			self:PrintErrorMessage( "Please select a faction!" )
