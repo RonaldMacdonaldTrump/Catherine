@@ -30,24 +30,21 @@ end
 function GM:CalcView( pl, pos, ang, fov ) end
 
 function GM:DrawEntityTargetID( pl, ent, a )
-	if ( ent:IsPlayer( ) ) then
-		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
-		local x, y, x2, y2 = pos.x, pos.y - 100, 0, 0
-		local playerName, playerDesc = hook.Run( "GetPlayerInformation", pl, ent )
-		draw.SimpleText( playerName, "catherine_normal25", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		y = y + 20
-		draw.SimpleText( playerDesc, "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		y = y + 15
-		
-		hook.Run( "PlayerInformationDraw", pl, ent, x, y, a )
-	end
+	if ( !ent:IsPlayer( ) ) then return end
+	local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
+	local x, y, x2, y2 = pos.x, pos.y - 100, 0, 0
+	local name, desc = hook.Run( "GetPlayerInformation", pl, ent )
+	draw.SimpleText( name, "catherine_normal25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+	y = y + 20
+	draw.SimpleText( desc, "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+	y = y + 15
+	
+	hook.Run( "PlayerInformationDraw", pl, ent, x, y, a )
 end
 
 function GM:PlayerInformationDraw( pl, target, x, y, a )
-	if ( !pl:Alive( ) ) then
-		local gender = ( pl:GetGender( ) == "male" and "He" ) or "She"
-		draw.SimpleText( gender .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
-	end
+	if ( target:Alive( ) ) then return end
+	draw.SimpleText( ( target:GetGender( ) == "male" and "He" or "She" ) .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
 end
 
 function GM:HUDDrawScoreBoard( )
@@ -92,7 +89,7 @@ function GM:HUDDrawScoreBoard( )
 	end
 end
 
-function GM:ProgressEntityTargetID( pl )
+function GM:ProgressEntityCache( pl )
 	if ( pl:IsCharacterLoaded( ) and catherine.nextCacheDo <= CurTime( ) ) then
 		local tr = { }
 		tr.start = pl:GetShootPos( )
@@ -108,10 +105,7 @@ function GM:ProgressEntityTargetID( pl )
 	end
 	
 	for k, v in pairs( catherine.entityCaches ) do
-		if ( !IsValid( k ) ) then 
-			catherine.entityCaches[ k ] = nil
-			continue
-		end
+		if ( !IsValid( k ) ) then catherine.entityCaches[ k ] = nil continue end
 		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k:GetPos( ), pl:GetPos( ), 412 ) )
 		k.alpha = a
 		if ( math.Round( a ) <= 0 ) then
@@ -130,9 +124,8 @@ function GM:HUDPaint( )
 	catherine.wep.Draw( pl )
 	
 	if ( pl:Alive( ) ) then
-		hook.Run( "ProgressEntityTargetID", pl )
-		local currVer = catherine.update.VERSION
-		local latestVer = GetGlobalString( "catherine.update.LATESTVERSION", nil )
+		hook.Run( "ProgressEntityCache", pl )
+		local currVer, latestVer = catherine.update.VERSION, GetGlobalString( "catherine.update.LATESTVERSION", nil )
 		if ( currVer != latestVer ) then
 			draw.SimpleText( "Your Catherine framework has need update!", "catherine_normal20", ScrW( ) - 10, 20, Color( 150, 255, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		end
@@ -141,19 +134,16 @@ end
 
 function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePos, eyeAng )
 	if ( !IsValid( weapon ) ) then return end
-	local pl = LocalPlayer()
+	local pl = LocalPlayer( )
 	local value = 0
 	if ( !pl:GetWeaponRaised( ) ) then value = 100 end
-
 	local fraction = ( pl.wepRaisedFraction or 0 ) / 100
 	local lowerAngle = weapon.LowerAngles or Angle( 30, -30, -25 )
 	
 	eyeAng:RotateAroundAxis( eyeAng:Up( ), lowerAngle.p * fraction)
 	eyeAng:RotateAroundAxis( eyeAng:Forward( ), lowerAngle.y * fraction)
 	eyeAng:RotateAroundAxis( eyeAng:Right( ), lowerAngle.r * fraction)
-
 	pl.wepRaisedFraction = Lerp( FrameTime( ) * 2, pl.wepRaisedFraction or 0, value )
-
 	viewModel:SetAngles( eyeAng )
 	return oldEyePos, eyeAng
 end

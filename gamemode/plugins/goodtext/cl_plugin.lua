@@ -40,4 +40,4 @@ function Plugin:PostDrawTranslucentRenderables( )
 	end
 end
 
-catherine.font.Add( "catherine_goodtext", catherine.font.FontString, 150, 1000, true )
+catherine.font.Register( "catherine_goodtext", catherine.configs.Font, 150, 1000, { outline = true } )

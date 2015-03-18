@@ -4,6 +4,8 @@ catherine.hud.CinematicIntro = catherine.hud.CinematicIntro or nil
 catherine.hud.clip1 = catherine.hud.clip1 or 0
 catherine.hud.pre = catherine.hud.pre or 0
 catherine.hud.vAlpha = catherine.hud.vAlpha or 0
+catherine.hud.vAlphaTarget = catherine.hud.vAlphaTarget or 255
+catherine.hud.checkV = catherine.hud.checkV or CurTime( )
 
 netstream.Hook( "catherine.hud.CinematicIntro_Init", function( )
 	catherine.hud.CinematicIntroInit( )
@@ -18,13 +20,20 @@ function catherine.hud.Draw( )
 end
 
 function catherine.hud.Vignette( )
-	local a = 255
-	local data = { }
-	data.start = LocalPlayer( ):GetPos( )
-	data.endpos = data.start + Vector( 0, 0, 2000 )
-	local tr = util.TraceLine( data )
-	if ( !tr.Hit or tr.HitSky ) then a = 125 end
-	catherine.hud.vAlpha = math.Approach( catherine.hud.vAlpha, a, FrameTime( ) * 90 )
+	if ( catherine.hud.checkV <= CurTime( ) ) then
+		local data = { }
+		data.start = LocalPlayer( ):GetPos( )
+		data.endpos = data.start + Vector( 0, 0, 2000 )
+		local tr = util.TraceLine( data )
+		if ( !tr.Hit or tr.HitSky ) then
+			catherine.hud.vAlphaTarget = 125
+		else
+			catherine.hud.vAlphaTarget = 255
+		end
+		catherine.hud.checkV = CurTime( ) + 1
+	end
+	
+	catherine.hud.vAlpha = math.Approach( catherine.hud.vAlpha, catherine.hud.vAlphaTarget, FrameTime( ) * 90 )
 	
 	surface.SetDrawColor( 0, 0, 0, catherine.hud.vAlpha )
 	surface.SetMaterial( Material( "CAT/vignette.png" ) )
@@ -35,11 +44,10 @@ function catherine.hud.ScreenDamageDraw( ) end
 
 function catherine.hud.AmmoDraw( )
 	local wep = LocalPlayer( ):GetActiveWeapon( )
-	if ( !IsValid( wep ) ) then return end
-	if ( wep.DrawHUD == false ) then return end
+	if ( !IsValid( wep ) or ( wep.DrawHUD == false ) ) then return end
 	local clip1 = wep:Clip1( )
 	local pre = LocalPlayer( ):GetAmmoCount( wep:GetPrimaryAmmoType( ) )
-	//local sec = LocalPlayer( ):GetAmmoCount( wep:GetSecondaryAmmoType( ) ) -- ^ㅡ^;
+	//local sec = LocalPlayer( ):GetAmmoCount( wep:GetSecondaryAmmoType( ) ) -- ^_^;
 	catherine.hud.clip1 = Lerp( 0.03, catherine.hud.clip1, clip1 )
 	catherine.hud.pre = Lerp( 0.03, catherine.hud.pre, pre )
 	if ( clip1 > 0 or pre > 0 ) then
@@ -122,3 +130,11 @@ function GM:PostRenderScreenColor( pl )
 	
 	return data
 end
+
+CAT_CONVAR_HUD = CreateClientConVar( "cat_convar_hud", true, true, true )
+
+catherine.option.Register( "CONVAR_HUD", CAT_CONVAR_HUD, "Show HUD", "", {
+	onSet = function( conVarObject, newVal )
+		RunConsoleCommand( "cat_convar_hud", newVal )
+	end
+} )
