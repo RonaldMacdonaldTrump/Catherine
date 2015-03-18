@@ -145,12 +145,12 @@ if ( SERVER ) then
 		netstream.Start( nil, "catherine.util.Notify", { message, time, icon } )
 	end
 	
-	function catherine.util.AddResourceByFolder( dir )
+	function catherine.util.AddResourceInFolder( dir )
 		if ( !dir ) then return end
 		local files, dirs = file.Find( dir .. "/*", "GAME" )
 		for _, v in pairs( dirs ) do
 			if ( v != ".svn" ) then   
-				catherine.util.AddResourceByFolder( dir .. "/" .. v )
+				catherine.util.AddResourceInFolder( dir .. "/" .. v )
 			end
 		end
 		for k, v in pairs( files ) do
