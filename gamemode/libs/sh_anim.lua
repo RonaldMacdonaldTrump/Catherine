@@ -1,5 +1,5 @@
 --[[
-	This code has brought by Nutscript!.
+	This code has brought by Nutscript.
 	https://github.com/Chessnut/NutScript
 --]]
 catherine.anim = catherine.anim or { }

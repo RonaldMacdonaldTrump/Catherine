@@ -24,3 +24,4 @@ catherine.configs.alwaysRaised = {
 	gmod_tool = true
 }
 catherine.configs.spaceString = "kg"
+catherine.configs.Font = "Segoe UI"

@@ -1,5 +1,5 @@
 catherine.update = catherine.update or { }
-catherine.update.VERSION = "2015-03-16"
+catherine.update.VERSION = "2015-03-18"
 
 if ( SERVER ) then
 	catherine.update.LATESTVERSION = catherine.update.LATESTVERSION or nil
@@ -50,7 +50,6 @@ else
 			catherine.vgui.version.status.text = data[ 2 ]
 			catherine.vgui.version:Refresh( )
 		end
-		
 		Derma_Message( data[ 2 ], "Check Result", "OK" )
 	end )
 end

@@ -1,24 +1,11 @@
 catherine.font = catherine.font or { }
-catherine.font.Lists = catherine.font.Lists or { }
-catherine.font.FontString = catherine.font.FontString or "Segoe UI"
+catherine.font.Lists = { }
 
-function catherine.font.Add( uniqueID, font, size, weight, outline )
-	local isValid = catherine.font.GetByID( uniqueID )
-	if ( isValid ) then return end
-	catherine.font.Lists[ #catherine.font.Lists + 1 ] = { uniqueID = uniqueID, font = font, size = size, weight = weight, outline = outline }
-	surface.CreateFont( uniqueID, { font = font, size = size, weight = weight, antialias = true, outline = outline } )
-end
-
-function catherine.font.Set( uniqueID, font, size, weight, outline )
-	if ( !uniqueID ) then return end
-	local fontTab = catherine.font.GetByID( uniqueID )
-	if ( !fontTab ) then return end
-	font = font or fontTab.font
-	size = size or fontTab.size
-	weight = weight or fontTab.weight
-	outline = outline or fontTab.outline or false
-	
-	surface.CreateFont( uniqueID, { font = font, size = size, weight = weight, antialias = true, outline = outline } )
+function catherine.font.Register( uniqueID, font, size, weight, fontTable )
+	if ( !fontTable ) then fontTable = { } end
+	table.Merge( fontTable, { uniqueID = uniqueID, font = font, size = size, weight = weight } )
+	catherine.font.Lists[ #catherine.font.Lists + 1 ] = fontTable
+	surface.CreateFont( uniqueID, fontTable )
 end
 
 function catherine.font.GetByID( id )
@@ -31,18 +18,18 @@ function catherine.font.GetByID( id )
 	return nil
 end
 
-catherine.font.FontString = "Segoe UI Bold"
-catherine.font.Add( "catherine_menuTitle", catherine.font.FontString, 20, 1000 )
-catherine.font.Add( "catherine_button20", catherine.font.FontString, 20, 1000 )
-catherine.font.Add( "catherine_normal15", catherine.font.FontString, 15, 1000 )
-catherine.font.Add( "catherine_normal20", catherine.font.FontString, 20, 1000 )
-catherine.font.Add( "catherine_normal25", catherine.font.FontString, 25, 1000 )
-catherine.font.Add( "catherine_normal30", catherine.font.FontString, 30, 1000 )
-catherine.font.Add( "catherine_normal35", catherine.font.FontString, 35, 1000 )
-catherine.font.Add( "catherine_normal40", catherine.font.FontString, 40, 1000 )
-catherine.font.Add( "catherine_normal50", catherine.font.FontString, 50, 1000 )
-catherine.font.Add( "catherine_schema_title", catherine.font.FontString, 50, 1000 )
-catherine.font.Add( "catherine_good15", catherine.font.FontString, 15, 1000 )
-catherine.font.Add( "catherine_hostname", catherine.font.FontString, 25, 1000 )
-catherine.font.Add( "catherine_outline20", catherine.font.FontString, 20, 1000, true )
-catherine.font.Add( "catherine_outline15", catherine.font.FontString, 15, 1000, true )
+local font = catherine.configs.Font
+catherine.font.Register( "catherine_menuTitle", font, 20, 1000 )
+catherine.font.Register( "catherine_button20", font, 20, 1000 )
+catherine.font.Register( "catherine_normal15", font, 15, 1000 )
+catherine.font.Register( "catherine_normal20", font, 20, 1000 )
+catherine.font.Register( "catherine_normal25", font, 25, 1000 )
+catherine.font.Register( "catherine_normal30", font, 30, 1000 )
+catherine.font.Register( "catherine_normal35", font, 35, 1000 )
+catherine.font.Register( "catherine_normal40", font, 40, 1000 )
+catherine.font.Register( "catherine_normal50", font, 50, 1000 )
+catherine.font.Register( "catherine_schema_title", font, 50, 1000 )
+catherine.font.Register( "catherine_good15", font, 15, 1000 )
+catherine.font.Register( "catherine_hostname", font, 25, 1000 )
+catherine.font.Register( "catherine_outline20", font, 20, 1000, { outline = true } )
+catherine.font.Register( "catherine_outline15", font, 15, 1000, { outline = true } )

@@ -1,6 +1,4 @@
-catherine.network = catherine.network or { }
-catherine.network.globalVars = catherine.network.globalVars or { }
-catherine.network.entityVars = catherine.network.entityVars or { }
+catherine.network = catherine.network or { globalVars = { }, entityVars = { } }
 local META = FindMetaTable( "Entity" )
 
 // 새로운 네트워킹 시스템; ^-^; 2015-03-10 학교 컴실에서..

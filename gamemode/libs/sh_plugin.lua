@@ -1,5 +1,4 @@
-catherine.plugin = catherine.plugin or { }
-catherine.plugin.List = catherine.plugin.List or { }
+catherine.plugin = catherine.plugin or { List = { } }
 
 function catherine.plugin.LoadAll( dir )
 	local _, folders = file.Find( dir .. "/gamemode/plugins/*", "LUA" )
