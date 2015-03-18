@@ -5,7 +5,7 @@ function PANEL:Init( )
 	
 	self.version = catherine.update.VERSION
 	self.latestVersion = GetGlobalString( "catherine.update.LATESTVERSION", nil )
-	self.status = { text = "Checking update ...", status = false, alpha = 255, rotate = 0 }
+	self.status = { text = "Checking update ...", status = false, alpha = 0, rotate = 0 }
 	
 	self:SetMenuSize( ScrW( ) * 0.5, ScrH( ) * 0.5 )
 	self:SetMenuName( "Version" )

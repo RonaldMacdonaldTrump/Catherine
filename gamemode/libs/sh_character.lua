@@ -245,7 +245,7 @@ if ( SERVER ) then
 		
 		netstream.Start( pl, "catherine.character.UseResult", { true } )
 		
-		catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [ " .. pl:SteamName( ) .. " ]" .. ( prevID or "None" ) .. " -> " .. id )
+		catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [" .. pl:SteamName( ) .. "] " .. ( prevID or "None" ) .. " -> " .. id )
 	end
 
 	function catherine.character.GetTargetCharacterByID( pl, id )

@@ -34,7 +34,6 @@ end
 
 function catherine.command.TransferToArgsTab( text )
 	local skip, args, curstr = 0, { }, ""
-	
 	for i = 1, #text do
 		if ( i <= skip ) then continue end
 		local k = text:sub( i, i )
@@ -56,35 +55,27 @@ function catherine.command.TransferToArgsTab( text )
 			curstr = curstr .. k
 		end 
 	end
-
 	if ( curstr != "" ) then
 		args[ #args + 1 ] = curstr
 	end
-
 	return args
 end
 
 if ( SERVER ) then
 	function catherine.command.Run( pl, id, args )
 		local cmdTab = catherine.command.FindByCMD( id )
-		if ( !cmdTab ) then return "Command not found!" end
-		if ( cmdTab.canRun and cmdTab.canRun( pl, id ) == false ) then return "You do not have permission." end
+		if ( !cmdTab ) then catherine.util.Notify( pl, "Command not found!" ) return end
+		if ( cmdTab.canRun and cmdTab.canRun( pl, id ) == false ) then catherine.util.Notify( pl, "You do not have permission!" ) end
 		if ( !cmdTab.runFunc ) then return end
 		cmdTab.runFunc( pl, args )
 	end
 	
-	function catherine.command.DoByText( pl, text )
-		if ( text:sub( 1, 1 ) == "/" ) then
-			local toArgs = catherine.command.TransferToArgsTab( text )
-			local id = toArgs[ 1 ]:sub( 2, #toArgs[ 1 ] )
-			table.remove( toArgs, 1 )
-			local result = catherine.command.Run( pl, id, toArgs )
-			if ( result ) then
-				catherine.util.Notify( pl, result )
-				return
-			end
-			
-			return ""
-		end
+	function catherine.command.RunByText( pl, text )
+		if ( !catherine.command.IsCommand( text ) ) then return text end
+		local args = catherine.command.TransferToArgsTab( text )
+		local id = args[ 1 ]:sub( 2, #args[ 1 ] )
+		table.remove( args, 1 )
+		catherine.command.Run( pl, id, args )
+		return ""
 	end
 end

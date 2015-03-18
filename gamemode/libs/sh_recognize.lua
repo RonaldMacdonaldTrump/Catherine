@@ -96,14 +96,14 @@ end
 
 function GM:GetPlayerInformation( pl, target )
 	if ( pl == target ) then
-		return pl:Name( ), pl:Desc( )
+		return target:Name( ), target:Desc( )
 	end
 	
 	if ( pl:IsKnow( target ) ) then
-		return pl:Name( ), pl:Desc( )
+		return target:Name( ), target:Desc( )
 	end
 	
-	return hook.Run( "GetUnknownTargetName", pl, target ), pl:Desc( )
+	return hook.Run( "GetUnknownTargetName", pl, target ), target:Desc( )
 end
 
 function GM:GetUnknownTargetName( pl, target )

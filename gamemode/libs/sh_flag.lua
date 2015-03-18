@@ -75,5 +75,3 @@ catherine.flag.Register( "t", "Access to toolgun.", {
 	end
 } )
 catherine.flag.Register( "e", "Access to prop spawn." )
-
-//print(player.GetByID(1):HasFlag( "p" ))

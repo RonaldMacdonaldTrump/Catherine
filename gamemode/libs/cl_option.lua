@@ -1,9 +1,9 @@
 catherine.option = catherine.option or { }
-catherine.option.Lists = { }
+catherine.option.Lists = catherine.option.Lists or { }
 
 function catherine.option.Register( uniqueID, conVar, name, desc, optionTable )
 	if ( !optionTable ) then optionTable = { } end
-	table.Merge( optionTable, { uniqueID = uniqueID, name = name, desc = desc, conVar = GetConVar( conVar ) } )
+	table.Merge( optionTable, { uniqueID = uniqueID, name = name, desc = desc, conVar = conVar } )
 	catherine.option.Lists[ uniqueID ] = optionTable
 end
 

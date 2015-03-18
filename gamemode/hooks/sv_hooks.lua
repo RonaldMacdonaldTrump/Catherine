@@ -101,10 +101,7 @@ function GM:PostWeaponGive( pl )
 end
 
 function GM:PlayerSay( pl, text )
-	local class = catherine.chat.FetchClassByText( text )
-	local newText = hook.Run( "PostPlayerSay", pl, class, text ) or text
-	if ( newText == "" ) then return end
-	catherine.chat.Progress( pl, newText )
+	catherine.chat.Work( pl, text )
 end
 
 function GM:KeyRelease( pl, key )

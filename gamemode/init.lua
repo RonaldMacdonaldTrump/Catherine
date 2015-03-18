@@ -4,15 +4,8 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
-local function badSchemaGMSyntaxFix( )
-	local badGMSyntax = {
-		[ "cat_hl2rp" ] = {
-			"Catherine-HL2RP-master",
-			"Catherine-HL2RP"
-		}
-	}
+local function badSchemaSettingFix( )
 	local currGM = GetConVarString( "gamemode" ):lower( )
-	
 	if ( currGM == "catherine" ) then
 		local _, gmDirs = file.Find( "gamemodes/*", "GAME" )
 		for k, v in pairs( gmDirs ) do
@@ -21,20 +14,10 @@ local function badSchemaGMSyntaxFix( )
 			RunConsoleCommand( "gamemode", v )
 			RunConsoleCommand( "changelevel", game.GetMap( ) )
 		end
-	else
-		for k, v in pairs( badGMSyntax ) do
-			for k1, v1 in pairs( v ) do
-				if ( currGM == v1:lower( ) ) then
-					catherine.util.Print( Color( 255, 255, 0 ), "Bad gamemode setting found, automatic change to " .. k .. "!" )
-					RunConsoleCommand( "gamemode", k )
-					RunConsoleCommand( "changelevel", game.GetMap( ) )
-				end
-			end
-		end
 	end
 end
 
-badSchemaGMSyntaxFix( )
+badSchemaSettingFix( )
 catherine.util.AddResourceInFolder( "materials/CAT" )
 
 if ( game.IsDedicated( ) ) then

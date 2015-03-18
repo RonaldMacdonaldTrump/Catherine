@@ -1,7 +1,8 @@
 catherine.chat = catherine.chat or { }
 catherine.chat.Classes = { }
 
-function catherine.chat.RegisterClass( tab )
+function catherine.chat.RegisterClass( class, tab )
+	table.Merge( tab, { class = class } )
 	catherine.chat.Classes[ #catherine.chat.Classes + 1 ] = tab
 end
 
@@ -12,7 +13,6 @@ function catherine.chat.FindByClass( class )
 			return v
 		end
 	end
-	
 	return nil
 end
 
@@ -27,13 +27,11 @@ function catherine.chat.FetchClassByText( text )
 			end
 		end
 	end
-	
 	return "ic"
 end
 
-catherine.chat.RegisterClass( {
-	class = "ic",
-	doChat = function( pl, text )
+catherine.chat.RegisterClass( "ic", {
+	onChat = function( pl, text )
 		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
 			name = desc
@@ -44,9 +42,8 @@ catherine.chat.RegisterClass( {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
-catherine.chat.RegisterClass( {
-	class = "me",
-	doChat = function( pl, text )
+catherine.chat.RegisterClass( "me", {
+	onChat = function( pl, text )
 		chat.AddText( Color( 255, 150, 255 ), "** " .. pl:Name( ) .. " " .. text )
 	end,
 	command = { "/me" },
@@ -54,9 +51,8 @@ catherine.chat.RegisterClass( {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
-catherine.chat.RegisterClass( {
-	class = "it",
-	doChat = function( pl, text )
+catherine.chat.RegisterClass( "it", {
+	onChat = function( pl, text )
 		chat.AddText( Color( 255, 150, 0 ), "*** " .. pl:Name( ) .. " " .. text )
 	end,
 	command = { "/it" },
@@ -64,17 +60,15 @@ catherine.chat.RegisterClass( {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
-catherine.chat.RegisterClass( {
-	class = "pm",
-	doChat = function( pl, text, ex )
+catherine.chat.RegisterClass( "pm", {
+	onChat = function( pl, text, ex )
 		chat.AddText( Color( 255, 255, 0 ), "[PM] " .. pl:Name( ) .. " : " .. text )
 	end,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
-catherine.chat.RegisterClass( {
-	class = "yell",
-	doChat = function( pl, text )
+catherine.chat.RegisterClass( "yell", {
+	onChat = function( pl, text )
 		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
 			name = desc
@@ -86,9 +80,8 @@ catherine.chat.RegisterClass( {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
-catherine.chat.RegisterClass( {
-	class = "whisper",
-	doChat = function( pl, text )
+catherine.chat.RegisterClass( "whisper", {
+	onChat = function( pl, text )
 		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
 			name = desc
@@ -100,9 +93,8 @@ catherine.chat.RegisterClass( {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
-catherine.chat.RegisterClass( {
-	class = "ooc",
-	doChat = function( pl, text )
+catherine.chat.RegisterClass( "ooc", {
+	onChat = function( pl, text )
 		local icon = Material( "icon16/user.png" )
 		if ( pl:IsSuperAdmin( ) ) then
 			icon = Material( "icon16/shield.png" )
@@ -118,9 +110,8 @@ catherine.chat.RegisterClass( {
 	noSpace = true
 } )
 
-catherine.chat.RegisterClass( {
-	class = "looc",
-	doChat = function( pl, text )
+catherine.chat.RegisterClass( "looc", {
+	onChat = function( pl, text )
 		chat.AddText( Color( 250, 255, 40 ), "[LOOC] ", pl, color_white, " : ".. text )
 	end,
 	canHearRange = 600,
@@ -136,9 +127,9 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
-				local player = catherine.util.FindPlayerByName( args[ 1 ] )
-				if ( IsValid( player ) ) then
-					catherine.chat.Send( pl, "pm", args[ 2 ], { pl, player }, player )
+				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				if ( IsValid( target ) ) then
+					catherine.chat.Send( pl, "pm", args[ 2 ], { pl, target }, target )
 				else
 					catherine.util.Notify( pl, "Can't found player!" )
 				end
@@ -156,72 +147,78 @@ if ( SERVER ) then
 		hook.Run( "PlayerSay", pl, data, true )
 	end )
 	
-	function catherine.chat.Send( pl, class, text, target, ... )
-		local targetB = { }
-		if ( type( target ) == "table" ) then targetB = { pl, target } else targetB = pl end
-		local classTab = catherine.chat.FindByClass( class )
-		if ( !classTab ) then return end
-		if ( type( targetB ) == "table" ) then
-			for k, v in pairs( target ) do
-				netstream.Start( v, "catherine.chat.Receive", { pl, class, text, { ... } } )
-			end
-		elseif ( type( targetB ) == "Player" ) then
-			if ( classTab.global ) then
-				for k, v in pairs( player.GetAll( ) ) do
-					if ( !v:IsCharacterLoaded( ) ) then continue end
-					netstream.Start( v, "catherine.chat.Receive", { pl, class, text, { ... } } )
+	function catherine.chat.Send( pl, classTable, text, target, ... )
+		if ( type( classTable ) == "string" ) then
+			classTable = catherine.chat.FindByClass( classTable )
+		end
+		if ( !classTable or type( classTable ) != "table" ) then return end
+		local class = classTable.class
+		
+		if ( classTable.global ) then
+			netstream.Start( nil, "catherine.chat.Post", { pl, class, text, { ... } } )
+		else
+			if ( type( target ) == "table" and #target > 1 ) then
+				for k, v in pairs( target ) do
+					netstream.Start( v, "catherine.chat.Post", { pl, class, text, { ... } } )
 				end
 			else
-				local targetEx = catherine.chat.GetTarget( pl, class )
-				for k, v in pairs( targetEx ) do
-					netstream.Start( v, "catherine.chat.Receive", { pl, class, text, { ... } } )
+				local listener = catherine.chat.GetListener( pl, class )
+				for k, v in pairs( listener ) do
+					netstream.Start( v, "catherine.chat.Post", { pl, class, text, { ... } } )
 				end
 			end
 		end
 	end
 	
-	function catherine.chat.GetTarget( pl, class )
-		local class = catherine.chat.FindByClass( class )
-		if ( !class or ( class and !class.canHearRange ) ) then return { pl } end
-		
-		local target = { pl }
-		
-		for k, v in pairs( player.GetAll( ) ) do
-			if ( !v:IsCharacterLoaded( ) ) then continue end
+	function catherine.chat.GetListener( pl, class )
+		local classTable, target = catherine.chat.FindByClass( class ), { pl }
+		if ( !classTable or ( classTable and !classTable.canHearRange ) ) then return target end
+		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			if ( pl == v ) then continue end
-			if ( pl:GetPos( ):Distance( v:GetPos( ) ) <= class.canHearRange ) then
+			if ( catherine.util.CalcDistanceByPos( pl, v ) <= classTable.canHearRange ) then
 				target[ #target + 1 ] = v
 			end
 		end
-		
 		return target
 	end
 	
-	function catherine.chat.Progress( pl, text )
+	function catherine.chat.CanChat( pl, classTable )
+		if ( !IsValid( pl ) or !classTable ) then return false end
+		if ( classTable.canRun and classTable.canRun( pl ) == false ) then
+			return false
+		end
+		return true
+	end
+	
+	function catherine.chat.Work( pl, text )
 		local class = catherine.chat.FetchClassByText( text )
-		local classTab = catherine.chat.FindByClass( class )
-		if ( !classTab ) then return end
-		local commandT = classTab.command or { }
-		if ( type( commandT ) == "table" and #commandT > 1 ) then
-			table.sort( classTab.command, function( a, b )
+		local classTable = catherine.chat.FindByClass( class )
+		if ( !classTable ) then return end
+		
+		if ( !catherine.chat.CanChat( pl, classTable ) ) then
+			catherine.util.Notify( pl, "You can run this work now!" )
+			return
+		end
+
+		local commandTable = classTable.command or { }
+		if ( type( commandTable ) == "table" and #commandTable > 1 ) then
+			table.sort( classTable.command, function( a, b )
 				return #a > #b
 			end )
 		end
 		
-		local fix = ""
-		local isFin = false
-		local noSpace = classTab.noSpace
-		if ( type( commandT ) == "table" ) then
-			for k, v in ipairs( commandT ) do
+		local fix, isFin, noSpace = "", false, classTable.noSpace
+		if ( type( commandTable ) == "table" ) then
+			for k, v in ipairs( commandTable ) do
 				if ( text:sub( 1, #v + ( noSpace and 0 or 1 ) ) == v .. ( noSpace and "" or " " ) ) then
 					isFin = true
 					fix = v .. ( noSpace and "" or " " )
 					break
 				end
 			end
-		elseif ( type( commandT ) == "string" ) then
-			isFin = text:sub( 1, #commandT + ( noSpace and 1 or 0 ) ) == commandT .. ( noSpace and "" or " " )
-			fix = commandT .. ( noSpace and "" or " " )
+		elseif ( type( commandTable ) == "string" ) then
+			isFin = text:sub( 1, #commandTable + ( noSpace and 1 or 0 ) ) == commandTable .. ( noSpace and "" or " " )
+			fix = commandTable .. ( noSpace and "" or " " )
 		end
 
 		if ( isFin ) then
@@ -231,38 +228,33 @@ if ( SERVER ) then
 			end
 		end
 
-		if ( classTab.canRun and ( classTab.canRun( pl ) == false ) ) then
-			catherine.util.Notify( pl, "You can run this work now!" )
+		if ( catherine.command.IsCommand( text ) ) then
+			catherine.command.RunByText( pl, text )
 			return
 		end
 		
 		local adjustInfo = {
 			text = text,
-			class = class
+			class = class,
+			player = pl
 		}
-		
-		if ( catherine.command.IsCommand( adjustInfo.text ) ) then
-			catherine.command.DoByText( pl, adjustInfo.text )
-			return
-		end
-		local adjustTransfer = hook.Run( "ChatAdjust", pl, adjustInfo )
-		catherine.chat.Send( pl, class, ( adjustTransfer and adjustTransfer.text ) or text )
-		hook.Run( "PostChated", pl, adjustTransfer or adjustInfo )
+		adjustInfo = hook.Run( "ChatAdjust", adjustInfo ) or adjustInfo
+		catherine.chat.Send( pl, classTable, adjustInfo.text )
+		hook.Run( "ChatSended", adjustInfo )
 	end
 	
 	function catherine.chat.RunByClass( pl, class, text, target )
 		if ( !target ) then target = pl end
-		local classTab = catherine.chat.FindByClass( class )
-		if ( !classTab ) then return end
-		
+		local classTable = catherine.chat.FindByClass( class )
+		if ( !classTable ) then return end
 		local adjustInfo = {
 			text = text,
-			class = class
+			class = class,
+			player = pl
 		}
-
-		local adjustTransfer = hook.Run( "ChatAdjust", pl, adjustInfo ) or nil
-		catherine.chat.Send( pl, class, adjustTransfer.text or text, target )
-		hook.Run( "PostChated", pl, adjustTransfer or text )
+		adjustInfo = hook.Run( "ChatAdjust", adjustInfo ) or adjustInfo
+		catherine.chat.Send( pl, classTable, adjustInfo.text, target )
+		hook.Run( "ChatSended", adjustInfo )
 	end
 else
 	catherine.chat.backpanel = catherine.chat.backpanel or nil
@@ -271,16 +263,16 @@ else
 	catherine.chat.msg = catherine.chat.msg or { }
 	catherine.chat.history = catherine.chat.history or { }
 	
-	netstream.Hook( "catherine.chat.Receive", function( data )
-		local speaker, class, text, ex = data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ]
-		local class = catherine.chat.FindByClass( class )
-		class.doChat( speaker, text, ex )
-	end )
-	
-	local CHATBox_w, CHATBox_h = ScrW( ) * 0.3, ScrH( ) * 0.3
+	local CHATBox_w, CHATBox_h = ScrW( ) * 0.5, ScrH( ) * 0.3
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
 	
-	local PANEL = {}
+	netstream.Hook( "catherine.chat.Post", function( data )
+		local speaker, class, text, ex = data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ]
+		local class = catherine.chat.FindByClass( class )
+		class.onChat( speaker, text, ex )
+	end )
+	
+	local PANEL = { }
 	
 	function PANEL:Init( )
 		self:SetDrawBackground( false )
@@ -297,9 +289,7 @@ else
 	end
 
 	function PANEL:Run( ... )
-		local data = ""
-		local latestColor = Color( 255, 255, 255 )
-
+		local data, latestColor = "", Color( 255, 255, 255 )
 		if ( self.font ) then data = "<font=" .. self.font .. ">" end
 
 		for k, v in ipairs( { ... } ) do
@@ -312,15 +302,13 @@ else
 				local col = team.GetColor( v:Team( ) )
 				data = data .. "<color=" .. col.r .. "," .. col.g .. "," .. col.b .. ">" .. v:Name( ) .. "</color>"
 			elseif ( types == "IMaterial" or types == "table" and type( v[ 1 ] ) == "IMaterial" ) then
-				local w, h = 16, 16
+				local w, h = 12, 12
 				local material = v
-
 				if ( type( v ) == "table" and v[ 2 ] and v[ 3 ] ) then
 					material = v[ 1 ]
 					w = v[ 2 ]
 					h = v[ 3 ]
 				end
-
 				data = data .. "<img=" .. material:GetName( )..".png," .. w .. "x" .. h .. "> "
 			else
 				v = tostring( v )
@@ -348,10 +336,6 @@ else
 		if ( self.start and self.finish ) then alpha = math.Clamp( 255 - math.TimeFraction( self.start, self.finish, CurTime( ) ) * 255, 0, 255 ) end
 		if ( catherine.chat.isOpened ) then alpha = 255 end
 		self:SetAlpha( alpha )
-		surface.SetDrawColor( 50, 50, 50, alpha )
-		surface.SetMaterial( Material( "gui/gradient" ) )
-		surface.DrawTexturedRect( 0, 0, w, h )
-		
 		if ( alpha > 0 ) then
 			self.markup:Draw( 1, 0, 0, 0 )
 		end

@@ -1,3 +1,6 @@
+if ( !catherine.option ) then
+	catherine.util.Include( "cl_option.lua" )
+end
 catherine.hud = catherine.hud or { }
 catherine.hud.ProgressBar = catherine.hud.ProgressBar or nil
 catherine.hud.CinematicIntro = catherine.hud.CinematicIntro or nil
@@ -131,7 +134,7 @@ function GM:PostRenderScreenColor( pl )
 	return data
 end
 
-CAT_CONVAR_HUD = CreateClientConVar( "cat_convar_hud", true, true, true )
+CAT_CONVAR_HUD = CreateClientConVar( "cat_convar_hud", 1, true, true )
 
 catherine.option.Register( "CONVAR_HUD", CAT_CONVAR_HUD, "Show HUD", "", {
 	onSet = function( conVarObject, newVal )

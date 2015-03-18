@@ -37,6 +37,11 @@ function catherine.util.IncludeInDir( dir, isFramework )
 	end
 end
 
+function catherine.util.CalcDistanceByPos( loc, target )
+	if ( !IsValid( loc ) or !IsValid( target ) ) then return 0 end
+	return loc:GetPos( ):Distance( target:GetPos( ) )
+end
+
 function catherine.util.FindPlayerByName( name )
 	if ( !name ) then return nil end
 	for k, v in pairs( player.GetAll( ) ) do
