@@ -15,7 +15,7 @@ function catherine.bar.Add( target, targetMax, text, color, uniqueID )
 end
 
 function catherine.bar.Draw( )
-	if ( !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+	if ( !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) or catherine.option.Get( "CONVAR_BAR" ) == "0" ) then return end
 	local count = 0
 	for k, v in pairs( catherine.bar.Lists ) do
 		if ( !v.target or !v.targetMax ) then continue end

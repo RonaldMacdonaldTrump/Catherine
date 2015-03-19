@@ -15,6 +15,7 @@ netstream.Hook( "catherine.hud.CinematicIntro_Init", function( )
 end )
 
 function catherine.hud.Draw( )
+	if ( catherine.option.Get( "CONVAR_MAINHUD" ) == "0" ) then return end
 	catherine.hud.Vignette( )
 	catherine.hud.ScreenDamageDraw( )
 	catherine.hud.AmmoDraw( )
@@ -135,9 +136,4 @@ function GM:PostRenderScreenColor( pl )
 end
 
 CAT_CONVAR_HUD = CreateClientConVar( "cat_convar_hud", 1, true, true )
-
-catherine.option.Register( "CONVAR_HUD", CAT_CONVAR_HUD, "Show HUD", "", {
-	onSet = function( conVarObject, newVal )
-		RunConsoleCommand( "cat_convar_hud", newVal )
-	end
-} )
+CAT_CONVAR_BAR = CreateClientConVar( "cat_convar_bar", 1, true, true )
