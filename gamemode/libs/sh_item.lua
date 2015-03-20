@@ -25,7 +25,7 @@ function catherine.item.Register( itemTable, isBase )
 			canShowIsWorld = true,
 			func = function( pl, itemTable, ent )
 				if ( !IsValid( ent ) ) then
-					catherine.util.Notify( pl, "Not valid entity!" )
+					catherine.util.Notify( pl, "This isn't a valid entity!" )
 					return
 				end
 				if ( !catherine.inventory.HasSpace( pl ) ) then
@@ -162,7 +162,7 @@ else
 			if ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) then continue end
 			menu:AddOption( v.text or "ERROR", function( )
 				netstream.Start( "catherine.item.RunFunction", { uniqueID, k, true } )
-			end ):SetImage( "icon16/information.png" )
+			end ):SetImage( v.icon or "icon16/information.png" )
 		end
 		menu:Open( )
 	end
@@ -179,7 +179,7 @@ else
 			if ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) then continue end
 			menu:AddOption( v.text or "ERROR", function( )
 				netstream.Start( "catherine.item.RunFunction", { uniqueID, k, ent } )
-			end ):SetImage( "icon16/information.png" )
+			end ):SetImage( v.icon or "icon16/information.png" )
 		end
 		menu:Open( )
 		menu:Center( )

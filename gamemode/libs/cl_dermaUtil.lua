@@ -8,8 +8,11 @@ function Derma_Message( strText, strTitle, strButtonText )
 		Window:SetDrawOnTop( true )
 		Window.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
+			
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface.SetMaterial( Material( "CAT/ui/icon_warning2.png" ) )
+			surface.DrawTexturedRect( 30, h / 2 - 64 / 2, 64, 64 )
 
-			draw.SimpleText( strTitle or "", "catherine_normal20", 30, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( strText, "catherine_normal25", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
 

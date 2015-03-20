@@ -16,7 +16,7 @@ if ( SERVER ) then
 			catherine.character.SendCurrentNetworking( pl, function( )
 				catherine.database.GetDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
 					if ( !data or #data == 0 ) then
-						catherine.player.DoQueryInitialize( pl, function( )
+						catherine.player.QueryInitialize( pl, function( )
 							catherine.character.SendCharacterLists( pl, function( )
 								catherine.catData.Load( pl )
 								netstream.Start( pl, "catherine.LoadingStatus", { false, "Framework loaded!" } )
@@ -46,8 +46,8 @@ if ( SERVER ) then
 			end )
 		end )
 	end
-	
-	function catherine.player.DoQueryInitialize( pl, func )
+
+	function catherine.player.QueryInitialize( pl, func )
 		if ( !IsValid( pl ) ) then return end
 		catherine.database.InsertDatas( "catherine_players", {
 			_steamName = pl:SteamName( ),
@@ -57,7 +57,7 @@ if ( SERVER ) then
 			if ( func ) then func( ) end
 		end )
 	end
-	
+
 	function META:SetWeaponRaised( bool, weapon )
 		if ( !IsValid( self ) or !self:IsCharacterLoaded( ) ) then return end
 		weapon = weapon or self:GetActiveWeapon( )
@@ -70,7 +70,7 @@ if ( SERVER ) then
 			weapon:SetNextSecondaryFire( CurTime( ) + time )
 		end
 	end
-	
+
 	function META:ToggleWeaponRaised( )
 		if ( self:GetWeaponRaised( ) ) then
 			self:SetWeaponRaised( false )

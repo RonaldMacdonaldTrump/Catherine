@@ -52,7 +52,18 @@ if ( SERVER ) then
 		end
 	end
 else
-
+	local toscreen = FindMetaTable("Vector").ToScreen
+	function ENT:DrawEntityTargetID( pl, _, a )
+		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
+		local x, y, x2, y2 = pos.x, pos.y
+		local itemTable = self:GetItemTable( )
+		local customDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, self:GetItemData( ) ) or nil
+		draw.SimpleText( itemTable.name, "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( itemTable.desc, "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
+		if ( customDesc ) then
+			draw.SimpleText( customDesc, "catherine_outline15", x, y + 45, Color( 255, 255, 255, a ), 1, 1 )
+		end
+	end
 end
 
 function ENT:GetItemTable( )

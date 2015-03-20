@@ -90,9 +90,6 @@ catherine.character.RegisterGlobalVar( "att", {
 	field = "_att",
 	doNetwork = true,
 	default = "[]",
-	checkValid = function( data )
-		// to do;
-	end,
 	needTransfer = true,
 	doLocal = true
 } )

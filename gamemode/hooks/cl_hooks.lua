@@ -106,10 +106,13 @@ function GM:ProgressEntityCache( pl )
 	
 	for k, v in pairs( catherine.entityCaches ) do
 		if ( !IsValid( k ) ) then catherine.entityCaches[ k ] = nil continue end
-		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k:GetPos( ), pl:GetPos( ), 412 ) )
+		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k:GetPos( ), pl:GetPos( ), 100 ) )
 		k.alpha = a
 		if ( math.Round( a ) <= 0 ) then
 			catherine.entityCaches[ k ] = nil
+		end
+		if ( k.DrawEntityTargetID ) then
+			k:DrawEntityTargetID( pl, k, a )
 		end
 		hook.Run( "DrawEntityTargetID", pl, k, a )
 	end

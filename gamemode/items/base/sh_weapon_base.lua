@@ -23,16 +23,13 @@ Base.func.equip = {
 			catherine.item.Give( pl, itemTable.uniqueID )
 			isMenu:Remove( )
 		end
-		
 		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
 		itemData.equiped = true
-		
 		local wep = pl:Give( itemTable.weaponClass )
 		if ( IsValid( wep ) ) then
 			pl:SelectWeapon( itemTable.weaponClass )
 			wep:SetClip1( 0 )
 		end
-		
 		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
 			uniqueID = itemTable.uniqueID,
 			newData = itemData
@@ -48,11 +45,9 @@ Base.func.unequip = {
 	func = function( pl, itemTable, isMenu )
 		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
 		itemData.equiped = false
-		
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
 			pl:StripWeapon( itemTable.weaponClass )
 		end
-		
 		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
 			uniqueID = itemTable.uniqueID,
 			newData = itemData

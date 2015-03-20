@@ -10,6 +10,9 @@ Lang.datas = {
 	[ "Faction_AddMessage01" ] = "Give faction",
 	[ "Faction_RemoveMessage01" ] = "Take faction",	
 	
+	// Flag ^-^;
+	[ "Flag_GiveMessage01" ] = "Give flag",
+	[ "Flag_TakeMessage01" ] = "Take flag",
 	
 	[ "UnknownError" ] = "알 수 없는 오류 입니다.",
 	

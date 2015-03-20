@@ -16,6 +16,10 @@ Lang.datas = {
 	[ "Faction_AddMessage01" ] = "Set faction",
 	[ "Faction_RemoveMessage01" ] = "Take faction",
 	
+	// Flag ^-^;
+	[ "Flag_GiveMessage01" ] = "Give flag",
+	[ "Flag_TakeMessage01" ] = "Take flag",
+	
 	[ "UnknownError" ] = "Unknown Error",
 	[ "UnknownPlayerError" ] = "You are not giving a valid character name!",
 	[ "ArgError" ] = "%s Please enter the second argument!"
