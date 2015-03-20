@@ -1,8 +1,7 @@
 AddCSLuaFile( )
 
-SWEP.Base = "catherine_base"
 SWEP.PrintName = "Fists"
-SWEP.HoldType = "fist"
+SWEP.HoldType = "normal"
 SWEP.Slot = 1
 SWEP.SlotPos = 1
 SWEP.DrawAmmo = false
@@ -48,11 +47,11 @@ function SWEP:PreDrawViewModel( viewMdl, wep, pl )
 end
 
 function SWEP:PrimaryAttack( )
+	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
-	if ( !IsFirstTimePredicted( ) ) then return end
-	if ( CLIENT ) then return end
 	local stamina = math.Clamp( catherine.character.GetCharacterVar( pl, "stamina", 100 ) - 10, 0, 100 )
-	if ( !pl:GetWeaponRaised( ) and stamina < 10 ) then return
+	if ( !pl:GetWeaponRaised( ) or stamina < 10 ) then
+		return
 	else
 		catherine.character.SetCharacterVar( pl, "stamina", stamina )
 		

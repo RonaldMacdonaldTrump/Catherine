@@ -1,7 +1,6 @@
 AddCSLuaFile( )
 
-SWEP.Base = "catherine_base"
-SWEP.HoldType = "fist"
+SWEP.HoldType = "normal"
 SWEP.PrintName = "Key"
 SWEP.ViewModel = Model( "models/weapons/c_arms_cstrike.mdl" )
 SWEP.WorldModel = ""

@@ -77,6 +77,7 @@ catherine.character.RegisterGlobalVar( "desc", {
 catherine.character.RegisterGlobalVar( "model", {
 	field = "_model",
 	default = "models/breen.mdl",
+	doNetwork = true,
 	checkValid = function( data )
 		if ( data == "" ) then
 			return false, "Please select character model!"
@@ -396,6 +397,7 @@ if ( SERVER ) then
 			if ( globalVar and globalVar.doLocal ) then target = pl end
 			netstream.Start( target, "catherine.character.SetNetworkingVar", { pl:SteamID( ), key, value } )
 		end
+		catherine.character.RunNyanHook( "NetworkGlobalVarChanged", pl, key, value )
 	end
 
 	function catherine.character.SetCharacterVar( pl, key, value, noSync )
@@ -408,6 +410,7 @@ if ( SERVER ) then
 			if ( globalVar and globalVar.doLocal ) then target = pl end
 			netstream.Start( nil, "catherine.character.SetNetworkingCharVar", { pl:SteamID( ), key, value } )
 		end
+		catherine.character.RunNyanHook( "NetworkCharVarChanged", pl, key, value )
 	end
 
 	netstream.Hook( "catherine.character.Create", function( pl, data )
@@ -420,6 +423,11 @@ if ( SERVER ) then
 	
 	netstream.Hook( "catherine.character.Delete", function( pl, data )
 		catherine.character.Delete( pl, data )
+	end )
+	
+	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", function( pl, key, value )
+		if ( key != "_model" ) then return end
+		pl:SetModel( value )
 	end )
 else
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
@@ -468,6 +476,7 @@ else
 	
 	netstream.Hook( "catherine.character.InitializeNetworking", function( data )
 		catherine.character.networkingVars[ data[ 1 ] ] = data[ 2 ]
+		catherine.character.RunNyanHook( "NetworkInitialized", LocalPlayer( ), data[ 2 ] )
 	end )
 	
 	netstream.Hook( "catherine.character.DisconnectNetworking", function( data )
@@ -480,16 +489,26 @@ else
 	
 	netstream.Hook( "catherine.character.SetNetworkingVar", function( data )
 		catherine.character.networkingVars[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
-		catherine.character.RunNyanHook( "NetworkGlobalVarChanged" )
+		catherine.character.RunNyanHook( "NetworkGlobalVarChanged", LocalPlayer( ), data[ 2 ], data[ 3 ] )
 	end )
 	
 	netstream.Hook( "catherine.character.SetNetworkingCharVar", function( data )
 		catherine.character.networkingVars[ data[ 1 ] ][ "_charVar" ][ data[ 2 ] ] = data[ 3 ]
-		catherine.character.RunNyanHook( "NetworkCharVarChanged" )
+		catherine.character.RunNyanHook( "NetworkCharVarChanged", LocalPlayer( ), data[ 2 ], data[ 3 ] )
 	end )
 
 	netstream.Hook( "catherine.character.SendCharacters", function( data )
 		catherine.character.localCharacters = data
+	end )
+	
+	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", function( pl, key, value )
+		if ( key != "_model" ) then return end
+		pl:SetModel( value )
+	end )
+	
+	catherine.character.RegisterNyanHook( "NetworkInitialized", function( pl, charVars )
+		if ( !charVars._model ) then return end
+		pl:SetModel( charVars._model )
 	end )
 end
 

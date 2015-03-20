@@ -197,4 +197,3 @@ else
 		catherine.vgui.inventory:InitializeInventory( )
 	end )
 end
-
