@@ -52,7 +52,7 @@ function catherine.item.Register( itemTable, isBase )
 					catherine.util.Notify( pl, "Can't!" )
 					return
 				end
-				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, { } ) // ITEM DATA :!
+				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, { } )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemTable.uniqueID )
 				hook.Run( "ItemDroped", pl, itemTable )
 			end,
