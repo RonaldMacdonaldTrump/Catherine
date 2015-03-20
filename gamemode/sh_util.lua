@@ -171,11 +171,11 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.util.UniqueStringReceiver", { id, title, msg, defV } )
 	end
 	
-	netstream.Hook( "catherine.util.UniqueStringReceiver_Receive", function( caller, data )
+	netstream.Hook( "catherine.util.UniqueStringReceiver_Receive", function( pl, data )
 		local id = data[ 1 ]
-		if ( !catherine.util.StringQuerys[ caller:SteamID( ) ] or !catherine.util.StringQuerys[ caller:SteamID( ) ][ id ] ) then return end
-		catherine.util.StringQuerys[ caller:SteamID( ) ][ id ][ 4 ]( caller, data[ 2 ] )
-		catherine.util.StringQuerys[ caller:SteamID( ) ][ id ] = nil
+		if ( !catherine.util.StringQuerys[ pl:SteamID( ) ] or !catherine.util.StringQuerys[ pl:SteamID( ) ][ id ] ) then return end
+		catherine.util.StringQuerys[ pl:SteamID( ) ][ id ][ 4 ]( pl, data[ 2 ] )
+		catherine.util.StringQuerys[ pl:SteamID( ) ][ id ] = nil
 	end )
 else
 	catherine.util.blurTexture = Material( "pp/blurscreen" )

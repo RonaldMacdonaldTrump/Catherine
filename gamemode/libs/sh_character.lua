@@ -1,8 +1,10 @@
 catherine.character = catherine.character or { }
 catherine.character.globalVars = { }
+catherine.character.hooks = { }
 catherine.character.networkingVars = catherine.character.networkingVars or { }
 
 function catherine.character.RegisterGlobalVar( id, tab )
+	if ( !tab ) then tab = { } end
 	table.Merge( tab, { id = id } )
 	catherine.character.globalVars[ #catherine.character.globalVars + 1 ] = tab
 end
@@ -13,26 +15,33 @@ end
 
 function catherine.character.FindGlobalVarByID( id )
 	if ( !id ) then return nil end
-	
 	for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
 		if ( v.id == id ) then
 			return v
 		end
 	end
-	
 	return nil
 end
 
 function catherine.character.FindGlobalVarByField( field )
 	if ( !field ) then return nil end
-	
 	for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
 		if ( v.field == field ) then
 			return v
 		end
 	end
-	
 	return nil
+end
+
+function catherine.character.RegisterNyanHook( hookID, func )
+	catherine.character.hooks[ hookID ] = catherine.character.hooks[ hookID ] or { }
+	catherine.character.hooks[ hookID ][ #catherine.character.hooks[ hookID ] + 1 ] = func
+end
+
+function catherine.character.RunNyanHook( hookID, ... )
+	for k, v in pairs( catherine.character.hooks[ hookID ] or { } ) do
+		v( ... )
+	end
 end
 
 catherine.character.RegisterGlobalVar( "id", {
@@ -83,7 +92,8 @@ catherine.character.RegisterGlobalVar( "att", {
 	checkValid = function( data )
 		// to do;
 	end,
-	needTransfer = true
+	needTransfer = true,
+	doLocal = true
 } )
 
 catherine.character.RegisterGlobalVar( "schema", {
@@ -114,14 +124,16 @@ catherine.character.RegisterGlobalVar( "charVar", {
 	field = "_charVar",
 	doNetwork = true,
 	default = "[]",
-	needTransfer = true
+	needTransfer = true,
+	doLocal = true
 } )
 
 catherine.character.RegisterGlobalVar( "inventory", {
 	field = "_inv",
 	doNetwork = true,
 	default = "[]",
-	needTransfer = true
+	needTransfer = true,
+	doLocal = true
 } )
 
 catherine.character.RegisterGlobalVar( "cash", {
@@ -327,7 +339,7 @@ if ( SERVER ) then
 		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
 			if ( !data ) then
 				catherine.character.Buffers[ pl:SteamID( ) ] = { }
-				netstream.Start( pl, "catherine.character.Lists", { } )
+				netstream.Start( pl, "catherine.character.SendCharacters", { } )
 				if ( func ) then
 					func( )
 				end
@@ -342,7 +354,7 @@ if ( SERVER ) then
 			end
 			
 			catherine.character.Buffers[ pl:SteamID( ) ] = data
-			netstream.Start( pl, "catherine.character.Lists", data )
+			netstream.Start( pl, "catherine.character.SendCharacters", data )
 			if ( func ) then
 				func( )
 			end
@@ -373,13 +385,16 @@ if ( SERVER ) then
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected", catherine.character.PlayerDisconnected )
 	hook.Add( "DataSave", "catherine.character.DataSave", catherine.character.DataSave )
 
-	// static 예외 처리 추가바람;;
 	function catherine.character.SetGlobalVar( pl, key, value, noSync )
 		if ( !IsValid( pl ) and !key ) then return default end
+		local globalVar = catherine.character.FindGlobalVarByField( key )
+		if ( globalVar and globalVar.static ) then return end
 		if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or catherine.character.networkingVars[ pl:SteamID( ) ][ key ] == nil ) then return end
 		catherine.character.networkingVars[ pl:SteamID( ) ][ key ] = value
 		if ( !noSync ) then
-			netstream.Start( nil, "catherine.character.SetNetworkingVar", { pl:SteamID( ), key, value } )
+			local target = nil
+			if ( globalVar and globalVar.doLocal ) then target = pl end
+			netstream.Start( target, "catherine.character.SetNetworkingVar", { pl:SteamID( ), key, value } )
 		end
 	end
 
@@ -388,20 +403,23 @@ if ( SERVER ) then
 		if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or !catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ] ) then return end
 		catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ][ key ] = value
 		if ( !noSync ) then
+			local globalVar = catherine.character.FindGlobalVarByField( "_charVar" )
+			local target = nil
+			if ( globalVar and globalVar.doLocal ) then target = pl end
 			netstream.Start( nil, "catherine.character.SetNetworkingCharVar", { pl:SteamID( ), key, value } )
 		end
 	end
 
-	netstream.Hook( "catherine.character.Create", function( caller, data )
-		catherine.character.Create( caller, data )
+	netstream.Hook( "catherine.character.Create", function( pl, data )
+		catherine.character.Create( pl, data )
 	end )
 	
-	netstream.Hook( "catherine.character.Use", function( caller, data )
-		catherine.character.Use( caller, data )
+	netstream.Hook( "catherine.character.Use", function( pl, data )
+		catherine.character.Use( pl, data )
 	end )
 	
-	netstream.Hook( "catherine.character.Delete", function( caller, data )
-		catherine.character.Delete( caller, data )
+	netstream.Hook( "catherine.character.Delete", function( pl, data )
+		catherine.character.Delete( pl, data )
 	end )
 else
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
@@ -416,7 +434,28 @@ else
 				end )
 			end
 		else
-			Derma_Message( data[ 2 ], "Character Create Error", "OK" )
+			Derma_Message( data[ 2 ], "Error", "OK" )
+		end
+	end )
+	
+	netstream.Hook( "catherine.character.UseResult", function( data )
+		if ( data[ 1 ] == true ) then
+			if ( IsValid( catherine.vgui.character ) ) then
+				catherine.vgui.character:Close( )
+			end
+		else
+			Derma_Message( data[ 2 ], "Error", "OK" )
+		end
+	end )
+	
+	netstream.Hook( "catherine.character.DeleteResult", function( data )
+		if ( data[ 1 ] == true ) then
+			if ( IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.CharacterPanel ) ) then
+				catherine.vgui.character.CharacterPanel:Remove( )
+				catherine.vgui.character:UseCharacterPanel( )
+			end
+		else
+			Derma_Message( data[ 2 ], "Error", "OK" )
 		end
 	end )
 	
@@ -441,38 +480,15 @@ else
 	
 	netstream.Hook( "catherine.character.SetNetworkingVar", function( data )
 		catherine.character.networkingVars[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
-		
-		if ( IsValid( catherine.vgui.inventory ) ) then
-			catherine.vgui.inventory:InitializeInv( )
-		end
+		catherine.character.RunNyanHook( "NetworkGlobalVarChanged" )
 	end )
 	
 	netstream.Hook( "catherine.character.SetNetworkingCharVar", function( data )
 		catherine.character.networkingVars[ data[ 1 ] ][ "_charVar" ][ data[ 2 ] ] = data[ 3 ]
+		catherine.character.RunNyanHook( "NetworkCharVarChanged" )
 	end )
 
-	netstream.Hook( "catherine.character.UseResult", function( data )
-		if ( data[ 1 ] == true ) then
-			if ( IsValid( catherine.vgui.character ) ) then
-				catherine.vgui.character:Close( )
-			end
-		else
-			Derma_Message( data[ 2 ], "Error", "OK" )
-		end
-	end )
-	
-	netstream.Hook( "catherine.character.DeleteResult", function( data )
-		if ( data[ 1 ] == true ) then
-			if ( IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.CharacterPanel ) ) then
-				catherine.vgui.character.CharacterPanel:Remove( )
-				catherine.vgui.character:UseCharacterPanel( )
-			end
-		else
-			Derma_Message( data[ 2 ], "Error", "OK" )
-		end
-	end )
-	
-	netstream.Hook( "catherine.character.Lists", function( data )
+	netstream.Hook( "catherine.character.SendCharacters", function( data )
 		catherine.character.localCharacters = data
 	end )
 end

@@ -1,14 +1,14 @@
 catherine.faction = catherine.faction or { }
 catherine.faction.Lists = { }
 
-function catherine.faction.GetAll( )
-	return catherine.faction.Lists
-end
-
 function catherine.faction.Register( tab )
 	tab.index = tab.index or #catherine.faction.Lists + 1
 	catherine.faction.Lists[ tab.index ] = tab
 	team.SetUp( tab.index, tab.name, tab.color )
+end
+
+function catherine.faction.GetAll( )
+	return catherine.faction.Lists
 end
 
 function catherine.faction.FindByName( name )
@@ -75,6 +75,7 @@ if ( SERVER ) then
 		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
 		table.RemoveByValue( whiteLists, id )
 		catherine.catData.Set( pl, "whitelists", whiteLists, false, true )
+		return true
 	end
 
 	function catherine.faction.HasWhiteList( pl, id )

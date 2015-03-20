@@ -20,8 +20,8 @@ Report Value :
 	UserURL = "htVtRYpjnm:IHtz/XDRaV/CElqTdpLsBsdMHaYMInYJCGsQhjpdGFFNtpTggFiwcGNegNAHPgCvneQbauNtnrSwiMNeibRzNBaEWHXMHknjvAlFBBwiNBJzK.RWGlwJDalHCYafycCWMxQjBWTUSvkUEOoilaSSBwYEtNJvClUbmPZjGAzbttlaZvwcCsA/fWdsUiLnGRcsWxGJgKOaooQJkXyxtruQlYAULSgjpORImvAkDzJAMNTNiGBxGQiEQmoiorpHwNHEiMdqAOYtF/UYbwWRdzqyEKSiXtqZYnqGtaRahUvnAZSRkUTpLIkvWONmUHpVcbAYoPyHpjIYhCfAoCXSfOvLikkFWJjipcNwynVFaBmExzDOKli_chJXwbBvLTIpBbDeSorNWMFRAHolIDjfweAEdrLrqhtNOIbuWoZkvgwooITSrdRJnxUUThDdqrpZZyvZMqNxLUgjxzOEcnuZGjDxlYXNTqQMQevkfQxowiODrsfxTUsgwWHObQKFMoVQdkZlpxubUnZGTqLworSpjbuIqNeUVrrDjAvLHIKWyh.ZpShgonFodbdRSSvUrofqUaRZGBaVOICgpBPMPjTkFfxROhzcPggEzsJiIDxLiZuGgaxhZIUvnEnYZMegyQuUykxVEjitACRwLpnBAJvpUDzSEROtPyivLqsrxBrZRLZkvNIYIizZmUCP"
 }
 
-netstream.Hook( "catherine.plugin.bugreport.Send", function( caller, data )
-	Plugin:SendBugReport( caller, data[ 1 ], data[ 2 ] )
+netstream.Hook( "catherine.plugin.bugreport.Send", function( pl, data )
+	Plugin:SendBugReport( pl, data[ 1 ], data[ 2 ] )
 end )
 
 function Plugin:FetchUserKey( )

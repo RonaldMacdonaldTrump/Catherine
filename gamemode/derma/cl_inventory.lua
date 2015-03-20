@@ -26,10 +26,10 @@ function PANEL:Init( )
 	self.weight:SetSize( 90, 90 )
 	self.weight:SetCircleSize( 40 )
 
-	self:InitializeInv( )
+	self:InitializeInventory( )
 end
 
-function PANEL:InitializeInv( )
+function PANEL:InitializeInventory( )
 	local inventory = catherine.inventory.Get( )
 	local tab = { }
 	
@@ -42,10 +42,10 @@ function PANEL:InitializeInv( )
 	
 	self.inventory = tab
 	self.weight:SetWeight( catherine.inventory.GetWeights( ) )
-	self:Refresh( )
+	self:BuildInventory( )
 end
 
-function PANEL:Refresh( )
+function PANEL:BuildInventory( )
 	if ( !self.inventory ) then return end
 	self.Lists:Clear( )
 	for k, v in pairs( self.inventory ) do

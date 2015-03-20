@@ -13,7 +13,7 @@ function PANEL:Init( )
 	self.Lists:SetSize( self.w - 20, self.h - 45 )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
-	self.Lists:EnableVerticalScrollbar( true )	
+	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 	end
@@ -28,27 +28,28 @@ function PANEL:InitializeOption( )
 		opt[ v.category ][ #opt[ v.category ] + 1 ] = v
 	end
 	self.optionTable = opt
-	self:RefreshOption( )
+	self:BuildOption( )
 end
 
-function PANEL:RefreshOption( )
+function PANEL:BuildOption( )
 	self.Lists:Clear( )
 	for k, v in pairs( self.optionTable or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetName( k )
 		form:SetSpacing( 0 )
 		form:SetAutoSize( true )
-		form.Header:SetFont( "catherine_normal15" )
-		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
 		form.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
 			draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
 		end
+		form.Header:SetFont( "catherine_normal15" )
+		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
+		
 		for k1, v1 in pairs( v ) do
-			local panel = vgui.Create( "catherine.vgui.optionItem" )
-			panel:SetTall( 60 )
-			panel:SetOption( v1 )
-			form:AddItem( panel )
+			local item = vgui.Create( "catherine.vgui.optionItem" )
+			item:SetTall( 60 )
+			item:SetOption( v1 )
+			form:AddItem( item )
 		end
 		self.Lists:AddItem( form )
 	end

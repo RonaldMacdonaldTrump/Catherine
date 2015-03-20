@@ -23,8 +23,16 @@ function catherine.flag.FindByID( id )
 end
 
 function catherine.flag.Has( pl, id )
-	local flagData = catherine.character.GetCharacterVar( pl, "flags", { } )
+	local flagData = catherine.character.GetCharacterVar( pl, "flags", "" )
 	return table.HasValue( flagData, id )
+end
+
+function catherine.flag.GetAllToString( )
+	local flags = ""
+	for k, v in pairs( catherine.flag.GetAll( ) ) do
+		flags = flags .. v.id
+	end
+	return flags
 end
 
 function META:HasFlag( id )
@@ -32,11 +40,20 @@ function META:HasFlag( id )
 end
 
 if ( SERVER ) then
-	function catherine.flag.Give( pl, id )
-	
+	function catherine.flag.Give( pl, ids )
+		if ( !IsValid( pl ) or !ids ) then return end
+		local ex = string.Explode( "", ids )
+		local result = catherine.character.GetCharacterVar( pl, "flags", "" )
+		for k, v in pairs( ex ) do
+			if ( catherine.flag.Has( pl, v.id ) ) then
+				return false, pl:Name( ) .. " alreay has " .. v .. " flag!"
+			end
+			
+			result = result .. v
+		end
 	end
 
-	function catherine.flag.Take( pl, id )
+	function catherine.flag.Take( pl, ids )
 	
 	end
 	

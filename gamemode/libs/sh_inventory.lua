@@ -191,4 +191,10 @@ else
 	function META:GetInvItemData( uniqueID )
 		return catherine.inventory.GetItemData( uniqueID )
 	end
+
+	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", function( )
+		if ( !IsValid( catherine.vgui.inventory ) ) then return end
+		catherine.vgui.inventory:InitializeInventory( )
+	end )
 end
+
