@@ -80,6 +80,7 @@ if ( SERVER ) then
 	end )
 
 	catherine.item.RegisterNyanHook( "ItemDroped", "catherine.item.hooks.weapon_base.ItemDroped", function( pl, itemTable )
+		if ( !itemTable.isWeapon ) then return end
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
 			pl:StripWeapon( itemTable.weaponClass )
 		end

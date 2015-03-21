@@ -118,8 +118,10 @@ function GM:PlayerInitialSpawn( pl )
 	timer.Create( "Catherine.timer.waitPlayer." .. pl:SteamID( ), 1, 0, function( )
 		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
 			timer.Remove( "Catherine.timer.waitPlayer." .. pl:SteamID( ) )
-			catherine.player.Initialize( pl )
-			pl:SetNoDraw( true )
+			timer.Simple( 2, function( )
+				catherine.player.Initialize( pl )
+				pl:SetNoDraw( true )
+			end )
 		end
 	end )
 end

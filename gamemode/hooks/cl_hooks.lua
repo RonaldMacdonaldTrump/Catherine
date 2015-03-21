@@ -3,7 +3,8 @@ catherine.loading = catherine.loading or {
 	errorMsg = nil,
 	alpha = 255,
 	rotate = 0,
-	msg = ""
+	rotateTwo = 0,
+	msg = "Please wait ..."
 }
 catherine.hudHide = {
 	"CHudHealth",
@@ -56,19 +57,14 @@ function GM:HUDDrawScoreBoard( )
 		catherine.loading.alpha = Lerp( 0.008, catherine.loading.alpha, 0 )
 	end
 	
-	catherine.loading.rotate = math.Approach( catherine.loading.rotate, catherine.loading.rotate - 3, 3 )
+	catherine.loading.rotate = math.Approach( catherine.loading.rotate, catherine.loading.rotate - 7, 4 )
+	catherine.loading.rotateTwo = math.Approach( catherine.loading.rotateTwo, catherine.loading.rotateTwo + 7, 3 )
 	
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 235, 235, 235, a ) )
 	
-	surface.SetDrawColor( 150, 150, 150, a )
+	surface.SetDrawColor( 255, 255, 255, a )
 	surface.SetMaterial( Material( "gui/gradient_up" ) )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )
-
-	surface.SetDrawColor( 255, 255, 255, a )
-	surface.SetMaterial( Material( "CAT/logos/1.png" ) )
-	surface.DrawTexturedRect( scrW / 2 - 512 / 2, scrH / 2 - 256 / 2, 512, 256 )
-	
-	draw.SimpleText( "Version " .. catherine.update.VERSION, "catherine_normal15", 15, 20, Color( 50, 50, 50, a ), TEXT_ALIGN_LEFT, 1 )
 
 	if ( catherine.loading.errorMsg ) then
 		draw.NoTexture( )
@@ -78,12 +74,16 @@ function GM:HUDDrawScoreBoard( )
 		draw.SimpleText( catherine.loading.errorMsg, "catherine_normal20", 100, scrH - 50, Color( 80, 80, 80, a ), TEXT_ALIGN_LEFT, 1 )
 	else
 		draw.NoTexture( )
-		surface.SetDrawColor( 90, 90, 90, catherine.loading.alpha - 55 )
-		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, 90, 360, 100 )
+		surface.SetDrawColor( 90, 90, 90, catherine.loading.alpha )
+		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, catherine.loading.rotate, 100, 100 )
 		
 		draw.NoTexture( )
-		surface.SetDrawColor( 255, 255, 255, catherine.loading.alpha )
-		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, catherine.loading.rotate, 100, 100 )
+		surface.SetDrawColor( 200, 200, 200, catherine.loading.alpha - 55 )
+		catherine.geometry.DrawCircle( 50, scrH - 50, 10, 10, 90, 360, 100 )
+		
+		draw.NoTexture( )
+		surface.SetDrawColor( 0, 0, 0, catherine.loading.alpha )
+		catherine.geometry.DrawCircle( 50, scrH - 50, 10, 5, catherine.loading.rotateTwo, 100, 100 )
 	
 		draw.SimpleText( catherine.loading.msg, "catherine_normal20", 100, scrH - 50, Color( 80, 80, 80, a ), TEXT_ALIGN_LEFT, 1 )
 	end
