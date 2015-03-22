@@ -384,7 +384,7 @@ if ( SERVER ) then
 	hook.Add( "DataSave", "catherine.character.DataSave", catherine.character.DataSave )
 
 	function catherine.character.SetGlobalVar( pl, key, value, noSync )
-		if ( !IsValid( pl ) and !key ) then return default end
+		if ( !IsValid( pl ) and !key ) then return end
 		local globalVar = catherine.character.FindGlobalVarByField( key )
 		if ( globalVar and globalVar.static ) then return end
 		if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or catherine.character.networkingVars[ pl:SteamID( ) ][ key ] == nil ) then return end
@@ -398,7 +398,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.SetCharacterVar( pl, key, value, noSync )
-		if ( !IsValid( pl ) and !key ) then return default end
+		if ( !IsValid( pl ) and !key ) then return end
 		if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or !catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ] ) then return end
 		catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ][ key ] = value
 		if ( !noSync ) then
@@ -485,11 +485,13 @@ else
 	end )
 	
 	netstream.Hook( "catherine.character.SetNetworkingVar", function( data )
+		if ( !catherine.character.networkingVars[ data[ 1 ] ] ) then return end
 		catherine.character.networkingVars[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
 		catherine.character.RunNyanHook( "NetworkGlobalVarChanged", LocalPlayer( ), data[ 2 ], data[ 3 ] )
 	end )
 	
 	netstream.Hook( "catherine.character.SetNetworkingCharVar", function( data )
+		if ( !catherine.character.networkingVars[ data[ 1 ] ] or !catherine.character.networkingVars[ data[ 1 ] ][ "_charVar" ] ) then return end
 		catherine.character.networkingVars[ data[ 1 ] ][ "_charVar" ][ data[ 2 ] ] = data[ 3 ]
 		catherine.character.RunNyanHook( "NetworkCharVarChanged", LocalPlayer( ), data[ 2 ], data[ 3 ] )
 	end )

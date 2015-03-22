@@ -41,6 +41,16 @@ function GM:PlayerDisconnected( pl )
 	end
 end
 
+// 철인 RP 방지 시스템
+function GM:EntityTakeDamage( pl, dmginfo )
+	if ( !pl:IsPlayer( ) or !dmginfo:IsBulletDamage( ) ) then return end
+	pl:SetRunSpeed( pl:GetWalkSpeed( ) )
+	timer.Remove( "Catherine.timer.RunSpamProtection_" .. pl:SteamID( ) )
+	timer.Create( "Catherine.timer.RunSpamProtection_" .. pl:SteamID( ), 2, 1, function( )
+		pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
+	end )
+end
+
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
 		timer.Create("Catherine.timer.weapontoggle." .. pl:SteamID( ), 1, 1, function()
@@ -50,7 +60,7 @@ function GM:KeyPress( pl, key )
 	elseif ( key == IN_USE ) then
 		local tr = { }
 		tr.start = pl:GetShootPos( )
-		tr.endpos = tr.start + pl:GetAimVector() * 60
+		tr.endpos = tr.start + pl:GetAimVector( ) * 60
 		tr.filter = pl
 		local ent = util.TraceLine( tr ).Entity
 		if ( IsValid( ent ) and ent:IsDoor( ) ) then
@@ -124,23 +134,6 @@ function GM:PlayerInitialSpawn( pl )
 			end )
 		end
 	end )
-end
-
-function GM:PlayerNoClip( pl, bool )
-	if ( pl:IsAdmin( ) ) then
-		if ( pl:GetMoveType( ) == MOVETYPE_WALK ) then
-			pl:SetNoDraw( true )
-			pl:DrawShadow( false )
-			pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
-			catherine.network.SetNetVar( pl, "nocliping", true )
-		else
-			pl:SetNoDraw( false )
-			pl:DrawShadow( true )
-			pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
-			catherine.network.SetNetVar( pl, "nocliping", false )
-		end
-	end
-	return pl:IsAdmin( )
 end
 
 function GM:PlayerGiveSWEP( pl )

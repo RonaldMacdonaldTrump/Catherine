@@ -38,7 +38,7 @@ Item.func.drop = {
 		catherine.util.UniqueStringReceiver( pl, "Cash_UniqueDropMoney", "What amount for drop money?", "", catherine.cash.Get( pl ), function( _, val )
 			val = tonumber( val )
 			if ( !val ) then return end
-			if ( catherine.cash.Get( pl ) < val ) then
+			if ( catherine.cash.Get( pl ) < val or val <= 0 ) then
 				catherine.util.Notify( pl, "You can't do that!" )
 				return
 			end

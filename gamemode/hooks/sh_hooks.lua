@@ -148,3 +148,20 @@ function GM:CalcMainActivity( pl, velo )
 		return pl.CalcIdle or ACT_IDLE, pl.CalcOver or -1
 	end
 end
+
+function GM:PlayerNoClip( pl, bool )
+	if ( pl:IsAdmin( ) ) then
+		if ( pl:GetMoveType( ) == MOVETYPE_WALK ) then
+			pl:SetNoDraw( true )
+			pl:DrawShadow( false )
+			pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
+			if ( SERVER ) then catherine.network.SetNetVar( pl, "nocliping", true ) end
+		else
+			pl:SetNoDraw( false )
+			pl:DrawShadow( true )
+			pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
+			if ( SERVER ) then catherine.network.SetNetVar( pl, "nocliping", false ) end
+		end
+	end
+	return pl:IsAdmin( )
+end
