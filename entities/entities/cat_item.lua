@@ -26,7 +26,6 @@ if ( SERVER ) then
 	end
 
 	function ENT:InitializeItem( itemID, itemData )
-		//if ( !itemTable ) then catherine.util.ErrorPrint( "Failed to initialize item entity! [ cat_item.lua ]" ) return end
 		self:SetNetVar( "uniqueID", itemID )
 		self:SetNetVar( "itemData", itemData )
 	end

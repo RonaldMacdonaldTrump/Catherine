@@ -286,13 +286,12 @@ if ( SERVER ) then
 	function catherine.character.InitializeNetworking( pl, id, data )
 		if ( !IsValid( pl ) or !id or !data ) then return end
 		catherine.character.networkingVars[ pl:SteamID( ) ] = { }
-		
 		for k, v in pairs( data ) do
 			local globalVarTab = catherine.character.FindGlobalVarByField( k )
 			if ( globalVarTab and !globalVarTab.doNetwork ) then continue end
 			catherine.character.networkingVars[ pl:SteamID( ) ][ k ] = v
 		end
-		
+		catherine.character.RunNyanHook( "InitializeNetworking", pl, catherine.character.networkingVars[ pl:SteamID( ) ] )
 		netstream.Start( nil, "catherine.character.InitializeNetworking", { pl:SteamID( ), catherine.character.networkingVars[ pl:SteamID( ) ] } )
 	end
 
