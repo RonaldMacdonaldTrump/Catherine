@@ -21,7 +21,7 @@ function PANEL:Paint( w, h )
 	surface.SetDrawColor( 90, 90, 90, 255 )
 	catherine.geometry.DrawCircle( w / 2, h / 2, self.size, 5, 90, self.invWeightAni, 100 )
 
-	draw.SimpleText( math.Round( self.invWeightTextAni * 100 ) .. " %", "catherine_normal20", w / 2, h / 2, Color( 90, 90, 90, 255 ), 1, 1 )
+	draw.SimpleText( math.Round( self.invWeightTextAni * 100 ) .. " %", "catherine_normal25", w / 2, h / 2, Color( 90, 90, 90, 255 ), 1, 1 )
 end
 
 function PANEL:SetCircleSize( size )

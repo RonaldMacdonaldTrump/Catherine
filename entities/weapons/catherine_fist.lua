@@ -52,41 +52,40 @@ function SWEP:PrimaryAttack( )
 	local stamina = math.Clamp( catherine.character.GetCharacterVar( pl, "stamina", 100 ) - 10, 0, 100 )
 	if ( !pl:GetWeaponRaised( ) or stamina < 10 ) then
 		return
-	else
-		catherine.character.SetCharacterVar( pl, "stamina", stamina )
-		
-		pl:SetAnimation( PLAYER_ATTACK1 )
-		
-		local viewModel = pl:GetViewModel( )
-		viewModel:SendViewModelMatchingSequence( viewModel:LookupSequence( "fists_idle_0" .. math.random( 1, 2 ) ) )
-		
-		timer.Simple( 0.1, function( )
-			viewModel:SendViewModelMatchingSequence( viewModel:LookupSequence( table.Random( { "fists_left", "fists_right" } ) ) )
-		end )
-		
-		self:EmitSound( "npc/vort/claw_swing" .. math.random( 1, 2 ) .. ".wav" )
-		pl:SendLua( "surface.PlaySound(\"npc/vort/claw_swing" .. math.random( 1, 2 ) .. ".wav\")" )
-		
-		pl:LagCompensation( true )
-		local tr = util.TraceLine( {
-			start = pl:GetShootPos( ),
-			endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * self.HitDistance,
-			filter = pl
-		} )
-		
-		if ( tr.Hit ) then
-			self:EmitSound( "Flesh.ImpactHard" )
-			pl:SendLua( "surface.PlaySound( \"Flesh.ImpactHard\" )" )
-			if ( tr.Entity:IsPlayer( ) ) then
-				local damageInfo = DamageInfo( )
-				damageInfo:SetAttacker( pl )
-				damageInfo:SetInflictor( self )
-				damageInfo:SetDamage( math.random( 8, 12 ) )
-				tr.Entity:TakeDamageInfo( damageInfo )
-			end
-		end
-		pl:LagCompensation( false )
 	end
+	catherine.character.SetCharacterVar( pl, "stamina", stamina )
+	
+	pl:SetAnimation( PLAYER_ATTACK1 )
+	
+	local viewModel = pl:GetViewModel( )
+	viewModel:SendViewModelMatchingSequence( viewModel:LookupSequence( "fists_idle_0" .. math.random( 1, 2 ) ) )
+	
+	timer.Simple( 0.1, function( )
+		viewModel:SendViewModelMatchingSequence( viewModel:LookupSequence( table.Random( { "fists_left", "fists_right" } ) ) )
+	end )
+	
+	self:EmitSound( "npc/vort/claw_swing" .. math.random( 1, 2 ) .. ".wav" )
+	pl:SendLua( "surface.PlaySound(\"npc/vort/claw_swing" .. math.random( 1, 2 ) .. ".wav\")" )
+	
+	pl:LagCompensation( true )
+	local tr = util.TraceLine( {
+		start = pl:GetShootPos( ),
+		endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * self.HitDistance,
+		filter = pl
+	} )
+	
+	if ( tr.Hit ) then
+		self:EmitSound( "Flesh.ImpactHard" )
+		pl:SendLua( "surface.PlaySound( \"Flesh.ImpactHard\" )" )
+		if ( tr.Entity:IsPlayer( ) ) then
+			local damageInfo = DamageInfo( )
+			damageInfo:SetAttacker( pl )
+			damageInfo:SetInflictor( self )
+			damageInfo:SetDamage( math.random( 8, 12 ) )
+			tr.Entity:TakeDamageInfo( damageInfo )
+		end
+	end
+	pl:LagCompensation( false )
 	
 	self:SetNextPrimaryFire( CurTime( ) + self.Primary.Delay )
 end

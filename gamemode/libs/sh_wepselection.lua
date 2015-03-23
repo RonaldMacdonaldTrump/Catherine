@@ -1,7 +1,7 @@
 catherine.wep = catherine.wep or { }
 
 if ( SERVER ) then
-	concommand.Add( "catherine.cmd.weaponselect", function( pl, _, args )
+	concommand.Add( "cat.cmd.weaponselect", function( pl, _, args )
 		pl:SelectWeapon( args[ 1 ] )
 	end )
 else
@@ -34,10 +34,9 @@ else
 		local defy = scrH * 0.4
 		for k, v in pairs( pl:GetWeapons( ) ) do
 			local color = Color( 255, 255, 255 )
-			if ( k == catherine.wep.latestSlot ) then color = Color( 255, 150, 150 ) end
+			if ( k == catherine.wep.latestSlot ) then color = Color( 50, 50, 50 ) end
 			color.a = math.Clamp( 255 - math.TimeFraction( catherine.wep.showTime, catherine.wep.noShowTime, CurTime( ) ) * 255, 0, 255 )
-			
-			draw.SimpleText( v:GetPrintName( ), "catherine_outline20", defx, defy + ( k * 25 ), color, TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( v:GetPrintName( ), "catherine_normal20", defx, defy + ( k * 25 ), color, TEXT_ALIGN_LEFT, 1 )
 			if ( k == catherine.wep.latestSlot and catherine.wep.markup ) then
 				catherine.wep.markup:Draw( defx + 128, defy + 24, 0, 1, color.a )
 			end
@@ -68,7 +67,7 @@ else
 				catherine.wep.showTime = 0 catherine.wep.noShowTime = 0
 				for k, v in pairs( weps ) do
 					if ( k != catherine.wep.latestSlot ) then continue end
-					RunConsoleCommand( "catherine.cmd.weaponselect", v:GetClass( ) )
+					RunConsoleCommand( "cat.cmd.weaponselect", v:GetClass( ) )
 					return true
 				end
 			end

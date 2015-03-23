@@ -1,6 +1,6 @@
 catherine.character = catherine.character or { }
 catherine.character.globalVars = { }
-catherine.character.hooks = { }
+catherine.character.hooks = catherine.character.hooks or { }
 catherine.character.networkingVars = catherine.character.networkingVars or { }
 
 function catherine.character.RegisterGlobalVar( id, tab )
@@ -33,9 +33,9 @@ function catherine.character.FindGlobalVarByField( field )
 	return nil
 end
 
-function catherine.character.RegisterNyanHook( hookID, func )
+function catherine.character.RegisterNyanHook( hookID, index, func )
 	catherine.character.hooks[ hookID ] = catherine.character.hooks[ hookID ] or { }
-	catherine.character.hooks[ hookID ][ #catherine.character.hooks[ hookID ] + 1 ] = func
+	catherine.character.hooks[ hookID ][ index ] = func
 end
 
 function catherine.character.RunNyanHook( hookID, ... )
@@ -286,13 +286,12 @@ if ( SERVER ) then
 	function catherine.character.InitializeNetworking( pl, id, data )
 		if ( !IsValid( pl ) or !id or !data ) then return end
 		catherine.character.networkingVars[ pl:SteamID( ) ] = { }
-		
 		for k, v in pairs( data ) do
 			local globalVarTab = catherine.character.FindGlobalVarByField( k )
 			if ( globalVarTab and !globalVarTab.doNetwork ) then continue end
 			catherine.character.networkingVars[ pl:SteamID( ) ][ k ] = v
 		end
-		
+		catherine.character.RunNyanHook( "InitializeNetworking", pl, catherine.character.networkingVars[ pl:SteamID( ) ] )
 		netstream.Start( nil, "catherine.character.InitializeNetworking", { pl:SteamID( ), catherine.character.networkingVars[ pl:SteamID( ) ] } )
 	end
 

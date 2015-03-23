@@ -10,8 +10,10 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) or !workID or !data ) then return end
 		if ( workID == CAT_INV_ACTION_ADD ) then
 			local inventory = catherine.inventory.Get( pl )
-			local uniqueID = data.uniqueID
+			local itemTable = catherine.item.FindByID( data.uniqueID )
+			local uniqueID = itemTable.uniqueID
 			local int = math.max( data.int or 1, 1 ) or 1
+			
 			if ( catherine.inventory.HasItem( pl, uniqueID ) ) then
 				inventory[ uniqueID ] = {
 					uniqueID = inventory[ uniqueID ].uniqueID,
@@ -23,7 +25,7 @@ if ( SERVER ) then
 				inventory[ uniqueID ] = {
 					uniqueID = uniqueID,
 					int = int,
-					itemData = data.itemData
+					itemData = itemTable.itemData or { }
 				}
 				catherine.character.SetGlobalVar( pl, "_inv", inventory )
 			end
@@ -31,6 +33,7 @@ if ( SERVER ) then
 			if ( !catherine.inventory.HasItem( pl, data ) ) then return end
 			local inventory = catherine.inventory.Get( pl )
 			local int = math.max( inventory[ data ].int - 1, 0 )
+			
 			if ( int != 0 ) then
 				inventory[ data ] = {
 					uniqueID = inventory[ data ].uniqueID,
@@ -42,9 +45,10 @@ if ( SERVER ) then
 			end
 			catherine.character.SetGlobalVar( pl, "_inv", inventory )
 		elseif ( workID == CAT_INV_ACTION_UPDATE ) then
+			if ( !catherine.inventory.HasItem( pl, data.uniqueID ) ) then return end
 			local uniqueID = data.uniqueID
-			if ( !catherine.inventory.HasItem( pl, uniqueID ) ) then return end
 			local inventory = catherine.inventory.Get( pl )
+			
 			inventory[ uniqueID ] = {
 				uniqueID = inventory[ uniqueID ].uniqueID,
 				int = inventory[ uniqueID ].int,
@@ -58,7 +62,7 @@ if ( SERVER ) then
 	
 	function catherine.inventory.IsEquipped( pl, uniqueID )
 		local itemData = catherine.inventory.GetItemData( pl, uniqueID )
-		return itemData.equiped
+		return itemData.equiped or false
 	end
 
 	function catherine.inventory.HasItem( pl, uniqueID )
@@ -130,6 +134,19 @@ if ( SERVER ) then
 	function META:SetInvItemData( uniqueID, key, newData )
 		return catherine.inventory.SetItemData( self, uniqueID, key, newData )
 	end
+
+	catherine.character.RegisterNyanHook( "InitializeNetworking", 1, function( pl, data )
+		if ( !data._inv ) then return end
+		local inventory, changed = data._inv, false
+		for k, v in pairs( inventory ) do
+			if ( catherine.item.FindByID( k ) ) then continue end
+			inventory[ k ] = nil
+			changed = true
+		end
+		if ( changed ) then
+			catherine.character.SetGlobalVar( pl, "_inv", inventory )
+		end
+	end )
 else
 	function catherine.inventory.Get( )
 		return catherine.character.GetGlobalVar( LocalPlayer( ), "_inv", { } )
@@ -150,7 +167,7 @@ else
 	
 	function catherine.inventory.IsEquipped( uniqueID )
 		local itemData = catherine.inventory.GetItemData( uniqueID )
-		return itemData.equiped
+		return itemData.equiped or false
 	end
 
 	function catherine.inventory.GetWeights( )

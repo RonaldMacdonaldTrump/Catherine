@@ -5,7 +5,7 @@ Plugin.author = "L7D"
 Plugin.desc = "Good stuff."
 
 if ( SERVER ) then
-	function Plugin:SaveItems( )
+	function Plugin:DataSave( )
 		local data = { }
 		for k, v in pairs( ents.FindByClass( "cat_item" ) ) do
 			data[ #data + 1 ] = {
@@ -15,23 +15,12 @@ if ( SERVER ) then
 				ang = v:GetAngles( )
 			}
 		end
-		
 		catherine.data.Set( "items", data )
-	end
-
-	function Plugin:LoadItems( )
-		local data = catherine.data.Get( "items", { } )
-
-		for k, v in pairs( data ) do
-			catherine.item.Spawn( v.uniqueID, v.pos, v.ang, v.itemData )
-		end
-	end
-	
-	function Plugin:DataSave( )
-		self:SaveItems( )
 	end
 	
 	function Plugin:DataLoad( )
-		self:LoadItems( )
+		for k, v in pairs( catherine.data.Get( "items", { } ) ) do
+			catherine.item.Spawn( v.uniqueID, v.pos, v.ang, v.itemData )
+		end
 	end
 end

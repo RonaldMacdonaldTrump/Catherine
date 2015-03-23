@@ -20,14 +20,14 @@ if ( SERVER ) then
 				v.nextStaminaUp = CurTime( ) + 3
 			end
 			if ( v:IsRunning( ) and v.nextStaminaDown <= CurTime( ) ) then
-				local staminaDown = math.Clamp( catherine.character.GetCharacterVar( v, "stamina", 100 ) - 5, 0, 100 )
+				local staminaDown = math.Clamp( catherine.character.GetCharacterVar( v, "stamina", 100 ) + ( -10 + math.min( ( catherine.attribute.GetProgress( v, CAT_ATT_STAMINA ) ) * 0.25, 7.5 ) ), 0, 100 )
 				if ( staminaDown < 10 ) then
 					v.runSpeed = v:GetRunSpeed( )
 					v:SetRunSpeed( v:GetWalkSpeed( ) )
+					catherine.attribute.AddProgress( v, CAT_ATT_STAMINA, 0.09 )
 				else
 					catherine.character.SetCharacterVar( v, "stamina", staminaDown )
 				end
-				
 				v.nextStaminaDown = CurTime( ) + 1
 			else
 				if ( v.nextStaminaUp <= CurTime( ) ) then
@@ -36,7 +36,9 @@ if ( SERVER ) then
 						v:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
 					end
 					
-					catherine.character.SetCharacterVar( v, "stamina", staminaUp )
+					if ( staminaUp != catherine.character.GetCharacterVar( v, "stamina", 100 ) ) then
+						catherine.character.SetCharacterVar( v, "stamina", staminaUp )
+					end
 					v.nextStaminaUp = CurTime( ) + 3
 				end
 			end
@@ -49,3 +51,5 @@ else
 		return 100
 	end, "", Color( 0, 206, 209 ), "stamina" )
 end
+
+CAT_ATT_STAMINA = catherine.attribute.Register( "stamina", "Stamina", "How long you can run for.", "CAT/attribute/stamina.png", 0, 100 )

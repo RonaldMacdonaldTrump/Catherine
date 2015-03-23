@@ -1,6 +1,5 @@
-catherine.item = catherine.item or { }
-catherine.item.bases = catherine.item.bases or { }
-catherine.item.items = catherine.item.items or { }
+catherine.item = catherine.item or { bases = { }, items = { } }
+catherine.item.hooks = { }
 
 function catherine.item.Register( itemTable, isBase )
 	if ( isBase ) then
@@ -22,6 +21,7 @@ function catherine.item.Register( itemTable, isBase )
 	local funcBuffer = { 
 		take = {
 			text = "Take",
+			icon = "icon16/basket_put.png",
 			canShowIsWorld = true,
 			func = function( pl, itemTable, ent )
 				if ( !IsValid( ent ) ) then
@@ -36,8 +36,9 @@ function catherine.item.Register( itemTable, isBase )
 					uniqueID = itemTable.uniqueID,
 					itemData = itemTable.itemData
 				} )
+				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
 				ent:Remove( )
-				hook.Run( "ItemTaked", pl, itemTable )
+				catherine.item.RunNyanHook( "ItemTaked", pl, itemTable )
 			end,
 			canLook = function( pl, itemTable )
 				return true
@@ -45,16 +46,18 @@ function catherine.item.Register( itemTable, isBase )
 		},
 		drop = {
 			text = "Drop",
+			icon = "icon16/basket_remove.png",
 			canShowIsMenu = true,
 			func = function( pl, itemTable )
 				local eyeTr = pl:GetEyeTrace( )
 				if ( pl:GetPos( ):Distance( eyeTr.HitPos ) > 100 ) then
-					catherine.util.Notify( pl, "Can't!" )
+					catherine.util.Notify( pl, "Can't drop far away!" )
 					return
 				end
+				pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
 				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, { } )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemTable.uniqueID )
-				hook.Run( "ItemDroped", pl, itemTable )
+				catherine.item.RunNyanHook( "ItemDroped", pl, itemTable )
 			end,
 			canLook = function( pl, itemTable )
 				return catherine.inventory.HasItem( itemTable.uniqueID )
@@ -67,9 +70,14 @@ function catherine.item.Register( itemTable, isBase )
 end
 
 function catherine.item.RegisterNyanHook( hookID, uniqueID, func )
-	hook.Add( hookID, uniqueID, function( pl, itemTable )
-		func( pl, itemTable )
-	end )
+	catherine.item.hooks[ hookID ] = catherine.item.hooks[ hookID ] or { }
+	catherine.item.hooks[ hookID ][ #catherine.item.hooks[ hookID ] + 1 ] = func
+end
+
+function catherine.item.RunNyanHook( hookID, ... )
+	for k, v in pairs( catherine.item.hooks[ hookID ] or { } ) do
+		v( ... )
+	end
 end
 
 function catherine.item.FindByID( id )
@@ -105,21 +113,21 @@ end
 catherine.item.Include( catherine.FolderName .. "/gamemode" )
 
 if ( SERVER ) then
-	function catherine.item.RunFunction( pl, itemID, funcID, ent_isMenu )
+	function catherine.item.Work( pl, itemID, funcID, ent_isMenu )
 		if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) or !itemID or !funcID ) then return end
 		local itemTable = catherine.item.FindByID( itemID )
 		if ( !itemTable ) then return end
 		if ( !itemTable.func or !itemTable.func[ funcID ] ) then return end
 		itemTable.func[ funcID ].func( pl, itemTable, ent_isMenu )
+		if ( itemTable.useSound ) then
+			
+		end
 	end
 	
 	function catherine.item.Give( pl, itemID, int )
 		if ( !IsValid( pl ) or !itemID ) then return end
-		local itemTable = catherine.item.FindByID( itemID )
-		if ( !itemTable ) then return end
 		catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 			uniqueID = itemID,
-			itemData = itemTable.itemData,
 			int = int
 		} )
 	end
@@ -148,8 +156,19 @@ if ( SERVER ) then
 		end
 	end
 	
-	netstream.Hook( "catherine.item.RunFunction", function( pl, data )
-		catherine.item.RunFunction( pl, data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ] )
+	function catherine.item.PlayerSpawnedInCharacter( pl )
+		catherine.item.RunNyanHook( "PlayerSpawnedInCharacter", pl )
+	end
+	
+	function catherine.item.PlayerDeath( pl )
+		catherine.item.RunNyanHook( "PlayerDeath", pl )
+	end
+	
+	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.PlayerSpawnedInCharacter", catherine.item.PlayerSpawnedInCharacter )
+	hook.Add( "PlayerDeath", "catherine.item.PlayerDeath", catherine.item.PlayerDeath )
+	
+	netstream.Hook( "catherine.item.Work", function( pl, data )
+		catherine.item.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ] )
 	end )
 else
 	function catherine.item.OpenMenuUse( uniqueID )
@@ -161,7 +180,7 @@ else
 			if ( !v.canShowIsMenu ) then continue end
 			if ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) then continue end
 			menu:AddOption( v.text or "ERROR", function( )
-				netstream.Start( "catherine.item.RunFunction", { uniqueID, k, true } )
+				netstream.Start( "catherine.item.Work", { uniqueID, k, true } )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
 		menu:Open( )
@@ -178,7 +197,7 @@ else
 			if ( !v.canShowIsWorld ) then continue end
 			if ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) then continue end
 			menu:AddOption( v.text or "ERROR", function( )
-				netstream.Start( "catherine.item.RunFunction", { uniqueID, k, ent } )
+				netstream.Start( "catherine.item.Work", { uniqueID, k, ent } )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
 		menu:Open( )
