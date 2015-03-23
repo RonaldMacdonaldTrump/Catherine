@@ -98,6 +98,7 @@ function GM:KeyPress( pl, key )
 		end
 	end
 end
+
 function GM:PlayerUse( pl, ent )
 	if ( ent:IsDoor( ) ) then
 		return pl.canUseDoor

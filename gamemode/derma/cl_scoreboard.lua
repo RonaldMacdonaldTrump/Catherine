@@ -55,8 +55,11 @@ function PANEL:RefreshPlayerLists( )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( k )
 		form.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, 20, Color( 150, 150, 150, 255 ) )
+			draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
+			draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
 		end
+		form.Header:SetFont( "catherine_normal15" )
+		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
 
 		local dpanelList = vgui.Create( "DPanelList", form )
 		dpanelList:SetSize( form:GetWide( ), form:GetTall( ) )

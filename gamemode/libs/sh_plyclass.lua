@@ -1,9 +1,12 @@
 local PLAYER = { }
+PLAYER.DisplayName = "Catherine Player"
 
-PLAYER.DuckSpeed = 0.1
-PLAYER.UnDuckSpeed = 0.1
+function PLAYER:Loadout( )
+    self.Player:SetupHands( )
+end
 
-PLAYER.WalkSpeed = catherine.configs.playerDefaultWalkSpeed
-PLAYER.RunSpeed	= catherine.configs.playerDefaultRunSpeed
+function PLAYER:GetHandsModel( )
+	return player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( self.Player:GetModel( ) ) )
+end
 
 player_manager.RegisterClass( "catherine_player", PLAYER, "player_default" )

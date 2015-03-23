@@ -135,7 +135,7 @@ if ( SERVER ) then
 		return catherine.inventory.SetItemData( self, uniqueID, key, newData )
 	end
 
-	catherine.character.RegisterNyanHook( "InitializeNetworking", function( pl, data )
+	catherine.character.RegisterNyanHook( "InitializeNetworking", 1, function( pl, data )
 		if ( !data._inv ) then return end
 		local inventory, changed = data._inv, false
 		for k, v in pairs( inventory ) do

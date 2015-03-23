@@ -21,6 +21,7 @@ function catherine.item.Register( itemTable, isBase )
 	local funcBuffer = { 
 		take = {
 			text = "Take",
+			icon = "icon16/basket_put.png",
 			canShowIsWorld = true,
 			func = function( pl, itemTable, ent )
 				if ( !IsValid( ent ) ) then
@@ -35,6 +36,7 @@ function catherine.item.Register( itemTable, isBase )
 					uniqueID = itemTable.uniqueID,
 					itemData = itemTable.itemData
 				} )
+				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
 				ent:Remove( )
 				catherine.item.RunNyanHook( "ItemTaked", pl, itemTable )
 			end,
@@ -44,13 +46,15 @@ function catherine.item.Register( itemTable, isBase )
 		},
 		drop = {
 			text = "Drop",
+			icon = "icon16/basket_remove.png",
 			canShowIsMenu = true,
 			func = function( pl, itemTable )
 				local eyeTr = pl:GetEyeTrace( )
 				if ( pl:GetPos( ):Distance( eyeTr.HitPos ) > 100 ) then
-					catherine.util.Notify( pl, "Can't!" )
+					catherine.util.Notify( pl, "Can't drop far away!" )
 					return
 				end
+				pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
 				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, { } )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemTable.uniqueID )
 				catherine.item.RunNyanHook( "ItemDroped", pl, itemTable )
@@ -115,6 +119,9 @@ if ( SERVER ) then
 		if ( !itemTable ) then return end
 		if ( !itemTable.func or !itemTable.func[ funcID ] ) then return end
 		itemTable.func[ funcID ].func( pl, itemTable, ent_isMenu )
+		if ( itemTable.useSound ) then
+			
+		end
 	end
 	
 	function catherine.item.Give( pl, itemID, int )

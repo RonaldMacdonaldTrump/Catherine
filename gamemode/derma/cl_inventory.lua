@@ -59,14 +59,14 @@ function PANEL:BuildInventory( )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( k )
 		form:SetAlpha( 0 )
-		form:AlphaTo( 255, 0.5, delta )
+		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
 			draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
-		delta = delta + 0.1
+		delta = delta + 0.05
 
 		local lists = vgui.Create( "DPanelList", form )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
@@ -83,7 +83,7 @@ function PANEL:BuildInventory( )
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( itemTable.model )
-			spawnIcon:SetToolTip( "Name : " .. itemTable.name .. "\nDescription : " .. itemTable.desc .. ( itemDesc and "\n" .. itemDesc or "" ) )
+			spawnIcon:SetToolTip( itemTable.name .. "\n" .. itemTable.desc .. ( itemDesc and "\n" .. itemDesc or "" ) )
 			spawnIcon.DoClick = function( )
 				catherine.item.OpenMenuUse( v1.uniqueID )
 			end
