@@ -1,7 +1,4 @@
 if ( SERVER ) then
-	local GetVelocity = FindMetaTable( "Entity" ).GetVelocity
-	local Length2D = FindMetaTable( "Vector" ).Length2D
-	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.stamina.PlayerSpawnedInCharacter", function( pl, charID )
 		local stamina = catherine.character.GetCharacterVar( pl, "stamina", 100 )
 		catherine.character.SetCharacterVar( pl, "stamina", stamina )
@@ -14,7 +11,6 @@ if ( SERVER ) then
 	hook.Add( "Think", "catherine.stamina.Think", function( )
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			if ( v:GetMoveType( ) == MOVETYPE_NOCLIP ) then continue end
-			local speed = Length2D( GetVelocity( v ) )
 			if ( !v.nextStaminaDown or !v.nextStaminaUp ) then
 				v.nextStaminaDown = CurTime( ) + 1
 				v.nextStaminaUp = CurTime( ) + 3

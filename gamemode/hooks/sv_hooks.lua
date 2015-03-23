@@ -96,6 +96,8 @@ function GM:KeyPress( pl, key )
 				pl.doorSpamCount = 0
 			end )
 		end
+	elseif ( key == IN_SPEED ) then
+		pl.CAT_runStart = true
 	end
 end
 
@@ -118,6 +120,8 @@ end
 function GM:KeyRelease( pl, key )
 	if ( key == IN_RELOAD ) then 
 		timer.Remove( "Catherine.timer.weapontoggle." .. pl:SteamID( ) )
+	elseif ( key == IN_SPEED ) then
+		pl.CAT_runStart = false
 	end
 end
 
@@ -174,7 +178,7 @@ function GM:PlayerSpawnSENT( pl )
 end
 
 function GM:PlayerHurt( pl )
-	pl.autoHealthrecoverStart = true
+	pl.CAT_healthRecoverBool = true
 	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
 	return true
 end
@@ -213,7 +217,7 @@ function GM:PlayerDeath( pl )
 		pl:Spawn( )
 	end )
 		
-	pl.autoHealthrecoverStart = false
+	pl.CAT_healthRecoverBool = false
 	catherine.util.ProgressBar( pl, "You are now respawning.", catherine.configs.spawnTime )
 	catherine.network.SetNetVar( pl, "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
 	catherine.network.SetNetVar( pl, "deathTime", CurTime( ) )
@@ -221,14 +225,54 @@ end
 
 function GM:Tick( )
 	// Health auto recover system.
-	for k, v in pairs( player.GetAll( ) ) do
-		if ( !v:IsCharacterLoaded( ) ) then continue end
-		if ( !v.autoHealthrecoverStart ) then continue end
-		if ( !v.autoHealthrecoverCur ) then v.autoHealthrecoverCur = CurTime( ) + 3 end
-		if ( math.Round( v:Health( ) ) >= v:GetMaxHealth( ) ) then v.autoHealthrecoverStart = false hook.Run( "HealthFullRecovered", v ) end
-		if ( v.autoHealthrecoverCur <= CurTime( ) ) then
+	// Run animation system.
+	// Bunny hop protection.
+	for k, v in pairs( player.GetAllByLoaded( ) ) do
+		if ( v:KeyPressed( IN_JUMP ) and ( v.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
+			if ( !v.CAT_nextBunnyCheck ) then
+				v.CAT_nextBunnyCheck = CurTime( ) + 0.05
+			end
+			v.CAT_bunnyCount = ( v.CAT_bunnyCount or 0 ) + 1
+			if ( v.CAT_bunnyCount >= 10 ) then
+				v:SetJumpPower( 150 )
+				catherine.util.Notify( v, "Don't Bunny-hop!" )
+				v:Freeze( true )
+				v.CAT_bunnyFreezed = true
+				v.CAT_nextbunnyFreezeDis = CurTime( ) + 5
+			end
+			v.CAT_nextBunnyCheck = CurTime( ) + 0.05
+		else
+			if ( ( v.CAT_nextBunnyInit or CurTime( ) ) <= CurTime( ) ) then
+				v.CAT_bunnyCount = 0
+				v.CAT_nextBunnyInit = CurTime( ) + 15
+			end
+		end
+		if ( v.CAT_bunnyFreezed and ( v.CAT_nextbunnyFreezeDis or CurTime( ) ) <= CurTime( ) ) then
+			v:Freeze( false )
+			v.CAT_bunnyCount = 0
+			v.CAT_bunnyFreezed = false
+		end
+		
+		if ( v.CAT_runStart ) then
+			if ( !v.CAT_runAnimation ) then
+				v.CAT_runAnimation = 0
+			end
+			v.CAT_runAnimation = Lerp( 0.03, v.CAT_runAnimation, catherine.configs.playerDefaultRunSpeed )
+			v:SetRunSpeed( v.CAT_runAnimation )
+		else
+			v.CAT_runAnimation = 0
+		end
+		
+		if ( !v.CAT_healthRecoverBool ) then continue end
+		if ( !v.CAT_healthRecoverTime ) then v.CAT_healthRecoverTime = CurTime( ) + 3 end
+		if ( math.Round( v:Health( ) ) >= v:GetMaxHealth( ) ) then
+			v.CAT_healthRecoverBool = false
+			hook.Run( "HealthFullRecovered", v )
+			continue
+		end
+		if ( v.CAT_healthRecoverTime <= CurTime( ) ) then
 			v:SetHealth( math.Clamp( v:Health( ) + 1, 0, v:GetMaxHealth( ) ) )
-			v.autoHealthrecoverCur = CurTime( ) + 3
+			v.CAT_healthRecoverTime = CurTime( ) + 3
 			hook.Run( "HealthRecovering", v )
 		end
 	end
