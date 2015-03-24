@@ -22,6 +22,7 @@ local font = catherine.configs.Font
 catherine.font.Register( "catherine_menuTitle", font, 20, 1000 )
 catherine.font.Register( "catherine_button20", font, 20, 1000 )
 catherine.font.Register( "catherine_normal15", font, 15, 1000 )
+catherine.font.Register( "catherine_normal17", font, 17, 1000 )
 catherine.font.Register( "catherine_normal20", font, 20, 1000 )
 catherine.font.Register( "catherine_normal25", font, 25, 1000 )
 catherine.font.Register( "catherine_normal30", font, 30, 1000 )

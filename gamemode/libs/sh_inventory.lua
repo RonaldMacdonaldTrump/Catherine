@@ -111,7 +111,7 @@ if ( SERVER ) then
 	
 	function catherine.inventory.SetItemData( pl, uniqueID, key, newData )
 		if ( !IsValid( pl ) or !uniqueID or !key or newData == nil ) then return end
-		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
+		local itemData = catherine.inventory.GetItemData( pl, uniqueID )
 		itemData[ key ] = newData
 		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
 			uniqueID = uniqueID,
@@ -120,10 +120,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.inventory.SetItemDatas( pl, uniqueID, newData )
-		if ( !IsValid( pl ) or !uniqueID or !key or newData == nil ) then return end
+		if ( !IsValid( pl ) or !uniqueID or newData == nil ) then return end
 		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
 			uniqueID = uniqueID,
-			newData = itemData
+			newData = newData
 		} )
 	end
 	
@@ -147,19 +147,6 @@ if ( SERVER ) then
 		catherine.inventory.SetItemDatas( self, uniqueID, newData )
 	end
 
-	catherine.character.RegisterNyanHook( "InitializeNetworking", 1, function( pl, data )
-		if ( !data._inv ) then return end
-		local inventory, changed = data._inv, false
-		for k, v in pairs( inventory ) do
-			if ( catherine.item.FindByID( k ) ) then continue end
-			inventory[ k ] = nil
-			changed = true
-		end
-		if ( changed ) then
-			catherine.character.SetGlobalVar( pl, "_inv", inventory )
-		end
-	end )
-	
 	catherine.character.RegisterNyanHook( "InitializeNetworking", 1, function( pl, data )
 		if ( !data._inv ) then return end
 		local inventory, changed = data._inv, false
@@ -234,7 +221,7 @@ else
 		return catherine.inventory.GetItemData( uniqueID )
 	end
 
-	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", function( )
+	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", 3, function( )
 		if ( !IsValid( catherine.vgui.inventory ) ) then return end
 		catherine.vgui.inventory:InitializeInventory( )
 	end )

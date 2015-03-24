@@ -107,8 +107,8 @@ function GM:PlayerFirstSpawned( pl )
 end
 
 function GM:PostWeaponGive( pl )
-	pl:Give( "catherine_fist" )
-	pl:Give( "catherine_key" )
+	pl:Give( "cat_fist" )
+	pl:Give( "cat_key" )
 end
 
 function GM:PlayerSay( pl, text )
@@ -223,7 +223,6 @@ end
 
 function GM:Tick( )
 	// Health auto recover system.
-	// Run animation system.
 	// Bunny hop protection.
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( v:KeyPressed( IN_JUMP ) and ( v.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
@@ -250,17 +249,19 @@ function GM:Tick( )
 			v.CAT_bunnyCount = 0
 			v.CAT_bunnyFreezed = false
 		end
-		
+		--[[ // ^-^;
 		if ( v.CAT_runStart ) then
 			if ( !v.CAT_runAnimation ) then
 				v.CAT_runAnimation = 0
 			end
 			v.CAT_runAnimation = Lerp( 0.03, v.CAT_runAnimation, catherine.configs.playerDefaultRunSpeed )
-			v:SetRunSpeed( v.CAT_runAnimation )
+			if ( catherine.character.GetCharacterVar( v, "stamina", 100 ) >= 11 ) then
+				v:SetRunSpeed( v.CAT_runAnimation )
+			end
 		else
 			v.CAT_runAnimation = 0
 		end
-		
+		--]]
 		if ( !v.CAT_healthRecoverBool ) then continue end
 		if ( !v.CAT_healthRecoverTime ) then v.CAT_healthRecoverTime = CurTime( ) + 3 end
 		if ( math.Round( v:Health( ) ) >= v:GetMaxHealth( ) ) then

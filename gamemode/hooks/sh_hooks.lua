@@ -165,3 +165,50 @@ function GM:PlayerNoClip( pl, bool )
 	end
 	return pl:IsAdmin( )
 end
+
+function GM:DoAnimationEvent( pl, event, data )
+	local mdl = pl:GetModel( ):lower( )
+	local class = catherine.anim.GetModelAnimation( mdl )
+
+	if ( mdl:find( "/player/" ) or mdl:find( "/playermodel" ) or class == "player" ) then
+		return self.BaseClass:DoAnimationEvent( pl, event, data )
+	end
+
+	local wep = pl:GetActiveWeapon( )
+	local holdType = "normal"
+	local class = catherine.anim.GetModelAnimation( mdl )
+
+	if ( !catherine.anim[ class ] ) then
+		class = "citizen_male"
+	end
+
+	if ( IsValid( wep ) ) then
+		holdType = catherine.util.GetHoldType( wep )
+	end
+
+	if ( !catherine.anim[ class ][ holdType ] ) then
+		holdType = "normal"
+	end
+
+	local ani = catherine.anim[ class ][ holdType ]
+
+	if ( event == PLAYERANIMEVENT_ATTACK_PRIMARY ) then
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
+
+		return ACT_VM_PRIMARYATTACK
+	elseif ( event == PLAYERANIMEVENT_ATTACK_SECONDARY ) then
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
+
+		return ACT_VM_SECONDARYATTACK
+	elseif ( event == PLAYERANIMEVENT_RELOAD ) then
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.reload or ACT_GESTURE_RELOAD_SMG1, true )
+
+		return ACT_INVALID
+	elseif ( event == PLAYERANIMEVENT_CANCEL_RELOAD ) then
+		pl:AnimResetGestureSlot( GESTURE_SLOT_ATTACK_AND_RELOAD )
+
+		return ACT_INVALID
+	end
+
+	return nil
+end

@@ -246,16 +246,16 @@ if ( SERVER ) then
 		catherine.character.InitializeNetworking( pl, id, characterData )
 		
 		if ( prevID == nil ) then
-			netstream.Start( pl, "catherine.hud.CinematicIntro_Init" )
+			netstream.Start( pl, "catherine.hud.WelcomeIntroStart" )
 		end
 
 		pl:SetNetVar( "charID", id )
 		pl:SetNetVar( "charLoaded", true )
 		
 		hook.Run( "PlayerSpawnedInCharacter", pl, id )
-		
+
 		if ( catherine.character.GetCharacterVar( pl, "isFirst", true ) == true ) then
-			catherine.character.SetCharacterVar( pl, "isFirst", false, true )
+			catherine.character.SetCharacterVar( pl, "isFirst", false )
 			hook.Run( "PlayerFirstSpawned", pl, id )
 		end
 		
@@ -308,7 +308,7 @@ if ( SERVER ) then
 			func( )
 		end
 	end
-	
+
 	function catherine.character.GetPlayerNetworking( pl )
 		if ( !IsValid( pl ) ) then return end
 		return catherine.character.networkingVars[ pl:SteamID( ) ]
@@ -427,7 +427,7 @@ if ( SERVER ) then
 		catherine.character.Delete( pl, data )
 	end )
 	
-	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", function( pl, key, value )
+	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", 4, function( pl, key, value )
 		if ( key != "_model" ) then return end
 		pl:SetModel( value )
 	end )
@@ -513,12 +513,12 @@ else
 		catherine.character.localCharacters = data
 	end )
 	
-	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", function( pl, key, value )
+	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", 5, function( pl, key, value )
 		if ( key != "_model" ) then return end
 		pl:SetModel( value )
 	end )
 	
-	catherine.character.RegisterNyanHook( "NetworkInitialized", function( pl, charVars )
+	catherine.character.RegisterNyanHook( "NetworkInitialized", 6, function( pl, charVars )
 		if ( !charVars._model ) then return end
 		pl:SetModel( charVars._model )
 	end )
@@ -527,13 +527,13 @@ end
 function catherine.character.GetGlobalVar( pl, key, default )
 	if ( !IsValid( pl ) and !key ) then return default end
 	if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or catherine.character.networkingVars[ pl:SteamID( ) ][ key ] == nil ) then return default end
-	return catherine.character.networkingVars[ pl:SteamID( ) ][ key ] or default
+	return catherine.character.networkingVars[ pl:SteamID( ) ][ key ]
 end
 
 function catherine.character.GetCharacterVar( pl, key, default )
 	if ( !IsValid( pl ) and !key ) then return default end
 	if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or !catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ] or catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ][ key ] == nil ) then return default end
-	return catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ][ key ] or default
+	return catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ][ key ]
 end
 
 function META:GetCharacterID( )
