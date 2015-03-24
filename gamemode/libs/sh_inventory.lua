@@ -119,6 +119,14 @@ if ( SERVER ) then
 		} )
 	end
 	
+	function catherine.inventory.SetItemDatas( pl, uniqueID, newData )
+		if ( !IsValid( pl ) or !uniqueID or !key or newData == nil ) then return end
+		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
+			uniqueID = uniqueID,
+			newData = itemData
+		} )
+	end
+	
 	function META:HasInvSpace( )
 		return catherine.inventory.HasSpace( self )
 	end
@@ -132,9 +140,26 @@ if ( SERVER ) then
 	end
 	
 	function META:SetInvItemData( uniqueID, key, newData )
-		return catherine.inventory.SetItemData( self, uniqueID, key, newData )
+		catherine.inventory.SetItemData( self, uniqueID, key, newData )
+	end
+	
+	function META:SetInvItemDatas( uniqueID, newData )
+		catherine.inventory.SetItemDatas( self, uniqueID, newData )
 	end
 
+	catherine.character.RegisterNyanHook( "InitializeNetworking", 1, function( pl, data )
+		if ( !data._inv ) then return end
+		local inventory, changed = data._inv, false
+		for k, v in pairs( inventory ) do
+			if ( catherine.item.FindByID( k ) ) then continue end
+			inventory[ k ] = nil
+			changed = true
+		end
+		if ( changed ) then
+			catherine.character.SetGlobalVar( pl, "_inv", inventory )
+		end
+	end )
+	
 	catherine.character.RegisterNyanHook( "InitializeNetworking", 1, function( pl, data )
 		if ( !data._inv ) then return end
 		local inventory, changed = data._inv, false
