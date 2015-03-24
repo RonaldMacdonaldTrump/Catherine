@@ -129,10 +129,6 @@ function GM:HUDPaint( )
 	
 	if ( pl:Alive( ) ) then
 		hook.Run( "ProgressEntityCache", pl )
-		local currVer, latestVer = catherine.update.VERSION, GetGlobalString( "catherine.update.LATESTVERSION", nil )
-		if ( currVer != latestVer ) then
-			draw.SimpleText( "Your Catherine framework has need update!", "catherine_normal20", ScrW( ) - 10, 20, Color( 150, 255, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
-		end
 	end
 end
 
