@@ -28,10 +28,9 @@ function catherine.util.Include( dir, typ )
 	end
 end
 
-function catherine.util.IncludeInDir( dir, isFramework )
-	if ( !dir ) then return end
-	if ( ( !isFramework or dir:find( "schema/" ) ) and !Schema ) then return end
-	local dir2 = ( ( isFramework and "catherine" ) or Schema.FolderName ) .. "/gamemode/" .. dir .. "/*.lua"
+function catherine.util.IncludeInDir( dir, isNyan )
+	if ( !dir or ( !isNyan or dir:find( "schema/" ) ) and !Schema ) then return end
+	local dir2 = ( ( isNyan and "catherine" ) or Schema.FolderName ) .. "/gamemode/" .. dir .. "/*.lua"
 	for k, v in pairs( file.Find( dir2, "LUA" ) ) do
 		catherine.util.Include( dir .. "/" .. v )
 	end
@@ -45,11 +44,16 @@ end
 function catherine.util.FindPlayerByName( name )
 	if ( !name ) then return nil end
 	for k, v in pairs( player.GetAll( ) ) do
-		if ( v:Name( ):lower( ):match( name:lower( ) ) ) then
+		if ( catherine.util.CheckStringMatch( name, v:Name( ) ) ) then
 			return v
 		end
 	end
 	return nil
+end
+
+function catherine.util.CheckStringMatch( one, two )
+	if ( !one or !two ) then return false end
+	return one:lower( ):match( two:lower( ) )
 end
 
 function catherine.util.GetUniqueName( name )
@@ -64,9 +68,7 @@ end
 
 function catherine.util.FolderDirectoryTranslate( dir )
 	if ( !dir ) then return end
-	if ( dir:sub( 1, 1 ) != "/" ) then
-		dir = "/" .. dir
-	end
+	if ( dir:sub( 1, 1 ) != "/" ) then dir = "/" .. dir end
 	local ex = string.Explode( "/", dir )
 	for k, v in pairs( ex ) do
 		if ( v == "" ) then
@@ -110,7 +112,6 @@ local translateHoldType = {
 
 function catherine.util.GetHoldType( wep )
 	local holdType = holdTypes[ wep:GetClass( ) ]
-
 	if ( holdType ) then
 		return holdType
 	elseif ( wep.HoldType ) then

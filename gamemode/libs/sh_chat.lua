@@ -16,6 +16,10 @@ function catherine.chat.FindByClass( class )
 	return nil
 end
 
+function catherine.chat.PreSet( text )
+	return "\"" .. text .. "\""
+end
+
 function catherine.chat.FetchClassByText( text )
 	for k, v in pairs( catherine.chat.Classes ) do
 		local command = v.command or ""
@@ -36,7 +40,7 @@ catherine.chat.RegisterClass( "ic", {
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
 			name = desc
 		end
-		chat.AddText( Color( 255, 255, 255 ), name .. " says '" .. text .. "'" )
+		chat.AddText( Color( 255, 255, 255 ), name .. " says " .. catherine.chat.PreSet( text ) )
 	end,
 	canHearRange = 300,
 	canRun = function( pl ) return pl:Alive( ) end
@@ -73,7 +77,7 @@ catherine.chat.RegisterClass( "yell", {
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
 			name = desc
 		end
-		chat.AddText( Color( 255, 255, 255 ), name .. " yells '" .. text .. "'" )
+		chat.AddText( Color( 255, 255, 255 ), name .. " yells " .. catherine.chat.PreSet( text ) )
 	end,
 	canHearRange = 600,
 	command = { "/y", "/yell" },
@@ -86,7 +90,7 @@ catherine.chat.RegisterClass( "whisper", {
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
 			name = desc
 		end
-		chat.AddText( Color( 255, 255, 255 ), name .. " whispers '" .. text .. "'" )
+		chat.AddText( Color( 255, 255, 255 ), name .. " whispers " .. catherine.chat.PreSet( text ) )
 	end,
 	canHearRange = 150,
 	command = { "/w", "/whisper" },
@@ -154,7 +158,7 @@ if ( SERVER ) then
 		if ( !classTable or type( classTable ) != "table" ) then return end
 		local class = classTable.class
 		
-		if ( classTable.global ) then
+		if ( classTable.global and !target ) then
 			netstream.Start( nil, "catherine.chat.Post", { pl, class, text, { ... } } )
 		else
 			if ( type( target ) == "table" and #target > 1 ) then
@@ -244,7 +248,6 @@ if ( SERVER ) then
 	end
 	
 	function catherine.chat.RunByClass( pl, class, text, target )
-		if ( !target ) then target = pl end
 		local classTable = catherine.chat.FindByClass( class )
 		if ( !classTable ) then return end
 		local adjustInfo = {
@@ -375,7 +378,7 @@ else
 	function catherine.chat.AddText( ... )
 		local msg = vgui.Create( "catherine.vgui.ChatMarkUp" )
 		msg:Dock( TOP )
-		msg:SetFont( "catherine_normal15" )
+		msg:SetFont( "catherine_normal17" )
 		msg:SetMaxWidth( CHATBox_w - 16 )
 		msg:Run( ... )
 		catherine.chat.msg[ #catherine.chat.msg + 1 ] = msg

@@ -147,7 +147,7 @@ if ( SERVER ) then
 		ent:Spawn( )
 		ent:SetModel( itemTable.model or "models/props_junk/watermelon01.mdl" )
 		ent:PhysicsInit( SOLID_VPHYSICS )
-		ent:InitializeItem( itemID, itemData or { } )
+		ent:InitializeItem( itemID, itemData or itemTable.itemData or { } )
 		
 		local physObject = ent:GetPhysicsObject( )
 		if ( IsValid( physObject ) ) then

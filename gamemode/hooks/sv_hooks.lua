@@ -64,20 +64,12 @@ function GM:KeyPress( pl, key )
 		tr.filter = pl
 		local ent = util.TraceLine( tr ).Entity
 		if ( IsValid( ent ) and ent:IsDoor( ) ) then
-			local function IsChildDoor( )
-				local currDoorIndex = ent:EntIndex( )
-				local prevEnt, nextEnt = Entity( currDoorIndex - 1 ), Entity( currDoorIndex + 1 )
-				if ( IsValid( prevEnt ) and prevEnt:IsDoor( ) or IsValid( nextEnt ) and nextEnt:IsDoor( ) ) then
-					return true
-				end
-				return false
-			end
 			if ( pl.canUseDoor == nil ) then pl.canUseDoor = true end
 			if ( !pl.doorSpamCount ) then pl.doorSpamCount = 0 end
 			if ( pl.lookingDoorEntity == nil ) then pl.lookingDoorEntity = ent end
 			pl.doorSpamCount = pl.doorSpamCount + 1
 			
-			if ( ( pl.lookingDoorEntity == ent or IsChildDoor ) and pl.doorSpamCount >= 10 ) then
+			if ( ( pl.lookingDoorEntity == ent ) and pl.doorSpamCount >= 10 ) then
 				pl.lookingDoorEntity = nil
 				pl.doorSpamCount = 0
 				pl.canUseDoor = false
@@ -95,6 +87,8 @@ function GM:KeyPress( pl, key )
 				pl.canUseDoor = true
 				pl.doorSpamCount = 0
 			end )
+			
+			return hook.Run( "PlayerUseDoor", pl, ent )
 		end
 	elseif ( key == IN_SPEED ) then
 		pl.CAT_runStart = true
@@ -108,9 +102,13 @@ function GM:PlayerUse( pl, ent )
 	return true
 end
 
+function GM:PlayerFirstSpawned( pl )
+	hook.Run( "InventoryInitialize", pl )
+end
+
 function GM:PostWeaponGive( pl )
-	pl:Give( "catherine_fist" )
-	pl:Give( "catherine_key" )
+	pl:Give( "cat_fist" )
+	pl:Give( "cat_key" )
 end
 
 function GM:PlayerSay( pl, text )
@@ -179,7 +177,7 @@ end
 
 function GM:PlayerHurt( pl )
 	pl.CAT_healthRecoverBool = true
-	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
+	pl:EmitSound( hook.Run( "GetPlayerPainSound", pl ) or "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
 	return true
 end
 
@@ -225,7 +223,6 @@ end
 
 function GM:Tick( )
 	// Health auto recover system.
-	// Run animation system.
 	// Bunny hop protection.
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( v:KeyPressed( IN_JUMP ) and ( v.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
@@ -252,17 +249,19 @@ function GM:Tick( )
 			v.CAT_bunnyCount = 0
 			v.CAT_bunnyFreezed = false
 		end
-		
+		--[[ // ^-^;
 		if ( v.CAT_runStart ) then
 			if ( !v.CAT_runAnimation ) then
 				v.CAT_runAnimation = 0
 			end
 			v.CAT_runAnimation = Lerp( 0.03, v.CAT_runAnimation, catherine.configs.playerDefaultRunSpeed )
-			v:SetRunSpeed( v.CAT_runAnimation )
+			if ( catherine.character.GetCharacterVar( v, "stamina", 100 ) >= 11 ) then
+				v:SetRunSpeed( v.CAT_runAnimation )
+			end
 		else
 			v.CAT_runAnimation = 0
 		end
-		
+		--]]
 		if ( !v.CAT_healthRecoverBool ) then continue end
 		if ( !v.CAT_healthRecoverTime ) then v.CAT_healthRecoverTime = CurTime( ) + 3 end
 		if ( math.Round( v:Health( ) ) >= v:GetMaxHealth( ) ) then
@@ -298,5 +297,3 @@ end
 function GM:ShutDown( )
 	hook.Run( "DataSave" )
 end
-
-function GM:PlayerCantSpray( pl ) end

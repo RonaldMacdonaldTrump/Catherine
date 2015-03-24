@@ -24,3 +24,7 @@ catherine.configs.alwaysRaised = {
 }
 catherine.configs.spaceString = "kg"
 catherine.configs.Font = "Segoe UI"
+
+if ( SERVER ) then
+	catherine.configs.hintInterval = 30
+end

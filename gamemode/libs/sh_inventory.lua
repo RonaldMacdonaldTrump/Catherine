@@ -111,11 +111,19 @@ if ( SERVER ) then
 	
 	function catherine.inventory.SetItemData( pl, uniqueID, key, newData )
 		if ( !IsValid( pl ) or !uniqueID or !key or newData == nil ) then return end
-		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
+		local itemData = catherine.inventory.GetItemData( pl, uniqueID )
 		itemData[ key ] = newData
 		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
 			uniqueID = uniqueID,
 			newData = itemData
+		} )
+	end
+	
+	function catherine.inventory.SetItemDatas( pl, uniqueID, newData )
+		if ( !IsValid( pl ) or !uniqueID or newData == nil ) then return end
+		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
+			uniqueID = uniqueID,
+			newData = newData
 		} )
 	end
 	
@@ -132,7 +140,11 @@ if ( SERVER ) then
 	end
 	
 	function META:SetInvItemData( uniqueID, key, newData )
-		return catherine.inventory.SetItemData( self, uniqueID, key, newData )
+		catherine.inventory.SetItemData( self, uniqueID, key, newData )
+	end
+	
+	function META:SetInvItemDatas( uniqueID, newData )
+		catherine.inventory.SetItemDatas( self, uniqueID, newData )
 	end
 
 	catherine.character.RegisterNyanHook( "InitializeNetworking", 1, function( pl, data )
@@ -209,7 +221,7 @@ else
 		return catherine.inventory.GetItemData( uniqueID )
 	end
 
-	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", function( )
+	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", 3, function( )
 		if ( !IsValid( catherine.vgui.inventory ) ) then return end
 		catherine.vgui.inventory:InitializeInventory( )
 	end )
