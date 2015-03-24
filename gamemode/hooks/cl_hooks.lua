@@ -125,6 +125,7 @@ function GM:HUDPaint( )
 	catherine.bar.Draw( )
 	catherine.notify.Draw( )
 	catherine.wep.Draw( pl )
+	catherine.hint.Draw( )
 	
 	if ( pl:Alive( ) ) then
 		hook.Run( "ProgressEntityCache", pl )
