@@ -84,6 +84,10 @@ end
 
 function catherine.recognize.IsKnowTarget( pl, target )
 	if ( !IsValid( pl ) or !IsValid( target ) ) then return false end
+	local factionTable = catherine.faction.FindByIndex( target:Team( ) )
+	if ( factionTable and factionTable.alwaysRecognized ) then
+		return true
+	end
 	local recognizeLists = catherine.character.GetCharacterVar( pl, "recognize", { } )
 	return table.HasValue( recognizeLists, target:GetCharacterID( ) )
 end

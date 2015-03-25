@@ -225,15 +225,15 @@ if ( SERVER ) then
 			return
 		end
 
-		local factionTab = catherine.faction.FindByID( characterData._faction )
-		if ( !factionTab ) then
+		local factionTable = catherine.faction.FindByID( characterData._faction )
+		if ( !factionTable ) then
 			netstream.Start( pl, "catherine.character.UseResult", { false, "Faction is not valid!" } )
 			return
 		end
 		
 		pl:KillSilent( )
 		pl:Spawn( )
-		pl:SetTeam( factionTab.index )
+		pl:SetTeam( factionTable.index )
 		pl:SetModel( characterData._model )
 		pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
 		pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
@@ -257,7 +257,6 @@ if ( SERVER ) then
 		end
 		
 		netstream.Start( pl, "catherine.character.UseResult", { true } )
-		
 		catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [" .. pl:SteamName( ) .. "] " .. ( prevID or "None" ) .. " -> " .. id )
 	end
 

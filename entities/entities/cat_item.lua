@@ -58,6 +58,7 @@ else
 		local itemTable = self:GetItemTable( )
 		if ( !itemTable ) then return end
 		local customDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, self:GetItemData( ) ) or nil
+		
 		draw.SimpleText( itemTable.name, "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		draw.SimpleText( itemTable.desc, "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
 		if ( customDesc ) then

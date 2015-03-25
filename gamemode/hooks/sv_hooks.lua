@@ -103,7 +103,7 @@ function GM:PlayerUse( pl, ent )
 end
 
 function GM:PlayerFirstSpawned( pl )
-	hook.Run( "InventoryInitialize", pl )
+	//hook.Run( "InventoryInitialize", pl )
 end
 
 function GM:PostWeaponGive( pl )
