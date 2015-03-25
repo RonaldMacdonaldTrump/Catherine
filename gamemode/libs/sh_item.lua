@@ -1,7 +1,11 @@
 catherine.item = catherine.item or { bases = { }, items = { } }
 
-function catherine.item.Register( itemTable, isBase )
-	if ( isBase ) then
+function catherine.item.Register( itemTable )
+	if ( !itemTable ) then
+		catherine.util.ErrorPrint( "Item register error, can't found item table!" )
+		return
+	end
+	if ( itemTable.isBase ) then
 		catherine.item.bases[ itemTable.uniqueID ] = itemTable
 		return
 	end
@@ -70,6 +74,10 @@ function catherine.item.Register( itemTable, isBase )
 	catherine.item.items[ itemTable.uniqueID ] = itemTable
 end
 
+function catherine.item.New( uniqueID, baseuniqueID, isBase )
+	return { uniqueID = uniqueID, base = baseuniqueID, isBase = isBase, index = ( isBase and table.Count( catherine.faction.Lists ) + 1 ) or table.Count( catherine.faction.items ) + 1 }
+end
+
 function catherine.item.RegisterNyanHook( hookID, uniqueID, func )
 	hook.Add( hookID, uniqueID, function( ... )
 		func( ... )
@@ -89,23 +97,20 @@ function catherine.item.FindBaseByID( id )
 end
 
 function catherine.item.Include( dir )
-	local baseFiles = file.Find( dir .. "/items/base/*", "LUA" )
-	for k, v in pairs( baseFiles ) do
-		Base = { uniqueID = catherine.util.GetUniqueName( v ) }
-		catherine.util.Include( dir .. "/items/base/" .. v )
-		catherine.item.Register( Base, true )
-		Base = nil
+	if ( !dir ) then return end
+	local files, folders = file.Find( dir .. "/items/*", "LUA" )
+	
+	for k, v in pairs( folders ) do
+		if ( v != "base" ) then continue end
+		catherine.util.Include( dir .. "/items/base/" .. v, "SHARED" )
 	end
-
-	local itemFiles, itemFolders = file.Find( dir .. "/items/*", "LUA" )
-	for k, v in pairs( itemFolders ) do
+	
+	for k, v in pairs( folders ) do
 		if ( v == "base" ) then continue end
-		local itemFile = file.Find( dir .. "/items/" .. v .. "/*", "LUA" )
-		for k1, v1 in pairs( itemFile ) do
-			Item = { uniqueID = catherine.util.GetUniqueName( v1 ) }
-			catherine.util.Include( dir .. "/items/" .. v .. "/" .. v1 )
-			catherine.item.Register( Item )
-			Item = nil
+		local files2 = file.Find( dir .. "/items/" .. v .. "/*", "LUA" )
+		catherine.util.Include( dir .. "/items/" .. v, "SHARED" )
+		for k1, v1 in pairs( files2 ) do
+			catherine.util.Include( dir .. "/items/" .. v .. "/" .. v1, "SHARED" )
 		end
 	end
 end

@@ -1,3 +1,4 @@
+/*
 Base.uniqueID = "clothing_base"
 Base.name = "Clothing"
 Base.desc = "A Cloth."
@@ -46,3 +47,4 @@ Base.func.takeoff = {
 		return true
 	end
 }
+*/

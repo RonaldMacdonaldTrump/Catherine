@@ -1,16 +1,16 @@
-Base.uniqueID = "weapon_base"
-Base.name = "Weapon Base"
-Base.desc = "A Weapon."
-Base.category = "Weapon"
-Base.cost = 0
-Base.weight = 0
-Base.isWeapon = true
-Base.weaponClass = "weapon_smg1"
-Base.itemData = {
+local BASE = catherine.item.New( "WEAPON", nil, true )
+BASE.name = "Weapon Base"
+BASE.desc = "A Weapon."
+BASE.category = "Weapon"
+BASE.cost = 0
+BASE.weight = 0
+BASE.isWeapon = true
+BASE.weaponClass = "weapon_smg1"
+BASE.itemData = {
 	equiped = false
 }
-Base.func = { }
-Base.func.equip = {
+BASE.func = { }
+BASE.func.equip = {
 	text = "Equip",
 	icon = "icon16/ruby_get.png",
 	canShowIsWorld = true,
@@ -37,7 +37,7 @@ Base.func.equip = {
 		return !catherine.inventory.IsEquipped( itemTable.uniqueID )
 	end
 }
-Base.func.unequip = {
+BASE.func.unequip = {
 	text = "Unequip",
 	icon = "icon16/ruby_put.png",
 	canShowIsMenu = true,
@@ -79,3 +79,5 @@ if ( SERVER ) then
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 end
+
+catherine.item.Register( BASE )

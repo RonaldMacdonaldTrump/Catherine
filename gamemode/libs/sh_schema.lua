@@ -11,12 +11,13 @@ function catherine.schema.Initialization( )
 		IntroTitle = "A Schema",
 		IntroDesc = "Welcome..."
 	}
+	
+	catherine.util.Include( "schema/sh_schema.lua" )
 	catherine.util.IncludeInDir( "schema/libs" )
 	catherine.util.IncludeInDir( "schema/derma" )
+	
 	catherine.plugin.LoadAll( Schema.FolderName )
 	catherine.plugin.LoadAll( catherine.FolderName )
-
-	catherine.util.Include( "schema/sh_schema.lua" )
 	catherine.faction.Include( Schema.FolderName .. "/gamemode/schema" )
 	catherine.item.Include( Schema.FolderName .. "/gamemode/schema" )
 	catherine.language.Include( Schema.FolderName .. "/gamemode/schema" )
@@ -25,18 +26,12 @@ function catherine.schema.Initialization( )
 end
 
 function catherine.schema.GetUniqueID( )
-	if ( !Schema ) then return "catherine" end
-	return Schema.UniqueID or "catherine"
+	return Schema and Schema.UniqueID or "catherine"
 end
 
 hook.NyanHookRun = hook.NyanHookRun or hook.Call
 
 function hook.Call( name, gm, ... )
-	if ( name == "PlayerSpawn" ) then
-		local arg = { ... }
-		local pl = arg[ 1 ]
-		if ( IsValid( pl ) and !pl:IsCharacterLoaded( ) ) then return end
-	end
 	if ( catherine.plugin ) then
 		for k, v in pairs( catherine.plugin.GetAlls( ) ) do
 			if ( !v[ name ] ) then continue end
