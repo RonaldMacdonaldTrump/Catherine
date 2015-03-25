@@ -17,7 +17,7 @@ function catherine.schema.Initialization( )
 	catherine.util.IncludeInDir( "schema/derma" )
 	
 	catherine.plugin.LoadAll( Schema.FolderName )
-	catherine.plugin.LoadAll( catherine.FolderName )
+	//catherine.plugin.LoadAll( catherine.FolderName ) // ;;?
 	catherine.faction.Include( Schema.FolderName .. "/gamemode/schema" )
 	catherine.item.Include( Schema.FolderName .. "/gamemode/schema" )
 	catherine.language.Include( Schema.FolderName .. "/gamemode/schema" )
@@ -33,7 +33,7 @@ hook.NyanHookRun = hook.NyanHookRun or hook.Call
 
 function hook.Call( name, gm, ... )
 	if ( catherine.plugin ) then
-		for k, v in pairs( catherine.plugin.GetAlls( ) ) do
+		for k, v in pairs( catherine.plugin.GetAll( ) ) do
 			if ( !v[ name ] ) then continue end
 			local func = v[ name ]( v, ... )
 			if ( func == nil ) then continue end

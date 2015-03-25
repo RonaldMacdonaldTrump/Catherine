@@ -43,12 +43,21 @@ end
 
 function catherine.util.FindPlayerByName( name )
 	if ( !name ) then return nil end
-	for k, v in pairs( player.GetAll( ) ) do
-		if ( catherine.util.CheckStringMatch( name, v:Name( ) ) ) then
+	for k, v in pairs( player.GetAllByLoaded( ) ) do
+		if ( catherine.util.CheckStringMatch( v:Name( ), name ) ) then
 			return v
 		end
 	end
-	return nil
+end
+
+function catherine.util.FindPlayerByStuff( use, str )
+	if ( !use or !str ) then return nil end
+	str = str:lower( )
+	for k, v in pairs( player.GetAllByLoaded( ) ) do
+		if ( catherine.util.CheckStringMatch( v[ use ]( v ), str ) ) then
+			return v
+		end
+	end
 end
 
 function catherine.util.CheckStringMatch( one, two )

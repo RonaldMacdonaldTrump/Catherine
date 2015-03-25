@@ -181,7 +181,7 @@ end
 
 function GM:PlayerHurt( pl )
 	if ( pl:Health( ) <= 0 ) then
-		return
+		return true
 	end
 	pl.CAT_healthRecoverBool = true
 	pl:EmitSound( hook.Run( "GetPlayerPainSound", pl ) or "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
@@ -189,7 +189,7 @@ function GM:PlayerHurt( pl )
 end
 
 function GM:PlayerDeathSound( pl )
-	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+	pl:EmitSound( hook.Run( "GetPlayerDeathSound", pl ) or "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
 	return true
 end
 

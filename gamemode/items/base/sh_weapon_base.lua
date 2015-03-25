@@ -61,7 +61,7 @@ if ( SERVER ) then
 			catherine.item.Work( pl, k, "equip" )
 		end
 	end )
-	
+
 	catherine.hooks.Register( "PlayerDeath", "catherine.item.hooks.weapon_base.PlayerDeath", function( pl )
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
 			if ( !catherine.inventory.IsEquipped( pl, k ) ) then continue end

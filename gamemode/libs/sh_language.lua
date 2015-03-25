@@ -6,7 +6,7 @@ function catherine.language.Register( languageTable )
 		catherine.util.ErrorPrint( "Language register error, can't found language table!" )
 		return
 	end
-	catherine.language.Lists[ languageTable.index ] = languageTable
+	catherine.language.Lists[ languageTable.uniqueID ] = languageTable
 end
 
 function catherine.language.New( uniqueID )
@@ -14,7 +14,7 @@ function catherine.language.New( uniqueID )
 		catherine.util.ErrorPrint( "Language create error, can't found unique ID!" )
 		return
 	end
-	return { name = "Unknown", data = { }, uniqueID = uniqueID, index = table.Count( catherine.language.Lists ) + 1 }
+	return { name = "Unknown", data = { }, uniqueID = uniqueID }
 end
 
 function catherine.language.GetAll( )
@@ -53,8 +53,8 @@ if ( SERVER ) then
 		local uniqueID = "english"
 		if ( IsValid( pl ) ) then uniqueID = pl:GetInfo( "cat_convar_language" ) end
 		local lists = catherine.language.Lists[ uniqueID ]
-		if ( !lists or !lists.datas ) then return "Error" end
-		return string.format( lists.datas[ key ], ... )
+		if ( !lists or !lists.data ) then return "Error" end
+		return string.format( lists.data[ key ], ... )
 	end
 else
 	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", "english", true, true )
@@ -62,7 +62,7 @@ else
 	function catherine.language.GetValue( key, ... )
 		local uniqueID = CAT_CONVAR_LANGUAGE:GetString( )
 		local lists = catherine.language.Lists[ uniqueID ]
-		if ( !lists or !lists.datas ) then return "Error" end
-		return string.format( lists.datas[ key ], ... )
+		if ( !lists or !lists.data ) then return "Error" end
+		return string.format( lists.data[ key ], ... )
 	end
 end

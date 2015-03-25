@@ -7,7 +7,6 @@ if ( SERVER ) then
 	function PLUGIN:PlayerSpawnedInCharacter( pl )
 		local stamina = catherine.character.GetCharacterVar( pl, "stamina", 100 )
 		catherine.character.SetCharacterVar( pl, "stamina", stamina )
-		print("SET!!!")
 	end
 	
 	function PLUGIN:PlayerDeath( pl )

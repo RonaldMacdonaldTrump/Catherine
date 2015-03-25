@@ -477,4 +477,4 @@ else
 	end
 end
 
-hook.Remove( "PlayerSay", "ULXMeCheck" ) // lol ulx me shit.
+hook.Remove( "PlayerSay", "ULXMeCheck" ) // ULX -_-;

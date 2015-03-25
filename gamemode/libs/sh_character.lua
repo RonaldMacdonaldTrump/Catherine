@@ -425,6 +425,8 @@ if ( SERVER ) then
 	function META:SetCharacterVar( key, value, noSync )
 		return catherine.character.SetCharacterVar( self, key, value, noSync )
 	end
+	
+	
 else
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
 	
@@ -474,7 +476,7 @@ else
 		catherine.character.networkingVars[ data[ 1 ] ] = data[ 2 ]
 		catherine.hooks.Run( "InitializeNetworking", LocalPlayer( ), catherine.character.networkingVars[ LocalPlayer( ):SteamID( ) ] )
 	end )
-	
+
 	netstream.Hook( "catherine.character.DisconnectNetworking", function( data )
 		catherine.character.networkingVars[ data ] = nil
 	end )
@@ -486,13 +488,14 @@ else
 	netstream.Hook( "catherine.character.SetNetworkingVar", function( data )
 		if ( !catherine.character.networkingVars[ data[ 1 ] ] ) then return end
 		catherine.character.networkingVars[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
-		catherine.hooks.Run( "NetworkGlobalVarChanged", LocalPlayer( ), data[ 2 ], data[ 3 ] )
+		catherine.hooks.Run( "NetworkGlobalVarChanged", catherine.util.FindPlayerByStuff( "SteamID", data[ 1 ] ), data[ 2 ], data[ 3 ] )
 	end )
 	
 	netstream.Hook( "catherine.character.SetNetworkingCharVar", function( data )
 		if ( !catherine.character.networkingVars[ data[ 1 ] ] or !catherine.character.networkingVars[ data[ 1 ] ][ "_charVar" ] ) then return end
 		catherine.character.networkingVars[ data[ 1 ] ][ "_charVar" ][ data[ 2 ] ] = data[ 3 ]
-		//catherine.hooks.Run( "NetworkCharVarChanged", LocalPlayer( ), data[ 2 ], data[ 3 ] )
+		local pl = data[ 1 ]
+		catherine.hooks.Run( "NetworkCharVarChanged", catherine.util.FindPlayerByStuff( "SteamID", data[ 1 ] ), data[ 2 ], data[ 3 ] )
 	end )
 
 	netstream.Hook( "catherine.character.SendCharacters", function( data )
@@ -500,12 +503,12 @@ else
 	end )
 	
 	catherine.hooks.Register( "NetworkGlobalVarChanged", "catherine.character.hooks.NetworkGlobalVarChanged_1", function( pl, key, value )
-		if ( key != "_model" ) then return end
+		if ( !IsValid( pl ) or key != "_model" ) then return end
 		pl:SetModel( value )
 	end )
 
 	catherine.hooks.Register( "InitializeNetworking", "catherine.character.hooks.InitializeNetworking_0", function( pl, charVars )
-		if ( !charVars._model ) then return end
+		if ( !IsValid( pl ) or !charVars._model ) then return end
 		pl:SetModel( charVars._model )
 	end )
 end

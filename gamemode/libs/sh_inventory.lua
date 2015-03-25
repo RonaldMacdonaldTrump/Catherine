@@ -61,8 +61,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.inventory.IsEquipped( pl, uniqueID )
-		local itemData = catherine.inventory.GetItemData( pl, uniqueID )
-		return itemData and itemData.equiped or false
+		return catherine.inventory.GetItemData( pl, uniqueID, "equiped", false )
 	end
 
 	function catherine.inventory.HasItem( pl, uniqueID )
@@ -118,7 +117,7 @@ if ( SERVER ) then
 	
 	function catherine.inventory.SetItemData( pl, uniqueID, key, newData )
 		if ( !IsValid( pl ) or !uniqueID or !key or newData == nil ) then return end
-		local itemData = catherine.inventory.GetItemData( pl, uniqueID )
+		local itemData = catherine.inventory.GetItemDatas( pl, uniqueID )
 		itemData[ key ] = newData
 		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
 			uniqueID = uniqueID,
@@ -189,8 +188,7 @@ else
 	end
 	
 	function catherine.inventory.IsEquipped( uniqueID )
-		local itemData = catherine.inventory.GetItemData( uniqueID )
-		return itemData.equiped or false
+		return catherine.inventory.GetItemData( uniqueID, "equiped", false )
 	end
 
 	function catherine.inventory.GetWeights( )
@@ -208,13 +206,20 @@ else
 		return invWeight, invMaxWeight
 	end
 	
-	function catherine.inventory.GetItemData( uniqueID )
+	function catherine.inventory.GetItemData( uniqueID, key, default )
+		if ( !uniqueID or !key ) then return default end
+		local inventory = catherine.inventory.Get( )
+		if ( !inventory[ uniqueID ] or !inventory[ uniqueID ].itemData ) then return default end
+		return inventory[ uniqueID ].itemData[ key ]
+	end
+	
+	function catherine.inventory.GetItemDatas( uniqueID )
 		if ( !uniqueID ) then return { } end
 		local inventory = catherine.inventory.Get( )
 		if ( !inventory[ uniqueID ] ) then return { } end
 		return inventory[ uniqueID ].itemData or { }
 	end
-	
+
 	function catherine.inventory.HasSpace( )
 		local invWeight, invMaxWeight = catherine.inventory.GetWeights( )
 		return invWeight < invMaxWeight
@@ -230,6 +235,10 @@ else
 	
 	function META:GetInvItemData( uniqueID )
 		return catherine.inventory.GetItemData( uniqueID )
+	end
+	
+	function META:GetInvItemDatas( uniqueID )
+		return catherine.inventory.GetItemDatas( uniqueID )
 	end
 
 	catherine.hooks.Register( "NetworkGlobalVarChanged", "catherine.inventory.hooks.NetworkGlobalVarChanged_0", function( )
