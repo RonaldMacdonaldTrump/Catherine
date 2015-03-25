@@ -15,10 +15,11 @@ function catherine.schema.Initialization( )
 	catherine.util.IncludeInDir( "schema/derma" )
 	catherine.plugin.LoadAll( Schema.FolderName )
 	catherine.plugin.LoadAll( catherine.FolderName )
-	
+
 	catherine.util.Include( "schema/sh_schema.lua" )
 	catherine.faction.Include( Schema.FolderName .. "/gamemode/schema" )
 	catherine.item.Include( Schema.FolderName .. "/gamemode/schema" )
+	catherine.language.Include( Schema.FolderName .. "/gamemode/schema" )
 	
 	hook.Run( "SchemaInitialized" )
 end

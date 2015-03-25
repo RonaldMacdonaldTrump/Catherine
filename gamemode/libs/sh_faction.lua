@@ -7,10 +7,11 @@ function catherine.faction.Register( factionTable )
 		return
 	end
 	catherine.faction.Lists[ factionTable.index ] = factionTable
+	team.SetUp( factionTable.index, factionTable.name, factionTable.color )
 	return factionTable.index
 end
 
-function catherine.faction.Create( uniqueID )
+function catherine.faction.New( uniqueID )
 	return { uniqueID = uniqueID, index = table.Count( catherine.faction.Lists ) + 1 }
 end
 
@@ -63,13 +64,9 @@ function catherine.faction.FindByIndex( index )
 end
 
 function catherine.faction.Include( dir )
-	local files = file.Find( dir .. "/factions/*", "LUA" )
-	for k, v in pairs( files ) do
-		local uniqueID = catherine.util.GetUniqueName( v )
-		Faction = catherine.faction.Lists[ uniqueID ] or { uniqueID = uniqueID, index = table.Count( catherine.faction.Lists[ uniqueID ] ) + 1 }
+	if ( !dir ) then return end
+	for k, v in pairs( file.Find( dir .. "/factions/*", "LUA" ) ) do
 		catherine.util.Include( dir .. "/factions/" .. v, "SHARED" )
-		catherine.faction.Register( Faction )
-		Faction = nil
 	end
 end
 
