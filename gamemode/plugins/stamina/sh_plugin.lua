@@ -1,14 +1,19 @@
+local PLUGIN = PLUGIN
+PLUGIN.name = "Stamina"
+PLUGIN.author = "L7D"
+PLUGIN.desc = "Good stuff."
+
 if ( SERVER ) then
-	hook.Add( "PlayerSpawnedInCharacter", "catherine.stamina.PlayerSpawnedInCharacter", function( pl, charID )
+	function PLUGIN:PlayerSpawnedInCharacter( pl )
 		local stamina = catherine.character.GetCharacterVar( pl, "stamina", 100 )
 		catherine.character.SetCharacterVar( pl, "stamina", stamina )
-	end )
+	end
 	
-	hook.Add( "PlayerSpawn", "catherine.stamina.PlayerSpawn", function( pl )
+	function PLUGIN:PlayerDeath( pl )
 		catherine.character.SetCharacterVar( pl, "stamina", 100 )
-	end )
+	end
 
-	hook.Add( "Think", "catherine.stamina.Think", function( )
+	function PLUGIN:Think( )
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			if ( v:GetMoveType( ) == MOVETYPE_NOCLIP ) then continue end
 			if ( !v.nextStaminaDown or !v.nextStaminaUp ) then
@@ -20,7 +25,7 @@ if ( SERVER ) then
 				if ( math.Round( staminaDown ) < 5 ) then
 					v.runSpeed = v:GetRunSpeed( )
 					v:SetRunSpeed( v:GetWalkSpeed( ) )
-					catherine.attribute.AddProgress( v, CAT_ATT_STAMINA, 0.09 )
+					catherine.attribute.AddProgress( v, CAT_ATT_STAMINA, 0.05 )
 				else
 					catherine.character.SetCharacterVar( v, "stamina", staminaDown )
 				end
@@ -39,8 +44,13 @@ if ( SERVER ) then
 				end
 			end
 		end
-	end )
+	end
 else
-
+	catherine.bar.Register( function( )
+		return catherine.character.GetCharacterVar( LocalPlayer( ), "stamina", 100 )
+	end, function( )
+		return 100
+	end, Color( 0, 206, 209 ) )
 end
 
+CAT_ATT_STAMINA = catherine.attribute.Register( "stamina", "Stamina", "How long you can run for.", "CAT/attribute/stamina.png", 0, 100 )

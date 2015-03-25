@@ -1,7 +1,7 @@
-local Plugin = Plugin
+local PLUGIN = PLUGIN
 
-Plugin.IsLoaded = Plugin.IsLoaded or false
-Plugin.datas = Plugin.datas or {
+PLUGIN.IsLoaded = PLUGIN.IsLoaded or false
+PLUGIN.datas = PLUGIN.datas or {
 	APIKey = "bag6mFbPuj1tzeT2ZqBBmdMUXdoFbSftWTvMbbplalAeV3TywDyVvgafkUjRGOzenN4gHESPOUzYkm0soGKJAslQgiC4pykojDuxCJazLacNCYSsbjHUyGUdaksYXcRYcVyWueYdbPEuhQuUzeFNTZPqbbGeRCxTFAueizIIRYqdhzXQSFFaJSDKKTTjsS4JghIjWXYxmJSeXhWcobcTUfnrKAwZGuVYWmysQCkcTCSsCkmeEteHQyKsffKKn4mfzflhujztGHaxcNyBTdDObVLOPQFHAJdOhQaQDuBBUlxd8hnOoCIDEOfNQOjVIUGHDSyFpbGBXOEVJBDjjmzOwovZQruzCbSbkUofiOfBFvmYJqTSEwbEUqJpUT8ZoePNHuuFYFcalbBvEhSbrPngZb4dAEpyaZaRwgqFAtjwYBsFExBeutEfNTZDqHwovpjSgzhzapKKpAFebzaaE7uaesbjMmxhVXNbaKPbrkDMGUFoUezX1BjwCnGPheVMiLMYINORBepikeSHmNZR",
 	UserKey = "",
 	Formats = [[
@@ -21,10 +21,10 @@ Report Value :
 }
 
 netstream.Hook( "catherine.plugin.bugreport.Send", function( pl, data )
-	Plugin:SendBugReport( pl, data[ 1 ], data[ 2 ] )
+	PLUGIN:SendBugReport( pl, data[ 1 ], data[ 2 ] )
 end )
 
-function Plugin:FetchUserKey( )
+function PLUGIN:FetchUserKey( )
 	http.Post( catherine.encrypt.Decode( self.datas.UserURL ),
 		{
 			api_dev_key = catherine.encrypt.Decode( self.datas.APIKey ),
@@ -41,7 +41,7 @@ function Plugin:FetchUserKey( )
 	)
 end
 
-function Plugin:SendBugReport( pl, title, value )
+function PLUGIN:SendBugReport( pl, title, value )
 	if ( !IsValid( pl ) ) then return end
 	local function createCode( )
 		return Format( self.datas.Formats, pl:SteamName( ), pl:SteamID( ), pl:SteamID64( ), GetConVarString( "hostname" ), title, value )
@@ -75,7 +75,7 @@ function Plugin:SendBugReport( pl, title, value )
 	)
 end
 
-function Plugin:PlayerAuthed( pl )
+function PLUGIN:PlayerAuthed( pl )
 	if ( self.IsLoaded ) then return end
 	if ( self.datas.UserKey != "" ) then return end
 	self:FetchUserKey( )

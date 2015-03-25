@@ -4,7 +4,7 @@ function catherine.plugin.LoadAll( dir )
 	local _, folders = file.Find( dir .. "/gamemode/plugins/*", "LUA" )
 
 	for k, v in pairs( folders ) do
-		Plugin = catherine.plugin.Get( v ) or { }
+		PLUGIN = catherine.plugin.Get( v ) or { }
 		
 		local Pdir = dir .. "/gamemode/plugins/" .. v
 		
@@ -23,10 +23,10 @@ function catherine.plugin.LoadAll( dir )
 				catherine.util.Include( Pdir .. "/libs/" .. v1 )
 			end
 			
-			catherine.plugin.List[ v ] = Plugin
+			catherine.plugin.List[ v ] = PLUGIN
 		end
 		
-		Plugin = nil
+		PLUGIN = nil
 	end
 end
 

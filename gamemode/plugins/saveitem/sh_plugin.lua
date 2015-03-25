@@ -1,11 +1,10 @@
-local Plugin = Plugin
-
-Plugin.name = "Save Item"
-Plugin.author = "L7D"
-Plugin.desc = "Good stuff."
+local PLUGIN = PLUGIN
+PLUGIN.name = "Save Item"
+PLUGIN.author = "L7D"
+PLUGIN.desc = "Good stuff."
 
 if ( SERVER ) then
-	function Plugin:DataSave( )
+	function PLUGIN:DataSave( )
 		local data = { }
 		for k, v in pairs( ents.FindByClass( "cat_item" ) ) do
 			data[ #data + 1 ] = {
@@ -18,7 +17,7 @@ if ( SERVER ) then
 		catherine.data.Set( "items", data )
 	end
 	
-	function Plugin:DataLoad( )
+	function PLUGIN:DataLoad( )
 		for k, v in pairs( catherine.data.Get( "items", { } ) ) do
 			catherine.item.Spawn( v.uniqueID, v.pos, v.ang, v.itemData )
 		end
