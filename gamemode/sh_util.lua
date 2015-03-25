@@ -121,6 +121,7 @@ function catherine.util.GetHoldType( wep )
 	end
 end
 
+catherine.util.Include( "sh_hook.lua" )
 catherine.util.IncludeInDir( "libs/external", true )
 
 if ( SERVER ) then

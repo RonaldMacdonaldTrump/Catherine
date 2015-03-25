@@ -2,6 +2,13 @@ catherine.bar = catherine.bar or { }
 catherine.bar.Lists = { }
 
 function catherine.bar.Register( target, targetMax, color, uniqueID )
+	for k, v in pairs( catherine.bar.Lists ) do
+		if ( !v.uniqueID ) then continue end
+		if ( v.uniqueID == uniqueID ) then
+			return
+		end
+	end
+	
 	catherine.bar.Lists[ #catherine.bar.Lists + 1 ] = {
 		target = target,
 		targetMax = targetMax,
@@ -37,11 +44,11 @@ do
 		return LocalPlayer( ):Health( )
 	end, function( )
 		return LocalPlayer( ):GetMaxHealth( )
-	end, Color( 255, 0, 150 ) )
+	end, Color( 255, 0, 150 ), "health" )
 
 	catherine.bar.Register( function( )
 		return LocalPlayer( ):Armor( )
 	end, function( )
 		return 255
-	end, Color( 255, 255, 150 ) )
+	end, Color( 255, 255, 150 ), "armor" )
 end

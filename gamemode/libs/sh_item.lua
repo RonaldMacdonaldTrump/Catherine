@@ -43,7 +43,7 @@ function catherine.item.Register( itemTable )
 				} )
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
 				ent:Remove( )
-				catherine.item.RunNyanHook( "ItemTaked", pl, itemTable )
+				catherine.hooks.Run( "ItemTaked", pl, itemTable )
 			end,
 			canLook = function( pl, itemTable )
 				return true
@@ -60,9 +60,9 @@ function catherine.item.Register( itemTable )
 					return
 				end
 				pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
-				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, itemTable.useDynamicItemData and ent:GetItemData( ) or { } )
+				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemTable.uniqueID )
-				catherine.item.RunNyanHook( "ItemDroped", pl, itemTable )
+				catherine.hooks.Run( "ItemDroped", pl, itemTable )
 			end,
 			canLook = function( pl, itemTable )
 				return catherine.inventory.HasItem( itemTable.uniqueID )
@@ -74,18 +74,8 @@ function catherine.item.Register( itemTable )
 	catherine.item.items[ itemTable.uniqueID ] = itemTable
 end
 
-function catherine.item.New( uniqueID, baseuniqueID, isBase )
-	return { uniqueID = uniqueID, base = baseuniqueID, isBase = isBase, index = ( isBase and table.Count( catherine.faction.Lists ) + 1 ) or table.Count( catherine.faction.items ) + 1 }
-end
-
-function catherine.item.RegisterNyanHook( hookID, uniqueID, func )
-	hook.Add( hookID, uniqueID, function( ... )
-		func( ... )
-	end )
-end
-
-function catherine.item.RunNyanHook( hookID, ... )
-	hook.Run( hookID, ... )
+function catherine.item.New( uniqueID, base_uniqueID, isBase )
+	return { uniqueID = uniqueID, base = base_uniqueID, isBase = isBase }
 end
 
 function catherine.item.FindByID( id )
@@ -98,20 +88,22 @@ end
 
 function catherine.item.Include( dir )
 	if ( !dir ) then return end
-	local files, folders = file.Find( dir .. "/items/*", "LUA" )
-	
-	for k, v in pairs( folders ) do
-		if ( v != "base" ) then continue end
+
+	for k, v in pairs( file.Find( dir .. "/items/base/*.lua", "LUA" ) ) do
 		catherine.util.Include( dir .. "/items/base/" .. v, "SHARED" )
 	end
 	
-	for k, v in pairs( folders ) do
+	local itemFiles, itemFolders = file.Find( dir .. "/items/*", "LUA" )
+	for k, v in pairs( itemFolders ) do
 		if ( v == "base" ) then continue end
-		local files2 = file.Find( dir .. "/items/" .. v .. "/*", "LUA" )
-		catherine.util.Include( dir .. "/items/" .. v, "SHARED" )
-		for k1, v1 in pairs( files2 ) do
+		local itemFiles2 = file.Find( dir .. "/items/" .. v .. "/*.lua", "LUA" )
+		for k1, v1 in pairs( itemFiles2 ) do
 			catherine.util.Include( dir .. "/items/" .. v .. "/" .. v1, "SHARED" )
 		end
+	end
+	
+	for k, v in pairs( itemFiles ) do
+		catherine.util.Include( dir .. "/items/" .. v, "SHARED" )
 	end
 end
 
@@ -125,7 +117,7 @@ if ( SERVER ) then
 		if ( !itemTable.func or !itemTable.func[ funcID ] ) then return end
 		itemTable.func[ funcID ].func( pl, itemTable, ent_isMenu )
 		if ( itemTable.useSound ) then
-			
+			//  to do
 		end
 	end
 	
@@ -160,17 +152,17 @@ if ( SERVER ) then
 			physObject:Wake( )
 		end
 	end
-	
+	--[[
 	function catherine.item.PlayerSpawnedInCharacter( pl )
-		catherine.item.RunNyanHook( "PlayerSpawnedInCharacter", pl )
+		catherine.hooks.Run( "PlayerSpawnedInCharacter", pl )
 	end
 	
 	function catherine.item.PlayerDeath( pl )
-		catherine.item.RunNyanHook( "PlayerDeath", pl )
+		catherine.hooks.Run( "PlayerDeath", pl )
 	end
 	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.PlayerSpawnedInCharacter", catherine.item.PlayerSpawnedInCharacter )
-	hook.Add( "PlayerDeath", "catherine.item.PlayerDeath", catherine.item.PlayerDeath )
+	hook.Add( "PlayerDeath", "catherine.item.PlayerDeath", catherine.item.PlayerDeath )--]]
 	
 	netstream.Hook( "catherine.item.Work", function( pl, data )
 		catherine.item.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ] )

@@ -62,7 +62,7 @@ if ( SERVER ) then
 	
 	function catherine.inventory.IsEquipped( pl, uniqueID )
 		local itemData = catherine.inventory.GetItemData( pl, uniqueID )
-		return itemData.equiped or false
+		return itemData and itemData.equiped or false
 	end
 
 	function catherine.inventory.HasItem( pl, uniqueID )
@@ -158,7 +158,7 @@ if ( SERVER ) then
 		catherine.inventory.SetItemDatas( self, uniqueID, newData )
 	end
 
-	catherine.character.RegisterNyanHook( "InitializeNetworking", "catherine.inventory.hooks.InitializeNetworking_0", function( pl, charVars )
+	catherine.hooks.Register( "InitializeNetworking", "catherine.inventory.hooks.InitializeNetworking_0", function( pl, charVars )
 		if ( !charVars._inv ) then return end
 		local inventory, changed = charVars._inv, false
 		for k, v in pairs( inventory ) do
@@ -232,7 +232,7 @@ else
 		return catherine.inventory.GetItemData( uniqueID )
 	end
 
-	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", "catherine.inventory.hooks.NetworkGlobalVarChanged_0", function( )
+	catherine.hooks.Register( "NetworkGlobalVarChanged", "catherine.inventory.hooks.NetworkGlobalVarChanged_0", function( )
 		if ( !IsValid( catherine.vgui.inventory ) ) then return end
 		catherine.vgui.inventory:InitializeInventory( )
 	end )

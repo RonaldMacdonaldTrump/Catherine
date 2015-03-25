@@ -80,6 +80,7 @@ function PANEL:BuildInventory( )
 			local w, h = 64, 64
 			local itemTable = catherine.item.FindByID( v1.uniqueID )
 			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( self.player, itemTable, self.player:GetInvItemData( itemTable.uniqueID ), true ) or nil
+
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( itemTable.model )

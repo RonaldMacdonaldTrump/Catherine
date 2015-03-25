@@ -7,6 +7,7 @@ if ( SERVER ) then
 	function PLUGIN:PlayerSpawnedInCharacter( pl )
 		local stamina = catherine.character.GetCharacterVar( pl, "stamina", 100 )
 		catherine.character.SetCharacterVar( pl, "stamina", stamina )
+		print("SET!!!")
 	end
 	
 	function PLUGIN:PlayerDeath( pl )
@@ -46,11 +47,13 @@ if ( SERVER ) then
 		end
 	end
 else
-	catherine.bar.Register( function( )
-		return catherine.character.GetCharacterVar( LocalPlayer( ), "stamina", 100 )
-	end, function( )
-		return 100
-	end, Color( 0, 206, 209 ) )
+	do
+		catherine.bar.Register( function( )
+			return catherine.character.GetCharacterVar( LocalPlayer( ), "stamina", 100 )
+		end, function( )
+			return 100
+		end, Color( 0, 206, 209 ), "stamina" )
+	end
 end
 
 CAT_ATT_STAMINA = catherine.attribute.Register( "stamina", "Stamina", "How long you can run for.", "CAT/attribute/stamina.png", 0, 100 )

@@ -53,8 +53,8 @@ ITEM.func.drop = {
 }
 
 if ( SERVER ) then
-	catherine.item.RegisterNyanHook( "PlayerSpawnedInCharacter", "catherine.item.hooks.wallet.PlayerSpawnedInCharacter", function( pl )
-		if ( catherine.inventory.HasITEM( pl, "wallet" ) ) then return end
+	catherine.hooks.Register( "PlayerSpawnedInCharacter", "catherine.item.hooks.wallet.PlayerSpawnedInCharacter", function( pl )
+		if ( catherine.inventory.HasItem( pl, "wallet" ) ) then return end
 		catherine.item.Give( pl, "wallet" )
 	end )
 else

@@ -55,14 +55,14 @@ BASE.func.unequip = {
 }
 
 if ( SERVER ) then
-	catherine.item.RegisterNyanHook( "PlayerSpawnedInCharacter", "catherine.item.hooks.weapon_base.PlayerSpawnedInCharacter", function( pl )
+	catherine.hooks.Register( "PlayerSpawnedInCharacter", "catherine.item.hooks.weapon_base.PlayerSpawnedInCharacter", function( pl )
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
 			if ( !catherine.inventory.IsEquipped( pl, k ) ) then continue end
 			catherine.item.Work( pl, k, "equip" )
 		end
 	end )
 	
-	catherine.item.RegisterNyanHook( "PlayerDeath", "catherine.item.hooks.weapon_base.PlayerDeath", function( pl )
+	catherine.hooks.Register( "PlayerDeath", "catherine.item.hooks.weapon_base.PlayerDeath", function( pl )
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
 			if ( !catherine.inventory.IsEquipped( pl, k ) ) then continue end
 			catherine.item.Work( pl, k, "unequip" )
@@ -71,7 +71,7 @@ if ( SERVER ) then
 		end
 	end )
 
-	catherine.item.RegisterNyanHook( "ItemDroped", "catherine.item.hooks.weapon_base.ItemDroped", function( pl, itemTable )
+	catherine.hooks.Register( "ItemDroped", "catherine.item.hooks.weapon_base.ItemDroped", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
 			pl:StripWeapon( itemTable.weaponClass )

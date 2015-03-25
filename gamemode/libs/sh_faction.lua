@@ -16,7 +16,7 @@ function catherine.faction.New( uniqueID )
 end
 
 function catherine.faction.GetPlayerUsableFaction( pl )
-	if ( !IsValid( pl ) ) then return { } end
+	if ( !IsValid( pl ) ) then print("Shit")return { } end
 	local factions = { }
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.isWhitelist and catherine.faction.HasWhiteList( self, id ) == false ) then continue end
@@ -25,6 +25,8 @@ function catherine.faction.GetPlayerUsableFaction( pl )
 	
 	return factions
 end
+
+//PrintTable(catherine.faction.GetPlayerUsableFaction( player.GetByID(1) ))
 
 function catherine.faction.GetAll( )
 	return catherine.faction.Lists
@@ -71,6 +73,8 @@ function catherine.faction.Include( dir )
 end
 
 catherine.faction.Include( catherine.FolderName .. "/gamemode" )
+
+//PrintTable(catherine.faction.Lists)
 
 if ( SERVER ) then
 	function catherine.faction.AddWhiteList( pl, id )
