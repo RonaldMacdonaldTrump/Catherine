@@ -1,7 +1,5 @@
-catherine.character = catherine.character or { }
+catherine.character = catherine.character or { networkingVars = { } }
 catherine.character.globalVars = { }
-catherine.character.hooks = catherine.character.hooks or { }
-catherine.character.networkingVars = catherine.character.networkingVars or { }
 local META = FindMetaTable( "Player" )
 
 function catherine.character.RegisterGlobalVar( id, tab )
@@ -32,17 +30,6 @@ function catherine.character.FindGlobalVarByField( field )
 		end
 	end
 	return nil
-end
-
-function catherine.character.RegisterNyanHook( hookID, index, func )
-	catherine.character.hooks[ hookID ] = catherine.character.hooks[ hookID ] or { }
-	catherine.character.hooks[ hookID ][ index ] = func
-end
-
-function catherine.character.RunNyanHook( hookID, ... )
-	for k, v in pairs( catherine.character.hooks[ hookID ] or { } ) do
-		v( ... )
-	end
 end
 
 catherine.character.RegisterGlobalVar( "id", {
@@ -228,15 +215,15 @@ if ( SERVER ) then
 			return
 		end
 
-		local factionTab = catherine.faction.FindByID( characterData._faction )
-		if ( !factionTab ) then
+		local factionTable = catherine.faction.FindByID( characterData._faction )
+		if ( !factionTable ) then
 			netstream.Start( pl, "catherine.character.UseResult", { false, "Faction is not valid!" } )
 			return
 		end
 		
 		pl:KillSilent( )
 		pl:Spawn( )
-		pl:SetTeam( factionTab.index )
+		pl:SetTeam( factionTable.index )
 		pl:SetModel( characterData._model )
 		pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
 		pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
@@ -260,7 +247,6 @@ if ( SERVER ) then
 		end
 		
 		netstream.Start( pl, "catherine.character.UseResult", { true } )
-		
 		catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [" .. pl:SteamName( ) .. "] " .. ( prevID or "None" ) .. " -> " .. id )
 	end
 
@@ -297,7 +283,7 @@ if ( SERVER ) then
 			if ( globalVarTab and !globalVarTab.doNetwork ) then continue end
 			catherine.character.networkingVars[ pl:SteamID( ) ][ k ] = v
 		end
-		catherine.character.RunNyanHook( "InitializeNetworking", pl, catherine.character.networkingVars[ pl:SteamID( ) ] )
+		catherine.hooks.Run( "InitializeNetworking", pl, catherine.character.networkingVars[ pl:SteamID( ) ] )
 		netstream.Start( nil, "catherine.character.InitializeNetworking", { pl:SteamID( ), catherine.character.networkingVars[ pl:SteamID( ) ] } )
 	end
 
@@ -399,7 +385,7 @@ if ( SERVER ) then
 			if ( globalVar and globalVar.doLocal ) then target = pl end
 			netstream.Start( target, "catherine.character.SetNetworkingVar", { pl:SteamID( ), key, value } )
 		end
-		catherine.character.RunNyanHook( "NetworkGlobalVarChanged", pl, key, value )
+		catherine.hooks.Run( "NetworkGlobalVarChanged", pl, key, value )
 	end
 
 	function catherine.character.SetCharacterVar( pl, key, value, noSync )
@@ -412,7 +398,7 @@ if ( SERVER ) then
 			if ( globalVar and globalVar.doLocal ) then target = pl end
 			netstream.Start( nil, "catherine.character.SetNetworkingCharVar", { pl:SteamID( ), key, value } )
 		end
-		catherine.character.RunNyanHook( "NetworkCharVarChanged", pl, key, value )
+		catherine.hooks.Run( "NetworkCharVarChanged", pl, key, value )
 	end
 
 	netstream.Hook( "catherine.character.Create", function( pl, data )
@@ -427,7 +413,7 @@ if ( SERVER ) then
 		catherine.character.Delete( pl, data )
 	end )
 	
-	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", 4, function( pl, key, value )
+	catherine.hooks.Register( "NetworkGlobalVarChanged", "catherine.character.hooks.NetworkGlobalVarChanged_0", function( pl, key, value )
 		if ( key != "_model" ) then return end
 		pl:SetModel( value )
 	end )
@@ -439,6 +425,8 @@ if ( SERVER ) then
 	function META:SetCharacterVar( key, value, noSync )
 		return catherine.character.SetCharacterVar( self, key, value, noSync )
 	end
+	
+	
 else
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
 	
@@ -486,9 +474,9 @@ else
 	
 	netstream.Hook( "catherine.character.InitializeNetworking", function( data )
 		catherine.character.networkingVars[ data[ 1 ] ] = data[ 2 ]
-		catherine.character.RunNyanHook( "NetworkInitialized", LocalPlayer( ), data[ 2 ] )
+		catherine.hooks.Run( "InitializeNetworking", LocalPlayer( ), catherine.character.networkingVars[ LocalPlayer( ):SteamID( ) ] )
 	end )
-	
+
 	netstream.Hook( "catherine.character.DisconnectNetworking", function( data )
 		catherine.character.networkingVars[ data ] = nil
 	end )
@@ -500,26 +488,27 @@ else
 	netstream.Hook( "catherine.character.SetNetworkingVar", function( data )
 		if ( !catherine.character.networkingVars[ data[ 1 ] ] ) then return end
 		catherine.character.networkingVars[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
-		catherine.character.RunNyanHook( "NetworkGlobalVarChanged", LocalPlayer( ), data[ 2 ], data[ 3 ] )
+		catherine.hooks.Run( "NetworkGlobalVarChanged", catherine.util.FindPlayerByStuff( "SteamID", data[ 1 ] ), data[ 2 ], data[ 3 ] )
 	end )
 	
 	netstream.Hook( "catherine.character.SetNetworkingCharVar", function( data )
 		if ( !catherine.character.networkingVars[ data[ 1 ] ] or !catherine.character.networkingVars[ data[ 1 ] ][ "_charVar" ] ) then return end
 		catherine.character.networkingVars[ data[ 1 ] ][ "_charVar" ][ data[ 2 ] ] = data[ 3 ]
-		catherine.character.RunNyanHook( "NetworkCharVarChanged", LocalPlayer( ), data[ 2 ], data[ 3 ] )
+		local pl = data[ 1 ]
+		catherine.hooks.Run( "NetworkCharVarChanged", catherine.util.FindPlayerByStuff( "SteamID", data[ 1 ] ), data[ 2 ], data[ 3 ] )
 	end )
 
 	netstream.Hook( "catherine.character.SendCharacters", function( data )
 		catherine.character.localCharacters = data
 	end )
 	
-	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", 5, function( pl, key, value )
-		if ( key != "_model" ) then return end
+	catherine.hooks.Register( "NetworkGlobalVarChanged", "catherine.character.hooks.NetworkGlobalVarChanged_1", function( pl, key, value )
+		if ( !IsValid( pl ) or key != "_model" ) then return end
 		pl:SetModel( value )
 	end )
-	
-	catherine.character.RegisterNyanHook( "NetworkInitialized", 6, function( pl, charVars )
-		if ( !charVars._model ) then return end
+
+	catherine.hooks.Register( "InitializeNetworking", "catherine.character.hooks.InitializeNetworking_0", function( pl, charVars )
+		if ( !IsValid( pl ) or !charVars._model ) then return end
 		pl:SetModel( charVars._model )
 	end )
 end

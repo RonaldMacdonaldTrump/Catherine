@@ -1,10 +1,28 @@
 catherine.faction = catherine.faction or { }
 catherine.faction.Lists = { }
 
-function catherine.faction.Register( tab )
-	tab.index = tab.index or #catherine.faction.Lists + 1
-	catherine.faction.Lists[ tab.index ] = tab
-	team.SetUp( tab.index, tab.name, tab.color )
+function catherine.faction.Register( factionTable )
+	if ( !factionTable or !factionTable.index ) then
+		catherine.util.ErrorPrint( "Faction register error, can't found faction table!" )
+		return
+	end
+	catherine.faction.Lists[ factionTable.index ] = factionTable
+	team.SetUp( factionTable.index, factionTable.name, factionTable.color )
+	return factionTable.index
+end
+
+function catherine.faction.New( uniqueID )
+	return { uniqueID = uniqueID, index = table.Count( catherine.faction.Lists ) + 1 }
+end
+
+function catherine.faction.GetPlayerUsableFaction( pl )
+	if ( !IsValid( pl ) ) then return { } end
+	local factions = { }
+	for k, v in pairs( catherine.faction.GetAll( ) ) do
+		if ( v.isWhitelist and ( SERVER and catherine.faction.HasWhiteList( pl, v.uniqueID ) or catherine.faction.HasWhiteList( v.uniqueID ) ) == false ) then continue end
+		factions[ #factions + 1 ] = v
+	end
+	return factions
 end
 
 function catherine.faction.GetAll( )
@@ -45,13 +63,9 @@ function catherine.faction.FindByIndex( index )
 end
 
 function catherine.faction.Include( dir )
-	local files = file.Find( dir .. "/factions/*", "LUA" )
-	for k, v in pairs( files ) do
-		Faction = { }
-		Faction.uniqueID = catherine.util.GetUniqueName( v )
-		catherine.util.Include( dir .. "/factions/" .. v )
-		catherine.faction.Register( Faction )
-		Faction = nil
+	if ( !dir ) then return end
+	for k, v in pairs( file.Find( dir .. "/factions/*", "LUA" ) ) do
+		catherine.util.Include( dir .. "/factions/" .. v, "SHARED" )
 	end
 end
 
@@ -60,8 +74,8 @@ catherine.faction.Include( catherine.FolderName .. "/gamemode" )
 if ( SERVER ) then
 	function catherine.faction.AddWhiteList( pl, id )
 		if ( !IsValid( pl ) or !id ) then return false, "player or faction id is not valid!" end
-		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData or ( factionData and !factionData.isWhitelist ) or catherine.faction.HasWhiteList( pl, id ) ) then return false, "faction is not whitelist or player already has whitelist!" end
+		local factionTable = catherine.faction.FindByID( id )
+		if ( !factionTable or !factionTable.isWhitelist or catherine.faction.HasWhiteList( pl, id ) ) then return false, "faction is not whitelist or player already has whitelist!" end
 		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
 		whiteLists[ #whiteLists + 1 ] = id
 		catherine.catData.Set( pl, "whitelists", whiteLists, false, true )
@@ -70,8 +84,8 @@ if ( SERVER ) then
 	
 	function catherine.faction.RemoveWhiteList( pl, id )
 		if ( !IsValid( pl ) or !id ) then return false, "player or faction id is not valid!" end
-		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData or ( factionData and !factionData.isWhitelist ) ) then return false, "faction is not whitelist!" end
+		local factionTable = catherine.faction.FindByID( id )
+		if ( !factionTable or !factionTable.isWhitelist ) then return false, "faction is not whitelist!" end
 		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
 		table.RemoveByValue( whiteLists, id )
 		catherine.catData.Set( pl, "whitelists", whiteLists, false, true )
@@ -79,16 +93,24 @@ if ( SERVER ) then
 	end
 
 	function catherine.faction.HasWhiteList( pl, id )
-		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData or !factionData.isWhitelist ) then return false end
+		local factionTable = catherine.faction.FindByID( id )
+		if ( !factionTable or !factionTable.isWhitelist ) then return false end
 		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
 		return table.HasValue( whiteLists, id )
 	end
+	
+	function catherine.faction.PlayerFirstSpawned( pl )
+		local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
+		if ( !factionTable or !factionTable.PlayerFirstSpawned ) then return end
+		factionTable:PlayerFirstSpawned( pl )
+	end
+	
+	hook.Add( "PlayerFirstSpawned", "catherine.faction.PlayerFirstSpawned", catherine.faction.PlayerFirstSpawned )
 else
 	function catherine.faction.HasWhiteList( id )
 		if ( !id ) then return false end
-		local factionData = catherine.faction.FindByID( id )
-		if ( !factionData or !factionData.isWhitelist ) then return false end
+		local factionTable = catherine.faction.FindByID( id )
+		if ( !factionTable or !factionTable.isWhitelist ) then return false end
 		local whiteLists = catherine.catData.Get( "whitelists", { } )
 		return table.HasValue( whiteLists, id )
 	end

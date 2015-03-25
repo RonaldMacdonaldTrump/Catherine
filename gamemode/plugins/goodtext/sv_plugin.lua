@@ -1,26 +1,26 @@
-local Plugin = Plugin
+local PLUGIN = PLUGIN
 
-function Plugin:EntityDataLoaded( pl )
+function PLUGIN:EntityDataLoaded( pl )
 	self:SyncTextAll( pl )
 end
 
-function Plugin:SaveTexts( )
+function PLUGIN:SaveTexts( )
 	catherine.data.Set( "goodtexts", self.textLists )
 end
 
-function Plugin:LoadTexts( )
+function PLUGIN:LoadTexts( )
 	self.textLists = catherine.data.Get( "goodtexts", { } )
 end
 
-function Plugin:DataLoad( )
+function PLUGIN:DataLoad( )
 	self:LoadTexts( )
 end
 
-function Plugin:DataSave( )
+function PLUGIN:DataSave( )
 	self:SaveTexts( )
 end
 
-function Plugin:AddText( pl, text, size )
+function PLUGIN:AddText( pl, text, size )
 	local tr = pl:GetEyeTraceNoCursor( )
 	local data = {
 		index = #self.textLists + 1,
@@ -39,7 +39,7 @@ function Plugin:AddText( pl, text, size )
 	self:SaveTexts( )
 end
 
-function Plugin:RemoveText( pos, range )
+function PLUGIN:RemoveText( pos, range )
 	range = tonumber( range )
 	local count = 0
 	for k, v in pairs( self.textLists ) do
@@ -55,7 +55,7 @@ function Plugin:RemoveText( pos, range )
 	return count
 end
 
-function Plugin:SyncTextAll( pl )
+function PLUGIN:SyncTextAll( pl )
 	if ( !pl ) then pl = nil end
 	for k, v in pairs( self.textLists ) do
 		netstream.Start( pl, "catherine.plugin.goodtext.SyncText", { index = k, text = v.text, pos = v.pos, ang = v.ang, size = v.size } )

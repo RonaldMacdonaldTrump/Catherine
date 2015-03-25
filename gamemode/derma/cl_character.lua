@@ -133,11 +133,16 @@ function PANEL:CreateCharacterPanel( )
 	self.createData.currentStage = vgui.Create( "catherine.character.stageOne", self )
 end
 
+concommand.Add( "char_open",function()
+	catherine.vgui.character:Remove()
+	catherine.vgui.character=nil
+	catherine.vgui.character=vgui.Create("catherine.vgui.character")
+end)
+
 function PANEL:UseCharacterPanel( )
 	self.loadCharacter = { Lists = { }, curr = 1 }
 
-	local baseW, baseH = 300, self.h * 0.85
-	
+	local baseW, baseH, errMsg = 300, self.h * 0.85, nil
 	for k, v in pairs( catherine.character.localCharacters ) do
 		self.loadCharacter.Lists[ #self.loadCharacter.Lists + 1 ] = { characterDatas = v, panel = nil }
 	end
@@ -149,6 +154,10 @@ function PANEL:UseCharacterPanel( )
 	self.CharacterPanel:AlphaTo( 255, 0.2, 0 )
 	self.CharacterPanel:SetDrawBackground( false )
 	self.CharacterPanel.Paint = function( pnl, w, h )
+		if ( errMsg ) then
+			draw.SimpleText( errMsg, "catherine_normal30", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+			return
+		end
 		if ( #self.loadCharacter.Lists == 0 ) then
 			draw.SimpleText( "You don't have any characters!", "catherine_normal30", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
@@ -167,6 +176,7 @@ function PANEL:UseCharacterPanel( )
 
 	for k, v in pairs( self.loadCharacter.Lists ) do
 		local factionData = catherine.faction.FindByID( v.characterDatas._faction )
+		if ( !factionData ) then return end
 		v.panel = vgui.Create( "DPanel", self.CharacterPanel )
 		v.panel:SetSize( baseW, baseH )
 		v.panel.x = 0
@@ -335,9 +345,9 @@ function PANEL:Init( )
 	self.parent = self:GetParent( )
 	self.w, self.h = self.parent.w * 0.8, self.parent.h * 0.6
 	self.data = { faction = nil }
-	self.factionList = self:GetFactionList( )
+	self.factionList = catherine.faction.GetPlayerUsableFaction( self.parent.player )
 	self.progressPercent, self.progressPercentAni = 0, 0
-	
+
 	self:SetSize( self.w, self.h )
 	self:SetPos( self.parent.w, self.parent.h / 2 - self.h / 2 )
 	self:SetAlpha( 0 )

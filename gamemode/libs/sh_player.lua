@@ -17,6 +17,15 @@ if ( SERVER ) then
 				catherine.database.GetDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
 					if ( !data or #data == 0 ) then
 						catherine.player.QueryInitialize( pl, function( )
+							if ( pl:SteamID( ) == catherine.configs.OWNER and pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
+								if ( ulx ) then
+									RunConsoleCommand( "ulx", "adduserid", pl:SteamID( ), "superadmin" )
+									catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl:SteamName( ) )
+								else
+									pl:SetUserGroup( "superadmin" )
+									catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set : " .. pl:SteamName( ) )
+								end
+							end
 							catherine.character.SendCharacterLists( pl, function( )
 								catherine.catData.Load( pl )
 								netstream.Start( pl, "catherine.LoadingStatus", { false, "Framework loaded!" } )

@@ -1,14 +1,15 @@
-Item.name = "Wallet"
-Item.desc = catherine.configs.cashName .. " in a small stack."
-Item.category = "Wallet"
-Item.model = catherine.configs.cashModel
-Item.cost = 0
-Item.weight = 0.5
-Item.itemData = {
+local ITEM = catherine.item.New( "wallet" )
+ITEM.name = "Wallet"
+ITEM.desc = catherine.configs.cashName .. " in a small stack."
+ITEM.category = "Wallet"
+ITEM.model = catherine.configs.cashModel
+ITEM.cost = 0
+ITEM.weight = 0.5
+ITEM.itemData = {
 	amount = 0
 }
-Item.func = { }
-Item.func.take = {
+ITEM.func = { }
+ITEM.func.take = {
 	text = "Take " .. catherine.configs.cashName,
 	icon = "icon16/money_add.png",
 	canShowIsWorld = true,
@@ -17,7 +18,7 @@ Item.func.take = {
 			catherine.util.Notify( pl, "This isn't a valid entity!" )
 			return
 		end
-		local itemData = ent:GetItemData( )
+		local itemData = ent:GetITEMData( )
 		catherine.cash.Give( pl, itemData.amount )
 		ent:Remove( )
 	end,
@@ -25,7 +26,7 @@ Item.func.take = {
 		return true
 	end
 }
-Item.func.drop = {
+ITEM.func.drop = {
 	text = "Drop " .. catherine.configs.cashName,
 	icon = "icon16/money_delete.png",
 	canShowIsMenu = true,
@@ -52,12 +53,14 @@ Item.func.drop = {
 }
 
 if ( SERVER ) then
-	catherine.item.RegisterNyanHook( "PlayerSpawnedInCharacter", "catherine.item.hooks.wallet.PlayerSpawnedInCharacter", function( pl )
+	catherine.hooks.Register( "PlayerSpawnedInCharacter", "catherine.item.hooks.wallet.PlayerSpawnedInCharacter", function( pl )
 		if ( catherine.inventory.HasItem( pl, "wallet" ) ) then return end
 		catherine.item.Give( pl, "wallet" )
 	end )
 else
-	function Item:GetDesc( pl, itemTable, itemData, isInv )
+	function ITEM:GetDesc( pl, itemTable, itemData, isInv )
 		return ( isInv and "You have " .. catherine.cash.GetName( catherine.cash.Get( pl ) ) .. "!" or catherine.cash.GetName( itemData.amount ) )
 	end
 end
+
+catherine.item.Register( ITEM )

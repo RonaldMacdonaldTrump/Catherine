@@ -79,7 +79,8 @@ function PANEL:BuildInventory( )
 		for k1, v1 in pairs( v ) do
 			local w, h = 64, 64
 			local itemTable = catherine.item.FindByID( v1.uniqueID )
-			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( self.player, itemTable, self.player:GetInvItemData( itemTable.uniqueID ), true ) or nil
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( self.player, itemTable, self.player:GetInvItemDatas( itemTable.uniqueID ), true ) or nil
+
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( itemTable.model )
@@ -97,7 +98,7 @@ function PANEL:BuildInventory( )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
 				if ( itemTable.DrawInformation ) then
-					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemData( itemTable.uniqueID ) )
+					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemDatas( itemTable.uniqueID ) )
 				end
 				if ( v1.int > 1 ) then
 					draw.SimpleText( v1.int, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )

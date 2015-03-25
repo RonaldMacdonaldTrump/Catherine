@@ -1,14 +1,6 @@
-Lang.name = "German"
-Lang.datas = {
-	[ "test" ] = "Dies ist die Deutsche Sprachdatei.",
-	[ "test2" ] = "Dies ist die %s Sprachdatei.",
-	
-	
-	
-	
-	
-	
-	
+local LANGUAGE = catherine.language.New( "german" )
+LANGUAGE.name = "German"
+LANGUAGE.data = {
 	// Cash ^-^;
 	[ "Cash_GiveMessage01" ] = "Du hast %s an %s überwiesen.",
 	
@@ -23,5 +15,6 @@ Lang.datas = {
 	[ "UnknownError" ] = "Unbekannter Fehler.",
 	[ "UnknownPlayerError" ] = "Der eingegebende Name ist ungültig!",
 	[ "ArgError" ] = "%s Bitte füge ein zweites Argument hinzu!"
-	
 }
+
+catherine.language.Register( LANGUAGE )

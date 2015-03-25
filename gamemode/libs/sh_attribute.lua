@@ -63,9 +63,9 @@ if ( SERVER ) then
 		return attribute[ attributeTable.uniqueID ].progress or 0
 	end
 	
-	catherine.character.RegisterNyanHook( "InitializeNetworking", 2, function( pl, data )
-		if ( !data._att ) then return end
-		local attribute, changed, count = data._att, false, 0
+	catherine.hooks.Register( "InitializeNetworking", "catherine.attribute.hooks.InitializeNetworking", function( pl, charVars )
+		if ( !charVars._att ) then return end
+		local attribute, changed, count = charVars._att, false, 0
 		for k, v in pairs( attribute ) do
 			count = count + 1
 			if ( catherine.attribute.FindByID( k ) ) then continue end

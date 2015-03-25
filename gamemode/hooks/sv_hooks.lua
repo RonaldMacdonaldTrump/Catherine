@@ -103,12 +103,16 @@ function GM:PlayerUse( pl, ent )
 end
 
 function GM:PlayerFirstSpawned( pl )
-	hook.Run( "InventoryInitialize", pl )
+	//hook.Run( "InventoryInitialize", pl )
 end
 
 function GM:PostWeaponGive( pl )
-	pl:Give( "cat_fist" )
-	pl:Give( "cat_key" )
+	if ( catherine.configs.giveHand ) then
+		pl:Give( "cat_fist" )
+	end
+	if ( catherine.configs.giveKey ) then
+		pl:Give( "cat_key" )
+	end
 end
 
 function GM:PlayerSay( pl, text )
@@ -176,13 +180,16 @@ function GM:PlayerSpawnSENT( pl )
 end
 
 function GM:PlayerHurt( pl )
+	if ( pl:Health( ) <= 0 ) then
+		return true
+	end
 	pl.CAT_healthRecoverBool = true
 	pl:EmitSound( hook.Run( "GetPlayerPainSound", pl ) or "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
 	return true
 end
 
 function GM:PlayerDeathSound( pl )
-	pl:EmitSound( "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+	pl:EmitSound( hook.Run( "GetPlayerDeathSound", pl ) or "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
 	return true
 end
 

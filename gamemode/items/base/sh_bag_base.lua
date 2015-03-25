@@ -1,13 +1,13 @@
-Base.uniqueID = "bag_base"
-Base.name = "Bag Base"
-Base.desc = "A Bag."
-Base.category = "Storage"
-Base.cost = 0
-Base.weight = 0
-Base.weightPlus = 10
-Base.isBag = true
-Base.func = { }
-Base.func.drop = {
+local BASE = catherine.item.New( "BAG", nil, true )
+BASE.name = "Bag Base"
+BASE.desc = "A Bag."
+BASE.category = "Storage"
+BASE.cost = 0
+BASE.weight = 0
+BASE.weightPlus = 10
+BASE.isBag = true
+BASE.func = { }
+BASE.func.drop = {
 	text = "Drop",
 	canShowIsMenu = true,
 	canLook = function( pl, itemTable )
@@ -15,3 +15,5 @@ Base.func.drop = {
 		return invWeight < ( invMaxWeight - itemTable.weightPlus )
 	end
 }
+
+catherine.item.Register( BASE )

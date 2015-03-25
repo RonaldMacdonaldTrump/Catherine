@@ -1,9 +1,8 @@
-local Plugin = Plugin
-
-Plugin.name = "Good Text"
-Plugin.author = "L7D"
-Plugin.desc = "Write text to wall."
-Plugin.textLists = Plugin.textLists or { }
+local PLUGIN = PLUGIN
+PLUGIN.name = "Good Text"
+PLUGIN.author = "L7D"
+PLUGIN.desc = "Write text to wall."
+PLUGIN.textLists = PLUGIN.textLists or { }
 
 catherine.util.Include( "sh_commands.lua" )
 catherine.util.Include( "sv_plugin.lua" )

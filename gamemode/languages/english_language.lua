@@ -1,14 +1,6 @@
-Lang.name = "English"
-Lang.datas = {
-	[ "test" ] = "This is english language.",
-	[ "test2" ] = "This is %s language.",
-	
-	
-	
-	
-	
-	
-	
+local LANGUAGE = catherine.language.New( "english" )
+LANGUAGE.name = "English"
+LANGUAGE.data = {
 	// Cash ^-^;
 	[ "Cash_GiveMessage01" ] = "You have given %s to %s",
 	
@@ -20,8 +12,9 @@ Lang.datas = {
 	[ "Flag_GiveMessage01" ] = "Give flag",
 	[ "Flag_TakeMessage01" ] = "Take flag",
 	
-	[ "UnknownError" ] = "Unknown Error",
+	[ "UnknownError" ] = "Unknown Error!",
 	[ "UnknownPlayerError" ] = "You are not giving a valid character name!",
-	[ "ArgError" ] = "%s Please enter the second argument!"
-	
+	[ "ArgError" ] = "Please enter the %s argument!"
 }
+
+catherine.language.Register( LANGUAGE )

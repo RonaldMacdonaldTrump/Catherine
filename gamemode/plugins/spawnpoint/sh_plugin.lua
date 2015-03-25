@@ -1,8 +1,7 @@
-local Plugin = Plugin
-
-Plugin.name = "Spawnpoint"
-Plugin.author = "L7D"
-Plugin.desc = "Good stuff."
+local PLUGIN = PLUGIN
+PLUGIN.name = "Spawnpoint"
+PLUGIN.author = "L7D"
+PLUGIN.desc = "Good stuff."
 
 catherine.util.Include( "sv_plugin.lua" )
 
@@ -16,11 +15,11 @@ catherine.command.Register( {
 			if ( factionTable ) then
 				local map = game.GetMap( )
 				local faction = factionTable.uniqueID
-				Plugin.Lists[ map ] = Plugin.Lists[ map ] or { }
-				Plugin.Lists[ map ][ faction ] = Plugin.Lists[ map ][ faction ] or { }
-				Plugin.Lists[ map ][ faction ][ #Plugin.Lists[ map ][ faction ] + 1 ] = pl:GetPos( )
+				PLUGIN.Lists[ map ] = PLUGIN.Lists[ map ] or { }
+				PLUGIN.Lists[ map ][ faction ] = PLUGIN.Lists[ map ][ faction ] or { }
+				PLUGIN.Lists[ map ][ faction ][ #PLUGIN.Lists[ map ][ faction ] + 1 ] = pl:GetPos( )
 				
-				Plugin:SavePoints( )
+				PLUGIN:SavePoints( )
 				
 				catherine.util.Notify( pl, "You added spawn point for " .. factionTable.name .. " faction!" )
 			else
@@ -41,10 +40,10 @@ catherine.command.Register( {
 		local pos = pl:GetPos( )
 		local i = 0
 
-		for k, v in pairs( Plugin.Lists[ game.GetMap( ) ] ) do
+		for k, v in pairs( PLUGIN.Lists[ game.GetMap( ) ] ) do
 			if ( v:Distance( pos ) <= rad ) then
 				i = i + 1
-				table.remove( Plugin.Lists[ game.GetMap( ) ], k )
+				table.remove( PLUGIN.Lists[ game.GetMap( ) ], k )
 			end
 		end
 		

@@ -1,4 +1,4 @@
-local Plugin = Plugin
+local PLUGIN = PLUGIN
 
 netstream.Hook( "catherine.plugin.bugreport.SendResult", function( data )
 	if ( type( data ) == "boolean" ) then

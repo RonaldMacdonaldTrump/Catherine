@@ -1,16 +1,16 @@
-Base.uniqueID = "weapon_base"
-Base.name = "Weapon Base"
-Base.desc = "A Weapon."
-Base.category = "Weapon"
-Base.cost = 0
-Base.weight = 0
-Base.isWeapon = true
-Base.weaponClass = "weapon_smg1"
-Base.itemData = {
+local BASE = catherine.item.New( "WEAPON", nil, true )
+BASE.name = "Weapon Base"
+BASE.desc = "A Weapon."
+BASE.category = "Weapon"
+BASE.cost = 0
+BASE.weight = 0
+BASE.isWeapon = true
+BASE.weaponClass = "weapon_smg1"
+BASE.itemData = {
 	equiped = false
 }
-Base.func = { }
-Base.func.equip = {
+BASE.func = { }
+BASE.func.equip = {
 	text = "Equip",
 	icon = "icon16/ruby_get.png",
 	canShowIsWorld = true,
@@ -24,9 +24,6 @@ Base.func.equip = {
 			catherine.item.Give( pl, itemTable.uniqueID )
 			ent:Remove( )
 		end
-		
-		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
-		itemData.equiped = true
 		local wep = pl:Give( itemTable.weaponClass )
 		if ( IsValid( wep ) ) then
 			pl:SelectWeapon( itemTable.weaponClass )
@@ -34,32 +31,23 @@ Base.func.equip = {
 		end
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
 		
-		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
-			uniqueID = itemTable.uniqueID,
-			newData = itemData
-		} )
+		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", true )
 	end,
 	canLook = function( pl, itemTable )
 		return !catherine.inventory.IsEquipped( itemTable.uniqueID )
 	end
 }
-Base.func.unequip = {
+BASE.func.unequip = {
 	text = "Unequip",
 	icon = "icon16/ruby_put.png",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
-		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
-		itemData.equiped = false
-		
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
 			pl:StripWeapon( itemTable.weaponClass )
 		end
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
 		
-		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
-			uniqueID = itemTable.uniqueID,
-			newData = itemData
-		} )
+		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", false )
 	end,
 	canLook = function( pl, itemTable )
 		return catherine.inventory.IsEquipped( itemTable.uniqueID )
@@ -67,14 +55,14 @@ Base.func.unequip = {
 }
 
 if ( SERVER ) then
-	catherine.item.RegisterNyanHook( "PlayerSpawnedInCharacter", "catherine.item.hooks.weapon_base.PlayerSpawnedInCharacter", function( pl )
+	catherine.hooks.Register( "PlayerSpawnedInCharacter", "catherine.item.hooks.weapon_base.PlayerSpawnedInCharacter", function( pl )
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
 			if ( !catherine.inventory.IsEquipped( pl, k ) ) then continue end
 			catherine.item.Work( pl, k, "equip" )
 		end
 	end )
-	
-	catherine.item.RegisterNyanHook( "PlayerDeath", "catherine.item.hooks.weapon_base.PlayerDeath", function( pl )
+
+	catherine.hooks.Register( "PlayerDeath", "catherine.item.hooks.weapon_base.PlayerDeath", function( pl )
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
 			if ( !catherine.inventory.IsEquipped( pl, k ) ) then continue end
 			catherine.item.Work( pl, k, "unequip" )
@@ -83,7 +71,7 @@ if ( SERVER ) then
 		end
 	end )
 
-	catherine.item.RegisterNyanHook( "ItemDroped", "catherine.item.hooks.weapon_base.ItemDroped", function( pl, itemTable )
+	catherine.hooks.Register( "ItemDroped", "catherine.item.hooks.weapon_base.ItemDroped", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
 			pl:StripWeapon( itemTable.weaponClass )
@@ -91,3 +79,5 @@ if ( SERVER ) then
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 end
+
+catherine.item.Register( BASE )

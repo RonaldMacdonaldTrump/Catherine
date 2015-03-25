@@ -1,4 +1,4 @@
-local Plugin = Plugin
+local PLUGIN = PLUGIN
 local PANEL = { }
 
 function PANEL:Init( )
@@ -124,7 +124,7 @@ function PANEL:MenuPaint( w, h )
 		return
 	end
 	
-	if ( self.data.titleLen > 10 and self.data.titleLen < Plugin.maxTitle ) then
+	if ( self.data.titleLen > 10 and self.data.titleLen < PLUGIN.maxTitle ) then
 		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( self.acceptMaterial )
 		surface.DrawTexturedRect( self.w - 16 - 10, 60 + 3, 16, 16 )
@@ -136,7 +136,7 @@ function PANEL:MenuPaint( w, h )
 		self.oneFin = false
 	end
 	
-	if ( self.data.valueLen > 20 and self.data.valueLen < Plugin.maxValue ) then
+	if ( self.data.valueLen > 20 and self.data.valueLen < PLUGIN.maxValue ) then
 		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( self.acceptMaterial )
 		surface.DrawTexturedRect( self.w - 16 - 10, 125 + 3, 16, 16 )

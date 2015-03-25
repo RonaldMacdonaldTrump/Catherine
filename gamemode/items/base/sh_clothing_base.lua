@@ -1,28 +1,19 @@
-Base.uniqueID = "clothing_base"
-Base.name = "Clothing"
-Base.desc = "A Cloth."
-Base.category = "Clothing"
-Base.modelmale = "models/humans/group01/male_01.mdl"
-Base.modelfemale = "models/humans/group01/female_01.mdl"
-Base.cost = 0
-Base.weight = 0
-Base.itemData = {
+local BASE = catherine.item.New( "CLOTHING", nil, true )
+BASE.name = "Clothing Base"
+BASE.desc = "A Cloth."
+BASE.category = "Clothing"
+BASE.cost = 0
+BASE.weight = 0
+BASE.itemData = {
 	wearing = false
 }
-Base.func = { }
-Base.func.wear = {
+BASE.func = { }
+BASE.func.wear = {
 	text = "Wear",
 	canShowIsWorld = true,
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
-		if ( !catherine.inventory.HasSpace( pl ) and type( ent ) == "Entity" ) then
-			catherine.util.Notify( pl, "You don't have inventory space!" )
-			return
-		end
-		if ( type( ent ) == "Entity" ) then
-			catherine.item.Give( pl, itemTable.uniqueID )
-			ent:Remove( )
-		end
+
 	end,
 	canLook = function( pl, itemTable )
 		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
@@ -32,7 +23,7 @@ Base.func.wear = {
 		return true
 	end
 }
-Base.func.takeoff = {
+BASE.func.takeoff = {
 	text = "Take off",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
@@ -46,3 +37,5 @@ Base.func.takeoff = {
 		return true
 	end
 }
+
+catherine.item.Register( BASE )

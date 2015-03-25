@@ -1,8 +1,11 @@
 catherine.item = catherine.item or { bases = { }, items = { } }
-catherine.item.hooks = { }
 
-function catherine.item.Register( itemTable, isBase )
-	if ( isBase ) then
+function catherine.item.Register( itemTable )
+	if ( !itemTable ) then
+		catherine.util.ErrorPrint( "Item register error, can't found item table!" )
+		return
+	end
+	if ( itemTable.isBase ) then
 		catherine.item.bases[ itemTable.uniqueID ] = itemTable
 		return
 	end
@@ -15,6 +18,7 @@ function catherine.item.Register( itemTable, isBase )
 	itemTable.name = itemTable.name or "A Name"
 	itemTable.desc = itemTable.desc or "A Desc"
 	itemTable.weight = itemTable.weight or 0
+	itemTable.useDynamicItemData = itemTable.useDynamicItemData or true
 	itemTable.itemData = itemTable.itemData or { }
 	itemTable.cost = itemTable.cost or 0
 	itemTable.category = itemTable.category or "Other"
@@ -32,13 +36,14 @@ function catherine.item.Register( itemTable, isBase )
 					catherine.util.Notify( pl, "You don't have inventory space!" )
 					return
 				end
+				local itemData = ent:GetItemData( )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 					uniqueID = itemTable.uniqueID,
-					itemData = itemTable.itemData
+					itemData = ( itemTable.useDynamicItemData and ent:GetItemData( ) ) or itemTable.itemData
 				} )
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
 				ent:Remove( )
-				catherine.item.RunNyanHook( "ItemTaked", pl, itemTable )
+				catherine.hooks.Run( "ItemTaked", pl, itemTable )
 			end,
 			canLook = function( pl, itemTable )
 				return true
@@ -55,9 +60,9 @@ function catherine.item.Register( itemTable, isBase )
 					return
 				end
 				pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
-				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, { } )
+				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemTable.uniqueID )
-				catherine.item.RunNyanHook( "ItemDroped", pl, itemTable )
+				catherine.hooks.Run( "ItemDroped", pl, itemTable )
 			end,
 			canLook = function( pl, itemTable )
 				return catherine.inventory.HasItem( itemTable.uniqueID )
@@ -69,15 +74,8 @@ function catherine.item.Register( itemTable, isBase )
 	catherine.item.items[ itemTable.uniqueID ] = itemTable
 end
 
-function catherine.item.RegisterNyanHook( hookID, uniqueID, func )
-	catherine.item.hooks[ hookID ] = catherine.item.hooks[ hookID ] or { }
-	catherine.item.hooks[ hookID ][ #catherine.item.hooks[ hookID ] + 1 ] = func
-end
-
-function catherine.item.RunNyanHook( hookID, ... )
-	for k, v in pairs( catherine.item.hooks[ hookID ] or { } ) do
-		v( ... )
-	end
+function catherine.item.New( uniqueID, base_uniqueID, isBase )
+	return { uniqueID = uniqueID, base = base_uniqueID, isBase = isBase }
 end
 
 function catherine.item.FindByID( id )
@@ -89,24 +87,23 @@ function catherine.item.FindBaseByID( id )
 end
 
 function catherine.item.Include( dir )
-	local baseFiles = file.Find( dir .. "/items/base/*", "LUA" )
-	for k, v in pairs( baseFiles ) do
-		Base = { uniqueID = catherine.util.GetUniqueName( v ) }
-		catherine.util.Include( dir .. "/items/base/" .. v )
-		catherine.item.Register( Base, true )
-		Base = nil
-	end
+	if ( !dir ) then return end
 
+	for k, v in pairs( file.Find( dir .. "/items/base/*.lua", "LUA" ) ) do
+		catherine.util.Include( dir .. "/items/base/" .. v, "SHARED" )
+	end
+	
 	local itemFiles, itemFolders = file.Find( dir .. "/items/*", "LUA" )
 	for k, v in pairs( itemFolders ) do
 		if ( v == "base" ) then continue end
-		local itemFile = file.Find( dir .. "/items/" .. v .. "/*", "LUA" )
-		for k1, v1 in pairs( itemFile ) do
-			Item = { uniqueID = catherine.util.GetUniqueName( v1 ) }
-			catherine.util.Include( dir .. "/items/" .. v .. "/" .. v1 )
-			catherine.item.Register( Item )
-			Item = nil
+		local itemFiles2 = file.Find( dir .. "/items/" .. v .. "/*.lua", "LUA" )
+		for k1, v1 in pairs( itemFiles2 ) do
+			catherine.util.Include( dir .. "/items/" .. v .. "/" .. v1, "SHARED" )
 		end
+	end
+	
+	for k, v in pairs( itemFiles ) do
+		catherine.util.Include( dir .. "/items/" .. v, "SHARED" )
 	end
 end
 
@@ -120,7 +117,7 @@ if ( SERVER ) then
 		if ( !itemTable.func or !itemTable.func[ funcID ] ) then return end
 		itemTable.func[ funcID ].func( pl, itemTable, ent_isMenu )
 		if ( itemTable.useSound ) then
-			
+			//  to do
 		end
 	end
 	
@@ -147,7 +144,7 @@ if ( SERVER ) then
 		ent:Spawn( )
 		ent:SetModel( itemTable.model or "models/props_junk/watermelon01.mdl" )
 		ent:PhysicsInit( SOLID_VPHYSICS )
-		ent:InitializeItem( itemID, itemData or itemTable.itemData or { } )
+		ent:InitializeItem( itemID, itemData or { } )
 		
 		local physObject = ent:GetPhysicsObject( )
 		if ( IsValid( physObject ) ) then
@@ -155,17 +152,17 @@ if ( SERVER ) then
 			physObject:Wake( )
 		end
 	end
-	
+	--[[
 	function catherine.item.PlayerSpawnedInCharacter( pl )
-		catherine.item.RunNyanHook( "PlayerSpawnedInCharacter", pl )
+		catherine.hooks.Run( "PlayerSpawnedInCharacter", pl )
 	end
 	
 	function catherine.item.PlayerDeath( pl )
-		catherine.item.RunNyanHook( "PlayerDeath", pl )
+		catherine.hooks.Run( "PlayerDeath", pl )
 	end
 	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.PlayerSpawnedInCharacter", catherine.item.PlayerSpawnedInCharacter )
-	hook.Add( "PlayerDeath", "catherine.item.PlayerDeath", catherine.item.PlayerDeath )
+	hook.Add( "PlayerDeath", "catherine.item.PlayerDeath", catherine.item.PlayerDeath )--]]
 	
 	netstream.Hook( "catherine.item.Work", function( pl, data )
 		catherine.item.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ] )

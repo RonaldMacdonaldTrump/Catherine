@@ -1,5 +1,7 @@
 catherine.configs = catherine.configs or { }
 
+catherine.configs.OWNER = ""
+
 catherine.configs.doorCost = 50
 catherine.configs.doorSellCost = 25
 catherine.configs.playerDefaultRunSpeed = 275

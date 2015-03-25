@@ -1,18 +1,18 @@
-local Plugin = Plugin
+local PLUGIN = PLUGIN
 
 netstream.Hook( "catherine.plugin.goodtext.SyncText", function( data )
 	local index = data.index
-	if ( !Plugin.textLists[ index ] or ( Plugin.textLists[ index ] and Plugin.textLists[ index ].text != data.text ) ) then
-		Plugin:DrawText( data )
+	if ( !PLUGIN.textLists[ index ] or ( PLUGIN.textLists[ index ] and PLUGIN.textLists[ index ].text != data.text ) ) then
+		PLUGIN:DrawText( data )
 	end
 end )
 
 netstream.Hook( "catherine.plugin.goodtext.RemoveText", function( data )
-	if ( !Plugin.textLists[ data ] ) then return end
-	Plugin.textLists[ data ] = nil
+	if ( !PLUGIN.textLists[ data ] ) then return end
+	PLUGIN.textLists[ data ] = nil
 end )
 
-function Plugin:DrawText( data )
+function PLUGIN:DrawText( data )
 	local object = catherine.markup.Parse( "<font=catherine_goodtext>" .. data.text .. "</font>" )
 	function object:DrawText( text, font, x, y, col, hA, vA, a )
 		col.a = a
@@ -28,7 +28,7 @@ function Plugin:DrawText( data )
 	}
 end
 
-function Plugin:PostDrawTranslucentRenderables( )
+function PLUGIN:PostDrawTranslucentRenderables( )
 	local pos = LocalPlayer( ):GetPos( )
 	for k, v in pairs( self.textLists ) do
 		local a = catherine.util.GetAlphaFromDistance( pos, v.pos, 1000 )
