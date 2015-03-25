@@ -1,10 +1,28 @@
 catherine.faction = catherine.faction or { }
-catherine.faction.Lists = { }
+catherine.faction.Lists = catherine.faction.Lists or { }
 
-function catherine.faction.Register( tab )
-	tab.index = tab.index or #catherine.faction.Lists + 1
-	catherine.faction.Lists[ tab.index ] = tab
-	team.SetUp( tab.index, tab.name, tab.color )
+function catherine.faction.Register( factionTable )
+	if ( !factionTable or !factionTable.index ) then
+		catherine.util.ErrorPrint( "Faction register error, can't found faction table!" )
+		return
+	end
+	catherine.faction.Lists[ factionTable.index ] = factionTable
+	return factionTable.index
+end
+
+function catherine.faction.Create( uniqueID )
+	return { uniqueID = uniqueID, index = table.Count( catherine.faction.Lists ) + 1 }
+end
+
+function catherine.faction.GetPlayerUsableFaction( pl )
+	if ( !IsValid( pl ) ) then return { } end
+	local factions = { }
+	for k, v in pairs( catherine.faction.GetAll( ) ) do
+		if ( v.isWhitelist and catherine.faction.HasWhiteList( self, id ) == false ) then continue end
+		factions[ #factions + 1 ] = v
+	end
+	
+	return factions
 end
 
 function catherine.faction.GetAll( )
@@ -47,9 +65,9 @@ end
 function catherine.faction.Include( dir )
 	local files = file.Find( dir .. "/factions/*", "LUA" )
 	for k, v in pairs( files ) do
-		Faction = { }
-		Faction.uniqueID = catherine.util.GetUniqueName( v )
-		catherine.util.Include( dir .. "/factions/" .. v )
+		local uniqueID = catherine.util.GetUniqueName( v )
+		Faction = catherine.faction.Lists[ uniqueID ] or { uniqueID = uniqueID, index = table.Count( catherine.faction.Lists[ uniqueID ] ) + 1 }
+		catherine.util.Include( dir .. "/factions/" .. v, "SHARED" )
 		catherine.faction.Register( Faction )
 		Faction = nil
 	end

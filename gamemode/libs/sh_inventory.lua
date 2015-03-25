@@ -102,7 +102,14 @@ if ( SERVER ) then
 		return invWeight < invMaxWeight
 	end
 	
-	function catherine.inventory.GetItemData( pl, uniqueID )
+	function catherine.inventory.GetItemData( pl, uniqueID, key, default )
+		if ( !IsValid( pl ) or !uniqueID or !key ) then return default end
+		local inventory = catherine.inventory.Get( pl )
+		if ( !inventory[ uniqueID ] or !inventory[ uniqueID ].itemData ) then return default end
+		return inventory[ uniqueID ].itemData[ key ]
+	end
+	
+	function catherine.inventory.GetItemDatas( pl, uniqueID )
 		if ( !IsValid( pl ) or !uniqueID ) then return { } end
 		local inventory = catherine.inventory.Get( pl )
 		if ( !inventory[ uniqueID ] ) then return { } end
@@ -135,8 +142,12 @@ if ( SERVER ) then
 		return catherine.inventory.HasItem( self, uniqueID )
 	end
 	
-	function META:GetInvItemData( uniqueID )
-		return catherine.inventory.GetItemData( self, uniqueID )
+	function META:GetInvItemData( uniqueID, key, default )
+		return catherine.inventory.GetItemData( self, uniqueID, key, default )
+	end
+	
+	function META:GetInvItemDatas( uniqueID )
+		return catherine.inventory.GetItemDatas( self, uniqueID )
 	end
 	
 	function META:SetInvItemData( uniqueID, key, newData )
@@ -147,9 +158,9 @@ if ( SERVER ) then
 		catherine.inventory.SetItemDatas( self, uniqueID, newData )
 	end
 
-	catherine.character.RegisterNyanHook( "InitializeNetworking", 1, function( pl, data )
-		if ( !data._inv ) then return end
-		local inventory, changed = data._inv, false
+	catherine.character.RegisterNyanHook( "InitializeNetworking", "catherine.inventory.hooks.InitializeNetworking_0", function( pl, charVars )
+		if ( !charVars._inv ) then return end
+		local inventory, changed = charVars._inv, false
 		for k, v in pairs( inventory ) do
 			if ( catherine.item.FindByID( k ) ) then continue end
 			inventory[ k ] = nil
@@ -221,7 +232,7 @@ else
 		return catherine.inventory.GetItemData( uniqueID )
 	end
 
-	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", 3, function( )
+	catherine.character.RegisterNyanHook( "NetworkGlobalVarChanged", "catherine.inventory.hooks.NetworkGlobalVarChanged_0", function( )
 		if ( !IsValid( catherine.vgui.inventory ) ) then return end
 		catherine.vgui.inventory:InitializeInventory( )
 	end )

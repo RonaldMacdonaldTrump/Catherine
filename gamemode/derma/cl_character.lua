@@ -335,7 +335,7 @@ function PANEL:Init( )
 	self.parent = self:GetParent( )
 	self.w, self.h = self.parent.w * 0.8, self.parent.h * 0.6
 	self.data = { faction = nil }
-	self.factionList = self:GetFactionList( )
+	self.factionList = catherine.faction.GetPlayerUsableFaction( self.player )
 	self.progressPercent, self.progressPercentAni = 0, 0
 	
 	self:SetSize( self.w, self.h )

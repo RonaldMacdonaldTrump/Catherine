@@ -1,5 +1,4 @@
 catherine.item = catherine.item or { bases = { }, items = { } }
-catherine.item.hooks = { }
 
 function catherine.item.Register( itemTable, isBase )
 	if ( isBase ) then
@@ -15,6 +14,7 @@ function catherine.item.Register( itemTable, isBase )
 	itemTable.name = itemTable.name or "A Name"
 	itemTable.desc = itemTable.desc or "A Desc"
 	itemTable.weight = itemTable.weight or 0
+	itemTable.useDynamicItemData = itemTable.useDynamicItemData or true
 	itemTable.itemData = itemTable.itemData or { }
 	itemTable.cost = itemTable.cost or 0
 	itemTable.category = itemTable.category or "Other"
@@ -32,9 +32,10 @@ function catherine.item.Register( itemTable, isBase )
 					catherine.util.Notify( pl, "You don't have inventory space!" )
 					return
 				end
+				local itemData = ent:GetItemData( )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 					uniqueID = itemTable.uniqueID,
-					itemData = itemTable.itemData
+					itemData = ( itemTable.useDynamicItemData and ent:GetItemData( ) ) or itemTable.itemData
 				} )
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
 				ent:Remove( )
@@ -55,7 +56,7 @@ function catherine.item.Register( itemTable, isBase )
 					return
 				end
 				pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
-				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, { } )
+				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, itemTable.useDynamicItemData and ent:GetItemData( ) or { } )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemTable.uniqueID )
 				catherine.item.RunNyanHook( "ItemDroped", pl, itemTable )
 			end,
@@ -70,14 +71,13 @@ function catherine.item.Register( itemTable, isBase )
 end
 
 function catherine.item.RegisterNyanHook( hookID, uniqueID, func )
-	catherine.item.hooks[ hookID ] = catherine.item.hooks[ hookID ] or { }
-	catherine.item.hooks[ hookID ][ #catherine.item.hooks[ hookID ] + 1 ] = func
+	hook.Add( hookID, uniqueID, function( ... )
+		func( ... )
+	end )
 end
 
 function catherine.item.RunNyanHook( hookID, ... )
-	for k, v in pairs( catherine.item.hooks[ hookID ] or { } ) do
-		v( ... )
-	end
+	hook.Run( hookID, ... )
 end
 
 function catherine.item.FindByID( id )
@@ -147,7 +147,7 @@ if ( SERVER ) then
 		ent:Spawn( )
 		ent:SetModel( itemTable.model or "models/props_junk/watermelon01.mdl" )
 		ent:PhysicsInit( SOLID_VPHYSICS )
-		ent:InitializeItem( itemID, itemData or itemTable.itemData or { } )
+		ent:InitializeItem( itemID, itemData or { } )
 		
 		local physObject = ent:GetPhysicsObject( )
 		if ( IsValid( physObject ) ) then

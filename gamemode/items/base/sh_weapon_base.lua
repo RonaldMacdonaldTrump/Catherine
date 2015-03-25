@@ -24,9 +24,6 @@ Base.func.equip = {
 			catherine.item.Give( pl, itemTable.uniqueID )
 			ent:Remove( )
 		end
-		
-		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
-		itemData.equiped = true
 		local wep = pl:Give( itemTable.weaponClass )
 		if ( IsValid( wep ) ) then
 			pl:SelectWeapon( itemTable.weaponClass )
@@ -34,10 +31,7 @@ Base.func.equip = {
 		end
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
 		
-		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
-			uniqueID = itemTable.uniqueID,
-			newData = itemData
-		} )
+		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", true )
 	end,
 	canLook = function( pl, itemTable )
 		return !catherine.inventory.IsEquipped( itemTable.uniqueID )
@@ -48,18 +42,12 @@ Base.func.unequip = {
 	icon = "icon16/ruby_put.png",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
-		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
-		itemData.equiped = false
-		
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
 			pl:StripWeapon( itemTable.weaponClass )
 		end
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
 		
-		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
-			uniqueID = itemTable.uniqueID,
-			newData = itemData
-		} )
+		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", false )
 	end,
 	canLook = function( pl, itemTable )
 		return catherine.inventory.IsEquipped( itemTable.uniqueID )
