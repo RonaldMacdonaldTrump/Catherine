@@ -474,7 +474,7 @@ else
 	
 	netstream.Hook( "catherine.character.InitializeNetworking", function( data )
 		catherine.character.networkingVars[ data[ 1 ] ] = data[ 2 ]
-		catherine.hooks.Run( "InitializeNetworking", LocalPlayer( ), catherine.character.networkingVars[ LocalPlayer( ):SteamID( ) ] )
+		catherine.hooks.Run( "InitializeNetworking", catherine.util.FindPlayerByStuff( "SteamID", data[ 1 ] ), data[ 2 ] )
 	end )
 
 	netstream.Hook( "catherine.character.DisconnectNetworking", function( data )
