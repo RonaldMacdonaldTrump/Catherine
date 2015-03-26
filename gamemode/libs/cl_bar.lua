@@ -15,7 +15,7 @@ function catherine.bar.Register( target, targetMax, color, uniqueID )
 		color = color,
 		uniqueID = uniqueID,
 		ani = 0,
-		y = -7 + ( #catherine.bar.Lists + 1 ) * 12,
+		y = -10 + ( #catherine.bar.Lists + 1 ) * 14,
 		alpha = 0
 	}
 end
@@ -33,9 +33,13 @@ function catherine.bar.Draw( )
 			v.alpha = Lerp( 0.03, v.alpha, 255 )
 		end
 		v.ani = Lerp( 0.03, v.ani, ( ScrW( ) * 0.3 ) * percent )
-		v.y = Lerp( 0.03, v.y, -7 + count * 12 )
-		draw.RoundedBox( 0, 5, v.y, ScrW( ) * 0.3, 7, Color( 230, 230, 230, v.alpha - 20 ) )
-		draw.RoundedBox( 0, 5, v.y, v.ani, 7, Color( v.color.r, v.color.g, v.color.b, v.alpha ) )
+		v.y = Lerp( 0.03, v.y, -5 + count * 10 )
+		
+		surface.SetDrawColor( 255,255,255, v.alpha - 30 )
+		surface.SetMaterial( Material( "CAT/bar_background.png", "smooth" ) )
+		surface.DrawTexturedRect( 5, v.y + 4, ScrW( ) * 0.3, 1 )
+		
+		draw.RoundedBox( 0, 5, v.y, v.ani, 5, Color( v.color.r, v.color.g, v.color.b, v.alpha ) )
 	end
 end
 
