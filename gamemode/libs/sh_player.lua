@@ -28,7 +28,7 @@ if ( SERVER ) then
 							end
 							catherine.character.SendCharacterLists( pl, function( )
 								catherine.catData.Load( pl )
-								netstream.Start( pl, "catherine.LoadingStatus", { false, "Framework loaded!" } )
+								netstream.Start( pl, "catherine.LoadingStatus", { false, "Welcome." } )
 								timer.Simple( 1, function( )
 									netstream.Start( pl, "catherine.LoadingStatus", { true, "" } )
 									catherine.character.OpenPanel( pl )
@@ -41,7 +41,7 @@ if ( SERVER ) then
 					else
 						catherine.character.SendCharacterLists( pl, function( )
 							catherine.catData.Load( pl )
-							netstream.Start( pl, "catherine.LoadingStatus", { false, "Framework loaded!" } )
+							netstream.Start( pl, "catherine.LoadingStatus", { false, "Welcome." } )
 							timer.Simple( 1, function( )
 								netstream.Start( pl, "catherine.LoadingStatus", { true, "" } )
 								catherine.character.OpenPanel( pl )

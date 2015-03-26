@@ -78,6 +78,14 @@ if ( SERVER ) then
 		end
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
+	
+	catherine.hooks.Register( "ItemStorageMoved", "catherine.item.hooks.weapon_base.ItemStorageMoved", function( pl, itemTable )
+		if ( !itemTable.isWeapon ) then return end
+		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
+			pl:StripWeapon( itemTable.weaponClass )
+		end
+		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+	end )
 end
 
 catherine.item.Register( BASE )

@@ -3,7 +3,7 @@ AddCSLuaFile( )
 DEFINE_BASECLASS( "base_gmodentity" )
 
 ENT.Type = "anim"
-ENT.PrintName = "Catherine Item"
+ENT.PrintName = "Catherine Storage"
 ENT.Author = "L7D"
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
@@ -15,23 +15,19 @@ if ( SERVER ) then
 		self:PhysicsInit( SOLID_VPHYSICS )
 		self:SetMoveType( MOVETYPE_VPHYSICS )
 		self:SetUseType( SIMPLE_USE )
-		self:SetHealth( 40 )
 		
 		local physObject = self:GetPhysicsObject( )
 		if ( IsValid( physObject ) ) then
-			physObject:EnableMotion( true )
 			physObject:Wake( )
 		end
-		self:PhysicsInitBox( Vector( -2, -2, -2 ), Vector( 2, 2, 2 ) )
 	end
 
-	function ENT:InitializeItem( itemID, itemData )
-		self:SetNetVar( "uniqueID", itemID )
-		self:SetNetVar( "itemData", itemData )
+	function ENT:InitializeStorage( )
+
 	end
 
 	function ENT:Use( pl )
-		netstream.Start( pl, "catherine.item.EntityUseMenu", { self, self:GetItemUniqueID( ) } )
+		netstream.Start( pl, "catherine.storage.EntityUseMenu", { self, self:GetItemUniqueID( ) } )
 	end
 	
 	function ENT:Bomb( )
@@ -52,10 +48,9 @@ if ( SERVER ) then
 	end
 else
 	local toscreen = FindMetaTable("Vector").ToScreen
-	function ENT:DrawEntityTargetID( pl, ent, a )
-		if ( ent:GetClass( ) != "cat_item" ) then return end
+	function ENT:DrawEntityTargetID( pl, _, a )
 		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
-		local x, y = pos.x, pos.y
+		local x, y, x2, y2 = pos.x, pos.y
 		local itemTable = self:GetItemTable( )
 		if ( !itemTable ) then return end
 		local customDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, self:GetItemData( ) ) or nil

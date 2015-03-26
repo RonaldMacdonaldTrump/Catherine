@@ -270,6 +270,7 @@ else
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
 	
 	netstream.Hook( "catherine.chat.Post", function( data )
+		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		local speaker, class, text, ex = data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ]
 		local class = catherine.chat.FindByClass( class )
 		class.onChat( speaker, text, ex )
@@ -355,6 +356,7 @@ else
 	chat.AddTextBuffer = chat.AddTextBuffer or chat.AddText
 	
 	function chat.AddText( ... )
+		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		local data = { }
 		local lastColor = Color( 255, 255, 255 )
 

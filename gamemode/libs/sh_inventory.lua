@@ -25,7 +25,7 @@ if ( SERVER ) then
 				inventory[ uniqueID ] = {
 					uniqueID = uniqueID,
 					int = int,
-					itemData = itemTable.itemData or { }
+					itemData = itemTable.itemData
 				}
 				catherine.character.SetGlobalVar( pl, "_inv", inventory )
 			end
@@ -48,12 +48,13 @@ if ( SERVER ) then
 			if ( !catherine.inventory.HasItem( pl, data.uniqueID ) ) then return end
 			local uniqueID = data.uniqueID
 			local inventory = catherine.inventory.Get( pl )
-			
+
 			inventory[ uniqueID ] = {
 				uniqueID = inventory[ uniqueID ].uniqueID,
 				int = inventory[ uniqueID ].int,
 				itemData = data.newData
 			}
+			
 			catherine.character.SetGlobalVar( pl, "_inv", inventory )
 		else
 			catherine.util.ErrorPrint( "Bad function id! - catherine.inventory.Work( )" )
@@ -71,7 +72,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.inventory.Get( pl )
-		return catherine.character.GetGlobalVar( pl, "_inv", { } )
+		return table.Copy( catherine.character.GetGlobalVar( pl, "_inv", { } ) )
 	end
 
 	function catherine.inventory.GetItemInt( pl, uniqueID )
@@ -81,7 +82,7 @@ if ( SERVER ) then
 		return inventory[ uniqueID ].int or 0
 	end
 	
-	function catherine.inventory.GetWeights( pl )
+	function catherine.inventory.GetWeights( pl, customAdd )
 		local inventory = catherine.inventory.Get( pl )
 		local invWeight, invMaxWeight = 0, catherine.configs.baseInventoryWeight
 		for k, v in pairs( inventory ) do
@@ -93,11 +94,11 @@ if ( SERVER ) then
 			end
 			invWeight = invWeight + itemInt * ( itemTable.weight or 1 )
 		end
-		return invWeight, invMaxWeight
+		return invWeight + ( customAdd or 0 ), invMaxWeight
 	end
 	
-	function catherine.inventory.HasSpace( pl )
-		local invWeight, invMaxWeight = catherine.inventory.GetWeights( pl )
+	function catherine.inventory.HasSpace( pl, customAdd )
+		local invWeight, invMaxWeight = catherine.inventory.GetWeights( pl, customAdd )
 		return invWeight < invMaxWeight
 	end
 	
@@ -171,7 +172,7 @@ if ( SERVER ) then
 	end )
 else
 	function catherine.inventory.Get( )
-		return catherine.character.GetGlobalVar( LocalPlayer( ), "_inv", { } )
+		return table.Copy( catherine.character.GetGlobalVar( LocalPlayer( ), "_inv", { } ) )
 	end
 
 	function catherine.inventory.GetItemInt( uniqueID )
@@ -191,7 +192,7 @@ else
 		return catherine.inventory.GetItemData( uniqueID, "equiped", false )
 	end
 
-	function catherine.inventory.GetWeights( )
+	function catherine.inventory.GetWeights( customAdd )
 		local inventory = catherine.inventory.Get( )
 		local invWeight, invMaxWeight = 0, catherine.configs.baseInventoryWeight
 		for k, v in pairs( inventory ) do
@@ -203,7 +204,7 @@ else
 			end
 			invWeight = invWeight + itemInt * ( itemTable.weight or 1 )
 		end
-		return invWeight, invMaxWeight
+		return invWeight + ( customAdd or 0 ), invMaxWeight
 	end
 	
 	function catherine.inventory.GetItemData( uniqueID, key, default )
@@ -220,8 +221,8 @@ else
 		return inventory[ uniqueID ].itemData or { }
 	end
 
-	function catherine.inventory.HasSpace( )
-		local invWeight, invMaxWeight = catherine.inventory.GetWeights( )
+	function catherine.inventory.HasSpace( customAdd )
+		local invWeight, invMaxWeight = catherine.inventory.GetWeights( customAdd )
 		return invWeight < invMaxWeight
 	end
 	

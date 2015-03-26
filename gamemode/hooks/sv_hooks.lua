@@ -89,6 +89,8 @@ function GM:KeyPress( pl, key )
 			end )
 			
 			return hook.Run( "PlayerUseDoor", pl, ent )
+		elseif ( IsValid( ent ) and ent.isCustomUse and type( ent.customUseFunction ) == "function" ) then
+			ent.customUseFunction( pl, ent )
 		end
 	elseif ( key == IN_SPEED ) then
 		pl.CAT_runStart = true
@@ -135,7 +137,7 @@ function GM:PlayerInitialSpawn( pl )
 	timer.Create( "Catherine.timer.waitPlayer." .. pl:SteamID( ), 1, 0, function( )
 		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
 			timer.Remove( "Catherine.timer.waitPlayer." .. pl:SteamID( ) )
-			timer.Simple( 2, function( )
+			timer.Simple( 4, function( )
 				catherine.player.Initialize( pl )
 				pl:SetNoDraw( true )
 			end )

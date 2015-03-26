@@ -133,12 +133,6 @@ function PANEL:CreateCharacterPanel( )
 	self.createData.currentStage = vgui.Create( "catherine.character.stageOne", self )
 end
 
-concommand.Add( "char_open",function()
-	catherine.vgui.character:Remove()
-	catherine.vgui.character=nil
-	catherine.vgui.character=vgui.Create("catherine.vgui.character")
-end)
-
 function PANEL:UseCharacterPanel( )
 	self.loadCharacter = { Lists = { }, curr = 1 }
 

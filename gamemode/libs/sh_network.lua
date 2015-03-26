@@ -11,10 +11,6 @@ if ( SERVER ) then
 		if ( !noSync ) then
 			netstream.Start( nil, "catherine.network.SetNetVar", { ent:EntIndex( ), key, value } )
 		end
-		ent:CallOnRemove( "ClearVars", function( )
-			catherine.network.entityVars[ ent:EntIndex( ) ] = nil
-			netstream.Start( nil, "catherine.network.ClearNetVar", ent:EntIndex( ) )
-		end )
 	end
 	
 	function catherine.network.SyncAllVars( pl, func )
@@ -39,11 +35,17 @@ if ( SERVER ) then
 		catherine.network.SetNetVar( self, key, value, noSync )
 	end
 	
+	function catherine.network.EntityRemoved( ent )
+		catherine.network.entityVars[ ent:EntIndex( ) ] = nil
+		netstream.Start( nil, "catherine.network.ClearNetVar", ent:EntIndex( ) )
+	end
+	
 	function catherine.network.PlayerDisconnected( pl )
 		catherine.network.entityVars[ pl:EntIndex( ) ] = nil
 		netstream.Start( nil, "catherine.network.ClearNetVar", pl:EntIndex( ) )
 	end
-	
+
+	hook.Add( "EntityRemoved", "catherine.network.EntityRemoved", catherine.network.EntityRemoved )
 	hook.Add( "PlayerDisconnected", "catherine.network.PlayerDisconnected", catherine.network.PlayerDisconnected )
 else
 	netstream.Hook( "catherine.network.SetNetVar", function( data )

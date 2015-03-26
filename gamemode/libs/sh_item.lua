@@ -32,11 +32,10 @@ function catherine.item.Register( itemTable )
 					catherine.util.Notify( pl, "This isn't a valid entity!" )
 					return
 				end
-				if ( !catherine.inventory.HasSpace( pl ) ) then
+				if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
 					catherine.util.Notify( pl, "You don't have inventory space!" )
 					return
 				end
-				local itemData = ent:GetItemData( )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 					uniqueID = itemTable.uniqueID,
 					itemData = ( itemTable.useDynamicItemData and ent:GetItemData( ) ) or itemTable.itemData
@@ -152,18 +151,7 @@ if ( SERVER ) then
 			physObject:Wake( )
 		end
 	end
-	--[[
-	function catherine.item.PlayerSpawnedInCharacter( pl )
-		catherine.hooks.Run( "PlayerSpawnedInCharacter", pl )
-	end
-	
-	function catherine.item.PlayerDeath( pl )
-		catherine.hooks.Run( "PlayerDeath", pl )
-	end
-	
-	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.PlayerSpawnedInCharacter", catherine.item.PlayerSpawnedInCharacter )
-	hook.Add( "PlayerDeath", "catherine.item.PlayerDeath", catherine.item.PlayerDeath )--]]
-	
+
 	netstream.Hook( "catherine.item.Work", function( pl, data )
 		catherine.item.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ] )
 	end )

@@ -18,7 +18,7 @@ ITEM.func.take = {
 			catherine.util.Notify( pl, "This isn't a valid entity!" )
 			return
 		end
-		local itemData = ent:GetITEMData( )
+		local itemData = ent:GetItemData( )
 		catherine.cash.Give( pl, itemData.amount )
 		ent:Remove( )
 	end,

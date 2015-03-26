@@ -5,6 +5,7 @@ function PANEL:Init( )
 	self.invMaxWeight = 0
 	self.invWeightAni = 0
 	self.size = 10
+	self.showText = true
 	self.invWeightTextAni = 0
 	self.weightStr = catherine.configs.spaceString
 end
@@ -21,11 +22,16 @@ function PANEL:Paint( w, h )
 	surface.SetDrawColor( 90, 90, 90, 255 )
 	catherine.geometry.DrawCircle( w / 2, h / 2, self.size, 5, 90, self.invWeightAni, 100 )
 
+	if ( !self.showText ) then return end
 	draw.SimpleText( math.Round( self.invWeightTextAni * 100 ) .. " %", "catherine_normal25", w / 2, h / 2, Color( 90, 90, 90, 255 ), 1, 1 )
 end
 
 function PANEL:SetCircleSize( size )
 	self.size = size
+end
+
+function PANEL:SetShowText( bool )
+	self.showText = bool
 end
 
 function PANEL:SetWeight( weight, maxWeight )

@@ -3,8 +3,7 @@ catherine.loading = catherine.loading or {
 	errorMsg = nil,
 	alpha = 255,
 	rotate = 0,
-	rotateTwo = 0,
-	msg = "Please wait ..."
+	msg = "Catherine is awaking ..."
 }
 catherine.hudHide = {
 	"CHudHealth",
@@ -28,7 +27,17 @@ function GM:HUDShouldDraw( name )
 	return true
 end
 
-function GM:CalcView( pl, pos, ang, fov ) end
+function GM:CalcView( pl, pos, ang, fov )
+	if ( catherine.loading.status ) then return end
+	local data = { }
+	data.origin = catherine.configs.loadingscreenPos.pos
+	data.angles = catherine.configs.loadingscreenPos.ang
+	return data
+end
+
+function GM:ShouldDrawLocalPlayer( )
+	return !catherine.loading.status
+end
 
 function GM:DrawEntityTargetID( pl, ent, a )
 	if ( !ent:IsPlayer( ) ) then return end
@@ -53,39 +62,25 @@ function GM:HUDDrawScoreBoard( )
 	local a = catherine.loading.alpha
 	if ( !catherine.loading.status ) then
 		catherine.loading.alpha = Lerp( 0.01, catherine.loading.alpha, 255 )
+		catherine.util.BlurDraw( 0, 0, scrW, scrH, 10 )
 	else
 		catherine.loading.alpha = Lerp( 0.008, catherine.loading.alpha, 0 )
 	end
 	
-	catherine.loading.rotate = math.Approach( catherine.loading.rotate, catherine.loading.rotate - 7, 4 )
-	catherine.loading.rotateTwo = math.Approach( catherine.loading.rotateTwo, catherine.loading.rotateTwo + 7, 3 )
-	
-	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 235, 235, 235, a ) )
-	
-	surface.SetDrawColor( 255, 255, 255, a )
-	surface.SetMaterial( Material( "gui/gradient_up" ) )
-	surface.DrawTexturedRect( 0, 0, scrW, scrH )
+	catherine.loading.rotate = math.Approach( catherine.loading.rotate, catherine.loading.rotate - 3, 4 )
 
 	if ( catherine.loading.errorMsg ) then
 		draw.NoTexture( )
-		surface.SetDrawColor( 255, 0, 0, catherine.loading.alpha - 55 )
+		surface.SetDrawColor( 255, 255, 255, catherine.loading.alpha - 55 )
 		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, 90, 360, 100 )
 		
-		draw.SimpleText( catherine.loading.errorMsg, "catherine_normal20", 100, scrH - 50, Color( 80, 80, 80, a ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( catherine.loading.errorMsg, "catherine_normal25", 100, scrH - 50, Color( 255, 255, 255, a ), TEXT_ALIGN_LEFT, 1 )
 	else
 		draw.NoTexture( )
-		surface.SetDrawColor( 90, 90, 90, catherine.loading.alpha )
+		surface.SetDrawColor( 255, 255, 255, catherine.loading.alpha )
 		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, catherine.loading.rotate, 100, 100 )
-		
-		draw.NoTexture( )
-		surface.SetDrawColor( 200, 200, 200, catherine.loading.alpha - 55 )
-		catherine.geometry.DrawCircle( 50, scrH - 50, 10, 10, 90, 360, 100 )
-		
-		draw.NoTexture( )
-		surface.SetDrawColor( 0, 0, 0, catherine.loading.alpha )
-		catherine.geometry.DrawCircle( 50, scrH - 50, 10, 5, catherine.loading.rotateTwo, 100, 100 )
 	
-		draw.SimpleText( catherine.loading.msg, "catherine_normal20", 100, scrH - 50, Color( 80, 80, 80, a ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( catherine.loading.msg, "catherine_normal25", 100, scrH - 50, Color( 255, 255, 255, a ), TEXT_ALIGN_LEFT, 1 )
 	end
 end
 
@@ -119,7 +114,7 @@ function GM:ProgressEntityCache( pl )
 end
 
 function GM:HUDPaint( )
-	if ( IsValid( catherine.vgui.character ) ) then return end
+	if ( IsValid( catherine.vgui.character ) or !catherine.loading.status ) then return end
 	local pl = LocalPlayer( )
 	catherine.hud.Draw( )
 	catherine.bar.Draw( )
@@ -179,6 +174,10 @@ function GM:RenderScreenspaceEffects( )
 	tab[ "$pp_colour_mulr" ] = data.mulr or 0
 	tab[ "$pp_colour_mulg" ] = data.mulg or 0
 	tab[ "$pp_colour_mulb" ] = data.mulb or 0
+	
+	if ( !catherine.loading.status ) then
+		tab[ "$pp_colour_colour" ] = 0
+	end
 	
 	DrawColorModify( tab )
 end
