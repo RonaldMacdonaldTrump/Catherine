@@ -421,10 +421,13 @@ else
 			local text = pnl:GetText( )
 			if ( text != "" ) then
 				netstream.Start( "catherine.chat.Run", text:sub( 1 ) )
-				catherine.chat.history[ #catherine.chat.history + 1 ] = text:sub( 1 )
-				if ( #catherine.chat.history > 10 ) then
-					table.remove( catherine.chat.history, 1 )
+				if ( catherine.chat.history[ #catherine.chat.history - 1 ] and catherine.chat.history[ #catherine.chat.history - 1 ] != text:sub( 1 ) ) then
+					catherine.chat.history[ #catherine.chat.history + 1 ] = text:sub( 1 )
+					if ( #catherine.chat.history > 10 ) then
+						table.remove( catherine.chat.history, 1 )
+					end
 				end
+				
 			end
 			catherine.chat.isOpened = false
 			
@@ -460,11 +463,13 @@ else
 				if ( initHistoryKey > 1 ) then
 					initHistoryKey = initHistoryKey - 1
 					pnl:SetText( catherine.chat.history[ initHistoryKey ] )
+					pnl:SetCaretPos( #catherine.chat.history[ initHistoryKey ] )
 				end
 			elseif ( code == KEY_DOWN ) then
 				if ( initHistoryKey < #catherine.chat.history ) then
 					initHistoryKey = initHistoryKey + 1
 					pnl:SetText( catherine.chat.history[ initHistoryKey ] )
+					pnl:SetCaretPos( #catherine.chat.history[ initHistoryKey ] )
 				end
 			end
 		end

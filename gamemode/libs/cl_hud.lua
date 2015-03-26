@@ -70,6 +70,7 @@ function catherine.hud.WelcomeIntroInitialize( )
 	t.endTime = CurTime( ) + 10
 	t.first = false
 	t.second = false
+	t.start = CurTime( ) + 15
 	t.firstTextTime = CurTime( )
 	t.secondTextTime = CurTime( ) + 3
 	t.thirdTextTime = CurTime( ) + 6
@@ -80,6 +81,10 @@ end
 function catherine.hud.WelcomeIntroDraw( )
 	if ( !catherine.hud.welcomeIntro ) then return end
 	local t = catherine.hud.welcomeIntro
+	if ( t.start <= CurTime( ) ) then
+		catherine.hud.welcomeIntro = nil
+		return
+	end
 	local scrW, scrH = ScrW( ), ScrH( )
 
 	if ( t.first and t.second ) then
