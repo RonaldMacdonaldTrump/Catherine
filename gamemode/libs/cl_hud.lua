@@ -4,6 +4,7 @@ end
 catherine.hud = catherine.hud or {
 	ProgressBar = nil,
 	welcomeIntro = nil,
+	blockedModules = { },
 	clip1 = 0,
 	pre = 0,
 	vAlpha = 0,
@@ -14,6 +15,10 @@ catherine.hud = catherine.hud or {
 netstream.Hook( "catherine.hud.WelcomeIntroStart", function( )
 	catherine.hud.WelcomeIntroInitialize( )
 end )
+
+function catherine.hud.RegisterBlockModule( name )
+	catherine.hud.blockedModules[ #catherine.hud.blockedModules + 1 ] = name
+end
 
 function catherine.hud.Draw( )
 	if ( catherine.option.Get( "CONVAR_MAINHUD" ) == "0" ) then return end
@@ -144,3 +149,15 @@ end
 
 CAT_CONVAR_HUD = CreateClientConVar( "cat_convar_hud", 1, true, true )
 CAT_CONVAR_BAR = CreateClientConVar( "cat_convar_bar", 1, true, true )
+
+local modules = {
+	"CHudHealth",
+	"CHudBattery",
+	"CHudAmmo",
+	"CHudSecondaryAmmo",
+	"CHudCrosshair",
+	"CHudDamageIndicator"
+}
+for i = 1, #modules do
+	catherine.hud.RegisterBlockModule( modules[ i ] )
+end
