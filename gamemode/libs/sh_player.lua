@@ -16,6 +16,7 @@ if ( SERVER ) then
 			catherine.character.SendCurrentNetworking( pl, function( )
 				catherine.database.GetDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
 					if ( !data or #data == 0 ) then
+						catherine.language.SyncByGMod( pl )
 						catherine.player.QueryInitialize( pl, function( )
 							if ( pl:SteamID( ) == catherine.configs.OWNER and pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
 								if ( ulx ) then

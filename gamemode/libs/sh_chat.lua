@@ -276,6 +276,8 @@ else
 		class.onChat( speaker, text, ex )
 	end )
 	
+	catherine.hud.RegisterBlockModule( "CHudChat" )
+	
 	local PANEL = { }
 	
 	function PANEL:Init( )
@@ -421,13 +423,10 @@ else
 			local text = pnl:GetText( )
 			if ( text != "" ) then
 				netstream.Start( "catherine.chat.Run", text:sub( 1 ) )
-				if ( catherine.chat.history[ #catherine.chat.history - 1 ] and catherine.chat.history[ #catherine.chat.history - 1 ] != text:sub( 1 ) ) then
-					catherine.chat.history[ #catherine.chat.history + 1 ] = text:sub( 1 )
-					if ( #catherine.chat.history > 10 ) then
-						table.remove( catherine.chat.history, 1 )
-					end
+				catherine.chat.history[ #catherine.chat.history + 1 ] = text:sub( 1 )
+				if ( #catherine.chat.history > 20 ) then
+					table.remove( catherine.chat.history, 1 )
 				end
-				
 			end
 			catherine.chat.isOpened = false
 			

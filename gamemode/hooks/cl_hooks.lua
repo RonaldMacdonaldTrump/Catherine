@@ -2,24 +2,16 @@ catherine.loading = catherine.loading or {
 	status = false,
 	errorMsg = nil,
 	alpha = 255,
-	rotate = 0,
-	msg = "Catherine is awaking ..."
-}
-catherine.hudHide = {
-	"CHudHealth",
-	"CHudBattery",
-	"CHudAmmo",
-	"CHudSecondaryAmmo",
-	"CHudCrosshair",
-	"CHudDamageIndicator",
-	"CHudChat"
+	rotate = 90,
+	blurAmount = 5,
+	msg = "Catherine is now booting ..."
 }
 catherine.entityCaches = { }
 catherine.nextCacheDo = CurTime( )
 local toscreen = FindMetaTable("Vector").ToScreen
 
 function GM:HUDShouldDraw( name )
-	for k, v in pairs( catherine.hudHide ) do
+	for k, v in pairs( catherine.hud.blockedModules ) do
 		if ( v == name ) then
 			return false
 		end
@@ -28,11 +20,43 @@ function GM:HUDShouldDraw( name )
 end
 
 function GM:CalcView( pl, pos, ang, fov )
-	if ( catherine.loading.status ) then return end
-	local data = { }
-	data.origin = catherine.configs.loadingscreenPos.pos
-	data.angles = catherine.configs.loadingscreenPos.ang
-	return data
+	if ( !catherine.loading.status or ( IsValid( catherine.vgui.character ) and !pl:IsCharacterLoaded( ) ) ) then
+		local data = { }
+		data.origin = catherine.configs.schematicViewPos.pos
+		data.angles = catherine.configs.schematicViewPos.ang
+		return data
+	end
+end
+
+function GM:HUDDrawScoreBoard( )
+	local scrW, scrH = ScrW( ), ScrH( )
+	if ( catherine.loading.status ) then
+		catherine.loading.alpha = Lerp( 0.008, catherine.loading.alpha, 0 )
+		catherine.loading.blurAmount = Lerp( 0.01, catherine.loading.blurAmount, 0 )
+	else
+		catherine.loading.alpha = Lerp( 0.01, catherine.loading.alpha, 255 )
+		catherine.loading.blurAmount = Lerp( 0.01, catherine.loading.blurAmount, 5 )
+	end
+	
+	if ( math.Round( catherine.loading.blurAmount ) > 0 ) then
+		catherine.util.BlurDraw( 0, 0, scrW, scrH, catherine.loading.blurAmount )
+	end
+	
+	catherine.loading.rotate = math.Approach( catherine.loading.rotate, catherine.loading.rotate - 3, 3 )
+
+	if ( catherine.loading.errorMsg ) then
+		draw.NoTexture( )
+		surface.SetDrawColor( 255, 255, 255, catherine.loading.alpha - 55 )
+		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, 90, 360, 100 )
+		
+		draw.SimpleText( catherine.loading.errorMsg, "catherine_normal25", 100, scrH - 50, Color( 255, 255, 255, catherine.loading.alpha ), TEXT_ALIGN_LEFT, 1 )
+	else
+		draw.NoTexture( )
+		surface.SetDrawColor( 255, 255, 255, catherine.loading.alpha )
+		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, catherine.loading.rotate, 100, 100 )
+	
+		draw.SimpleText( catherine.loading.msg, "catherine_normal20", 100, scrH - 50, Color( 255, 255, 255, catherine.loading.alpha ), TEXT_ALIGN_LEFT, 1 )
+	end
 end
 
 function GM:ShouldDrawLocalPlayer( )
@@ -55,33 +79,6 @@ end
 function GM:PlayerInformationDraw( pl, target, x, y, a )
 	if ( target:Alive( ) ) then return end
 	draw.SimpleText( ( target:GetGender( ) == "male" and "He" or "She" ) .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
-end
-
-function GM:HUDDrawScoreBoard( )
-	local scrW, scrH = ScrW( ), ScrH( )
-	local a = catherine.loading.alpha
-	if ( !catherine.loading.status ) then
-		catherine.loading.alpha = Lerp( 0.01, catherine.loading.alpha, 255 )
-		catherine.util.BlurDraw( 0, 0, scrW, scrH, 10 )
-	else
-		catherine.loading.alpha = Lerp( 0.008, catherine.loading.alpha, 0 )
-	end
-	
-	catherine.loading.rotate = math.Approach( catherine.loading.rotate, catherine.loading.rotate - 3, 4 )
-
-	if ( catherine.loading.errorMsg ) then
-		draw.NoTexture( )
-		surface.SetDrawColor( 255, 255, 255, catherine.loading.alpha - 55 )
-		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, 90, 360, 100 )
-		
-		draw.SimpleText( catherine.loading.errorMsg, "catherine_normal25", 100, scrH - 50, Color( 255, 255, 255, a ), TEXT_ALIGN_LEFT, 1 )
-	else
-		draw.NoTexture( )
-		surface.SetDrawColor( 255, 255, 255, catherine.loading.alpha )
-		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, catherine.loading.rotate, 100, 100 )
-	
-		draw.SimpleText( catherine.loading.msg, "catherine_normal25", 100, scrH - 50, Color( 255, 255, 255, a ), TEXT_ALIGN_LEFT, 1 )
-	end
 end
 
 function GM:ProgressEntityCache( pl )
@@ -147,7 +144,7 @@ function GM:GetSchemaInformation( )
 	return {
 		title = catherine.Name,
 		desc = catherine.Desc,
-		author = "A framework design and development by L7D."
+		author = "Design and development by L7D."
 	}
 end
 

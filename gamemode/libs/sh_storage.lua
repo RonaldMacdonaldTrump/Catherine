@@ -124,7 +124,7 @@ if ( SERVER ) then
 			end
 			
 			catherine.item.Take( pl, data )
-			catherine.hooks.Run( "ItemStorageMoved", pl, itemTable )
+			hook.Run( "ItemStorageMoved", pl, itemTable )
 			catherine.storage.SetInv( ent, inventory )
 		elseif ( workID == CAT_STORAGE_ACTION_REMOVE ) then
 			if ( !data ) then return end
@@ -152,7 +152,7 @@ if ( SERVER ) then
 			end
 			
 			catherine.item.Give( pl, data )
-			catherine.hooks.Run( "ItemStorageTaked", pl, itemTable )
+			hook.Run( "ItemStorageTaked", pl, itemTable )
 			
 			catherine.storage.SetInv( ent, inventory )
 		end

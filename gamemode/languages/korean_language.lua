@@ -1,6 +1,8 @@
 local LANGUAGE = catherine.language.New( "korean" )
 LANGUAGE.name = "Korean(한국어)"
 LANGUAGE.data = {
+	[ "LanguageError01" ] = "언어 설정 오류",
+	
 	// Cash ^-^;
 	[ "Cash_GiveMessage01" ] = "당신은 %s 님에게 %s 를 주셨습니다.",
 	

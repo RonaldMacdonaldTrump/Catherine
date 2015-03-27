@@ -1,6 +1,8 @@
 local LANGUAGE = catherine.language.New( "german" )
 LANGUAGE.name = "German"
 LANGUAGE.data = {
+	[ "LanguageError01" ] = "Error Language",
+	
 	// Cash ^-^;
 	[ "Cash_GiveMessage01" ] = "Du hast %s an %s überwiesen.",
 	

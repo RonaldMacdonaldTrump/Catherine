@@ -53,7 +53,7 @@ ITEM.func.drop = {
 }
 
 if ( SERVER ) then
-	catherine.hooks.Register( "PlayerSpawnedInCharacter", "catherine.item.hooks.wallet.PlayerSpawnedInCharacter", function( pl )
+	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.hooks.wallet.PlayerSpawnedInCharacter", function( pl )
 		if ( catherine.inventory.HasItem( pl, "wallet" ) ) then return end
 		catherine.item.Give( pl, "wallet" )
 	end )

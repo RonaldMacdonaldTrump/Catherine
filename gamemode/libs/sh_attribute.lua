@@ -63,7 +63,7 @@ if ( SERVER ) then
 		return attribute[ attributeTable.uniqueID ].progress or 0
 	end
 	
-	catherine.hooks.Register( "InitializeNetworking", "catherine.attribute.hooks.InitializeNetworking", function( pl, charVars )
+	hook.Add( "InitializeNetworking", "catherine.attribute.hooks.InitializeNetworking", function( pl, charVars )
 		if ( !charVars._att ) then return end
 		local attribute, changed, count = charVars._att, false, 0
 		for k, v in pairs( attribute ) do
