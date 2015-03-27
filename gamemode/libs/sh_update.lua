@@ -1,5 +1,5 @@
 catherine.update = catherine.update or { }
-catherine.update.VERSION = "2015-03-26"
+catherine.update.VERSION = "2015-03-27"
 
 if ( SERVER ) then
 	catherine.update.LATESTVERSION = catherine.update.LATESTVERSION or nil

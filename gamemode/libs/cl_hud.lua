@@ -9,7 +9,8 @@ catherine.hud = catherine.hud or {
 	pre = 0,
 	vAlpha = 0,
 	vAlphaTarget = 255,
-	checkV = CurTime( )
+	checkV = CurTime( ),
+	deathAlpha = 0
 }
 
 netstream.Hook( "catherine.hud.WelcomeIntroStart", function( )
@@ -25,8 +26,15 @@ function catherine.hud.Draw( )
 	catherine.hud.Vignette( )
 	catherine.hud.ScreenDamageDraw( )
 	catherine.hud.AmmoDraw( )
+	catherine.hud.DeathScreen( )
 	catherine.hud.ProgressBarDraw( )
 	catherine.hud.WelcomeIntroDraw( )
+end
+
+function catherine.hud.DeathScreen( )
+	catherine.hud.deathAlpha = Lerp( 0.03, catherine.hud.deathAlpha, LocalPlayer( ):Alive( ) and 0 or 255 )
+	
+	draw.RoundedBox( 0, 0, 0, ScrW( ), ScrH( ), Color( 0, 0, 0, catherine.hud.deathAlpha ) )
 end
 
 function catherine.hud.Vignette( )

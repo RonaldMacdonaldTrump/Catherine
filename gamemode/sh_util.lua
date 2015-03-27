@@ -181,6 +181,11 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.util.UniqueStringReceiver", { id, title, msg, defV } )
 	end
 	
+	function catherine.util.ScreenColorEffect( pl, col, time, fadeTime )
+		if ( !IsValid( pl ) ) then return end
+		netstream.Start( pl, "catherine.util.ScreenColorEffect", { col or Color( 255, 255, 255 ), time, fadeTime } )
+	end
+
 	netstream.Hook( "catherine.util.UniqueStringReceiver_Receive", function( pl, data )
 		local id = data[ 1 ]
 		if ( !catherine.util.StringQuerys[ pl:SteamID( ) ] or !catherine.util.StringQuerys[ pl:SteamID( ) ][ id ] ) then return end
@@ -194,6 +199,20 @@ else
 		 Derma_StringRequest( data[ 2 ], data[ 3 ], data[ 4 ], function( val )
 			netstream.Start( "catherine.util.UniqueStringReceiver_Receive", { data[ 1 ], val } )
 		 end, function( ) end, "OK", "NO" )
+	end )
+	
+	netstream.Hook( "catherine.util.ScreenColorEffect", function( data )
+		local col, time, fadeTime, a = data[ 1 ], CurTime( ) + ( data[ 2 ] or 0.1 ), data[ 3 ] or 0.03, 255
+		hook.Remove( "HUDPaint", "catherine.util.ScreenColorEffect" )
+		hook.Add( "HUDPaint", "catherine.util.ScreenColorEffect", function( )
+			if ( time <= CurTime( ) ) then
+				a = Lerp( fadeTime, a, 0 )
+				if ( math.Round( a ) <= 0 ) then
+					hook.Remove( "HUDPaint", "catherine.util.ScreenColorEffect" )
+				end
+			end
+			draw.RoundedBox( 0, 0, 0, ScrW( ), ScrH( ), Color( col.r, col.g, col.b, a ) )
+		end )
 	end )
 	
 	netstream.Hook( "catherine.util.PlaySound", function( data )

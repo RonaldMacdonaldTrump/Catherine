@@ -113,12 +113,15 @@ end
 function GM:HUDPaint( )
 	if ( IsValid( catherine.vgui.character ) or !catherine.loading.status ) then return end
 	local pl = LocalPlayer( )
+	
+	hook.Run( "HUDBackgroundDraw" )
 	catherine.hud.Draw( )
 	catherine.bar.Draw( )
 	catherine.notify.Draw( )
 	catherine.wep.Draw( pl )
 	catherine.hint.Draw( )
 	
+	hook.Run( "HUDDraw" )
 	if ( pl:Alive( ) ) then
 		hook.Run( "ProgressEntityCache", pl )
 	end

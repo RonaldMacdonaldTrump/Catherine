@@ -21,7 +21,11 @@ function catherine.bar.Register( target, targetMax, color, uniqueID )
 end
 
 function catherine.bar.Draw( )
-	if ( !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) or catherine.option.Get( "CONVAR_BAR" ) == "0" ) then return end
+	if ( catherine.option.Get( "CONVAR_BAR" ) == "0" ) then return end
+	if ( !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then
+		hook.Run( "HUDDrawBarBottom", 5, 5 )
+		return
+	end
 	local count = 0
 	for k, v in pairs( catherine.bar.Lists ) do
 		if ( !v.target or !v.targetMax ) then continue end
@@ -41,6 +45,8 @@ function catherine.bar.Draw( )
 		
 		draw.RoundedBox( 0, 5, v.y, v.ani, 5, Color( v.color.r, v.color.g, v.color.b, v.alpha ) )
 	end
+	
+	hook.Run( "HUDDrawBarBottom", 5, catherine.bar.Lists[ #catherine.bar.Lists ].y )
 end
 
 do

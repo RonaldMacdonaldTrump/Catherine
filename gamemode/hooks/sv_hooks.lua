@@ -14,7 +14,6 @@ function GM:PlayerSpawn( pl )
 	pl:Freeze( false )
 	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
-	pl:SetupHands( )
 	player_manager.SetPlayerClass( pl, "catherine_player" )
 	if ( pl:IsCharacterLoaded( ) ) then
 		hook.Run( "PlayerSpawnedInCharacter", pl )
@@ -22,6 +21,8 @@ function GM:PlayerSpawn( pl )
 end
 
 function GM:PlayerSpawnedInCharacter( pl )
+	catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
+	hook.Run( "OnSpawnedInCharacter", pl )
 	hook.Run( "PostWeaponGive", pl )
 end
 
@@ -104,10 +105,6 @@ function GM:PlayerUse( pl, ent )
 	return true
 end
 
-function GM:PlayerFirstSpawned( pl )
-	//hook.Run( "InventoryInitialize", pl )
-end
-
 function GM:PostWeaponGive( pl )
 	if ( catherine.configs.giveHand ) then
 		pl:Give( "cat_fist" )
@@ -187,6 +184,7 @@ function GM:PlayerHurt( pl )
 	end
 	pl.CAT_healthRecoverBool = true
 	pl:EmitSound( hook.Run( "GetPlayerPainSound", pl ) or "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
+	hook.Run( "PlayerTakeDamage", pl )
 	return true
 end
 
@@ -213,9 +211,7 @@ function GM:PlayerDeath( pl )
 	catherine.network.SetNetVar( pl.dummy, "player", pl )
 	catherine.network.SetNetVar( pl.dummy, "ragdollID", pl.dummy:EntIndex( ) )
 	pl.dummy:CallOnRemove( "RecoverPlayer", function( )
-		if ( !IsValid( pl ) ) then return end
-		pl:Spawn( )
-		if ( !IsValid( pl.dummy ) ) then return end
+		if ( !IsValid( pl ) or !IsValid( pl.dummy ) ) then return end
 		pl.dummy:Remove( )
 	end )
 	
@@ -228,6 +224,8 @@ function GM:PlayerDeath( pl )
 	catherine.util.ProgressBar( pl, "You are now respawning.", catherine.configs.spawnTime )
 	catherine.network.SetNetVar( pl, "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
 	catherine.network.SetNetVar( pl, "deathTime", CurTime( ) )
+	
+	hook.Run( "PlayerGone", pl )
 end
 
 function GM:Tick( )

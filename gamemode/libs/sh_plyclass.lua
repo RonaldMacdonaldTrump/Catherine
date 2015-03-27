@@ -2,7 +2,7 @@ local PLAYER = { }
 PLAYER.DisplayName = "Catherine Player"
 
 function PLAYER:Loadout( )
-    self.Player:SetupHands( )
+	self.Player:SetupHands( )
 end
 
 function PLAYER:GetHandsModel( )
