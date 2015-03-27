@@ -49,20 +49,32 @@ end
 catherine.language.Include( catherine.FolderName .. "/gamemode" )
 
 if ( SERVER ) then
+	function catherine.language.SyncByGMod( pl )
+		if ( !IsValid( pl ) ) then return end
+		pl:ConCommand( "cat_convar_language " .. pl:GetInfo( "gmod_language" ) )
+	end
+	
+	function catherine.language.GetLists( pl )
+		if ( !IsValid( pl ) ) then return { data = { } } end
+		local uniqueID = pl:GetInfo( "cat_convar_language" )
+		return catherine.language.Lists[ uniqueID ] or catherine.language.Lists[ "english" ] or { data = { } }
+	end
+
 	function catherine.language.GetValue( pl, key, ... )
-		local uniqueID = "english"
-		if ( IsValid( pl ) ) then uniqueID = pl:GetInfo( "cat_convar_language" ) end
-		local lists = catherine.language.Lists[ uniqueID ]
-		if ( !lists or !lists.data ) then return "Error" end
-		return string.format( lists.data[ key ], ... )
+		if ( !IsValid( pl ) or !key ) then return end
+		local languageTable = catherine.language.GetLists( pl )
+		return string.format( languageTable.data[ key ] or "LanguageError01", ... ) or "Language Error"
 	end
 else
 	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", "english", true, true )
 	
-	function catherine.language.GetValue( key, ... )
+	function catherine.language.GetLists( )
 		local uniqueID = CAT_CONVAR_LANGUAGE:GetString( )
-		local lists = catherine.language.Lists[ uniqueID ]
-		if ( !lists or !lists.data ) then return "Error" end
-		return string.format( lists.data[ key ], ... )
+		return catherine.language.Lists[ uniqueID ] or catherine.language.Lists[ "english" ] or { data = { } }
+	end
+	
+	function catherine.language.GetValue( key, ... )
+		local languageTable = catherine.language.GetLists( )
+		return string.format( languageTable.data[ key ] or "LanguageError01", ... ) or "Language Error"
 	end
 end
