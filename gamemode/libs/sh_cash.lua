@@ -8,13 +8,13 @@ function catherine.cash.GetOnlyName( )
 	return catherine.configs.cashName
 end
 
-function catherine.cash.GetName( int )
-	return int .. " " .. catherine.configs.cashName
+function catherine.cash.GetName( amount )
+	return amount .. " " .. catherine.configs.cashName
 end
 
 catherine.command.Register( {
 	command = "chargivecash",
-	syntax = "[name] [int]",
+	syntax = "[name] [amount]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -42,26 +42,26 @@ catherine.command.Register( {
 local CASH_MAX_LIMIT = 9999999999
 
 if ( SERVER ) then
-	function catherine.cash.Set( pl, int )
-		int = tonumber( int )
-		if ( !int ) then return false end
-		catherine.character.SetGlobalVar( pl, "_cash", math.Clamp( tonumber( int ), 0, CASH_MAX_LIMIT ) )
+	function catherine.cash.Set( pl, amount )
+		amount = tonumber( amount )
+		if ( !amount ) then return false end
+		catherine.character.SetGlobalVar( pl, "_cash", math.Clamp( tonumber( amount ), 0, CASH_MAX_LIMIT ) )
 		
 		return true
 	end
 	
-	function catherine.cash.Give( pl, int )
-		int = tonumber( int )
-		if ( !int ) then return false end
-		catherine.character.SetGlobalVar( pl, "_cash", math.Clamp( catherine.cash.Get( pl ) + tonumber( int ), 0, CASH_MAX_LIMIT ) )
+	function catherine.cash.Give( pl, amount )
+		amount = tonumber( amount )
+		if ( !amount ) then return false end
+		catherine.character.SetGlobalVar( pl, "_cash", math.Clamp( catherine.cash.Get( pl ) + tonumber( amount ), 0, CASH_MAX_LIMIT ) )
 		
 		return true
 	end
-	
-	function catherine.cash.Take( pl, int )
-		int = tonumber( int )
-		if ( !int ) then return false end
-		catherine.character.SetGlobalVar( pl, "_cash", math.Clamp( catherine.cash.Get( pl ) - tonumber( int ), 0, CASH_MAX_LIMIT ) )
+
+	function catherine.cash.Take( pl, amount )
+		amount = tonumber( amount )
+		if ( !amount ) then return false end
+		catherine.character.SetGlobalVar( pl, "_cash", math.Clamp( catherine.cash.Get( pl ) - tonumber( amount ), 0, CASH_MAX_LIMIT ) )
 		
 		return true
 	end

@@ -109,9 +109,9 @@ end
 catherine.item.Include( catherine.FolderName .. "/gamemode" )
 
 if ( SERVER ) then
-	function catherine.item.Work( pl, itemID, funcID, ent_isMenu )
-		if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) or !itemID or !funcID ) then return end
-		local itemTable = catherine.item.FindByID( itemID )
+	function catherine.item.Work( pl, uniqueID, funcID, ent_isMenu )
+		if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) or !uniqueID or !funcID ) then return end
+		local itemTable = catherine.item.FindByID( uniqueID )
 		if ( !itemTable ) then return end
 		if ( !itemTable.func or !itemTable.func[ funcID ] ) then return end
 		itemTable.func[ funcID ].func( pl, itemTable, ent_isMenu )
@@ -120,22 +120,22 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.item.Give( pl, itemID, int )
-		if ( !IsValid( pl ) or !itemID ) then return end
+	function catherine.item.Give( pl, uniqueID, itemCount )
+		if ( !IsValid( pl ) or !uniqueID ) then return end
 		catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
-			uniqueID = itemID,
-			int = int
+			uniqueID = uniqueID,
+			itemCount = itemCount
 		} )
 	end
 	
-	function catherine.item.Take( pl, itemID )
-		if ( !IsValid( pl ) or !itemID ) then return end
-		catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemID )
+	function catherine.item.Take( pl, uniqueID )
+		if ( !IsValid( pl ) or !uniqueID ) then return end
+		catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, uniqueID )
 	end
 
-	function catherine.item.Spawn( itemID, pos, ang, itemData )
-		if ( !itemID or !pos ) then return end
-		local itemTable = catherine.item.FindByID( itemID )
+	function catherine.item.Spawn( uniqueID, pos, ang, itemData )
+		if ( !uniqueID or !pos ) then return end
+		local itemTable = catherine.item.FindByID( uniqueID )
 		if ( !itemTable ) then return end
 		local ent = ents.Create( "cat_item" )
 		ent:SetPos( Vector( pos.x, pos.y, pos.z + 10 ) )
@@ -143,7 +143,7 @@ if ( SERVER ) then
 		ent:Spawn( )
 		ent:SetModel( itemTable.model or "models/props_junk/watermelon01.mdl" )
 		ent:PhysicsInit( SOLID_VPHYSICS )
-		ent:InitializeItem( itemID, itemData or { } )
+		ent:InitializeItem( uniqueID, itemData or { } )
 		
 		local physObject = ent:GetPhysicsObject( )
 		if ( IsValid( physObject ) ) then

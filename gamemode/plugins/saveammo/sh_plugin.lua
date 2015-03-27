@@ -32,9 +32,9 @@ if ( SERVER ) then
 	function PLUGIN:PostCharacterSave( pl )
 		local wep, tab = pl:GetActiveWeapon( ), { }
 		for k, v in pairs( Ammo_Types ) do
-			local int = pl:GetAmmoCount( v )
-			if ( int > 0 ) then
-				tab[ v ] = int
+			local ammoCount = pl:GetAmmoCount( v )
+			if ( ammoCount > 0 ) then
+				tab[ v ] = ammoCount
 			end
 		end
 		catherine.character.SetCharacterVar( pl, "ammos", tab )

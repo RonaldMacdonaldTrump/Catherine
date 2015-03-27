@@ -85,22 +85,19 @@ if ( SERVER ) then
 		if ( !IsValid( ent ) or !uniqueID ) then return 0 end
 		local inventory = catherine.storage.GetInv( ent )
 		if ( !inventory[ uniqueID ] ) then return 0 end
-		return inventory[ uniqueID ].int or 0
+		return inventory[ uniqueID ].itemCount or 0
 	end
 	
 	function catherine.storage.Work( pl, ent, workID, data )
 		ent = Entity( ent )
-		if ( !IsValid( pl ) or !IsValid( ent ) or !workID ) then return end
+		if ( !IsValid( pl ) or !IsValid( ent ) or !workID or !data ) then return end
 		
 		if ( workID == CAT_STORAGE_ACTION_ADD ) then
-			if ( !data ) then return end
 			local itemTable = catherine.item.FindByID( data )
-			if ( !itemTable ) then
+			if ( !itemTable or !catherine.inventory.HasItem( pl, data ) ) then
 				return
 			end
-			if ( !catherine.inventory.HasItem( pl, data ) ) then
-				return
-			end
+			
 			local weight, maxWeight = catherine.storage.GetWeights( ent, itemTable.weight )
 			if ( weight >= maxWeight ) then
 				catherine.util.Notify( pl, "This storage don't have inventory space!" )
@@ -108,17 +105,18 @@ if ( SERVER ) then
 			end
 			
 			local inventory = catherine.storage.GetInv( ent )
-			
-			if ( inventory[ data ] ) then
+			local invData = inventory[ data ]
+
+			if ( invData ) then
 				inventory[ data ] = {
-					uniqueID = inventory[ data ].uniqueID,
-					int = inventory[ data ].int + 1,
-					itemData = inventory[ data ].itemData
+					uniqueID = invData.uniqueID,
+					itemCount = invData.itemCount + 1,
+					itemData = invData.itemData
 				}
 			else
 				inventory[ data ] = {
-					uniqueID = data,
-					int = 1,
+					uniqueID = itemTable.uniqueID,
+					itemCount = 1,
 					itemData = itemTable.itemData or { }
 				}
 			end
@@ -127,33 +125,35 @@ if ( SERVER ) then
 			hook.Run( "ItemStorageMoved", pl, itemTable )
 			catherine.storage.SetInv( ent, inventory )
 		elseif ( workID == CAT_STORAGE_ACTION_REMOVE ) then
-			if ( !data ) then return end
-			local inventory = catherine.storage.GetInv( ent )
 			local itemTable = catherine.item.FindByID( data )
-			
-			if ( !inventory[ data ] ) then
-				return
-			end
 			if ( !itemTable ) then
 				return
 			end
+			
+			local inventory = catherine.storage.GetInv( ent )
+			if ( !inventory[ data ] ) then
+				return
+			end
+
 			if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
 				catherine.util.Notify( pl, "You don't have inventory space!" )
 				return
 			end
+			
+			local invData = inventory[ data ]
 
 			inventory[ data ] = {
-				uniqueID = inventory[ data ].uniqueID,
-				int = math.max( inventory[ data ].int - 1, 0 ),
-				itemData = inventory[ data ].itemData
+				uniqueID = invData.uniqueID,
+				itemCount = math.max( invData.itemCount - 1, 0 ),
+				itemData = invData.itemData
 			}
-			if ( inventory[ data ].int == 0 ) then
+			
+			if ( inventory[ data ].itemCount == 0 ) then
 				inventory[ data ] = nil
 			end
 			
 			catherine.item.Give( pl, data )
 			hook.Run( "ItemStorageTaked", pl, itemTable )
-			
 			catherine.storage.SetInv( ent, inventory )
 		end
 		
@@ -241,7 +241,7 @@ else
 		if ( !IsValid( ent ) or !uniqueID ) then return 0 end
 		local inventory = catherine.storage.GetInv( ent )
 		if ( !inventory[ uniqueID ] ) then return 0 end
-		return inventory[ uniqueID ].int or 0
+		return inventory[ uniqueID ].itemCount or 0
 	end
 
 	local toscreen = FindMetaTable("Vector").ToScreen

@@ -8,50 +8,54 @@ if ( SERVER ) then
 	
 	function catherine.inventory.Work( pl, workID, data )
 		if ( !IsValid( pl ) or !workID or !data ) then return end
+		local workInv = catherine.character.SetGlobalVar
+		
 		if ( workID == CAT_INV_ACTION_ADD ) then
-			local inventory = catherine.inventory.Get( pl )
-			local itemTable = catherine.item.FindByID( data.uniqueID )
-			local uniqueID = itemTable.uniqueID
-			local int = math.max( data.int or 1, 1 ) or 1
+			local inventory, itemTable, itemCount = catherine.inventory.Get( pl ), catherine.item.FindByID( data.uniqueID ), math.max( data.itemCount or 1, 1 ) or 1
+			local invData = inventory[ itemTable.uniqueID ]
 			
-			if ( catherine.inventory.HasItem( pl, uniqueID ) ) then
-				inventory[ uniqueID ] = {
-					uniqueID = inventory[ uniqueID ].uniqueID,
-					int = inventory[ uniqueID ].int + int,
-					itemData = inventory[ uniqueID ].itemData
+			if ( invData ) then
+				inventory[ itemTable.uniqueID ] = {
+					uniqueID = invData.uniqueID,
+					itemCount = invData.itemCount + itemCount,
+					itemData = invData.itemData
 				}
-				catherine.character.SetGlobalVar( pl, "_inv", inventory )
 			else
-				inventory[ uniqueID ] = {
-					uniqueID = uniqueID,
-					int = int,
+				inventory[ itemTable.uniqueID ] = {
+					uniqueID = itemTable.uniqueID,
+					itemCount = itemCount,
 					itemData = itemTable.itemData
 				}
-				catherine.character.SetGlobalVar( pl, "_inv", inventory )
 			end
+
+			catherine.character.SetGlobalVar( pl, "_inv", inventory )
 		elseif ( workID == CAT_INV_ACTION_REMOVE ) then
-			if ( !catherine.inventory.HasItem( pl, data ) ) then return end
-			local inventory = catherine.inventory.Get( pl )
-			local int = math.max( inventory[ data ].int - 1, 0 )
+			local invData = catherine.inventory.GetInvItem( pl, data )
+			if ( !invData ) then return end
 			
-			if ( int != 0 ) then
+			local inventory = catherine.inventory.Get( pl )
+			local itemCount = math.max( invData.itemCount - 1, 0 )
+			
+			if ( itemCount != 0 ) then
 				inventory[ data ] = {
-					uniqueID = inventory[ data ].uniqueID,
-					int = int,
-					itemData = inventory[ data ].itemData
+					uniqueID = invData.uniqueID,
+					itemCount = itemCount,
+					itemData = invData.itemData
 				}
 			else
 				inventory[ data ] = nil
 			end
+			
 			catherine.character.SetGlobalVar( pl, "_inv", inventory )
 		elseif ( workID == CAT_INV_ACTION_UPDATE ) then
-			if ( !catherine.inventory.HasItem( pl, data.uniqueID ) ) then return end
-			local uniqueID = data.uniqueID
+			local invData = catherine.inventory.GetInvItem( pl, data.uniqueID )
+			if ( !invData ) then return end
+			
 			local inventory = catherine.inventory.Get( pl )
-
-			inventory[ uniqueID ] = {
-				uniqueID = inventory[ uniqueID ].uniqueID,
-				int = inventory[ uniqueID ].int,
+			
+			inventory[ data.uniqueID ] = {
+				uniqueID = invData.uniqueID,
+				itemCount = invData.itemCount,
 				itemData = data.newData
 			}
 			
@@ -61,14 +65,18 @@ if ( SERVER ) then
 		end
 	end
 	
+	function catherine.inventory.GetInvItem( pl, uniqueID )
+		if ( !IsValid( pl ) or !uniqueID ) then return false end
+		return catherine.inventory.Get( pl )[ uniqueID ]
+	end
+	
 	function catherine.inventory.IsEquipped( pl, uniqueID )
 		return catherine.inventory.GetItemData( pl, uniqueID, "equiped", false )
 	end
 
 	function catherine.inventory.HasItem( pl, uniqueID )
 		if ( !IsValid( pl ) or !uniqueID ) then return false end
-		local inventory = catherine.inventory.Get( pl )
-		return inventory[ uniqueID ]
+		return catherine.inventory.Get( pl )[ uniqueID ] or false
 	end
 	
 	function catherine.inventory.Get( pl )
@@ -79,7 +87,7 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) or !uniqueID ) then return 0 end
 		local inventory = catherine.inventory.Get( pl )
 		if ( !inventory[ uniqueID ] ) then return 0 end
-		return inventory[ uniqueID ].int or 0
+		return inventory[ uniqueID ].itemCount or 0
 	end
 	
 	function catherine.inventory.GetWeights( pl, customAdd )
@@ -179,7 +187,7 @@ else
 		if ( !uniqueID ) then return 0 end
 		local inventory = catherine.inventory.Get( )
 		if ( !inventory[ uniqueID ] ) then return 0 end
-		return inventory[ uniqueID ].int or 0
+		return inventory[ uniqueID ].itemCount or 0
 	end
 	
 	function catherine.inventory.HasItem( uniqueID )

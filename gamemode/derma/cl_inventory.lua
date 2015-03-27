@@ -100,8 +100,8 @@ function PANEL:BuildInventory( )
 				if ( itemTable.DrawInformation ) then
 					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemDatas( itemTable.uniqueID ) )
 				end
-				if ( v1.int > 1 ) then
-					draw.SimpleText( v1.int, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				if ( v1.itemCount > 1 ) then
+					draw.SimpleText( v1.itemCount, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
 			lists:AddItem( spawnIcon )

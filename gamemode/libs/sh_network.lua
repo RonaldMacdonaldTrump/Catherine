@@ -73,8 +73,7 @@ end
 
 function catherine.network.GetNetVar( ent, key, default )
 	if ( !IsValid( ent ) or !key ) then return default end
-	if ( !catherine.network.entityVars[ ent:EntIndex( ) ] ) then return default end
-	return catherine.network.entityVars[ ent:EntIndex( ) ][ key ] or default
+	return catherine.network.entityVars[ ent:EntIndex( ) ] and catherine.network.entityVars[ ent:EntIndex( ) ][ key ] or default
 end
 
 function catherine.network.GetNetGlobalVar( key, default )
