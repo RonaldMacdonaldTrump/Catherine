@@ -42,7 +42,7 @@ function catherine.item.Register( itemTable )
 				} )
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
 				ent:Remove( )
-				catherine.hooks.Run( "ItemTaked", pl, itemTable )
+				hook.Run( "ItemTaked", pl, itemTable )
 			end,
 			canLook = function( pl, itemTable )
 				return true
@@ -61,7 +61,7 @@ function catherine.item.Register( itemTable )
 				pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
 				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemTable.uniqueID )
-				catherine.hooks.Run( "ItemDroped", pl, itemTable )
+				hook.Run( "ItemDroped", pl, itemTable )
 			end,
 			canLook = function( pl, itemTable )
 				return catherine.inventory.HasItem( itemTable.uniqueID )
