@@ -237,6 +237,19 @@ else
 		catherine.hud.ProgressBarAdd( message, endTime )
 	end
 	
+	CAT_UTIL_BUTTOMSOUND_1 = 1
+	CAT_UTIL_BUTTOMSOUND_2 = 2
+	CAT_UTIL_BUTTOMSOUND_3 = 3
+	function catherine.util.PlayButtonSound( typ )
+		if ( typ == CAT_UTIL_BUTTOMSOUND_1 ) then
+			surface.PlaySound( "CAT/ui/one.wav" )
+		elseif ( typ == CAT_UTIL_BUTTOMSOUND_2 ) then
+			surface.PlaySound( "CAT/ui/two.wav" )
+		elseif ( typ == CAT_UTIL_BUTTOMSOUND_3 ) then
+			surface.PlaySound( "CAT/ui/three.wav" )
+		end
+	end
+	
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )
 		if ( !message or !font or !x or !y ) then return end
 		if ( !xA or !yA ) then xA = 1 yA = 1 end

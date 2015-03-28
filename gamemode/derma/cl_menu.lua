@@ -79,19 +79,23 @@ function PANEL:AddMenuItem( name, func )
 	item.DoClick = function( pnl )
 		if ( self.lastmenuName == name ) then
 			if ( IsValid( self.lastmenuPnl ) ) then
+				catherine.util.PlayButtonSound( CAT_UTIL_BUTTOMSOUND_1 )
 				self.lastmenuPnl:Close( )
 				self.lastmenuPnl = nil
 				self.lastmenuName = ""
 			else
+				catherine.util.PlayButtonSound( CAT_UTIL_BUTTOMSOUND_2 )
 				self.lastmenuPnl = func( self, pnl )
 				self.lastmenuName = name
 			end
 		else
 			if ( IsValid( self.lastmenuPnl ) ) then
+				catherine.util.PlayButtonSound( CAT_UTIL_BUTTOMSOUND_2 )
 				self.lastmenuPnl:Close( )
 				self.lastmenuPnl = func( self, pnl )
 				self.lastmenuName = name
 			else
+				catherine.util.PlayButtonSound( CAT_UTIL_BUTTOMSOUND_3 )
 				self.lastmenuPnl = func( self, pnl )
 				self.lastmenuName = name
 			end
