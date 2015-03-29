@@ -42,6 +42,10 @@ function GM:PlayerDisconnected( pl )
 	end
 end
 
+function GM:PlayerCanHearPlayersVoice( pl, target )
+	return catherine.configs.voiceAllow, catherine.configs.voice3D
+end
+
 // 철인 RP 방지 시스템
 function GM:EntityTakeDamage( pl, dmginfo )
 	if ( !pl:IsPlayer( ) or !dmginfo:IsBulletDamage( ) ) then return end
