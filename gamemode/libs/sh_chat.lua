@@ -71,6 +71,14 @@ catherine.chat.RegisterClass( "pm", {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
+catherine.chat.RegisterClass( "event", {
+	onChat = function( _, text )
+		chat.AddText( Color( 194, 93, 39 ), text )
+	end,
+	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
+	command = { "/event" }
+} )
+
 catherine.chat.RegisterClass( "yell", {
 	onChat = function( pl, text )
 		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
@@ -161,7 +169,7 @@ if ( SERVER ) then
 		if ( classTable.global and !target ) then
 			netstream.Start( nil, "catherine.chat.Post", { pl, class, text, { ... } } )
 		else
-			if ( type( target ) == "table" and #target > 1 ) then
+			if ( type( target ) == "table" and #target > 0 ) then
 				for k, v in pairs( target ) do
 					netstream.Start( v, "catherine.chat.Post", { pl, class, text, { ... } } )
 				end
