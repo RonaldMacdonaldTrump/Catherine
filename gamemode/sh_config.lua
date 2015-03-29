@@ -21,6 +21,10 @@ catherine.configs.schematicViewPos = { // for rp_c18_v1!
 	pos = Vector( 339.375244, -101.734825, 1207.814819 ),
 	ang = Angle( 33.188992, -139.331573, 0.000000 )
 }
+catherine.configs.alwaysRaised = {
+	weapon_physgun = true,
+	gmod_tool = true
+}
 
 if ( SERVER ) then
 	catherine.configs.hintInterval = 30
@@ -30,8 +34,4 @@ if ( SERVER ) then
 	catherine.configs.giveHand = true
 	catherine.configs.giveKey = true
 	catherine.configs.spawnTime = 10
-	catherine.configs.alwaysRaised = {
-		weapon_physgun = true,
-		gmod_tool = true
-	}
 end
