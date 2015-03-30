@@ -186,6 +186,7 @@ function GM:PlayerHurt( pl )
 	if ( pl:Health( ) <= 0 ) then
 		return true
 	end
+	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 	pl.CAT_healthRecoverBool = true
 	pl:EmitSound( hook.Run( "GetPlayerPainSound", pl ) or "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
 	hook.Run( "PlayerTakeDamage", pl )

@@ -50,10 +50,14 @@ catherine.language.Include( catherine.FolderName .. "/gamemode" )
 
 if ( SERVER ) then
 	function catherine.language.SyncByGMod( pl )
+		--[[ // have bug ^-^;
 		if ( !IsValid( pl ) ) then return end
-		pl:ConCommand( "cat_convar_language " .. catherine.language.Lists[ pl:GetInfo( "gmod_language" ) ] and pl:GetInfo( "gmod_language" ) or "english" )
+		local languageConfig = pl:GetInfo( "gmod_language" )
+		pl:ConCommand( "cat_convar_language " .. ( catherine.language.Lists[ languageConfig ] and languageConfig or "english" ) )
+		--]]
 	end
 	
+
 	function catherine.language.GetLists( pl )
 		if ( !IsValid( pl ) ) then return { data = { } } end
 		local uniqueID = pl:GetInfo( "cat_convar_language" )

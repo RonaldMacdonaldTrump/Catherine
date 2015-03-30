@@ -64,6 +64,18 @@ catherine.chat.RegisterClass( "it", {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
+catherine.chat.RegisterClass( "roll", {
+	onChat = function( pl, text )
+		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
+		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
+			name = desc
+		end
+		chat.AddText( Color( 158, 122, 19 ), name .. " roll number " .. text )
+	end,
+	canHearRange = 600,
+	canRun = function( pl ) return pl:Alive( ) end
+} )
+
 catherine.chat.RegisterClass( "pm", {
 	onChat = function( pl, text, ex )
 		chat.AddText( Color( 255, 255, 0 ), "[PM] " .. pl:Name( ) .. " : " .. text )
@@ -151,6 +163,13 @@ catherine.command.Register( {
 		else
 			catherine.util.Notify( pl, "Please input first value!" )
 		end
+	end
+} )
+
+catherine.command.Register( {
+	command = "roll",
+	runFunc = function( pl, args )
+		catherine.chat.Send( pl, "roll", math.random( 1, 100 ) )
 	end
 } )
 

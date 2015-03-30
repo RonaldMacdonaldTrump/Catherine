@@ -17,6 +17,8 @@ function PANEL:Init( )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	self:ShowCloseButton( false )
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.2, 0 )
 	
 	self.storageLists = vgui.Create( "DPanelList", self )
 	self.storageLists:SetPos( 10, 35 )
@@ -61,9 +63,10 @@ function PANEL:Init( )
 	self.close:SetSize( 30, 25 )
 	self.close:SetStr( "X" )
 	self.close:SetStrFont( "catherine_normal30" )
-	self.close:SetStrColor( Color( 255, 255, 255, 255 ) )
-	self.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
+	self.close:SetStrColor( Color( 255, 150, 150, 255 ) )
+	self.close:SetGradientColor( Color( 255, 150, 150, 255 ) )
 	self.close.Click = function( )
+		if ( self.closeing ) then return end
 		self:Close( )
 	end
 end
@@ -159,7 +162,7 @@ function PANEL:BuildStorage( )
 			local w, h = 54, 54
 			local itemTable = catherine.item.FindByID( v1.uniqueID )
 			if ( !itemTable ) then continue end
-			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( self.player, itemTable, self.player:GetInvItemDatas( itemTable.uniqueID ), true ) or nil
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( self.player, itemTable, self.player:GetInvItemDatas( itemTable.uniqueID ), false ) or nil
 
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )

@@ -109,8 +109,11 @@ function PANEL:DoClick( )
 end
 
 function PANEL:PaintOverAll( w, h ) end
+function PANEL:PaintBackground( w, h ) end
 
 function PANEL:Paint( w, h )
+	self:PaintBackground( w, h )
+	
 	if ( self.CursorIsOn ) then
 		self.gradientColor.r = Lerp( 0.05, self.gradientColor.r, self.gradientColor_original.r )
 		self.gradientColor.g = Lerp( 0.05, self.gradientColor.g, self.gradientColor_original.g )

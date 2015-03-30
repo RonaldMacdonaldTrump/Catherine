@@ -81,6 +81,10 @@ function catherine.item.FindByID( id )
 	return catherine.item.items[ id ]
 end
 
+function catherine.item.GetAll( )
+	return catherine.item.items
+end
+
 function catherine.item.FindBaseByID( id )
 	return catherine.item.bases[ id ]
 end
@@ -115,13 +119,17 @@ if ( SERVER ) then
 		if ( !itemTable ) then return end
 		if ( !itemTable.func or !itemTable.func[ funcID ] ) then return end
 		itemTable.func[ funcID ].func( pl, itemTable, ent_isMenu )
-		if ( itemTable.useSound ) then
-			//  to do
-		end
 	end
 	
-	function catherine.item.Give( pl, uniqueID, itemCount )
+	function catherine.item.Give( pl, uniqueID, itemCount, force )
 		if ( !IsValid( pl ) or !uniqueID ) then return end
+		if ( !force ) then
+			local itemTable = catherine.item.FindByID( uniqueID )
+			if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
+				catherine.util.Notify( pl, "You don't have inventory space!" )
+				return
+			end
+		end
 		catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 			uniqueID = uniqueID,
 			itemCount = itemCount
@@ -154,6 +162,10 @@ if ( SERVER ) then
 
 	netstream.Hook( "catherine.item.Work", function( pl, data )
 		catherine.item.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ] )
+	end )
+	
+	netstream.Hook( "catherine.item.Give", function( pl, data )
+		catherine.item.Give( pl, data )
 	end )
 else
 	function catherine.item.OpenMenuUse( uniqueID )

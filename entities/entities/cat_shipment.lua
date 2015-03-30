@@ -53,7 +53,7 @@ else
 		local x, y = pos.x, pos.y
 		
 		draw.SimpleText( "Shipment", "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( "A Shipment", "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( "The Shipment", "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
 	end
 end
 

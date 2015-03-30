@@ -3,6 +3,12 @@ catherine.business = catherine.business or { }
 if ( SERVER ) then
 	function catherine.business.BuyItems( pl, shipLists )
 		if ( !IsValid( pl ) or !shipLists ) then return end
+
+		local eyeTr = pl:GetEyeTraceNoCursor( )
+		if ( pl:GetPos( ):Distance( eyeTr.HitPos ) > 150 ) then
+			catherine.util.Notify( pl, "Can't drop far away!" )
+			return
+		end
 		
 		local cost = 0
 		for k, v in pairs( shipLists ) do
@@ -12,14 +18,14 @@ if ( SERVER ) then
 		end
 		
 		if ( catherine.cash.Get( pl ) < cost ) then
-			print("You don't have cash!")
+			catherine.util.Notify( pl, "You don't have cash!" )
 			return
 		end
 		
 		catherine.cash.Take( pl, cost )
-		--[[
+		
 		local ent = ents.Create( "cat_shipment" )
-		ent:SetPos( Vector( pos.x, pos.y, pos.z + 10 ) )
+		ent:SetPos( eyeTr.HitPos )
 		ent:SetAngles( Angle( ) )
 		ent:Spawn( )
 		ent:PhysicsInit( SOLID_VPHYSICS )
@@ -30,13 +36,29 @@ if ( SERVER ) then
 			physObject:EnableMotion( true )
 			physObject:Wake( )
 		end
-		--]]
+		
+		netstream.Start( pl, "catherine.business.Result", true )
 	end
 	
 	netstream.Hook( "catherine.business.BuyItems", function( pl, data )
 		catherine.business.BuyItems( pl, data )
-	end
+	end )
+	
+	netstream.Hook( "catherine.business.RemoveShipment", function( pl, data )
+		data = Entity( data )
+		if ( !IsValid( data ) ) then return end
+		data:Remove( )
+	end )
+	
 else
+	netstream.Hook( "catherine.business.Result", function( data )
+		if ( data == true ) then
+			if ( IsValid( catherine.vgui.business ) ) then
+				catherine.vgui.business:Close( )
+			end
+		end
+	end )
+	
 	netstream.Hook( "catherine.business.EntityUseMenu", function( data )
 		local ent = Entity( data )
 		
@@ -44,5 +66,7 @@ else
 			catherine.vgui.shipment:Remove( )
 			catherine.vgui.shipment = nil
 		end
-	end
+		catherine.vgui.shipment = vgui.Create( "catherine.vgui.shipment" )
+		catherine.vgui.shipment:InitializeShipment( ent, ent:GetShipLists( ) )
+	end )
 end
