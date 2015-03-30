@@ -14,12 +14,12 @@ if ( SERVER ) then
 					catherine.update.LATESTVERSION = body
 					catherine.util.Print( Color( 0, 255, 0 ), "You can use the latest version of Catherine. - " .. body )
 					if ( IsValid( pl ) ) then
-						netstream.Start( pl, "catherine.update.CheckResult", { false, "You can use the latest version of Catherine. - " .. body } )
+						netstream.Start( pl, "catherine.update.CheckResult", { false, "You should update to the latest version of Catherine. - " .. body } )
 					end
 				else
 					catherine.update.LATESTVERSION = body
 					if ( IsValid( pl ) ) then
-						netstream.Start( pl, "catherine.update.CheckResult", { false, "You are using latest version of Catherine." } )
+						netstream.Start( pl, "catherine.update.CheckResult", { false, "You are using the latest version of Catherine." } )
 					end
 				end
 			end, function( err )
