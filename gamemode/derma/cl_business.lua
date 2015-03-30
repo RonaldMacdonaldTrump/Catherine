@@ -44,17 +44,17 @@ function PANEL:Init( )
 		if ( self:GetShipmentCount( ) > 0 ) then
 			if ( catherine.cash.Get( self.player ) >= self.shoppingcartInfo ) then
 				if ( self.player:GetPos( ):Distance( self.player:GetEyeTraceNoCursor( ).HitPos ) <= 150 ) then
-					Derma_Query( "Are you sure buy this items?", "Buy Items", "YES", function( )
+					Derma_Query( "Are you sure you want to buy this item(s)?", "Buy Items", "YES", function( )
 						netstream.Start( "catherine.business.BuyItems", self.shoppingcart )
 					end, "No", function( ) end )
 				else
-					catherine.notify.Add( "Can't drop far away!", 5 )
+					catherine.notify.Add( "You cannot drop far away!", 5 )
 				end
 			else
-				catherine.notify.Add( "No cash!", 5 )
+				catherine.notify.Add( "No "..catherine.config.moneyName.."!", 5 )
 			end
 		else
-			catherine.notify.Add( "Add shipment!", 5 )
+			catherine.notify.Add( "Shipment bought!", 5 )
 		end
 	end
 	self.buyItems.PaintBackground = function( pnl, w, h )
