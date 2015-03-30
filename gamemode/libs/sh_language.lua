@@ -3,7 +3,7 @@ catherine.language.Lists = { }
 
 function catherine.language.Register( languageTable )
 	if ( !languageTable ) then
-		catherine.util.ErrorPrint( "Language register error, can't found language table!" )
+		catherine.util.ErrorPrint( "Language register error, can't find language table!" )
 		return
 	end
 	catherine.language.Lists[ languageTable.uniqueID ] = languageTable
@@ -11,7 +11,7 @@ end
 
 function catherine.language.New( uniqueID )
 	if ( !uniqueID ) then
-		catherine.util.ErrorPrint( "Language create error, can't found unique ID!" )
+		catherine.util.ErrorPrint( "Language create error, can't find unique ID!" )
 		return
 	end
 	return { name = "Unknown", data = { }, uniqueID = uniqueID }
