@@ -180,7 +180,7 @@ function PANEL:UseCharacterPanel( )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
 			draw.SimpleText( v.characterDatas._name, "catherine_normal20", w / 2, h - 90, Color( 0, 0, 0, 255 ), 1, 1 )
 			draw.SimpleText( v.characterDatas._desc, "catherine_normal15", w / 2, h - 70, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( factionData.name, "catherine_normal30", w / 2, 20, Color( 0, 0, 0, 255 ), 1, 1 )
+			draw.SimpleText( factionData.name, "catherine_normal30", w / 2, 20, Color( 0, 0, 0, 255 ), 1, 1 )--]]
 		end
 		
 		v.panel.button = vgui.Create( "DButton", v.panel )
@@ -223,12 +223,13 @@ function PANEL:UseCharacterPanel( )
 		end
 		
 		v.panel.model = vgui.Create( "DModelPanel", v.panel )
-		v.panel.model:SetSize( v.panel:GetWide( ), v.panel:GetTall( ) )
-		v.panel.model:SetPos( 0, 0 - 80 )
+		v.panel.model:SetSize( v.panel:GetWide( ) / 1.5, v.panel:GetTall( ) / 1.5 )
+		v.panel.model:SetPos( v.panel:GetWide( ) / 2 - v.panel.model:GetWide( ) / 2, 60 )
 		v.panel.model:MoveToBack( )
 		v.panel.model:SetModel( v.characterDatas._model )
 		v.panel.model:SetDrawBackground( false )
-		v.panel.model:SetFOV( 40 )
+		v.panel.model:SetDisabled( true )
+		v.panel.model:SetFOV( 30 )
 		v.panel.model.LayoutEntity = function( pnl, ent )
 			ent:SetAngles( Angle( 0, 45, 0 ) )
 			if ( k == self.loadCharacter.curr ) then 
@@ -365,10 +366,10 @@ function PANEL:Init( )
 		panel.Paint = function( pnl, w, h )
 			if ( self.data.faction == v.uniqueID ) then
 				draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 235 ) )
-				draw.SimpleText( v.name, "catherine_normal25", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
+				draw.SimpleText( v.name, "catherine_normal15", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
 				return
 			end
-			draw.SimpleText( v.name, "catherine_normal25", w / 2, h - 30, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( v.name, "catherine_normal15", w / 2, h - 30, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
 		
 		local model = vgui.Create( "DModelPanel", panel )

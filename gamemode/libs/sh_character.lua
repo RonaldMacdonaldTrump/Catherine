@@ -155,7 +155,6 @@ if ( SERVER ) then
 				var = data[ v.id ]
 				if ( v.checkValid ) then
 					local success, reason = v.checkValid( var )
-					
 					if ( success == false ) then
 						netstream.Start( pl, "catherine.character.CreateResult", { success, reason } )
 						return

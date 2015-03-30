@@ -1,7 +1,5 @@
 catherine.plugin = catherine.plugin or { Lists = { } }
 
-
-
 function catherine.plugin.LoadAll( dir )
 	local _, folders = file.Find( dir .. "/gamemode/plugins/*", "LUA" )
 
@@ -41,3 +39,15 @@ function catherine.plugin.GetAll( )
 end
 
 catherine.plugin.LoadAll( catherine.FolderName )
+
+if ( CLIENT ) then
+	hook.Add( "AddHelpItem", "catherine.plugin.AddHelpItem", function( data )
+		local html = ""
+		
+		for k, v in pairs( catherine.plugin.GetAll( ) ) do
+			html = html .. "<p>< " .. v.name .. " ><br><i><b>" .. v.desc .. "</b></i><br><i><b>Develop and Design by " .. v.author .. "</b></i>"
+		end
+		
+		data:AddItem( "Plugins", html )
+	end )
+end

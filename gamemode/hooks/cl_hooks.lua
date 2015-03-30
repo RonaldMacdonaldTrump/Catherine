@@ -117,7 +117,6 @@ function GM:HUDPaint( )
 	hook.Run( "HUDBackgroundDraw" )
 	catherine.hud.Draw( )
 	catherine.bar.Draw( )
-	catherine.notify.Draw( )
 	catherine.wep.Draw( pl )
 	catherine.hint.Draw( )
 	
@@ -125,6 +124,11 @@ function GM:HUDPaint( )
 	if ( pl:Alive( ) ) then
 		hook.Run( "ProgressEntityCache", pl )
 	end
+end
+
+function GM:PostRenderVGUI( )
+	if ( IsValid( catherine.vgui.character ) or !catherine.loading.status ) then return end
+	catherine.notify.Draw( )
 end
 
 function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePos, eyeAng )
