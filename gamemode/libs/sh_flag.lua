@@ -91,6 +91,21 @@ if ( SERVER ) then
 		end
 	end
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.flag.PlayerSpawnedInCharacter", catherine.flag.PlayerSpawnedInCharacter )
+else
+	hook.Add( "AddHelpItem", "catherine.flag.AddHelpItem", function( data )
+		local html = ""
+		
+		for k, v in pairs( catherine.flag.GetAll( ) ) do
+			local col = "<font color=\"red\">&#10008;"
+			if ( LocalPlayer( ):HasFlag( v.id ) ) then
+				col = "<font color=\"green\">&#10004;"
+			end
+			
+			html = html .. "<p>" .. col .. "< " .. v.id .. " ><br><i><b>" .. v.desc .. "</b></i>"
+		end
+		
+		data:AddItem( "Flags", html )
+	end )
 end
 
 catherine.flag.Register( "p", "Access to physgun.", {
