@@ -29,7 +29,7 @@ function PANEL:Init( )
 	self.storageLists.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 		if ( self.storageInventory and table.Count( self.storageInventory ) == 0 ) then
-			draw.SimpleText( "This storage don't have any items!", "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( "This storage box has no items!", "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
 	end
 	
