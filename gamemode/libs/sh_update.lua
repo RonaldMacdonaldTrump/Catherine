@@ -1,24 +1,23 @@
 catherine.update = catherine.update or { }
-catherine.update.VERSION = "2015-03-29"
+catherine.update.VERSION = "2015-03-30"
 
 if ( SERVER ) then
 	catherine.update.LATESTVERSION = catherine.update.LATESTVERSION or nil
 	catherine.update.Checked = catherine.update.Checked or false
-	
+
 	local checkURL = "htctJcpnyz:vaRG/OCENq/nTJXeTtbetsLVkeBvHRYubixWGCFWvJnKtfUgtsexJYWuOgatlvnmXOkpBJizmfJOuokrlUfjebtCkOsHPCoeSclMFWQetsMamafQnflUWyTrFtbGydUbFylJiyJeNrafFheVoNmAPznLpRfXlXjLrtWlsgicLflmRWPzcOk.bMzNsvPCazHQZIhIhqFcMRShzunPpypzLJFzWpnooGYxVGDOmxMvdSDVQnTAWOmpVBxCWssVGZpelFewnIcRN/MEoODmvPIgeWWVymkjfYmoDmNXRiOjQctjjAMHYiZIUpmuwr7yAPXjBJsZValiVzWGrNuqWkFD6fRgfMiZogfqfoJDyqiICzYzIVcjbJnfEbiVZqIZYjHGaGqyDWEmwLH/DUtKaghOZCwSkDwqhzVszkRDIuVfrlCexMtUZtgvlELiBwEoVzsbAaBWFoaaiLbLCbROUhcjtOHMxwOaDjGqNevYQwXnKXwCuwPcNBlOiztOybBPbesblgIjK"
 	function catherine.update.Check( pl )
 		http.Fetch( catherine.encrypt.Decode( checkURL ), 
 			function( body )
+				SetGlobalString( "catherine.update.LATESTVERSION", body )
 				if ( body != catherine.update.VERSION ) then
 					catherine.update.LATESTVERSION = body
-					SetGlobalString( "catherine.update.LATESTVERSION", body )
 					catherine.util.Print( Color( 0, 255, 0 ), "You can use the latest version of Catherine. - " .. body )
 					if ( IsValid( pl ) ) then
 						netstream.Start( pl, "catherine.update.CheckResult", { false, "You can use the latest version of Catherine. - " .. body } )
 					end
 				else
 					catherine.update.LATESTVERSION = body
-					SetGlobalString( "catherine.update.LATESTVERSION", body )
 					if ( IsValid( pl ) ) then
 						netstream.Start( pl, "catherine.update.CheckResult", { false, "You are using latest version of Catherine." } )
 					end
