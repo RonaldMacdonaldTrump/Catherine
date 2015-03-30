@@ -51,7 +51,7 @@ catherine.language.Include( catherine.FolderName .. "/gamemode" )
 if ( SERVER ) then
 	function catherine.language.SyncByGMod( pl )
 		if ( !IsValid( pl ) ) then return end
-		pl:ConCommand( "cat_convar_language " .. pl:GetInfo( "gmod_language" ) )
+		pl:ConCommand( "cat_convar_language " .. catherine.language.Lists[ pl:GetInfo( "gmod_language" ) ] and pl:GetInfo( "gmod_language" ) or "english" )
 	end
 	
 	function catherine.language.GetLists( pl )
