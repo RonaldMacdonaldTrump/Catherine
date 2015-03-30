@@ -24,12 +24,13 @@ if ( SERVER ) then
 		end
 	end
 	
-	function ENT:InitializeShipment( pl, lists )
-		self.owner = pl:GetCharacterID( )
+	function ENT:InitializeShipment( pl, shipLists )
+		self:SetNetVar( "owner", pl:GetCharacterID( ) )
+		self:SetNetVar( "shipLists", shipLists )
 	end
 
 	function ENT:Use( pl )
-		if ( pl:GetCharacterID( ) != self.owner ) then
+		if ( pl:GetCharacterID( ) != self:GetNetVar( "owner", 0 ) ) then
 			catherine.util.Notify( pl, "You can't open this shipment!" )
 			return
 		end
@@ -54,4 +55,12 @@ else
 		draw.SimpleText( "Shipment", "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		draw.SimpleText( "A Shipment", "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
 	end
+end
+
+function ENT:GetOwner( )
+	return self:GetNetVar( "owner", 0 )
+end
+
+function ENT:GetShipLists( )
+	return self:GetNetVar( "shipLists", { } )
 end
