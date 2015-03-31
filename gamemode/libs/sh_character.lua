@@ -196,6 +196,12 @@ if ( SERVER ) then
 	function catherine.character.Use( pl, id )
 		if ( !IsValid( pl ) or !id ) then return end
 		if ( !catherine.character.Buffers[ pl:SteamID( ) ] ) then return end
+		
+		if ( catherine.player.IsRagdolled( pl ) ) then
+			netstream.Start( pl, "catherine.character.UseResult", { false, "You can't switch character on ragdolled!" } )
+			return
+		end
+		
 		local prevID = pl:GetCharacterID( )
 		
 		if ( prevID == id ) then

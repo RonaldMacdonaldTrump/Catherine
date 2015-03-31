@@ -3,6 +3,7 @@ if ( !catherine.option ) then
 end
 catherine.hud = catherine.hud or {
 	ProgressBar = nil,
+	TopNotify = nil,
 	welcomeIntro = nil,
 	blockedModules = { },
 	clip1 = 0,
@@ -28,12 +29,12 @@ function catherine.hud.Draw( )
 	catherine.hud.AmmoDraw( )
 	catherine.hud.DeathScreen( )
 	catherine.hud.ProgressBarDraw( )
+	catherine.hud.TopNotifyDraw( )
 	catherine.hud.WelcomeIntroDraw( )
 end
 
 function catherine.hud.DeathScreen( )
 	catherine.hud.deathAlpha = Lerp( 0.03, catherine.hud.deathAlpha, LocalPlayer( ):Alive( ) and 0 or 255 )
-	
 	draw.RoundedBox( 0, 0, 0, ScrW( ), ScrH( ), Color( 0, 0, 0, catherine.hud.deathAlpha ) )
 end
 
@@ -132,6 +133,22 @@ function catherine.hud.ProgressBarAdd( message, endTime )
 		startTime = CurTime( ),
 		endTime = CurTime( ) + endTime
 	}
+end
+
+function catherine.hud.TopNotifyAdd( message )
+	catherine.hud.TopNotify = {
+		message = message
+	}
+end
+
+function catherine.hud.TopNotifyDraw( )
+	if ( !catherine.hud.TopNotify ) then return end
+	local scrW, scrH = ScrW( ), ScrH( )
+	
+	surface.SetDrawColor( 50, 50, 50, 150 )
+	surface.SetMaterial( Material( "gui/center_gradient" ) )
+	surface.DrawTexturedRect( 0, scrH / 2 - 80, scrW, 110 )
+	draw.SimpleText( catherine.hud.TopNotify.message or "", "catherine_normal25", scrW / 2, scrH / 2 - 30, Color( 255, 255, 255, 255 ), 1, 1 )
 end
 
 function catherine.hud.ProgressBarDraw( )

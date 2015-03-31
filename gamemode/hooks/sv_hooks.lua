@@ -27,13 +27,11 @@ function GM:PlayerSpawnedInCharacter( pl )
 end
 
 function GM:PlayerSetHandsModel( pl, ent )
-	local model = player_manager.TranslateToPlayerModelName( pl:GetModel( ) )
-	local info = player_manager.TranslatePlayerHands( model )
-	if ( info ) then
-		ent:SetModel( info.model )
-		ent:SetSkin( info.skin )
-		ent:SetBodyGroups( info.body )
-	end
+	local info = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl:GetModel( ) ) )
+	if ( !info ) then return end
+	ent:SetModel( info.model )
+	ent:SetSkin( info.skin )
+	ent:SetBodyGroups( info.body )
 end
 
 function GM:PlayerDisconnected( pl )
@@ -198,38 +196,22 @@ function GM:PlayerDeathSound( pl )
 	return true
 end
 
-function GM:DoPlayerDeath( pl )
-	pl:SetNoDraw( true )
-	pl:Freeze( true )
+function GM:PlayerDeathThink( pl )
+	// do nothing :)
 end
 
 function GM:PlayerDeath( pl )
-	// Spaen fake death body.
-	pl.dummy = ents.Create( "prop_ragdoll" )
-	pl.dummy:SetAngles( pl:GetAngles( ) )
-	pl.dummy:SetModel( pl:GetModel( ) )
-	pl.dummy:SetPos( pl:GetPos( ) )
-	pl.dummy:Spawn( )
-	pl.dummy:Activate( )
-	pl.dummy:SetCollisionGroup( COLLISION_GROUP_WEAPON )
-	pl.dummy.player = self
-	catherine.network.SetNetVar( pl.dummy, "player", pl )
-	catherine.network.SetNetVar( pl.dummy, "ragdollID", pl.dummy:EntIndex( ) )
-	pl.dummy:CallOnRemove( "RecoverPlayer", function( )
-		if ( !IsValid( pl ) or !IsValid( pl.dummy ) ) then return end
-		pl.dummy:Remove( )
-	end )
-	
-	timer.Create( "catherine.timer.Respawn_" .. pl:SteamID( ), catherine.configs.spawnTime, 1, function( )
-		if ( !IsValid( pl ) ) then return end
-		pl:Spawn( )
-	end )
+	if ( IsValid( pl.ragdoll ) ) then
+		pl.ragdoll:Remove( )
+		pl.ragdoll = nil
+	end
 		
 	pl.CAT_healthRecoverBool = false
-	catherine.util.ProgressBar( pl, "You are now respawning.", catherine.configs.spawnTime )
-	catherine.network.SetNetVar( pl, "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
-	catherine.network.SetNetVar( pl, "deathTime", CurTime( ) )
-	
+	catherine.util.ProgressBar( pl, "You are now respawning.", catherine.configs.spawnTime, function( )
+		pl:Spawn( )
+	end )
+	pl:SetNetVar( "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
+	pl:SetNetVar( "deathTime", CurTime( ) )
 	hook.Run( "PlayerGone", pl )
 end
 

@@ -135,7 +135,7 @@ catherine.command.Register( {
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					local success, reason = catherine.faction.AddWhiteList( pl, args[ 2 ] )
+					local success, reason = catherine.faction.AddWhiteList( target, args[ 2 ] )
 					if ( success ) then
 						catherine.util.Notify( pl, catherine.language.GetValue( pl, "Faction_AddMessage01" ) )
 					else
@@ -162,7 +162,7 @@ catherine.command.Register( {
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					local success, reason = catherine.faction.RemoveWhiteList( pl, args[ 2 ] )
+					local success, reason = catherine.faction.RemoveWhiteList( target, args[ 2 ] )
 					if ( success ) then
 						catherine.util.Notify( pl, catherine.language.GetValue( pl, "Faction_RemoveMessage01" ) )
 					else
@@ -179,3 +179,4 @@ catherine.command.Register( {
 		end
 	end
 } )
+

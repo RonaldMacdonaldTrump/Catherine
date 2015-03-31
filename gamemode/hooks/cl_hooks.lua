@@ -26,6 +26,20 @@ function GM:CalcView( pl, pos, ang, fov )
 		data.angles = catherine.configs.schematicViewPos.ang
 		return data
 	end
+
+	local ent = Entity( pl:GetNetVar( "ragdollEnt", 0 ) )
+	if ( IsValid( ent ) and catherine.player.IsRagdolled( pl ) ) then
+		local index = ent:LookupAttachment( "eyes" )
+		local view = { }
+		
+		if ( !index ) then return end
+		local data = ent:GetAttachment( index )
+		
+		view.origin = data and data.Pos
+		view.angles = data and data.Ang
+		
+		return view
+	end
 end
 
 function GM:HUDDrawScoreBoard( )
@@ -151,7 +165,7 @@ function GM:GetSchemaInformation( )
 	return {
 		title = catherine.Name,
 		desc = catherine.Desc,
-		author = "Design and development by L7D."
+		author = "Develop and design By L7D."
 	}
 end
 

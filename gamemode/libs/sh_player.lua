@@ -68,6 +68,83 @@ if ( SERVER ) then
 		end )
 	end
 
+	function catherine.player.RagdollWork( pl, status, time )
+		if ( !IsValid( pl ) ) then return end
+		
+		if ( !status ) then
+			pl:SetNoDraw( false )
+			pl:SetNotSolid( false )
+			pl:Freeze( false )
+			pl:SetPos( IsValid( pl.ragdoll ) and pl.ragdoll:GetPos( ) or pl:GetPos( ) )
+			pl:SetMoveType( MOVETYPE_WALK )
+			pl:SetLocalVelocity( vector_origin )
+			pl:DropToFloor( )
+			if ( IsValid( pl.ragdoll ) ) then pl.ragdoll:SetNetVar( "player", nil ) end
+			
+			for k, v in pairs( pl:GetNetVar( "weps", { } ) ) do
+				pl:Give( v )
+			end
+			
+			pl:SetNetVar( "weps", nil )
+			pl:SetNetVar( "isRagdolled", nil )
+			pl:SetNetVar( "ragdollEnt", nil )
+			
+			if ( IsValid( pl.ragdoll ) ) then
+				pl.ragdoll:Remove( )
+				pl.ragdoll = nil
+			end
+			return
+		end
+		
+		if ( IsValid( pl.ragdoll ) ) then
+			pl.ragdoll:Remove( )
+			pl.ragdoll = nil
+		end
+		
+		if ( !time ) then catherine.util.TopNotify( pl, "You are regaining consciousness ..." ) end
+		
+		pl.ragdoll = ents.Create( "prop_ragdoll" )
+		pl.ragdoll:SetAngles( pl:GetAngles( ) )
+		pl.ragdoll:SetModel( pl:GetModel( ) )
+		pl.ragdoll:SetPos( pl:GetPos( ) )
+		pl.ragdoll:Spawn( )
+		pl.ragdoll:Activate( )
+		pl.ragdoll:SetCollisionGroup( COLLISION_GROUP_WEAPON )
+		pl.ragdoll.player = self
+		pl.ragdoll:SetNetVar( "player", pl )
+		pl.ragdoll:CallOnRemove( "RecoverPlayer", function( )
+			if ( !IsValid( pl ) ) then return end
+			pl:SetNoDraw( false )
+			pl:SetNotSolid( false )
+			pl:Freeze( false )
+			pl:SetMoveType( MOVETYPE_WALK )
+			pl:SetLocalVelocity( vector_origin )
+			catherine.util.TopNotify( pl, false )
+			pl:SetNetVar( "isRagdolled", nil )
+			pl:SetNetVar( "ragdollEnt", nil )
+		end )
+		
+		local weps, wepsBuffer = pl:GetWeapons( ), { }
+		for k, v in pairs( weps ) do
+			wepsBuffer[ #wepsBuffer + 1 ] = v:GetClass( )
+		end
+		
+		pl:SetNetVar( "weps", wepsBuffer )
+		pl:StripWeapons( )
+		pl:GodDisable( )
+		pl:Freeze( true )
+		pl:SetNoDraw( true )
+		
+		pl:SetNetVar( "ragdollEnt", pl.ragdoll:EntIndex( ) )
+		pl:SetNetVar( "isRagdolled", true )
+		
+		if ( time ) then
+			catherine.util.ProgressBar( pl, "You are regaining consciousness ...", time, function( )
+				catherine.player.RagdollWork( pl, false )
+			end )
+		end
+	end
+
 	function META:SetWeaponRaised( bool, weapon )
 		if ( !IsValid( self ) or !self:IsCharacterLoaded( ) ) then return end
 		weapon = weapon or self:GetActiveWeapon( )
@@ -102,69 +179,12 @@ if ( SERVER ) then
 	function META:IsRunning( )
 		return v( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
 	end
-
-	/* // Error;
-	
-	function META:ForceRagdoll( )
-		self.ragdoll = ents.Create( "prop_ragdoll" )
-		self.ragdoll:SetAngles( self:GetAngles( ) )
-		self.ragdoll:SetModel( self:GetModel( ) )
-		self.ragdoll:SetPos( self:GetPos( ) )
-		self.ragdoll:Spawn( )
-		self.ragdoll:Activate( )
-		self.ragdoll:SetCollisionGroup( COLLISION_GROUP_WEAPON )
-		self.ragdoll.player = self
-		self.ragdoll:SetNetworkValue( "player", self )
-		self.ragdoll:CallOnRemove( "RecoverPlayer", function( )
-			if ( IsValid( self ) ) then
-				self:Ragdoll( false )
-			end
-		end )
-
-		local weap = { }
-		for k, v in pairs( self:GetWeapons( ) ) do
-			weap[#weap + 1] = v:GetClass( )
-		end
-
-		self:SetNetworkValue( "weap", weap )
-		self:StripWeapons( )
-		self:Freeze( true )
-		self:SetNoDraw( true )
-		self:SetNetworkValue( "ragdollID", self.ragdoll:EntIndex( ) )
-		self:SetNotSolid( true )
-	end
-		
-	function META:Ragdoll( bool )
-		if ( bool ) then
-			self:ForceRagdoll( )
-		else
-			if ( !self:IsRagdolled( ) ) then return end
-			self:SetPos( self.ragdoll:GetPos( ) )
-			self:SetMoveType( MOVETYPE_WALK )
-			self:SetCollisionGroup( COLLISION_GROUP_PLAYER )
-			self:Freeze( false )
-			self:SetNoDraw( false )
-			self:SetNetworkValue( "ragdollID", 0 )
-			self:DropToFloor( )
-			self:SetNotSolid( false )
-			
-			for k, v in pairs( self:GetNetworkValue( "weap", { } ) ) do
-				self:Give( v )
-			end
-
-			self:SetNetworkValue( "weap", nil )
-
-			if ( IsValid( self.ragdoll ) ) then
-				self.ragdoll:Remove( )
-			end
-		end
-	end
-	
-	*/
-else
-
 end
 
+function catherine.player.IsRagdolled( pl )
+	return pl:GetNetVar( "isRagdolled", nil )
+end
+	
 function META:GetWeaponRaised( )
 	return self:GetNetVar( "weaponRaised", false )
 end

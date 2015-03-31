@@ -145,11 +145,22 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.util.Notify", { catherine.language.GetValue( pl, message, ... ) } )
 	end
 	
-	function catherine.util.ProgressBar( pl, message, time )
+	function catherine.util.ProgressBar( pl, message, time, func )
 		if ( !IsValid( pl ) or !message or !time ) then return end
+		if ( func ) then
+			timer.Simple( time, function( )
+				if ( !IsValid( pl ) ) then return end
+				func( pl )
+			end )
+		end
 		netstream.Start( pl, "catherine.util.ProgressBar", { message, time } )
 	end
 	
+	function catherine.util.TopNotify( pl, message )
+		if ( !IsValid( pl ) or message == nil ) then return end
+		netstream.Start( pl, "catherine.util.TopNotify", message )
+	end
+
 	function catherine.util.PlaySound( pl, dir )
 		if ( !dir ) then return end
 		netstream.Start( pl, "catherine.util.PlaySound", dir )
@@ -224,17 +235,21 @@ else
 	end )
 	
 	netstream.Hook( "catherine.util.ProgressBar", function( data )
-		catherine.util.ProgressBar( data[ 1 ], data[ 2 ] )
+		if ( !data[ 1 ] or !data[ 2 ] ) then return end
+		catherine.hud.ProgressBarAdd( data[ 1 ], data[ 2 ] )
 	end )
 	
+	netstream.Hook( "catherine.util.TopNotify", function( data )
+		if ( data == false ) then
+			catherine.hud.TopNotify = nil
+			return
+		end
+		catherine.hud.TopNotifyAdd( data )
+	end )
+
 	function catherine.util.Notify( message, time, sound, icon )
 		if ( !message ) then return end
 		catherine.notify.Add( message, time or 5, sound, icon )
-	end
-	
-	function catherine.util.ProgressBar( message, endTime )
-		if ( !message or !endTime ) then return end
-		catherine.hud.ProgressBarAdd( message, endTime )
 	end
 	
 	CAT_UTIL_BUTTOMSOUND_1 = 1
