@@ -1,6 +1,6 @@
 --[[
 < CATHERINE > - A free role-playing framework for Garry's Mod.
-Develop by L7D.
+Development and design by L7D.
 
 Catherine is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,15 +25,12 @@ function GM:PlayerSpray( pl )
 end
 
 function GM:PlayerSpawn( pl )
-	if ( IsValid( pl.dummy ) ) then
-		pl.dummy:Remove( )
-	end
 	pl:SetNoDraw( false )
 	pl:Freeze( false )
 	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	player_manager.SetPlayerClass( pl, "catherine_player" )
-	if ( pl:IsCharacterLoaded( ) ) then
+	if ( pl:IsCharacterLoaded( ) and !pl.CAT_loadingChar ) then
 		hook.Run( "PlayerSpawnedInCharacter", pl )
 	end
 end
@@ -307,5 +304,6 @@ function GM:InitPostEntity( )
 end
 
 function GM:ShutDown( )
+	hook.Run( "PostDataSave" )
 	hook.Run( "DataSave" )
 end

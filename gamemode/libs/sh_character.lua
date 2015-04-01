@@ -1,6 +1,6 @@
 --[[
 < CATHERINE > - A free role-playing framework for Garry's Mod.
-Develop by L7D.
+Development and design by L7D.
 
 Catherine is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -245,6 +245,7 @@ if ( SERVER ) then
 			netstream.Start( pl, "catherine.character.UseResult", { false, "Faction is not valid!" } )
 			return
 		end
+		pl.CAT_loadingChar = true
 		
 		pl:KillSilent( )
 		pl:Spawn( )
@@ -256,20 +257,23 @@ if ( SERVER ) then
 		hook.Run( "PostWeaponGive", pl )
 
 		catherine.character.InitializeNetworking( pl, id, characterData )
+		catherine.character.SetCharacterVar( pl, "class", nil )
 		
 		if ( prevID == nil ) then
 			netstream.Start( pl, "catherine.hud.WelcomeIntroStart" )
 		end
+		
+		hook.Run( "PlayerSpawnedInCharacter", pl )
 
 		pl:SetNetVar( "charID", id )
 		pl:SetNetVar( "charLoaded", true )
-		
-		hook.Run( "PlayerSpawnedInCharacter", pl, id )
 
 		if ( catherine.character.GetCharacterVar( pl, "isFirst", true ) == true ) then
 			catherine.character.SetCharacterVar( pl, "isFirst", false )
 			hook.Run( "PlayerFirstSpawned", pl, id )
 		end
+		
+		pl.CAT_loadingChar = nil
 		
 		netstream.Start( pl, "catherine.character.UseResult", { true } )
 		catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [" .. pl:SteamName( ) .. "] " .. ( prevID or "None" ) .. " -> " .. id )

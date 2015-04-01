@@ -1,6 +1,6 @@
 --[[
 < CATHERINE > - A free role-playing framework for Garry's Mod.
-Develop by L7D.
+Development and design by L7D.
 
 Catherine is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -44,9 +44,7 @@ function PANEL:Init( )
 	self.TopBase = vgui.Create( "DPanel", self )
 	self.TopBase:SetSize( self.w, 50 )
 	self.TopBase:SetPos( 0, 0 - 50 )
-	self.TopBase:MoveTo( 0, 0, 0.2, 0.1, nil, function( )
-		
-	end )
+	self.TopBase:MoveTo( 0, 0, 0.2, 0.1 )
 	self.TopBase.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 235 ) )
 		draw.SimpleText( self.player:Name( ), "catherine_normal25", 50, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )

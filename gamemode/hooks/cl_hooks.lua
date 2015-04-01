@@ -1,6 +1,6 @@
 --[[
 < CATHERINE > - A free role-playing framework for Garry's Mod.
-Develop by L7D.
+Development and design by L7D.
 
 Catherine is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -183,7 +183,7 @@ function GM:GetSchemaInformation( )
 	return {
 		title = catherine.Name,
 		desc = catherine.Desc,
-		author = "Develop and design By L7D."
+		author = "Development and design by L7D."
 	}
 end
 

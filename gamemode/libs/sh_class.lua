@@ -1,6 +1,6 @@
 --[[
 < CATHERINE > - A free role-playing framework for Garry's Mod.
-Develop by L7D.
+Development and design by L7D.
 
 Catherine is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -57,23 +57,19 @@ function catherine.class.canJoin( pl, uniqueID )
 	local classTable = catherine.class.FindByID( uniqueID )
 	
 	if ( !classTable ) then
-		print("Class error")
-		return false
+		return false, "Class error"
 	end
 
 	if ( pl:Team( ) != classTable.faction ) then
-		print("Team error")
-		return false
+		return false, "Team error"
 	end
 
 	if ( catherine.character.GetCharacterVar( pl, "class", "" ) == uniqueID ) then
-		print("Same class")
-		return false
+		return false, "Same class"
 	end
 	
 	if ( classTable.limit and ( #catherine.class.GetPlayers( uniqueID ) >= classTable.limit ) ) then
-		print("Hit limit")
-		return false
+		return false, "Hit limit"
 	end
 	
 	return classTable:onCanJoin( pl )
@@ -116,6 +112,7 @@ if ( SERVER ) then
 		end
 		
 		local fault, reason = catherine.class.canJoin( pl, uniqueID )
+
 		if ( !fault ) then
 			catherine.util.Notify( pl, reason )
 			return
@@ -141,14 +138,7 @@ if ( SERVER ) then
 			end
 		end
 	end
-	
-	function catherine.class.CharacterLoadingStart( pl, prevID, newID )
-		if ( !prevID ) then return end
-		catherine.character.SetCharacterVar( pl, "class", nil )
-	end
-	
-	hook.Add( "CharacterLoadingStart", "catherine.class.CharacterLoadingStart", catherine.class.CharacterLoadingStart )
-	
+
 	netstream.Hook( "catherine.class.Set", function( pl, data )
 		catherine.class.Set( pl, data )
 	end )
