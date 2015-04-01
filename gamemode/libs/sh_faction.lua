@@ -82,12 +82,10 @@ end
 
 function catherine.faction.Include( dir )
 	if ( !dir ) then return end
-	for k, v in pairs( file.Find( dir .. "/factions/*", "LUA" ) ) do
+	for k, v in pairs( file.Find( dir .. "/factions/*.lua", "LUA" ) ) do
 		catherine.util.Include( dir .. "/factions/" .. v, "SHARED" )
 	end
 end
-
-catherine.faction.Include( catherine.FolderName .. "/gamemode" )
 
 if ( SERVER ) then
 	function catherine.faction.AddWhiteList( pl, id )

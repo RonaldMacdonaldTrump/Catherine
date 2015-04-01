@@ -531,11 +531,13 @@ else
 	hook.Add( "NetworkGlobalVarChanged", "catherine.character.hooks.NetworkGlobalVarChanged_1", function( pl, key, value )
 		if ( !IsValid( pl ) or key != "_model" ) then return end
 		pl:SetModel( value )
+		catherine.character.SetCharacterVar( pl, "originalModel", value )
 	end )
 
 	hook.Add( "InitializeNetworking", "catherine.character.hooks.InitializeNetworking_0", function( pl, charVars )
 		if ( !IsValid( pl ) or !charVars._model ) then return end
 		pl:SetModel( charVars._model )
+		catherine.character.SetCharacterVar( pl, "originalModel", charVars._model )
 	end )
 end
 

@@ -31,6 +31,7 @@ function catherine.schema.Initialization( )
 	}
 	
 	catherine.faction.Include( Schema.FolderName .. "/gamemode/schema" )
+	catherine.class.Include( Schema.FolderName .. "/gamemode/schema" )
 	catherine.item.Include( Schema.FolderName .. "/gamemode/schema" )
 	catherine.language.Include( Schema.FolderName .. "/gamemode/schema" )
 	catherine.util.Include( "schema/sh_schema.lua" )

@@ -93,8 +93,58 @@ function catherine.class.GetPlayers( uniqueID )
 	return players
 end
 
-if ( SERVER ) then
+function catherine.class.Include( dir )
+	if ( !dir ) then return end
+	for k, v in pairs( file.Find( dir .. "/classes/*.lua", "LUA" ) ) do
+		catherine.util.Include( dir .. "/classes/" .. v, "SHARED" )
+	end
+end
 
+if ( SERVER ) then
+	function catherine.class.Set( pl, uniqueID )
+		if ( !IsValid( pl ) ) then return end
+		
+		if ( !uniqueID ) then
+			local defaultClass = catherine.class.GetDefaultClass( factionID )
+			if ( !defaultClass ) then return end
+			local defaultModel = catherine.character.GetCharacterVar( pl, "originalModel" )
+			if ( !defaultModel ) then return end
+			
+			catherine.character.SetCharacterVar( pl, "class", defaultClass.uniqueID )
+			pl:SetModel( defaultModel )
+			return
+		end
+		
+		local fault, reason = catherine.class.canJoin( pl, uniqueID )
+		if ( !fault ) then
+			catherine.util.Notify( pl, reason )
+			return
+		end
+		
+		local classTable = catherine.class.FindByID( uniqueID )
+		
+		if ( classTable.model ) then
+			if ( !catherine.character.GetCharacterVar( pl, "originalModel" ) ) then
+				catherine.character.SetCharacterVar( pl, "originalModel", pl:GetModel( ) )
+			end
+			pl:SetModel( ( type( classTable.model ) == "table" and table.Random( classTable.model ) or classTable.model ) )
+		end
+		
+		catherine.character.SetCharacterVar( pl, "class", uniqueID )
+	end
+	
+	function catherine.class.GetDefaultClass( factionID )
+		if ( !factionID ) then return nil end
+		for k, v in pairs( catherine.class.GetAll( ) ) do
+			if ( v.faction == factionID and v.isDefault ) then
+				return v
+			end
+		end
+	end
+	
+	netstream.Hook( "catherine.class.Set", function( pl, data )
+		catherine.class.Set( pl, data )
+	end )
 else
 
 end
