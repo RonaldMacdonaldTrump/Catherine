@@ -21,35 +21,8 @@ PLUGIN.name = "Save Prop"
 PLUGIN.author = "L7D"
 PLUGIN.desc = "Good stuff."
 
-if ( SERVER ) then
-	function PLUGIN:DataSave( )
-		local data = { }
-		for k, v in pairs( ents.GetAll( ) ) do
-			if ( !v:GetNetVar( "isPersistent" ) ) then continue end
-			data[ #data + 1 ] = v
-		end
-		
-		if ( #data == 0 ) then return end
-		local persistentData = duplicator.CopyEnts( data )
-		if ( !persistentData ) then return end
-		catherine.data.Set( "props", persistentData )
-	end
-	
-	function PLUGIN:DataLoad( )
-		local data = catherine.data.Get( "props", nil )
-		if ( !data ) then return end
-		
-		local ents, consts = duplicator.Paste( nil, data.Entities or { }, data.Contraints or { } )
-		
-		for k, v in pairs( ents ) do
-			v:SetNetVar( "isPersistent", true )
-		end
-	end
-end
-
 catherine.command.Register( {
 	command = "staticprop",
-	syntax = "",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		local tr = pl:GetEyeTraceNoCursor( )
@@ -74,3 +47,29 @@ catherine.command.Register( {
 		end
 	end
 } )
+
+if ( CLIENT ) then return end
+
+function PLUGIN:DataSave( )
+	local data = { }
+	for k, v in pairs( ents.GetAll( ) ) do
+		if ( !v:GetNetVar( "isPersistent" ) ) then continue end
+		data[ #data + 1 ] = v
+	end
+	
+	if ( #data == 0 ) then return end
+	local persistentData = duplicator.CopyEnts( data )
+	if ( !persistentData ) then return end
+	catherine.data.Set( "props", persistentData )
+end
+
+function PLUGIN:DataLoad( )
+	local data = catherine.data.Get( "props", nil )
+	if ( !data ) then return end
+	
+	local ents, consts = duplicator.Paste( nil, data.Entities or { }, data.Contraints or { } )
+	
+	for k, v in pairs( ents ) do
+		v:SetNetVar( "isPersistent", true )
+	end
+end
