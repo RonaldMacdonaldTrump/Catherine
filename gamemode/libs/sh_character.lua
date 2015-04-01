@@ -448,6 +448,11 @@ if ( SERVER ) then
 		if ( key != "_model" ) then return end
 		pl:SetModel( value )
 	end )
+	
+	hook.Add( "NetworkGlobalVarChanged", "catherine.character.hooks.NetworkGlobalVarChanged_1", function( pl, key, value )
+		if ( key != "_name" ) then return end
+		hook.Run( "CharacterNameChanged", pl, value )
+	end )
 else
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
 	
