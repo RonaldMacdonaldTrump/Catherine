@@ -1,3 +1,21 @@
+--[[
+< CATHERINE > - A free role-playing framework for Garry's Mod.
+Develop by L7D.
+
+Catherine is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
+]]--
+
 catherine.loading = catherine.loading or {
 	status = false,
 	errorMsg = nil,
@@ -7,6 +25,7 @@ catherine.loading = catherine.loading or {
 	msg = "Catherine is now booting ..."
 }
 catherine.entityCaches = { }
+catherine.weaponModels = catherine.weaponModels or { }
 catherine.nextCacheDo = CurTime( )
 local toscreen = FindMetaTable("Vector").ToScreen
 
@@ -131,10 +150,9 @@ function GM:HUDPaint( )
 	hook.Run( "HUDBackgroundDraw" )
 	catherine.hud.Draw( )
 	catherine.bar.Draw( )
-	catherine.wep.Draw( pl )
 	catherine.hint.Draw( )
-	
 	hook.Run( "HUDDraw" )
+	
 	if ( pl:Alive( ) ) then
 		hook.Run( "ProgressEntityCache", pl )
 	end
@@ -198,6 +216,44 @@ function GM:RenderScreenspaceEffects( )
 	end
 	
 	DrawColorModify( tab )
+end
+
+function GM:PostPlayerDraw( pl )
+	if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) ) then return end
+	local wep = pl:GetActiveWeapon( )
+	local curClass = ( IsValid( wep ) and wep:GetClass( ):lower( ) or "" )
+	
+	for k, v in pairs( pl:GetWeapons( ) ) do
+		if ( !IsValid( v ) ) then continue end
+		local wepClass = v:GetClass( ):lower( )
+		local info = WEAPON_PLAYERDRAW_INFO[ wepClass ]
+		if ( !info ) then continue end
+		
+		pl.CAT_weapon_Nyandraw = pl.CAT_weapon_Nyandraw or { }
+		
+		if ( !pl.CAT_weapon_Nyandraw[ wepClass ] or !IsValid( pl.CAT_weapon_Nyandraw[ wepClass ] ) ) then
+			pl.CAT_weapon_Nyandraw[ wepClass ] = ClientsideModel( info.model, RENDERGROUP_TRANSLUCENT )
+			pl.CAT_weapon_Nyandraw[ wepClass ]:SetNoDraw( true )
+		else
+			local drawEnt = pl.CAT_weapon_Nyandraw[ wepClass ]
+			if ( !IsValid( drawEnt ) ) then continue end
+			local index = pl:LookupBone( info.bone )
+			
+			if ( index and index > 0 ) then
+				if ( curClass == wepClass ) then continue end
+				local bonePos, boneAng = pl:GetBonePosition( index )
+				drawEnt:SetRenderOrigin( bonePos )
+				drawEnt:SetRenderAngles( boneAng )
+				drawEnt:DrawModel( )
+			end
+		end
+	end
+	
+	for k, v in pairs( pl.CAT_weapon_Nyandraw or { } ) do
+		local wep = pl:GetWeapon( k )
+		if ( wep or IsValid( wep ) ) then continue end
+		v:Remove( )
+	end
 end
 
 netstream.Hook( "catherine.LoadingStatus", function( data )

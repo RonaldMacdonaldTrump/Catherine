@@ -1,3 +1,21 @@
+--[[
+< CATHERINE > - A free role-playing framework for Garry's Mod.
+Develop by L7D.
+
+Catherine is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
+]]--
+
 local PANEL = { }
 
 function PANEL:Init( )
@@ -34,7 +52,11 @@ function PANEL:Init( )
 		draw.SimpleText( self.player:Name( ), "catherine_normal25", 50, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 		draw.SimpleText( self.player:Desc( ), "catherine_normal15", 50, 35, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 		draw.SimpleText( self.player:FactionName( ), "catherine_normal25", w - 5, 35, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
-		draw.SimpleText( catherine.util.GetRealTime( ), "catherine_normal15", w - 5, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		
+		local className = self.player:ClassName( )
+		if ( className ) then
+			draw.SimpleText( className, "catherine_normal15", w - 5, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		end
 	end
 	
 	self.TopBase.avatar = vgui.Create( "AvatarImage", self.TopBase )

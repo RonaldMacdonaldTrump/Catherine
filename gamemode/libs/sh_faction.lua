@@ -1,3 +1,21 @@
+--[[
+< CATHERINE > - A free role-playing framework for Garry's Mod.
+Develop by L7D.
+
+Catherine is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
+]]--
+
 catherine.faction = catherine.faction or { }
 catherine.faction.Lists = { }
 
@@ -64,12 +82,10 @@ end
 
 function catherine.faction.Include( dir )
 	if ( !dir ) then return end
-	for k, v in pairs( file.Find( dir .. "/factions/*", "LUA" ) ) do
+	for k, v in pairs( file.Find( dir .. "/factions/*.lua", "LUA" ) ) do
 		catherine.util.Include( dir .. "/factions/" .. v, "SHARED" )
 	end
 end
-
-catherine.faction.Include( catherine.FolderName .. "/gamemode" )
 
 if ( SERVER ) then
 	function catherine.faction.AddWhiteList( pl, id )

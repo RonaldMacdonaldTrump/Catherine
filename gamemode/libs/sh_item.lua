@@ -1,3 +1,21 @@
+--[[
+< CATHERINE > - A free role-playing framework for Garry's Mod.
+Develop by L7D.
+
+Catherine is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
+]]--
+
 catherine.item = catherine.item or { bases = { }, items = { } }
 
 function catherine.item.Register( itemTable )
@@ -69,8 +87,10 @@ function catherine.item.Register( itemTable )
 		}
 	}
 	itemTable.func = table.Merge( funcBuffer, itemTable.func or { } )
-
+	
 	catherine.item.items[ itemTable.uniqueID ] = itemTable
+	
+	if ( itemTable.OnRegistered ) then itemTable:OnRegistered( ) end
 end
 
 function catherine.item.New( uniqueID, base_uniqueID, isBase )
@@ -96,7 +116,7 @@ function catherine.item.Include( dir )
 		catherine.util.Include( dir .. "/items/base/" .. v, "SHARED" )
 	end
 	
-	local itemFiles, itemFolders = file.Find( dir .. "/items/*", "LUA" )
+	local itemFiles, itemFolders = file.Find( dir .. "/items/*.lua", "LUA" )
 	for k, v in pairs( itemFolders ) do
 		if ( v == "base" ) then continue end
 		local itemFiles2 = file.Find( dir .. "/items/" .. v .. "/*.lua", "LUA" )

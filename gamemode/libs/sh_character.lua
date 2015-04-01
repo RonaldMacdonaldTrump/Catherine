@@ -1,3 +1,21 @@
+--[[
+< CATHERINE > - A free role-playing framework for Garry's Mod.
+Develop by L7D.
+
+Catherine is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
+]]--
+
 catherine.character = catherine.character or { networkingVars = { } }
 catherine.character.globalVars = { }
 local META = FindMetaTable( "Player" )
@@ -208,6 +226,8 @@ if ( SERVER ) then
 			netstream.Start( pl, "catherine.character.UseResult", { false, "You can't use same character!" } )
 			return
 		end
+		
+		hook.Run( "CharacterLoadingStart", pl, prevID, id )
 
 		if ( prevID != nil ) then
 			catherine.character.SavePlayerCharacter( pl )
@@ -430,6 +450,12 @@ if ( SERVER ) then
 		if ( key != "_model" ) then return end
 		pl:SetModel( value )
 	end )
+	
+	hook.Add( "NetworkGlobalVarChanged", "catherine.character.hooks.NetworkGlobalVarChanged_1", function( pl, key, value )
+		if ( key == "_name" ) then
+			hook.Run( "CharacterNameChanged", pl, value )
+		end
+	end )
 else
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
 	
@@ -508,6 +534,7 @@ else
 	hook.Add( "NetworkGlobalVarChanged", "catherine.character.hooks.NetworkGlobalVarChanged_1", function( pl, key, value )
 		if ( !IsValid( pl ) or key != "_model" ) then return end
 		pl:SetModel( value )
+		catherine.character.SetCharacterVar( pl, "originalModel", value )
 	end )
 
 	hook.Add( "InitializeNetworking", "catherine.character.hooks.InitializeNetworking_0", function( pl, charVars )
