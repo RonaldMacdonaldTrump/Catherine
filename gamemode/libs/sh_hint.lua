@@ -1,22 +1,22 @@
 catherine.hint = catherine.hint or { }
 catherine.hint.Lists = { }
 
-function catherine.hint.Register(  message, canLook )
-	local index = #catherine.hint.Lists + 1
-	catherine.hint.Lists[ index ] = { index = index, message = message, canLook = canLook }
+function catherine.hint.Register( message, canLook )
+	catherine.hint.Lists[ #catherine.hint.Lists + 1 ] = { message = message, canLook = canLook }
 end
 
 if ( SERVER ) then
 	catherine.hint.SendCurTime = catherine.hint.SendCurTime or CurTime( ) + catherine.configs.hintInterval
 	
 	function catherine.hint.Work( )
-		local randHint = table.Random( catherine.hint.Lists )
-		if ( !randHint ) then return end
+		local rand = math.random( 1, #catherine.hint.Lists )
+		local hintTable = catherine.hint.Lists[ rand ]
+		if ( !hintTable ) then return end
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			if ( v:GetInfo( "cat_convar_hint" ) == "0" ) then continue end
-			local canLook = randHint.canLook and randHint.canLook( v ) or true
+			local canLook = hintTable.canLook and hintTable.canLook( v ) or true
 			if ( !canLook ) then continue end
-			netstream.Start( v, "catherine.hint.Receive", randHint.index )
+			netstream.Start( v, "catherine.hint.Receive", rand )
 		end
 	end
 	
