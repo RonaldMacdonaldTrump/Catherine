@@ -52,7 +52,11 @@ function PANEL:Init( )
 		draw.SimpleText( self.player:Name( ), "catherine_normal25", 50, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 		draw.SimpleText( self.player:Desc( ), "catherine_normal15", 50, 35, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 		draw.SimpleText( self.player:FactionName( ), "catherine_normal25", w - 5, 35, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
-		draw.SimpleText( catherine.util.GetRealTime( ), "catherine_normal15", w - 5, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		
+		local className = self.player:ClassName( )
+		if ( className ) then
+			draw.SimpleText( className, "catherine_normal15", w - 5, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		end
 	end
 	
 	self.TopBase.avatar = vgui.Create( "AvatarImage", self.TopBase )

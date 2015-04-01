@@ -60,12 +60,12 @@ function catherine.class.canJoin( pl, uniqueID )
 		print("Class error")
 		return false
 	end
-	
+
 	if ( pl:Team( ) != classTable.faction ) then
 		print("Team error")
 		return false
 	end
-	
+
 	if ( catherine.character.GetCharacterVar( pl, "class", "" ) == uniqueID ) then
 		print("Same class")
 		return false
@@ -105,7 +105,7 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) ) then return end
 		
 		if ( !uniqueID ) then
-			local defaultClass = catherine.class.GetDefaultClass( factionID )
+			local defaultClass = catherine.class.GetDefaultClass( pl:Team( ) )
 			if ( !defaultClass ) then return end
 			local defaultModel = catherine.character.GetCharacterVar( pl, "originalModel" )
 			if ( !defaultModel ) then return end
@@ -132,7 +132,7 @@ if ( SERVER ) then
 		
 		catherine.character.SetCharacterVar( pl, "class", uniqueID )
 	end
-	
+
 	function catherine.class.GetDefaultClass( factionID )
 		if ( !factionID ) then return nil end
 		for k, v in pairs( catherine.class.GetAll( ) ) do
@@ -142,9 +142,26 @@ if ( SERVER ) then
 		end
 	end
 	
+	function catherine.class.CharacterLoadingStart( pl, prevID, newID )
+		if ( !prevID ) then return end
+		catherine.character.SetCharacterVar( pl, "class", nil )
+	end
+	
+	hook.Add( "CharacterLoadingStart", "catherine.class.CharacterLoadingStart", catherine.class.CharacterLoadingStart )
+	
 	netstream.Hook( "catherine.class.Set", function( pl, data )
 		catherine.class.Set( pl, data )
 	end )
 else
 
+end
+
+local META = FindMetaTable( "Player" )
+
+function META:Class( )
+	return catherine.character.GetCharacterVar( self, "class", nil )
+end
+
+function META:ClassName( )
+	return catherine.class.FindByID( self:Class( ) ) and catherine.class.FindByID( self:Class( ) ).name or nil
 end

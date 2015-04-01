@@ -226,6 +226,8 @@ if ( SERVER ) then
 			netstream.Start( pl, "catherine.character.UseResult", { false, "You can't use same character!" } )
 			return
 		end
+		
+		hook.Run( "CharacterLoadingStart", pl, prevID, id )
 
 		if ( prevID != nil ) then
 			catherine.character.SavePlayerCharacter( pl )
@@ -450,8 +452,9 @@ if ( SERVER ) then
 	end )
 	
 	hook.Add( "NetworkGlobalVarChanged", "catherine.character.hooks.NetworkGlobalVarChanged_1", function( pl, key, value )
-		if ( key != "_name" ) then return end
-		hook.Run( "CharacterNameChanged", pl, value )
+		if ( key == "_name" ) then
+			hook.Run( "CharacterNameChanged", pl, value )
+		end
 	end )
 else
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
@@ -537,7 +540,6 @@ else
 	hook.Add( "InitializeNetworking", "catherine.character.hooks.InitializeNetworking_0", function( pl, charVars )
 		if ( !IsValid( pl ) or !charVars._model ) then return end
 		pl:SetModel( charVars._model )
-		catherine.character.SetCharacterVar( pl, "originalModel", charVars._model )
 	end )
 end
 

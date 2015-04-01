@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.update = catherine.update or { VERSION = "2015-03-31" }
+catherine.update = catherine.update or { VERSION = "2015-04-01" }
 
 if ( SERVER ) then
 	catherine.update.LATESTVERSION = catherine.update.LATESTVERSION or nil
