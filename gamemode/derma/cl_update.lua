@@ -68,7 +68,7 @@ function PANEL:MenuPaint( w, h )
 	end
 	
 	surface.SetDrawColor( 255, 255, 255, 255 )
-	surface.SetMaterial( Material( "CAT/logos/1.png" ) )
+	surface.SetMaterial( Material( "CAT/logos/2.png" ) )
 	surface.DrawTexturedRect( w / 2 - 512 / 2, h / 2 - 256 / 2, 512, 256 )
 	
 	if ( self.latestVersion ) then
