@@ -264,7 +264,7 @@ else
 	local toscreen = FindMetaTable("Vector").ToScreen
 
 	function catherine.storage.DrawEntityTargetID( pl, ent, a )
-		if ( !ent:GetNetVar( "isStorage", false ) ) then return end
+		if ( !IsValid( ent ) or !ent:GetNetVar( "isStorage", false ) ) then return end
 		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		

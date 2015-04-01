@@ -16,10 +16,11 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+--[[ -- Deleted ^-^;
 catherine.meta = catherine.meta or { }
-catherine.meta.objects = catherine.meta.objects or { }
+catherine.meta.objects = { } 
 
-function catherine.meta.Create( class, data )
+function catherine.meta.New( class, data )
 	local self = setmetatable( data, catherine.meta.objects[ class ] )
 	catherine.meta.objects[ #catherine.meta.objects + 1 ] = self
 	return self
@@ -29,3 +30,4 @@ function catherine.meta.Register( class, data )
 	data.__index = data
 	catherine.meta.objects[ class ] = data
 end
+--]]

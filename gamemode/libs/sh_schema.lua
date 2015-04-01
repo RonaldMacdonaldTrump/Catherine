@@ -30,15 +30,14 @@ function catherine.schema.Initialization( )
 		IntroDesc = "Welcome..."
 	}
 	
-	catherine.util.Include( "schema/sh_schema.lua" )
-	catherine.util.IncludeInDir( "schema/libs" )
-	catherine.util.IncludeInDir( "schema/derma" )
-	
-	catherine.plugin.LoadAll( Schema.FolderName )
-	//catherine.plugin.LoadAll( catherine.FolderName ) // ;;?
 	catherine.faction.Include( Schema.FolderName .. "/gamemode/schema" )
 	catherine.item.Include( Schema.FolderName .. "/gamemode/schema" )
 	catherine.language.Include( Schema.FolderName .. "/gamemode/schema" )
+	catherine.util.Include( "schema/sh_schema.lua" )
+	catherine.util.IncludeInDir( "schema/libs" )
+	catherine.util.IncludeInDir( "schema/derma" )
+	catherine.plugin.LoadAll( Schema.FolderName )
+	//catherine.plugin.LoadAll( catherine.FolderName ) // ;;?
 	
 	hook.Run( "SchemaInitialized" )
 end

@@ -25,6 +25,7 @@ catherine.loading = catherine.loading or {
 	msg = "Catherine is now booting ..."
 }
 catherine.entityCaches = { }
+catherine.weaponModels = catherine.weaponModels or { }
 catherine.nextCacheDo = CurTime( )
 local toscreen = FindMetaTable("Vector").ToScreen
 
@@ -215,6 +216,44 @@ function GM:RenderScreenspaceEffects( )
 	end
 	
 	DrawColorModify( tab )
+end
+
+function GM:PostPlayerDraw( pl )
+	if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) ) then return end
+	local wep = pl:GetActiveWeapon( )
+	local curClass = ( IsValid( wep ) and wep:GetClass( ):lower( ) or "" )
+	
+	for k, v in pairs( pl:GetWeapons( ) ) do
+		if ( !IsValid( v ) ) then continue end
+		local wepClass = v:GetClass( ):lower( )
+		local info = WEAPON_PLAYERDRAW_INFO[ wepClass ]
+		if ( !info ) then continue end
+		
+		pl.CAT_weapon_Nyandraw = pl.CAT_weapon_Nyandraw or { }
+		
+		if ( !pl.CAT_weapon_Nyandraw[ wepClass ] or !IsValid( pl.CAT_weapon_Nyandraw[ wepClass ] ) ) then
+			pl.CAT_weapon_Nyandraw[ wepClass ] = ClientsideModel( info.model, RENDERGROUP_TRANSLUCENT )
+			pl.CAT_weapon_Nyandraw[ wepClass ]:SetNoDraw( true )
+		else
+			local drawEnt = pl.CAT_weapon_Nyandraw[ wepClass ]
+			if ( !IsValid( drawEnt ) ) then continue end
+			local index = pl:LookupBone( info.bone )
+			
+			if ( index and index > 0 ) then
+				if ( curClass == wepClass ) then continue end
+				local bonePos, boneAng = pl:GetBonePosition( index )
+				drawEnt:SetRenderOrigin( bonePos )
+				drawEnt:SetRenderAngles( boneAng )
+				drawEnt:DrawModel( )
+			end
+		end
+	end
+	
+	for k, v in pairs( pl.CAT_weapon_Nyandraw or { } ) do
+		local wep = pl:GetWeapon( k )
+		if ( wep or IsValid( wep ) ) then continue end
+		v:Remove( )
+	end
 end
 
 netstream.Hook( "catherine.LoadingStatus", function( data )

@@ -87,8 +87,10 @@ function catherine.item.Register( itemTable )
 		}
 	}
 	itemTable.func = table.Merge( funcBuffer, itemTable.func or { } )
-
+	
 	catherine.item.items[ itemTable.uniqueID ] = itemTable
+	
+	if ( itemTable.OnRegistered ) then itemTable:OnRegistered( ) end
 end
 
 function catherine.item.New( uniqueID, base_uniqueID, isBase )
