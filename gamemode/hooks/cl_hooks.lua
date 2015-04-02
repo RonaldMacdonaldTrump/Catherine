@@ -264,3 +264,12 @@ netstream.Hook( "catherine.LoadingStatus", function( data )
 		catherine.loading.msg = ""
 	end
 end )
+
+netstream.Hook( "catherine.ShowHelp", function( )
+	if ( IsValid( catherine.vgui.information ) ) then
+		catherine.vgui.information:Close( )
+		return
+	end
+	
+	catherine.vgui.information = vgui.Create( "catherine.vgui.information" )
+end )

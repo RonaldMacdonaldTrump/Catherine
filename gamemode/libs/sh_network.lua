@@ -23,20 +23,20 @@ local META = FindMetaTable( "Entity" )
 if ( SERVER ) then
 	function catherine.network.SetNetVar( ent, key, value, noSync )
 		if ( !IsValid( ent ) or !key ) then return end
-		catherine.network.entityVars[ ent:EntIndex( ) ] = catherine.network.entityVars[ ent:EntIndex( ) ] or { }
-		catherine.network.entityVars[ ent:EntIndex( ) ][ key ] = value
+		catherine.network.entityVars[ ent ] = catherine.network.entityVars[ ent ] or { }
+		catherine.network.entityVars[ ent ][ key ] = value
 		if ( !noSync ) then
 			netstream.Start( nil, "catherine.network.SetNetVar", { ent:EntIndex( ), key, value } )
 		end
 	end
-	
+
 	function catherine.network.SyncAllVars( pl, func )
 		netstream.Start( pl, "catherine.network.SyncAllVars", { catherine.network.entityVars, catherine.network.globalVars } )
 		if ( func ) then
 			func( )
 		end
 	end
-	
+
 	function catherine.network.SetNetGlobalVar( key, value, noSync )
 		if ( !key ) then return end
 		catherine.network.globalVars[ key ] = value
@@ -53,12 +53,12 @@ if ( SERVER ) then
 	end
 	
 	function catherine.network.EntityRemoved( ent )
-		catherine.network.entityVars[ ent:EntIndex( ) ] = nil
+		catherine.network.entityVars[ ent ] = nil
 		netstream.Start( nil, "catherine.network.ClearNetVar", ent:EntIndex( ) )
 	end
 	
 	function catherine.network.PlayerDisconnected( pl )
-		catherine.network.entityVars[ pl:EntIndex( ) ] = nil
+		catherine.network.entityVars[ pl ] = nil
 		netstream.Start( nil, "catherine.network.ClearNetVar", pl:EntIndex( ) )
 	end
 
@@ -66,6 +66,7 @@ if ( SERVER ) then
 	hook.Add( "PlayerDisconnected", "catherine.network.PlayerDisconnected", catherine.network.PlayerDisconnected )
 else
 	netstream.Hook( "catherine.network.SetNetVar", function( data )
+		data[ 1 ] = Entity( data[ 1 ] )
 		catherine.network.entityVars[ data[ 1 ] ] = catherine.network.entityVars[ data[ 1 ] ] or { }
 		catherine.network.entityVars[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
 	end )
@@ -90,7 +91,7 @@ end
 
 function catherine.network.GetNetVar( ent, key, default )
 	if ( !IsValid( ent ) or !key ) then return default end
-	return catherine.network.entityVars[ ent:EntIndex( ) ] and catherine.network.entityVars[ ent:EntIndex( ) ][ key ] or default
+	return catherine.network.entityVars[ ent ] and catherine.network.entityVars[ ent ][ key ] or default
 end
 
 function catherine.network.GetNetGlobalVar( key, default )

@@ -523,7 +523,7 @@ else
 		catherine.character.networkingVars[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
 		hook.Run( "NetworkGlobalVarChanged", catherine.util.FindPlayerByStuff( "SteamID", data[ 1 ] ), data[ 2 ], data[ 3 ] )
 	end )
-	
+
 	netstream.Hook( "catherine.character.SetNetworkingCharVar", function( data )
 		if ( !catherine.character.networkingVars[ data[ 1 ] ] or !catherine.character.networkingVars[ data[ 1 ] ][ "_charVar" ] ) then return end
 		catherine.character.networkingVars[ data[ 1 ] ][ "_charVar" ][ data[ 2 ] ] = data[ 3 ]
@@ -535,6 +535,7 @@ else
 		catherine.character.localCharacters = data
 	end )
 	
+	// Need delete :!
 	hook.Add( "NetworkGlobalVarChanged", "catherine.character.hooks.NetworkGlobalVarChanged_1", function( pl, key, value )
 		if ( !IsValid( pl ) or key != "_model" ) then return end
 		pl:SetModel( value )

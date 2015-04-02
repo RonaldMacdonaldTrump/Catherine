@@ -16,6 +16,10 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+function GM:ShowHelp( pl )
+	netstream.Start( pl, "catherine.ShowHelp" )
+end
+
 function GM:GetGameDescription( )
 	return "CAT - ".. ( Schema and Schema.Name or "Unknown" )
 end
