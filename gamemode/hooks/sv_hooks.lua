@@ -17,6 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 function GM:ShowHelp( pl )
+	if ( !pl:IsCharacterLoaded( ) ) then return end
 	netstream.Start( pl, "catherine.ShowHelp" )
 end
 

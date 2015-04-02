@@ -33,7 +33,7 @@ function PANEL:Init( )
 	self:SetTitle( "" )
 	self:SetDraggable( false )
 	self:ShowCloseButton( false )
-	self:MoveTo( ScrW( ) - self.w, self.y, 0.3, 0 )
+	self:MoveTo( ScrW( ) - self.w, self.y, 0.2, 0 )
 	
 	self.playerModel = vgui.Create( "SpawnIcon", self )
 	self.playerModel:SetPos( 15, 15 )
@@ -63,23 +63,21 @@ function PANEL:Paint( w, h )
 		draw.SimpleText( className, "catherine_normal15", 15, 110, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 	end
 
-	draw.SimpleText( catherine.date.GetDateString( ), "catherine_normal35", w - 5, h - 65, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
-	draw.SimpleText( catherine.date.GetTimeString( ), "catherine_normal25", w - 5, h - 35, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
-	
-	//draw.SimpleText( "Real time - " .. catherine.util.GetRealTime( ), "catherine_normal15", w - 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
+	draw.SimpleText( catherine.environment.GetDateString( ), "catherine_normal35", w - 5, h - 65, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
+	draw.SimpleText( catherine.environment.GetTimeString( ), "catherine_normal25", w - 5, h - 35, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
 	
 	surface.SetDrawColor( 255, 255, 255, 255 )
 	surface.SetMaterial( Material( "CAT/date/sun.png", "smooth" ) )
 	surface.DrawTexturedRect( 15, h - 75, 64, 64 )
 	
-	//draw.SimpleText( "32 ℃", "catherine_normal20", 90, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT ) // to do;
+	draw.SimpleText( catherine.environment.GetTemperatureString( ), "catherine_normal20", 90, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT ) // to do;
 end
 
 function PANEL:Close( )
 	if ( self.closeing ) then return end
 	gui.EnableScreenClicker( false )
 	self.closeing = true
-	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
+	self:MoveTo( ScrW( ), self.y, 0.1, 0, nil, function( )
 		self:Remove( )
 		self = nil
 	end )
