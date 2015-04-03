@@ -238,7 +238,7 @@ function PANEL:Init( )
 	self:ShowCloseButton( false )
 	self:SetAlpha( 0 )
 	self:AlphaTo( 255, 0.2, 0 )
-	
+
 	self.Lists = vgui.Create( "DPanelList", self )
 	self.Lists:SetPos( 10, 35 )
 	self.Lists:SetSize( self.w - 20, self.h - 45 )

@@ -260,8 +260,8 @@ else
 		return catherine.inventory.HasItem( uniqueID )
 	end
 	
-	function META:GetInvItemData( uniqueID )
-		return catherine.inventory.GetItemData( uniqueID )
+	function META:GetInvItemData( uniqueID, key, default )
+		return catherine.inventory.GetItemData( uniqueID, key, default )
 	end
 	
 	function META:GetInvItemDatas( uniqueID )

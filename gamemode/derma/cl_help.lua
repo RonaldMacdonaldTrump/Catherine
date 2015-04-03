@@ -20,6 +20,7 @@ local PANEL = { }
 
 function PANEL:Init( )
 	catherine.vgui.help = self
+	
 	self.helps = { }
 	local data = { }
 	self.loadingAni = 0
@@ -65,10 +66,11 @@ function PANEL:MenuPaint( w, h )
 end
 
 function PANEL:DoWork( html )
-	if ( html:find( "http://" ) ) then
+	if ( html:sub( 1, 4 ) == "http" ) then
 		self.html:OpenURL( html )
 		return
 	end
+	
 	local prefix = [[
 		<head>
 		<style>

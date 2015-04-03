@@ -41,7 +41,7 @@ if ( SERVER ) then
 		end
 		
 		catherine.cash.Take( pl, cost )
-		
+
 		local ent = ents.Create( "cat_shipment" )
 		ent:SetPos( eyeTr.HitPos )
 		ent:SetAngles( Angle( ) )
@@ -67,7 +67,6 @@ if ( SERVER ) then
 		if ( !IsValid( data ) ) then return end
 		data:Remove( )
 	end )
-	
 else
 	netstream.Hook( "catherine.business.Result", function( data )
 		if ( data == true ) then
@@ -79,7 +78,6 @@ else
 	
 	netstream.Hook( "catherine.business.EntityUseMenu", function( data )
 		local ent = Entity( data )
-		
 		if ( IsValid( catherine.vgui.shipment ) ) then
 			catherine.vgui.shipment:Remove( )
 			catherine.vgui.shipment = nil

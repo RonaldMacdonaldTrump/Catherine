@@ -58,7 +58,6 @@ function PANEL:Refresh( )
 end
 
 function PANEL:MenuPaint( w, h )
-	
 	if ( self.status.status ) then
 		self.status.rotate = math.Approach( self.status.rotate, self.status.rotate - 3, 3 )
 		self.status.alpha = math.Approach( self.status.alpha, 255, 5 )

@@ -38,12 +38,12 @@ if ( SERVER ) then
 				end
 			end
 		end
-		
+
 		if ( type( target ) == "table" ) then
 			for k, v in pairs( target ) do
 				if ( !IsValid( v ) ) then continue end
-				catherine.recognize.DoDataSave( pl, target )
-				catherine.recognize.DoDataSave( target, pl )
+				catherine.recognize.DoDataSave( pl, v )
+				catherine.recognize.DoDataSave( v, pl )
 			end
 		elseif ( type( target ) == "Player" ) then
 			catherine.recognize.DoDataSave( pl, target )
@@ -61,6 +61,7 @@ if ( SERVER ) then
 		elseif ( type( target ) == "Player" ) then
 			recognizeLists[ #recognizeLists + 1 ] = target:GetCharacterID( )
 		end
+		
 		catherine.character.SetCharacterVar( pl, "recognize", recognizeLists )
 	end
 	

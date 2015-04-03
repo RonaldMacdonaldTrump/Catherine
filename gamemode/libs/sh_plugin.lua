@@ -60,10 +60,10 @@ catherine.plugin.LoadAll( catherine.FolderName )
 
 if ( CLIENT ) then
 	hook.Add( "AddHelpItem", "catherine.plugin.AddHelpItem", function( data )
-		local html = ""
+		local html = [[<b>Plugins</b><br>]]
 		
 		for k, v in pairs( catherine.plugin.GetAll( ) ) do
-			html = html .. "<p>< " .. v.name .. " ><br><i><b>" .. v.desc .. "</b></i><br><i><b>Develop and Design by " .. v.author .. "</b></i>"
+			html = html .. "<p><b>&#10022; " .. v.name .. "</b><br>" .. v.desc .. "<br>By " .. v.author .. "<br>"
 		end
 		
 		data:AddItem( "Plugins", html )

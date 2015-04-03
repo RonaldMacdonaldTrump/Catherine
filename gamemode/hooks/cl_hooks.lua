@@ -171,9 +171,9 @@ function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePo
 	local fraction = ( pl.wepRaisedFraction or 0 ) / 100
 	local lowerAngle = weapon.LowerAngles or Angle( 30, -30, -25 )
 	
-	eyeAng:RotateAroundAxis( eyeAng:Up( ), lowerAngle.p * fraction)
-	eyeAng:RotateAroundAxis( eyeAng:Forward( ), lowerAngle.y * fraction)
-	eyeAng:RotateAroundAxis( eyeAng:Right( ), lowerAngle.r * fraction)
+	eyeAng:RotateAroundAxis( eyeAng:Up( ), lowerAngle.p * fraction )
+	eyeAng:RotateAroundAxis( eyeAng:Forward( ), lowerAngle.y * fraction )
+	eyeAng:RotateAroundAxis( eyeAng:Right( ), lowerAngle.r * fraction )
 	pl.wepRaisedFraction = Lerp( FrameTime( ) * 2, pl.wepRaisedFraction or 0, value )
 	viewModel:SetAngles( eyeAng )
 	return oldEyePos, eyeAng
@@ -263,4 +263,13 @@ netstream.Hook( "catherine.LoadingStatus", function( data )
 		catherine.loading.errorMsg = data[ 2 ]
 		catherine.loading.msg = ""
 	end
+end )
+
+netstream.Hook( "catherine.ShowHelp", function( )
+	if ( IsValid( catherine.vgui.information ) ) then
+		catherine.vgui.information:Close( )
+		return
+	end
+	
+	catherine.vgui.information = vgui.Create( "catherine.vgui.information" )
 end )

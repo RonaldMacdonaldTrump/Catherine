@@ -24,33 +24,25 @@ function catherine.command.Register( tab )
 end
 
 function catherine.command.FindByCMD( id )
-	if ( !id ) then return nil end
-	
-	for k, v in pairs( catherine.command.Lists ) do
-		if ( v.command == id ) then
-			return v
-		end
-	end
-	
-	return nil
+	return catherine.command.Lists[ id ]
+end
+
+function catherine.command.GetAll( )
+	return catherine.command.Lists
 end
 
 function catherine.command.IsCommand( text )
-	if ( text:sub( 1, 1 ) == "/" ) then
-		local toArgs = catherine.command.TransferToArgsTab( text )
-		local id = toArgs[ 1 ]:sub( 2, #toArgs[ 1 ] )
-		if ( catherine.command.Lists[ id ] ) then
-			return true
-		else
-			return false
-		end
-	else
-		return false
-	end
+	if ( text:sub( 1, 1 ) != "/" ) then return end
+	
+	local toArgs = catherine.command.TransferToArgsTab( text )
+	local id = toArgs[ 1 ]:sub( 2, #toArgs[ 1 ] )
+	
+	return catherine.command.Lists[ id ]
 end
 
 function catherine.command.TransferToArgsTab( text )
 	local skip, args, curstr = 0, { }, ""
+	
 	for i = 1, #text do
 		if ( i <= skip ) then continue end
 		local k = text:sub( i, i )
@@ -72,27 +64,56 @@ function catherine.command.TransferToArgsTab( text )
 			curstr = curstr .. k
 		end 
 	end
+	
 	if ( curstr != "" ) then
 		args[ #args + 1 ] = curstr
 	end
+	
 	return args
 end
 
 if ( SERVER ) then
 	function catherine.command.Run( pl, id, args )
-		local cmdTab = catherine.command.FindByCMD( id )
-		if ( !cmdTab ) then catherine.util.Notify( pl, "Command not found!" ) return end
-		if ( cmdTab.canRun and cmdTab.canRun( pl, id ) == false ) then catherine.util.Notify( pl, "You do not have permission!" ) end
-		if ( !cmdTab.runFunc ) then return end
-		cmdTab.runFunc( pl, args )
+		if ( !IsValid( pl ) or !id ) then return end
+		
+		local commandTable = catherine.command.FindByCMD( id )
+		if ( !commandTable ) then
+			catherine.util.Notify( pl, "Command not found!" )
+			return
+		end
+		if ( commandTable.canRun and commandTable.canRun( pl, id ) == false ) then
+			catherine.util.Notify( pl, "You do not have permission!" )
+			return
+		end
+		if ( !commandTable.runFunc ) then return end
+		
+		commandTable.runFunc( pl, args )
 	end
 	
 	function catherine.command.RunByText( pl, text )
-		if ( !catherine.command.IsCommand( text ) ) then return text end
+		if ( !IsValid( pl ) or !text ) then return end
 		local args = catherine.command.TransferToArgsTab( text )
 		local id = args[ 1 ]:sub( 2, #args[ 1 ] )
 		table.remove( args, 1 )
 		catherine.command.Run( pl, id, args )
-		return ""
 	end
+	
+	netstream.Hook( "catherine.command.Run", function( pl, data )
+		catherine.command.Run( pl, data[ 1 ], data[ 2 ] )
+	end )
+else
+	function catherine.command.Run( id, args )
+		netstream.Start( "catherine.command.Run", { id, args } )
+	end
+
+	hook.Add( "AddHelpItem", "catherine.command.AddHelpItem", function( data )
+		local html = [[<b>Commands</b><br>]]
+		
+		for k, v in pairs( catherine.command.GetAll( ) ) do
+			if ( v.canRun and v.canRun( LocalPlayer( ), v.command ) == false ) then continue end
+			html = html .. "<p><b>&#10022; " .. v.command .. "</b><br>" .. v.syntax .. "<br>"
+		end
+
+		data:AddItem( "Commands", html )
+	end )
 end

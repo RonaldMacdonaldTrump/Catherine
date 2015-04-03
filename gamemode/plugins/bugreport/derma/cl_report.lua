@@ -199,6 +199,7 @@ vgui.Register( "catherine.vgui.bugreport", PANEL, "catherine.vgui.menuBase" )
 
 
 hook.Add( "AddMenuItem", "catherine.vgui.bugreport", function( tab )
+	if ( !LocalPlayer( ):IsSuperAdmin( ) ) then return end
 	tab[ "Bug Report" ] = function( menuPnl, itemPnl )
 		return vgui.Create( "catherine.vgui.bugreport", menuPnl )
 	end

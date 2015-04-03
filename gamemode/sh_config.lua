@@ -45,6 +45,15 @@ catherine.configs.alwaysRaised = {
 }
 
 if ( SERVER ) then
+	catherine.configs.defaultRPInformation = {
+		year = 2015,
+		minute = 1,
+		day = 1,
+		hour = 1,
+		month = 1,
+		second = 1,
+		temperature = 20
+	}
 	catherine.configs.hintInterval = 30
 	catherine.configs.voiceAllow = false
 	catherine.configs.voice3D = true

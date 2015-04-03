@@ -112,15 +112,16 @@ end
 function catherine.item.Include( dir )
 	if ( !dir ) then return end
 
-	for k, v in pairs( file.Find( dir .. "/items/base/*.lua", "LUA" ) ) do
+	for k, v in pairs( file.Find( dir .. "/items/base/*", "LUA" ) ) do
 		catherine.util.Include( dir .. "/items/base/" .. v, "SHARED" )
 	end
 	
-	local itemFiles, itemFolders = file.Find( dir .. "/items/*.lua", "LUA" )
+	local itemFiles, itemFolders = file.Find( dir .. "/items/*", "LUA" )
+	
 	for k, v in pairs( itemFolders ) do
 		if ( v == "base" ) then continue end
-		local itemFiles2 = file.Find( dir .. "/items/" .. v .. "/*.lua", "LUA" )
-		for k1, v1 in pairs( itemFiles2 ) do
+		
+		for k1, v1 in pairs( file.Find( dir .. "/items/" .. v .. "/*.lua", "LUA" ) ) do
 			catherine.util.Include( dir .. "/items/" .. v .. "/" .. v1, "SHARED" )
 		end
 	end
