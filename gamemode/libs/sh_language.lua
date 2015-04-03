@@ -74,7 +74,6 @@ if ( SERVER ) then
 		pl:ConCommand( "cat_convar_language " .. ( catherine.language.Lists[ languageConfig ] and languageConfig or "english" ) )
 		--]]
 	end
-	
 
 	function catherine.language.GetLists( pl )
 		if ( !IsValid( pl ) ) then return { data = { } } end

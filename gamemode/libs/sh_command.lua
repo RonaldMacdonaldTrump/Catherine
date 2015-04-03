@@ -24,15 +24,11 @@ function catherine.command.Register( tab )
 end
 
 function catherine.command.FindByCMD( id )
-	if ( !id ) then return nil end
-	
-	for k, v in pairs( catherine.command.Lists ) do
-		if ( v.command == id ) then
-			return v
-		end
-	end
-	
-	return nil
+	return catherine.command.Lists[ id ]
+end
+
+function catherine.command.GetAll( )
+	return catherine.command.Lists
 end
 
 function catherine.command.IsCommand( text )
@@ -109,4 +105,15 @@ else
 	function catherine.command.Run( id, args )
 		netstream.Start( "catherine.command.Run", { id, args } )
 	end
+
+	hook.Add( "AddHelpItem", "catherine.command.AddHelpItem", function( data )
+		local html = [[<b>Commands</b><br>]]
+		
+		for k, v in pairs( catherine.command.GetAll( ) ) do
+			if ( v.canRun and v.canRun( LocalPlayer( ), v.command ) == false ) then continue end
+			html = html .. "<p><b>&#10022; " .. v.command .. "</b><br>" .. v.syntax .. "<br>"
+		end
+
+		data:AddItem( "Commands", html )
+	end )
 end

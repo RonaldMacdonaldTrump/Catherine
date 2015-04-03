@@ -22,7 +22,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
-local function badSchemaSettingFix( )
+local function schemaSettingsFix( )
 	local currGM = GetConVarString( "gamemode" ):lower( )
 	if ( currGM == "catherine" ) then
 		local _, gmDirs = file.Find( "gamemodes/*", "GAME" )
@@ -35,7 +35,7 @@ local function badSchemaSettingFix( )
 	end
 end
 
-badSchemaSettingFix( )
+schemaSettingsFix( )
 catherine.util.AddResourceInFolder( "materials/CAT" )
 catherine.util.AddResourceInFolder( "sound/CAT" )
 

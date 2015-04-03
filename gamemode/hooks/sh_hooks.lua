@@ -72,8 +72,6 @@ function GM:CalcMainActivity( pl, velo )
 	local holdType = "normal"
 	local status = WEAPON_LOWERED
 	local act = "idle"
-	
-	//print(mdl,class)
 
 	if ( Length2D( velo ) >= catherine.configs.playerDefaultRunSpeed - 10 ) then
 		act = "run"

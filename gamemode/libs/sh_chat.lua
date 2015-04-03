@@ -292,7 +292,7 @@ if ( SERVER ) then
 		hook.Run( "ChatSended", adjustInfo )
 	end
 	
-	function catherine.chat.RunByClass( pl, class, text, target )
+	function catherine.chat.RunByClass( pl, class, text, target, ... )
 		local classTable = catherine.chat.FindByClass( class )
 		if ( !classTable ) then return end
 		local adjustInfo = {
@@ -301,7 +301,7 @@ if ( SERVER ) then
 			player = pl
 		}
 		adjustInfo = hook.Run( "ChatAdjust", adjustInfo ) or adjustInfo
-		catherine.chat.Send( pl, classTable, adjustInfo.text, target )
+		catherine.chat.Send( pl, classTable, adjustInfo.text, target, ... )
 		hook.Run( "ChatSended", adjustInfo )
 	end
 else

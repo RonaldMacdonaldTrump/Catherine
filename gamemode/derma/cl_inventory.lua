@@ -47,10 +47,6 @@ function PANEL:Init( )
 	self:InitializeInventory( )
 end
 
-function PANEL:MenuPaint( w, h )
-
-end
-
 function PANEL:InitializeInventory( )
 	local inventory = catherine.inventory.Get( )
 	local tab = { }

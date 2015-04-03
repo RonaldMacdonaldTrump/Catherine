@@ -111,15 +111,15 @@ if ( SERVER ) then
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.flag.PlayerSpawnedInCharacter", catherine.flag.PlayerSpawnedInCharacter )
 else
 	hook.Add( "AddHelpItem", "catherine.flag.AddHelpItem", function( data )
-		local html = ""
+		local html = [[<b>Flags</b><br>]]
 		
 		for k, v in pairs( catherine.flag.GetAll( ) ) do
-			local col = "<font color=\"red\">&#10008;"
+			local col = "<font color=\"red\">&#10005;</font>"
 			if ( LocalPlayer( ):HasFlag( v.id ) ) then
-				col = "<font color=\"green\">&#10004;"
+				col = "<font color=\"green\">&#10004;</font>"
 			end
 			
-			html = html .. "<p>" .. col .. "< " .. v.id .. " ><br><i><b>" .. v.desc .. "</b></i>"
+			html = html .. "<p>" .. col .. "<b> " .. v.id .. "</b><br>" .. v.desc .. "<br>"
 		end
 		
 		data:AddItem( "Flags", html )

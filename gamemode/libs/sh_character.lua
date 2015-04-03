@@ -550,14 +550,16 @@ end
 
 function catherine.character.GetGlobalVar( pl, key, default )
 	if ( !IsValid( pl ) and !key ) then return default end
-	if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or catherine.character.networkingVars[ pl:SteamID( ) ][ key ] == nil ) then return default end
-	return catherine.character.networkingVars[ pl:SteamID( ) ][ key ]
+	local steamID = pl:SteamID( )
+	if ( !catherine.character.networkingVars[ steamID ] or catherine.character.networkingVars[ steamID ][ key ] == nil ) then return default end
+	return catherine.character.networkingVars[ steamID ][ key ]
 end
 
 function catherine.character.GetCharacterVar( pl, key, default )
 	if ( !IsValid( pl ) and !key ) then return default end
-	if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or !catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ] or catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ][ key ] == nil ) then return default end
-	return catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ][ key ]
+	local steamID = pl:SteamID( )
+	if ( !catherine.character.networkingVars[ steamID ] or !catherine.character.networkingVars[ steamID ][ "_charVar" ] or catherine.character.networkingVars[ steamID ][ "_charVar" ][ key ] == nil ) then return default end
+	return catherine.character.networkingVars[ steamID ][ "_charVar" ][ key ]
 end
 
 function META:GetCharacterID( )

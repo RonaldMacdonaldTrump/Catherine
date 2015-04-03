@@ -26,7 +26,11 @@ if ( SERVER ) then
 		catherine.network.entityVars[ ent ] = catherine.network.entityVars[ ent ] or { }
 		catherine.network.entityVars[ ent ][ key ] = value
 		if ( !noSync ) then
-			netstream.Start( nil, "catherine.network.SetNetVar", { ent:EntIndex( ), key, value } )
+			if ( type( ent ) == "Player" ) then
+				netstream.Start( nil, "catherine.network.SetNetVar", { ent:SteamID( ), key, value } )
+			else
+				netstream.Start( nil, "catherine.network.SetNetVar", { ent:EntIndex( ), key, value } )
+			end
 		end
 	end
 

@@ -171,9 +171,9 @@ function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePo
 	local fraction = ( pl.wepRaisedFraction or 0 ) / 100
 	local lowerAngle = weapon.LowerAngles or Angle( 30, -30, -25 )
 	
-	eyeAng:RotateAroundAxis( eyeAng:Up( ), lowerAngle.p * fraction)
-	eyeAng:RotateAroundAxis( eyeAng:Forward( ), lowerAngle.y * fraction)
-	eyeAng:RotateAroundAxis( eyeAng:Right( ), lowerAngle.r * fraction)
+	eyeAng:RotateAroundAxis( eyeAng:Up( ), lowerAngle.p * fraction )
+	eyeAng:RotateAroundAxis( eyeAng:Forward( ), lowerAngle.y * fraction )
+	eyeAng:RotateAroundAxis( eyeAng:Right( ), lowerAngle.r * fraction )
 	pl.wepRaisedFraction = Lerp( FrameTime( ) * 2, pl.wepRaisedFraction or 0, value )
 	viewModel:SetAngles( eyeAng )
 	return oldEyePos, eyeAng
