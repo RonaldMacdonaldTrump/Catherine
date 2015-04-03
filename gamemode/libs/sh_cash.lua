@@ -88,3 +88,9 @@ end
 function catherine.cash.Get( pl )
 	return tonumber( catherine.character.GetGlobalVar( pl, "_cash", 0 ) )
 end
+
+if ( SERVER ) then return end
+
+hook.Add( "AddRPInformation", "catherine.cash.AddRPInformation", function( pnl, data )
+	data[ #data + 1 ] = "You have a " .. catherine.cash.GetName( catherine.cash.Get( LocalPlayer( ) ) ) .. "."
+end )

@@ -91,15 +91,15 @@ if ( SERVER ) then
 		end
 		if ( !commandTable.runFunc ) then return end
 		
-		cmdTab.runFunc( pl, args )
+		commandTable.runFunc( pl, args )
 	end
 	
 	function catherine.command.RunByText( pl, text )
 		if ( !IsValid( pl ) or !text ) then return end
 		local args = catherine.command.TransferToArgsTab( text )
-		
+		local id = args[ 1 ]:sub( 2, #args[ 1 ] )
 		table.remove( args, 1 )
-		catherine.command.Run( pl, args[ 1 ]:sub( 2, #args[ 1 ] ), args )
+		catherine.command.Run( pl, id, args )
 	end
 	
 	netstream.Hook( "catherine.command.Run", function( pl, data )

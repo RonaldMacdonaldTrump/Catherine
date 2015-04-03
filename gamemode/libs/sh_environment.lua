@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.environment = catherine.environment or { }
-catherine.environment.TimeTick = CurTime( ) + 0.5
+catherine.environment.TimeTick = CurTime( ) + 0.2
 catherine.environment.Buffer = catherine.environment.Buffer or { }
 catherine.environment.MonthBuffer = catherine.environment.MonthBuffer or {
 	31,
@@ -33,8 +33,6 @@ catherine.environment.MonthBuffer = catherine.environment.MonthBuffer or {
 	30,
 	31
 }
-CAT_ENVIRONMENT_WEATHER_SUN = 1
-CAT_ENVIRONMENT_WEATHER_RAIN = 2
 
 function catherine.environment.GetDateString( )
 	local d = catherine.environment.Buffer
@@ -93,7 +91,7 @@ if ( SERVER ) then
 				d.month = 1
 			end
 
-			catherine.environment.TimeTick = CurTime( ) + 0.5
+			catherine.environment.TimeTick = CurTime( ) + 0.2
 		end
 		
 		if ( catherine.environment.TemperatureTick <= CurTime( ) ) then
@@ -310,17 +308,13 @@ if ( SERVER ) then
 	end
 	
 	function catherine.environment.GetHour( )
-		return catherine.environment.Buffer.hour
+		return catherine.environment.Buffer.hour or 1
 	end
 	
 	function catherine.environment.GetTemperature( )
-		return catherine.environment.Buffer.temperature
+		return catherine.environment.Buffer.temperature or 30
 	end
-	
-	function catherine.environment.GetWeather( )
-		return catherine.environment.Buffer.weather
-	end
-	
+
 	function catherine.environment.AutomaticDayNight( )
 		local dayNightData = catherine.environment.GetLightDataByHour( )
 		if ( !dayNightData ) then return end
@@ -362,10 +356,6 @@ if ( SERVER ) then
 		return temp
 	end
 
-	function catherine.environment.SetWeather( weather, time )
-		// :( ...
-	end
-
 	function catherine.environment.SyncToPlayer( pl, func )
 		if ( !IsValid( pl ) ) then return end
 		netstream.Start( pl, "catherine.environment.Sync", catherine.environment.Buffer )
@@ -378,10 +368,6 @@ if ( SERVER ) then
 		netstream.Start( nil, "catherine.environment.SendTemperatureToAll", catherine.environment.Buffer.temperature )
 	end
 	
-	function catherine.environment.SendWeatherToAll( )
-		netstream.Start( nil, "catherine.environment.SendWeatherToAll", catherine.environment.Buffer.weather )
-	end
-
 	function catherine.environment.SyncToAll( )
 		netstream.Start( nil, "catherine.environment.Sync", catherine.environment.Buffer )
 	end
@@ -391,10 +377,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.environment.DataLoad( )
-		local data = catherine.data.Get( "environment", catherine.configs.defaultRPdateTime )
+		local data = catherine.data.Get( "environment", catherine.configs.defaultRPInformation )
 
 		if ( table.Count( data ) == 0 ) then
-			catherine.environment.Buffer = catherine.configs.defaultRPdateTime
+			catherine.environment.Buffer = catherine.configs.defaultRPInformation
 		else
 			catherine.environment.Buffer = data
 		end
@@ -412,10 +398,6 @@ else
 	
 	netstream.Hook( "catherine.environment.SendTemperatureToAll", function( data )
 		catherine.environment.Buffer.temperature = data
-	end )
-	
-	netstream.Hook( "catherine.environment.SendWeatherToAll", function( data )
-		catherine.environment.Buffer.weather = data
 	end )
 
 	netstream.Hook( "catherine.environment.SetLightFlag", function( )
@@ -453,7 +435,7 @@ else
 				d.month = 1
 			end
 
-			catherine.environment.TimeTick = CurTime( ) + 0.5
+			catherine.environment.TimeTick = CurTime( ) + 0.2
 		end
 	end
 

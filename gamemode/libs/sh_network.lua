@@ -31,7 +31,18 @@ if ( SERVER ) then
 	end
 
 	function catherine.network.SyncAllVars( pl, func )
-		netstream.Start( pl, "catherine.network.SyncAllVars", { catherine.network.entityVars, catherine.network.globalVars } )
+		local conVart = { }
+		
+		for k, v in pairs( catherine.network.entityVars ) do
+			if ( type( k ) == "Player" ) then
+				conVart[ k:SteamID( ) ] = v
+			else
+				conVart[ k:EntIndex( ) ] = v
+			end
+		end
+
+		netstream.Start( pl, "catherine.network.SyncAllVars", { conVart, catherine.network.globalVars } )
+		
 		if ( func ) then
 			func( )
 		end
@@ -66,7 +77,6 @@ if ( SERVER ) then
 	hook.Add( "PlayerDisconnected", "catherine.network.PlayerDisconnected", catherine.network.PlayerDisconnected )
 else
 	netstream.Hook( "catherine.network.SetNetVar", function( data )
-		data[ 1 ] = Entity( data[ 1 ] )
 		catherine.network.entityVars[ data[ 1 ] ] = catherine.network.entityVars[ data[ 1 ] ] or { }
 		catherine.network.entityVars[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
 	end )
@@ -74,7 +84,7 @@ else
 	netstream.Hook( "catherine.network.SetNetGlobalVar", function( data )
 		catherine.network.globalVars[ data[ 1 ] ] = data[ 2 ]
 	end )
-	
+
 	netstream.Hook( "catherine.network.ClearNetVar", function( data )
 		catherine.network.entityVars[ data ] = nil
 	end )
@@ -91,7 +101,15 @@ end
 
 function catherine.network.GetNetVar( ent, key, default )
 	if ( !IsValid( ent ) or !key ) then return default end
-	return catherine.network.entityVars[ ent ] and catherine.network.entityVars[ ent ][ key ] or default
+	if ( SERVER ) then
+		return catherine.network.entityVars[ ent ] and catherine.network.entityVars[ ent ][ key ] or default
+	else
+		if ( type( ent ) == "Player" ) then
+			return catherine.network.entityVars[ ent:SteamID( ) ] and catherine.network.entityVars[ ent:SteamID( ) ][ key ] or default
+		else
+			return catherine.network.entityVars[ ent:EntIndex( ) ] and catherine.network.entityVars[ ent:EntIndex( ) ][ key ] or default
+		end
+	end
 end
 
 function catherine.network.GetNetGlobalVar( key, default )

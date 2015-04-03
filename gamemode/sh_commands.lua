@@ -116,7 +116,7 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 1 ]:len( ) >= catherine.configs.characterDescMinLen and args[ 1 ]:len( ) < catherine.configs.characterDescMaxLen ) then
-				catherine.character.SetGlobalVar( target, "_desc", args[ 1 ] )
+				catherine.character.SetGlobalVar( pl, "_desc", args[ 1 ] )
 				catherine.util.Notify( pl, "Set your desc" )
 			else
 				catherine.util.Notify( pl, "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long and up to " .. catherine.configs.characterDescMaxLen .. " characters!" )
