@@ -217,7 +217,7 @@ function GM:RenderScreenspaceEffects( )
 	
 	DrawColorModify( tab )
 end
-
+--[[
 function GM:PostPlayerDraw( pl )
 	if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) ) then return end
 	local wep = pl:GetActiveWeapon( )
@@ -230,7 +230,7 @@ function GM:PostPlayerDraw( pl )
 		if ( !info ) then continue end
 		
 		pl.CAT_weapon_Nyandraw = pl.CAT_weapon_Nyandraw or { }
-		
+
 		if ( !pl.CAT_weapon_Nyandraw[ wepClass ] or !IsValid( pl.CAT_weapon_Nyandraw[ wepClass ] ) ) then
 			pl.CAT_weapon_Nyandraw[ wepClass ] = ClientsideModel( info.model, RENDERGROUP_TRANSLUCENT )
 			pl.CAT_weapon_Nyandraw[ wepClass ]:SetNoDraw( true )
@@ -238,7 +238,7 @@ function GM:PostPlayerDraw( pl )
 			local drawEnt = pl.CAT_weapon_Nyandraw[ wepClass ]
 			if ( !IsValid( drawEnt ) ) then continue end
 			local index = pl:LookupBone( info.bone )
-			
+
 			if ( index and index > 0 ) then
 				if ( curClass == wepClass ) then continue end
 				local bonePos, boneAng = pl:GetBonePosition( index )
@@ -255,6 +255,7 @@ function GM:PostPlayerDraw( pl )
 		v:Remove( )
 	end
 end
+--]]
 
 netstream.Hook( "catherine.LoadingStatus", function( data )
 	catherine.loading.status = data[ 1 ]
@@ -270,6 +271,5 @@ netstream.Hook( "catherine.ShowHelp", function( )
 		catherine.vgui.information:Close( )
 		return
 	end
-	
 	catherine.vgui.information = vgui.Create( "catherine.vgui.information" )
 end )
