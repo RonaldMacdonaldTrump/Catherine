@@ -250,7 +250,8 @@ function PANEL:UseCharacterPanel( )
 		v.panel.model:SetFOV( 30 )
 		v.panel.model.LayoutEntity = function( pnl, ent )
 			ent:SetAngles( Angle( 0, 45, 0 ) )
-			if ( k == self.loadCharacter.curr ) then 
+			ent:SetIK( false )
+			if ( k == self.loadCharacter.curr ) then
 				pnl:RunAnimation( )
 			end
 		end
@@ -373,7 +374,7 @@ function PANEL:Init( )
 	self.label01:SetFont( "catherine_normal35" )
 	self.label01:SetText( "Faction" )
 	self.label01:SizeToContents( )
-	
+
 	self.Lists = vgui.Create( "DHorizontalScroller", self )
 	self.Lists:SetPos( 10, 60 )
 	self.Lists:SetSize( 0, self.h - 85 )
@@ -398,8 +399,9 @@ function PANEL:Init( )
 		model:SetModel( table.Random( v.models ) )
 		model:SetVisible( true )
 		model:SetFOV( 40 )
-		model.LayoutEntity = function( pnl, entity )
-			entity:SetAngles( Angle( 0, 45, 0 ) )
+		model.LayoutEntity = function( pnl, ent )
+			ent:SetIK( false )
+			ent:SetAngles( Angle( 0, 45, 0 ) )
 			pnl:RunAnimation( )
 		end
 		
@@ -419,7 +421,7 @@ function PANEL:Init( )
 		self.Lists:SetSize( self.Lists:GetWide( ) + 200, self.Lists:GetTall( ) )
 		self.Lists:SetPos( self.w / 2 - self.Lists:GetWide( ) / 2, 60 )
 	end
-	
+
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
 	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 15 )
 	self.nextStage:SetSize( self.w * 0.2, 25 )

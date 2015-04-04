@@ -40,6 +40,30 @@ function GM:PlayerSpawn( pl )
 	end
 end
 
+function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
+	if ( pl:IsPlayer( ) ) then
+		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+		
+		if ( hitGroup == CAT_BODY_ID_HEAD ) then
+			catherine.util.ScreenColorEffect( pl, nil, 2, 0.005 )
+		--[[ // to do...; maybe ..
+		elseif ( hitGroup == CAT_BODY_ID_CHEST ) then
+			catherine.body.TakePercent( pl, CAT_BODY_ID_CHEST, 1 )
+		elseif ( hitGroup == CAT_BODY_ID_L_ARM ) then
+			catherine.body.TakePercent( pl, CAT_BODY_ID_L_ARM, 1 )
+		elseif ( hitGroup == CAT_BODY_ID_R_ARM ) then
+			catherine.body.TakePercent( pl, CAT_BODY_ID_R_ARM, 1 )
+		elseif ( hitGroup == CAT_BODY_ID_STOMACH ) then
+			catherine.body.TakePercent( pl, CAT_BODY_ID_STOMACH, 1 )
+		elseif ( hitGroup == CAT_BODY_ID_L_LEG ) then
+			catherine.body.TakePercent( pl, CAT_BODY_ID_L_LEG, 1 )
+		elseif ( hitGroup == CAT_BODY_ID_R_LEG ) then
+			catherine.body.TakePercent( pl, CAT_BODY_ID_R_LEG, 1 )
+		--]]
+		end
+	end
+end
+
 function GM:PlayerSpawnedInCharacter( pl )
 	catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 	hook.Run( "OnSpawnedInCharacter", pl )
@@ -204,9 +228,26 @@ function GM:PlayerHurt( pl )
 	if ( pl:Health( ) <= 0 ) then
 		return true
 	end
-	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+	
 	pl.CAT_healthRecoverBool = true
-	pl:EmitSound( hook.Run( "GetPlayerPainSound", pl ) or "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
+	
+	local hitGroup = pl:LastHitGroup( )
+	local sound = hook.Run( "GetPlayerPainSound", pl )
+	local gender = pl:GetGender( )
+	if ( !sound ) then
+		if ( hitGroup == HITGROUP_HEAD) then
+			sound = "vo/npc/"..gender.."01/ow0" .. math.random(1, 2) .. ".wav"
+		elseif ( hitGroup == HITGROUP_CHEST or hitGroup == HITGROUP_GENERIC ) then
+			sound = "vo/npc/"..gender.."01/hitingut0" .. math.random(1, 2) .. ".wav"
+		elseif ( hitGroup == HITGROUP_LEFTLEG or hitGroup == HITGROUP_RIGHTLEG ) then
+			sound = "vo/npc/"..gender.."01/myleg0" .. math.random(1, 2) .. ".wav"
+		elseif ( hitGroup == HITGROUP_LEFTARM or hitGroup == HITGROUP_RIGHTARM ) then
+			sound = "vo/npc/"..gender.."01/myarm0" .. math.random(1, 2) .. ".wav"
+		elseif ( hitGroup == HITGROUP_GEAR ) then
+			sound = "vo/npc/"..gender.."01/startle0" .. math.random(1, 2) .. ".wav"
+		end;
+	end
+	pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
 	hook.Run( "PlayerTakeDamage", pl )
 	return true
 end
