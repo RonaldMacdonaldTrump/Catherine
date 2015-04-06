@@ -51,7 +51,7 @@ if ( SERVER ) then
 			catherine.util.Notify( pl, reason )
 			return
 		end
-		
+		pl:SetNetVar( "vendor_work", true )
 		netstream.Start( pl, "catherine.plugin.vendor.VendorUse", self )
 	end
 else

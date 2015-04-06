@@ -17,3 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
+
+netstream.Hook( "catherine.plugin.vendor.RefreshRequest", function( )
+	//catherine.vgui.vendor
+end )

@@ -18,6 +18,44 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 local PLUGIN = PLUGIN
 
+CAT_VENDOR_ACTION_BUY = 1 // Buy from player
+CAT_VENDOR_ACTION_SELL = 2 // Sell to player
+CAT_VENDOR_ACTION_SETTING_CHANGE = 3 // Setting change
+local vars = {
+	{
+		id = "name",
+		default = "Johnson"
+	},
+	{
+		id = "desc",
+		default = "No desc"
+	},
+	{
+		id = "factions",
+		default = { }
+	},
+	{
+		id = "classes",
+		default = { }
+	},
+	{
+		id = "inv",
+		default = { }
+	},
+	{
+		id = "cash",
+		default = 0
+	},
+	{
+		id = "setting",
+		default = { }
+	},
+	{
+		id = "status",
+		default = false
+	}
+}
+
 function PLUGIN:SaveVendors( )
 	local data = { }
 	
@@ -69,41 +107,7 @@ setting = v.vendorData.setting,
 
 function PLUGIN:MakeVendor( ent, data )
 	if ( !IsValid( ent ) or !data ) then return end
-	local vars = {
-		{
-			id = "name",
-			default = "Johnson"
-		},
-		{
-			id = "desc",
-			default = "No desc"
-		},
-		{
-			id = "factions",
-			default = { }
-		},
-		{
-			id = "classes",
-			default = { }
-		},
-		{
-			id = "inv",
-			default = { }
-		},
-		{
-			id = "cash",
-			default = 0
-		},
-		{
-			id = "setting",
-			default = { }
-		},
-		{
-			id = "status",
-			default = false
-		}
-	}
-	
+
 	ent.vendorData = { }
 	for k, v in pairs( vars ) do
 		local val = data[ v.id ] and data[ v.id ] or v.default
@@ -114,8 +118,61 @@ function PLUGIN:MakeVendor( ent, data )
 	ent.isVendor = true
 end
 
-function PLUGIN:VendorWork( pl, ent, workID, data )
+--[[
+CAT_VENDOR_ACTION_BUY = 1 // Buy from player
+CAT_VENDOR_ACTION_SELL = 2 // Sell to player
+CAT_VENDOR_ACTION_SETTING_CHANGE = 3 // Setting change
+--]]
 
+function PLUGIN:SetVendorData( ent, id, data, noSync )
+	if ( !IsValid( ent ) or !id or !data ) then return end
+	if ( !table.HasValue( vars, id ) or id == "setting" ) then print("Unknown id") return end
+	
+	ent.vendorData[ id ] = data
+	ent:SetNetVar( id, data )
+	
+	// self:GetVendorWorkingPlayers( ) 이거 안될거같은데;;
+	if ( !noSync ) then
+		netstream.Start( self:GetVendorWorkingPlayers( ), "catherine.plugin.vendor.RefreshRequest" )
+	end
+end
+
+function PLUGIN:GetVendorData( ent, id, default )
+	if ( !IsValid( ent ) or !id ) then return default end
+	if ( !table.HasValue( vars, id ) ) then print("Unknown id") return default end
+	return ent.vendorData[ id ]
+end
+
+function PLUGIN:VendorWork( pl, ent, workID, data )
+	if ( !IsValid( pl ) or !IsValid( ent ) or !workID or !data ) then return end
+	if ( workID == CAT_VENDOR_ACTION_BUY ) then
+		local uniqueID = data.uniqueID
+		local itemTable = catherine.item.FindByID( uniqueID )
+		
+		if ( !itemTable ) then
+			print("Item table error")
+			return
+		end
+		local vendorCash, vendorInv = self:GetVendorData( ent, "cash", 0 ), self:GetVendorData( ent, "inv", { } )
+		
+		
+		if ( !vendorInv[ uniqueID ] ) then
+			vendorInv[ uniqueID ] = {
+				uniqueID = uniqueID,
+				
+			}
+		else
+		
+		end
+		
+		self:SetVendorData( ent, "inv", data, true )
+	elseif ( workID == CAT_VENDOR_ACTION_SELL ) then
+	
+	elseif ( workID == CAT_VENDOR_ACTION_SETTING_CHANGE ) then
+	
+	else
+		// ;;
+	end
 end
 
 function PLUGIN:CanUseVendor( pl, ent )

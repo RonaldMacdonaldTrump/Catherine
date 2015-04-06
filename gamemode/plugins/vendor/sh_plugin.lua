@@ -45,6 +45,17 @@ function PLUGIN:GetVendorDatas( ent )
 	return datas
 end
 
+function PLUGIN:GetVendorWorkingPlayers( )
+	local players = { }
+
+	for k, v in pairs( player.GetByLoaded( ) ) do
+		if ( !v:GetNetVar( "vendor_work" ) ) then continue end
+		players[ #players + 1 ] = v
+	end
+	
+	return players
+end
+
 catherine.util.Include( "sh_commands.lua" )
 catherine.util.Include( "sv_plugin.lua" )
 catherine.util.Include( "cl_plugin.lua" )
