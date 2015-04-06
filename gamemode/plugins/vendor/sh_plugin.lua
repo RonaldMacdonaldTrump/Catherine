@@ -20,6 +20,30 @@ local PLUGIN = PLUGIN
 PLUGIN.name = "Vendor"
 PLUGIN.author = "L7D"
 PLUGIN.desc = "Good stuff."
+PLUGIN.randModels = {
+
+}
+local varsID = {
+	"name",
+	"desc",
+	"factions",
+	"classes",
+	"inv",
+	"cash",
+	"setting",
+	"status"
+}
+
+function PLUGIN:GetVendorDatas( ent )
+	if ( !IsValid( ent ) or !ent.isVendor ) then return end
+	local datas = { }
+
+	for k, v in pairs( varsID ) do
+		datas[ v ] = ent:GetNetVar( v )
+	end
+	
+	return datas
+end
 
 catherine.util.Include( "sh_commands.lua" )
 catherine.util.Include( "sv_plugin.lua" )

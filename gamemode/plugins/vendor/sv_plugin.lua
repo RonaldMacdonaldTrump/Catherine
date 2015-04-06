@@ -18,64 +18,130 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 local PLUGIN = PLUGIN
 
-function PLUGIN:EntityDataLoaded( pl )
-	self:SyncTextAll( pl )
+function PLUGIN:SaveVendors( )
+	local data = { }
+	
+	for k, v in pairs( ents.FindByClass( "cat_vendor" ) ) do
+		if ( !v.vendorData ) then print("No data") continue end
+		data[ #data + 1 ] = {
+			name = v.vendorData.name,
+			desc = v.vendorData.desc,
+			factionData = v.vendorData.factions,
+			classData = v.vendorData.classes,
+			inv = v.vendorData.inv,
+			cash = v.vendorData.cash,
+			setting = v.vendorData.setting,
+			status = v.vendorData.status,
+			
+			model = v:GetModel( ),
+			pos = v:GetPos( ),
+			ang = v:GetAngles( )
+		}
+	end
+	
+	catherine.data.Set( "vendors", data )
 end
 
-function PLUGIN:SaveTexts( )
-	catherine.data.Set( "goodtexts", self.textLists )
+function PLUGIN:LoadVendors( )
+	local data = catherine.data.Get( "vendors", { } )
+	
+	for k, v in pairs( data ) do
+		local ent = ents.Create( "cat_vendor" )
+		ent:SetPos( v.pos )
+		ent:SetAngles( v.ang )
+		ent:SetModel( v.model )
+		ent:Spawn( )
+		ent:Activate( )
+		
+		self:MakeVendor( ent, v )
+	end
 end
 
-function PLUGIN:LoadTexts( )
-	self.textLists = catherine.data.Get( "goodtexts", { } )
+--[[
+name = v.vendorData.name,
+desc = v.vendorData.desc,
+factionData = v.vendorData.factions,
+classData = v.vendorData.classes,
+inv = v.vendorData.inv,
+cash = v.vendorData.cash,
+setting = v.vendorData.setting,
+--]]
+
+function PLUGIN:MakeVendor( ent, data )
+	if ( !IsValid( ent ) or !data ) then return end
+	local vars = {
+		{
+			id = "name",
+			default = "Johnson"
+		},
+		{
+			id = "desc",
+			default = "No desc"
+		},
+		{
+			id = "factions",
+			default = { }
+		},
+		{
+			id = "classes",
+			default = { }
+		},
+		{
+			id = "inv",
+			default = { }
+		},
+		{
+			id = "cash",
+			default = 0
+		},
+		{
+			id = "setting",
+			default = { }
+		},
+		{
+			id = "status",
+			default = false
+		}
+	}
+	
+	ent.vendorData = { }
+	for k, v in pairs( vars ) do
+		local val = data[ v.id ] and data[ v.id ] or v.default
+		ent:SetNetVar( v.id, val )
+		ent.vendorData[ v.id ] = val
+	end
+	
+	ent.isVendor = true
+end
+
+function PLUGIN:VendorWork( pl, ent, workID, data )
+
+end
+
+function PLUGIN:CanUseVendor( pl, ent )
+	if ( !IsValid( pl ) or !IsValid( ent ) or !ent.isVendor ) then return end
+	
+	if ( !ent.vendorData.status ) then
+		return false, "status"
+	end
+	
+	local factionData = v.vendorData.factions
+	if ( #factionData != 0 and !table.HasValue( factionData, pl:Team( ) ) ) then
+		return false, "faction"
+	end
+	
+	local classData = v.vendorData.classes
+	if ( #classData != 0 and !table.HasValue( classData, pl:Class( ) ) ) then
+		return false, "class"
+	end
+
+	return true
 end
 
 function PLUGIN:DataLoad( )
-	self:LoadTexts( )
+	self:LoadVendors( )
 end
 
 function PLUGIN:DataSave( )
-	self:SaveTexts( )
-end
-
-function PLUGIN:AddText( pl, text, size )
-	local tr = pl:GetEyeTraceNoCursor( )
-	local data = {
-		index = #self.textLists + 1,
-		pos = tr.HitPos + tr.HitNormal,
-		ang = tr.HitNormal:Angle( ),
-		text = text,
-		size = math.max( math.abs( size or 0.25 ), 0.005 )
-	}
-	
-	data.ang:RotateAroundAxis( data.ang:Up( ), 90 )
-	data.ang:RotateAroundAxis( data.ang:Forward( ), 90 )
-
-	self.textLists[ data.index ] = data
-	
-	self:SyncTextAll( )
-	self:SaveTexts( )
-end
-
-function PLUGIN:RemoveText( pos, range )
-	range = tonumber( range )
-	local count = 0
-	for k, v in pairs( self.textLists ) do
-		if ( v.pos:Distance( pos ) <= range ) then
-			netstream.Start( nil, "catherine.plugin.goodtext.RemoveText", v.index )
-			table.remove( self.textLists, k )
-			count = count + 1
-		end
-	end
-	
-	self:SaveTexts( )
-	
-	return count
-end
-
-function PLUGIN:SyncTextAll( pl )
-	if ( !pl ) then pl = nil end
-	for k, v in pairs( self.textLists ) do
-		netstream.Start( pl, "catherine.plugin.goodtext.SyncText", { index = k, text = v.text, pos = v.pos, ang = v.ang, size = v.size } )
-	end
+	self:SaveVendors( )
 end

@@ -19,30 +19,30 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local PLUGIN = PLUGIN
 
 catherine.command.Register( {
-	command = "textadd",
-	syntax = "[Text] [Size]",
+	command = "vendoradd",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
-		if ( args[ 1 ] ) then
-			PLUGIN:AddText( pl, args[ 1 ], tonumber( args[ 2 ] ) )
-			catherine.util.Notify( pl, "You have added text to your desired location!" )
-		else
-			catherine.util.Notify( pl, "args[ 1 ] is missing!" )
-		end
+		catherine.util.UniqueStringReceiver( pl, "Vendor_SpawnFunc_Name", "Vendor Name", "What are you want vendor name?", "Johnson", function( _, val )
+			local pos, ang = pl:GetEyeTraceNoCursor( ).HitPos, pl:EyeAngles( )
+			ang.p = 0
+			ang.y = ang.y - 180
+			
+			local ent = ents.Create( "cat_vendor" )
+			ent:SetPos( pos )
+			ent:SetAngles( ang )
+			//ent:SetModel( table.Random( PLUGIN.randModels ) )
+			ent:Spawn( )
+			ent:Activate( )
+			
+			PLUGIN:MakeVendor( ent, { name = val } )
+		end )
 	end
 } )
 
 catherine.command.Register( {
-	command = "textremove",
-	syntax = "[Distance]",
+	command = "vendorremove",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
-		if ( !args[ 1 ] ) then args[ 1 ] = 256 end
-		local count = PLUGIN:RemoveText( pl:GetShootPos( ), args[ 1 ] )
-		if ( count == 0 ) then
-			catherine.util.Notify( pl, "There are no texts at that location." )
-		else
-			catherine.util.Notify( pl, "You have removed " .. count .. "'s texts!" )
-		end
+		
 	end
 } )
