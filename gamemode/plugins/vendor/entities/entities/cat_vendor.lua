@@ -36,13 +36,25 @@ if ( SERVER ) then
 		self:DrawShadow( true )
 		self:SetMoveType( MOVETYPE_NONE )
 		self:SetUseType( SIMPLE_USE )
-		self:DropToFloor( )
+		//self:DropToFloor( )
 		
 		local physObject = self:GetPhysicsObject( )
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( false )
 			physObject:Sleep( )
 		end
+		
+		self:SetAni( )
+	end
+	
+	function ENT:SetAni( )
+		for k, v in pairs( self:GetSequenceList( ) ) do
+			if ( !v:lower( ):find( "idle" ) or v == "idlenoise" ) then continue end
+			self:ResetSequence( k )
+			return
+		end
+		
+		self:ResetSequence( 4 )
 	end
 
 	function ENT:Use( pl )
@@ -56,6 +68,11 @@ if ( SERVER ) then
 	end
 else
 	local toscreen = FindMetaTable("Vector").ToScreen
+	
+	function ENT:Think( )
+		self:SetEyeTarget( LocalPlayer( ):GetPos( ) )
+	end
+	
 	function ENT:DrawEntityTargetID( pl, ent, a )
 		if ( ent:GetClass( ) != "cat_vendor" ) then return end
 		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )

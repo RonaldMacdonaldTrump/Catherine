@@ -19,5 +19,16 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local PLUGIN = PLUGIN
 
 netstream.Hook( "catherine.plugin.vendor.RefreshRequest", function( )
+	print("catherine.plugin.vendor.RefreshRequest receive")
 	//catherine.vgui.vendor
+end )
+
+netstream.Hook( "catherine.plugin.vendor.VendorUse", function( data )
+	if ( IsValid( catherine.vgui.vendor ) ) then
+		catherine.vgui.vendor:Remove( )
+		catherine.vgui.vendor = nil
+	end
+	
+	catherine.vgui.vendor = vgui.Create( "catherine.vgui.vendor" )
+	catherine.vgui.vendor:SetEntity( data )
 end )

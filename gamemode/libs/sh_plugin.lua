@@ -51,7 +51,7 @@ function catherine.plugin.IncludeEntities( dir )
 	local files, _ = file.Find( dir .. "/entities/entities/*.lua", "LUA" )
 	
 	for k, v in pairs( files ) do
-		ENT = { Type = "anim", ClassName = v }
+		ENT = { Type = "anim", ClassName = v:sub( 1, #v - 4 ) }
 		
 		catherine.util.Include( dir .. "/entities/entities/" .. v, "SHARED" )
 		scripted_ents.Register( ENT, ENT.ClassName )

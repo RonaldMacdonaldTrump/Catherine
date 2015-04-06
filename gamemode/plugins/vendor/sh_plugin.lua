@@ -33,6 +33,10 @@ local varsID = {
 	"setting",
 	"status"
 }
+CAT_VENDOR_ACTION_BUY = 1 // Buy from player
+CAT_VENDOR_ACTION_SELL = 2 // Sell to player
+CAT_VENDOR_ACTION_SETTING_CHANGE = 3 // Setting change
+CAT_VENDOR_ACTION_ITEM_CHANGE = 4
 
 function PLUGIN:GetVendorDatas( ent )
 	if ( !IsValid( ent ) or !ent.isVendor ) then return end

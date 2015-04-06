@@ -157,9 +157,12 @@ if ( SERVER ) then
 		} )
 	end
 	
-	function catherine.item.Take( pl, uniqueID )
+	function catherine.item.Take( pl, uniqueID, itemCount )
 		if ( !IsValid( pl ) or !uniqueID ) then return end
-		catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, uniqueID )
+		catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, {
+			uniqueID = uniqueID,
+			itemCount = itemCount
+		} )
 	end
 
 	function catherine.item.Spawn( uniqueID, pos, ang, itemData )

@@ -51,6 +51,8 @@ if ( SERVER ) then
 			func( )
 		end
 	end
+	
+//	PrintTable(catherine.network.entityVars)
 
 	function catherine.network.SetNetGlobalVar( key, value, noSync )
 		if ( !key ) then return end

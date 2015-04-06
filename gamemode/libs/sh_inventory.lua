@@ -48,20 +48,20 @@ if ( SERVER ) then
 
 			catherine.character.SetGlobalVar( pl, "_inv", inventory )
 		elseif ( workID == CAT_INV_ACTION_REMOVE ) then
-			local invData = catherine.inventory.GetInvItem( pl, data )
+			local invData = catherine.inventory.GetInvItem( pl, data.uniqueID )
 			if ( !invData ) then return end
 			
 			local inventory = catherine.inventory.Get( pl )
-			local itemCount = math.max( invData.itemCount - 1, 0 )
+			local itemCount = math.max( invData.itemCount - ( data.count or 1 ), 0 )
 			
 			if ( itemCount != 0 ) then
-				inventory[ data ] = {
+				inventory[ data.uniqueID ] = {
 					uniqueID = invData.uniqueID,
 					itemCount = itemCount,
 					itemData = invData.itemData
 				}
 			else
-				inventory[ data ] = nil
+				inventory[ data.uniqueID ] = nil
 			end
 			
 			catherine.character.SetGlobalVar( pl, "_inv", inventory )
