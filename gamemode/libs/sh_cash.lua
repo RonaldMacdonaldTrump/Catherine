@@ -57,13 +57,11 @@ catherine.command.Register( {
 	end
 } )
 
-local CASH_MAX_LIMIT = 9999999999
-
 if ( SERVER ) then
 	function catherine.cash.Set( pl, amount )
 		amount = tonumber( amount )
 		if ( !amount ) then return false end
-		catherine.character.SetGlobalVar( pl, "_cash", math.Clamp( tonumber( amount ), 0, CASH_MAX_LIMIT ) )
+		catherine.character.SetGlobalVar( pl, "_cash", math.max( amount, 0 ) )
 		
 		return true
 	end
@@ -71,7 +69,7 @@ if ( SERVER ) then
 	function catherine.cash.Give( pl, amount )
 		amount = tonumber( amount )
 		if ( !amount ) then return false end
-		catherine.character.SetGlobalVar( pl, "_cash", math.Clamp( catherine.cash.Get( pl ) + tonumber( amount ), 0, CASH_MAX_LIMIT ) )
+		catherine.character.SetGlobalVar( pl, "_cash", math.max( catherine.cash.Get( pl ) + amount, 0 ) )
 		
 		return true
 	end
@@ -79,7 +77,7 @@ if ( SERVER ) then
 	function catherine.cash.Take( pl, amount )
 		amount = tonumber( amount )
 		if ( !amount ) then return false end
-		catherine.character.SetGlobalVar( pl, "_cash", math.Clamp( catherine.cash.Get( pl ) - tonumber( amount ), 0, CASH_MAX_LIMIT ) )
+		catherine.character.SetGlobalVar( pl, "_cash", math.max( catherine.cash.Get( pl ) - amount, 0 ) )
 		
 		return true
 	end

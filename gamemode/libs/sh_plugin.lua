@@ -27,17 +27,16 @@ function catherine.plugin.LoadAll( dir )
 		local Pdir = dir .. "/gamemode/plugins/" .. v
 		
 		if ( file.Exists( Pdir .. "/sh_plugin.lua", "LUA" ) ) then
-			local findDermas = file.Find( Pdir .. "/derma/*.lua", "LUA" )
-			local findLibs = file.Find( Pdir .. "/libs/*.lua", "LUA" )
-			
 			catherine.util.Include( Pdir .. "/sh_plugin.lua" )
 			catherine.item.Include( Pdir )
 			
-			for k1, v1 in pairs( findDermas ) do
+			catherine.plugin.IncludeEntities( Pdir )
+			
+			for k1, v1 in pairs( file.Find( Pdir .. "/derma/*.lua", "LUA" ) ) do
 				catherine.util.Include( Pdir .. "/derma/" .. v1 )
 			end
 			
-			for k1, v1 in pairs( findLibs ) do
+			for k1, v1 in pairs( file.Find( Pdir .. "/libs/*.lua", "LUA" ) ) do
 				catherine.util.Include( Pdir .. "/libs/" .. v1 )
 			end
 			
@@ -45,6 +44,19 @@ function catherine.plugin.LoadAll( dir )
 		end
 		
 		PLUGIN = nil
+	end
+end
+
+function catherine.plugin.IncludeEntities( dir )
+	local files, _ = file.Find( dir .. "/entities/entities/*.lua", "LUA" )
+	
+	for k, v in pairs( files ) do
+		ENT = { Type = "anim", ClassName = v:sub( 1, #v - 4 ) }
+		
+		catherine.util.Include( dir .. "/entities/entities/" .. v, "SHARED" )
+		scripted_ents.Register( ENT, ENT.ClassName )
+		
+		ENT = nil
 	end
 end
 
@@ -56,7 +68,7 @@ function catherine.plugin.GetAll( )
 	return catherine.plugin.Lists
 end
 
-catherine.plugin.LoadAll( catherine.FolderName )
+catherine.plugin.LoadAll( catherine.FolderName ) // need delete ;)
 
 if ( CLIENT ) then
 	hook.Add( "AddHelpItem", "catherine.plugin.AddHelpItem", function( data )

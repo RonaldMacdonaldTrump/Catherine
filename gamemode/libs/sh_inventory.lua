@@ -48,20 +48,20 @@ if ( SERVER ) then
 
 			catherine.character.SetGlobalVar( pl, "_inv", inventory )
 		elseif ( workID == CAT_INV_ACTION_REMOVE ) then
-			local invData = catherine.inventory.GetInvItem( pl, data )
+			local invData = catherine.inventory.GetInvItem( pl, data.uniqueID )
 			if ( !invData ) then return end
 			
 			local inventory = catherine.inventory.Get( pl )
-			local itemCount = math.max( invData.itemCount - 1, 0 )
+			local itemCount = math.max( invData.itemCount - ( data.count or 1 ), 0 )
 			
 			if ( itemCount != 0 ) then
-				inventory[ data ] = {
+				inventory[ data.uniqueID ] = {
 					uniqueID = invData.uniqueID,
 					itemCount = itemCount,
 					itemData = invData.itemData
 				}
 			else
-				inventory[ data ] = nil
+				inventory[ data.uniqueID ] = nil
 			end
 			
 			catherine.character.SetGlobalVar( pl, "_inv", inventory )
@@ -87,7 +87,7 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) or !uniqueID ) then return false end
 		return catherine.inventory.Get( pl )[ uniqueID ]
 	end
-	
+
 	function catherine.inventory.IsEquipped( pl, uniqueID )
 		return catherine.inventory.GetItemData( pl, uniqueID, "equiped", false )
 	end
@@ -111,15 +111,17 @@ if ( SERVER ) then
 	function catherine.inventory.GetWeights( pl, customAdd )
 		local inventory = catherine.inventory.Get( pl )
 		local invWeight, invMaxWeight = 0, catherine.configs.baseInventoryWeight
+		
 		for k, v in pairs( inventory ) do
 			local itemTable = catherine.item.FindByID( k )
 			if ( !itemTable ) then continue end
-			local itemInt = catherine.inventory.GetItemInt( pl, k )
+
 			if ( itemTable.isBag ) then
-				invMaxWeight = invMaxWeight + ( itemTable.weightPlus or 0 )
+				invMaxWeight = invMaxWeight + ( v.itemCount * ( itemTable.weightPlus or 0 ) )
 			end
-			invWeight = invWeight + itemInt * ( itemTable.weight or 1 )
+			invWeight = invWeight + ( v.itemCount * ( itemTable.weight or 0 ) )
 		end
+		
 		return invWeight + ( customAdd or 0 ), invMaxWeight
 	end
 	
@@ -221,18 +223,20 @@ else
 	function catherine.inventory.GetWeights( customAdd )
 		local inventory = catherine.inventory.Get( )
 		local invWeight, invMaxWeight = 0, catherine.configs.baseInventoryWeight
+		
 		for k, v in pairs( inventory ) do
 			local itemTable = catherine.item.FindByID( k )
 			if ( !itemTable ) then continue end
-			local itemInt = catherine.inventory.GetItemInt( k )
+			
 			if ( itemTable.isBag ) then
-				invMaxWeight = invMaxWeight + ( itemTable.weightPlus or 0 )
+				invMaxWeight = invMaxWeight + ( v.itemCount * ( itemTable.weightPlus or 0 ) )
 			end
-			invWeight = invWeight + itemInt * ( itemTable.weight or 1 )
+			invWeight = invWeight + ( v.itemCount * ( itemTable.weight or 0 ) )
 		end
+		
 		return invWeight + ( customAdd or 0 ), invMaxWeight
 	end
-	
+
 	function catherine.inventory.GetItemData( uniqueID, key, default )
 		if ( !uniqueID or !key ) then return default end
 		local inventory = catherine.inventory.Get( )

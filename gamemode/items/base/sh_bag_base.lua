@@ -29,7 +29,7 @@ BASE.func.drop = {
 	text = "Drop",
 	canShowIsMenu = true,
 	canLook = function( pl, itemTable )
-		local invWeight, invMaxWeight = catherine.inventory.GetWeights( pl )
+		local invWeight, invMaxWeight = catherine.inventory.GetWeights( )
 		return invWeight < ( invMaxWeight - itemTable.weightPlus )
 	end
 }

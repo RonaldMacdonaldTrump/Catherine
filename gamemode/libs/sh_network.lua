@@ -23,8 +23,10 @@ local META = FindMetaTable( "Entity" )
 if ( SERVER ) then
 	function catherine.network.SetNetVar( ent, key, value, noSync )
 		if ( !IsValid( ent ) or !key ) then return end
+		
 		catherine.network.entityVars[ ent ] = catherine.network.entityVars[ ent ] or { }
 		catherine.network.entityVars[ ent ][ key ] = value
+		
 		if ( !noSync ) then
 			if ( type( ent ) == "Player" ) then
 				netstream.Start( nil, "catherine.network.SetNetVar", { ent:SteamID( ), key, value } )
@@ -54,7 +56,9 @@ if ( SERVER ) then
 
 	function catherine.network.SetNetGlobalVar( key, value, noSync )
 		if ( !key ) then return end
+		
 		catherine.network.globalVars[ key ] = value
+		
 		if ( !noSync ) then
 			netstream.Start( nil, "catherine.network.SetNetGlobalVar", { key, value } )
 		end
@@ -105,6 +109,7 @@ end
 
 function catherine.network.GetNetVar( ent, key, default )
 	if ( !IsValid( ent ) or !key ) then return default end
+	
 	if ( SERVER ) then
 		return catherine.network.entityVars[ ent ] and catherine.network.entityVars[ ent ][ key ] or default
 	else
