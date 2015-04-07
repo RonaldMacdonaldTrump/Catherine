@@ -78,7 +78,7 @@ function catherine.item.Register( itemTable )
 				end
 				pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
 				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )
-				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, itemTable.uniqueID )
+				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, { uniqueID = itemTable.uniqueID } )
 				hook.Run( "ItemDroped", pl, itemTable )
 			end,
 			canLook = function( pl, itemTable )
@@ -148,13 +148,15 @@ if ( SERVER ) then
 			local itemTable = catherine.item.FindByID( uniqueID )
 			if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
 				catherine.util.Notify( pl, "You don't have inventory space!" )
-				return
+				return false
 			end
 		end
 		catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 			uniqueID = uniqueID,
 			itemCount = itemCount
 		} )
+		
+		return true
 	end
 	
 	function catherine.item.Take( pl, uniqueID, itemCount )

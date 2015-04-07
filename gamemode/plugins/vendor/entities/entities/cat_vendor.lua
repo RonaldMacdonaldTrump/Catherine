@@ -36,7 +36,6 @@ if ( SERVER ) then
 		self:DrawShadow( true )
 		self:SetMoveType( MOVETYPE_NONE )
 		self:SetUseType( SIMPLE_USE )
-		//self:DropToFloor( )
 		
 		local physObject = self:GetPhysicsObject( )
 		if ( IsValid( physObject ) ) then

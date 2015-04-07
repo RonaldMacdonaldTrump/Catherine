@@ -104,6 +104,14 @@ if ( SERVER ) then
 		end
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
+	
+	hook.Add( "ItemVendorSolded", "catherine.item.hooks.weapon_base.ItemVendorSolded", function( pl, itemTable )
+		if ( !itemTable.isWeapon ) then return end
+		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
+			pl:StripWeapon( itemTable.weaponClass )
+		end
+		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+	end )
 end
 
 WEAPON_PLAYERDRAW_INFO = { }

@@ -37,6 +37,9 @@ CAT_VENDOR_ACTION_BUY = 1 // Buy from player
 CAT_VENDOR_ACTION_SELL = 2 // Sell to player
 CAT_VENDOR_ACTION_SETTING_CHANGE = 3 // Setting change
 CAT_VENDOR_ACTION_ITEM_CHANGE = 4
+CAT_VENDOR_ACTION_ITEM_UNCHANGE = 5
+
+PLUGIN.VENDOR_SOLD_DISCOUNTPER = 2
 
 function PLUGIN:GetVendorDatas( ent )
 	if ( !IsValid( ent ) or !ent.isVendor ) then return end
@@ -52,7 +55,7 @@ end
 function PLUGIN:GetVendorWorkingPlayers( )
 	local players = { }
 
-	for k, v in pairs( player.GetByLoaded( ) ) do
+	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( !v:GetNetVar( "vendor_work" ) ) then continue end
 		players[ #players + 1 ] = v
 	end

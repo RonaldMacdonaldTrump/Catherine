@@ -64,6 +64,12 @@ catherine.chat.RegisterClass( "ic", {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
+catherine.chat.RegisterClass( "notify", {
+	onChat = function( _, text )
+		chat.AddText( Color( 255, 255, 255 ), text )
+	end
+} )
+
 catherine.chat.RegisterClass( "me", {
 	onChat = function( pl, text )
 		chat.AddText( Color( 255, 150, 255 ), "** " .. pl:Name( ) .. " " .. text )

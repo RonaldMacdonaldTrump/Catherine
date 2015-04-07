@@ -17,9 +17,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-
-
-
 local vars = {
 	{
 		id = "name",
@@ -63,7 +60,7 @@ function PLUGIN:SaveVendors( )
 	local data = { }
 	
 	for k, v in pairs( ents.FindByClass( "cat_vendor" ) ) do
-		if ( !v.vendorData ) then print("No data") continue end
+		if ( !v.vendorData ) then continue end
 		data[ #data + 1 ] = {
 			name = v.vendorData.name,
 			desc = v.vendorData.desc,
@@ -98,16 +95,6 @@ function PLUGIN:LoadVendors( )
 	end
 end
 
---[[
-name = v.vendorData.name,
-desc = v.vendorData.desc,
-factionData = v.vendorData.factions,
-classData = v.vendorData.classes,
-inv = v.vendorData.inv,
-cash = v.vendorData.cash,
-setting = v.vendorData.setting,
---]]
-
 function PLUGIN:MakeVendor( ent, data )
 	if ( !IsValid( ent ) or !data ) then return end
 
@@ -121,157 +108,176 @@ function PLUGIN:MakeVendor( ent, data )
 	ent.isVendor = true
 end
 
---[[
-CAT_VENDOR_ACTION_BUY = 1 // Buy from player
-CAT_VENDOR_ACTION_SELL = 2 // Sell to player
-CAT_VENDOR_ACTION_SETTING_CHANGE = 3 // Setting change
---]]
-
 function PLUGIN:SetVendorData( ent, id, data, noSync )
 	if ( !IsValid( ent ) or !id or !data ) then return end
 
 	ent.vendorData[ id ] = data
 	ent:SetNetVar( id, data )
-	
-	// self:GetVendorWorkingPlayers( ) 이거 안될거같은데;;
+
 	if ( !noSync ) then
-		//netstream.Start( self:GetVendorWorkingPlayers( ), "catherine.plugin.vendor.RefreshRequest" )
+		local target = self:GetVendorWorkingPlayers( )
+		if ( #target != 0 ) then
+			netstream.Start( target, "catherine.plugin.vendor.RefreshRequest", ent )
+		end
 	end
 end
 
 function PLUGIN:GetVendorData( ent, id, default )
 	if ( !IsValid( ent ) or !id ) then return default end
-	if ( !table.HasValue( vars, id ) ) then print("Unknown id") return default end
-	return ent.vendorData[ id ]
+	return ent.vendorData[ id ] or default
 end
 
 function PLUGIN:VendorWork( pl, ent, workID, data )
 	if ( !IsValid( pl ) or !IsValid( ent ) or !workID or !data ) then return end
 	if ( workID == CAT_VENDOR_ACTION_BUY ) then
 		local uniqueID = data.uniqueID
-		local itemTable = catherine.item.FindByID( uniqueID )
 		local count = math.max( data.count or 1, 1 )
-		
+		local itemTable = catherine.item.FindByID( uniqueID )
+
 		if ( !itemTable ) then
-			print("Item table error")
-			return
-		end
-		
-		if ( catherine.inventory.GetItemInt( pl, uniqueID ) < count ) then
-			print("!?")
-			return
-		end
-		
-		local itemCost = itemTable.cost
-		
-		if ( data.count > 1 ) then
-			itemCost = itemTable.cost * count
-		end
-		
-		local playerCash, vendorCash, vendorInv = catherine.cash.Get( pl ), self:GetVendorData( ent, "cash", 0 ), table.Copy( self:GetVendorData( ent, "inv", { } ) )
-		
-		if ( vendorCash < itemCost ) then
-			print("vendor no money!")
+			catherine.util.Notify( pl, "Item is not valid!" )
 			return
 		end
 
-		if ( !vendorInv[ uniqueID ] ) then
-			vendorInv[ uniqueID ] = {
-				uniqueID = uniqueID,
-				count = count
-			}
-		else
-			vendorInv[ uniqueID ] = {
-				uniqueID = uniqueID,
-				count = vendorInv[ uniqueID ].count + count
-			}
+		if ( !catherine.inventory.HasItem( pl, uniqueID ) ) then
+			catherine.util.Notify( pl, "You don't have this item!" )
+			return
 		end
 		
-		catherine.item.Take( pl, uniqueID, data.count )
+		--[[ // 나중에 ㅋ
+		// Vendor 가 사야할 아이템 숫자가 플레이어의 인벤토리 아이템 수보다 많을때?
+		if ( catherine.inventory.GetItemInt( pl, uniqueID ) < count ) then
+			catherine.util.Notify( pl, "!!!!" )
+			return
+		end
+		--]]
+		
+		local playerCash = catherine.cash.Get( pl )
+		local vendorCash = self:GetVendorData( ent, "cash", 0 )
+		local vendorInv = table.Copy( self:GetVendorData( ent, "inv", { } ) )
+		
+		if ( !vendorInv[ uniqueID ] ) then
+			catherine.util.Notify( pl, "This vendor has not stock for this item!" )
+			return
+		end
+		
+		local itemCost = math.Round( ( vendorInv[ uniqueID ].cost * count ) / self.VENDOR_SOLD_DISCOUNTPER )
+		
+		if ( vendorCash < itemCost ) then
+			catherine.util.Notify( pl, "This vendor has not enough cash!" )
+			return
+		end
+
+		vendorInv[ uniqueID ] = {
+			uniqueID = uniqueID,
+			stock = vendorInv[ uniqueID ].stock + count,
+			cost = vendorInv[ uniqueID ].cost,
+			type = vendorInv[ uniqueID ].type
+		}
+
+		catherine.cash.Give( pl, itemCost )
+		catherine.item.Take( pl, uniqueID, count )
 		self:SetVendorData( ent, "inv", vendorInv )
 		self:SetVendorData( ent, "cash", vendorCash - itemCost )
+		
+		hook.Run( "ItemVendorSolded", pl, itemTable )
+		catherine.util.Notify( pl, "You are sold '" .. itemTable.name .. "' at '" .. catherine.cash.GetName( itemCost ) .. "' from this vendor!" )
 	elseif ( workID == CAT_VENDOR_ACTION_SELL ) then
 		local uniqueID = data.uniqueID
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local count = math.max( data.count or 1, 1 )
 		
 		if ( !itemTable ) then
-			print("Item table error")
+			catherine.util.Notify( pl, "Item is not valid!" )
 			return
 		end
 		
-		if ( catherine.inventory.GetItemInt( pl, uniqueID ) < count ) then
-			print("!?")
-			return
-		end
-		
-		local itemCost = itemTable.cost
-		
-		if ( data.count > 1 ) then
-			itemCost = itemTable.cost * count
-		end
-		
-		local playerCash, vendorCash, vendorInv = catherine.cash.Get( pl ), self:GetVendorData( ent, "cash", 0 ), table.Copy( self:GetVendorData( ent, "inv", { } ) )
-		
-		if ( playerCash < itemCost ) then
-			print("player no money!")
-			return
-		end
+		local playerCash = catherine.cash.Get( pl )
+		local vendorCash = self:GetVendorData( ent, "cash", 0 )
+		local vendorInv = table.Copy( self:GetVendorData( ent, "inv", { } ) )
 
 		if ( !vendorInv[ uniqueID ] ) then
-			print("Vendor no zago!")
+			catherine.util.Notify( pl, "This vendor has not stock for this item!" )
 			return
 		end
 		
-		if ( vendorInv[ uniqueID ].count < count ) then
-			print("Vendor no count!")
-			count = vendorInv[ uniqueID ].count
+		if ( vendorInv[ uniqueID ].stock < count ) then
+			count = vendorInv[ uniqueID ].stock
 		end
 		
+		local itemCost = vendorInv[ uniqueID ].cost * count
+		
+		if ( itemCost > playerCash ) then
+			catherine.util.Notify( pl, "You don't have enough cash!" )
+			return 
+		end
+
 		vendorInv[ uniqueID ] = {
 			uniqueID = uniqueID,
-			count = vendorInv[ uniqueID ].count - count
+			stock = vendorInv[ uniqueID ].stock - count,
+			cost = vendorInv[ uniqueID ].cost,
+			type = vendorInv[ uniqueID ].type
 		}
 		
-		if ( vendorInv[ uniqueID ].count <= 0 ) then
-			vendorInv[ uniqueID ] = nil
+		if ( vendorInv[ uniqueID ].stock <= 0 ) then
+			vendorInv[ uniqueID ].stock = 0
 		end
 		
-		catherine.item.Give( pl, uniqueID, data.count )
+		local success = catherine.item.Give( pl, uniqueID, count )
+		if ( !success ) then return end
+		
 		catherine.cash.Take( pl, itemCost )
 		self:SetVendorData( ent, "inv", vendorInv )
 		self:SetVendorData( ent, "cash", vendorCash + itemCost )
+		
+		catherine.util.Notify( pl, "You are brought '" .. itemTable.name .. "' at '" .. catherine.cash.GetName( itemCost ) .. "' from this vendor!" )
 	elseif ( workID == CAT_VENDOR_ACTION_SETTING_CHANGE ) then
-	
+		if ( !pl:IsAdmin( ) ) then
+			catherine.util.Notify( pl, "You don't have permission!" )
+			return
+		end
+		
 	elseif ( workID == CAT_VENDOR_ACTION_ITEM_CHANGE ) then
-		//PrintTable(data)
+		if ( !pl:IsAdmin( ) ) then
+			catherine.util.Notify( pl, "You don't have permission!" )
+			return
+		end
+		
 		local uniqueID = data.uniqueID
-		local itemTable = catherine.item.FindByID( uniqueID )
-		
-		local stock = data.stock
-		local cost = data.cost
+		local stock = math.Round( data.stock )
+		local cost = math.Round( data.cost )
 		local type = data.type
-		
+		local itemTable = catherine.item.FindByID( uniqueID )
+
 		if ( !itemTable ) then
-			print("Item table error")
+			catherine.util.Notify( pl, "Item is not valid!" )
 			return
 		end
 
-		local vendorItem = table.Copy( self:GetVendorData( ent, "items", { } ) )
-		
-		vendorItem[ uniqueID ] = {
+		local vendorInv = table.Copy( self:GetVendorData( ent, "inv", { } ) )
+
+		vendorInv[ uniqueID ] = {
 			uniqueID = uniqueID,
 			stock = stock,
 			cost = cost,
 			type = type
 		}
+
+		self:SetVendorData( ent, "inv", vendorInv )
 		
-		PrintTable(vendorItem)
+		catherine.util.Notify( pl, "Item data updated!" )
+	elseif ( workID == CAT_VENDOR_ACTION_ITEM_UNCHANGE ) then
+		local uniqueID = data
+		local itemTable = catherine.item.FindByID( uniqueID )
+
+		if ( !itemTable ) then
+			catherine.util.Notify( pl, "Item is not valid!" )
+			return
+		end
 		
-		self:SetVendorData( ent, "items", vendorItem )
-	else
-		// ;;
-		print("?")
+		local vendorInv = table.Copy( self:GetVendorData( ent, "inv", { } ) )
+		vendorInv[ uniqueID ] = nil
+		self:SetVendorData( ent, "inv", vendorInv )
 	end
 end
 
@@ -279,7 +285,7 @@ function PLUGIN:CanUseVendor( pl, ent )
 	if ( !IsValid( pl ) or !IsValid( ent ) or !ent.isVendor ) then return end
 	
 	if ( !ent.vendorData.status ) then
-		//return false, "status"
+		//return false, "status" // 나중에 추가..
 	end
 	
 	local factionData = ent.vendorData.factions
@@ -305,4 +311,8 @@ end
 
 netstream.Hook( "catherine.plugin.vendor.VendorWork", function( pl, data )
 	PLUGIN:VendorWork( pl, data[ 1 ], data[ 2 ], data[ 3 ] )
+end )
+
+netstream.Hook( "catherine.plugin.vendor.VendorClose", function( pl )
+	pl:SetNetVar( "vendor_work", nil )
 end )

@@ -30,11 +30,11 @@ catherine.command.Register( {
 			local ent = ents.Create( "cat_vendor" )
 			ent:SetPos( pos )
 			ent:SetAngles( ang )
-			//ent:SetModel( table.Random( PLUGIN.randModels ) )
 			ent:Spawn( )
 			ent:Activate( )
 			
 			PLUGIN:MakeVendor( ent, { name = val } )
+			PLUGIN:SaveVendors( )
 		end )
 	end
 } )
@@ -43,6 +43,12 @@ catherine.command.Register( {
 	command = "vendorremove",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
+		local ent = pl:GetEyeTraceNoCursor( ).Entity
 		
+		if ( IsValid( ent ) and ent:GetClass( ) == "cat_vendor" ) then
+			ent:Remove( )
+		else
+			catherine.util.Notify( pl, "This is not vendor!" )
+		end
 	end
 } )
