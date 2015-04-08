@@ -23,22 +23,22 @@ function PANEL:Init( )
 	
 	self.version = catherine.update.VERSION
 	self.latestVersion = GetGlobalString( "catherine.update.LATESTVERSION", nil )
-	self.status = { text = "Checking update ...", status = false, alpha = 0, rotate = 0 }
+	self.status = { text = LANG( "Version_UI_Checking" ), status = false, alpha = 0, rotate = 0 }
 	
 	self:SetMenuSize( ScrW( ) * 0.5, ScrH( ) * 0.5 )
-	self:SetMenuName( "Version" )
+	self:SetMenuName( LANG( "Version_UI_Title" ) )
 
 	self.check = vgui.Create( "catherine.vgui.button", self )
 	self.check:SetPos( self.w - ( self.w * 0.2 ) - 10, 30 )
 	self.check:SetSize( self.w * 0.2, 30 )
-	self.check:SetStr( "Update check" )
+	self.check:SetStr( LANG( "Version_UI_CheckButtonStr" ) )
 	self.check.Cant = false
 	self.check.PaintOverAll = function( pnl )
-		if ( self.status.status ) then
-			pnl:SetStr( "Checking ..." )
+		if ( self.status.status and !pnl.Cant ) then
+			pnl:SetStr( self.status.text )
 			pnl.Cant = true
-		else
-			pnl:SetStr( "Update check" )
+		elseif ( !self.status.status and pnl.Cant ) then
+			pnl:SetStr( LANG( "Version_UI_CheckButtonStr" ) )
 			pnl.Cant = false
 		end
 	end
@@ -47,7 +47,7 @@ function PANEL:Init( )
 	self.check.Click = function( )
 		if ( self.check.Cant ) then return end
 		self.status.status = true
-		self.status.text = "Checking update ..."
+		self.status.text = LANG( "Version_UI_Checking" )
 		netstream.Start( "catherine.update.Check" )
 	end
 end
@@ -72,8 +72,8 @@ function PANEL:MenuPaint( w, h )
 	surface.SetMaterial( Material( catherine.configs.frameworkLogo ) )
 	surface.DrawTexturedRect( w / 2 - 512 / 2, h / 2 - 256 / 2, 512, 256 )
 	
-	draw.SimpleText( self.latestVersion and ( "Latest Version - " .. self.latestVersion ) or "Latest Version - None", "catherine_normal20", w / 2, h - 60, Color( 50, 50, 50, 255 ), 1, 1 )
-	draw.SimpleText( self.version and ( "Your Version - " .. self.version ) or "Your Version - None", "catherine_normal20", w / 2, h - 25, Color( 50, 50, 50, 255 ), 1, 1 )
+	draw.SimpleText( self.latestVersion and LANG( "Version_UI_LatestVer_AV", self.latestVersion ) or LANG( "Version_UI_LatestVer_NO" ), "catherine_normal20", w / 2, h - 60, Color( 50, 50, 50, 255 ), 1, 1 )
+	draw.SimpleText( self.version and LANG( "Version_UI_YourVer_AV", self.version ) or LANG( "Version_UI_YourVer_NO" ), "catherine_normal20", w / 2, h - 25, Color( 50, 50, 50, 255 ), 1, 1 )
 	
 	if ( math.Round( self.status.alpha ) > 0 ) then
 		draw.NoTexture( )
@@ -90,7 +90,9 @@ end
 
 vgui.Register( "catherine.vgui.version", PANEL, "catherine.vgui.menuBase" )
 
-catherine.menu.Register( "Version", function( menuPnl, itemPnl )
+catherine.menu.Register( function( )
+	return LANG( "Version_UI_Title" )
+end, function( menuPnl, itemPnl )
 	return vgui.Create( "catherine.vgui.version", menuPnl )
 end, function( pl )
 	return pl:IsSuperAdmin( )

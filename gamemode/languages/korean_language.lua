@@ -34,7 +34,27 @@ LANGUAGE.data = {
 	
 	[ "UnknownError" ] = "알 수 없는 오류 입니다.",
 	[ "UnknownPlayerError" ] = "올바르지 않은 캐릭터 이름을 입력했습니다!",
-	[ "ArgError" ] = "%s 번째 값을 입력하세요!"
+	[ "ArgError" ] = "%s 번째 값을 입력하세요!",
+	
+	// UI
+	// Version
+	[ "Version_UI_Title" ] = "버전",
+	[ "Version_UI_LatestVer_AV" ] = "최신 버전 - %s",
+	[ "Version_UI_LatestVer_NO" ] = "최신 버전 - 없음",
+	[ "Version_UI_YourVer_AV" ] = "현재 버전 - %s",
+	[ "Version_UI_YourVer_NO" ] = "현재 버전 - 없음",
+	[ "Version_UI_Checking" ] = "업데이트를 확인하는 중 입니다 ...",
+	[ "Version_UI_CheckButtonStr" ] = "업데이트 확인",
+	
+	// Attribute
+	[ "Attribute_UI_Title" ] = "능력",
+	
+	// Basic
+	[ "Basic_UI_Notify" ] = "알림",
+	[ "Basic_UI_OK" ] = "확인",
+	[ "Basic_UI_YES" ] = "네",
+	[ "Basic_UI_NO" ] = "아니오"
+	
 }
 
 catherine.language.Register( LANGUAGE )

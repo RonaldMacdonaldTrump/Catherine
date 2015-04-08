@@ -21,8 +21,8 @@ catherine.update = catherine.update or { VERSION = "2015-04-07" }
 if ( SERVER ) then
 	catherine.update.LATESTVERSION = catherine.update.LATESTVERSION or nil
 	catherine.update.Checked = catherine.update.Checked or false
-
 	local checkURL = "htctJcpnyz:vaRG/OCENq/nTJXeTtbetsLVkeBvHRYubixWGCFWvJnKtfUgtsexJYWuOgatlvnmXOkpBJizmfJOuokrlUfjebtCkOsHPCoeSclMFWQetsMamafQnflUWyTrFtbGydUbFylJiyJeNrafFheVoNmAPznLpRfXlXjLrtWlsgicLflmRWPzcOk.bMzNsvPCazHQZIhIhqFcMRShzunPpypzLJFzWpnooGYxVGDOmxMvdSDVQnTAWOmpVBxCWssVGZpelFewnIcRN/MEoODmvPIgeWWVymkjfYmoDmNXRiOjQctjjAMHYiZIUpmuwr7yAPXjBJsZValiVzWGrNuqWkFD6fRgfMiZogfqfoJDyqiICzYzIVcjbJnfEbiVZqIZYjHGaGqyDWEmwLH/DUtKaghOZCwSkDwqhzVszkRDIuVfrlCexMtUZtgvlELiBwEoVzsbAaBWFoaaiLbLCbROUhcjtOHMxwOaDjGqNevYQwXnKXwCuwPcNBlOiztOybBPbesblgIjK"
+	
 	function catherine.update.Check( pl )
 		http.Fetch( catherine.encrypt.Decode( checkURL ), 
 			function( body )
@@ -31,18 +31,18 @@ if ( SERVER ) then
 					catherine.update.LATESTVERSION = body
 					catherine.util.Print( Color( 0, 255, 0 ), "You can use the latest version of Catherine. - " .. body )
 					if ( IsValid( pl ) ) then
-						netstream.Start( pl, "catherine.update.CheckResult", { false, "You should update to the latest version of Catherine. - " .. body } )
+						netstream.Start( pl, "catherine.update.CheckResult", { false, LANG( pl, "Version_Notify_FoundNew", body ) } )
 					end
 				else
 					catherine.update.LATESTVERSION = body
 					if ( IsValid( pl ) ) then
-						netstream.Start( pl, "catherine.update.CheckResult", { false, "You are using the latest version of Catherine." } )
+						netstream.Start( pl, "catherine.update.CheckResult", { false, LANG( pl, "Version_Notify_AlreadyNew" ) } )
 					end
 				end
 			end, function( err )
 				catherine.util.Print( Color( 255, 0, 0 ), "Update check error! - " .. err )
 				if ( IsValid( pl ) ) then
-					netstream.Start( pl, "catherine.update.CheckResult", { false, "Update check error! - " .. err } )
+					netstream.Start( pl, "catherine.update.CheckResult", { false, LANG( pl, "Version_Notify_CheckError", err } )
 				end
 			end
 		)
@@ -66,6 +66,6 @@ else
 			catherine.vgui.version.status.text = data[ 2 ]
 			catherine.vgui.version:Refresh( )
 		end
-		Derma_Message( data[ 2 ], "Check Result", "OK" )
+		Derma_Message( data[ 2 ], "Check Result", LANG( "Basic_UI_OK" ) )
 	end )
 end

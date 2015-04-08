@@ -48,7 +48,8 @@ function PANEL:Init( )
 		local delta = 0
 		for k, v in pairs( catherine.menu.GetAll( ) ) do
 			if ( v.canLook and v.canLook( self.player ) == false ) then continue end
-			local menuButton = self:AddMenuItem( v.name, v.func )
+			
+			local menuButton = self:AddMenuItem( type( v.name ) == "function" and v.name( self.player ) or v.name, v.func )
 			menuButton:SetAlpha( 0 )
 			menuButton:AlphaTo( 255, 0.2, delta )
 			delta = delta + 0.05

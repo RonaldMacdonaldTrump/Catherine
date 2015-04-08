@@ -22,7 +22,7 @@ function PANEL:Init( )
 	catherine.vgui.attribute = self
 
 	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
-	self:SetMenuName( "Attribute" )
+	self:SetMenuName( LANG( "Attribute_UI_Title" ) )
 
 	self.Lists = vgui.Create( "DPanelList", self )
 	self.Lists:SetPos( 10, 35 )
@@ -45,6 +45,7 @@ function PANEL:BuildAttribute( )
 		item:SetTall( 90 )
 		item:SetAttribute( v )
 		item:SetProgress( catherine.attribute.GetProgress( v ) )
+		item:SetAlpha( 0 )
 		item:AlphaTo( 255, 0.1, delta )
 		delta = delta + 0.05
 		
@@ -53,7 +54,6 @@ function PANEL:BuildAttribute( )
 end
 
 vgui.Register( "catherine.vgui.attribute", PANEL, "catherine.vgui.menuBase" )
-
 
 local PANEL = { }
 
@@ -99,6 +99,8 @@ end
 
 vgui.Register( "catherine.vgui.attributeItem", PANEL, "DPanel" )
 
-catherine.menu.Register( "Attribute", function( menuPnl, itemPnl )
+catherine.menu.Register( function( )
+	return LANG( "Attribute_UI_Title" )
+end, function( menuPnl, itemPnl )
 	return vgui.Create( "catherine.vgui.attribute", menuPnl )
 end )

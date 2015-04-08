@@ -34,16 +34,35 @@ LANGUAGE.data = {
 	
 	[ "UnknownError" ] = "Unknown Error!",
 	[ "UnknownPlayerError" ] = "You are not giving a valid character name!",
-	[ "ArgError" ] = "Please enter the %s argument!"
+	[ "ArgError" ] = "Please enter the %s argument!",
 	
 	
 	
 	
 	
-	// UI
 	// Version
+	[ "Version_UI_Title" ] = "Version",
+	[ "Version_UI_LatestVer_AV" ] = "Latest Version - %s",
+	[ "Version_UI_LatestVer_NO" ] = "Latest Version - None",
+	[ "Version_UI_YourVer_AV" ] = "Your Version - %s",
+	[ "Version_UI_YourVer_NO" ] = "Your Version - None",
+	[ "Version_UI_Checking" ] = "Checking update ...",
+	[ "Version_UI_CheckButtonStr" ] = "Update Check",
+	// Version Notify
+	[ "Version_Notify_FoundNew" ] = "You should update to the latest version of Catherine. - %s",
+	[ "Version_Notify_AlreadyNew" ] = "You are using the latest version of Catherine.",
+	[ "Version_Notify_CheckError" ] = "Update check error! - %s",
+	
+	// Attribute
+	[ "Attribute_UI_Title" ] = "Attribute",
+	// Attribute Notify
 	
 	
+	// Basic
+	[ "Basic_UI_Notify" ] = "Notify",
+	[ "Basic_UI_OK" ] = "OK",
+	[ "Basic_UI_YES" ] = "YES",
+	[ "Basic_UI_NO" ] = "NO"
 }
 
 catherine.language.Register( LANGUAGE )

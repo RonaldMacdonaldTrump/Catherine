@@ -86,6 +86,12 @@ if ( SERVER ) then
 		local languageTable = catherine.language.GetLists( pl )
 		return string.format( languageTable.data[ key ] or "LanguageError01", ... ) or "Language Error"
 	end
+	
+	function LANG( pl, key, ... )
+		if ( !IsValid( pl ) or !key ) then return end
+		local languageTable = catherine.language.GetLists( pl )
+		return string.format( languageTable.data[ key ] or "LanguageError01", ... ) or "Language Error"
+	end
 else
 	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", "english", true, true )
 	
@@ -95,6 +101,11 @@ else
 	end
 	
 	function catherine.language.GetValue( key, ... )
+		local languageTable = catherine.language.GetLists( )
+		return string.format( languageTable.data[ key ] or "LanguageError01", ... ) or "Language Error"
+	end
+	
+	function LANG( key, ... )
 		local languageTable = catherine.language.GetLists( )
 		return string.format( languageTable.data[ key ] or "LanguageError01", ... ) or "Language Error"
 	end
