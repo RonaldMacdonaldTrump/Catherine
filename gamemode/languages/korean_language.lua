@@ -49,6 +49,10 @@ LANGUAGE.data = {
 	// Attribute
 	[ "Attribute_UI_Title" ] = "능력",
 	
+	// Business
+	[ "Business_UI_Title" ] = "사업",
+	[ "Business_UI_NoBuyable" ] = "당신이 구매할 수 있는 항목이 없습니다!",
+	
 	// Basic
 	[ "Basic_UI_Notify" ] = "알림",
 	[ "Basic_UI_OK" ] = "확인",

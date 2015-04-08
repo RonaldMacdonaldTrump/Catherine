@@ -23,6 +23,7 @@ LANGUAGE.data = {
 	
 	// Cash ^-^;
 	[ "Cash_GiveMessage01" ] = "You have given %s to %s",
+	[ "Cash_Notify_HasNot" ] = "You don't have a enough %s!",
 	
 	// Faction ^-^;
 	[ "Faction_AddMessage01" ] = "Set faction",
@@ -48,17 +49,33 @@ LANGUAGE.data = {
 	[ "Version_UI_YourVer_NO" ] = "Your Version - None",
 	[ "Version_UI_Checking" ] = "Checking update ...",
 	[ "Version_UI_CheckButtonStr" ] = "Update Check",
-	// Version Notify
 	[ "Version_Notify_FoundNew" ] = "You should update to the latest version of Catherine. - %s",
 	[ "Version_Notify_AlreadyNew" ] = "You are using the latest version of Catherine.",
 	[ "Version_Notify_CheckError" ] = "Update check error! - %s",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",
-	// Attribute Notify
 	
+	// Business
+	[ "Business_UI_Title" ] = "Business",
+	[ "Business_UI_NoBuyable" ] = "You can't buy anything!",
+	[ "Business_UI_BuyButtonStr" ] = "Buy Item > %s",
+	[ "Business_UI_ShoppingCartStr" ] = "Shopping Cart",
+	[ "Business_UI_TotalStr" ] = "Total %s",
+	[ "Business_UI_Take" ] = "Take",
+	[ "Business_UI_Shipment_Title" ] = "Shipment",
+	[ "Business_UI_Shipment_Desc" ] = "A Shipment",
+	[ "Business_Notify_BuyQ" ] = "Are you sure you want to buy this item(s) ?",
+	[ "Business_Notify_CantOpenShipment" ] = "You can't open this shipment!",
+	[ "Business_Notify_NeedCartAdd" ] = "Add item on your cart first!",
+	
+	// Inventory
+	[ "Inventory_UI_Title" ] = "Inventory",
+	[ "Inventory_Notify_HasNotSpace" ] = "You don't have inventory space!",
+	[ "Inventory_Notify_CantDrop01" ] = "Is too far away for drop the item!",
 	
 	// Basic
+	[ "Basic_UI_Question" ] = "Question",
 	[ "Basic_UI_Notify" ] = "Notify",
 	[ "Basic_UI_OK" ] = "OK",
 	[ "Basic_UI_YES" ] = "YES",
