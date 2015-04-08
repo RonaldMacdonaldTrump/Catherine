@@ -128,6 +128,7 @@ LANGUAGE.data = {
 	[ "Door_Notify_CantBuyable" ] = "This door can't buy!",
 	[ "Door_Notify_Buy" ] = "You are buy this door.",
 	[ "Door_Notify_Sell" ] = "You are sold this door.",
+	[ "Door_Notify_SetTitle" ] = "You are set title this door.",
 	
 	// Basic
 	[ "Basic_UI_CATLoaded" ] = "Welcome.",

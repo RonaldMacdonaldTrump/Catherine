@@ -21,41 +21,6 @@ if ( !catherine.data ) then
 end
 catherine.door = catherine.door or { }
 
-
-catherine.command.Register( {
-	command = "doorbuy",
-	syntax = "[none]",
-	runFunc = function( pl, args )
-		local success, langKey, par = catherine.door.Buy( pl, pl:GetEyeTrace( 70 ).Entity )
-		if ( success ) then
-			catherine.util.NotifyLang( pl, "Door_Notify_Buy" )
-		else
-			catherine.util.NotifyLang( pl, langKey, unpack( par ) )
-		end
-	end
-} )
-
-catherine.command.Register( {
-	command = "doorsell",
-	syntax = "[none]",
-	runFunc = function( pl, args )
-		local success, langKey, par = catherine.door.Sell( pl, pl:GetEyeTrace( 70 ).Entity )
-		if ( success ) then
-			catherine.util.NotifyLang( pl, "Door_Notify_Sell" )
-		else
-			catherine.util.NotifyLang( pl, langKey, unpack( par ) )
-		end
-	end
-} )
-
-catherine.command.Register( {
-	command = "doorsettitle",
-	syntax = "[text]",
-	runFunc = function( pl, args )
-		catherine.door.SetDoorTitle( pl, ent, title, force )
-	end
-} )
-
 if ( SERVER ) then
 	function catherine.door.Buy( pl, ent )
 		if ( !IsValid( pl ) ) then return end
@@ -126,79 +91,8 @@ if ( SERVER ) then
 	end
 	
 	function catherine.door.IsDoorOwner( pl, ent )
-		//if ( !IsValid( pl ) or !IsValid( ent ) ) then return end
 		return pl:GetCharacterID( ) == ent:GetNetVar( "owner" )
 	end
-	
-	
-	/*
-	function catherine.door.Buy( pl )
-		local ent = pl:GetEyeTrace( 70 ).Entity
-		if ( !IsValid( ent ) ) then
-			return catherine.util.Notify( pl, "Please look valid entity!" )
-		end
-		if ( !ent:IsDoor( ) ) then
-			return catherine.util.Notify( pl, "Please look valid door!" )
-		end
-		if ( catherine.network.GetNetVar( ent, "owner", nil ) != nil ) then
-			return catherine.util.Notify( pl, "This door has already bought by unknown guy." )
-		end
-		if ( catherine.cash.Get( pl ) >= catherine.configs.doorCost ) then
-			catherine.door.SetDoorOwner( ent, pl )
-			catherine.util.Notify( pl, "You have purchased this door." )
-			catherine.cash.Take( pl, catherine.configs.doorCost )
-		elseif ( catherine.cash.Get( pl ) < catherine.configs.doorCost ) then
-			catherine.util.Notify( pl, "You need " .. catherine.cash.GetName( catherine.configs.doorCost - pl:GetCash( ) ) .. "(s) more!" )
-		end
-	end
-	
-	function catherine.door.Sell( pl )
-		local ent = pl:GetEyeTrace( 70 ).Entity
-		if ( !IsValid( ent ) ) then
-			return catherine.util.Notify( pl, "Please look valid entity!" )
-		end
-		if ( !ent:IsDoor( ) ) then
-			return catherine.util.Notify( pl, "Please look valid door!" )
-		end
-		if ( catherine.network.GetNetVar( ent, "owner", nil ) != pl ) then
-			return catherine.util.Notify( pl, "You do not have permission!" )
-		end
-		catherine.door.SetDoorOwner( ent, nil )
-		catherine.cash.Give( pl, catherine.configs.doorSellCost )
-		catherine.util.Notify( pl, "You are sold this door." )
-	end
-	
-	function catherine.door.SetDoorTitle( pl, title )
-		if ( !title ) then title = "Door" end
-		local ent = pl:GetEyeTrace( 70 ).Entity
-		if ( !IsValid( ent ) ) then return catherine.util.Notify( pl, "Please look valid entity!" ) end
-		if ( !ent:IsDoor( ) ) then return catherine.util.Notify( pl, "Please look valid door!" ) end
-		if ( catherine.network.GetNetVar( ent, "owner", nil ) != pl ) then return catherine.util.Notify( pl, "You do not have permission!" ) end
-		catherine.network.SetNetVar( ent, "title", title )
-		catherine.util.Notify( pl, "You are setting this door title to \"" .. title .. "\"" )
-	end
-	
-	function catherine.door.SetDoorOwner( ent, pl )
-		if ( !IsValid( ent ) ) then
-			return catherine.util.Notify( pl, "Please look valid entity!" )
-		end
-		if ( !ent:IsDoor( ) ) then
-			return catherine.util.Notify( pl, "Please look valid door!" )
-		end
-		catherine.network.SetNetVar( ent, "owner", pl )
-	end
-	
-	function catherine.door.GetDoorOwner( ent )
-		if ( !IsValid( ent ) ) then
-			return catherine.util.Notify( pl, "Please look valid entity!" )
-		end
-		if ( !ent:IsDoor( ) ) then
-			return catherine.util.Notify( pl, "Please look valid door!" )
-		end
-		return catherine.network.GetNetVar( ent, "owner", nil )
-	end
-	
-	*/
 
 	function catherine.door.DataSave( )
 		local data = { }
@@ -246,16 +140,60 @@ else
 		end
 	end
 	
-	hook.Add( "DrawEntityTargetID", "catherine.door.DrawEntityTargetID", function( pl, ent, a )
-		if ( !ent:IsDoor( ) ) then return end
+	function catherine.door.DrawEntityTargetID( pl, ent, a )
+		if ( !catherine.entity.IsDoor( ent ) ) then return end
 		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		
 		draw.SimpleText( ent:GetNetVar( "title", "Door" ), "catherine_outline20", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		draw.SimpleText( catherine.door.GetDetailString( ent ), "catherine_outline15", x, y + 20, Color( 255, 255, 255, a ), 1, 1 )
-	end )
+	end
+	
+	hook.Add( "DrawEntityTargetID", "catherine.door.DrawEntityTargetID", catherine.door.DrawEntityTargetID )
 end
 
 function catherine.door.IsBuyableDoor( ent )
 	return ent:GetNetVar( "buyable", true )
 end
+
+catherine.command.Register( {
+	command = "doorbuy",
+	runFunc = function( pl, args )
+		local success, langKey, par = catherine.door.Buy( pl, pl:GetEyeTrace( 70 ).Entity )
+		if ( success ) then
+			catherine.util.NotifyLang( pl, "Door_Notify_Buy" )
+		else
+			catherine.util.NotifyLang( pl, langKey, unpack( par ) )
+		end
+	end
+} )
+
+catherine.command.Register( {
+	command = "doorsell",
+	runFunc = function( pl, args )
+		local success, langKey, par = catherine.door.Sell( pl, pl:GetEyeTrace( 70 ).Entity )
+		if ( success ) then
+			catherine.util.NotifyLang( pl, "Door_Notify_Sell" )
+		else
+			catherine.util.NotifyLang( pl, langKey, unpack( par ) )
+		end
+	end
+} )
+
+catherine.command.Register( {
+	command = "doorsettitle",
+	syntax = "[Text]",
+	canRun = function( pl ) return pl:IsAdmin( ) end,
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			local success, langKey, par = catherine.door.SetDoorTitle( pl, pl:GetEyeTrace( 70 ).Entity, args[ 1 ], true )
+			if ( success ) then
+				catherine.util.NotifyLang( pl, "Door_Notify_SetTitle" )
+			else
+				catherine.util.NotifyLang( pl, langKey, unpack( par ) )
+			end
+		else
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+		end
+	end
+} )
