@@ -34,6 +34,7 @@ LANGUAGE.data = {
 	[ "Faction_Notify_Give" ] = "%s have given %s to %s",
 	[ "Faction_Notify_Take" ] = "%s have taken %s from %s",
 	[ "Faction_Notify_NotValid" ] = "%s is not valid faction!",
+	[ "Faction_Notify_AlreadyHasOrNotWhitelist" ] = "Faction is not valid or not whitelist",
 	
 	// Flag ^-^;
 	[ "Flag_Notify_Give" ] = "%s have given %s to %s",

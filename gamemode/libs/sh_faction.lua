@@ -89,11 +89,16 @@ end
 
 if ( SERVER ) then
 	function catherine.faction.AddWhiteList( pl, id )
-		if ( !IsValid( pl ) or !id ) then return false, "player or faction id is not valid!" end
+		if ( !IsValid( pl ) or !id ) then return end
+		
 		local factionTable = catherine.faction.FindByID( id )
-		if ( !factionTable or !factionTable.isWhitelist or catherine.faction.HasWhiteList( pl, id ) ) then return false, "faction is not whitelist or player already has whitelist!" end
+		if ( !factionTable or !factionTable.isWhitelist or catherine.faction.HasWhiteList( pl, id ) ) then
+			return false, ""
+		end
+		
 		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
 		whiteLists[ #whiteLists + 1 ] = id
+		
 		catherine.catData.Set( pl, "whitelists", whiteLists, false, true )
 		return true
 	end
@@ -144,7 +149,7 @@ end
 
 catherine.command.Register( {
 	command = "plygivewhitelist",
-	syntax = "[name] [faction unique name]",
+	syntax = "[Name] [Faction Name]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -171,7 +176,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "plytakewhitelist",
-	syntax = "[name] [faction unique name]",
+	syntax = "[Name] [Faction Name]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
