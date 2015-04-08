@@ -158,6 +158,16 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.util.Notify", { message, time, icon } )
 	end
 	
+	function catherine.util.NotifyAll( message, time, icon )
+		if ( !message ) then return end
+		netstream.Start( player.GetAllByLoaded( ), "catherine.util.Notify", { message, time, icon } )
+	end
+	
+	function catherine.util.NotifyAllLang( key, ... )
+		if ( !key ) then return end
+		netstream.Start( player.GetAllByLoaded( ), "catherine.util.NotifyAllLang", { key, { ... } } )
+	end
+	
 	function catherine.util.NotifyLang( pl, key, ... )
 		if ( !IsValid( pl ) or !key ) then return end
 		netstream.Start( pl, "catherine.util.Notify", { LANG( pl, key, ... ) } )
@@ -184,10 +194,7 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.util.PlaySound", dir )
 	end
 	
-	function catherine.util.NotifyAll( message, time, icon )
-		if ( !message ) then return end
-		netstream.Start( nil, "catherine.util.Notify", { message, time, icon } )
-	end
+	
 	
 	function catherine.util.AddResourceInFolder( dir )
 		if ( !dir ) then return end
@@ -252,6 +259,10 @@ else
 		catherine.util.Notify( data[ 1 ], data[ 2 ], data[ 3 ] )
 	end )
 	
+	netstream.Hook( "catherine.util.NotifyAllLang", function( data )
+		catherine.util.Notify( LANG( data[ 1 ], unpack( data[ 2 ] ) ) // 버그 발생할 수 있음 ^-^;;
+	end )
+
 	netstream.Hook( "catherine.util.ProgressBar", function( data )
 		if ( !data[ 1 ] or !data[ 2 ] ) then return end
 		catherine.hud.ProgressBarAdd( data[ 1 ], data[ 2 ] )

@@ -22,8 +22,13 @@ LANGUAGE.data = {
 	[ "LanguageError01" ] = "Error Language",
 	
 	// Cash ^-^;
-	[ "Cash_GiveMessage01" ] = "You have given %s to %s",
+	[ "Cash_UI_HasStr" ] = "You have a %s.",
+	[ "Cash_Notify_Set" ] = "%s have set %s to %s",
+	[ "Cash_Notify_Give" ] = "%s have given %s to %s",
+	[ "Cash_Notify_Take" ] = "%s have taken %s from %s",
 	[ "Cash_Notify_HasNot" ] = "You don't have a enough %s!",
+	[ "Cash_Notify_NotValidAmount" ] = "Please enter right amount!",
+	
 	
 	// Faction ^-^;
 	[ "Faction_AddMessage01" ] = "Set faction",
@@ -34,8 +39,8 @@ LANGUAGE.data = {
 	[ "Flag_TakeMessage01" ] = "Take flag",
 	
 	[ "UnknownError" ] = "Unknown Error!",
-	[ "UnknownPlayerError" ] = "You are not giving a valid character name!",
-	[ "ArgError" ] = "Please enter the %s argument!",
+	[ "Basic_Notify_UnknownPlayer" ] = "You are not giving a valid character name!",
+	[ "Basic_Notify_NoArg" ] = "Please enter the %s argument!",
 	
 	
 	
@@ -73,6 +78,12 @@ LANGUAGE.data = {
 	[ "Inventory_UI_Title" ] = "Inventory",
 	[ "Inventory_Notify_HasNotSpace" ] = "You don't have inventory space!",
 	[ "Inventory_Notify_CantDrop01" ] = "Is too far away for drop the item!",
+	
+	// Item
+	[ "Item_Notify_NoItemData" ] = "Is not an available item!",
+	
+	// Entity
+	[ "Entity_Notify_NotValid" ] = "This isn't a valid entity",
 	
 	// Basic
 	[ "Basic_UI_Question" ] = "Question",

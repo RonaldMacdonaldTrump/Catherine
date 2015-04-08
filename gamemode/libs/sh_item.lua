@@ -47,18 +47,18 @@ function catherine.item.Register( itemTable )
 			canShowIsWorld = true,
 			func = function( pl, itemTable, ent )
 				if ( !IsValid( ent ) ) then
-					catherine.util.Notify( pl, "This isn't a valid entity!" )
+					catherine.util.NotifyLang( pl, "Entity_Notify_NotValid" )
 					return
 				end
 				if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
-					catherine.util.Notify( pl, "You don't have inventory space!" )
+					catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 					return
 				end
 				catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 					uniqueID = itemTable.uniqueID,
 					itemData = ( itemTable.useDynamicItemData and ent:GetItemData( ) ) or itemTable.itemData
 				} )
-				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
+				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 50 )
 				ent:Remove( )
 				hook.Run( "ItemTaked", pl, itemTable )
 			end,
@@ -73,10 +73,10 @@ function catherine.item.Register( itemTable )
 			func = function( pl, itemTable )
 				local eyeTr = pl:GetEyeTrace( )
 				if ( pl:GetPos( ):Distance( eyeTr.HitPos ) > 100 ) then
-					catherine.util.Notify( pl, "Can't drop far away!" )
+					catherine.util.NotifyLang( pl, "Inventory_Notify_CantDrop01" )
 					return
 				end
-				pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 40 )
+				pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 50 )
 				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, { uniqueID = itemTable.uniqueID } )
 				hook.Run( "ItemDroped", pl, itemTable )
@@ -147,7 +147,7 @@ if ( SERVER ) then
 		if ( !force ) then
 			local itemTable = catherine.item.FindByID( uniqueID )
 			if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
-				catherine.util.Notify( pl, "You don't have inventory space!" )
+				catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 				return false
 			end
 		end
@@ -170,7 +170,8 @@ if ( SERVER ) then
 	function catherine.item.Spawn( uniqueID, pos, ang, itemData )
 		if ( !uniqueID or !pos ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )
-		if ( !itemTable ) then return end
+		if ( !itemTable ) then return false end
+		
 		local ent = ents.Create( "cat_item" )
 		ent:SetPos( Vector( pos.x, pos.y, pos.z + 10 ) )
 		ent:SetAngles( ang or Angle( ) )
@@ -238,9 +239,12 @@ catherine.command.Register( {
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
-			catherine.item.Spawn( args[ 1 ], pl:GetEyeTrace( ).HitPos )
+			local success = catherine.item.Spawn( args[ 1 ], pl:GetEyeTrace( ).HitPos )
+			if ( !success ) then
+				catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
+			end
 		else
-			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+			catherine.util.NotifyLang( pl, "ArgError", 1 )
 		end
 	end
 } )
