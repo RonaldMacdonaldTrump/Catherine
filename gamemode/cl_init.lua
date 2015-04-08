@@ -24,16 +24,3 @@ include( "shared.lua" )
 timer.Remove( "HintSystem_Annoy1" )
 timer.Remove( "HintSystem_Annoy2" )
 timer.Remove( "HintSystem_OpeningMenu" )
-
-hook.Add( "AddHelpItem", "catherine.AddHelpItem.01", function( data )
-	data:AddItem( "Credit", [[<b>Credit</b><br><br>
-		<b>L7D</b><br>Develop and Design.<br><br>
-		<b>Chessnut</b><br>Good helper.<br><br>
-		<b>Kyle Smith</b><br>UTF-8 module.<br><br>
-		<b>thelastpenguin™</b><br>pON module.<br><br>
-		<b>Alexander Grist-Hucker</b><br>netstream 2 module.<br><br><br>
-		
-		<b>Thanks for using Catherine!</b>
-	]] )
-	data:AddItem( "Changelog", "http://github.com/L7D/Catherine/commits/master" )
-end )

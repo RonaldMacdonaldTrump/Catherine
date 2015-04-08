@@ -25,7 +25,6 @@ function PANEL:Init( )
 	self.ent = nil
 	self.entCheck = CurTime( ) + 1
 	self.closeing = false
-	
 	self.vendorData = { inv = nil }
 	self.player = LocalPlayer( )
 	self.w, self.h = ScrW( ) * 0.6, ScrH( ) * 0.8
@@ -135,7 +134,7 @@ function PANEL:Init( )
 	self.buyPanel.Lists:EnableHorizontal( false )
 	self.buyPanel.Lists:EnableVerticalScrollbar( true )	
 	self.buyPanel.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 		if ( self.count == 0 ) then
 			draw.SimpleText( "Sorry! :(", "catherine_normal30", w / 2, h / 2 - 30, Color( 50, 50, 50, 255 ), 1, 1 )
 			draw.SimpleText( "You can not buy anything!", "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
@@ -154,7 +153,7 @@ function PANEL:Init( )
 	self.sellPanel.Lists:EnableHorizontal( false )
 	self.sellPanel.Lists:EnableVerticalScrollbar( true )	
 	self.sellPanel.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 		if ( self.count == 0 ) then
 			draw.SimpleText( "Sorry! :(", "catherine_normal30", w / 2, h / 2 - 30, Color( 50, 50, 50, 255 ), 1, 1 )
 			draw.SimpleText( "You can not sell anything!", "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
@@ -178,7 +177,7 @@ function PANEL:Init( )
 	self.manageItemPanel.Lists:EnableHorizontal( false )
 	self.manageItemPanel.Lists:EnableVerticalScrollbar( true )	
 	self.manageItemPanel.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
 	
 	self.close = vgui.Create( "catherine.vgui.button", self )
@@ -195,20 +194,17 @@ function PANEL:Init( )
 	end
 end
 
-
 function PANEL:Refresh_List( id )
 	if ( id == 1 ) then
 		local buyalbeItems = self:GetBuyableItems( )
 		self.count = table.Count( buyalbeItems )
-		
 		self.buyPanel.Lists:Clear( )
 		for k, v in pairs( buyalbeItems ) do
 			local form = vgui.Create( "DForm" )
 			form:SetSize( self.buyPanel.Lists:GetWide( ), 64 )
 			form:SetName( k )
 			form.Paint = function( pnl, w, h )
-				draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-				draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+				catherine.theme.Draw( CAT_THEME_FORM, w, h )
 			end
 			form.Header:SetFont( "catherine_normal15" )
 			form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
@@ -273,15 +269,13 @@ function PANEL:Refresh_List( id )
 	elseif ( id == 2 ) then
 		local sellableItems = self:GetSellableItems( )
 		self.count = table.Count( sellableItems )
-		
 		self.sellPanel.Lists:Clear( )
 		for k, v in pairs( sellableItems ) do
 			local form = vgui.Create( "DForm" )
 			form:SetSize( self.sellPanel.Lists:GetWide( ), 64 )
 			form:SetName( k )
 			form.Paint = function( pnl, w, h )
-				draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-				draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+				catherine.theme.Draw( CAT_THEME_FORM, w, h )
 			end
 			form.Header:SetFont( "catherine_normal15" )
 			form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
@@ -351,8 +345,7 @@ function PANEL:Refresh_List( id )
 			form:SetSize( self.manageItemPanel.Lists:GetWide( ), 64 )
 			form:SetName( k )
 			form.Paint = function( pnl, w, h )
-				draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-				draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+				catherine.theme.Draw( CAT_THEME_FORM, w, h )
 			end
 			form.Header:SetFont( "catherine_normal15" )
 			form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
@@ -641,16 +634,14 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	end
 end
 
-
 function PANEL:Paint( w, h )
-	draw.RoundedBox( 0, 0, 25, w, h, Color( 255, 255, 255, 235 ) )
-		
-	surface.SetDrawColor( 200, 200, 200, 235 )
-	surface.SetMaterial( Material( "gui/gradient_up" ) )
-	surface.DrawTexturedRect( 0, 25, w, h )
+	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	
-	if ( IsValid( self.ent ) and self.ent:GetNetVar( "name" ) ) then
-		draw.SimpleText( self.ent:GetNetVar( "name" ), "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	if ( !IsValid( self.ent ) ) then return end
+	local name = self.ent:GetNetVar( "name" )
+	
+	if ( name ) then
+		draw.SimpleText( name, "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 	end
 end
 

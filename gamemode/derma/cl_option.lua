@@ -57,8 +57,7 @@ function PANEL:BuildOption( )
 		form:SetSpacing( 0 )
 		form:SetAutoSize( true )
 		form.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-			draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
@@ -129,8 +128,6 @@ end
 
 vgui.Register( "catherine.vgui.optionItem", PANEL, "DPanel" )
 
-hook.Add( "AddMenuItem", "catherine.vgui.option", function( tab )
-	tab[ "Setting" ] = function( menuPnl, itemPnl )
-		return vgui.Create( "catherine.vgui.option", menuPnl )
-	end
+catherine.menu.Register( "Setting", function( menuPnl, itemPnl )
+	return vgui.Create( "catherine.vgui.option", menuPnl )
 end )

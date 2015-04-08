@@ -22,20 +22,20 @@ function PANEL:Init( )
 	catherine.vgui.help = self
 	
 	self.helps = { }
-	local data = { }
 	self.loadingAni = 0
+	self.loadingAlpha = 0
 	
 	self:SetMenuSize( ScrW( ) * 0.95, ScrH( ) * 0.8 )
 	self:SetMenuName( "Help" )
 
-	self.folders = vgui.Create( "DPanelList", self )
-	self.folders:SetPos( 10, 35 )
-	self.folders:SetSize( self.w * 0.2, self.h - 45 )
-	self.folders:SetSpacing( 5 )
-	self.folders:EnableHorizontal( false )
-	self.folders:EnableVerticalScrollbar( true )
-	self.folders.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+	self.categorys = vgui.Create( "DPanelList", self )
+	self.categorys:SetPos( 10, 35 )
+	self.categorys:SetSize( self.w * 0.2, self.h - 45 )
+	self.categorys:SetSpacing( 5 )
+	self.categorys:EnableHorizontal( false )
+	self.categorys:EnableVerticalScrollbar( true )
+	self.categorys.Paint = function( pnl, w, h )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
 	
 	self.html = vgui.Create( "DHTML", self )
@@ -44,30 +44,33 @@ function PANEL:Init( )
 	self.html.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 	end
-	
-	function data:AddItem( folder, html )
-		catherine.vgui.help.helps[ folder ] = html
+
+	for k, v in pairs( catherine.help.GetAll( ) ) do
+		self.helps[ v.category ] = v.codes
 	end
-	
-	hook.Run( "AddHelpItem", data )
 
 	self:BuildHelps( )
 end
 
 function PANEL:MenuPaint( w, h )
-	draw.NoTexture( )
 	if ( self.html:IsLoading( ) ) then
-		surface.SetDrawColor( 90, 90, 90, 255 )
-		self.loadingAni = math.Approach( self.loadingAni, self.loadingAni - 5, 5 )
-	else
-		surface.SetDrawColor( 90, 90, 90, 0 )
+		self.loadingAlpha = Lerp( 0.05, self.loadingAlpha, 255 )
+	elseif ( !self.html:IsLoading( ) and math.Round( self.loadingAlpha ) > 0 ) then
+		self.loadingAlpha = Lerp( 0.05, self.loadingAlpha, 0 )
 	end
-	catherine.geometry.DrawCircle( w - 20, 50, 10, 5, self.loadingAni, 70, 100 )
+	
+	if ( math.Round( self.loadingAlpha ) > 0 ) then
+		self.loadingAni = math.Approach( self.loadingAni, self.loadingAni - 5, 5 )
+		
+		draw.NoTexture( )
+		surface.SetDrawColor( 90, 90, 90, self.loadingAlpha )
+		catherine.geometry.DrawCircle( w - 20, 50, 10, 5, self.loadingAni, 70, 100 )
+	end
 end
 
-function PANEL:DoWork( html )
-	if ( html:sub( 1, 4 ) == "http" ) then
-		self.html:OpenURL( html )
+function PANEL:DoWork( data )
+	if ( types.types == CAT_HELP_WEBPAGE ) then
+		self.html:OpenURL( data.codes )
 		return
 	end
 	
@@ -82,14 +85,14 @@ function PANEL:DoWork( html )
 		</style>
 		</head>
 	]]
-	self.html:SetHTML( prefix .. html )
+	self.html:SetHTML( prefix .. data.codes )
 end
 
 function PANEL:BuildHelps( )
-	self.folders:Clear( )
+	self.categorys:Clear( )
 	for k, v in pairs( self.helps ) do
 		local panel = vgui.Create( "catherine.vgui.button", self )
-		panel:SetSize( self.folders:GetWide( ), 50 )
+		panel:SetSize( self.categorys:GetWide( ), 30 )
 		panel:SetStr( k )
 		panel:SetStrFont( "catherine_normal15" )
 		panel:SetStrColor( Color( 50, 50, 50, 255 ) )
@@ -101,14 +104,12 @@ function PANEL:BuildHelps( )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 		end
 		
-		self.folders:AddItem( panel )
+		self.categorys:AddItem( panel )
 	end
 end
 
 vgui.Register( "catherine.vgui.help", PANEL, "catherine.vgui.menuBase" )
 
-hook.Add( "AddMenuItem", "catherine.vgui.help", function( tab )
-	tab[ "Help" ] = function( menuPnl, itemPnl )
-		return vgui.Create( "catherine.vgui.help", menuPnl )
-	end
+catherine.menu.Register( "Help", function( menuPnl, itemPnl )
+	return vgui.Create( "catherine.vgui.help", menuPnl )
 end )

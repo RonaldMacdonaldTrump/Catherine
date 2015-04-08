@@ -36,7 +36,7 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
 	self.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
 	
 	self.weight = vgui.Create( "catherine.vgui.weight", self )
@@ -75,8 +75,7 @@ function PANEL:BuildInventory( )
 		form:SetAlpha( 0 )
 		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-			draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
@@ -126,8 +125,6 @@ end
 
 vgui.Register( "catherine.vgui.inventory", PANEL, "catherine.vgui.menuBase" )
 
-hook.Add( "AddMenuItem", "catherine.vgui.inventory", function( tab )
-	tab[ "Inventory" ] = function( menuPnl, itemPnl )
-		return vgui.Create( "catherine.vgui.inventory", menuPnl )
-	end
+catherine.menu.Register( "Inventory", function( menuPnl, itemPnl )
+	return vgui.Create( "catherine.vgui.inventory", menuPnl )
 end )

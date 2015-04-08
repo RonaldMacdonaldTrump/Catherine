@@ -34,7 +34,7 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
 	self.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
 
 	self:SortPlayerLists( )
@@ -73,26 +73,25 @@ function PANEL:RefreshPlayerLists( )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( k )
 		form.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-			draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
 
-		local dpanelList = vgui.Create( "DPanelList", form )
-		dpanelList:SetSize( form:GetWide( ), form:GetTall( ) )
-		dpanelList:SetSpacing( 3 )
-		dpanelList:EnableHorizontal( true )
-		dpanelList:EnableVerticalScrollbar( false )	
+		local lists = vgui.Create( "DPanelList", form )
+		lists:SetSize( form:GetWide( ), form:GetTall( ) )
+		lists:SetSpacing( 3 )
+		lists:EnableHorizontal( true )
+		lists:EnableVerticalScrollbar( false )	
 		
-		form:AddItem( dpanelList )
+		form:AddItem( lists )
 		
 		for k1, v1 in pairs( v ) do
 			local know = self.player:IsKnow( v1 )
 			if ( self.player == v1 ) then know = true end
 			
 			local panel = vgui.Create( "DPanel" )
-			panel:SetSize( dpanelList:GetWide( ), 50 )
+			panel:SetSize( lists:GetWide( ), 50 )
 			panel.Paint = function( pnl, w, h )
 				if ( !IsValid( v1 ) ) then
 					self:RefreshPanel( )
@@ -125,7 +124,7 @@ function PANEL:RefreshPlayerLists( )
 			spawnIcon:SetToolTip( false )
 			spawnIcon.PaintOver = function( pnl, w, h ) end
 			
-			dpanelList:AddItem( panel )
+			lists:AddItem( panel )
 			hF = hF + 51
 		end
 		
@@ -138,8 +137,6 @@ end
 
 vgui.Register( "catherine.vgui.scoreboard", PANEL, "catherine.vgui.menuBase" )
 
-hook.Add( "AddMenuItem", "catherine.vgui.scoreboard", function( tab )
-	tab[ "Player List" ] = function( menuPnl, itemPnl )
-		return vgui.Create( "catherine.vgui.scoreboard", menuPnl )
-	end
+catherine.menu.Register( "Player List", function( menuPnl, itemPnl )
+	return vgui.Create( "catherine.vgui.scoreboard", menuPnl )
 end )

@@ -45,7 +45,7 @@ function PANEL:Init( )
 	self.storageLists:EnableHorizontal( false )
 	self.storageLists:EnableVerticalScrollbar( true )	
 	self.storageLists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 		if ( self.storageInventory and table.Count( self.storageInventory ) == 0 ) then
 			draw.SimpleText( "This storage box has no items!", "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
@@ -58,7 +58,7 @@ function PANEL:Init( )
 	self.playerLists:EnableHorizontal( false )
 	self.playerLists:EnableVerticalScrollbar( true )	
 	self.playerLists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 		if ( self.playerInventory and table.Count( self.playerInventory ) == 0 ) then
 			draw.SimpleText( "You don't have any items!", "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
@@ -90,14 +90,13 @@ function PANEL:Init( )
 end
 
 function PANEL:Paint( w, h )
-	draw.RoundedBox( 0, 0, 25, w, h, Color( 255, 255, 255, 235 ) )
-		
-	surface.SetDrawColor( 200, 200, 200, 235 )
-	surface.SetMaterial( Material( "gui/gradient_up" ) )
-	surface.DrawTexturedRect( 0, 25, w, h )
+	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	
-	if ( IsValid( self.ent ) and self.ent:GetNetVar( "name" ) ) then
-		draw.SimpleText( self.ent:GetNetVar( "name" ), "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	if ( !IsValid( self.ent ) ) then return end
+	local name = self.ent:GetNetVar( "name" )
+	
+	if ( name ) then
+		draw.SimpleText( name, "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 	end
 	
 	draw.SimpleText( "Your Inventory", "catherine_normal25", w / 2, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
@@ -161,8 +160,7 @@ function PANEL:BuildStorage( )
 		form:SetAlpha( 0 )
 		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-			draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
@@ -216,8 +214,7 @@ function PANEL:BuildStorage( )
 		form:SetAlpha( 0 )
 		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-			draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )

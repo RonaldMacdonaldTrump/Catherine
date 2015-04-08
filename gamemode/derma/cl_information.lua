@@ -40,7 +40,7 @@ function PANEL:Init( )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
-	self.Lists.Paint = function( pnl, w, h ) end
+	self.Lists:SetDrawBackground( false )
 	
 	self.descEnt = vgui.Create( "DTextEntry", self )
 	self.descEnt:SetPos( 90, 45 )
@@ -89,11 +89,7 @@ function PANEL:AddRPInformation( text )
 end
 
 function PANEL:Paint( w, h )
-	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
-		
-	surface.SetDrawColor( 200, 200, 200, 200 )
-	surface.SetMaterial( Material( "gui/gradient_up" ) )
-	surface.DrawTexturedRect( 0, 0, w, h )
+	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	
 	draw.SimpleText( self.player:Name( ), "catherine_normal25", 90, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 	draw.SimpleText( self.player:FactionName( ), "catherine_normal20", 15, 80, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )

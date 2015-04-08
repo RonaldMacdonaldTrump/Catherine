@@ -35,7 +35,7 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 		if ( self.business and table.Count( self.business ) == 0 ) then
 			draw.SimpleText( "You can't buy anything!", "catherine_normal25", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
@@ -48,7 +48,7 @@ function PANEL:Init( )
 	self.Cart:EnableHorizontal( false )
 	self.Cart:EnableVerticalScrollbar( true )
 	self.Cart.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
 	
 	self.buyItems = vgui.Create( "catherine.vgui.button", self )
@@ -170,8 +170,7 @@ function PANEL:BuildBusiness( )
 		form:SetAlpha( 0 )
 		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-			draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
@@ -246,7 +245,7 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
 	
 	self.close = vgui.Create( "catherine.vgui.button", self )
@@ -311,12 +310,7 @@ function PANEL:BuildShipment( )
 end
 
 function PANEL:Paint( w, h )
-	draw.RoundedBox( 0, 0, 25, w, h, Color( 255, 255, 255, 235 ) )
-		
-	surface.SetDrawColor( 200, 200, 200, 235 )
-	surface.SetMaterial( Material( "gui/gradient_up" ) )
-	surface.DrawTexturedRect( 0, 25, w, h )
-	
+	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	draw.SimpleText( "Shipment", "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 end
 
@@ -346,8 +340,6 @@ end
 
 vgui.Register( "catherine.vgui.shipment", PANEL, "DFrame" )
 
-hook.Add( "AddMenuItem", "catherine.vgui.business", function( tab )
-	tab[ "Business" ] = function( menuPnl, itemPnl )
-		return vgui.Create( "catherine.vgui.business", menuPnl )
-	end
+catherine.menu.Register( "Business", function( menuPnl, itemPnl )
+	return vgui.Create( "catherine.vgui.business", menuPnl )
 end )

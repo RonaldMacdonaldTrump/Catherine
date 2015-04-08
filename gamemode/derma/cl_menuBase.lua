@@ -52,12 +52,7 @@ end
 function PANEL:MenuPaint( w, h ) end
 
 function PANEL:Paint( w, h )
-	draw.RoundedBox( 0, 0, 25, w, h, Color( 255, 255, 255, 235 ) )
-		
-	surface.SetDrawColor( 200, 200, 200, 235 )
-	surface.SetMaterial( Material( "gui/gradient_up" ) )
-	surface.DrawTexturedRect( 0, 25, w, h )
-
+	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	draw.SimpleText( self.name, "catherine_normal25", 0, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 	self:MenuPaint( w, h )
 end

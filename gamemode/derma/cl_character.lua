@@ -624,9 +624,7 @@ end
 
 vgui.Register( "catherine.character.stageTwo", PANEL, "DPanel" )
 
-hook.Add( "AddMenuItem", "catherine.vgui.character", function( tab )
-	tab[ "Character" ] = function( menuPnl, itemPnl )
-		vgui.Create( "catherine.vgui.character" )
-		menuPnl:Close( )
-	end
+catherine.menu.Register( "Character", function( menuPnl, itemPnl )
+	vgui.Create( "catherine.vgui.character" )
+	menuPnl:Close( )
 end )

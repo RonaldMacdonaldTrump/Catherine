@@ -45,13 +45,12 @@ function PANEL:Init( )
 	self.ListsBase:SetSize( self.w, 50 )
 	self.ListsBase:SetPos( 0, self.h )
 	self.ListsBase:MoveTo( 0, self.h - self.ListsBase:GetTall( ), 0.2, 0.1, nil, function( )
-		hook.Run( "AddMenuItem", self.menuItems )
-		
 		local delta = 0
-		for k, v in pairs( self.menuItems ) do
-			local itemPnl = self:AddMenuItem( k, v )
-			itemPnl:SetAlpha( 0 )
-			itemPnl:AlphaTo( 255, 0.2, delta )
+		for k, v in pairs( catherine.menu.GetAll( ) ) do
+			if ( v.canLook and v.canLook( self.player ) == false ) then continue end
+			local menuButton = self:AddMenuItem( v.name, v.func )
+			menuButton:SetAlpha( 0 )
+			menuButton:AlphaTo( 255, 0.2, delta )
 			delta = delta + 0.05
 		end
 	end )

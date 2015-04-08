@@ -16,34 +16,17 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-local LANGUAGE = catherine.language.New( "english" )
-LANGUAGE.name = "English"
-LANGUAGE.data = {
-	[ "LanguageError01" ] = "Error Language",
-	
-	// Cash ^-^;
-	[ "Cash_GiveMessage01" ] = "You have given %s to %s",
-	
-	// Faction ^-^;
-	[ "Faction_AddMessage01" ] = "Set faction",
-	[ "Faction_RemoveMessage01" ] = "Take faction",
-	
-	// Flag ^-^;
-	[ "Flag_GiveMessage01" ] = "Give flag",
-	[ "Flag_TakeMessage01" ] = "Take flag",
-	
-	[ "UnknownError" ] = "Unknown Error!",
-	[ "UnknownPlayerError" ] = "You are not giving a valid character name!",
-	[ "ArgError" ] = "Please enter the %s argument!"
-	
-	
-	
-	
-	
-	// UI
-	// Version
-	
-	
-}
+catherine.menu = catherine.menu or { }
+catherine.menu.Lists = { }
 
-catherine.language.Register( LANGUAGE )
+function catherine.menu.Register( name, func, canLook )
+	catherine.menu.Lists[ #catherine.menu.Lists + 1 ] = {
+		name = name,
+		func = func,
+		canLook = canLook
+	}
+end
+
+function catherine.menu.GetAll( )
+	return catherine.menu.Lists
+end

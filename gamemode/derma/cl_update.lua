@@ -31,15 +31,15 @@ function PANEL:Init( )
 	self.check = vgui.Create( "catherine.vgui.button", self )
 	self.check:SetPos( self.w - ( self.w * 0.2 ) - 10, 30 )
 	self.check:SetSize( self.w * 0.2, 30 )
-	self.check:SetStr( "Check update!" )
+	self.check:SetStr( "Update check" )
 	self.check.Cant = false
 	self.check.PaintOverAll = function( pnl )
 		if ( self.status.status ) then
-			self.check:SetStr( "Checking ..." )
-			self.check.Cant = true
+			pnl:SetStr( "Checking ..." )
+			pnl.Cant = true
 		else
-			self.check:SetStr( "Check update!" )
-			self.check.Cant = false
+			pnl:SetStr( "Update check" )
+			pnl.Cant = false
 		end
 	end
 	self.check:SetGradientColor( Color( 50, 50, 50, 150 ) )
@@ -62,27 +62,20 @@ function PANEL:MenuPaint( w, h )
 		self.status.rotate = math.Approach( self.status.rotate, self.status.rotate - 3, 3 )
 		self.status.alpha = math.Approach( self.status.alpha, 255, 5 )
 	else
-		self.status.rotate = math.Approach( self.status.rotate, 90, 5 )
-		self.status.alpha = math.Approach( self.status.alpha, 0, 3 )
+		if ( math.Round( self.status.alpha ) > 0 ) then
+			self.status.rotate = math.Approach( self.status.rotate, 90, 5 )
+			self.status.alpha = math.Approach( self.status.alpha, 0, 3 )
+		end
 	end
 	
 	surface.SetDrawColor( 255, 255, 255, 255 )
-	surface.SetMaterial( Material( "CAT/logos/2.png" ) )
+	surface.SetMaterial( Material( catherine.configs.frameworkLogo ) )
 	surface.DrawTexturedRect( w / 2 - 512 / 2, h / 2 - 256 / 2, 512, 256 )
 	
-	if ( self.latestVersion ) then
-		draw.SimpleText( "Latest Version - " .. self.latestVersion, "catherine_normal20", w / 2, h - 60, Color( 50, 50, 50, 255 ), 1, 1 )
-	else
-		draw.SimpleText( "Latest Version - None", "catherine_normal20", w / 2, h - 60, Color( 50, 50, 50, 255 ), 1, 1 )
-	end
+	draw.SimpleText( self.latestVersion and ( "Latest Version - " .. self.latestVersion ) or "Latest Version - None", "catherine_normal20", w / 2, h - 60, Color( 50, 50, 50, 255 ), 1, 1 )
+	draw.SimpleText( self.version and ( "Your Version - " .. self.version ) or "Your Version - None", "catherine_normal20", w / 2, h - 25, Color( 50, 50, 50, 255 ), 1, 1 )
 	
-	if ( self.version ) then
-		draw.SimpleText( "Your Version - " .. self.version, "catherine_normal20", w / 2, h - 25, Color( 50, 50, 50, 255 ), 1, 1 )
-	else
-		draw.SimpleText( "Your Version - None", "catherine_normal20", w / 2, h - 25, Color( 50, 50, 50, 255 ), 1, 1 )
-	end
-	
-	if ( self.status.alpha > 0 ) then
+	if ( math.Round( self.status.alpha ) > 0 ) then
 		draw.NoTexture( )
 		surface.SetDrawColor( 90, 90, 90, self.status.alpha )
 		catherine.geometry.DrawCircle( 30, 50, 10, 3, 90, 360, 100 )
@@ -97,9 +90,8 @@ end
 
 vgui.Register( "catherine.vgui.version", PANEL, "catherine.vgui.menuBase" )
 
-hook.Add( "AddMenuItem", "catherine.vgui.version", function( tab )
-	if ( !LocalPlayer( ):IsSuperAdmin( ) ) then return end
-	tab[ "Version" ] = function( menuPnl, itemPnl )
-		return vgui.Create( "catherine.vgui.version", menuPnl )
-	end
+catherine.menu.Register( "Version", function( menuPnl, itemPnl )
+	return vgui.Create( "catherine.vgui.version", menuPnl )
+end, function( pl )
+	return pl:IsSuperAdmin( )
 end )

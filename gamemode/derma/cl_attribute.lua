@@ -31,7 +31,7 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
 	self.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
 
 	self:BuildAttribute( )
@@ -99,8 +99,6 @@ end
 
 vgui.Register( "catherine.vgui.attributeItem", PANEL, "DPanel" )
 
-hook.Add( "AddMenuItem", "catherine.vgui.attribute", function( tab )
-	tab[ "Attribute" ] = function( menuPnl, itemPnl )
-		return vgui.Create( "catherine.vgui.attribute", menuPnl )
-	end
+catherine.menu.Register( "Attribute", function( menuPnl, itemPnl )
+	return vgui.Create( "catherine.vgui.attribute", menuPnl )
 end )
