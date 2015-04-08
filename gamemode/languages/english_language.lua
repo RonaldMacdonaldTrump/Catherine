@@ -120,12 +120,14 @@ LANGUAGE.data = {
 	[ "Door_Notify_CMD_UnLocked" ] = "You are unlocked this door.",
 	[ "Door_Message_Locking" ] = "Locking ...",
 	[ "Door_Message_UnLocking" ] = "UnLocking ...",
+	[ "Door_Message_Buyable" ] = "This door can purchase.",
+	[ "Door_Message_CantBuy" ] = "This door can't purchase.",
+	[ "Door_Message_AlreadySold" ] = "This door has already been purchased",
 	[ "Door_Notify_AlreadySold" ] = "This door is already sold by someone!",
 	[ "Door_Notify_NoOwner" ] = "You are not owner for this door!",
 	[ "Door_Notify_CantBuyable" ] = "This door can't buy!",
 	[ "Door_Notify_Buy" ] = "You are buy this door.",
 	[ "Door_Notify_Sell" ] = "You are sold this door.",
-	
 	
 	// Basic
 	[ "Basic_UI_CATLoaded" ] = "Welcome.",

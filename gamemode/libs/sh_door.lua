@@ -59,7 +59,7 @@ catherine.command.Register( {
 if ( SERVER ) then
 	function catherine.door.Buy( pl, ent )
 		if ( !IsValid( pl ) ) then return end
-		if ( !IsValid( ent ) ) then
+		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
 			return false, "Entity_Notify_NotDoor"
 		end
 		
@@ -84,7 +84,7 @@ if ( SERVER ) then
 	
 	function catherine.door.Sell( pl, ent )
 		if ( !IsValid( pl ) ) then return end
-		if ( !IsValid( ent ) ) then
+		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
 			return false, "Entity_Notify_NotDoor"
 		end
 
@@ -101,7 +101,7 @@ if ( SERVER ) then
 	
 	function catherine.door.SetDoorTitle( pl, ent, title, force )
 		if ( !IsValid( pl ) or !title ) then return end
-		if ( !IsValid( ent ) ) then
+		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
 			return false, "Entity_Notify_NotDoor"
 		end
 		
@@ -235,11 +235,24 @@ if ( SERVER ) then
 else
 	local toscreen = FindMetaTable("Vector").ToScreen
 	
+	function catherine.door.GetDetailString( ent )
+		local owner = ent:GetNetVar( "owner" )
+		if ( owner ) then
+			return LANG( "Door_Message_AlreadySold" )
+		elseif ( !owner and catherine.door.IsBuyableDoor( ent ) ) then
+			return LANG( "Door_Message_Buyable" )
+		else
+			return LANG( "Door_Message_CantBuy" )
+		end
+	end
+	
 	hook.Add( "DrawEntityTargetID", "catherine.door.DrawEntityTargetID", function( pl, ent, a )
 		if ( !ent:IsDoor( ) ) then return end
-		local position = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
-		draw.SimpleText( catherine.network.GetNetVar( ent, "owner", nil ) == nil and "This door can purchase." or "This door has already been purchased.", "catherine_outline15", position.x, position.y + 20, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( catherine.network.GetNetVar( ent, "title", "Door" ), "catherine_outline20", position.x, position.y, Color( 255, 255, 255, a ), 1, 1 )
+		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
+		local x, y = pos.x, pos.y
+		
+		draw.SimpleText( ent:GetNetVar( "title", "Door" ), "catherine_outline20", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( catherine.door.GetDetailString( ent ), "catherine_outline15", x, y + 20, Color( 255, 255, 255, a ), 1, 1 )
 	end )
 end
 
