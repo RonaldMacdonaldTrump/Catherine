@@ -274,6 +274,6 @@ else
 
 	hook.Add( "NetworkGlobalVarChanged", "catherine.inventory.hooks.NetworkGlobalVarChanged_0", function( )
 		if ( !IsValid( catherine.vgui.inventory ) ) then return end
-		catherine.vgui.inventory:InitializeInventory( )
+		catherine.vgui.inventory:BuildInventory( )
 	end )
 end

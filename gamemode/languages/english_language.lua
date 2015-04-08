@@ -85,6 +85,12 @@ LANGUAGE.data = {
 	[ "Scoreboard_UI_UnknownDesc" ] = "You don't know this guy.",
 	[ "Scoreboard_UI_PlayerDetailStr" ] = "This player Steam Name is %s\nThis player Steam ID is %s\nThis player Ping is %s",
 	
+	// Help
+	[ "Help_UI_Title" ] = "Help",
+	
+	// Help
+	[ "Help_UI_Title" ] = "Help",
+	
 	// Item
 	[ "Item_Notify_NoItemData" ] = "Is not an available item!",
 	

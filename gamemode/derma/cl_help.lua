@@ -26,7 +26,7 @@ function PANEL:Init( )
 	self.loadingAlpha = 0
 	
 	self:SetMenuSize( ScrW( ) * 0.95, ScrH( ) * 0.8 )
-	self:SetMenuName( "Help" )
+	self:SetMenuName( LANG( "Help_UI_Title" ) )
 
 	self.categorys = vgui.Create( "DPanelList", self )
 	self.categorys:SetPos( 10, 35 )
@@ -110,6 +110,8 @@ end
 
 vgui.Register( "catherine.vgui.help", PANEL, "catherine.vgui.menuBase" )
 
-catherine.menu.Register( "Help", function( menuPnl, itemPnl )
+catherine.menu.Register( function( )
+	return LANG( "Help_UI_Title" )
+end, function( menuPnl, itemPnl )
 	return vgui.Create( "catherine.vgui.help", menuPnl )
 end )
