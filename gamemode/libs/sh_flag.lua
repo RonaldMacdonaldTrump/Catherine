@@ -31,18 +31,12 @@ function catherine.flag.GetAll( )
 end
 
 function catherine.flag.FindByID( id )
-	if ( !id ) then return nil end
+	if ( !id ) then return end
 	for k, v in pairs( catherine.flag.GetAll( ) ) do
 		if ( v.id == id ) then
 			return v
 		end
 	end
-	return nil
-end
-
-function catherine.flag.Has( pl, id )
-	local flagData = catherine.character.GetCharacterVar( pl, "flags", "" )
-	return tobool( flagData:find( id ) )
 end
 
 function catherine.flag.GetAllToString( )
@@ -53,22 +47,19 @@ function catherine.flag.GetAllToString( )
 	return flags
 end
 
-function META:HasFlag( id )
-	return catherine.flag.Has( self, id )
-end
-
 if ( SERVER ) then
 	function catherine.flag.Give( pl, ids )
 		if ( !IsValid( pl ) or !ids ) then return end
 		local ex = string.Explode( "", ids )
 		local result = catherine.character.GetCharacterVar( pl, "flags", "" )
+		
 		for k, v in pairs( ex ) do
 			local flagTable = catherine.flag.FindByID( v )
 			if ( !flagTable ) then
-				return false, v .. " is not valid flag!"
+				return false, "Flag_Notify_NotValid", { v }
 			end
 			if ( catherine.flag.Has( pl, v ) ) then
-				return false, pl:Name( ) .. " already has " .. v .. " flag!"
+				return false, "Flag_Notify_AlreadyHas", { pl:Name( ), v }
 			end
 			
 			result = result .. v
@@ -76,21 +67,23 @@ if ( SERVER ) then
 				flagTable.onGive( pl )
 			end
 		end
+		
 		catherine.character.SetCharacterVar( pl, "flags", result )
-		return true
+		return true, nil, ids
 	end
 	
 	function catherine.flag.Take( pl, ids )
 		if ( !IsValid( pl ) or !ids ) then return end
 		local ex = string.Explode( "", ids )
 		local result = catherine.character.GetCharacterVar( pl, "flags", "" )
+		
 		for k, v in pairs( ex ) do
 			local flagTable = catherine.flag.FindByID( v )
 			if ( !flagTable ) then
-				return false, v .. " is not valid flag!"
+				return false, "Flag_Notify_NotValid", { v }
 			end
 			if ( !catherine.flag.Has( pl, v ) ) then
-				return false, pl:Name( ) .. " hasen't " .. v .. " flag!"
+				return false, "Flag_Notify_HasNot", { pl:Name( ), v }
 			end
 			
 			result = result:gsub( v, "" )
@@ -98,8 +91,19 @@ if ( SERVER ) then
 				flagTable.onTake( pl )
 			end
 		end
+		
 		catherine.character.SetCharacterVar( pl, "flags", result )
-		return true
+		return true, nil, ids
+	end
+	
+	function catherine.flag.Has( pl, id )
+		if ( !IsValid( pl ) or !id ) then return end
+		local flagData = catherine.character.GetCharacterVar( pl, "flags", "" )
+		return flagData:find( id )
+	end
+	
+	function META:HasFlag( id )
+		return catherine.flag.Has( self, id )
 	end
 	
 	function catherine.flag.PlayerSpawnedInCharacter( pl )
@@ -108,22 +112,31 @@ if ( SERVER ) then
 			v.onSpawn( pl )
 		end
 	end
+	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.flag.PlayerSpawnedInCharacter", catherine.flag.PlayerSpawnedInCharacter )
 else
-	hook.Add( "AddHelpItem", "catherine.flag.AddHelpItem", function( data )
-		local html = [[<b>Flags</b><br>]]
+	function catherine.flag.Has( id )
+		if ( !id ) then return end
+		local flagData = catherine.character.GetCharacterVar( LocalPlayer( ), "flags", "" )
+		return flagData:find( id )
+	end
+	
+	function META:HasFlag( id )
+		return catherine.flag.Has( id )
+	end
+	
+	local html = [[<b>Flags</b><br>]]
 		
-		for k, v in pairs( catherine.flag.GetAll( ) ) do
-			local col = "<font color=\"red\">&#10005;</font>"
-			if ( LocalPlayer( ):HasFlag( v.id ) ) then
-				col = "<font color=\"green\">&#10004;</font>"
-			end
-			
-			html = html .. "<p>" .. col .. "<b> " .. v.id .. "</b><br>" .. v.desc .. "<br>"
+	for k, v in pairs( catherine.flag.GetAll( ) ) do
+		local col = "<font color=\"red\">&#10005;</font>"
+		if ( catherine.flag.Has( v.id ) ) then
+			col = "<font color=\"green\">&#10004;</font>"
 		end
 		
-		data:AddItem( "Flags", html )
-	end )
+		html = html .. "<p>" .. col .. "<b> " .. v.id .. "</b><br>" .. v.desc .. "<br>"
+	end
+		
+	catherine.help.Register( CAT_HELP_HTML, "Flags", html )
 end
 
 catherine.flag.Register( "p", "Access to physgun.", {
@@ -160,20 +173,20 @@ catherine.command.Register( {
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					local success, reason = catherine.flag.Give( pl, args[ 2 ] )
+					local success, langKey, par = catherine.flag.Give( target, args[ 2 ] )
 					if ( success ) then
-						catherine.util.Notify( pl, catherine.language.GetValue( pl, "Flag_GiveMessage01" ) )
+						catherine.util.NotifyAllLang( "Flag_Notify_Give", pl:Name( ), par, target:Name( ) )
 					else
-						catherine.util.Notify( pl, reason or catherine.language.GetValue( pl, "UnknownError" ) )
+						catherine.util.NotifyLang( pl, langKey, unpack( par ) )
 					end
 				else
-					catherine.util.Notify( pl, catherine.language.GetValue( pl, "UnknownPlayerError" ) )
+					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
 			else
-				catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 2 ) )
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
 			end
 		else
-			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )
@@ -187,20 +200,20 @@ catherine.command.Register( {
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					local success, reason = catherine.flag.Take( pl, args[ 2 ] )
+					local success, langKey, par = catherine.flag.Take( target, args[ 2 ] )
 					if ( success ) then
-						catherine.util.Notify( pl, catherine.language.GetValue( pl, "Flag_TakeMessage01" ) )
+						catherine.util.NotifyAllLang( "Flag_Notify_Take", pl:Name( ), par, target:Name( ) )
 					else
-						catherine.util.Notify( pl, reason or catherine.language.GetValue( pl, "UnknownError" ) )
+						catherine.util.NotifyLang( pl, langKey, unpack( par ) )
 					end
 				else
-					catherine.util.Notify( pl, catherine.language.GetValue( pl, "UnknownPlayerError" ) )
+					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
 			else
-				catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 2 ) )
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
 			end
 		else
-			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )

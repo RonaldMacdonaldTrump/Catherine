@@ -35,8 +35,11 @@ LANGUAGE.data = {
 	[ "Faction_RemoveMessage01" ] = "Take faction",
 	
 	// Flag ^-^;
-	[ "Flag_GiveMessage01" ] = "Give flag",
-	[ "Flag_TakeMessage01" ] = "Take flag",
+	[ "Flag_Notify_Give" ] = "%s have given %s to %s",
+	[ "Flag_Notify_Take" ] = "%s have taken %s to %s",
+	[ "Flag_Notify_AlreadyHas" ] = "%s already has %s flag!",
+	[ "Flag_Notify_HasNot" ] = "%s hasen't %s flag!",
+	[ "Flag_Notify_NotValid" ] = "%s is not valid flag!",
 	
 	[ "UnknownError" ] = "Unknown Error!",
 	[ "Basic_Notify_UnknownPlayer" ] = "You are not giving a valid character name!",
