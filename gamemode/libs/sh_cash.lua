@@ -29,6 +29,10 @@ function catherine.cash.GetName( amount )
 	return amount .. " " .. catherine.configs.cashName
 end
 
+function catherine.cash.Has( pl, amount )
+	return catherine.cash.Get( pl ) >= amount
+end
+
 if ( SERVER ) then
 	function catherine.cash.Set( pl, amount )
 		amount = tonumber( amount )

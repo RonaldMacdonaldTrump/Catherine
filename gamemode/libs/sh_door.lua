@@ -21,18 +21,117 @@ if ( !catherine.data ) then
 end
 catherine.door = catherine.door or { }
 
-local META = FindMetaTable( "Entity" )
 
-function META:IsDoor( )
-	if ( !IsValid( self ) ) then return false end
-	local class = self:GetClass( )
-	if ( class == "func_door" or class == "func_door_rotating" or class == "prop_door_rotating" or class == "prop_dynamic" ) then
-		return true
+catherine.command.Register( {
+	command = "doorbuy",
+	syntax = "[none]",
+	runFunc = function( pl, args )
+		local success, langKey, par = catherine.door.Buy( pl, pl:GetEyeTrace( 70 ).Entity )
+		if ( success ) then
+			catherine.util.NotifyLang( pl, "Door_Notify_Buy" )
+		else
+			catherine.util.NotifyLang( pl, langKey, unpack( par ) )
+		end
 	end
-	return false
-end
+} )
+
+catherine.command.Register( {
+	command = "doorsell",
+	syntax = "[none]",
+	runFunc = function( pl, args )
+		local success, langKey, par = catherine.door.Sell( pl, pl:GetEyeTrace( 70 ).Entity )
+		if ( success ) then
+			catherine.util.NotifyLang( pl, "Door_Notify_Sell" )
+		else
+			catherine.util.NotifyLang( pl, langKey, unpack( par ) )
+		end
+	end
+} )
+
+catherine.command.Register( {
+	command = "doorsettitle",
+	syntax = "[text]",
+	runFunc = function( pl, args )
+		catherine.door.SetDoorTitle( pl, ent, title, force )
+	end
+} )
 
 if ( SERVER ) then
+	function catherine.door.Buy( pl, ent )
+		if ( !IsValid( pl ) ) then return end
+		if ( !IsValid( ent ) ) then
+			return false, "Entity_Notify_NotDoor"
+		end
+		
+		if ( !catherine.door.IsBuyableDoor( ent ) ) then
+			return false, "Door_Notify_CantBuyable"
+		end
+
+		if ( catherine.door.GetDoorOwner( ent ) ) then
+			return false, "Door_Notify_AlreadySold"
+		end
+		
+		local cost = catherine.door.GetDoorCost( pl, ent )
+		if ( !catherine.cash.Has( pl, cost ) ) then
+			return false, "Cash_Notify_HasNot", { catherine.cash.GetOnlyName( ) }
+		end
+		
+		catherine.cash.Take( pl, cost )
+		ent:SetNetVar( "owner", pl:GetCharacterID( ) )
+		
+		return true
+	end
+	
+	function catherine.door.Sell( pl, ent )
+		if ( !IsValid( pl ) ) then return end
+		if ( !IsValid( ent ) ) then
+			return false, "Entity_Notify_NotDoor"
+		end
+
+		if ( !catherine.door.GetDoorOwner( ent ) or !catherine.door.IsDoorOwner( pl, ent ) ) then
+			return false, "Door_Notify_NoOwner"
+		end
+		
+		catherine.cash.Give( pl, catherine.door.GetDoorCost( pl, ent ) / 2 )
+		ent:SetNetVar( "owner", nil )
+		
+		return true
+		// 판매시 주인이 임의로 설정한 커스텀 타이틀이 복귀되어야함 ^_^
+	end
+	
+	function catherine.door.SetDoorTitle( pl, ent, title, force )
+		if ( !IsValid( pl ) or !title ) then return end
+		if ( !IsValid( ent ) ) then
+			return false, "Entity_Notify_NotDoor"
+		end
+		
+		if ( force ) then
+			ent:SetNetVar( "title", title )
+		else
+			if ( !catherine.door.GetDoorOwner( ent ) or !catherine.door.IsDoorOwner( pl, ent ) ) then
+				return false, "Door_Notify_NoOwner"
+			end
+			ent:SetNetVar( "title", title )
+		end
+		
+		return true
+	end
+
+	function catherine.door.GetDoorCost( pl, ent )
+		return catherine.configs.doorCost // to do;;
+	end
+	
+	function catherine.door.GetDoorOwner( ent )
+		return ent:GetNetVar( "owner" )
+	end
+	
+	function catherine.door.IsDoorOwner( pl, ent )
+		//if ( !IsValid( pl ) or !IsValid( ent ) ) then return end
+		return pl:GetCharacterID( ) == ent:GetNetVar( "owner" )
+	end
+	
+	
+	/*
 	function catherine.door.Buy( pl )
 		local ent = pl:GetEyeTrace( 70 ).Entity
 		if ( !IsValid( ent ) ) then
@@ -98,42 +197,41 @@ if ( SERVER ) then
 		end
 		return catherine.network.GetNetVar( ent, "owner", nil )
 	end
+	
+	*/
 
-	function catherine.door.SaveData( )
+	function catherine.door.DataSave( )
 		local data = { }
+		
 		for k, v in pairs( ents.GetAll( ) ) do
-			if ( !v:IsDoor( ) ) then continue end
-			local title = catherine.network.GetNetVar( v, "title", "Door" )
-			if ( title == "Door" ) then continue end
+			if ( !catherine.entity.IsDoor( v ) ) then continue end
+			local title = v:GetNetVar( "title", "Door" )
+			local buyable = v:GetNetVar( "buyable", true )
+			if ( title == "Door" or buyable ) then continue end
+			
 			data[ #data + 1 ] = {
 				title = title,
+				buyable = buyable,
 				index = v:EntIndex( )
 			}
 		end
 		
-		catherine.data.Set( "door", data )
+		catherine.data.Set( "doors", data )
 	end
 	
-	
-	function catherine.door.LoadData( )
-		local data = catherine.data.Get( "door", { } )
-		
-		for k, v in pairs( data ) do
-			for k1, v1 in pairs( ents.GetAll( ) ) do
-				if ( IsValid( v1 ) and v1:IsDoor( ) and v1:EntIndex( ) == v.index ) then
-					catherine.network.SetNetVar( v1, "title", v.title )
+	function catherine.door.DataLoad( )
+		for k, v in pairs( ents.GetAll( ) ) do
+			for k1, v1 in pairs( catherine.data.Get( "doors", { } ) ) do
+				if ( IsValid( v ) and catherine.entity.IsDoor( v ) and v:EntIndex( ) == v1.index ) then
+					v:SetNetVar( "title", v1.title )
+					v:SetNetVar( "buyable", v1.buyable )
 				end
 			end
 		end
 	end
 	
-	hook.Add( "DataSave", "catherine.door.DataSave", function( )
-		catherine.door.SaveData( )
-	end )
-	
-	hook.Add( "DataLoad", "catherine.door.DataLoad", function( )
-		catherine.door.LoadData( )
-	end )
+	hook.Add( "DataSave", "catherine.door.DataSave", catherine.door.DataSave )
+	hook.Add( "DataLoad", "catherine.door.DataLoad", catherine.door.DataLoad )
 else
 	local toscreen = FindMetaTable("Vector").ToScreen
 	
@@ -145,26 +243,6 @@ else
 	end )
 end
 
-catherine.command.Register( {
-	command = "doorbuy",
-	syntax = "[none]",
-	runFunc = function( pl, args )
-		catherine.door.Buy( pl )
-	end
-} )
-
-catherine.command.Register( {
-	command = "doorsell",
-	syntax = "[none]",
-	runFunc = function( pl, args )
-		catherine.door.Sell( pl )
-	end
-} )
-
-catherine.command.Register( {
-	command = "doorsettitle",
-	syntax = "[text]",
-	runFunc = function( pl, args )
-		catherine.door.SetDoorTitle( pl, args[ 1 ] )
-	end
-} )
+function catherine.door.IsBuyableDoor( ent )
+	return ent:GetNetVar( "buyable", true )
+end
