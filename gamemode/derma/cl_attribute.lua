@@ -29,7 +29,7 @@ function PANEL:Init( )
 	self.Lists:SetSize( self.w - 20, self.h - 45 )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
-	self.Lists:EnableVerticalScrollbar( true )	
+	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end

@@ -31,8 +31,9 @@ LANGUAGE.data = {
 	
 	
 	// Faction ^-^;
-	[ "Faction_AddMessage01" ] = "Set faction",
-	[ "Faction_RemoveMessage01" ] = "Take faction",
+	[ "Faction_Notify_Give" ] = "%s have given %s to %s",
+	[ "Faction_Notify_Take" ] = "%s have taken %s from %s",
+	[ "Faction_Notify_NotValid" ] = "%s is not valid faction!",
 	
 	// Flag ^-^;
 	[ "Flag_Notify_Give" ] = "%s have given %s to %s",

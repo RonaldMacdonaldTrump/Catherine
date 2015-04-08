@@ -17,33 +17,9 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.Lists = PLUGIN.Lists or { }
 
-function PLUGIN:SavePoints( )
-	catherine.data.Set( "spawnpoints", self.Lists )
-end
-
-function PLUGIN:LoadPoints( )
-	self.Lists = catherine.data.Get( "spawnpoints", { } )
-end
-
-function PLUGIN:DataLoad( )
-	self:LoadPoints( )
-end
-
-function PLUGIN:DataSave( )
-	self:SavePoints( )
-end
-
-function PLUGIN:GetRandomPos( faction )
-	local map = game.GetMap( )
-	if ( !faction or !self.Lists[ map ] or !self.Lists[ map ][ faction ] or #self.Lists[ map ][ faction ] == 0 ) then return end
-	return table.Random( self.Lists[ map ][ faction ] )
-end
-
-function PLUGIN:PlayerSpawnedInCharacter( pl )
-	local pos = self:GetRandomPos( pl:Faction( ) )
-	if ( !pos ) then return end
-	pos.z = pos.z + 10
-	pl:SetPos( pos )
-end
+catherine.language.Merge( "english", {
+	[ "Spawnpoint_Notify_Add" ] = "You added spawnpoint for '%s' faction!",
+	[ "Spawnpoint_Notify_Remove" ] = "You removed %s's spawn points!",
+	[ "Spawnpoint_Notify_Remove_No" ] = "This place hasn't spawnpoint!"
+} )
