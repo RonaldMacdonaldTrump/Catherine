@@ -104,6 +104,7 @@ LANGUAGE.data = {
 	
 	// Player
 	[ "Player_Message_Ragdolled_01" ] = "You are regaining consciousness ...",
+	[ "Player_Message_HasNotPermission" ] = "You don't have permission!",
 	
 	// Recognize
 	[ "Recognize_UI_Option_LookingPlayer" ] = "Recognize for looking player.",
@@ -114,6 +115,7 @@ LANGUAGE.data = {
 	
 	// Basic
 	[ "Basic_UI_CATLoaded" ] = "Welcome.",
+	[ "Basic_UI_StringRequest" ] = "Request",
 	[ "Basic_UI_Question" ] = "Question",
 	[ "Basic_UI_Notify" ] = "Notify",
 	[ "Basic_UI_OK" ] = "OK",
