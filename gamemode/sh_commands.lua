@@ -133,12 +133,12 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
 		
-		if ( IsValid( ent ) and ent:IsDoor( ) ) then
+		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
 			ent:Fire( "Lock", "", 0 ) 
 			ent:EmitSound( "doors/door_latch3.wav" )
-			catherine.util.Notify( pl, "You are locked this door." )
+			catherine.util.NotifyLang( pl, "Door_Notify_CMD_Locked" )
 		else
-			catherine.util.Notify( pl, "This is not a valid door!" )
+			catherine.util.NotifyLang( pl, "Entity_Notify_NotDoor" )
 		end
 	end
 } )
@@ -149,12 +149,12 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
 		
-		if ( IsValid( ent ) and ent:IsDoor( ) ) then
+		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
 			ent:Fire( "Unlock", "", 0 ) 
 			ent:EmitSound( "doors/door_latch3.wav" )
-			catherine.util.Notify( pl, "You are unlocked this door." )
+			catherine.util.NotifyLang( pl, "Door_Notify_CMD_UnLocked" )
 		else
-			catherine.util.Notify( pl, "This is not a valid door!" )
+			catherine.util.NotifyLang( pl, "Entity_Notify_NotDoor" )
 		end
 	end
 } )

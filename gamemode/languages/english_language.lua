@@ -102,6 +102,7 @@ LANGUAGE.data = {
 	// Entity
 	[ "Entity_Notify_NotValid" ] = "This isn't a valid entity!",
 	[ "Entity_Notify_NotPlayer" ] = "This isn't a valid player!",
+	[ "Entity_Notify_NotDoor" ] = "This isn't a valid door!",
 	
 	// Player
 	[ "Player_Message_Ragdolled_01" ] = "You are regaining consciousness ...",
@@ -114,6 +115,10 @@ LANGUAGE.data = {
 	[ "Recognize_UI_Option_WhisperRange" ] = "All characters within whispering range.",
 	[ "Recognize_UI_Unknown" ] = "Unknown",
 	
+	// Door
+	[ "Door_Notify_CMD_Locked" ] = "You are locked this door",
+	[ "Door_Notify_CMD_UnLocked" ] = "You are unlocked this door",
+
 	// Basic
 	[ "Basic_UI_CATLoaded" ] = "Welcome.",
 	[ "Basic_UI_StringRequest" ] = "Request",
