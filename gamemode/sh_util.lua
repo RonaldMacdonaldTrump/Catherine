@@ -258,7 +258,7 @@ else
 	end )
 	
 	netstream.Hook( "catherine.util.NotifyAllLang", function( data )
-		catherine.util.Notify( LANG( data[ 1 ] ), unpack( data[ 2 ] ) ) // 버그 발생할 수 있음 ^-^;;
+		catherine.util.Notify( LANG( data[ 1 ], unpack( data[ 2 ] ) ) )
 	end )
 
 	netstream.Hook( "catherine.util.ProgressBar", function( data )

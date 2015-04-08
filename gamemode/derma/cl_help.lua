@@ -46,7 +46,7 @@ function PANEL:Init( )
 	end
 
 	for k, v in pairs( catherine.help.GetAll( ) ) do
-		self.helps[ v.category ] = v.codes
+		self.helps[ v.category ] = v
 	end
 
 	self:BuildHelps( )
@@ -69,7 +69,7 @@ function PANEL:MenuPaint( w, h )
 end
 
 function PANEL:DoWork( data )
-	if ( types.types == CAT_HELP_WEBPAGE ) then
+	if ( data.types == CAT_HELP_WEBPAGE ) then
 		self.html:OpenURL( data.codes )
 		return
 	end

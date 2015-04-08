@@ -196,7 +196,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		local vendorCash = self:GetVendorData( ent, "cash", 0 )
 		local vendorInv = table.Copy( self:GetVendorData( ent, "inv", { } ) )
 
-		if ( !vendorInv[ uniqueID ] ) then
+		if ( !vendorInv[ uniqueID ] or vendorInv[ uniqueID ].stock <= 0 ) then
 			catherine.util.NotifyLang( pl, "Vendor_Notify_NoHasStock" )
 			return
 		end

@@ -89,7 +89,11 @@ function PANEL:AddRPInformation( text )
 end
 
 function PANEL:Paint( w, h )
-	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 235 ) )
+		
+	surface.SetDrawColor( 200, 200, 200, 235 )
+	surface.SetMaterial( Material( "gui/gradient_up" ) )
+	surface.DrawTexturedRect( 0, 0, w, h )
 	
 	draw.SimpleText( self.player:Name( ), "catherine_normal25", 90, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 	draw.SimpleText( self.player:FactionName( ), "catherine_normal20", 15, 80, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )

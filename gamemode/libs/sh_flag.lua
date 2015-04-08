@@ -47,6 +47,30 @@ function catherine.flag.GetAllToString( )
 	return flags
 end
 
+catherine.flag.Register( "p", "Access to physgun.", {
+	onSpawn = function( pl )
+		pl:Give( "weapon_physgun" )
+	end,
+	onGive = function( pl )
+		pl:Give( "weapon_physgun" )
+	end,
+	onTake = function( pl )
+		pl:StripWeapon( "weapon_physgun" )
+	end
+} )
+catherine.flag.Register( "t", "Access to toolgun.", {
+	onSpawn = function( pl )
+		pl:Give( "gmod_tool" )
+	end,
+	onGive = function( pl )
+		pl:Give( "gmod_tool" )
+	end,
+	onTake = function( pl )
+		pl:StripWeapon( "gmod_tool" )
+	end
+} )
+catherine.flag.Register( "e", "Access to prop spawn." )
+
 if ( SERVER ) then
 	function catherine.flag.Give( pl, ids )
 		if ( !IsValid( pl ) or !ids ) then return end
@@ -133,36 +157,13 @@ else
 			col = "<font color=\"green\">&#10004;</font>"
 		end
 		
+		print("asdds")
+		
 		html = html .. "<p>" .. col .. "<b> " .. v.id .. "</b><br>" .. v.desc .. "<br>"
 	end
-		
+
 	catherine.help.Register( CAT_HELP_HTML, "Flags", html )
 end
-
-catherine.flag.Register( "p", "Access to physgun.", {
-	onSpawn = function( pl )
-		pl:Give( "weapon_physgun" )
-	end,
-	onGive = function( pl )
-		pl:Give( "weapon_physgun" )
-	end,
-	onTake = function( pl )
-		pl:StripWeapon( "weapon_physgun" )
-	end
-} )
-catherine.flag.Register( "t", "Access to toolgun.", {
-	onSpawn = function( pl )
-		pl:Give( "gmod_tool" )
-	end,
-	onGive = function( pl )
-		pl:Give( "gmod_tool" )
-	end,
-	onTake = function( pl )
-		pl:StripWeapon( "gmod_tool" )
-	end
-} )
-catherine.flag.Register( "e", "Access to prop spawn." )
-
 
 catherine.command.Register( {
 	command = "flaggive",

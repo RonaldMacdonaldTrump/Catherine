@@ -40,7 +40,7 @@ catherine.command.Register( {
 				
 				PLUGIN:SavePoints( )
 				
-				catherine.util.NotifyAllLang( "Spawnpoint_Notify_Add", factionTable.name )
+				catherine.util.NotifyLang( pl, "Spawnpoint_Notify_Add", factionTable.name )
 			else
 				catherine.util.NotifyLang( pl, "Faction_Notify_NotValid" )
 			end

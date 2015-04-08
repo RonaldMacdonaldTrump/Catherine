@@ -163,7 +163,7 @@ catherine.command.Register( {
 		if ( success ) then
 			catherine.util.NotifyLang( pl, "Door_Notify_Buy" )
 		else
-			catherine.util.NotifyLang( pl, langKey, unpack( par ) )
+			catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 		end
 	end
 } )
@@ -175,7 +175,7 @@ catherine.command.Register( {
 		if ( success ) then
 			catherine.util.NotifyLang( pl, "Door_Notify_Sell" )
 		else
-			catherine.util.NotifyLang( pl, langKey, unpack( par ) )
+			catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 		end
 	end
 } )
