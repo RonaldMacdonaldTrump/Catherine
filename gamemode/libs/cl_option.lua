@@ -19,10 +19,11 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.option = catherine.option or { }
 catherine.option.Lists = { }
 CAT_OPTION_SWITCH = 0
+CAT_OPTION_LIST = 1
 
-function catherine.option.Register( uniqueID, conVar, name, desc, category, typ, optionTable )
-	if ( !optionTable ) then optionTable = { } end
-	table.Merge( optionTable, { uniqueID = uniqueID, name = name, desc = desc, conVar = conVar, typ = typ, category = category } )
+function catherine.option.Register( uniqueID, conVar, name, desc, category, typ, data )
+	local optionTable = { }
+	table.Merge( optionTable, { uniqueID = uniqueID, name = name, desc = desc, conVar = conVar, typ = typ, category = category, data = data } )
 	catherine.option.Lists[ uniqueID ] = optionTable
 end
 
@@ -62,5 +63,16 @@ function catherine.option.GetAll( )
 	return catherine.option.Lists
 end
 
+local lang = { data = { }, curVal = catherine.language.FindByID( GetConVarString( "cat_convar_language" ) ).name }
+for k, v in pairs( catherine.language.GetAll( ) ) do
+	lang.data[ #lang.data + 1 ] = {
+		func = function( )
+			RunConsoleCommand( "cat_convar_language", k )
+		end,
+		name = v.name
+	}
+end
+
 catherine.option.Register( "CONVAR_BAR", "cat_convar_bar", "Bar", "Displays the Bar.", "Framework Settings", CAT_OPTION_SWITCH )
 catherine.option.Register( "CONVAR_MAINHUD", "cat_convar_hud", "Main HUD", "Displays the main HUD.", "Framework Settings", CAT_OPTION_SWITCH )
+catherine.option.Register( "CONVAR_LANGUAGE", "cat_convar_language", "Language", "Language.", "Framework Settings", CAT_OPTION_LIST, lang )

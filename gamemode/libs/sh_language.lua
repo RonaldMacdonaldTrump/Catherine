@@ -63,7 +63,8 @@ if ( SERVER ) then
 	function LANG( pl, key, ... )
 		if ( !IsValid( pl ) or !key ) then return "Error" end
 		local languageTable = catherine.language.Lists[ pl:GetInfo( "cat_convar_language" ) ] or catherine.language.Lists[ "english" ]
-		return string.format( languageTable.data[ key ], ... ) or key .. "-Error"
+		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
+		return string.format( languageTable.data[ key ], ... )
 	end
 else
 	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", catherine.configs.defaultLanguage, true, true )
@@ -71,6 +72,7 @@ else
 	function LANG( key, ... )
 		if ( !key ) then return "Error" end
 		local languageTable = catherine.language.Lists[ CAT_CONVAR_LANGUAGE:GetString( ) ] or catherine.language.Lists[ "english" ]
-		return string.format( languageTable.data[ key ], ... ) or key .. "-Error"
+		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
+		return string.format( languageTable.data[ key ], ... )
 	end
 end

@@ -115,9 +115,9 @@ end
 
 function PANEL:Paint( w, h )
 	if ( self.closeing ) then
-		self.blurAmount = Lerp( 0.03, self.blurAmount, 0 )
+		self.blurAmount = Lerp( 0.05, self.blurAmount, 0 )
 	else
-		self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
+		self.blurAmount = Lerp( 0.05, self.blurAmount, 3 )
 	end
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 end

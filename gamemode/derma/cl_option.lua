@@ -64,7 +64,7 @@ function PANEL:BuildOption( )
 		
 		for k1, v1 in pairs( v ) do
 			local item = vgui.Create( "catherine.vgui.optionItem" )
-			item:SetTall( 60 )
+			item:SetSize( self.Lists:GetWide( ), 60 )
 			item:SetOption( v1 )
 			form:AddItem( item )
 		end
@@ -107,6 +107,11 @@ function PANEL:Init( )
 		surface.PlaySound( "common/talk.wav" )
 		catherine.option.Toggle( self.optionTable.uniqueID )
 	end
+	
+	self.List = vgui.Create( "DComboBox", self )
+	self.List:SetSize( self:GetWide( ) * 0.3, 30 )
+	self.List:SetPos( self:GetWide( ) - self.List:GetWide( ) - 20, self:GetTall( ) / 2 - self.List:GetTall( ) / 2 )
+	self.List:SetVisible( false )
 end
 
 function PANEL:Paint( w, h )
@@ -120,10 +125,29 @@ end
 function PANEL:PerformLayout( w, h )
 	self.Button:SetSize( 70, 30 )
 	self.Button:SetPos( w - self.Button:GetWide( ) - 20, h / 2 - self.Button:GetTall( ) / 2 )
+	self.List:SetSize( self:GetWide( ) * 0.3, 30 )
+	self.List:SetPos( self:GetWide( ) - self.List:GetWide( ) - 20, self:GetTall( ) / 2 - self.List:GetTall( ) / 2 )
 end
 
 function PANEL:SetOption( optionTable )
 	self.optionTable = optionTable
+
+	if ( optionTable.typ == CAT_OPTION_LIST ) then
+		self.Button:SetVisible( false )
+		self.List:SetVisible( true )
+		
+		self.List:SetText( optionTable.data.curVal )
+		self.List:SetTextColor( Color( 255, 0, 0 ) )
+		for k, v in pairs( optionTable.data.data ) do
+			self.List:AddChoice( v.name )
+		end
+		
+		self.List.OnSelect = function( pnl, index, val, data )
+			optionTable.data.data[ index ].func( )
+			self.List:SetText( val )
+			self.List:SetTextColor( Color( 255, 0, 0 ) )
+		end
+	end
 end
 
 vgui.Register( "catherine.vgui.optionItem", PANEL, "DPanel" )

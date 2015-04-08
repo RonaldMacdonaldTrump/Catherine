@@ -131,7 +131,7 @@ function PANEL:RefreshPlayerLists( )
 		
 		hF = hF + 10
 		form:SetSize( self.Lists:GetWide( ), hF )
-		dpanelList:SetSize( form:GetWide( ), form:GetTall( ) )
+		lists:SetSize( form:GetWide( ), form:GetTall( ) )
 		self.Lists:AddItem( form )
 	end
 end

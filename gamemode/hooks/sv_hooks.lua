@@ -110,7 +110,7 @@ function GM:KeyPress( pl, key )
 		tr.endpos = tr.start + pl:GetAimVector( ) * 60
 		tr.filter = pl
 		local ent = util.TraceLine( tr ).Entity
-		if ( IsValid( ent ) and ent:IsDoor( ) ) then
+		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
 			if ( pl.canUseDoor == nil ) then pl.canUseDoor = true end
 			if ( !pl.doorSpamCount ) then pl.doorSpamCount = 0 end
 			if ( pl.lookingDoorEntity == nil ) then pl.lookingDoorEntity = ent end
@@ -145,7 +145,7 @@ function GM:KeyPress( pl, key )
 end
 
 function GM:PlayerUse( pl, ent )
-	if ( ent:IsDoor( ) ) then
+	if ( catherine.entity.IsDoor( ent ) ) then
 		return pl.canUseDoor
 	end
 	return true

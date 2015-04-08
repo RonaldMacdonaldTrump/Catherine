@@ -42,7 +42,7 @@ if ( SERVER ) then
 			end, function( err )
 				catherine.util.Print( Color( 255, 0, 0 ), "Update check error! - " .. err )
 				if ( IsValid( pl ) ) then
-					netstream.Start( pl, "catherine.update.CheckResult", { false, LANG( pl, "Version_Notify_CheckError", err } )
+					netstream.Start( pl, "catherine.update.CheckResult", { false, LANG( pl, "Version_Notify_CheckError", err ) } )
 				end
 			end
 		)

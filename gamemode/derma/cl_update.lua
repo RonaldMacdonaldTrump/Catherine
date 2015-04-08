@@ -29,8 +29,8 @@ function PANEL:Init( )
 	self:SetMenuName( LANG( "Version_UI_Title" ) )
 
 	self.check = vgui.Create( "catherine.vgui.button", self )
-	self.check:SetPos( self.w - ( self.w * 0.2 ) - 10, 30 )
-	self.check:SetSize( self.w * 0.2, 30 )
+	self.check:SetPos( self.w - ( self.w * 0.4 ) - 10, 30 )
+	self.check:SetSize( self.w * 0.4, 30 )
 	self.check:SetStr( LANG( "Version_UI_CheckButtonStr" ) )
 	self.check.Cant = false
 	self.check.PaintOverAll = function( pnl )
