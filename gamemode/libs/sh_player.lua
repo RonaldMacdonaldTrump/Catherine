@@ -48,7 +48,7 @@ if ( SERVER ) then
 								end
 								catherine.character.SendCharacterLists( pl, function( )
 									catherine.catData.Load( pl )
-									netstream.Start( pl, "catherine.LoadingStatus", { false, "Welcome." } )
+									netstream.Start( pl, "catherine.LoadingStatus", { false, LANG( pl, "Basic_UI_CATLoaded" ) } )
 									timer.Simple( 1, function( )
 										netstream.Start( pl, "catherine.LoadingStatus", { true, "" } )
 										catherine.character.OpenPanel( pl )
@@ -61,7 +61,7 @@ if ( SERVER ) then
 						else
 							catherine.character.SendCharacterLists( pl, function( )
 								catherine.catData.Load( pl )
-								netstream.Start( pl, "catherine.LoadingStatus", { false, "Welcome." } )
+								netstream.Start( pl, "catherine.LoadingStatus", { false, LANG( pl, "Basic_UI_CATLoaded" ) } )
 								timer.Simple( 1, function( )
 									netstream.Start( pl, "catherine.LoadingStatus", { true, "" } )
 									catherine.character.OpenPanel( pl )
@@ -121,7 +121,7 @@ if ( SERVER ) then
 			pl.ragdoll = nil
 		end
 		
-		if ( !time ) then catherine.util.TopNotify( pl, "You are regaining consciousness ..." ) end
+		if ( !time ) then catherine.util.TopNotify( pl, LANG( pl, "Player_Message_Ragdolled_01" ) ) end
 		
 		pl.ragdoll = ents.Create( "prop_ragdoll" )
 		pl.ragdoll:SetAngles( pl:GetAngles( ) )
@@ -159,22 +159,23 @@ if ( SERVER ) then
 		pl:SetNetVar( "isRagdolled", true )
 		
 		if ( time ) then
-			catherine.util.ProgressBar( pl, "You are regaining consciousness ...", time, function( )
+			catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
 				catherine.player.RagdollWork( pl, false )
 			end )
 		end
 	end
 
-	function META:SetWeaponRaised( bool, weapon )
+	function META:SetWeaponRaised( bool, wep )
 		if ( !IsValid( self ) or !self:IsCharacterLoaded( ) ) then return end
-		weapon = weapon or self:GetActiveWeapon( )
-		if ( weapon.AlwaysLowered ) then catherine.network.SetNetVar( self, "weaponRaised", false ) return end
+		wep = wep or self:GetActiveWeapon( )
+		if ( wep.AlwaysLowered ) then catherine.network.SetNetVar( self, "weaponRaised", false ) return end
 		catherine.network.SetNetVar( self, "weaponRaised", bool )
-		if ( IsValid( weapon ) ) then
+		
+		if ( IsValid( wep ) ) then
 			local time = 9999999
-			if ( bool or weapon.CanFireLowered ) then time = 0.9 end
-			weapon:SetNextPrimaryFire( CurTime( ) + time )
-			weapon:SetNextSecondaryFire( CurTime( ) + time )
+			if ( bool or wep.CanFireLowered ) then time = 0.9 end
+			wep:SetNextPrimaryFire( CurTime( ) + time )
+			wep:SetNextSecondaryFire( CurTime( ) + time )
 		end
 	end
 
@@ -186,11 +187,11 @@ if ( SERVER ) then
 		end
 	end
 	
-	hook.Add("PlayerSwitchWeapon", "player_PlayerSwitchWeapon", function( pl, old, new )
-		if ( !new.AlwaysRaised and !catherine.configs.alwaysRaised[ new:GetClass( ) ] ) then
-			pl:SetWeaponRaised( false, new )
+	hook.Add( "PlayerSwitchWeapon", "catherine.player.PlayerSwitchWeapon", function( pl, oldWep, newWep )
+		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then
+			pl:SetWeaponRaised( false, newWep )
 		else
-			pl:SetWeaponRaised( true, new )
+			pl:SetWeaponRaised( true, newWep )
 		end
 	end )
 	
@@ -211,18 +212,22 @@ end
 
 function META:GetGender( )
 	local model = self:GetModel( ):lower( )
+	local gender = "male"
+	
 	if ( model:find( "female" ) or model:find( "alyx" ) or model:find( "mossman" ) ) then
-		return "female"
-	else
-		return "male"
+		gender = "female"
 	end
+	
+	return gender
 end
 
 function player.GetAllByLoaded( )
 	local players = { }
+	
 	for k, v in pairs( player.GetAll( ) ) do
 		if ( !v:IsCharacterLoaded( ) ) then continue end
 		players[ #players + 1 ] = v
 	end
+	
 	return players
 end

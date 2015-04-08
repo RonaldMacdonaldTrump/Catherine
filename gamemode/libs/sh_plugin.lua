@@ -71,13 +71,11 @@ end
 catherine.plugin.LoadAll( catherine.FolderName ) // need delete ;)
 
 if ( CLIENT ) then
-	hook.Add( "AddHelpItem", "catherine.plugin.AddHelpItem", function( data )
-		local html = [[<b>Plugins</b><br>]]
+	local html = [[<b>Plugins</b><br>]]
 		
-		for k, v in pairs( catherine.plugin.GetAll( ) ) do
-			html = html .. "<p><b>&#10022; " .. v.name .. "</b><br>" .. v.desc .. "<br>By " .. v.author .. "<br>"
-		end
+	for k, v in pairs( catherine.plugin.GetAll( ) ) do
+		html = html .. "<p><b>&#10022; " .. v.name .. "</b><br>" .. v.desc .. "<br>By " .. v.author .. "<br>"
+	end
 		
-		data:AddItem( "Plugins", html )
-	end )
+	catherine.help.Register( CAT_HELP_HTML, "Plugins", html )
 end

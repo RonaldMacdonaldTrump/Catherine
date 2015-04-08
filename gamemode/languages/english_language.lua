@@ -79,13 +79,31 @@ LANGUAGE.data = {
 	[ "Inventory_Notify_HasNotSpace" ] = "You don't have inventory space!",
 	[ "Inventory_Notify_CantDrop01" ] = "Is too far away for drop the item!",
 	
+	// Scoreboard
+	[ "Scoreboard_UI_Title" ] = "Player List",
+	[ "Scoreboard_UI_Author" ] = "Framework Author",
+	[ "Scoreboard_UI_UnknownDesc" ] = "You don't know this guy.",
+	[ "Scoreboard_UI_PlayerDetailStr" ] = "This player Steam Name is %s\nThis player Steam ID is %s\nThis player Ping is %s",
+	
 	// Item
 	[ "Item_Notify_NoItemData" ] = "Is not an available item!",
 	
 	// Entity
-	[ "Entity_Notify_NotValid" ] = "This isn't a valid entity",
+	[ "Entity_Notify_NotValid" ] = "This isn't a valid entity!",
+	[ "Entity_Notify_NotPlayer" ] = "This isn't a valid player!",
+	
+	// Player
+	[ "Player_Message_Ragdolled_01" ] = "You are regaining consciousness ...",
+	
+	// Recognize
+	[ "Recognize_UI_Option_LookingPlayer" ] = "Recognize for looking player.",
+	[ "Recognize_UI_Option_TalkRange" ] = "All characters within talking range.",
+	[ "Recognize_UI_Option_YellRange" ] = "All characters within yelling range.",
+	[ "Recognize_UI_Option_WhisperRange" ] = "All characters within whispering range.",
+	[ "Recognize_UI_Unknown" ] = "Unknown",
 	
 	// Basic
+	[ "Basic_UI_CATLoaded" ] = "Welcome.",
 	[ "Basic_UI_Question" ] = "Question",
 	[ "Basic_UI_Notify" ] = "Notify",
 	[ "Basic_UI_OK" ] = "OK",

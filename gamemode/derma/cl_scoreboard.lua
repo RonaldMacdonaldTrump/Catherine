@@ -25,7 +25,7 @@ function PANEL:Init( )
 	self.playerCount = #player.GetAll( )
 	
 	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
-	self:SetMenuName( "Player List" )
+	self:SetMenuName( LANG( "Scoreboard_UI_Title" ) )
 	
 	self.Lists = vgui.Create( "DPanelList", self )
 	self.Lists:SetPos( 10, 60 )
@@ -104,18 +104,19 @@ function PANEL:RefreshPlayerLists( )
 					surface.SetDrawColor( 255, 255, 255, 255 )
 					surface.SetMaterial( Material( "icon16/award_star_gold_1.png" ) )
 					surface.DrawTexturedRect( w - 60, h / 2 - 16 / 2, 16, 16 )
-					draw.SimpleText( "Framework Author", "catherine_normal15", w - 70, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					
+					draw.SimpleText( LANG( "Scoreboard_UI_Author" ), "catherine_normal15", w - 70, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 				end
 				
 				draw.SimpleText( v1:Name( ), "catherine_normal20", 100, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-				draw.SimpleText( ( know == true and v1:Desc( ) or "You don't know this guy." ), "catherine_normal15", 100, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.SimpleText( ( know == true and v1:Desc( ) or LANG( "Scoreboard_UI_UnknownDesc" ) ), "catherine_normal15", 100, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 			end
 			
 			local avatar = vgui.Create( "AvatarImage", panel )
 			avatar:SetPos( 5, 5 )
 			avatar:SetSize( 40, 40 )
 			avatar:SetPlayer( v1, 64 )
-			avatar:SetToolTip( "This player Name is " .. v1:SteamName( ) .. "\nThis player Steam ID is " .. v1:SteamID( ) .. "\nThis player Ping is " .. v1:Ping( ) )
+			avatar:SetToolTip( LANG( "Scoreboard_UI_PlayerDetailStr", v1:SteamName( ), v1:SteamID( ), v1:Ping( ) ) )
 			
 			local spawnIcon = vgui.Create( "SpawnIcon", panel )
 			spawnIcon:SetPos( 50, 5 )
@@ -137,6 +138,8 @@ end
 
 vgui.Register( "catherine.vgui.scoreboard", PANEL, "catherine.vgui.menuBase" )
 
-catherine.menu.Register( "Player List", function( menuPnl, itemPnl )
+catherine.menu.Register( function( )
+	return LANG( "Scoreboard_UI_Title" )
+end, function( menuPnl, itemPnl )
 	return vgui.Create( "catherine.vgui.scoreboard", menuPnl )
 end )

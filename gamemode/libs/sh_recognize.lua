@@ -17,6 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.recognize = catherine.recognize or { }
+// 참고 : 이 라이브러리는 최적화가 필요함;
 
 function GM:ShowTeam( pl )
 	netstream.Start( pl, "catherine.ShowTeam" )
@@ -54,6 +55,7 @@ if ( SERVER ) then
 	function catherine.recognize.DoDataSave( pl, target )
 		if ( catherine.recognize.IsKnowTarget( pl, target ) ) then return end
 		local recognizeLists = catherine.character.GetCharacterVar( pl, "recognize", { } )
+		
 		if ( type( target ) == "table" ) then
 			for k, v in pairs( target ) do
 				recognizeLists[ #recognizeLists + 1 ] = v:GetCharacterID( )
@@ -68,32 +70,34 @@ if ( SERVER ) then
 	function catherine.recognize.Init( pl )
 		catherine.character.SetCharacterVar( pl, "recognize", { } )
 	end
+
+	function catherine.recognize.PlayerDeath( pl )
+		catherine.recognize.Init( pl )
+	end
+	
+	hook.Add( "PlayerDeath", "catherine.recognize.PlayerDeath", catherine.recognize.PlayerDeath )
 	
 	netstream.Hook( "catherine.recognize.DoKnow", function( pl, data )
-		catherine.recognize.DoKnow( pl, data[ 1 ], data[ 2 ] or nil )
-	end )
-	
-	hook.Add( "PlayerDeath", "catherine.recognize.PlayerDeath", function( pl )
-		catherine.recognize.Init( pl )
+		catherine.recognize.DoKnow( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
 	netstream.Hook( "catherine.ShowTeam", function( )
 		local Menu = DermaMenu( )
-		Menu:AddOption( "Recognize for looking player.", function( )
+		Menu:AddOption( LANG( "Recognize_UI_Option_LookingPlayer" ), function( )
 			local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
 			if ( IsValid( ent ) ) then
 				netstream.Start( "catherine.recognize.DoKnow", { "ic", ent } )
 			else
-				catherine.notify.Add( "Please look player!", 5 )
+				catherine.notify.Add( LANG( "Entity_Notify_NotPlayer" ), 5 )
 			end
 		end )
-		Menu:AddOption( "All characters within talking range", function( )
+		Menu:AddOption( LANG( "Recognize_UI_Option_TalkRange" ), function( )
 			netstream.Start( "catherine.recognize.DoKnow", { "ic" } )
 		end )
-		Menu:AddOption( "All characters within whispering range.", function( )
+		Menu:AddOption( LANG( "Recognize_UI_Option_WhisperRange" ), function( )
 			netstream.Start( "catherine.recognize.DoKnow", { "whisper" } )
 		end )
-		Menu:AddOption( "All characters within yelling range.", function( )
+		Menu:AddOption( LANG( "Recognize_UI_Option_YellRange" ), function( )
 			netstream.Start( "catherine.recognize.DoKnow", { "yell" } )
 		end )
 		Menu:Open( )
@@ -130,5 +134,9 @@ function GM:GetPlayerInformation( pl, target )
 end
 
 function GM:GetUnknownTargetName( pl, target )
-	return "Unknown"
+	if ( SERVER ) then
+		return LANG( pl, "Recognize_UI_Unknown" )
+	else
+		return LANG( "Recognize_UI_Unknown" )
+	end
 end
