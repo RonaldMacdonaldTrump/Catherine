@@ -193,9 +193,7 @@ if ( SERVER ) then
 		if ( !dir ) then return end
 		netstream.Start( pl, "catherine.util.PlaySound", dir )
 	end
-	
-	
-	
+
 	function catherine.util.AddResourceInFolder( dir )
 		if ( !dir ) then return end
 		local files, dirs = file.Find( dir .. "/*", "GAME" )

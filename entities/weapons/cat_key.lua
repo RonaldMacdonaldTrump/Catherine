@@ -50,47 +50,39 @@ function SWEP:Initialize( )
 end
 
 function SWEP:PrimaryAttack( )
-	if ( !IsFirstTimePredicted( ) ) then return end
-	if ( CLIENT ) then return end
-	
+	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
 	local ent = pl:GetEyeTrace( 70 ).Entity
 	
-	if ( !ent:IsDoor( ) or ent.Locked ) then return end
-	if ( catherine.door.GetDoorOwner( ent ) != pl or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
-	
-	catherine.util.ProgressBar( pl, "You are locking this door.", 4 )
+	if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) or ent.CAT_doorLocked or !catherine.door.IsDoorOwner( ent, pl ) ) then return end
 	
 	pl:Freeze( true )
-	
-	timer.Simple( 4, function( )
-		ent.Locked = true
-		ent:Fire( "lock" )
-		ent:EmitSound( "doors/door_latch3.wav" )
+	catherine.util.ProgressBar( pl, LANG( pl, "Door_Message_Locking" ), 2, function( )
+		if ( IsValid( ent ) ) then
+			ent.CAT_doorLocked = true
+			ent:Fire( "Lock" )
+			ent:EmitSound( "doors/door_latch3.wav" )
+		end
 		pl:Freeze( false )
 	end )
-	
+
 	self:SetNextPrimaryFire( CurTime( ) + 4 )
 end
 
 function SWEP:SecondaryAttack( )
-	if ( !IsFirstTimePredicted( ) ) then return end
-	if ( CLIENT ) then return end
-	
+	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
 	local ent = pl:GetEyeTrace( 70 ).Entity
 	
-	if ( !ent:IsDoor( ) or !ent.Locked ) then return end
-	if ( catherine.door.GetDoorOwner( ent ) != pl or pl:GetPos( ):Distance( ent:GetPos( ) ) > 100 ) then return end
-	
-	catherine.util.ProgressBar( pl, "You are unlocking this door.", 4 )
-	
+	if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) or !ent.CAT_doorLocked or !catherine.door.IsDoorOwner( ent, pl ) ) then return end
+
 	pl:Freeze( true )
-	
-	timer.Simple( 4, function( )
-		ent.Locked = false
-		ent:Fire( "unlock" )
-		ent:EmitSound( "doors/door_latch3.wav" )
+	catherine.util.ProgressBar( pl, LANG( pl, "Door_Message_UnLocking" ), 2, function( )
+		if ( IsValid( ent ) ) then
+			ent.CAT_doorLocked = true
+			ent:Fire( "Unlock" )
+			ent:EmitSound( "doors/door_latch3.wav" )
+		end
 		pl:Freeze( false )
 	end )
 	

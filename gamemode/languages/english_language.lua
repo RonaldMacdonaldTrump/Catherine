@@ -118,7 +118,9 @@ LANGUAGE.data = {
 	// Door
 	[ "Door_Notify_CMD_Locked" ] = "You are locked this door",
 	[ "Door_Notify_CMD_UnLocked" ] = "You are unlocked this door",
-
+	[ "Door_Message_Locking" ] = "Locking ...",
+	[ "Door_Message_UnLocking" ] = "UnLocking ...",
+	
 	// Basic
 	[ "Basic_UI_CATLoaded" ] = "Welcome.",
 	[ "Basic_UI_StringRequest" ] = "Request",
