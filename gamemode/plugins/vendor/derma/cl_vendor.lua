@@ -645,7 +645,7 @@ function PANEL:Paint( w, h )
 	end
 end
 
-function PANEL:SetEntity( ent )
+function PANEL:InitializeVendor( ent )
 	self.ent = ent
 	self.vendorData.inv = ent:GetNetVar( "inv", { } )
 end

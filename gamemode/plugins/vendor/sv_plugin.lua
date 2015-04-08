@@ -117,7 +117,7 @@ function PLUGIN:SetVendorData( ent, id, data, noSync )
 	if ( !noSync ) then
 		local target = self:GetVendorWorkingPlayers( )
 		if ( #target != 0 ) then
-			netstream.Start( target, "catherine.plugin.vendor.RefreshRequest", ent )
+			netstream.Start( target, "catherine.plugin.vendor.RefreshRequest", ent:EntIndex( ) )
 		end
 	end
 end

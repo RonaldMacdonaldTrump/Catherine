@@ -81,6 +81,7 @@ LANGUAGE.data = {
 	[ "Inventory_UI_Title" ] = "Inventory",
 	[ "Inventory_Notify_HasNotSpace" ] = "You don't have inventory space!",
 	[ "Inventory_Notify_CantDrop01" ] = "Is too far away for drop the item!",
+	[ "Inventory_Notify_DontHave" ] = "You don't have this item!",
 	
 	// Scoreboard
 	[ "Scoreboard_UI_Title" ] = "Player List",
@@ -91,8 +92,8 @@ LANGUAGE.data = {
 	// Help
 	[ "Help_UI_Title" ] = "Help",
 	
-	// Help
-	[ "Help_UI_Title" ] = "Help",
+	// Storage
+	[ "Storage_Notify_HasNotSpace" ] = "This storage don't have inventory space!",
 	
 	// Item
 	[ "Item_Notify_NoItemData" ] = "Is not an available item!",

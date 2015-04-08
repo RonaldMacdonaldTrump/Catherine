@@ -63,7 +63,7 @@ if ( SERVER ) then
 			return
 		end
 		pl:SetNetVar( "vendor_work", true )
-		netstream.Start( pl, "catherine.plugin.vendor.VendorUse", self )
+		netstream.Start( pl, "catherine.plugin.vendor.VendorUse", self:EntIndex( ) )
 	end
 else
 	local toscreen = FindMetaTable("Vector").ToScreen

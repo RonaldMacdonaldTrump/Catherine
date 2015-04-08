@@ -29,7 +29,7 @@ netstream.Hook( "catherine.plugin.vendor.RefreshRequest", function( data )
 	end
 	
 	catherine.vgui.vendor = vgui.Create( "catherine.vgui.vendor" )
-	catherine.vgui.vendor:SetEntity( data )
+	catherine.vgui.vendor:InitializeVendor( Entity( data ) )
 	if ( menuID ) then
 		catherine.vgui.vendor:ChangeMode( menuID )
 	end
@@ -43,5 +43,5 @@ netstream.Hook( "catherine.plugin.vendor.VendorUse", function( data )
 	end
 	
 	catherine.vgui.vendor = vgui.Create( "catherine.vgui.vendor" )
-	catherine.vgui.vendor:SetEntity( data )
+	catherine.vgui.vendor:InitializeVendor( Entity( data ) )
 end )

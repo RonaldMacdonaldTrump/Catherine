@@ -165,7 +165,7 @@ catherine.flag.Register( "e", "Access to prop spawn." )
 
 
 catherine.command.Register( {
-	command = "giveflag",
+	command = "flaggive",
 	syntax = "[name] [flag name]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
@@ -192,7 +192,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
-	command = "takeflag",
+	command = "flagtake",
 	syntax = "[name] [flag name]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
