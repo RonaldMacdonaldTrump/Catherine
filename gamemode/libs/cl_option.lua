@@ -63,16 +63,25 @@ function catherine.option.GetAll( )
 	return catherine.option.Lists
 end
 
-local lang = { data = { }, curVal = catherine.language.FindByID( GetConVarString( "cat_convar_language" ) ).name }
-for k, v in pairs( catherine.language.GetAll( ) ) do
-	lang.data[ #lang.data + 1 ] = {
-		func = function( )
-			RunConsoleCommand( "cat_convar_language", k )
-		end,
-		name = v.name
-	}
-end
-
 catherine.option.Register( "CONVAR_BAR", "cat_convar_bar", "Bar", "Displays the Bar.", "Framework Settings", CAT_OPTION_SWITCH )
 catherine.option.Register( "CONVAR_MAINHUD", "cat_convar_hud", "Main HUD", "Displays the main HUD.", "Framework Settings", CAT_OPTION_SWITCH )
-catherine.option.Register( "CONVAR_LANGUAGE", "cat_convar_language", "Language", "Language.", "Framework Settings", CAT_OPTION_LIST, lang )
+catherine.option.Register( "CONVAR_LANGUAGE", "cat_convar_language", "Language", "The language.", "Framework Settings", CAT_OPTION_LIST, function( )
+	local lang = { data = { }, curVal = "English" }
+	local languageTable = catherine.language.FindByID( GetConVarString( "cat_convar_language" ) )
+	if ( languageTable ) then
+		lang.curVal = languageTable.name
+	end
+	
+	for k, v in pairs( catherine.language.GetAll( ) ) do
+		lang.data[ #lang.data + 1 ] = {
+			func = function( )
+				RunConsoleCommand( "cat_convar_language", k )
+				catherine.vgui.menu:Close( )
+				catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )
+			end,
+			name = v.name
+		}
+	end
+
+	return lang
+end )

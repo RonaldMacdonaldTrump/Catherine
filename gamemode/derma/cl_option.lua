@@ -108,10 +108,15 @@ function PANEL:Init( )
 		catherine.option.Toggle( self.optionTable.uniqueID )
 	end
 	
-	self.List = vgui.Create( "DComboBox", self )
+	self.List = vgui.Create( "DButton", self )
 	self.List:SetSize( self:GetWide( ) * 0.3, 30 )
 	self.List:SetPos( self:GetWide( ) - self.List:GetWide( ) - 20, self:GetTall( ) / 2 - self.List:GetTall( ) / 2 )
 	self.List:SetVisible( false )
+	self.List:SetFont( "catherine_normal20" )
+	self.List:SetTextColor( Color( 50, 50, 50 ) )
+	self.List.Paint = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
+	end
 end
 
 function PANEL:Paint( w, h )
@@ -135,17 +140,20 @@ function PANEL:SetOption( optionTable )
 	if ( optionTable.typ == CAT_OPTION_LIST ) then
 		self.Button:SetVisible( false )
 		self.List:SetVisible( true )
+
+		local data = optionTable.data( )
 		
-		self.List:SetText( optionTable.data.curVal )
-		self.List:SetTextColor( Color( 255, 0, 0 ) )
-		for k, v in pairs( optionTable.data.data ) do
-			self.List:AddChoice( v.name )
-		end
-		
-		self.List.OnSelect = function( pnl, index, val, data )
-			optionTable.data.data[ index ].func( )
-			self.List:SetText( val )
-			self.List:SetTextColor( Color( 255, 0, 0 ) )
+		self.List:SetText( data.curVal )
+
+		self.List.DoClick = function( )
+			local menu = DermaMenu( )
+			for k, v in pairs( data.data ) do
+				menu:AddOption( v.name, function( )
+					v.func( )
+					self.List:SetText( v.name )
+				end )
+			end
+			menu:Open( )
 		end
 	end
 end
