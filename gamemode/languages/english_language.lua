@@ -53,14 +53,12 @@ LANGUAGE.data = {
 	
 	// Version
 	[ "Version_UI_Title" ] = "Version",
-	[ "Version_UI_LatestVer_AV" ] = "Latest Version - %s",
-	[ "Version_UI_LatestVer_NO" ] = "Latest Version - None",
-	[ "Version_UI_YourVer_AV" ] = "Your Version - %s",
-	[ "Version_UI_YourVer_NO" ] = "Your Version - None",
+	[ "Version_UI_YourVer_AV" ] = "Ver '%s'",
+	[ "Version_UI_YourVer_NO" ] = "Ver 'Error'",
 	[ "Version_UI_Checking" ] = "Checking update ...",
 	[ "Version_UI_CheckButtonStr" ] = "Update Check",
-	[ "Version_Notify_FoundNew" ] = "You should update to the latest version of Catherine. - %s",
-	[ "Version_Notify_AlreadyNew" ] = "You are using the latest version of Catherine.",
+	[ "Version_Notify_FoundNew" ] = "This server should update to the latest version of Catherine!",
+	[ "Version_Notify_AlreadyNew" ] = "This server are using the latest version of Catherine.",
 	[ "Version_Notify_CheckError" ] = "Update check error! - %s",
 	
 	// Attribute

@@ -404,7 +404,7 @@ if ( SERVER ) then
 	hook.Add( "DataSave", "catherine.character.DataSave", catherine.character.DataSave )
 
 	function catherine.character.SetGlobalVar( pl, key, value, noSync )
-		if ( !IsValid( pl ) and !key ) then return end
+		if ( !IsValid( pl ) or !key ) then return end
 		local globalVar = catherine.character.FindGlobalVarByField( key )
 		if ( globalVar and globalVar.static ) then return end
 		if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or catherine.character.networkingVars[ pl:SteamID( ) ][ key ] == nil ) then return end
@@ -418,7 +418,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.SetCharacterVar( pl, key, value, noSync )
-		if ( !IsValid( pl ) and !key ) then return end
+		if ( !IsValid( pl ) or !key ) then return end
 		if ( !catherine.character.networkingVars[ pl:SteamID( ) ] or !catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ] ) then return end
 		catherine.character.networkingVars[ pl:SteamID( ) ][ "_charVar" ][ key ] = value
 		if ( !noSync ) then
@@ -549,14 +549,14 @@ else
 end
 
 function catherine.character.GetGlobalVar( pl, key, default )
-	if ( !IsValid( pl ) and !key ) then return default end
+	if ( !IsValid( pl ) or !key ) then return default end
 	local steamID = pl:SteamID( )
 	if ( !catherine.character.networkingVars[ steamID ] or catherine.character.networkingVars[ steamID ][ key ] == nil ) then return default end
 	return catherine.character.networkingVars[ steamID ][ key ]
 end
 
 function catherine.character.GetCharacterVar( pl, key, default )
-	if ( !IsValid( pl ) and !key ) then return default end
+	if ( !IsValid( pl ) or !key ) then return default end
 	local steamID = pl:SteamID( )
 	if ( !catherine.character.networkingVars[ steamID ] or !catherine.character.networkingVars[ steamID ][ "_charVar" ] or catherine.character.networkingVars[ steamID ][ "_charVar" ][ key ] == nil ) then return default end
 	return catherine.character.networkingVars[ steamID ][ "_charVar" ][ key ]

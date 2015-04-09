@@ -16,13 +16,12 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.help = catherine.help or { }
-catherine.help.Lists = { }
+catherine.help = catherine.help or { Lists = { } }
 CAT_HELP_HTML = 1
 CAT_HELP_WEBPAGE = 2
 
 function catherine.help.Register( types, category, codes )
-	catherine.help.Lists[ #catherine.help.Lists + 1 ] = {
+	catherine.help.Lists[ category ] = {
 		types = types,
 		category = category,
 		codes = codes
@@ -35,12 +34,10 @@ end
 
 catherine.help.Register( CAT_HELP_HTML, "Credit", [[
 	<b>Credit</b><br><br>
-	<b>L7D</b><br>Develop and Design.<br><br>
+	<b>L7D</b><br>Development and Design.<br><br>
 	<b>Chessnut</b><br>Good helper.<br><br>
 	<b>Kyle Smith</b><br>UTF-8 module.<br><br>
 	<b>thelastpenguin™</b><br>pON module.<br><br>
 	<b>Alexander Grist-Hucker</b><br>netstream 2 module.<br><br><br>
-	
-	<b>Thanks for using Catherine!</b>
 ]] )
 catherine.help.Register( CAT_HELP_WEBPAGE, "Changelog", "http://github.com/L7D/Catherine/commits/master" )

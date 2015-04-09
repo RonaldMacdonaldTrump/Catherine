@@ -41,9 +41,11 @@ end
 
 function catherine.flag.GetAllToString( )
 	local flags = ""
+	
 	for k, v in pairs( catherine.flag.GetAll( ) ) do
 		flags = flags .. v.id
 	end
+	
 	return flags
 end
 
@@ -93,6 +95,7 @@ if ( SERVER ) then
 		end
 		
 		catherine.character.SetCharacterVar( pl, "flags", result )
+		netstream.Start( pl, "catherine.flag.BuildHelp" )
 		return true, nil, ids
 	end
 	
@@ -117,6 +120,7 @@ if ( SERVER ) then
 		end
 		
 		catherine.character.SetCharacterVar( pl, "flags", result )
+		netstream.Start( pl, "catherine.flag.BuildHelp" )
 		return true, nil, ids
 	end
 	
@@ -135,10 +139,27 @@ if ( SERVER ) then
 			if ( !catherine.flag.Has( pl, v.id ) or !v.onSpawn ) then continue end
 			v.onSpawn( pl )
 		end
+		
+		netstream.Start( pl, "catherine.flag.BuildHelp" )
 	end
 	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.flag.PlayerSpawnedInCharacter", catherine.flag.PlayerSpawnedInCharacter )
 else
+	netstream.Hook( "catherine.flag.BuildHelp", function( data )
+		local html = [[<b>Flags</b><br>]]
+		
+		for k, v in pairs( catherine.flag.GetAll( ) ) do
+			local col = "<font color=\"red\">&#10005;</font>"
+			if ( catherine.flag.Has( v.id ) ) then
+				col = "<font color=\"green\">&#10004;</font>"
+			end
+
+			html = html .. "<p>" .. col .. "<b> " .. v.id .. "</b><br>" .. v.desc .. "<br>"
+		end
+
+		catherine.help.Register( CAT_HELP_HTML, "Flags", html )
+	end )
+	
 	function catherine.flag.Has( id )
 		if ( !id ) then return end
 		local flagData = catherine.character.GetCharacterVar( LocalPlayer( ), "flags", "" )
@@ -148,21 +169,6 @@ else
 	function META:HasFlag( id )
 		return catherine.flag.Has( id )
 	end
-	
-	local html = [[<b>Flags</b><br>]]
-		
-	for k, v in pairs( catherine.flag.GetAll( ) ) do
-		local col = "<font color=\"red\">&#10005;</font>"
-		if ( catherine.flag.Has( v.id ) ) then
-			col = "<font color=\"green\">&#10004;</font>"
-		end
-		
-		print("asdds")
-		
-		html = html .. "<p>" .. col .. "<b> " .. v.id .. "</b><br>" .. v.desc .. "<br>"
-	end
-
-	catherine.help.Register( CAT_HELP_HTML, "Flags", html )
 end
 
 catherine.command.Register( {
@@ -178,7 +184,7 @@ catherine.command.Register( {
 					if ( success ) then
 						catherine.util.NotifyAllLang( "Flag_Notify_Give", pl:Name( ), par, target:Name( ) )
 					else
-						catherine.util.NotifyLang( pl, langKey, unpack( par ) )
+						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
@@ -205,7 +211,7 @@ catherine.command.Register( {
 					if ( success ) then
 						catherine.util.NotifyAllLang( "Flag_Notify_Take", pl:Name( ), par, target:Name( ) )
 					else
-						catherine.util.NotifyLang( pl, langKey, unpack( par ) )
+						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
