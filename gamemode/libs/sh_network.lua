@@ -18,21 +18,50 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.network = catherine.network or { globalVars = { }, entityVars = { } }
 local META = FindMetaTable( "Entity" )
-// 새로운 네트워킹 시스템; ^-^; 2015-03-10 학교 컴실에서..
+local META2 = FindMetaTable( "Player" )
+// 네트워킹 시스템; ^-^; 2015-03-10 학교 컴실에서.. // 이전
+// 새로운 네트워킹 시스템; ^-^; 2015-04-09 집에서..
 
 if ( SERVER ) then
 	function catherine.network.SetNetVar( ent, key, value, noSync )
-		if ( !IsValid( ent ) or !key ) then return end
+		if ( !key ) then return end
 		
 		catherine.network.entityVars[ ent ] = catherine.network.entityVars[ ent ] or { }
 		catherine.network.entityVars[ ent ][ key ] = value
 		
 		if ( !noSync ) then
-			if ( type( ent ) == "Player" ) then
-				netstream.Start( nil, "catherine.network.SetNetVar", { ent:SteamID( ), key, value } )
-			else
-				netstream.Start( nil, "catherine.network.SetNetVar", { ent:EntIndex( ), key, value } )
+			local data = ent:EntIndex( )
+			
+			if ( ent:IsPlayer( ) ) then
+				data = ent:SteamID( )
 			end
+			
+			if ( value == nil ) then
+				netstream.Start( nil, "catherine.network.ClearNetVar", data )
+				return
+			end
+			
+			netstream.Start( nil, "catherine.network.SetNetVar", { data, key, value } )
+		end
+	end
+	
+	function catherine.network.GetNetVar( ent, key, default )
+		if ( !key ) then return default end
+		return catherine.network.entityVars[ ent ] and catherine.network.entityVars[ ent ][ key ] or default
+	end
+	
+	function catherine.network.SetNetGlobalVar( key, value, noSync )
+		if ( !key ) then return end
+		
+		catherine.network.globalVars[ key ] = value
+		
+		if ( !noSync ) then
+			if ( value == nil ) then
+				netstream.Start( nil, "catherine.network.ClearNetGlobalVar", key )
+				return
+			end
+			
+			netstream.Start( nil, "catherine.network.SetNetGlobalVar", { key, value } )
 		end
 	end
 
@@ -40,11 +69,12 @@ if ( SERVER ) then
 		local conVart = { }
 		
 		for k, v in pairs( catherine.network.entityVars ) do
-			if ( type( k ) == "Player" ) then
+			if ( k:IsPlayer( ) ) then
 				conVart[ k:SteamID( ) ] = v
-			else
-				conVart[ k:EntIndex( ) ] = v
+				continue
 			end
+			
+			conVart[ k:EntIndex( ) ] = v
 		end
 
 		netstream.Start( pl, "catherine.network.SyncAllVars", { conVart, catherine.network.globalVars } )
@@ -54,22 +84,11 @@ if ( SERVER ) then
 		end
 	end
 
-	function catherine.network.SetNetGlobalVar( key, value, noSync )
-		if ( !key ) then return end
-		
-		catherine.network.globalVars[ key ] = value
-		
-		if ( !noSync ) then
-			netstream.Start( nil, "catherine.network.SetNetGlobalVar", { key, value } )
-		end
-		if ( value == nil ) then
-			netstream.Start( nil, "catherine.network.ClearNetGlobalVar", key )
-		end
-	end
-	
 	function META:SetNetVar( key, value, noSync )
 		catherine.network.SetNetVar( self, key, value, noSync )
 	end
+	
+	META2.SetNetVar = META.SetNetVar
 	
 	function catherine.network.EntityRemoved( ent )
 		catherine.network.entityVars[ ent ] = nil
@@ -78,7 +97,7 @@ if ( SERVER ) then
 	
 	function catherine.network.PlayerDisconnected( pl )
 		catherine.network.entityVars[ pl ] = nil
-		netstream.Start( nil, "catherine.network.ClearNetVar", pl:EntIndex( ) )
+		netstream.Start( nil, "catherine.network.ClearNetVar", pl:SteamID( ) )
 	end
 
 	hook.Add( "EntityRemoved", "catherine.network.EntityRemoved", catherine.network.EntityRemoved )
@@ -105,19 +124,15 @@ else
 		catherine.network.entityVars = data[ 1 ]
 		catherine.network.globalVars = data[ 2 ]
 	end )
-end
-
-function catherine.network.GetNetVar( ent, key, default )
-	if ( !IsValid( ent ) or !key ) then return default end
 	
-	if ( SERVER ) then
-		return catherine.network.entityVars[ ent ] and catherine.network.entityVars[ ent ][ key ] or default
-	else
-		if ( type( ent ) == "Player" ) then
-			return catherine.network.entityVars[ ent:SteamID( ) ] and catherine.network.entityVars[ ent:SteamID( ) ][ key ] or default
-		else
-			return catherine.network.entityVars[ ent:EntIndex( ) ] and catherine.network.entityVars[ ent:EntIndex( ) ][ key ] or default
+	function catherine.network.GetNetVar( ent, key, default )
+		if ( !key ) then return default end
+		local data = ent:EntIndex( )
+		if ( ent:IsPlayer( ) ) then
+			data = ent:SteamID( )
 		end
+		
+		return catherine.network.entityVars[ data ] and catherine.network.entityVars[ data ][ key ] or default
 	end
 end
 

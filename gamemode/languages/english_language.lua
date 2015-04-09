@@ -46,11 +46,7 @@ LANGUAGE.data = {
 	[ "UnknownError" ] = "Unknown Error!",
 	[ "Basic_Notify_UnknownPlayer" ] = "You are not giving a valid character name!",
 	[ "Basic_Notify_NoArg" ] = "Please enter the %s argument!",
-	
-	
-	
-	
-	
+
 	// Version
 	[ "Version_UI_Title" ] = "Version",
 	[ "Version_UI_YourVer_AV" ] = "Ver '%s'",

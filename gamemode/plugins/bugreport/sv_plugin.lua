@@ -51,7 +51,6 @@ function PLUGIN:FetchUserKey( )
 		},
 		function( data )
 			self.datas.UserKey = data
-			catherine.util.Print( Color( 0, 255, 0 ), "[Bug Report] Finished fetch user key!" )
 		end,
 		function( err )
 			catherine.util.Print( Color( 255, 0, 0 ), "[Bug Report] Can't fetch user key! - " .. err )

@@ -377,9 +377,9 @@ if ( SERVER ) then
 	end
 	
 	function catherine.environment.DataLoad( )
-		local data = catherine.data.Get( "environment", catherine.configs.defaultRPInformation )
+		local data = catherine.data.Get( "environment", { } )
 
-		if ( table.Count( data ) == 0 ) then
+		if ( table.Count( data ) != 7 ) then
 			catherine.environment.Buffer = catherine.configs.defaultRPInformation
 		else
 			catherine.environment.Buffer = data
