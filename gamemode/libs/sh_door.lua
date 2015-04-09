@@ -21,7 +21,39 @@ if ( !catherine.data ) then
 end
 catherine.door = catherine.door or { }
 
+CAT_DOOR_CHANGEPERMISSION = 1
+
 if ( SERVER ) then
+	function catherine.door.Work( pl, ent, workID, data )
+		if ( !IsValid( pl ) or !workID ) then return end
+		if ( !IsValid( ent ) ) then
+			catherine.util.NotifyLang( pl, "Entity_Notify_NotDoor" )
+			return
+		end
+		
+		if ( workID == CAT_DOOR_CHANGEPERMISSION ) then
+			if ( !catherine.door.IsDoorOwner( pl, ent ) ) then
+				catherine.util.NotifyLang( pl, "Door_Notify_NoOwner" )
+				return
+			end
+			local target = catherine.util.FindPlayerByStuff( "SteamID", data[ 1 ] )
+			
+			if ( !IsValid( target ) ) then
+				catherine.util.NotifyLang( pl, "Entity_Notify_NotPlayer" )
+				return
+			end
+			
+			local newData = ent:GetNetVar( "permission_guys", { } )
+			
+			//if ( newData[ 
+			
+			ent:SetNetVar( "permission_guys", newData )
+			
+		else
+		
+		end
+	end
+	
 	function catherine.door.Buy( pl, ent )
 		if ( !IsValid( pl ) ) then return end
 		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
@@ -126,7 +158,21 @@ if ( SERVER ) then
 	
 	hook.Add( "DataSave", "catherine.door.DataSave", catherine.door.DataSave )
 	hook.Add( "DataLoad", "catherine.door.DataLoad", catherine.door.DataLoad )
+	
+	netstream.Hook( "catherine.door.Work", function( pl, data )
+		catherine.door.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ] )
+	end )
 else
+	netstream.Hook( "catherine.door.DoorMenu", function( data )
+		if ( IsValid( catherine.vgui.door ) ) then
+			catherine.vgui.door:Remove( )
+			catherine.vgui.door = nil
+		end
+		
+		catherine.vgui.door = vgui.Create( "catherine.vgui.door" )
+		catherine.vgui.door:InitializeDoor( Entity( data ) )
+	end )
+	
 	local toscreen = FindMetaTable("Vector").ToScreen
 	
 	function catherine.door.GetDetailString( ent )

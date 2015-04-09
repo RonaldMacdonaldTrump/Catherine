@@ -19,10 +19,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.recognize = catherine.recognize or { }
 // 참고 : 이 라이브러리는 최적화가 필요함;
 
-function GM:ShowTeam( pl )
-	netstream.Start( pl, "catherine.ShowTeam" )
-end
-
 if ( SERVER ) then
 	function catherine.recognize.DoKnow( pl, talkCode, target )
 		target = target or { }
@@ -81,7 +77,7 @@ if ( SERVER ) then
 		catherine.recognize.DoKnow( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
-	netstream.Hook( "catherine.ShowTeam", function( )
+	netstream.Hook( "catherine.recognize.SelectMenu", function( )
 		local Menu = DermaMenu( )
 		Menu:AddOption( LANG( "Recognize_UI_Option_LookingPlayer" ), function( )
 			local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity

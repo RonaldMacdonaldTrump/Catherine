@@ -21,6 +21,23 @@ function GM:ShowHelp( pl )
 	netstream.Start( pl, "catherine.ShowHelp" )
 end
 
+function GM:ShowTeam( pl )
+	if ( !pl:IsCharacterLoaded( ) ) then return end
+	local ent = pl:GetEyeTrace( 70 ).Entity
+	
+	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
+		if ( catherine.door.IsDoorOwner( pl, ent ) ) then
+			netstream.Start( pl, "catherine.door.DoorMenu", ent:EntIndex( ) )
+		else
+			catherine.door.Buy( pl, ent )
+		end
+	else
+		netstream.Start( pl, "catherine.recognize.SelectMenu" )
+	end
+	//
+	//
+end
+
 function GM:GetGameDescription( )
 	return "CAT - ".. ( Schema and Schema.Name or "Unknown" )
 end
