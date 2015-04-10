@@ -21,10 +21,10 @@ local PANEL = { }
 function PANEL:Init( )
 	catherine.vgui.version = self
 	
-	self.version = catherine.update.Ver
+	self.version = catherine.version.Ver
 	self.needUpdate = catherine.network.GetNetGlobalVar( "cat_needUpdate", false )
 	self.status = false
-	self.materials = {
+	self.mat = {
 		Material( "icon16/accept.png" ),
 		Material( "icon16/error.png" )
 	}
@@ -51,17 +51,17 @@ function PANEL:Init( )
 	self.check.Click = function( pnl )
 		if ( pnl.Cant ) then return end
 		self.status = true
-		netstream.Start( "catherine.update.Check" )
+		netstream.Start( "catherine.version.Check" )
 	end
 end
 
 function PANEL:Rebuild( )
-	self.version = catherine.update.Ver
+	self.version = catherine.version.Ver
 	self.needUpdate = catherine.network.GetNetGlobalVar( "cat_needUpdate", false )
 end
 
 function PANEL:MenuPaint( w, h )
-	local mat = self.materials[ 2 ]
+	local mat = self.mat[ 2 ]
 	local txt = LANG( "Version_Notify_FoundNew" )
 	
 	surface.SetDrawColor( 255, 255, 255, 255 )
@@ -69,7 +69,7 @@ function PANEL:MenuPaint( w, h )
 	surface.DrawTexturedRect( w / 2 - 512 / 2, h / 2 - 256 / 2, 512, 256 )
 	
 	if ( !self.needUpdate ) then
-		mat = self.materials[ 1 ]
+		mat = self.mat[ 1 ]
 		txt = LANG( "Version_Notify_AlreadyNew" )
 	end
 	

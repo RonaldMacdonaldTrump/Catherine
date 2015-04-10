@@ -62,11 +62,26 @@ end
 function PANEL:BuildPlayerList( )
 	self.playerLists:Clear( )
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
+		local isMaster = catherine.door.IsDoorOwner( v, self.ent, CAT_DOOR_FLAG_MASTER )
+		local isAll = catherine.door.IsDoorOwner( v, self.ent, CAT_DOOR_FLAG_ALL )
+		local isBasic = catherine.door.IsDoorOwner( v, self.ent, CAT_DOOR_FLAG_BASIC )
+		
+		print(groupID,d)
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.playerLists:GetWide( ), 30 )
 		panel.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
 			draw.SimpleText( v:Name( ), "catherine_normal20", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			
+			if ( isMaster ) then
+				draw.SimpleText( "MASTER", "catherine_normal20", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			elseif ( isAll ) then
+				draw.SimpleText( "ALL", "catherine_normal20", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			elseif ( isBasic ) then
+				draw.SimpleText( "BASIC", "catherine_normal20", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			else
+				draw.SimpleText( "NO PERMISSION", "catherine_normal20", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			end
 		end
 		
 		local button = vgui.Create( "DButton", panel )

@@ -23,6 +23,10 @@ catherine.door = catherine.door or { }
 
 CAT_DOOR_CHANGEPERMISSION = 1
 
+CAT_DOOR_FLAG_MASTER = 1
+CAT_DOOR_FLAG_ALL = 2
+CAT_DOOR_FLAG_BASIC = 3
+
 if ( SERVER ) then
 	function catherine.door.Work( pl, ent, workID, data )
 		if ( !IsValid( pl ) or !workID ) then return end
@@ -55,7 +59,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.door.Buy( pl, ent )
-		if ( !IsValid( pl ) ) then return end
+		if ( !IsValid( pl ) ) then print("!")return end
 		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
 			return false, "Entity_Notify_NotDoor"
 		end
@@ -64,7 +68,7 @@ if ( SERVER ) then
 			return false, "Door_Notify_CantBuyable"
 		end
 
-		if ( catherine.door.GetDoorOwner( ent ) ) then
+		if ( ent:GetNetVar( "owner" ) ) then
 			return false, "Door_Notify_AlreadySold"
 		end
 		
@@ -74,8 +78,13 @@ if ( SERVER ) then
 		end
 		
 		catherine.cash.Take( pl, cost )
-		ent:SetNetVar( "owner", pl:GetCharacterID( ) )
+		ent:SetNetVar( "owners", {
+			master = pl:GetCharacterID( ),
+			all = { },
+			basic = { }
+		} )
 		
+		print("Fin")
 		return true
 	end
 	
@@ -85,12 +94,12 @@ if ( SERVER ) then
 			return false, "Entity_Notify_NotDoor"
 		end
 
-		if ( !catherine.door.GetDoorOwner( ent ) or !catherine.door.IsDoorOwner( pl, ent ) ) then
+		if ( !catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_MASTER ) ) then
 			return false, "Door_Notify_NoOwner"
 		end
 		
 		catherine.cash.Give( pl, catherine.door.GetDoorCost( pl, ent ) / 2 )
-		ent:SetNetVar( "owner", nil )
+		ent:SetNetVar( "owners", nil )
 		
 		return true
 		// 판매시 주인이 임의로 설정한 커스텀 타이틀이 복귀되어야함 ^_^
@@ -105,7 +114,7 @@ if ( SERVER ) then
 		if ( force ) then
 			ent:SetNetVar( "title", title )
 		else
-			if ( !catherine.door.GetDoorOwner( ent ) or !catherine.door.IsDoorOwner( pl, ent ) ) then
+			if ( !catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_MASTER, CAT_DOOR_FLAG_ALL ) ) then
 				return false, "Door_Notify_NoOwner"
 			end
 			ent:SetNetVar( "title", title )
@@ -116,14 +125,6 @@ if ( SERVER ) then
 
 	function catherine.door.GetDoorCost( pl, ent )
 		return catherine.configs.doorCost // to do;;
-	end
-	
-	function catherine.door.GetDoorOwner( ent )
-		return ent:GetNetVar( "owner" )
-	end
-	
-	function catherine.door.IsDoorOwner( pl, ent )
-		return pl:GetCharacterID( ) == ent:GetNetVar( "owner" )
 	end
 
 	function catherine.door.DataSave( )
@@ -176,7 +177,8 @@ else
 	local toscreen = FindMetaTable("Vector").ToScreen
 	
 	function catherine.door.GetDetailString( ent )
-		local owner = ent:GetNetVar( "owner" )
+		local owner = ent:GetNetVar( "owners" )
+		
 		if ( owner ) then
 			return LANG( "Door_Message_AlreadySold" )
 		elseif ( !owner and catherine.door.IsBuyableDoor( ent ) ) then
@@ -196,6 +198,21 @@ else
 	end
 	
 	hook.Add( "DrawEntityTargetID", "catherine.door.DrawEntityTargetID", catherine.door.DrawEntityTargetID )
+end
+
+function catherine.door.IsDoorOwner( pl, ent, ... )
+	local ownerTable = ent:GetNetVar( "owners" )
+	if ( !ownerTable ) then return end
+
+	for k, v in pairs( { ... } ) do
+		if ( v == CAT_DOOR_FLAG_MASTER ) then
+			return ownerTable.master == pl:GetCharacterID( ), CAT_DOOR_FLAG_MASTER
+		elseif ( v == CAT_DOOR_FLAG_ALL ) then
+			return table.HasValue( ownerTable.all, pl:GetCharacterID( ) ), CAT_DOOR_FLAG_ALL
+		elseif ( v == CAT_DOOR_FLAG_BASIC ) then
+			return table.HasValue( ownerTable.basic, pl:GetCharacterID( ) ), CAT_DOOR_FLAG_BASIC
+		end
+	end
 end
 
 function catherine.door.IsBuyableDoor( ent )
