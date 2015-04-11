@@ -464,6 +464,8 @@ else
 	end
 	
 	function catherine.chat.SetStatus( bool )
+		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+		
 		catherine.chat.CreateBase( )
 		catherine.chat.isOpened = bool
 		

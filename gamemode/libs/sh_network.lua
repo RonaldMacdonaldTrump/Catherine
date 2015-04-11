@@ -65,7 +65,7 @@ if ( SERVER ) then
 		end
 	end
 
-	function catherine.network.SyncAllVars( pl, func )
+	function catherine.network.SyncAllVars( pl )
 		local conVart = { }
 		
 		for k, v in pairs( catherine.network.entityVars ) do
@@ -78,10 +78,6 @@ if ( SERVER ) then
 		end
 
 		netstream.Start( pl, "catherine.network.SyncAllVars", { conVart, catherine.network.globalVars } )
-		
-		if ( func ) then
-			func( )
-		end
 	end
 
 	function META:SetNetVar( key, value, noSync )

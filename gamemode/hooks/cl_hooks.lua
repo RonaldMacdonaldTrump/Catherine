@@ -16,13 +16,12 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.loading = catherine.loading or {
-	status = false,
-	errorMsg = nil,
-	alpha = 255,
+catherine.intro = catherine.intro or {
+	alpha = 0,
+	loading = false,
+	intro = false,
 	rotate = 90,
-	blurAmount = 5,
-	msg = "Catherine is now booting ..."
+	rotateAlpha = 0
 }
 catherine.entityCaches = { }
 catherine.weaponModels = catherine.weaponModels or { }
@@ -39,7 +38,7 @@ function GM:HUDShouldDraw( name )
 end
 
 function GM:CalcView( pl, pos, ang, fov )
-	if ( !catherine.loading.status or ( IsValid( catherine.vgui.character ) and !pl:IsCharacterLoaded( ) ) ) then
+	if ( IsValid( catherine.vgui.character ) or !pl:IsCharacterLoaded( ) ) then
 		local data = { }
 		data.origin = catherine.configs.schematicViewPos.pos
 		data.angles = catherine.configs.schematicViewPos.ang
@@ -63,37 +62,27 @@ end
 
 function GM:HUDDrawScoreBoard( )
 	local scrW, scrH = ScrW( ), ScrH( )
-	if ( catherine.loading.status ) then
-		catherine.loading.alpha = Lerp( 0.008, catherine.loading.alpha, 0 )
-		catherine.loading.blurAmount = Lerp( 0.01, catherine.loading.blurAmount, 0 )
-	else
-		catherine.loading.alpha = Lerp( 0.01, catherine.loading.alpha, 255 )
-		catherine.loading.blurAmount = Lerp( 0.01, catherine.loading.blurAmount, 5 )
-	end
-	
-	if ( math.Round( catherine.loading.blurAmount ) > 0 ) then
-		catherine.util.BlurDraw( 0, 0, scrW, scrH, catherine.loading.blurAmount )
-	end
-	
-	catherine.loading.rotate = math.Approach( catherine.loading.rotate, catherine.loading.rotate - 3, 3 )
 
-	if ( catherine.loading.errorMsg ) then
-		draw.NoTexture( )
-		surface.SetDrawColor( 255, 255, 255, catherine.loading.alpha - 55 )
-		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, 90, 360, 100 )
-		
-		draw.SimpleText( catherine.loading.errorMsg, "catherine_normal25", 100, scrH - 50, Color( 255, 255, 255, catherine.loading.alpha ), TEXT_ALIGN_LEFT, 1 )
-	else
-		draw.NoTexture( )
-		surface.SetDrawColor( 255, 255, 255, catherine.loading.alpha )
-		catherine.geometry.DrawCircle( 50, scrH - 50, 20, 5, catherine.loading.rotate, 100, 100 )
-	
-		draw.SimpleText( catherine.loading.msg, "catherine_normal20", 100, scrH - 50, Color( 255, 255, 255, catherine.loading.alpha ), TEXT_ALIGN_LEFT, 1 )
-	end
-end
+	catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 6, 6 )
 
-function GM:ShouldDrawLocalPlayer( )
-	return !catherine.loading.status
+	draw.NoTexture( )
+	surface.SetDrawColor( 255, 255, 255, catherine.intro.rotateAlpha )
+	catherine.geometry.DrawCircle( scrW / 2 - 50 / 2, scrH - 50, 20, 5, catherine.intro.rotate, 250, 100 )
+
+	if ( catherine.intro.intro ) then
+		catherine.intro.alpha = Lerp( 0.05, catherine.intro.alpha, 255 )
+	else
+		catherine.intro.alpha = Lerp( 0.05, catherine.intro.alpha, 0 )
+	end
+
+	if ( catherine.intro.loading ) then
+		catherine.intro.rotateAlpha = Lerp( 0.05, catherine.intro.rotateAlpha, 255 )
+	else
+		catherine.intro.rotateAlpha = Lerp( 0.05, catherine.intro.rotateAlpha, 0 )
+	end
+	
+	draw.SimpleText( "CATHERINE", "catherine_introTitle", scrW / 2, scrH / 2, Color( 235, 235, 235, catherine.intro.alpha ), 1, 1 )
+	draw.SimpleText( Schema and Schema.Title or "Unknown", "catherine_introSchema", scrW / 2, scrH * 0.6, Color( 235, 235, 235, catherine.intro.alpha ), 1, 1 )
 end
 
 function GM:DrawEntityTargetID( pl, ent, a )
@@ -144,7 +133,7 @@ function GM:ProgressEntityCache( pl )
 end
 
 function GM:HUDPaint( )
-	if ( IsValid( catherine.vgui.character ) or !catherine.loading.status ) then return end
+	if ( IsValid( catherine.vgui.character ) ) then return end
 	local pl = LocalPlayer( )
 	
 	hook.Run( "HUDBackgroundDraw" )
@@ -159,7 +148,7 @@ function GM:HUDPaint( )
 end
 
 function GM:PostRenderVGUI( )
-	if ( IsValid( catherine.vgui.character ) or !catherine.loading.status ) then return end
+	if ( IsValid( catherine.vgui.character ) ) then return end
 	catherine.notify.Draw( )
 end
 
@@ -187,7 +176,8 @@ function GM:GetSchemaInformation( )
 	}
 end
 
-function GM:ScoreboardShow()
+function GM:ScoreboardShow( )
+	if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 	if ( IsValid( catherine.vgui.menu ) ) then
 		catherine.vgui.menu:Close( )
 		gui.EnableScreenClicker( false )
@@ -210,11 +200,7 @@ function GM:RenderScreenspaceEffects( )
 	tab[ "$pp_colour_mulr" ] = data.mulr or 0
 	tab[ "$pp_colour_mulg" ] = data.mulg or 0
 	tab[ "$pp_colour_mulb" ] = data.mulb or 0
-	
-	if ( !catherine.loading.status ) then
-		tab[ "$pp_colour_colour" ] = 0
-	end
-	
+
 	DrawColorModify( tab )
 end
 --[[
@@ -272,4 +258,19 @@ netstream.Hook( "catherine.ShowHelp", function( )
 		return
 	end
 	catherine.vgui.information = vgui.Create( "catherine.vgui.information" )
+end )
+
+netstream.Hook( "catherine.IntroStart", function( )
+	timer.Simple( 1, function( )
+		catherine.intro.loading = true
+		catherine.intro.intro = true
+	end )
+end )
+
+netstream.Hook( "catherine.IntroStop", function( )
+	catherine.intro.intro = false
+end )
+
+netstream.Hook( "catherine.loadingFinished", function( )
+	catherine.intro.loading = false
 end )

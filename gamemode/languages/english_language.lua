@@ -126,7 +126,6 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetTitle" ] = "You are set title this door.",
 	
 	// Basic
-	[ "Basic_UI_CATLoaded" ] = "Welcome.",
 	[ "Basic_UI_StringRequest" ] = "Request",
 	[ "Basic_UI_Question" ] = "Question",
 	[ "Basic_UI_Notify" ] = "Notify",

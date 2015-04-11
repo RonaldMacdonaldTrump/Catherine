@@ -65,8 +65,8 @@ function PANEL:BuildPlayerList( )
 		local isMaster = catherine.door.IsDoorOwner( v, self.ent, CAT_DOOR_FLAG_MASTER )
 		local isAll = catherine.door.IsDoorOwner( v, self.ent, CAT_DOOR_FLAG_ALL )
 		local isBasic = catherine.door.IsDoorOwner( v, self.ent, CAT_DOOR_FLAG_BASIC )
+
 		
-		print(groupID,d)
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.playerLists:GetWide( ), 30 )
 		panel.Paint = function( pnl, w, h )

@@ -17,73 +17,87 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.player = catherine.player or { }
-
 local META = FindMetaTable( "Player" )
+
+if ( CLIENT ) then
+	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 1
+	
+	netstream.Hook( "catherine.player.CheckLocalPlayer", function( )
+		hook.Add( "Tick", "catherine.player.CheckLocalPlayer.Tick", function( )
+			if ( catherine.player.nextLocalPlayerCheck <= CurTime( ) ) then
+				if ( IsValid( LocalPlayer( ) ) ) then
+					netstream.Start( "catherine.player.CheckLocalPlayer_Receive" )
+					hook.Remove( "Tick", "catherine.player.CheckLocalPlayer.Tick" )
+					catherine.player.nextLocalPlayerCheck = nil
+					return
+				end
+				catherine.player.nextLocalPlayerCheck = CurTime( ) + 1
+			end
+		end )
+	end )
+end
 
 if ( SERVER ) then
 	function catherine.player.Initialize( pl, func )
-		if ( !catherine.database.Connected ) then
-			netstream.Start( pl, "catherine.LoadingStatus", { false, "DataBase ERROR : " .. catherine.database.ErrorMsg, true } )
-			return
-		end
-		if ( !Schema and catherine.network.GetNetGlobalVar( "notSetSchema", false ) == true ) then
-			netstream.Start( pl, "catherine.LoadingStatus", { false, "Can't load Schema table!!! please check your '+gamemode' command!", true } )
-			return
-		end
-		catherine.network.SyncAllVars( pl, function( )
-			catherine.character.SendCurrentNetworking( pl, function( )
-				catherine.environment.SyncToPlayer( pl, function( )
-					catherine.database.GetDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
-						if ( !data or #data == 0 ) then
-							catherine.player.QueryInitialize( pl, function( )
-								if ( pl:SteamID( ) == catherine.configs.OWNER and pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
-									if ( ulx ) then
-										RunConsoleCommand( "ulx", "adduserid", pl:SteamID( ), "superadmin" )
-										catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl:SteamName( ) )
-									else
-										pl:SetUserGroup( "superadmin" )
-										catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set : " .. pl:SteamName( ) )
-									end
-								end
-								catherine.character.SendCharacterLists( pl, function( )
-									catherine.catData.Load( pl )
-									netstream.Start( pl, "catherine.LoadingStatus", { false, LANG( pl, "Basic_UI_CATLoaded" ) } )
-									timer.Simple( 1, function( )
-										netstream.Start( pl, "catherine.LoadingStatus", { true, "" } )
-										catherine.character.OpenPanel( pl )
-										if ( func ) then
-											func( )
-										end
-									end )
-								end )
-							end )
-						else
-							catherine.character.SendCharacterLists( pl, function( )
-								catherine.catData.Load( pl )
-								netstream.Start( pl, "catherine.LoadingStatus", { false, LANG( pl, "Basic_UI_CATLoaded" ) } )
-								timer.Simple( 1, function( )
-									netstream.Start( pl, "catherine.LoadingStatus", { true, "" } )
-									catherine.character.OpenPanel( pl )
-									if ( func ) then
-										func( )
-									end
-								end )
-							end )
-						end
+		if ( !IsValid( pl ) ) then return end
+		
+		local function loading( )
+			catherine.network.SyncAllVars( pl )
+			catherine.character.SendCurrentNetworking( pl )
+			catherine.environment.SyncToPlayer( pl )
+			catherine.player.SQLInitialize( pl )
+			catherine.character.SendCharacterLists( pl )
+			catherine.catData.Load( pl )
+
+			timer.Simple( 2, function( )
+				if ( !IsValid( pl ) ) then return end
+				netstream.Start( pl, "catherine.loadingFinished" )
+				
+				timer.Simple( 1, function( )
+					if ( !IsValid( pl ) ) then return end
+					
+					netstream.Start( pl, "catherine.IntroStop" )
+					timer.Simple( 1, function( )
+						if ( !IsValid( pl ) ) then return end
+						
+						pl:Freeze( false )
+						pl:UnLock( )
+						catherine.character.OpenPanel( pl )
 					end )
 				end )
 			end )
+		end
+		
+		netstream.Hook( "catherine.player.CheckLocalPlayer_Receive", function( )
+			netstream.Start( pl, "catherine.IntroStart" )
+			loading( )
 		end )
+		
+		pl:Freeze( true )
+		pl:Lock( )
+		
+		netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
 	end
 
-	function catherine.player.QueryInitialize( pl, func )
-		if ( !IsValid( pl ) ) then return end
-		catherine.database.InsertDatas( "catherine_players", {
-			_steamName = pl:SteamName( ),
-			_steamID = pl:SteamID( ),
-			_catData = { }
-		}, function( )
-			if ( func ) then func( ) end
+	function catherine.player.SQLInitialize( pl )
+		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
+			if ( !data or #data == 0 ) then
+				if ( pl:SteamID( ) == catherine.configs.OWNER and pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
+					if ( ulx ) then
+						RunConsoleCommand( "ulx", "adduserid", pl:SteamID( ), "superadmin" )
+						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl:SteamName( ) )
+					else
+						pl:SetUserGroup( "superadmin" )
+						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set : " .. pl:SteamName( ) )
+					end
+				end
+				
+				catherine.database.InsertDatas( "catherine_players", {
+					_steamName = pl:SteamName( ),
+					_steamID = pl:SteamID( ),
+					_catData = { }
+				} )
+			end
 		end )
 	end
 
@@ -196,6 +210,7 @@ if ( SERVER ) then
 	
 	local velo = FindMetaTable("Entity").GetVelocity
 	local v = FindMetaTable("Vector").Length2D
+	
 	function META:IsRunning( )
 		return v( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
 	end

@@ -356,12 +356,9 @@ if ( SERVER ) then
 		return temp
 	end
 
-	function catherine.environment.SyncToPlayer( pl, func )
+	function catherine.environment.SyncToPlayer( pl )
 		if ( !IsValid( pl ) ) then return end
 		netstream.Start( pl, "catherine.environment.Sync", catherine.environment.Buffer )
-		if ( func ) then
-			func( )
-		end
 	end
 	
 	function catherine.environment.SendTemperatureToAll( )
@@ -405,7 +402,7 @@ else
 	end )
 
 	function catherine.environment.WorkClient( )
-		if ( table.Count( catherine.environment.Buffer ) == 0 ) then return end
+		if ( table.Count( catherine.environment.Buffer ) != 7 ) then return end
 		if ( catherine.environment.TimeTick <= CurTime( ) ) then
 			local d = catherine.environment.Buffer
 			d.second = d.second + 1

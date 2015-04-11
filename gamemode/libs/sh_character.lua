@@ -316,12 +316,8 @@ if ( SERVER ) then
 		netstream.Start( nil, "catherine.character.InitializeNetworking", { pl:SteamID( ), catherine.character.networkingVars[ pl:SteamID( ) ] } )
 	end
 
-	function catherine.character.SendCurrentNetworking( pl, func )
-		if ( !IsValid( pl ) ) then return end
+	function catherine.character.SendCurrentNetworking( pl )
 		netstream.Start( pl, "catherine.character.SendCurrentNetworking", catherine.character.networkingVars )
-		if ( func ) then
-			func( )
-		end
 	end
 
 	function catherine.character.GetPlayerNetworking( pl )
