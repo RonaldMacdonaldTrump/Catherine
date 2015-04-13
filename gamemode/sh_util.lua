@@ -151,7 +151,7 @@ end
 catherine.util.IncludeInDir( "libs/external", true )
 
 if ( SERVER ) then
-	catherine.util.StringQuerys = catherine.util.StringQuerys or { }
+	catherine.util.Receiver = catherine.util.Receiver or { String = { }, Query = { } }
 	
 	function catherine.util.Notify( pl, message, time, icon )
 		if ( !IsValid( pl ) or !message ) then return end
@@ -207,12 +207,25 @@ if ( SERVER ) then
 		end
 	end
 
-	function catherine.util.UniqueStringReceiver( pl, id, title, msg, defV, func )
-		if ( !IsValid( pl ) or !id or !title or !msg or !func ) then return end
+	function catherine.util.StringReceiver( pl, id, msg, defV, func )
+		if ( !IsValid( pl ) or !id or !msg or !func ) then return end
 		if ( !defV ) then defV = "" end
-		catherine.util.StringQuerys[ pl:SteamID( ) ] = catherine.util.StringQuerys[ pl:SteamID( ) ] or { }
-		catherine.util.StringQuerys[ pl:SteamID( ) ][ id ] = { id, title, msg, func }
-		netstream.Start( pl, "catherine.util.UniqueStringReceiver", { id, title, msg, defV } )
+		local steamID = pl:SteamID( )
+		
+		catherine.util.Receiver.String[ steamID ] = catherine.util.Receiver.String[ steamID ] or { }
+		catherine.util.Receiver.String[ steamID ][ id ] = func
+		
+		netstream.Start( pl, "catherine.util.StringReceiver", { id, msg, defV } )
+	end
+	
+	function catherine.util.QueryReceiver( pl, id, msg, func )
+		if ( !IsValid( pl ) or !id or !msg or !func ) then return end
+		local steamID = pl:SteamID( )
+		
+		catherine.util.Receiver.Query[ steamID ] = catherine.util.Receiver.Query[ steamID ] or { }
+		catherine.util.Receiver.Query[ steamID ][ id ] = func
+		
+		netstream.Start( pl, "catherine.util.QueryReceiver", { id, msg } )
 	end
 	
 	function catherine.util.ScreenColorEffect( pl, col, time, fadeTime )
@@ -220,19 +233,44 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.util.ScreenColorEffect", { col or Color( 255, 255, 255 ), time, fadeTime } )
 	end
 
-	netstream.Hook( "catherine.util.UniqueStringReceiver_Receive", function( pl, data )
+	netstream.Hook( "catherine.util.StringReceiver_Receive", function( pl, data )
 		local id = data[ 1 ]
-		if ( !catherine.util.StringQuerys[ pl:SteamID( ) ] or !catherine.util.StringQuerys[ pl:SteamID( ) ][ id ] ) then return end
-		catherine.util.StringQuerys[ pl:SteamID( ) ][ id ][ 4 ]( pl, data[ 2 ] )
-		catherine.util.StringQuerys[ pl:SteamID( ) ][ id ] = nil
+		local steamID = pl:SteamID( )
+		local rec = catherine.util.Receiver.String
+		
+		if ( !rec[ steamID ] or !rec[ steamID ][ id ] ) then return end
+		
+		rec[ steamID ][ id ]( pl, data[ 2 ] )
+		catherine.util.Receiver.String[ steamID ][ id ] = nil
+	end )
+	
+	netstream.Hook( "catherine.util.QueryReceiver_Receive", function( pl, data )
+		local id = data[ 1 ]
+		local steamID = pl:SteamID( )
+		local rec = catherine.util.Receiver.Query
+		
+		if ( !rec[ steamID ] or !rec[ steamID ][ id ] ) then return end
+		
+		rec[ steamID ][ id ]( pl, data[ 2 ] )
+		catherine.util.Receiver.Query[ steamID ][ id ] = nil
 	end )
 else
 	catherine.util.blurTexture = Material( "pp/blurscreen" )
 	
-	netstream.Hook( "catherine.util.UniqueStringReceiver", function( data )
-		 Derma_StringRequest( data[ 2 ], data[ 3 ], data[ 4 ], function( val )
-			netstream.Start( "catherine.util.UniqueStringReceiver_Receive", { data[ 1 ], val } )
-		 end, function( ) end, "OK", "NO" )
+	netstream.Hook( "catherine.util.StringReceiver", function( data )
+		Derma_StringRequest( data[ 2 ], LANG( "Basic_UI_StringRequest" ), data[ 3 ], function( val )
+				netstream.Start( "catherine.util.StringReceiver_Receive", { data[ 1 ], val } )
+			end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
+		)
+	end )
+	
+	netstream.Hook( "catherine.util.QueryReceiver", function( data )
+		Derma_Query( data[ 2 ], LANG( "Basic_UI_Question" ), LANG( "Basic_UI_OK" ), function( )
+				netstream.Start( "catherine.util.QueryReceiver_Receive", { data[ 1 ], true } )
+			end, LANG( "Basic_UI_NO" ), function( ) 
+				netstream.Start( "catherine.util.QueryReceiver_Receive", { data[ 1 ], false } )
+			end
+		)
 	end )
 	
 	netstream.Hook( "catherine.util.ScreenColorEffect", function( data )

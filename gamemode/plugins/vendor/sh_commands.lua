@@ -22,7 +22,7 @@ catherine.command.Register( {
 	command = "vendoradd",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
-		catherine.util.UniqueStringReceiver( pl, "Vendor_SpawnFunc_Name", LANG( pl, "Basic_UI_StringRequest" ), LANG( pl, "Vendor_NameQ" ), "Johnson", function( _, val )
+		catherine.util.StringReceiver( pl, "Vendor_SpawnFunc_Name", LANG( pl, "Vendor_NameQ" ), "Johnson", function( _, val )
 			local pos, ang = pl:GetEyeTraceNoCursor( ).HitPos, pl:EyeAngles( )
 			ang.p = 0
 			ang.y = ang.y - 180

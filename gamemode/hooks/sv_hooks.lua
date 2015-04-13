@@ -18,6 +18,10 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 function GM:ShowHelp( pl )
 	if ( !pl:IsCharacterLoaded( ) ) then return end
+	
+	local success = hook.Run( "PostPressF1", pl )
+	if ( success ) then return end
+	
 	netstream.Start( pl, "catherine.ShowHelp" )
 end
 
@@ -25,20 +29,21 @@ function GM:ShowTeam( pl )
 	if ( !pl:IsCharacterLoaded( ) ) then return end
 	local ent = pl:GetEyeTrace( 70 ).Entity
 	
+	local success = hook.Run( "PostPressF2", pl )
+	if ( success ) then return end
+	
 	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
-		
 		if ( catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_MASTER ) ) then
 			netstream.Start( pl, "catherine.door.DoorMenu", ent:EntIndex( ) )
-			print("1!")
 		else
-			catherine.door.Buy( pl, ent )
-			print("2!")
+			catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )
+				if ( !bool ) then return end
+				catherine.door.Buy( pl, ent )
+			end )
 		end
 	else
 		netstream.Start( pl, "catherine.recognize.SelectMenu" )
 	end
-	//
-	//
 end
 
 function GM:GetGameDescription( )
@@ -61,26 +66,25 @@ function GM:PlayerSpawn( pl )
 end
 
 function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
-	if ( pl:IsPlayer( ) ) then
-		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
-		
-		if ( hitGroup == CAT_BODY_ID_HEAD ) then
-			catherine.util.ScreenColorEffect( pl, nil, 2, 0.005 )
-		--[[ // to do...; maybe ..
-		elseif ( hitGroup == CAT_BODY_ID_CHEST ) then
-			catherine.body.TakePercent( pl, CAT_BODY_ID_CHEST, 1 )
-		elseif ( hitGroup == CAT_BODY_ID_L_ARM ) then
-			catherine.body.TakePercent( pl, CAT_BODY_ID_L_ARM, 1 )
-		elseif ( hitGroup == CAT_BODY_ID_R_ARM ) then
-			catherine.body.TakePercent( pl, CAT_BODY_ID_R_ARM, 1 )
-		elseif ( hitGroup == CAT_BODY_ID_STOMACH ) then
-			catherine.body.TakePercent( pl, CAT_BODY_ID_STOMACH, 1 )
-		elseif ( hitGroup == CAT_BODY_ID_L_LEG ) then
-			catherine.body.TakePercent( pl, CAT_BODY_ID_L_LEG, 1 )
-		elseif ( hitGroup == CAT_BODY_ID_R_LEG ) then
-			catherine.body.TakePercent( pl, CAT_BODY_ID_R_LEG, 1 )
-		--]]
-		end
+	if ( !pl:IsPlayer( ) ) then return end
+	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+	
+	if ( hitGroup == CAT_BODY_ID_HEAD ) then
+		catherine.util.ScreenColorEffect( pl, nil, 2, 0.005 )
+	--[[ // to do...; maybe ..
+	elseif ( hitGroup == CAT_BODY_ID_CHEST ) then
+		catherine.body.TakePercent( pl, CAT_BODY_ID_CHEST, 1 )
+	elseif ( hitGroup == CAT_BODY_ID_L_ARM ) then
+		catherine.body.TakePercent( pl, CAT_BODY_ID_L_ARM, 1 )
+	elseif ( hitGroup == CAT_BODY_ID_R_ARM ) then
+		catherine.body.TakePercent( pl, CAT_BODY_ID_R_ARM, 1 )
+	elseif ( hitGroup == CAT_BODY_ID_STOMACH ) then
+		catherine.body.TakePercent( pl, CAT_BODY_ID_STOMACH, 1 )
+	elseif ( hitGroup == CAT_BODY_ID_L_LEG ) then
+		catherine.body.TakePercent( pl, CAT_BODY_ID_L_LEG, 1 )
+	elseif ( hitGroup == CAT_BODY_ID_R_LEG ) then
+		catherine.body.TakePercent( pl, CAT_BODY_ID_R_LEG, 1 )
+	--]]
 	end
 end
 

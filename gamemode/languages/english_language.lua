@@ -69,7 +69,7 @@ LANGUAGE.data = {
 	[ "Business_UI_Take" ] = "Take",
 	[ "Business_UI_Shipment_Title" ] = "Shipment",
 	[ "Business_UI_Shipment_Desc" ] = "A Shipment",
-	[ "Business_Notify_BuyQ" ] = "Are you sure you want to buy this item(s) ?",
+	[ "Business_Notify_BuyQ" ] = "Are you sure you want to buy this item(s)?",
 	[ "Business_Notify_CantOpenShipment" ] = "You can't open this shipment!",
 	[ "Business_Notify_NeedCartAdd" ] = "Add item on your cart first!",
 	
@@ -113,6 +113,7 @@ LANGUAGE.data = {
 	// Door
 	[ "Door_Notify_CMD_Locked" ] = "You are locked this door.",
 	[ "Door_Notify_CMD_UnLocked" ] = "You are unlocked this door.",
+	[ "Door_Notify_BuyQ" ] = "Are you sure you want to buy this door?",
 	[ "Door_Message_Locking" ] = "Locking ...",
 	[ "Door_Message_UnLocking" ] = "UnLocking ...",
 	[ "Door_Message_Buyable" ] = "This door can purchase.",
