@@ -100,6 +100,49 @@ if ( SERVER ) then
 			end
 		end )
 	end
+	
+	function catherine.player.HealthRecoverTick( pl )
+		if ( !pl.CAT_healthRecover ) then return end
+		
+		if ( math.Round( pl:Health( ) ) >= pl:GetMaxHealth( ) ) then
+			pl.CAT_healthRecover = false
+			hook.Run( "HealthFullRecovered", pl )
+			return
+		end
+		
+		if ( ( pl.CAT_healthRecoverTick or CurTime( ) + 3 ) <= CurTime( ) ) then
+			pl:SetHealth( math.Clamp( pl:Health( ) + 1, 0, pl:GetMaxHealth( ) ) )
+			pl.CAT_healthRecoverTick = CurTime( ) + 3
+			hook.Run( "HealthRecovering", pl )
+		end
+	end
+	
+	function catherine.player.BunnyHopProtection( pl )
+		if ( pl:KeyPressed( IN_JUMP ) and ( pl.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
+			if ( !pl.CAT_nextBunnyCheck ) then
+				pl.CAT_nextBunnyCheck = CurTime( ) + 0.05
+			end
+			pl.CAT_bunnyCount = ( pl.CAT_bunnyCount or 0 ) + 1
+			if ( pl.CAT_bunnyCount >= 10 ) then
+				pl:SetJumpPower( 150 )
+				catherine.util.Notify( pl, "Don't Bunny-hop!" )
+				pl:Freeze( true )
+				pl.CAT_bunnyFreezed = true
+				pl.CAT_nextbunnyFreezeDis = CurTime( ) + 5
+			end
+			pl.CAT_nextBunnyCheck = CurTime( ) + 0.05
+		else
+			if ( ( pl.CAT_nextBunnyInit or CurTime( ) ) <= CurTime( ) ) then
+				pl.CAT_bunnyCount = 0
+				pl.CAT_nextBunnyInit = CurTime( ) + 15
+			end
+		end
+		if ( pl.CAT_bunnyFreezed and ( pl.CAT_nextbunnyFreezeDis or CurTime( ) ) <= CurTime( ) ) then
+			pl:Freeze( false )
+			pl.CAT_bunnyCount = 0
+			pl.CAT_bunnyFreezed = false
+		end
+	end
 
 	function catherine.player.RagdollWork( pl, status, time )
 		if ( !IsValid( pl ) ) then return end
