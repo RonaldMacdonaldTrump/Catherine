@@ -525,17 +525,26 @@ else
 		catherine.character.networkRegistry = data
 	end )
 	
-	netstream.Hook( "catherine.character.SetNetworkingVar", function( data )
-		if ( !catherine.character.networkRegistry[ data[ 1 ] ] ) then return end
-		catherine.character.networkRegistry[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
-		hook.Run( "NetworkGlobalVarChanged", catherine.util.FindPlayerByStuff( "SteamID", data[ 1 ] ), data[ 2 ], data[ 3 ] )
+	netstream.Hook( "catherine.character.SetVar", function( data )
+		local steamID = data[ 1 ]
+		local key = data[ 2 ]
+		local value = data[ 3 ]
+		
+		if ( !catherine.character.networkRegistry[ steamID ] ) then return end
+		catherine.character.networkRegistry[ steamID ][ key ] = value
+		
+		hook.Run( "CharacterVarChanged", catherine.util.FindPlayerByStuff( "SteamID", steamID ), key, value )
 	end )
 
-	netstream.Hook( "catherine.character.SetNetworkingCharVar", function( data )
-		if ( !catherine.character.networkRegistry[ data[ 1 ] ] or !catherine.character.networkRegistry[ data[ 1 ] ][ "_charVar" ] ) then return end
-		catherine.character.networkRegistry[ data[ 1 ] ][ "_charVar" ][ data[ 2 ] ] = data[ 3 ]
-		local pl = data[ 1 ]
-		hook.Run( "NetworkCharVarChanged", catherine.util.FindPlayerByStuff( "SteamID", data[ 1 ] ), data[ 2 ], data[ 3 ] )
+	netstream.Hook( "catherine.character.SetCharVar", function( data )
+		local steamID = data[ 1 ]
+		local key = data[ 2 ]
+		local value = data[ 3 ]
+		
+		if ( !catherine.character.networkRegistry[ steamID ] or !catherine.character.networkRegistry[ steamID ][ "_charVar" ] ) then return end
+		catherine.character.networkRegistry[ steamID ][ "_charVar" ][ key ] = value
+		
+		hook.Run( "CharacterCharVarChanged", catherine.util.FindPlayerByStuff( "SteamID", steamID ), key, value )
 	end )
 
 	netstream.Hook( "catherine.character.SyncCharacterList", function( data )
@@ -543,14 +552,13 @@ else
 	end )
 end
 
-function catherine.character.GetGlobalVar( pl, key, default )
-	if ( !IsValid( pl ) or !key ) then return default end
+function catherine.character.GetVar( pl, key, default )
 	local steamID = pl:SteamID( )
 	if ( !catherine.character.networkRegistry[ steamID ] or catherine.character.networkRegistry[ steamID ][ key ] == nil ) then return default end
-	return catherine.character.networkRegistry[ steamID ][ key ]
+	return catherine.character.networkRegistry[ steamID ][ key ] or default // 버그발생?
 end
 
-function catherine.character.GetCharacterVar( pl, key, default )
+function catherine.character.GetCharVar( pl, key, default )
 	if ( !IsValid( pl ) or !key ) then return default end
 	local steamID = pl:SteamID( )
 	if ( !catherine.character.networkRegistry[ steamID ] or !catherine.character.networkRegistry[ steamID ][ "_charVar" ] or catherine.character.networkRegistry[ steamID ][ "_charVar" ][ key ] == nil ) then return default end
