@@ -97,12 +97,12 @@ function catherine.item.New( uniqueID, base_uniqueID, isBase )
 	return { uniqueID = uniqueID, base = base_uniqueID, isBase = isBase }
 end
 
-function catherine.item.FindByID( id )
-	return catherine.item.items[ id ]
-end
-
 function catherine.item.GetAll( )
 	return catherine.item.items
+end
+
+function catherine.item.FindByID( id )
+	return catherine.item.items[ id ]
 end
 
 function catherine.item.FindBaseByID( id )

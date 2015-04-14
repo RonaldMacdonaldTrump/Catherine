@@ -16,49 +16,49 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.character = catherine.character or { networkingVars = { } }
-catherine.character.globalVars = { }
+catherine.character = catherine.character or { networkRegistry = { } }
+catherine.character.vars = { }
 local META = FindMetaTable( "Player" )
 
-function catherine.character.RegisterGlobalVar( id, tab )
-	if ( !tab ) then tab = { } end
-	table.Merge( tab, { id = id } )
-	catherine.character.globalVars[ #catherine.character.globalVars + 1 ] = tab
+function catherine.character.NewVar( id, varTable )
+	if ( !varTable ) then varTable = { } end
+	table.Merge( varTable, { id = id } )
+	catherine.character.vars[ #catherine.character.vars + 1 ] = varTable
 end
 
-function catherine.character.GetGlobalVarAll( )
-	return catherine.character.globalVars
+function catherine.character.GetVarAll( )
+	return catherine.character.vars
 end
 
-function catherine.character.FindGlobalVarByID( id )
-	if ( !id ) then return nil end
-	for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
+function catherine.character.FindVarByID( id )
+	if ( !id ) then return end
+	
+	for k, v in pairs( catherine.character.GetVarAll( ) ) do
 		if ( v.id == id ) then
 			return v
 		end
 	end
-	return nil
 end
 
-function catherine.character.FindGlobalVarByField( field )
-	if ( !field ) then return nil end
-	for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
+function catherine.character.FindVarByField( field )
+	if ( !field ) then return end
+	
+	for k, v in pairs( catherine.character.GetVarAll( ) ) do
 		if ( v.field == field ) then
 			return v
 		end
 	end
-	return nil
 end
 
-catherine.character.RegisterGlobalVar( "id", {
+catherine.character.NewVar( "id", {
 	field = "_id",
-	doNetwork = true,
+	doNetworking = true,
 	static = true
 } )
 
-catherine.character.RegisterGlobalVar( "name", {
+catherine.character.NewVar( "name", {
 	field = "_name",
-	doNetwork = true,
+	doNetworking = true,
 	default = "Johnson",
 	checkValid = function( data )
 		if ( data:len( ) >= catherine.configs.characterNameMinLen and data:len( ) < catherine.configs.characterNameMaxLen ) then
@@ -68,9 +68,9 @@ catherine.character.RegisterGlobalVar( "name", {
 	end
 } )
 
-catherine.character.RegisterGlobalVar( "desc", {
+catherine.character.NewVar( "desc", {
 	field = "_desc",
-	doNetwork = true,
+	doNetworking = true,
 	default = "No desc.",
 	checkValid = function( data )
 		if ( data:len( ) >= catherine.configs.characterDescMinLen and data:len( ) < catherine.configs.characterDescMaxLen ) then
@@ -80,10 +80,9 @@ catherine.character.RegisterGlobalVar( "desc", {
 	end
 } )
 
-catherine.character.RegisterGlobalVar( "model", {
+catherine.character.NewVar( "model", {
 	field = "_model",
 	default = "models/breen.mdl",
-	doNetwork = true,
 	checkValid = function( data )
 		if ( data == "" ) then
 			return false, "Please select character model!"
@@ -92,15 +91,15 @@ catherine.character.RegisterGlobalVar( "model", {
 	end
 } )
 
-catherine.character.RegisterGlobalVar( "att", {
+catherine.character.NewVar( "att", {
 	field = "_att",
-	doNetwork = true,
+	doNetworking = true,
 	default = "[]",
-	needTransfer = true,
+	doConversion = true,
 	doLocal = true
 } )
 
-catherine.character.RegisterGlobalVar( "schema", {
+catherine.character.NewVar( "schema", {
 	field = "_schema",
 	static = true,
 	default = function( )
@@ -108,7 +107,7 @@ catherine.character.RegisterGlobalVar( "schema", {
 	end
 } )
 
-catherine.character.RegisterGlobalVar( "registerTime", {
+catherine.character.NewVar( "registerTime", {
 	field = "_registerTime",
 	static = true,
 	default = function( )
@@ -116,7 +115,7 @@ catherine.character.RegisterGlobalVar( "registerTime", {
 	end
 } )
 
-catherine.character.RegisterGlobalVar( "steamID", {
+catherine.character.NewVar( "steamID", {
 	field = "_steamID",
 	static = true,
 	default = function( pl )
@@ -124,43 +123,43 @@ catherine.character.RegisterGlobalVar( "steamID", {
 	end
 } )
 
-catherine.character.RegisterGlobalVar( "charVar", {
+catherine.character.NewVar( "charVar", {
 	field = "_charVar",
-	doNetwork = true,
+	doNetworking = true,
 	default = "[]",
-	needTransfer = true,
+	doConversion = true,
 	doLocal = true
 } )
 
-catherine.character.RegisterGlobalVar( "inventory", {
+catherine.character.NewVar( "inventory", {
 	field = "_inv",
-	doNetwork = true,
+	doNetworking = true,
 	default = "[]",
-	needTransfer = true,
+	doConversion = true,
 	doLocal = true
 } )
 
-catherine.character.RegisterGlobalVar( "cash", {
+catherine.character.NewVar( "cash", {
 	field = "_cash",
-	doNetwork = true,
+	doNetworking = true,
 	default = catherine.configs.defaultCash
 } )
 
-catherine.character.RegisterGlobalVar( "faction", {
+catherine.character.NewVar( "faction", {
 	field = "_faction",
-	doNetwork = true,
+	doNetworking = true,
 	default = "citizen"
 } )
 
 if ( SERVER ) then
 	catherine.character.Buffers = catherine.character.Buffers or { }
-	catherine.character.SaveCurTime = catherine.character.SaveCurTime or CurTime( ) + catherine.configs.saveInterval
+	catherine.character.SaveTick = catherine.character.SaveTick or CurTime( ) + catherine.configs.saveInterval
 
 	function catherine.character.Create( pl, data )
 		if ( !IsValid( pl ) or !data ) then return end
-		
 		local characterVars = { }
-		for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
+		
+		for k, v in pairs( catherine.character.GetVarAll( ) ) do
 			local var = nil
 			
 			if ( type( v.default ) == "function" ) then
@@ -360,7 +359,7 @@ if ( SERVER ) then
 				return
 			end
 			
-			for k, v in pairs( catherine.character.GetGlobalVarAll( ) ) do
+			for k, v in pairs( catherine.character.GetVarAll( ) ) do
 				for k1, v1 in pairs( data ) do
 					if ( !v.needTransfer ) then continue end
 					data[ k1 ][ v.field ] = util.JSONToTable( data[ k1 ][ v.field ] )
@@ -376,11 +375,12 @@ if ( SERVER ) then
 	end
 	
 	function catherine.character.Think( )
-		if ( catherine.character.SaveCurTime <= CurTime( ) ) then
+		if ( catherine.character.SaveTick <= CurTime( ) ) then
 			for k, v in pairs( player.GetAllByLoaded( ) ) do
 				catherine.character.SavePlayerCharacter( v )
 			end
-			catherine.character.SaveCurTime = CurTime( ) + catherine.configs.saveInterval
+			
+			catherine.character.SaveTick = CurTime( ) + catherine.configs.saveInterval
 		end
 	end
 
