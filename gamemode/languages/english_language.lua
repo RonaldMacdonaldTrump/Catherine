@@ -29,6 +29,12 @@ LANGUAGE.data = {
 	[ "Cash_Notify_HasNot" ] = "You don't have a enough %s!",
 	[ "Cash_Notify_NotValidAmount" ] = "Please enter right amount!",
 	
+	// Character
+	[ "Character_Notify_CantDeleteUsing" ] = "You can't delete using character!",
+	[ "Character_Notify_CantSwitchRagdolled" ] = "You can't switch character on ragdolled!",
+	[ "Character_Notify_IsNotValid" ] = "This character is not valid!",
+	[ "Character_Notify_IsNotValidFaction" ] = "This character faction is not valid!",
+	[ "Character_Notify_CantSwitchUsing" ] = "You can't use same character!",
 	
 	// Faction ^-^;
 	[ "Faction_Notify_Give" ] = "%s have given %s to %s",

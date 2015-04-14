@@ -152,11 +152,10 @@ catherine.character.NewVar( "faction", {
 } )
 
 if ( SERVER ) then
-	catherine.character.Buffers = catherine.character.Buffers or { }
+	catherine.character.buffers = catherine.character.buffers or { }
 	catherine.character.SaveTick = catherine.character.SaveTick or CurTime( ) + catherine.configs.saveInterval
 
 	function catherine.character.Create( pl, data )
-		if ( !IsValid( pl ) or !data ) then return end
 		local charVars = { }
 		
 		for k, v in pairs( catherine.character.GetVarAll( ) ) do
@@ -172,7 +171,7 @@ if ( SERVER ) then
 					local success, reason = v.checkValid( var )
 					
 					if ( success == false ) then
-						netstream.Start( pl, "catherine.character.CreateResult", { success, reason } )
+						netstream.Start( pl, "catherine.character.CreateResult", reason ) // need language;
 						return
 					end
 				end
@@ -183,57 +182,143 @@ if ( SERVER ) then
 
 		catherine.database.InsertDatas( "catherine_characters", charVars, function( )
 			catherine.util.Print( Color( 0, 255, 0 ), "Character created! [" .. pl:SteamName( ) .. "]" )
-			netstream.Start( pl, "catherine.character.CreateResult", { true } )
+			netstream.Start( pl, "catherine.character.CreateResult", true )
 			catherine.character.SendCharacterLists( pl )
 		end )
 	end
 	
 	function catherine.character.Use( pl, id )
-		if ( !IsValid( pl ) or !id or !catherine.character.Buffers[ pl:SteamID( ) ] ) then return end
+		local success, reason = catherine.character.New( pl, id )
 		
-		if ( catherine.player.IsRagdolled( pl ) ) then
-			netstream.Start( pl, "catherine.character.UseResult", { false, "You can't switch character on ragdolled!" } )
+		if ( success ) then
+			netstream.Start( pl, "catherine.character.UseResult", true )
+			catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [" .. pl:SteamName( ) .. "] " .. ( prevID or "None" ) .. " -> " .. id )
+		else
+			netstream.Start( pl, "catherine.character.UseResult", LANG( pl, reason ) )
+		end
+	end
+	
+	function catherine.character.Delete( pl, id )
+		if ( pl:GetCharacterID( ) == id ) then
+			netstream.Start( pl, "catherine.character.DeleteResult", LANG( pl, "Character_Notify_CantDeleteUsing" ) )
 			return
 		end
 		
+		catherine.database.Query( "DELETE FROM `catherine_characters` WHERE _steamID = '" .. pl:SteamID( ) .. "' AND _id = '" .. id .. "'", function( data )
+			catherine.character.SyncCharacterList( pl, function( )
+				netstream.Start( pl, "catherine.character.DeleteResult", true )
+			end )
+		end )
+	end
+	
+	function catherine.character.OpenMenu( pl )
+		netstream.Start( pl, "catherine.character.OpenPanel" )
+	end
+	
+	function catherine.character.SyncCharacterList( pl, func )
+		local steamID = pl:SteamID( )
+		
+		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. steamID .. "'", function( data )
+			if ( !data ) then
+				catherine.character.buffers[ steamID ] = { }
+				netstream.Start( pl, "catherine.character.SyncCharacterList", { } )
+				
+				if ( func ) then
+					func( )
+				end
+				return
+			end
+
+			for k, v in pairs( catherine.character.GetVarAll( ) ) do
+				for k1, v1 in pairs( data ) do
+					if ( !v.doConversion ) then continue end
+					
+					data[ k1 ][ v.field ] = util.JSONToTable( data[ k1 ][ v.field ] )
+				end
+			end
+			
+			catherine.character.buffers[ steamID ] = data
+			netstream.Start( pl, "catherine.character.SyncCharacterList", data )
+			
+			if ( func ) then
+				func( )
+			end
+		end )
+	end
+	
+	function catherine.character.RefreshCharacterBuffer( pl )
+		local steamID = pl:SteamID( )
+		
+		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. steamID .. "'", function( data )
+			if ( !data ) then return end
+			catherine.character.buffers[ steamID ] = data
+		end )
+	end
+
+	function catherine.character.GetTargetCharacterByID( pl, id )
+		for k, v in pairs( catherine.character.buffers[ pl:SteamID( ) ] or { } ) do
+			for k1, v1 in pairs( v ) do
+				if ( k1 == "_id" and v1 == id ) then
+					return catherine.character.ConvertDataTable( v )
+				end
+			end
+		end
+	end
+	
+	function catherine.character.ConvertDataTable( data )
+		for k, v in pairs( data ) do
+			local varTable = catherine.character.FindGlobalVarByField( k )
+			if ( ( varTable and !varTable.doConversion ) or type( v ) == "table" ) then continue end
+			data[ k ] = util.JSONToTable( v )
+		end
+		
+		return data
+	end
+
+	function catherine.character.New( pl, id )
+		if ( catherine.player.IsRagdolled( pl ) ) then
+			return false, "Character_Notify_CantSwitchRagdolled"
+		end
+		
+		local character = catherine.character.GetTargetCharacterByID( pl, id )
+		
+		if ( !character ) then
+			return false, "Character_Notify_IsNotValid"
+		end
+		
+		local factionTable = catherine.faction.FindByID( character._faction )
+		
+		if ( !factionTable ) then
+			return false, "Character_Notify_IsNotValidFaction"
+		end
+
 		local prevID = pl:GetCharacterID( )
 		
 		if ( prevID == id ) then
-			netstream.Start( pl, "catherine.character.UseResult", { false, "You can't use same character!" } )
-			return
+			return false, "Character_Notify_CantSwitchUsing"
 		end
 		
 		hook.Run( "CharacterLoadingStart", pl, prevID, id )
 
 		if ( prevID != nil ) then
-			catherine.character.SaveCharacter( pl )
+			catherine.character.Save( pl )
 			catherine.character.DeleteNetworkRegistry( pl )
 		end
-
-		local characterData = catherine.character.GetTargetCharacterByID( pl, id )
-		if ( !characterData ) then
-			netstream.Start( pl, "catherine.character.UseResult", { false, "Character is not valid!" } )
-			return
-		end
-
-		local factionTable = catherine.faction.FindByID( characterData._faction )
-		if ( !factionTable ) then
-			netstream.Start( pl, "catherine.character.UseResult", { false, "Faction is not valid!" } )
-			return
-		end
+		
+		// Go!
 		pl.CAT_loadingChar = true
 		
 		pl:KillSilent( )
 		pl:Spawn( )
 		pl:SetTeam( factionTable.index )
-		pl:SetModel( characterData._model )
+		pl:SetModel( character._model )
 		pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
 		pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
 		
 		hook.Run( "PostWeaponGive", pl )
 
-		catherine.character.InitializeNetworking( pl, id, characterData )
-		catherine.character.SetCharacterVar( pl, "class", nil )
+		catherine.character.CreateNetworkRegistry( pl, id, character )
+		catherine.character.SetCharVar( pl, "class", nil )
 		
 		if ( prevID == nil ) then
 			netstream.Start( pl, "catherine.hud.WelcomeIntroStart" )
@@ -244,64 +329,18 @@ if ( SERVER ) then
 		pl:SetNetVar( "charID", id )
 		pl:SetNetVar( "charLoaded", true )
 
-		if ( catherine.character.GetCharacterVar( pl, "isFirst", true ) == true ) then
-			catherine.character.SetCharacterVar( pl, "isFirst", false )
+		if ( catherine.character.GetCharVar( pl, "isFirst", true ) == true ) then
+			catherine.character.SetCharVar( pl, "isFirst", false )
 			hook.Run( "PlayerFirstSpawned", pl, id )
 		end
 		
 		pl.CAT_loadingChar = nil
-		
-		netstream.Start( pl, "catherine.character.UseResult", { true } )
-		catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [" .. pl:SteamName( ) .. "] " .. ( prevID or "None" ) .. " -> " .. id )
-	end
-	
-	function catherine.character.Delete( pl, id )
-		if ( !IsValid( pl ) ) then return end
-		if ( pl:GetCharacterID( ) == id ) then
-			netstream.Start( pl, "catherine.character.DeleteResult", { false, "You can't delete using character!" } )
-			return
-		end
-		catherine.database.Query( "DELETE FROM `catherine_characters` WHERE _steamID = '" .. pl:SteamID( ) .. "' AND _id = '" .. id .. "'", function( data )
-			catherine.character.SendCharacterLists( pl, function( )
-				netstream.Start( pl, "catherine.character.DeleteResult", { true } )
-			end )
-		end )
-	end
-	
-	function catherine.character.SyncCharacterBuffer( pl )
-		if ( !IsValid( pl ) ) then return end
-		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
-			if ( !data ) then return end
-			catherine.character.Buffers[ pl:SteamID( ) ] = data
-		end )
-	end
 
-	function catherine.character.GetTargetCharacterByID( pl, id )
-		if ( !IsValid( pl ) or !id ) then return nil end
-		for k, v in pairs( catherine.character.Buffers[ pl:SteamID( ) ] ) do
-			for k1, v1 in pairs( v ) do
-				if ( k1 == "_id" and v1 == id ) then
-					return catherine.character.TransferJSON( v )
-				end
-			end
-		end
-		
-		return nil
+		return true
+		// Fin!
 	end
 	
-	function catherine.character.TransferJSON( data )
-		if ( !data ) then return nil end
-		for k, v in pairs( data ) do
-			local globalVarTab = catherine.character.FindGlobalVarByField( k )
-			if ( globalVarTab and !globalVarTab.needTransfer ) then continue end
-			if ( type( v ) == "table" ) then continue end
-			data[ k ] = util.JSONToTable( v )
-		end
-		
-		return data
-	end
-	
-	function catherine.character.InitializeNetworking( pl, id, data )
+	function catherine.character.CreateNetworkRegistry( pl, id, data )
 		if ( !IsValid( pl ) or !id or !data ) then return end
 		catherine.character.networkRegistry[ pl:SteamID( ) ] = { }
 		for k, v in pairs( data ) do
@@ -313,8 +352,8 @@ if ( SERVER ) then
 		netstream.Start( nil, "catherine.character.InitializeNetworking", { pl:SteamID( ), catherine.character.networkRegistry[ pl:SteamID( ) ] } )
 	end
 
-	function catherine.character.SendCurrentNetworkRegistry( pl )
-		netstream.Start( pl, "catherine.character.SendCurrentNetworkRegistry", catherine.character.networkRegistry )
+	function catherine.character.SyncAllNetworkRegistry( pl )
+		netstream.Start( pl, "catherine.character.SyncAllNetworkRegistry", catherine.character.networkRegistry )
 	end
 
 	function catherine.character.GetNetworkRegistry( pl )
@@ -328,54 +367,23 @@ if ( SERVER ) then
 		netstream.Start( nil, "catherine.character.DeleteNetworkRegistry", steamID )
 	end
 
-	function catherine.character.SaveCharacter( pl )
-		if ( !IsValid( pl ) ) then return end
+	function catherine.character.Save( pl )
 		hook.Run( "PostCharacterSave", pl )
+		
+		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
+		if ( !networkRegistry ) then return end
 		local id = pl:GetCharacterID( )
-		local character = catherine.character.GetPlayerNetworking( pl )
-		if ( !character ) then return end
-		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. pl:SteamID( ) .. "'", character, function( data )
+		
+		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. pl:SteamID( ) .. "'", networkRegistry, function( )
 			catherine.character.SyncCharacterBuffer( pl )
 			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl:Name( ) .. "'s [" .. id .. "] character." )
 		end )
 	end
-	
-	function catherine.character.OpenPanel( pl )
-		if ( !IsValid( pl ) ) then return end
-		netstream.Start( pl, "catherine.character.OpenPanel" )
-	end
-	
-	function catherine.character.SendCharacterLists( pl, func )
-		if ( !IsValid( pl ) ) then return end
-		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
-			if ( !data ) then
-				catherine.character.Buffers[ pl:SteamID( ) ] = { }
-				netstream.Start( pl, "catherine.character.SendCharacters", { } )
-				if ( func ) then
-					func( )
-				end
-				return
-			end
-			
-			for k, v in pairs( catherine.character.GetVarAll( ) ) do
-				for k1, v1 in pairs( data ) do
-					if ( !v.needTransfer ) then continue end
-					data[ k1 ][ v.field ] = util.JSONToTable( data[ k1 ][ v.field ] )
-				end
-			end
-			
-			catherine.character.Buffers[ pl:SteamID( ) ] = data
-			netstream.Start( pl, "catherine.character.SendCharacters", data )
-			if ( func ) then
-				func( )
-			end
-		end )
-	end
-	
+
 	function catherine.character.Think( )
 		if ( catherine.character.SaveTick <= CurTime( ) ) then
 			for k, v in pairs( player.GetAllByLoaded( ) ) do
-				catherine.character.SavePlayerCharacter( v )
+				catherine.character.Save( v )
 			end
 			
 			catherine.character.SaveTick = CurTime( ) + catherine.configs.saveInterval
@@ -384,7 +392,7 @@ if ( SERVER ) then
 
 	function catherine.character.DataSave( )
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			catherine.character.SavePlayerCharacter( v )
+			catherine.character.Save( v )
 		end
 	end
 	
@@ -525,7 +533,7 @@ else
 		hook.Run( "NetworkCharVarChanged", catherine.util.FindPlayerByStuff( "SteamID", data[ 1 ] ), data[ 2 ], data[ 3 ] )
 	end )
 
-	netstream.Hook( "catherine.character.SendCharacters", function( data )
+	netstream.Hook( "catherine.character.SyncCharacterList", function( data )
 		catherine.character.localCharacters = data
 	end )
 	
