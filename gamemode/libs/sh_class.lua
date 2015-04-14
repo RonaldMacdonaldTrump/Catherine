@@ -64,7 +64,7 @@ function catherine.class.canJoin( pl, uniqueID )
 		return false, "Team error"
 	end
 
-	if ( catherine.character.GetCharacterVar( pl, "class", "" ) == uniqueID ) then
+	if ( catherine.character.GetCharVar( pl, "class", "" ) == uniqueID ) then
 		return false, "Same class"
 	end
 	
@@ -81,7 +81,7 @@ function catherine.class.GetPlayers( uniqueID )
 	local players = { }
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		if ( catherine.character.GetCharacterVar( v, "class", "" ) == uniqueID ) then
+		if ( catherine.character.GetCharVar( v, "class", "" ) == uniqueID ) then
 			players[ #players + 1 ] = v
 		end
 	end
@@ -103,10 +103,10 @@ if ( SERVER ) then
 		if ( !uniqueID ) then
 			local defaultClass = catherine.class.GetDefaultClass( pl:Team( ) )
 			if ( !defaultClass ) then return end
-			local defaultModel = catherine.character.GetCharacterVar( pl, "originalModel" )
+			local defaultModel = catherine.character.GetCharVar( pl, "originalModel" )
 			if ( !defaultModel ) then return end
 			
-			catherine.character.SetCharacterVar( pl, "class", defaultClass.uniqueID )
+			catherine.character.SetCharVar( pl, "class", defaultClass.uniqueID )
 			pl:SetModel( defaultModel )
 			return
 		end
@@ -121,13 +121,13 @@ if ( SERVER ) then
 		local classTable = catherine.class.FindByID( uniqueID )
 		
 		if ( classTable.model ) then
-			if ( !catherine.character.GetCharacterVar( pl, "originalModel" ) ) then
-				catherine.character.SetCharacterVar( pl, "originalModel", pl:GetModel( ) )
+			if ( !catherine.character.GetCharVar( pl, "originalModel" ) ) then
+				catherine.character.SetCharVar( pl, "originalModel", pl:GetModel( ) )
 			end
 			pl:SetModel( ( type( classTable.model ) == "table" and table.Random( classTable.model ) or classTable.model ) )
 		end
 		
-		catherine.character.SetCharacterVar( pl, "class", uniqueID )
+		catherine.character.SetCharVar( pl, "class", uniqueID )
 	end
 
 	function catherine.class.GetDefaultClass( factionID )
@@ -149,7 +149,7 @@ end
 local META = FindMetaTable( "Player" )
 
 function META:Class( )
-	return catherine.character.GetCharacterVar( self, "class", nil )
+	return catherine.character.GetCharVar( self, "class", nil )
 end
 
 function META:ClassName( )

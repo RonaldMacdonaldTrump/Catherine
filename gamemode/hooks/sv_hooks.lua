@@ -129,11 +129,11 @@ function GM:KeyPress( pl, key )
 			pl:ToggleWeaponRaised( )
 		end )
 	elseif ( key == IN_USE ) then
-		local ent = util.TraceLine( {
-			tr.start = pl:GetShootPos( )
-			tr.endpos = tr.start + pl:GetAimVector( ) * 60
-			tr.filter = pl
-		} ).Entity
+		local tr = { }
+		tr.start = pl:GetShootPos( )
+		tr.endpos = tr.start + pl:GetAimVector( ) * 60
+		tr.filter = pl
+		local ent = util.TraceLine( tr ).Entity
 		if ( !IsValid( ent ) ) then return end
 		
 		if ( catherine.entity.IsDoor( ent ) ) then

@@ -64,18 +64,19 @@ end
 function SWEP:PrimaryAttack( )
 	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
-	local stamina = catherine.character.GetCharacterVar( pl, "stamina", 100 )
+	local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
 	if ( !pl:GetWeaponRaised( ) or stamina < 10 ) then
 		return
 	end
 	
-	local ent = util.TraceLine( {
-		start = pl:GetShootPos( ),
-		endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * self.HitDistance,
-		filter = pl
-	} ).Entity
+	local tr = { }
+	tr.start = pl:GetShootPos( )
+	tr.endpos = tr.start + pl:GetAimVector( ) * self.HitDistance
+	tr.filter = pl
+		
+	local ent = util.TraceLine( tr ).Entity
 	
-	catherine.character.SetCharacterVar( pl, "stamina", stamina )
+	catherine.character.SetCharVar( pl, "stamina", stamina - 5 )
 	
 	pl:SetAnimation( PLAYER_ATTACK1 )
 	
@@ -85,12 +86,12 @@ function SWEP:PrimaryAttack( )
 	timer.Simple( 0.1, function( )
 		viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( table.Random( { "fists_left", "fists_right" } ) ) )
 	end )
-	
-	self:EmitSound( "npc/vort/claw_swing" .. math.random( 1, 2 ) .. ".wav" )
+
+	pl:EmitSound( "npc/vort/claw_swing" .. math.random( 1, 2 ) .. ".wav" )
 	pl:LagCompensation( true )
 
 	if ( IsValid( ent ) ) then
-		self:EmitSound( "Flesh.ImpactHard" )
+		pl:EmitSound( "Flesh.ImpactHard" )
 
 		if ( ent:IsPlayer( ) ) then
 			local dmgInfo = DamageInfo( )

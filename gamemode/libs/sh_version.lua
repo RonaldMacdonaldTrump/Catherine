@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.version = catherine.version or { Ver = "2015-04-09" }
+catherine.version = catherine.version or { Ver = "2015-04-14" }
 
 if ( SERVER ) then
 	catherine.version.Checked = catherine.version.Checked or false

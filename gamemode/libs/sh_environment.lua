@@ -63,6 +63,11 @@ if ( SERVER ) then
 	function catherine.environment.Work( )
 		if ( catherine.environment.TimeTick <= CurTime( ) ) then
 			local d = catherine.environment.Buffer
+			if ( !d.second ) then
+				//catherine.util.ErrorPrint( "catherine.environment.Work has error!" )
+				return
+			end
+			
 			d.second = d.second + 1
 			
 			if ( d.second >= 60 ) then
@@ -405,6 +410,11 @@ else
 		if ( table.Count( catherine.environment.Buffer ) != 7 ) then return end
 		if ( catherine.environment.TimeTick <= CurTime( ) ) then
 			local d = catherine.environment.Buffer
+			if ( !d.second ) then
+				catherine.util.ErrorPrint( "catherine.environment.Work has error!" )
+				return
+			end
+			
 			d.second = d.second + 1
 			
 			if ( d.second >= 60 ) then

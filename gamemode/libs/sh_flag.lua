@@ -77,7 +77,7 @@ if ( SERVER ) then
 	function catherine.flag.Give( pl, ids )
 		if ( !IsValid( pl ) or !ids ) then return end
 		local ex = string.Explode( "", ids )
-		local result = catherine.character.GetCharacterVar( pl, "flags", "" )
+		local result = catherine.character.GetCharVar( pl, "flags", "" )
 		
 		for k, v in pairs( ex ) do
 			local flagTable = catherine.flag.FindByID( v )
@@ -94,7 +94,7 @@ if ( SERVER ) then
 			end
 		end
 		
-		catherine.character.SetCharacterVar( pl, "flags", result )
+		catherine.character.SetCharVar( pl, "flags", result )
 		netstream.Start( pl, "catherine.flag.BuildHelp" )
 		return true
 	end
@@ -102,7 +102,7 @@ if ( SERVER ) then
 	function catherine.flag.Take( pl, ids )
 		if ( !IsValid( pl ) or !ids ) then return end
 		local ex = string.Explode( "", ids )
-		local result = catherine.character.GetCharacterVar( pl, "flags", "" )
+		local result = catherine.character.GetCharVar( pl, "flags", "" )
 		
 		for k, v in pairs( ex ) do
 			local flagTable = catherine.flag.FindByID( v )
@@ -119,14 +119,14 @@ if ( SERVER ) then
 			end
 		end
 		
-		catherine.character.SetCharacterVar( pl, "flags", result )
+		catherine.character.SetCharVar( pl, "flags", result )
 		netstream.Start( pl, "catherine.flag.BuildHelp" )
 		return true
 	end
 	
 	function catherine.flag.Has( pl, id )
 		if ( !IsValid( pl ) or !id ) then return end
-		local flagData = catherine.character.GetCharacterVar( pl, "flags", "" )
+		local flagData = catherine.character.GetCharVar( pl, "flags", "" )
 		return flagData:find( id )
 	end
 	
@@ -162,7 +162,7 @@ else
 	
 	function catherine.flag.Has( id )
 		if ( !id ) then return end
-		local flagData = catherine.character.GetCharacterVar( LocalPlayer( ), "flags", "" )
+		local flagData = catherine.character.GetCharVar( LocalPlayer( ), "flags", "" )
 		return flagData:find( id )
 	end
 	

@@ -586,7 +586,7 @@ function PANEL:Init( )
 	self.nextStage.Click = function( )
 		local count = 0
 		for k, v in pairs( self.data ) do
-			local vars = catherine.character.FindGlobalVarByID( k )
+			local vars = catherine.character.FindVarByID( k )
 			if ( vars and vars.checkValid ) then
 				count = count + 1
 				local success, reason = vars.checkValid( self.data[ vars.id ] )

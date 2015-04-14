@@ -53,44 +53,47 @@ end
 if ( SERVER ) then
 	function catherine.attribute.SetProgress( pl, attributeTable, progress )
 		if ( !IsValid( pl ) or !attributeTable or !progress ) then return end
-		local attribute = catherine.character.GetGlobalVar( pl, "_att", { } )
+		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		attribute[ attributeTable.uniqueID ] = attribute[ attributeTable.uniqueID ] or { per = 0, progress = attributeTable.default }
 		attribute[ attributeTable.uniqueID ].progress = math.Clamp( progress, 0, attributeTable.max )
-		catherine.character.SetGlobalVar( pl, "_att", attribute )
+		catherine.character.SetVar( pl, "_att", attribute )
 	end
 	
 	function catherine.attribute.AddProgress( pl, attributeTable, progress )
 		if ( !IsValid( pl ) or !attributeTable or !progress ) then return end
-		local attribute = catherine.character.GetGlobalVar( pl, "_att", { } )
+		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		attribute[ attributeTable.uniqueID ] = attribute[ attributeTable.uniqueID ] or { per = 0, progress = attributeTable.default }
 		attribute[ attributeTable.uniqueID ].progress = math.Clamp( attribute[ attributeTable.uniqueID ].progress + progress, 0, attributeTable.max )
-		catherine.character.SetGlobalVar( pl, "_att", attribute )
+		catherine.character.SetVar( pl, "_att", attribute )
 	end
 	
 	function catherine.attribute.RemoveProgress( pl, attributeTable, progress )
 		if ( !IsValid( pl ) or !attributeTable or !progress ) then return end
-		local attribute = catherine.character.GetGlobalVar( pl, "_att", { } )
+		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		attribute[ attributeTable.uniqueID ] = attribute[ attributeTable.uniqueID ] or { per = 0, progress = attributeTable.default }
 		attribute[ attributeTable.uniqueID ].progress = math.Clamp( attribute[ attributeTable.uniqueID ].progress - progress, 0, attributeTable.max )
-		catherine.character.SetGlobalVar( pl, "_att", attribute )
+		catherine.character.SetVar( pl, "_att", attribute )
 	end
 
 	function catherine.attribute.GetProgress( pl, attributeTable )
-		local attribute = catherine.character.GetGlobalVar( pl, "_att", { } )
+		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		if ( !attribute[ attributeTable.uniqueID ] ) then return 0 end
 		return attribute[ attributeTable.uniqueID ].progress or 0
 	end
-	
-	hook.Add( "InitializeNetworking", "catherine.attribute.hooks.InitializeNetworking", function( pl, charVars )
+
+	function catherine.attribute.CreateNetworkRegistry( pl, charVars )
 		if ( !charVars._att ) then return end
 		local attribute, changed, count = charVars._att, false, 0
+		
 		for k, v in pairs( attribute ) do
 			count = count + 1
 			if ( catherine.attribute.FindByID( k ) ) then continue end
 			attribute[ k ] = nil
 			changed = true
 		end
+		
 		local attAll = catherine.attribute.GetAll( )
+		
 		if ( count != #attAll ) then
 			for k, v in pairs( attAll ) do
 				if ( attribute[ v.uniqueID ] ) then continue end
@@ -98,13 +101,16 @@ if ( SERVER ) then
 				changed = true
 			end
 		end
+		
 		if ( changed ) then
-			catherine.character.SetGlobalVar( pl, "_att", attribute )
+			catherine.character.SetVar( pl, "_att", attribute )
 		end
-	end )
+	end
+
+	hook.Add( "CreateNetworkRegistry", "catherine.attribute.CreateNetworkRegistry", catherine.attribute.CreateNetworkRegistry )
 else
 	function catherine.attribute.GetProgress( attributeTable )
-		local attribute = catherine.character.GetGlobalVar( LocalPlayer( ), "_att", { } )
+		local attribute = catherine.character.GetVar( LocalPlayer( ), "_att", { } )
 		if ( !attribute[ attributeTable.uniqueID ] ) then return 0 end
 		return attribute[ attributeTable.uniqueID ].progress or 0
 	end

@@ -44,6 +44,7 @@ function catherine.bar.Draw( )
 		hook.Run( "HUDDrawBarBottom", 5, 5 )
 		return
 	end
+	
 	local count = 0
 	for k, v in pairs( catherine.bar.Lists ) do
 		if ( !v.target or !v.targetMax ) then continue end
@@ -54,7 +55,7 @@ function catherine.bar.Draw( )
 			count = count + 1
 			v.alpha = Lerp( 0.03, v.alpha, 255 )
 		end
-		v.ani = Lerp( 0.03, v.ani, ( ScrW( ) * 0.3 ) * percent )
+		v.ani = math.Approach( v.ani, ( ScrW( ) * 0.3 ) * percent, 0.5 )
 		v.y = Lerp( 0.03, v.y, -5 + count * 10 )
 		
 		surface.SetDrawColor( 255,255,255, v.alpha - 30 )

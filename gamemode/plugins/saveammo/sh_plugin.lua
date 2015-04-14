@@ -56,14 +56,14 @@ function PLUGIN:PostCharacterSave( pl )
 			tab[ v ] = ammoCount
 		end
 	end
-	catherine.character.SetCharacterVar( pl, "ammos", tab )
+	catherine.character.SetCharVar( pl, "ammos", tab )
 end
 
 function PLUGIN:PlayerSpawnedInCharacter( pl )
 	pl:RemoveAllAmmo( )
-	local ammoData = catherine.character.GetCharacterVar( pl, "ammos", { } )
+	local ammoData = catherine.character.GetCharVar( pl, "ammos", { } )
 	for k, v in pairs( ammoData ) do
 		pl:SetAmmo( tonumber( v ) or 0, k )
 	end
-	catherine.character.SetCharacterVar( pl, "ammos", nil )
+	catherine.character.SetCharVar( pl, "ammos", nil )
 end

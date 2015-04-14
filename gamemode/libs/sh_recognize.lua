@@ -50,7 +50,7 @@ if ( SERVER ) then
 	
 	function catherine.recognize.DoDataSave( pl, target )
 		if ( catherine.recognize.IsKnowTarget( pl, target ) ) then return end
-		local recognizeLists = catherine.character.GetCharacterVar( pl, "recognize", { } )
+		local recognizeLists = catherine.character.GetCharVar( pl, "recognize", { } )
 		
 		if ( type( target ) == "table" ) then
 			for k, v in pairs( target ) do
@@ -60,11 +60,11 @@ if ( SERVER ) then
 			recognizeLists[ #recognizeLists + 1 ] = target:GetCharacterID( )
 		end
 		
-		catherine.character.SetCharacterVar( pl, "recognize", recognizeLists )
+		catherine.character.SetCharVar( pl, "recognize", recognizeLists )
 	end
 	
 	function catherine.recognize.Init( pl )
-		catherine.character.SetCharacterVar( pl, "recognize", { } )
+		catherine.character.SetCharVar( pl, "recognize", { } )
 	end
 
 	function catherine.recognize.PlayerDeath( pl )
@@ -107,7 +107,7 @@ function catherine.recognize.IsKnowTarget( pl, target )
 	if ( factionTable and factionTable.alwaysRecognized ) then
 		return true
 	end
-	local recognizeLists = catherine.character.GetCharacterVar( pl, "recognize", { } )
+	local recognizeLists = catherine.character.GetCharVar( pl, "recognize", { } )
 	return table.HasValue( recognizeLists, target:GetCharacterID( ) )
 end
 

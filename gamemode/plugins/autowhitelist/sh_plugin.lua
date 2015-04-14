@@ -31,7 +31,7 @@ if ( SERVER ) then
 	
 	function PLUGIN:PlayerFirstSpawned( pl )
 		if ( !self.enable ) then return end
-		catherine.character.SetCharacterVar( pl, "aw_playTime", 0 )
+		catherine.character.SetCharVar( pl, "aw_playTime", 0 )
 	end
 	
 	function PLUGIN:PlayerSpawnedInCharacter( pl )
@@ -44,8 +44,8 @@ if ( SERVER ) then
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			if ( !v.CAT_aw_nextRefresh ) then continue end
 			if ( v.CAT_aw_nextRefresh <= CurTime( ) ) then
-				local prevTime = catherine.character.GetCharacterVar( v, "aw_playTime", 0 )
-				catherine.character.SetCharacterVar( v, "aw_playTime", prevTime + self.refreshTime )
+				local prevTime = catherine.character.GetCharVar( v, "aw_playTime", 0 )
+				catherine.character.SetCharVar( v, "aw_playTime", prevTime + self.refreshTime )
 				
 				for k1, v1 in pairs( self.lists ) do
 					local factionTable = catherine.faction.FindByID( k1 )

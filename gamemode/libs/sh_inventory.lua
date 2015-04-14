@@ -26,8 +26,7 @@ if ( SERVER ) then
 	
 	function catherine.inventory.Work( pl, workID, data )
 		if ( !IsValid( pl ) or !workID or !data ) then return end
-		local workInv = catherine.character.SetGlobalVar
-		
+
 		if ( workID == CAT_INV_ACTION_ADD ) then
 			local inventory, itemTable, itemCount = catherine.inventory.Get( pl ), catherine.item.FindByID( data.uniqueID ), math.max( data.itemCount or 1, 1 ) or 1
 			local invData = inventory[ itemTable.uniqueID ]
@@ -46,7 +45,7 @@ if ( SERVER ) then
 				}
 			end
 
-			catherine.character.SetGlobalVar( pl, "_inv", inventory )
+			catherine.character.SetVar( pl, "_inv", inventory )
 		elseif ( workID == CAT_INV_ACTION_REMOVE ) then
 			local invData = catherine.inventory.GetInvItem( pl, data.uniqueID )
 			if ( !invData ) then return end
@@ -64,7 +63,7 @@ if ( SERVER ) then
 				inventory[ data.uniqueID ] = nil
 			end
 			
-			catherine.character.SetGlobalVar( pl, "_inv", inventory )
+			catherine.character.SetVar( pl, "_inv", inventory )
 		elseif ( workID == CAT_INV_ACTION_UPDATE ) then
 			local invData = catherine.inventory.GetInvItem( pl, data.uniqueID )
 			if ( !invData ) then return end
@@ -77,7 +76,7 @@ if ( SERVER ) then
 				itemData = data.newData
 			}
 			
-			catherine.character.SetGlobalVar( pl, "_inv", inventory )
+			catherine.character.SetVar( pl, "_inv", inventory )
 		else
 			catherine.util.ErrorPrint( "Bad function id! - catherine.inventory.Work( )" )
 		end
@@ -98,7 +97,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.inventory.Get( pl )
-		return table.Copy( catherine.character.GetGlobalVar( pl, "_inv", { } ) )
+		return table.Copy( catherine.character.GetVar( pl, "_inv", { } ) )
 	end
 
 	function catherine.inventory.GetItemInt( pl, uniqueID )
@@ -185,22 +184,26 @@ if ( SERVER ) then
 	function META:SetInvItemDatas( uniqueID, newData )
 		catherine.inventory.SetItemDatas( self, uniqueID, newData )
 	end
-
-	hook.Add( "InitializeNetworking", "catherine.inventory.hooks.InitializeNetworking_0", function( pl, charVars )
+	
+	function catherine.inventory.CreateNetworkRegistry( pl, charVars )
 		if ( !charVars._inv ) then return end
 		local inventory, changed = charVars._inv, false
+		
 		for k, v in pairs( inventory ) do
 			if ( catherine.item.FindByID( k ) ) then continue end
 			inventory[ k ] = nil
 			changed = true
 		end
+		
 		if ( changed ) then
-			catherine.character.SetGlobalVar( pl, "_inv", inventory )
+			catherine.character.SetVar( pl, "_inv", inventory )
 		end
-	end )
+	end
+
+	hook.Add( "CreateNetworkRegistry", "catherine.inventory.CreateNetworkRegistry", catherine.inventory.CreateNetworkRegistry )
 else
 	function catherine.inventory.Get( )
-		return table.Copy( catherine.character.GetGlobalVar( LocalPlayer( ), "_inv", { } ) )
+		return table.Copy( catherine.character.GetVar( LocalPlayer( ), "_inv", { } ) )
 	end
 
 	function catherine.inventory.GetItemInt( uniqueID )
@@ -271,9 +274,12 @@ else
 	function META:GetInvItemDatas( uniqueID )
 		return catherine.inventory.GetItemDatas( uniqueID )
 	end
-
-	hook.Add( "NetworkGlobalVarChanged", "catherine.inventory.hooks.NetworkGlobalVarChanged_0", function( )
-		if ( !IsValid( catherine.vgui.inventory ) ) then return end
-		catherine.vgui.inventory:BuildInventory( )
-	end )
+	
+	function catherine.inventory.CharacterVarChanged( )
+		if ( IsValid( catherine.vgui.inventory ) ) then
+			catherine.vgui.inventory:BuildInventory( )
+		end
+	end
+	
+	hook.Add( "CharacterVarChanged", "catherine.inventory.CharacterVarChanged", catherine.inventory.CharacterVarChanged )
 end

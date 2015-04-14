@@ -55,7 +55,7 @@ catherine.command.Register( {
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					catherine.character.SetGlobalVar( target, "_name", args[ 2 ] )
+					catherine.character.SetVar( target, "_name", args[ 2 ] )
 					catherine.util.Notify( pl, "Set name" )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
@@ -78,7 +78,7 @@ catherine.command.Register( {
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					catherine.character.SetGlobalVar( target, "_desc", args[ 2 ] )
+					catherine.character.SetVar( target, "_desc", args[ 2 ] )
 					catherine.util.Notify( pl, "Set desc" )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
@@ -101,7 +101,7 @@ catherine.command.Register( {
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					catherine.character.SetGlobalVar( target, "_model", args[ 2 ] )
+					catherine.character.SetVar( target, "_model", args[ 2 ] )
 					catherine.util.Notify( pl, "Set model" )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
@@ -120,7 +120,7 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 1 ]:len( ) >= catherine.configs.characterDescMinLen and args[ 1 ]:len( ) < catherine.configs.characterDescMaxLen ) then
-				catherine.character.SetGlobalVar( pl, "_desc", args[ 1 ] )
+				catherine.character.SetVar( pl, "_desc", args[ 1 ] )
 				catherine.util.Notify( pl, "Set your desc" )
 			else
 				catherine.util.Notify( pl, "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long and up to " .. catherine.configs.characterDescMaxLen .. " characters!" )
