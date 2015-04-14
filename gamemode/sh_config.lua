@@ -46,7 +46,6 @@ catherine.configs.alwaysRaised = {
 }
 catherine.configs.frameworkLogo = "CAT/logos/2.png"
 
-
 if ( SERVER ) then
 	catherine.configs.defaultRPInformation = {
 		year = 2015,

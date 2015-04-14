@@ -32,6 +32,7 @@ end
 function catherine.util.Include( dir, typ )
 	if ( !dir ) then return end
 	dir = dir:lower( )
+	
 	if ( SERVER and ( typ == "SERVER" or dir:find( "sv_" ) ) ) then 
 		include( dir )
 	elseif ( typ == "CLIENT" or dir:find( "cl_" ) ) then
@@ -46,9 +47,10 @@ function catherine.util.Include( dir, typ )
 	end
 end
 
-function catherine.util.IncludeInDir( dir, isNyan )
-	if ( !dir or ( !isNyan or dir:find( "schema/" ) ) and !Schema ) then return end
-	local dir2 = ( ( isNyan and "catherine" ) or Schema.FolderName ) .. "/gamemode/" .. dir .. "/*.lua"
+function catherine.util.IncludeInDir( dir, isCat )
+	if ( !dir or ( !isCat or dir:find( "schema/" ) ) and !Schema ) then return end
+	local dir2 = ( ( isCat and "catherine" ) or Schema.FolderName ) .. "/gamemode/" .. dir .. "/*.lua"
+	
 	for k, v in pairs( file.Find( dir2, "LUA" ) ) do
 		catherine.util.Include( dir .. "/" .. v )
 	end
@@ -60,7 +62,8 @@ function catherine.util.CalcDistanceByPos( loc, target )
 end
 
 function catherine.util.FindPlayerByName( name )
-	if ( !name ) then return nil end
+	if ( !name ) then return end
+	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( catherine.util.CheckStringMatch( v:Name( ), name ) ) then
 			return v
@@ -69,8 +72,8 @@ function catherine.util.FindPlayerByName( name )
 end
 
 function catherine.util.FindPlayerByStuff( use, str )
-	if ( !use or !str ) then return nil end
-	str = str:lower( )
+	if ( !use or !str ) then return end
+
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( catherine.util.CheckStringMatch( v[ use ]( v ), str ) ) then
 			return v
@@ -84,7 +87,7 @@ function catherine.util.CheckStringMatch( one, two )
 end
 
 function catherine.util.GetUniqueName( name )
-	if ( !name ) then return nil end
+	if ( !name ) then return end
 	return name:sub( 4, -5 )
 end
 

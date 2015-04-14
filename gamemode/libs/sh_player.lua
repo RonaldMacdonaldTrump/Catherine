@@ -19,24 +19,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.player = catherine.player or { }
 local META = FindMetaTable( "Player" )
 
-if ( CLIENT ) then
-	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 1
-	
-	netstream.Hook( "catherine.player.CheckLocalPlayer", function( )
-		hook.Add( "Tick", "catherine.player.CheckLocalPlayer.Tick", function( )
-			if ( catherine.player.nextLocalPlayerCheck <= CurTime( ) ) then
-				if ( IsValid( LocalPlayer( ) ) ) then
-					netstream.Start( "catherine.player.CheckLocalPlayer_Receive" )
-					hook.Remove( "Tick", "catherine.player.CheckLocalPlayer.Tick" )
-					catherine.player.nextLocalPlayerCheck = nil
-					return
-				end
-				catherine.player.nextLocalPlayerCheck = CurTime( ) + 1
-			end
-		end )
-	end )
-end
-
 if ( SERVER ) then
 	function catherine.player.Initialize( pl, func )
 		if ( !IsValid( pl ) ) then return end
@@ -257,6 +239,22 @@ if ( SERVER ) then
 	function META:IsRunning( )
 		return v( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
 	end
+else
+	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 1
+	
+	netstream.Hook( "catherine.player.CheckLocalPlayer", function( )
+		hook.Add( "Tick", "catherine.player.CheckLocalPlayer.Tick", function( )
+			if ( catherine.player.nextLocalPlayerCheck <= CurTime( ) ) then
+				if ( IsValid( LocalPlayer( ) ) ) then
+					netstream.Start( "catherine.player.CheckLocalPlayer_Receive" )
+					hook.Remove( "Tick", "catherine.player.CheckLocalPlayer.Tick" )
+					catherine.player.nextLocalPlayerCheck = nil
+					return
+				end
+				catherine.player.nextLocalPlayerCheck = CurTime( ) + 1
+			end
+		end )
+	end )
 end
 
 function catherine.player.IsRagdolled( pl )

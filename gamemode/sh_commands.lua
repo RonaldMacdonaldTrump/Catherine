@@ -20,6 +20,7 @@ catherine.command.Register( {
 	command = "fallover",
 	canRun = function( pl ) return pl:Alive( ) end,
 	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then args[ 1 ] = tonumber( args[ 1 ] ) end
 		catherine.player.RagdollWork( pl, !catherine.player.IsRagdolled( pl ), args[ 1 ] )
 	end
 } )
@@ -56,13 +57,13 @@ catherine.command.Register( {
 					catherine.character.SetGlobalVar( target, "_name", args[ 2 ] )
 					catherine.util.Notify( pl, "Set name" )
 				else
-					catherine.util.Notify( pl, catherine.language.GetValue( pl, "UnknownPlayerError" ) )
+					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
 			else
-				catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 2 ) )
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
 			end
 		else
-			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )
@@ -78,13 +79,13 @@ catherine.command.Register( {
 					catherine.character.SetGlobalVar( target, "_desc", args[ 2 ] )
 					catherine.util.Notify( pl, "Set desc" )
 				else
-					catherine.util.Notify( pl, catherine.language.GetValue( pl, "UnknownPlayerError" ) )
+					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
 			else
-				catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 2 ) )
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
 			end
 		else
-			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )
@@ -100,13 +101,13 @@ catherine.command.Register( {
 					catherine.character.SetGlobalVar( target, "_model", args[ 2 ] )
 					catherine.util.Notify( pl, "Set model" )
 				else
-					catherine.util.Notify( pl, catherine.language.GetValue( pl, "UnknownPlayerError" ) )
+					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
 			else
-				catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 2 ) )
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
 			end
 		else
-			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )
@@ -122,7 +123,7 @@ catherine.command.Register( {
 				catherine.util.Notify( pl, "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long and up to " .. catherine.configs.characterDescMaxLen .. " characters!" )
 			end
 		else
-			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )
@@ -134,7 +135,7 @@ catherine.command.Register( {
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
 		
 		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
-			ent:Fire( "Lock", "", 0 ) 
+			ent:Fire( "Lock" )
 			ent:EmitSound( "doors/door_latch3.wav" )
 			catherine.util.NotifyLang( pl, "Door_Notify_CMD_Locked" )
 		else
@@ -150,7 +151,7 @@ catherine.command.Register( {
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
 		
 		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
-			ent:Fire( "Unlock", "", 0 ) 
+			ent:Fire( "Unlock" )
 			ent:EmitSound( "doors/door_latch3.wav" )
 			catherine.util.NotifyLang( pl, "Door_Notify_CMD_UnLocked" )
 		else
