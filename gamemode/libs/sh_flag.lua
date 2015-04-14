@@ -96,7 +96,7 @@ if ( SERVER ) then
 		
 		catherine.character.SetCharacterVar( pl, "flags", result )
 		netstream.Start( pl, "catherine.flag.BuildHelp" )
-		return true, nil, ids
+		return true
 	end
 	
 	function catherine.flag.Take( pl, ids )
@@ -121,7 +121,7 @@ if ( SERVER ) then
 		
 		catherine.character.SetCharacterVar( pl, "flags", result )
 		netstream.Start( pl, "catherine.flag.BuildHelp" )
-		return true, nil, ids
+		return true
 	end
 	
 	function catherine.flag.Has( pl, id )
@@ -179,10 +179,12 @@ catherine.command.Register( {
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					local success, langKey, par = catherine.flag.Give( target, args[ 2 ] )
+					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Flag_Notify_Give", pl:Name( ), par, target:Name( ) )
+						catherine.util.NotifyAllLang( "Flag_Notify_Give", pl:Name( ), args[ 2 ], target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
@@ -206,10 +208,12 @@ catherine.command.Register( {
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					local success, langKey, par = catherine.flag.Take( target, args[ 2 ] )
+					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Flag_Notify_Take", pl:Name( ), par, target:Name( ) )
+						catherine.util.NotifyAllLang( "Flag_Notify_Take", pl:Name( ), args[ 2 ], target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end

@@ -100,11 +100,12 @@ function catherine.util.FolderDirectoryTranslate( dir )
 	if ( !dir ) then return end
 	if ( dir:sub( 1, 1 ) != "/" ) then dir = "/" .. dir end
 	local ex = string.Explode( "/", dir )
+	
 	for k, v in pairs( ex ) do
-		if ( v == "" ) then
-			table.remove( ex, k )
-		end
+		if ( v != "" ) then continue end
+		table.remove( ex, k )
 	end
+	
 	return ex
 end
 
@@ -156,14 +157,14 @@ catherine.util.IncludeInDir( "libs/external", true )
 if ( SERVER ) then
 	catherine.util.Receiver = catherine.util.Receiver or { String = { }, Query = { } }
 	
-	function catherine.util.Notify( pl, message, time, icon )
+	function catherine.util.Notify( pl, message, time )
 		if ( !IsValid( pl ) or !message ) then return end
-		netstream.Start( pl, "catherine.util.Notify", { message, time, icon } )
+		netstream.Start( pl, "catherine.util.Notify", { message, time } )
 	end
 	
-	function catherine.util.NotifyAll( message, time, icon )
+	function catherine.util.NotifyAll( message, time )
 		if ( !message ) then return end
-		netstream.Start( player.GetAllByLoaded( ), "catherine.util.Notify", { message, time, icon } )
+		netstream.Start( player.GetAllByLoaded( ), "catherine.util.Notify", { message, time } )
 	end
 	
 	function catherine.util.NotifyAllLang( key, ... )
@@ -178,12 +179,14 @@ if ( SERVER ) then
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
 		if ( !IsValid( pl ) or !message or !time ) then return end
+		
 		if ( func ) then
 			timer.Simple( time, function( )
 				if ( !IsValid( pl ) ) then return end
 				func( pl )
 			end )
 		end
+		
 		netstream.Start( pl, "catherine.util.ProgressBar", { message, time } )
 	end
 	
@@ -200,11 +203,12 @@ if ( SERVER ) then
 	function catherine.util.AddResourceInFolder( dir )
 		if ( !dir ) then return end
 		local files, dirs = file.Find( dir .. "/*", "GAME" )
+		
 		for _, v in pairs( dirs ) do
-			if ( v != ".svn" ) then   
-				catherine.util.AddResourceInFolder( dir .. "/" .. v )
-			end
+			if ( v == ".svn" ) then	continue end
+			catherine.util.AddResourceInFolder( dir .. "/" .. v )
 		end
+		
 		for k, v in pairs( files ) do
 			resource.AddFile( dir .. "/" .. v )
 		end
@@ -259,6 +263,9 @@ if ( SERVER ) then
 	end )
 else
 	catherine.util.blurTexture = Material( "pp/blurscreen" )
+	CAT_UTIL_BUTTOMSOUND_1 = 1
+	CAT_UTIL_BUTTOMSOUND_2 = 2
+	CAT_UTIL_BUTTOMSOUND_3 = 3
 	
 	netstream.Hook( "catherine.util.StringReceiver", function( data )
 		Derma_StringRequest( data[ 2 ], LANG( "Basic_UI_StringRequest" ), data[ 3 ], function( val )
@@ -277,7 +284,11 @@ else
 	end )
 	
 	netstream.Hook( "catherine.util.ScreenColorEffect", function( data )
-		local col, time, fadeTime, a = data[ 1 ], CurTime( ) + ( data[ 2 ] or 0.1 ), data[ 3 ] or 0.03, 255
+		local col = data[ 1 ]
+		local time = CurTime( ) + ( data[ 2 ] or 0.1 )
+		local fadeTime = data[ 3 ] or 0.03
+		local a = 255
+		
 		hook.Remove( "HUDPaint", "catherine.util.ScreenColorEffect" )
 		hook.Add( "HUDPaint", "catherine.util.ScreenColorEffect", function( )
 			if ( time <= CurTime( ) ) then
@@ -295,15 +306,14 @@ else
 	end )
 
 	netstream.Hook( "catherine.util.Notify", function( data )
-		catherine.util.Notify( data[ 1 ], data[ 2 ], data[ 3 ] )
+		catherine.notify.Add( data[ 1 ], data[ 2 ] )
 	end )
 	
 	netstream.Hook( "catherine.util.NotifyAllLang", function( data )
-		catherine.util.Notify( LANG( data[ 1 ], unpack( data[ 2 ] ) ) )
+		catherine.notify.Add( LANG( data[ 1 ], unpack( data[ 2 ] ) ) )
 	end )
 
 	netstream.Hook( "catherine.util.ProgressBar", function( data )
-		if ( !data[ 1 ] or !data[ 2 ] ) then return end
 		catherine.hud.ProgressBarAdd( data[ 1 ], data[ 2 ] )
 	end )
 	
@@ -315,14 +325,6 @@ else
 		catherine.hud.TopNotifyAdd( data )
 	end )
 
-	function catherine.util.Notify( message, time, sound, icon )
-		if ( !message ) then return end
-		catherine.notify.Add( message, time or 5, sound, icon )
-	end
-	
-	CAT_UTIL_BUTTOMSOUND_1 = 1
-	CAT_UTIL_BUTTOMSOUND_2 = 2
-	CAT_UTIL_BUTTOMSOUND_3 = 3
 	function catherine.util.PlayButtonSound( typ )
 		if ( typ == CAT_UTIL_BUTTOMSOUND_1 ) then
 			surface.PlaySound( "CAT/ui/one.wav" )

@@ -53,6 +53,7 @@ catherine.command.Register( {
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetGlobalVar( target, "_name", args[ 2 ] )
 					catherine.util.Notify( pl, "Set name" )
@@ -75,6 +76,7 @@ catherine.command.Register( {
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetGlobalVar( target, "_desc", args[ 2 ] )
 					catherine.util.Notify( pl, "Set desc" )
@@ -97,6 +99,7 @@ catherine.command.Register( {
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetGlobalVar( target, "_model", args[ 2 ] )
 					catherine.util.Notify( pl, "Set model" )

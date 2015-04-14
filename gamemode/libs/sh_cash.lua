@@ -71,8 +71,10 @@ catherine.command.Register( {
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					local success = catherine.cash.Set( target, args[ 2 ] )
+					
 					if ( success ) then
 						catherine.util.NotifyAllLang( "Cash_Notify_Set", pl:Name( ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
 					else
@@ -98,8 +100,10 @@ catherine.command.Register( {
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					local success = catherine.cash.Give( target, args[ 2 ] )
+					
 					if ( success ) then
 						catherine.util.NotifyAllLang( "Cash_Notify_Give", pl:Name( ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
 					else
@@ -125,8 +129,10 @@ catherine.command.Register( {
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					local success = catherine.cash.Take( target, args[ 2 ] )
+					
 					if ( success ) then
 						catherine.util.NotifyAllLang( "Cash_Notify_Take", pl:Name( ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
 					else

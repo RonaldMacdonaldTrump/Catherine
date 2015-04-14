@@ -176,16 +176,17 @@ catherine.command.Register( {
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
 				if ( IsValid( target ) ) then
 					catherine.chat.Send( pl, "pm", args[ 2 ], { pl, target }, target )
 				else
-					catherine.util.Notify( pl, "Can't found player!" )
+					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
 			else
-				catherine.util.Notify( pl, "Please input second value!" )
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
 			end
 		else
-			catherine.util.Notify( pl, "Please input first value!" )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )
