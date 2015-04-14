@@ -25,10 +25,10 @@ if ( SERVER ) then
 		
 		local function loading( )
 			catherine.network.SyncAllVars( pl )
-			catherine.character.SendCurrentNetworking( pl )
+			catherine.character.SyncAllNetworkRegistry( pl )
 			catherine.environment.SyncToPlayer( pl )
 			catherine.player.SQLInitialize( pl )
-			catherine.character.SendCharacterLists( pl )
+			catherine.character.SyncCharacterList( pl )
 			catherine.catData.Load( pl )
 
 			timer.Simple( 2, function( )
@@ -44,7 +44,7 @@ if ( SERVER ) then
 						
 						pl:Freeze( false )
 						pl:UnLock( )
-						catherine.character.OpenPanel( pl )
+						catherine.character.OpenMenu( pl )
 					end )
 				end )
 			end )
