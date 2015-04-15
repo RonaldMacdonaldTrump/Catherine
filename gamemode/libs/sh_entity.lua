@@ -34,6 +34,8 @@ function catherine.entity.IsProp( ent )
 end
 
 if ( SERVER ) then
+	catherine.entity.CustomUse = catherine.entity.CustomUse or { }
+	
 	function catherine.entity.RegisterUseMenu( ent, menuTable )
 		local forServer = { }
 		local forClient = { }
@@ -45,8 +47,8 @@ if ( SERVER ) then
 		
 		ent.IsCustomUse = true
 		catherine.entity.CustomUse[ ent:EntIndex( ) ] = forServer
-		
-		netstream.Start( pl, "catherine.entity.RegisterUseMenu", { ent:EntIndex( ), forClient } )
+
+		ent:SetNetVar( "customUseClient", forClient )
 	end
 	
 	function catherine.entity.RunUseMenu( pl, index, uniqueID )
@@ -54,25 +56,23 @@ if ( SERVER ) then
 		
 		catherine.entity.CustomUse[ index ][ uniqueID ]( pl, Entity( index ) )
 	end
-
+	
 	function catherine.entity.EntityRemoved( ent )
-		local index = ent:EntIndex( )
-		if ( !catherine.entity.CustomUse[ index ] ) then return end
-		catherine.entity.CustomUse[ index ] = nil
-		netstream.Start( pl, "catherine.entity.ClearCustomUse", index )
+		catherine.entity.CustomUse[ ent:EntIndex( ) ] = nil
 	end
-	
+
 	hook.Add( "EntityRemoved", "catherine.entity.EntityRemoved", catherine.entity.EntityRemoved )
-	
+
 	netstream.Hook( "catherine.entity.CustomUseMenu_Receive", function( pl, data )
 		catherine.entity.RunUseMenu( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
 	netstream.Hook( "catherine.entity.CustomUseMenu", function( data )
 		local index = data
+		local ent = Entity( index )
 		local menu = DermaMenu( )
 		
-		for k, v in pairs( catherine.entity.CustomUse[ index ] ) do
+		for k, v in pairs( IsValid( ent ) and ent:GetNetVar( "customUseClient" ) or { } ) do
 			menu:AddOption( v.text, function( )
 				netstream.Start( "catherine.entity.CustomUseMenu_Receive", { index, v.uniqueID } )
 			end )
