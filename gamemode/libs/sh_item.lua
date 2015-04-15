@@ -50,20 +50,20 @@ function catherine.item.Register( itemTable )
 					catherine.util.NotifyLang( pl, "Entity_Notify_NotValid" )
 					return
 				end
+				
 				if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
 					catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 					return
 				end
+				
 				catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 					uniqueID = itemTable.uniqueID,
 					itemData = ( itemTable.useDynamicItemData and ent:GetItemData( ) ) or itemTable.itemData
 				} )
-				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 50 )
+				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )
 				ent:Remove( )
+				
 				hook.Run( "ItemTaked", pl, itemTable )
-			end,
-			canLook = function( pl, itemTable )
-				return true
 			end
 		},
 		drop = {
@@ -71,14 +71,12 @@ function catherine.item.Register( itemTable )
 			icon = "icon16/basket_remove.png",
 			canShowIsMenu = true,
 			func = function( pl, itemTable )
-				local eyeTr = pl:GetEyeTrace( )
-				if ( pl:GetPos( ):Distance( eyeTr.HitPos ) > 100 ) then
-					catherine.util.NotifyLang( pl, "Inventory_Notify_CantDrop01" )
-					return
-				end
-				pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 50 )
-				catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )
-				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, { uniqueID = itemTable.uniqueID } )
+				local uniqueID = itemTable.uniqueID
+
+				local ent = catherine.item.Spawn( uniqueID, catherine.util.GetItemDropPos( pl ), nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )
+				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, { uniqueID = uniqueID } )
+				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )
+				
 				hook.Run( "ItemDroped", pl, itemTable )
 			end,
 			canLook = function( pl, itemTable )
@@ -90,7 +88,9 @@ function catherine.item.Register( itemTable )
 	
 	catherine.item.items[ itemTable.uniqueID ] = itemTable
 	
-	if ( itemTable.OnRegistered ) then itemTable:OnRegistered( ) end
+	if ( itemTable.OnRegistered ) then
+		itemTable:OnRegistered( )
+	end
 end
 
 function catherine.item.New( uniqueID, base_uniqueID, isBase )
@@ -137,20 +137,21 @@ if ( SERVER ) then
 	function catherine.item.Work( pl, uniqueID, funcID, ent_isMenu )
 		if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) or !uniqueID or !funcID ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )
-		if ( !itemTable ) then return end
-		if ( !itemTable.func or !itemTable.func[ funcID ] ) then return end
+		if ( !itemTable or !itemTable.func or !itemTable.func[ funcID ] ) then return end
+		
 		itemTable.func[ funcID ].func( pl, itemTable, ent_isMenu )
 	end
 	
 	function catherine.item.Give( pl, uniqueID, itemCount, force )
-		if ( !IsValid( pl ) or !uniqueID ) then return end
 		if ( !force ) then
 			local itemTable = catherine.item.FindByID( uniqueID )
+			
 			if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 				return false
 			end
 		end
+		
 		catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 			uniqueID = uniqueID,
 			itemCount = itemCount
@@ -160,7 +161,6 @@ if ( SERVER ) then
 	end
 	
 	function catherine.item.Take( pl, uniqueID, itemCount )
-		if ( !IsValid( pl ) or !uniqueID ) then return end
 		catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, {
 			uniqueID = uniqueID,
 			itemCount = itemCount
@@ -185,6 +185,8 @@ if ( SERVER ) then
 			physObject:EnableMotion( true )
 			physObject:Wake( )
 		end
+		
+		return ent
 	end
 
 	netstream.Hook( "catherine.item.Work", function( pl, data )
