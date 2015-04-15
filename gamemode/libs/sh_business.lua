@@ -21,29 +21,22 @@ catherine.business = catherine.business or { }
 if ( SERVER ) then
 	function catherine.business.BuyItems( pl, shipLists )
 		if ( !IsValid( pl ) or !shipLists ) then return end
-
-		local eyeTr = pl:GetEyeTraceNoCursor( )
-		if ( pl:GetPos( ):Distance( eyeTr.HitPos ) > 150 ) then
-			catherine.util.Notify( pl, "Can't drop far away!" )
-			return
-		end
-		
 		local cost = 0
+		
 		for k, v in pairs( shipLists ) do
 			local itemTable = catherine.item.FindByID( v.uniqueID )
-			if ( !itemTable ) then continue end
+			if ( itemTable ) then continue end
+			
 			cost = cost + ( itemTable.cost * v.count )
 		end
 		
-		if ( catherine.cash.Get( pl ) < cost ) then
-			catherine.util.Notify( pl, "You don't have cash!" )
+		if ( !catherine.cash.Has( pl, cost ) ) then
+			catherine.util.NotifyLang( pl, "Cash_Notify_HasNot", catherine.cash.GetOnlyName( ) )
 			return
 		end
-		
-		catherine.cash.Take( pl, cost )
 
 		local ent = ents.Create( "cat_shipment" )
-		ent:SetPos( eyeTr.HitPos )
+		ent:SetPos( catherine.util.GetItemDropPos( pl ) )
 		ent:SetAngles( Angle( ) )
 		ent:Spawn( )
 		ent:PhysicsInit( SOLID_VPHYSICS )
@@ -55,6 +48,7 @@ if ( SERVER ) then
 			physObject:Wake( )
 		end
 		
+		catherine.cash.Take( pl, cost )
 		netstream.Start( pl, "catherine.business.Result", true )
 	end
 	
@@ -64,20 +58,20 @@ if ( SERVER ) then
 	
 	netstream.Hook( "catherine.business.RemoveShipment", function( pl, data )
 		data = Entity( data )
-		if ( !IsValid( data ) ) then return end
-		data:Remove( )
+		if ( IsValid( data ) ) then
+			data:Remove( )
+		end
 	end )
 else
 	netstream.Hook( "catherine.business.Result", function( data )
-		if ( data == true ) then
-			if ( IsValid( catherine.vgui.business ) ) then
-				catherine.vgui.business:Close( )
-			end
+		if ( data == true and IsValid( catherine.vgui.business ) ) then
+			catherine.vgui.business:Close( )
 		end
 	end )
 	
 	netstream.Hook( "catherine.business.EntityUseMenu", function( data )
 		local ent = Entity( data )
+		
 		if ( IsValid( catherine.vgui.shipment ) ) then
 			catherine.vgui.shipment:Remove( )
 			catherine.vgui.shipment = nil

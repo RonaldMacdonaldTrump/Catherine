@@ -109,6 +109,16 @@ function catherine.util.FolderDirectoryTranslate( dir )
 	return ex
 end
 
+function catherine.util.GetItemDropPos( pl )
+	local data = { }
+	data.start = pl:GetShootPos( ) - pl:GetAimVector( ) * 64
+	data.endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * 86
+	data.filter = pl
+	local tr = util.TraceLine( data )
+
+	return tr.HitPos + tr.HitNormal * 36
+end
+
 local holdTypes = {
 	weapon_physgun = "smg",
 	weapon_physcannon = "smg",

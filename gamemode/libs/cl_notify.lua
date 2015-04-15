@@ -20,12 +20,14 @@ catherine.notify = catherine.notify or { }
 catherine.notify.Lists = { }
 
 function catherine.notify.Add( message, time, sound )
+	local index = #catherine.notify.Lists + 1
+	
 	surface.PlaySound( sound or "buttons/button24.wav" )
-	catherine.notify.Lists[ #catherine.notify.Lists + 1 ] = {
+	catherine.notify.Lists[ index ] = {
 		message = message or "Error",
 		endTime = CurTime( ) + ( time or 5 ),
 		x = ScrW( ) / 2 - ( ScrW( ) * 0.4 ) / 2,
-		y = ( ScrH( ) - 10 ) - ( ( #catherine.notify.Lists + 1 ) * 25 ),
+		y = ( ScrH( ) - 10 ) - ( index * 25 ),
 		w = ScrW( ) * 0.4,
 		h = 20,
 		a = 0
@@ -34,9 +36,11 @@ end
 
 function catherine.notify.Draw( )
 	if ( #catherine.notify.Lists == 0 ) then return end
+	
 	for k, v in pairs( catherine.notify.Lists ) do
 		if ( v.endTime <= CurTime( ) ) then
 			v.a = Lerp( 0.05, v.a, 0 )
+			
 			if ( math.Round( v.a ) <= 0 ) then
 				table.remove( catherine.notify.Lists, k )
 			end

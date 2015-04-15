@@ -62,12 +62,14 @@ function catherine.hud.Vignette( )
 		data.start = LocalPlayer( ):GetPos( )
 		data.endpos = data.start + Vector( 0, 0, 2000 )
 		local tr = util.TraceLine( data )
+		
 		if ( !tr.Hit or tr.HitSky ) then
 			catherine.hud.vAlphaTarget = 125
 		else
 			catherine.hud.vAlphaTarget = 255
 		end
-		catherine.hud.checkV = CurTime( ) + 1
+		
+		catherine.hud.checkV = CurTime( ) + 1.5
 	end
 	
 	catherine.hud.vAlpha = math.Approach( catherine.hud.vAlpha, catherine.hud.vAlphaTarget, FrameTime( ) * 90 )
@@ -87,6 +89,7 @@ function catherine.hud.AmmoDraw( )
 	//local sec = LocalPlayer( ):GetAmmoCount( wep:GetSecondaryAmmoType( ) ) -- ^_^;
 	catherine.hud.clip1 = Lerp( 0.03, catherine.hud.clip1, clip1 )
 	catherine.hud.pre = Lerp( 0.03, catherine.hud.pre, pre )
+	
 	if ( clip1 > 0 or pre > 0 ) then
 		draw.SimpleText( clip1 == -1 and pre or math.Round( catherine.hud.clip1 ) .. " / " .. math.Round( catherine.hud.pre ), "catherine_normal25", ScrW( ) - 30, ScrH( ) - 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	end
@@ -113,6 +116,7 @@ end
 function catherine.hud.WelcomeIntroDraw( )
 	if ( !catherine.hud.welcomeIntro ) then return end
 	local t = catherine.hud.welcomeIntro
+	
 	if ( t.start <= CurTime( ) ) then
 		catherine.hud.welcomeIntro = nil
 		return
@@ -124,6 +128,7 @@ function catherine.hud.WelcomeIntroDraw( )
 		t.secondalpha = Lerp( 0.03, t.secondalpha, 0 )
 		t.thirdalpha = Lerp( 0.03, t.thirdalpha, 0 )
 	end
+	
 	if ( t.firstTextTime + 3 <= CurTime( ) and t.secondTextTime + 3 <= CurTime( ) and !t.endIng ) then
 		t.first = true
 		t.firstalpha = Lerp( 0.03, t.firstalpha, 0 )
@@ -131,6 +136,7 @@ function catherine.hud.WelcomeIntroDraw( )
 		t.thirdalpha = Lerp( 0.03, t.thirdalpha, 255 )
 		t.backalpha = Lerp( 0.01, t.backalpha, 0 )
 	end
+	
 	if ( t.thirdTextTime + 6 <= CurTime( ) ) then t.second = true t.endIng = true end
 	if ( t.firstTextTime <= CurTime( ) and !t.first ) then t.firstalpha = Lerp( 0.03, t.firstalpha, 255 ) end
 	if ( t.secondTextTime <= CurTime( ) and !t.first ) then t.secondalpha = Lerp( 0.03, t.secondalpha, 255 ) end
