@@ -40,7 +40,7 @@ function catherine.item.Register( itemTable )
 	itemTable.itemData = itemTable.itemData or { }
 	itemTable.cost = itemTable.cost or 0
 	itemTable.category = itemTable.category or "Other"
-	local funcBuffer = { 
+	local funcBuffer = {
 		take = {
 			text = "Take",
 			icon = "icon16/basket_put.png",
@@ -74,7 +74,9 @@ function catherine.item.Register( itemTable )
 				local uniqueID = itemTable.uniqueID
 
 				local ent = catherine.item.Spawn( uniqueID, catherine.util.GetItemDropPos( pl ), nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )
-				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, { uniqueID = uniqueID } )
+				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, {
+					uniqueID = uniqueID
+				} )
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )
 				
 				hook.Run( "ItemDroped", pl, itemTable )
@@ -170,7 +172,7 @@ if ( SERVER ) then
 	function catherine.item.Spawn( uniqueID, pos, ang, itemData )
 		if ( !uniqueID or !pos ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )
-		if ( !itemTable ) then return false end
+		if ( !itemTable ) then return end
 		
 		local ent = ents.Create( "cat_item" )
 		ent:SetPos( Vector( pos.x, pos.y, pos.z + 10 ) )
@@ -198,17 +200,17 @@ if ( SERVER ) then
 	end )
 else
 	function catherine.item.OpenMenuUse( uniqueID )
-		if ( !uniqueID ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )
-		if ( !itemTable ) then return end
 		local menu = DermaMenu( )
-		for k, v in pairs( itemTable.func ) do
-			if ( !v.canShowIsMenu ) then continue end
-			if ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) then continue end
+		
+		for k, v in pairs( itemTable and itemTable.func or { } ) do
+			if ( !v.canShowIsMenu or ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) ) then continue end
+			
 			menu:AddOption( v.text or "ERROR", function( )
 				netstream.Start( "catherine.item.Work", { uniqueID, k, true } )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
+		
 		menu:Open( )
 	end
 	
@@ -217,15 +219,16 @@ else
 		local uniqueID = data[ 2 ]
 		if ( !IsValid( ent ) or !IsValid( LocalPlayer( ):GetEyeTrace( ).Entity ) ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )
-		if ( !itemTable ) then return end
 		local menu = DermaMenu( )
-		for k, v in pairs( itemTable.func ) do
-			if ( !v.canShowIsWorld ) then continue end
-			if ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) then continue end
+		
+		for k, v in pairs( itemTable and itemTable.func or { } ) do
+			if ( !v.canShowIsWorld or ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) ) then continue end
+
 			menu:AddOption( v.text or "ERROR", function( )
 				netstream.Start( "catherine.item.Work", { uniqueID, k, ent } )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
+		
 		menu:Open( )
 		menu:Center( )
 	end
@@ -237,16 +240,17 @@ end
 
 catherine.command.Register( {
 	command = "itemspawn",
-	syntax = "[Item id]",
+	syntax = "[Item ID]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
-			local success = catherine.item.Spawn( args[ 1 ], pl:GetEyeTrace( ).HitPos )
+			local success = catherine.item.Spawn( args[ 1 ], catherine.util.GetItemDropPos( pl ) )
+			
 			if ( !success ) then
 				catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
 			end
 		else
-			catherine.util.NotifyLang( pl, "ArgError", 1 )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )
