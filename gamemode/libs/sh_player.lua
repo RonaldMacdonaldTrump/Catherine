@@ -23,13 +23,13 @@ if ( SERVER ) then
 	function catherine.player.Initialize( pl, func )
 		if ( !IsValid( pl ) ) then return end
 		
-		local function loading( )
+		local function loadFramework( )
 			catherine.network.SyncAllVars( pl )
 			catherine.character.SyncAllNetworkRegistry( pl )
 			catherine.environment.SyncToPlayer( pl )
 			catherine.player.SQLInitialize( pl )
 			catherine.character.SyncCharacterList( pl )
-			catherine.catData.Load( pl )
+			catherine.catData.GetVarsByDB( pl )
 
 			timer.Simple( 2, function( )
 				if ( !IsValid( pl ) ) then return end
@@ -52,7 +52,7 @@ if ( SERVER ) then
 		
 		netstream.Hook( "catherine.player.CheckLocalPlayer_Receive", function( )
 			netstream.Start( pl, "catherine.IntroStart" )
-			loading( )
+			loadFramework( )
 		end )
 		
 		pl:Freeze( true )

@@ -105,10 +105,10 @@ if ( SERVER ) then
 			return false, "Faction_Notify_AlreadyHas", { pl:Name( ), id }
 		end
 		
-		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
+		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
 		whiteLists[ #whiteLists + 1 ] = id
 		
-		catherine.catData.Set( pl, "whitelists", whiteLists, false, true )
+		catherine.catData.SetVar( pl, "whitelists", whiteLists, false, true )
 		return true
 	end
 	
@@ -128,15 +128,15 @@ if ( SERVER ) then
 			return false, "Faction_Notify_HasNot", { pl:Name( ), id }
 		end
 		
-		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
+		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
 		table.RemoveByValue( whiteLists, id )
 		
-		catherine.catData.Set( pl, "whitelists", whiteLists, false, true )
+		catherine.catData.SetVar( pl, "whitelists", whiteLists, false, true )
 		return true
 	end
 
 	function catherine.faction.HasWhiteList( pl, id )
-		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
+		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
 		return table.HasValue( whiteLists, id )
 	end
 	
@@ -154,7 +154,7 @@ if ( SERVER ) then
 	hook.Add( "PlayerFirstSpawned", "catherine.faction.PlayerFirstSpawned", catherine.faction.PlayerFirstSpawned )
 else
 	function catherine.faction.HasWhiteList( id )
-		local whiteLists = catherine.catData.Get( "whitelists", { } )
+		local whiteLists = catherine.catData.GetVar( "whitelists", { } )
 		return table.HasValue( whiteLists, id )
 	end
 	

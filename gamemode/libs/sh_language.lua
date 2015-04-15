@@ -45,6 +45,7 @@ end
 
 function catherine.language.Include( dir )
 	if ( !dir ) then return end
+	
 	for k, v in pairs( file.Find( dir .. "/languages/*.lua", "LUA" ) ) do
 		catherine.util.Include( dir .. "/languages/" .. v, "SHARED" )
 	end
@@ -52,8 +53,10 @@ end
 
 function catherine.language.Merge( uniqueID, data )
 	if ( !uniqueID or !data ) then return end
+	
 	local languageTable = catherine.language.FindByID( uniqueID )
 	if ( !languageTable ) then return end
+	
 	languageTable.data = table.Merge( languageTable.data, data )
 end
 
@@ -61,18 +64,18 @@ catherine.language.Include( catherine.FolderName .. "/gamemode" )
 
 if ( SERVER ) then
 	function LANG( pl, key, ... )
-		if ( !IsValid( pl ) or !key ) then return "Error" end
 		local languageTable = catherine.language.Lists[ pl:GetInfo( "cat_convar_language" ) ] or catherine.language.Lists[ "english" ]
 		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
+		
 		return string.format( languageTable.data[ key ], ... )
 	end
 else
 	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", catherine.configs.defaultLanguage, true, true )
 
 	function LANG( key, ... )
-		if ( !key ) then return "Error" end
 		local languageTable = catherine.language.Lists[ CAT_CONVAR_LANGUAGE:GetString( ) ] or catherine.language.Lists[ "english" ]
 		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
+		
 		return string.format( languageTable.data[ key ], ... )
 	end
 end

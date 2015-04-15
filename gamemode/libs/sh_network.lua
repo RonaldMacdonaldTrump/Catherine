@@ -24,8 +24,6 @@ local META2 = FindMetaTable( "Player" )
 
 if ( SERVER ) then
 	function catherine.network.SetNetVar( ent, key, value, noSync )
-		if ( !key ) then return end
-		
 		catherine.network.entityVars[ ent ] = catherine.network.entityVars[ ent ] or { }
 		catherine.network.entityVars[ ent ][ key ] = value
 		
@@ -46,13 +44,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.network.GetNetVar( ent, key, default )
-		if ( !key ) then return default end
 		return catherine.network.entityVars[ ent ] and catherine.network.entityVars[ ent ][ key ] or default
 	end
 	
 	function catherine.network.SetNetGlobalVar( key, value, noSync )
-		if ( !key ) then return end
-		
 		catherine.network.globalVars[ key ] = value
 		
 		if ( !noSync ) then
@@ -66,18 +61,17 @@ if ( SERVER ) then
 	end
 
 	function catherine.network.SyncAllVars( pl )
-		local conVart = { }
+		local conVert = { }
 		
 		for k, v in pairs( catherine.network.entityVars ) do
 			if ( k:IsPlayer( ) ) then
-				conVart[ k:SteamID( ) ] = v
-				continue
+				conVert[ k:SteamID( ) ] = v
+			else
+				conVert[ k:EntIndex( ) ] = v
 			end
-			
-			conVart[ k:EntIndex( ) ] = v
 		end
 
-		netstream.Start( pl, "catherine.network.SyncAllVars", { conVart, catherine.network.globalVars } )
+		netstream.Start( pl, "catherine.network.SyncAllVars", { conVert, catherine.network.globalVars } )
 	end
 
 	function META:SetNetVar( key, value, noSync )
@@ -122,8 +116,8 @@ else
 	end )
 	
 	function catherine.network.GetNetVar( ent, key, default )
-		if ( !key ) then return default end
 		local data = ent:EntIndex( )
+		
 		if ( ent:IsPlayer( ) ) then
 			data = ent:SteamID( )
 		end
@@ -133,7 +127,6 @@ else
 end
 
 function catherine.network.GetNetGlobalVar( key, default )
-	if ( !key ) then return default end
 	return catherine.network.globalVars[ key ] or default
 end
 
