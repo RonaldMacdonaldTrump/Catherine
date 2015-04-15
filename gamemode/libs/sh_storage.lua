@@ -70,7 +70,7 @@ if ( SERVER ) then
 
 		catherine.entity.RegisterCustomUseMenu( ent, {
 			{
-				uniqueID = "IDOPEN",
+				uniqueID = "ID_OPEN",
 				text = "Open",
 				func = function( pl, ent )
 					netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )

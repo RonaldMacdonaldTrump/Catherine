@@ -46,14 +46,14 @@ if ( SERVER ) then
 		
 		for k, v in pairs( menuTable ) do
 			forServer[ v.uniqueID ] = v.func
-			forClient[ v.uniqueID ] = v.text
+			forClient[ v.uniqueID ] = { text = v.text, uniqueID = v.uniqueID }
 		end
 		
 		catherine.entity.CustomUse[ ent:EntIndex( ) ] = forServer
 		
 		netstream.Start( pl, "catherine.entity.RegisterCustomUseMenu", { ent:EntIndex( ), forClient } )
 	end
-	
+
 	function catherine.entity.EntityRemoved( ent )
 		local index = ent:EntIndex( )
 		if ( !catherine.entity.CustomUse[ index ] ) then return end
@@ -62,12 +62,25 @@ if ( SERVER ) then
 	end
 	
 	hook.Add( "EntityRemoved", "catherine.entity.EntityRemoved", catherine.entity.EntityRemoved )
+	
+	netstream.Hook( "catherine.entity.CustomUseMenu_Receive", function( pl, data )
+		local index = data[ 1 ]
+		catherine.entity.CustomUse[ index ][ data[ 2 ] ]( pl, Entity( index ) )
+	end )
 else
 	catherine.entity.CustomUse = catherine.entity.CustomUse or { }
 	
 	netstream.Hook( "catherine.entity.CustomUseMenu", function( data )
-	
+		local index = data
+		local menu = DermaMenu( )
 		
+		for k, v in pairs( catherine.entity.CustomUse[ index ] ) do
+			menu:AddOption( v.text, function( )
+				netstream.Start( "catherine.entity.CustomUseMenu_Receive", { index, v.uniqueID } )
+			end )
+		end
+		
+		menu:Open( )
 	end )
 	
 	netstream.Hook( "catherine.entity.RegisterCustomUseMenu", function( data )
@@ -78,5 +91,3 @@ else
 		catherine.entity.CustomUse[ data ] = nil
 	end )
 end
-
-function GM:PlayerBindPress(client, bind, pressed)
