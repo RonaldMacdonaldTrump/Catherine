@@ -24,10 +24,10 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) ) then return end
 		
 		local function loadFramework( )
+			catherine.player.PlayerInformationInitialize( pl )
 			catherine.network.SyncAllVars( pl )
 			catherine.character.SyncAllNetworkRegistry( pl )
 			catherine.environment.SyncToPlayer( pl )
-			catherine.player.SQLInitialize( pl )
 			catherine.character.SyncCharacterList( pl )
 			catherine.catData.GetVarsByDB( pl )
 
@@ -61,10 +61,12 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
 	end
 
-	function catherine.player.SQLInitialize( pl )
-		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. pl:SteamID( ) .. "'", function( data )
+	function catherine.player.PlayerInformationInitialize( pl )
+		local steamID = pl:SteamID( )
+		
+		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data or #data == 0 ) then
-				if ( pl:SteamID( ) == catherine.configs.OWNER and pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
+				if ( steamID == catherine.configs.OWNER and pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
 					if ( ulx ) then
 						RunConsoleCommand( "ulx", "adduserid", pl:SteamID( ), "superadmin" )
 						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl:SteamName( ) )
@@ -76,7 +78,7 @@ if ( SERVER ) then
 				
 				catherine.database.InsertDatas( "catherine_players", {
 					_steamName = pl:SteamName( ),
-					_steamID = pl:SteamID( ),
+					_steamID = steamID,
 					_catData = { }
 				} )
 			end
@@ -104,7 +106,9 @@ if ( SERVER ) then
 			if ( !pl.CAT_nextBunnyCheck ) then
 				pl.CAT_nextBunnyCheck = CurTime( ) + 0.05
 			end
+			
 			pl.CAT_bunnyCount = ( pl.CAT_bunnyCount or 0 ) + 1
+			
 			if ( pl.CAT_bunnyCount >= 10 ) then
 				pl:SetJumpPower( 150 )
 				catherine.util.Notify( pl, "Don't Bunny-hop!" )
@@ -112,6 +116,7 @@ if ( SERVER ) then
 				pl.CAT_bunnyFreezed = true
 				pl.CAT_nextbunnyFreezeDis = CurTime( ) + 5
 			end
+			
 			pl.CAT_nextBunnyCheck = CurTime( ) + 0.05
 		else
 			if ( ( pl.CAT_nextBunnyInit or CurTime( ) ) <= CurTime( ) ) then
@@ -119,6 +124,7 @@ if ( SERVER ) then
 				pl.CAT_nextBunnyInit = CurTime( ) + 15
 			end
 		end
+		
 		if ( pl.CAT_bunnyFreezed and ( pl.CAT_nextbunnyFreezeDis or CurTime( ) ) <= CurTime( ) ) then
 			pl:Freeze( false )
 			pl.CAT_bunnyCount = 0
@@ -127,8 +133,6 @@ if ( SERVER ) then
 	end
 
 	function catherine.player.RagdollWork( pl, status, time )
-		if ( !IsValid( pl ) ) then return end
-		
 		if ( !status ) then
 			pl:SetNoDraw( false )
 			pl:SetNotSolid( false )
@@ -137,7 +141,9 @@ if ( SERVER ) then
 			pl:SetMoveType( MOVETYPE_WALK )
 			pl:SetLocalVelocity( vector_origin )
 			pl:DropToFloor( )
-			if ( IsValid( pl.ragdoll ) ) then pl.ragdoll:SetNetVar( "player", nil ) end
+			if ( IsValid( pl.ragdoll ) ) then
+				pl.ragdoll:SetNetVar( "player" )
+			end
 			
 			for k, v in pairs( pl:GetNetVar( "weps", { } ) ) do
 				pl:Give( v )
@@ -151,6 +157,7 @@ if ( SERVER ) then
 				pl.ragdoll:Remove( )
 				pl.ragdoll = nil
 			end
+			
 			return
 		end
 		
@@ -159,7 +166,9 @@ if ( SERVER ) then
 			pl.ragdoll = nil
 		end
 		
-		if ( !time ) then catherine.util.TopNotify( pl, LANG( pl, "Player_Message_Ragdolled_01" ) ) end
+		if ( !time ) then
+			catherine.util.TopNotify( pl, LANG( pl, "Player_Message_Ragdolled_01" ) )
+		end
 		
 		pl.ragdoll = ents.Create( "prop_ragdoll" )
 		pl.ragdoll:SetAngles( pl:GetAngles( ) )
@@ -172,6 +181,7 @@ if ( SERVER ) then
 		pl.ragdoll:SetNetVar( "player", pl )
 		pl.ragdoll:CallOnRemove( "RecoverPlayer", function( )
 			if ( !IsValid( pl ) ) then return end
+			
 			pl:SetNoDraw( false )
 			pl:SetNotSolid( false )
 			pl:Freeze( false )
@@ -182,8 +192,9 @@ if ( SERVER ) then
 			pl:SetNetVar( "ragdollEnt", nil )
 		end )
 		
-		local weps, wepsBuffer = pl:GetWeapons( ), { }
-		for k, v in pairs( weps ) do
+		local wepsBuffer = { }
+		
+		for k, v in pairs( pl:GetWeapons( ) or { } ) do
 			wepsBuffer[ #wepsBuffer + 1 ] = v:GetClass( )
 		end
 		
@@ -206,12 +217,21 @@ if ( SERVER ) then
 	function META:SetWeaponRaised( bool, wep )
 		if ( !IsValid( self ) or !self:IsCharacterLoaded( ) ) then return end
 		wep = wep or self:GetActiveWeapon( )
-		if ( wep.AlwaysLowered ) then self:SetNetVar( "weaponRaised", false ) return end
+		
+		if ( wep.AlwaysLowered ) then
+			self:SetNetVar( "weaponRaised", false )
+			return
+		end
+		
 		self:SetNetVar( "weaponRaised", bool )
 		
 		if ( IsValid( wep ) ) then
 			local time = 99999
-			if ( bool or wep.CanFireLowered ) then time = 0.9 end
+			
+			if ( bool or wep.CanFireLowered ) then
+				time = 0.9
+			end
+			
 			wep:SetNextPrimaryFire( CurTime( ) + time )
 			wep:SetNextSecondaryFire( CurTime( ) + time )
 		end
@@ -225,20 +245,22 @@ if ( SERVER ) then
 		end
 	end
 	
-	hook.Add( "PlayerSwitchWeapon", "catherine.player.PlayerSwitchWeapon", function( pl, oldWep, newWep )
-		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then
-			pl:SetWeaponRaised( false, newWep )
-		else
-			pl:SetWeaponRaised( true, newWep )
-		end
-	end )
-	
 	local velo = FindMetaTable("Entity").GetVelocity
 	local v = FindMetaTable("Vector").Length2D
 	
 	function META:IsRunning( )
 		return v( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
 	end
+
+	function catherine.player.PlayerSwitchWeapon( pl, oldWep, newWep )
+		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then
+			pl:SetWeaponRaised( false, newWep )
+		else
+			pl:SetWeaponRaised( true, newWep )
+		end
+	end
+	
+	hook.Add( "PlayerSwitchWeapon", "catherine.player.PlayerSwitchWeapon", catherine.player.PlayerSwitchWeapon )
 else
 	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 1
 	
@@ -257,10 +279,6 @@ else
 	end )
 end
 
-function catherine.player.IsRagdolled( pl )
-	return pl:GetNetVar( "isRagdolled", nil )
-end
-	
 function META:GetWeaponRaised( )
 	return self:GetNetVar( "weaponRaised", false )
 end
@@ -274,6 +292,18 @@ function META:GetGender( )
 	end
 	
 	return gender
+end
+
+function META:IsFemale( )
+	local model = self:GetModel( ):lower( )
+
+	if ( model:find( "female" ) or model:find( "alyx" ) or model:find( "mossman" ) ) then
+		return true
+	end
+end
+
+function catherine.player.IsRagdolled( pl )
+	return pl:GetNetVar( "isRagdolled", nil )
 end
 
 function player.GetAllByLoaded( )
