@@ -139,16 +139,26 @@ function GM:KeyPress( pl, key )
 		if ( !IsValid( ent ) ) then return end
 		
 		if ( catherine.entity.IsDoor( ent ) ) then
-			if ( pl.canUseDoor == nil ) then pl.canUseDoor = true end
-			if ( !pl.doorSpamCount ) then pl.doorSpamCount = 0 end
-			if ( pl.lookingDoorEntity == nil ) then pl.lookingDoorEntity = ent end
+			if ( pl.canUseDoor == nil ) then
+				pl.canUseDoor = true
+			end
+			
+			if ( !pl.doorSpamCount ) then
+				pl.doorSpamCount = 0
+			end
+			
+			if ( pl.lookingDoorEntity == nil ) then
+				pl.lookingDoorEntity = ent
+			end
+			
 			pl.doorSpamCount = pl.doorSpamCount + 1
 			
-			if ( ( pl.lookingDoorEntity == ent ) and pl.doorSpamCount >= 10 ) then
+			if ( pl.lookingDoorEntity == ent and pl.doorSpamCount >= 10 ) then
 				pl.lookingDoorEntity = nil
 				pl.doorSpamCount = 0
 				pl.canUseDoor = false
 				catherine.util.Notify( pl, "Do not door-spam!" )
+				
 				timer.Create( "Catherine.timer.doorSpamDelay", 1, 1, function( )
 					pl.canUseDoor = true
 				end )
@@ -172,10 +182,7 @@ function GM:KeyPress( pl, key )
 end
 
 function GM:PlayerUse( pl, ent )
-	if ( catherine.entity.IsDoor( ent ) ) then
-		return pl.canUseDoor
-	end
-	return true
+	return catherine.entity.IsDoor( ent ) and pl.canUseDoor or true
 end
 
 function GM:PostWeaponGive( pl )
@@ -192,8 +199,9 @@ function GM:PlayerSay( pl, text )
 end
 
 function GM:KeyRelease( pl, key )
-	if ( key != IN_RELOAD ) then return end
-	timer.Remove( "Catherine.timer.weapontoggle." .. pl:SteamID( ) )
+	if ( key = IN_RELOAD ) then
+		timer.Remove( "Catherine.timer.weapontoggle." .. pl:SteamID( ) )
+	end
 end
 
 function GM:PlayerInitialSpawn( pl )
@@ -269,13 +277,14 @@ function GM:PlayerDeath( pl )
 	catherine.util.ProgressBar( pl, "You are now respawning.", catherine.configs.spawnTime, function( )
 		pl:Spawn( )
 	end )
+	
 	pl:SetNetVar( "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
 	pl:SetNetVar( "deathTime", CurTime( ) )
+	
 	hook.Run( "PlayerGone", pl )
 end
 
 function GM:Tick( )
-	// Bunny hop protection.
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		catherine.player.BunnyHopProtection( v )
 		catherine.player.HealthRecoverTick( v )
