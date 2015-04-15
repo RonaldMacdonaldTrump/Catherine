@@ -133,7 +133,9 @@ function GM:KeyPress( pl, key )
 		tr.start = pl:GetShootPos( )
 		tr.endpos = tr.start + pl:GetAimVector( ) * 60
 		tr.filter = pl
+		
 		local ent = util.TraceLine( tr ).Entity
+		
 		if ( !IsValid( ent ) ) then return end
 		
 		if ( catherine.entity.IsDoor( ent ) ) then
@@ -163,8 +165,8 @@ function GM:KeyPress( pl, key )
 			end )
 			
 			return hook.Run( "PlayerUseDoor", pl, ent )
-		elseif ( ent.isCustomUse and type( ent.customUseFunction ) == "function" ) then
-			ent.customUseFunction( pl, ent )
+		elseif ( ent.IsCustomUse ) then
+			netstream.Start( pl, "catherine.entity.CustomUseMenu", ent:EntIndex( ) )
 		end
 	end
 end

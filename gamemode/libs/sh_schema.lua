@@ -38,8 +38,8 @@ function catherine.schema.Initialization( )
 	catherine.util.IncludeInDir( "schema/libs" )
 	catherine.util.IncludeInDir( "schema/derma" )
 	catherine.plugin.LoadAll( Schema.FolderName )
-	//catherine.plugin.LoadAll( catherine.FolderName ) // ;;?
-	
+	catherine.plugin.LoadAll( catherine.FolderName )
+
 	hook.Run( "SchemaInitialized" )
 end
 

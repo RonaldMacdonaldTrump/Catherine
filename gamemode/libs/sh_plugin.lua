@@ -48,9 +48,7 @@ function catherine.plugin.LoadAll( dir )
 end
 
 function catherine.plugin.IncludeEntities( dir )
-	local files, _ = file.Find( dir .. "/entities/entities/*.lua", "LUA" )
-	
-	for k, v in pairs( files ) do
+	for k, v in pairs( file.Find( dir .. "/entities/entities/*.lua", "LUA" ) ) do
 		ENT = { Type = "anim", ClassName = v:sub( 1, #v - 4 ) }
 		
 		catherine.util.Include( dir .. "/entities/entities/" .. v, "SHARED" )
@@ -67,8 +65,6 @@ end
 function catherine.plugin.GetAll( )
 	return catherine.plugin.Lists
 end
-
-catherine.plugin.LoadAll( catherine.FolderName ) // need delete ;)
 
 if ( CLIENT ) then
 	local html = [[<b>Plugins</b><br>]]

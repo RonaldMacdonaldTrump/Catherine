@@ -26,15 +26,57 @@ local doorClasses = {
 }
 
 function catherine.entity.IsDoor( ent )
-	if ( !IsValid( ent ) ) then return end
 	return table.HasValue( doorClasses, ent:GetClass( ) ) // need lower?, idk ;)
 end
 
 function catherine.entity.IsProp( ent )
-	if ( !IsValid( ent ) ) then return end
 	return ent:GetClass( ):find( "prop_" )
 end
 
 if ( SERVER ) then
-
+	catherine.entity.CustomUse = catherine.entity.CustomUse or { }
+	
+	function catherine.entity.RegisterCustomUseMenu( ent, menuTable )
+		ent.IsCustomUse = true
+		ent.CustomUseMenu = menuTable
+		ent:SetNetVar( "IsCustomUse", true )
+		
+		local forServer = { }
+		local forClient = { }
+		
+		for k, v in pairs( menuTable ) do
+			forServer[ v.uniqueID ] = v.func
+			forClient[ v.uniqueID ] = v.text
+		end
+		
+		catherine.entity.CustomUse[ ent:EntIndex( ) ] = forServer
+		
+		netstream.Start( pl, "catherine.entity.RegisterCustomUseMenu", { ent:EntIndex( ), forClient } )
+	end
+	
+	function catherine.entity.EntityRemoved( ent )
+		local index = ent:EntIndex( )
+		if ( !catherine.entity.CustomUse[ index ] ) then return end
+		catherine.entity.CustomUse[ index ] = nil
+		netstream.Start( pl, "catherine.entity.ClearCustomUse", index )
+	end
+	
+	hook.Add( "EntityRemoved", "catherine.entity.EntityRemoved", catherine.entity.EntityRemoved )
+else
+	catherine.entity.CustomUse = catherine.entity.CustomUse or { }
+	
+	netstream.Hook( "catherine.entity.CustomUseMenu", function( data )
+	
+		
+	end )
+	
+	netstream.Hook( "catherine.entity.RegisterCustomUseMenu", function( data )
+		catherine.entity.CustomUse[ data[ 1 ] ] = data[ 2 ]
+	end )
+	
+	netstream.Hook( "catherine.entity.ClearCustomUse", function( data )
+		catherine.entity.CustomUse[ data ] = nil
+	end )
 end
+
+function GM:PlayerBindPress(client, bind, pressed)

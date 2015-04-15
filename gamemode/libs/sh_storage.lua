@@ -49,8 +49,8 @@ if ( SERVER ) then
 	end
 	
 	function catherine.storage.Make( ent, data )
-		if ( !IsValid( ent ) ) then return end
 		local originalData = catherine.storage.FindByModel( ent:GetModel( ) )
+		
 		if ( !data ) then
 			data = catherine.storage.FindByModel( ent:GetModel( ) )
 			if ( !data ) then return end
@@ -67,11 +67,16 @@ if ( SERVER ) then
 		ent:SetNetVar( "inv", ent.inv )
 		ent:SetNetVar( "maxWeight", ent.maxWeight )
 		ent:SetNetVar( "isStorage", true )
-		
-		ent.isCustomUse = true
-		ent.customUseFunction = function( pl )
-			netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
-		end
+
+		catherine.entity.RegisterCustomUseMenu( ent, {
+			{
+				uniqueID = "IDOPEN",
+				text = "Open",
+				func = function( pl, ent )
+					netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
+				end
+			}
+		} )
 	end
 	
 	function catherine.storage.SetInv( ent, data )
