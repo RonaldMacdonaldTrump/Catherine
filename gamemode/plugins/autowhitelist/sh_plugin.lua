@@ -41,15 +41,16 @@ if ( SERVER ) then
 	
 	function PLUGIN:Think( )
 		if ( !self.enable ) then return end
+		
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			if ( !v.CAT_aw_nextRefresh ) then continue end
-			if ( v.CAT_aw_nextRefresh <= CurTime( ) ) then
+			if ( ( v.CAT_aw_nextRefresh or CurTime( ) ) <= CurTime( ) ) then
 				local prevTime = catherine.character.GetCharVar( v, "aw_playTime", 0 )
 				catherine.character.SetCharVar( v, "aw_playTime", prevTime + self.refreshTime )
 				
 				for k1, v1 in pairs( self.lists ) do
 					local factionTable = catherine.faction.FindByID( k1 )
 					if ( !factionTable or !factionTable.isWhitelist or catherine.faction.HasWhiteList( v, k1 ) ) then continue end
+					
 					if ( prevTime + self.refreshTime >= v1 ) then
 						catherine.faction.AddWhiteList( v, k1 )
 					end

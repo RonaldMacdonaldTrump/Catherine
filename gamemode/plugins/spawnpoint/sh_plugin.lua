@@ -31,9 +31,11 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			local factionTable = catherine.faction.FindByName( args[ 1 ] )
+			
 			if ( factionTable ) then
 				local map = game.GetMap( )
 				local faction = factionTable.uniqueID
+				
 				PLUGIN.Lists[ map ] = PLUGIN.Lists[ map ] or { }
 				PLUGIN.Lists[ map ][ faction ] = PLUGIN.Lists[ map ][ faction ] or { }
 				PLUGIN.Lists[ map ][ faction ][ #PLUGIN.Lists[ map ][ faction ] + 1 ] = pl:GetPos( )

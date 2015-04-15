@@ -38,12 +38,14 @@ end
 function PLUGIN:GetRandomPos( faction )
 	local map = game.GetMap( )
 	if ( !faction or !self.Lists[ map ] or !self.Lists[ map ][ faction ] or #self.Lists[ map ][ faction ] == 0 ) then return end
+	
 	return table.Random( self.Lists[ map ][ faction ] )
 end
 
 function PLUGIN:PlayerSpawnedInCharacter( pl )
 	local pos = self:GetRandomPos( pl:Faction( ) )
 	if ( !pos ) then return end
+	
 	pos.z = pos.z + 10
 	pl:SetPos( pos )
 end

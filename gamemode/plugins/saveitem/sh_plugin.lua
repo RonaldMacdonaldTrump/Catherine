@@ -25,6 +25,7 @@ if ( CLIENT ) then return end
 
 function PLUGIN:DataSave( )
 	local data = { }
+	
 	for k, v in pairs( ents.FindByClass( "cat_item" ) ) do
 		data[ #data + 1 ] = {
 			uniqueID = v:GetItemUniqueID( ),
@@ -33,6 +34,7 @@ function PLUGIN:DataSave( )
 			ang = v:GetAngles( )
 		}
 	end
+	
 	catherine.data.Set( "items", data )
 end
 

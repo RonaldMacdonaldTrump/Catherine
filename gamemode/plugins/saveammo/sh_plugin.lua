@@ -49,21 +49,26 @@ local Ammo_Types = {
 }
 
 function PLUGIN:PostCharacterSave( pl )
-	local wep, tab = pl:GetActiveWeapon( ), { }
+	local wep = pl:GetActiveWeapon( )
+	local tab = { }
+	
 	for k, v in pairs( Ammo_Types ) do
 		local ammoCount = pl:GetAmmoCount( v )
+		
 		if ( ammoCount > 0 ) then
 			tab[ v ] = ammoCount
 		end
 	end
+	
 	catherine.character.SetCharVar( pl, "ammos", tab )
 end
 
 function PLUGIN:PlayerSpawnedInCharacter( pl )
 	pl:RemoveAllAmmo( )
-	local ammoData = catherine.character.GetCharVar( pl, "ammos", { } )
-	for k, v in pairs( ammoData ) do
+
+	for k, v in pairs( catherine.character.GetCharVar( pl, "ammos", { } ) ) do
 		pl:SetAmmo( tonumber( v ) or 0, k )
 	end
+	
 	catherine.character.SetCharVar( pl, "ammos", nil )
 end
