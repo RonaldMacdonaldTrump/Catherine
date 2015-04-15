@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.entity = catherine.entity or { }
+catherine.entity = catherine.entity or { CustomUse = { } }
 local META = FindMetaTable( "Entity" )
 local doorClasses = {
 	"func_door",
@@ -34,13 +34,7 @@ function catherine.entity.IsProp( ent )
 end
 
 if ( SERVER ) then
-	catherine.entity.CustomUse = catherine.entity.CustomUse or { }
-	
-	function catherine.entity.RegisterCustomUseMenu( ent, menuTable )
-		ent.IsCustomUse = true
-		ent.CustomUseMenu = menuTable
-		ent:SetNetVar( "IsCustomUse", true )
-		
+	function catherine.entity.RegisterUseMenu( ent, menuTable )
 		local forServer = { }
 		local forClient = { }
 		
@@ -49,9 +43,16 @@ if ( SERVER ) then
 			forClient[ v.uniqueID ] = { text = v.text, uniqueID = v.uniqueID }
 		end
 		
+		ent.IsCustomUse = true
 		catherine.entity.CustomUse[ ent:EntIndex( ) ] = forServer
 		
-		netstream.Start( pl, "catherine.entity.RegisterCustomUseMenu", { ent:EntIndex( ), forClient } )
+		netstream.Start( pl, "catherine.entity.RegisterUseMenu", { ent:EntIndex( ), forClient } )
+	end
+	
+	function catherine.entity.RunUseMenu( pl, index, uniqueID )
+		if ( !catherine.entity.CustomUse[ index ] or !catherine.entity.CustomUse[ index ][ uniqueID ] ) then return end
+		
+		catherine.entity.CustomUse[ index ][ uniqueID ]( pl, Entity( index ) )
 	end
 
 	function catherine.entity.EntityRemoved( ent )
@@ -64,12 +65,9 @@ if ( SERVER ) then
 	hook.Add( "EntityRemoved", "catherine.entity.EntityRemoved", catherine.entity.EntityRemoved )
 	
 	netstream.Hook( "catherine.entity.CustomUseMenu_Receive", function( pl, data )
-		local index = data[ 1 ]
-		catherine.entity.CustomUse[ index ][ data[ 2 ] ]( pl, Entity( index ) )
+		catherine.entity.RunUseMenu( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
-	catherine.entity.CustomUse = catherine.entity.CustomUse or { }
-	
 	netstream.Hook( "catherine.entity.CustomUseMenu", function( data )
 		local index = data
 		local menu = DermaMenu( )
@@ -83,7 +81,7 @@ else
 		menu:Open( )
 	end )
 	
-	netstream.Hook( "catherine.entity.RegisterCustomUseMenu", function( data )
+	netstream.Hook( "catherine.entity.RegisterUseMenu", function( data )
 		catherine.entity.CustomUse[ data[ 1 ] ] = data[ 2 ]
 	end )
 	

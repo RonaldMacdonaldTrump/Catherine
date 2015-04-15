@@ -68,7 +68,7 @@ if ( SERVER ) then
 		ent:SetNetVar( "maxWeight", ent.maxWeight )
 		ent:SetNetVar( "isStorage", true )
 
-		catherine.entity.RegisterCustomUseMenu( ent, {
+		catherine.entity.RegisterUseMenu( ent, {
 			{
 				uniqueID = "ID_OPEN",
 				text = "Open",
