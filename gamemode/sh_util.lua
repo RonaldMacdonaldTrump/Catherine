@@ -20,12 +20,13 @@ catherine.util = catherine.util or { }
 
 function catherine.util.Print( col, message )
 	if ( !message ) then return end
-	if ( !col ) then col = Color( 255, 255, 255 ) end
-	MsgC( col, "[CAT] " .. message .. "\n" )
+
+	MsgC( col or Color( 255, 255, 255 ), "[CAT] " .. message .. "\n" )
 end
 
 function catherine.util.ErrorPrint( message )
 	if ( !message ) then return end
+	
 	MsgC( Color( 0, 255, 255 ), "[CAT LUA ERROR] " .. message .. "\n" )
 end
 
@@ -58,6 +59,7 @@ end
 
 function catherine.util.CalcDistanceByPos( loc, target )
 	if ( !IsValid( loc ) or !IsValid( target ) ) then return 0 end
+	
 	return loc:GetPos( ):Distance( target:GetPos( ) )
 end
 
@@ -83,16 +85,19 @@ end
 
 function catherine.util.CheckStringMatch( one, two )
 	if ( !one or !two ) then return false end
+	
 	return one:lower( ):match( two:lower( ) )
 end
 
 function catherine.util.GetUniqueName( name )
 	if ( !name ) then return end
+	
 	return name:sub( 4, -5 )
 end
 
 function catherine.util.GetRealTime( )
 	local one, dst, hour = os.date( "*t" ), os.date( "%p" ), os.date( "%I" )
+	
 	return one.year .. "-" .. one.month .. "-" .. one.day .. " | " .. dst .. " " .. hour .. ":" .. os.date( "%M" )
 end
 
@@ -153,6 +158,7 @@ local translateHoldType = {
 
 function catherine.util.GetHoldType( wep )
 	local holdType = holdTypes[ wep:GetClass( ) ]
+	
 	if ( holdType ) then
 		return holdType
 	elseif ( wep.HoldType ) then
@@ -169,21 +175,25 @@ if ( SERVER ) then
 	
 	function catherine.util.Notify( pl, message, time )
 		if ( !IsValid( pl ) or !message ) then return end
+		
 		netstream.Start( pl, "catherine.util.Notify", { message, time } )
 	end
 	
 	function catherine.util.NotifyAll( message, time )
 		if ( !message ) then return end
+		
 		netstream.Start( player.GetAllByLoaded( ), "catherine.util.Notify", { message, time } )
 	end
 	
 	function catherine.util.NotifyAllLang( key, ... )
 		if ( !key ) then return end
+		
 		netstream.Start( player.GetAllByLoaded( ), "catherine.util.NotifyAllLang", { key, { ... } } )
 	end
 	
 	function catherine.util.NotifyLang( pl, key, ... )
 		if ( !IsValid( pl ) or !key ) then return end
+		
 		netstream.Start( pl, "catherine.util.Notify", { LANG( pl, key, ... ) } )
 	end
 	
@@ -202,11 +212,13 @@ if ( SERVER ) then
 	
 	function catherine.util.TopNotify( pl, message )
 		if ( !IsValid( pl ) or message == nil ) then return end
+		
 		netstream.Start( pl, "catherine.util.TopNotify", message )
 	end
 
 	function catherine.util.PlaySound( pl, dir )
 		if ( !dir ) then return end
+		
 		netstream.Start( pl, "catherine.util.PlaySound", dir )
 	end
 
@@ -226,13 +238,12 @@ if ( SERVER ) then
 
 	function catherine.util.StringReceiver( pl, id, msg, defV, func )
 		if ( !IsValid( pl ) or !id or !msg or !func ) then return end
-		if ( !defV ) then defV = "" end
 		local steamID = pl:SteamID( )
 		
 		catherine.util.Receiver.String[ steamID ] = catherine.util.Receiver.String[ steamID ] or { }
 		catherine.util.Receiver.String[ steamID ][ id ] = func
 		
-		netstream.Start( pl, "catherine.util.StringReceiver", { id, msg, defV } )
+		netstream.Start( pl, "catherine.util.StringReceiver", { id, msg, defV or "" } )
 	end
 	
 	function catherine.util.QueryReceiver( pl, id, msg, func )
@@ -247,6 +258,7 @@ if ( SERVER ) then
 	
 	function catherine.util.ScreenColorEffect( pl, col, time, fadeTime )
 		if ( !IsValid( pl ) ) then return end
+		
 		netstream.Start( pl, "catherine.util.ScreenColorEffect", { col or Color( 255, 255, 255 ), time, fadeTime } )
 	end
 
@@ -278,7 +290,7 @@ else
 	CAT_UTIL_BUTTOMSOUND_3 = 3
 	
 	netstream.Hook( "catherine.util.StringReceiver", function( data )
-		Derma_StringRequest( data[ 2 ], LANG( "Basic_UI_StringRequest" ), data[ 3 ], function( val )
+		Derma_StringRequest( data[ 2 ], LANG( "Basic_UI_StringRequest" ), data[ 3 ] or "", function( val )
 				netstream.Start( "catherine.util.StringReceiver_Receive", { data[ 1 ], val } )
 			end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
 		)
@@ -347,24 +359,25 @@ else
 	
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )
 		if ( !message or !font or !x or !y ) then return end
-		if ( !xA or !yA ) then xA = 1 yA = 1 end
-		if ( !backgroundBor ) then backgroundBor = 5 end
-		if ( !col ) then col = Color( 255, 255, 255, 255 ) end
-		if ( !backgroundCol ) then backgroundCol = Color( 50, 50, 50, 255 ) end
-		surface.SetFont( font )
-		local textW, textH = surface.GetTextSize( message )
 		
-		draw.RoundedBox( 0, x - ( textW / 2 ) - ( backgroundBor ), y - ( textH / 2 ) - ( backgroundBor ), textW + ( backgroundBor * 2 ), textH + ( backgroundBor * 2 ), backgroundCol )
-		draw.SimpleText( message, font, x, y, col, xA, yA )
+		if ( !backgroundBor ) then
+			backgroundBor = 5
+		end
+
+		surface.SetFont( font )
+		local tw, th = surface.GetTextSize( message )
+		
+		draw.RoundedBox( 0, x - ( tw / 2 ) - ( backgroundBor ), y - ( th / 2 ) - ( backgroundBor ), tw + ( backgroundBor * 2 ), th + ( backgroundBor * 2 ), backgroundCol or Color( 50, 50, 50, 255 ) )
+		draw.SimpleText( message, font, x, y, col or Color( 255, 255, 255, 255 ), xA or 1, yA or 1 )
 	end
 	
 	function catherine.util.GetAlphaFromDistance( base, x, max )
 		if ( !base or !x or !max ) then return 255 end
+		
 		return ( 1 - ( ( x:Distance( base ) ) / max ) ) * 255
 	end
 	
 	function catherine.util.BlurDraw( x, y, w, h, amount )
-		amount = amount or 5
 		surface.SetMaterial( catherine.util.blurTexture )
 		surface.SetDrawColor( 255, 255, 255 )
 		
@@ -372,7 +385,7 @@ else
 		local w2, h2 = ( x + w ) / ScrW( ), ( y + h ) / ScrH( )
 
 		for i = -0.2, 1, 0.2 do
-			catherine.util.blurTexture:SetFloat( "$blur", i * amount )
+			catherine.util.blurTexture:SetFloat( "$blur", i * ( amount or 5 ) )
 			catherine.util.blurTexture:Recompute( )
 			render.UpdateScreenEffectTexture( )
 			surface.DrawTexturedRectUV( x, y, w, h, x2, y2, w2, h2 )

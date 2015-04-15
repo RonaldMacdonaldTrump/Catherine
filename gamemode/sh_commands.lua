@@ -20,7 +20,10 @@ catherine.command.Register( {
 	command = "fallover",
 	canRun = function( pl ) return pl:Alive( ) end,
 	runFunc = function( pl, args )
-		if ( args[ 1 ] ) then args[ 1 ] = tonumber( args[ 1 ] ) end
+		if ( args[ 1 ] ) then
+			args[ 1 ] = tonumber( args[ 1 ] )
+		end
+		
 		catherine.player.RagdollWork( pl, !catherine.player.IsRagdolled( pl ), args[ 1 ] )
 	end
 } )

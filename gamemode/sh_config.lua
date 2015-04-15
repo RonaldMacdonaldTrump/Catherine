@@ -54,7 +54,7 @@ if ( SERVER ) then
 		hour = 1,
 		month = 1,
 		second = 1,
-		temperature = 20
+		temperature = 25
 	}
 	catherine.configs.hintInterval = 30
 	catherine.configs.voiceAllow = false
