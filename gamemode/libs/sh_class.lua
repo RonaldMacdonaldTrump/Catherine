@@ -42,8 +42,6 @@ function catherine.class.GetAll( )
 end
 
 function catherine.class.FindByID( id )
-	if ( !id ) then return nil end
-	
 	for k, v in pairs( catherine.class.GetAll( ) ) do
 		if ( v.uniqueID == id ) then
 			return v
@@ -51,7 +49,7 @@ function catherine.class.FindByID( id )
 	end
 end
 
-function catherine.class.canJoin( pl, uniqueID )
+function catherine.class.CanJoin( pl, uniqueID )
 	if ( !IsValid( pl ) or !uniqueID ) then return false end
 	
 	local classTable = catherine.class.FindByID( uniqueID )
@@ -76,21 +74,17 @@ function catherine.class.canJoin( pl, uniqueID )
 end
 
 function catherine.class.GetPlayers( uniqueID )
-	if ( !uniqueID ) then return { } end
-	
 	local players = { }
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		if ( catherine.character.GetCharVar( v, "class", "" ) == uniqueID ) then
-			players[ #players + 1 ] = v
-		end
+		if ( catherine.character.GetCharVar( v, "class", "" ) != uniqueID ) then continue end
+		players[ #players + 1 ] = v
 	end
 
 	return players
 end
 
 function catherine.class.Include( dir )
-	if ( !dir ) then return end
 	for k, v in pairs( file.Find( dir .. "/classes/*.lua", "LUA" ) ) do
 		catherine.util.Include( dir .. "/classes/" .. v, "SHARED" )
 	end
@@ -98,8 +92,6 @@ end
 
 if ( SERVER ) then
 	function catherine.class.Set( pl, uniqueID )
-		if ( !IsValid( pl ) ) then return end
-		
 		if ( !uniqueID ) then
 			local defaultClass = catherine.class.GetDefaultClass( pl:Team( ) )
 			if ( !defaultClass ) then return end
@@ -111,10 +103,10 @@ if ( SERVER ) then
 			return
 		end
 		
-		local fault, reason = catherine.class.canJoin( pl, uniqueID )
+		local success, reason = catherine.class.CanJoin( pl, uniqueID )
 
-		if ( !fault ) then
-			catherine.util.Notify( pl, reason )
+		if ( !success ) then
+			catherine.util.NotifyLang( pl, reason )
 			return
 		end
 		
@@ -124,6 +116,7 @@ if ( SERVER ) then
 			if ( !catherine.character.GetCharVar( pl, "originalModel" ) ) then
 				catherine.character.SetCharVar( pl, "originalModel", pl:GetModel( ) )
 			end
+			
 			pl:SetModel( ( type( classTable.model ) == "table" and table.Random( classTable.model ) or classTable.model ) )
 		end
 		
@@ -131,7 +124,6 @@ if ( SERVER ) then
 	end
 
 	function catherine.class.GetDefaultClass( factionID )
-		if ( !factionID ) then return nil end
 		for k, v in pairs( catherine.class.GetAll( ) ) do
 			if ( v.faction == factionID and v.isDefault ) then
 				return v
@@ -142,8 +134,6 @@ if ( SERVER ) then
 	netstream.Hook( "catherine.class.Set", function( pl, data )
 		catherine.class.Set( pl, data )
 	end )
-else
-
 end
 
 local META = FindMetaTable( "Player" )

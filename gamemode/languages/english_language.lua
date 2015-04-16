@@ -107,6 +107,9 @@ LANGUAGE.data = {
 	[ "Entity_Notify_NotPlayer" ] = "This isn't a valid player!",
 	[ "Entity_Notify_NotDoor" ] = "This isn't a valid door!",
 	
+	// Command
+	[ "Command_Notify_NotFound" ] = "Command not found!",
+	
 	// Player
 	[ "Player_Message_Ragdolled_01" ] = "You are regaining consciousness ...",
 	[ "Player_Message_HasNotPermission" ] = "You don't have permission!",

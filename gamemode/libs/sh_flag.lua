@@ -140,7 +140,10 @@ if ( SERVER ) then
 			v.onSpawn( pl )
 		end
 		
-		netstream.Start( pl, "catherine.flag.BuildHelp" )
+		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl:GetCharacterID( ) ) then
+			netstream.Start( pl, "catherine.flag.BuildHelp" )
+			pl.CAT_flag_buildHelp = pl:GetCharacterID( )
+		end
 	end
 	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.flag.PlayerSpawnedInCharacter", catherine.flag.PlayerSpawnedInCharacter )
