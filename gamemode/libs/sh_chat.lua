@@ -25,13 +25,11 @@ function catherine.chat.RegisterClass( class, tab )
 end
 
 function catherine.chat.FindByClass( class )
-	if ( !class ) then return nil end
 	for k, v in pairs( catherine.chat.Classes ) do
 		if ( v.class == class ) then
 			return v
 		end
 	end
-	return nil
 end
 
 function catherine.chat.PreSet( text )
@@ -41,6 +39,7 @@ end
 function catherine.chat.FetchClassByText( text )
 	for k, v in pairs( catherine.chat.Classes ) do
 		local command = v.command or ""
+		
 		if ( type( command ) == "table" ) then
 			for k2, v2 in pairs( command ) do
 				if ( text:sub( 1, #v2 ) == v2 ) then
@@ -49,15 +48,18 @@ function catherine.chat.FetchClassByText( text )
 			end
 		end
 	end
+	
 	return "ic"
 end
 
 catherine.chat.RegisterClass( "ic", {
 	onChat = function( pl, text )
 		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
+		
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
 			name = desc
 		end
+		
 		chat.AddText( Color( 255, 255, 255 ), name .. " says " .. catherine.chat.PreSet( text ) )
 	end,
 	canHearRange = 300,
@@ -91,9 +93,11 @@ catherine.chat.RegisterClass( "it", {
 catherine.chat.RegisterClass( "roll", {
 	onChat = function( pl, text )
 		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
+		
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
 			name = desc
 		end
+		
 		chat.AddText( Color( 158, 122, 19 ), name .. " roll number " .. text )
 	end,
 	canHearRange = 600,
@@ -118,9 +122,11 @@ catherine.chat.RegisterClass( "event", {
 catherine.chat.RegisterClass( "yell", {
 	onChat = function( pl, text )
 		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
+		
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
 			name = desc
 		end
+		
 		chat.AddText( Color( 255, 255, 255 ), name .. " yells " .. catherine.chat.PreSet( text ) )
 	end,
 	canHearRange = 600,
@@ -131,9 +137,11 @@ catherine.chat.RegisterClass( "yell", {
 catherine.chat.RegisterClass( "whisper", {
 	onChat = function( pl, text )
 		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
+		
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
 			name = desc
 		end
+		
 		chat.AddText( Color( 255, 255, 255 ), name .. " whispers " .. catherine.chat.PreSet( text ) )
 	end,
 	canHearRange = 150,
@@ -177,7 +185,7 @@ catherine.command.Register( {
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
-				if ( IsValid( target ) ) then
+				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.chat.Send( pl, "pm", args[ 2 ], { pl, target }, target )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
@@ -199,10 +207,6 @@ catherine.command.Register( {
 } )
 
 if ( SERVER ) then
-	netstream.Hook( "catherine.chat.Run", function( pl, data )
-		hook.Run( "PlayerSay", pl, data, true )
-	end )
-	
 	function catherine.chat.Send( pl, classTable, text, target, ... )
 		if ( type( classTable ) == "string" ) then
 			classTable = catherine.chat.FindByClass( classTable )
@@ -314,6 +318,10 @@ if ( SERVER ) then
 		catherine.chat.Send( pl, classTable, adjustInfo.text, target, ... )
 		hook.Run( "ChatSended", adjustInfo )
 	end
+	
+	netstream.Hook( "catherine.chat.Run", function( pl, data )
+		hook.Run( "PlayerSay", pl, data, true )
+	end )
 else
 	catherine.chat.backpanel = catherine.chat.backpanel or nil
 	catherine.chat.chatpanel = catherine.chat.chatpanel or nil
@@ -328,84 +336,16 @@ else
 		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		local speaker, class, text, ex = data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ]
 		local class = catherine.chat.FindByClass( class )
+		
 		class.onChat( speaker, text, ex )
 	end )
 	
 	catherine.hud.RegisterBlockModule( "CHudChat" )
-	
-	local PANEL = { }
-	
-	function PANEL:Init( )
-		self:SetDrawBackground( false )
-		self.start = CurTime( )
-		self.finish = CurTime( ) + 15
-	end
 
-	function PANEL:SetMaxWidth( w )
-		self.maxWidth = w
-	end
-
-	function PANEL:SetFont( font )
-		self.font = font
-	end
-
-	function PANEL:Run( ... )
-		local data, latestColor = "", Color( 255, 255, 255 )
-		if ( self.font ) then data = "<font=" .. self.font .. ">" end
-
-		for k, v in ipairs( { ... } ) do
-			local types = type( v )
-			if ( types == "table" and v.r and v.g and v.b ) then
-				if ( v != latestColor ) then data = data .. "</color>" end
-				latestColor = v
-				data = data .. "<color="..v.r..","..v.g..","..v.b..">"
-			elseif ( types == "Player" ) then
-				local col = team.GetColor( v:Team( ) )
-				data = data .. "<color=" .. col.r .. "," .. col.g .. "," .. col.b .. ">" .. v:Name( ) .. "</color>"
-			elseif ( types == "IMaterial" or types == "table" and type( v[ 1 ] ) == "IMaterial" ) then
-				local w, h = 12, 12
-				local material = v
-				if ( type( v ) == "table" and v[ 2 ] and v[ 3 ] ) then
-					material = v[ 1 ]
-					w = v[ 2 ]
-					h = v[ 3 ]
-				end
-				data = data .. "<img=" .. material:GetName( )..".png," .. w .. "x" .. h .. "> "
-			else
-				v = tostring( v )
-				v = string.gsub( v, "&", "&amp;" )
-				v = string.gsub( v, "<", "&lt;" )
-				v = string.gsub( v, ">", "&gt;" )
-				data = data .. v
-			end
-		end
-
-		if ( self.font ) then data = data .. "</font>" end
-
-		self.markup = catherine.markup.Parse( data, self.maxWidth )
-
-		function self.markup:DrawText( text, font, x, y, color, hAlign, vAlign, alpha )
-			draw.SimpleTextOutlined( text, font, x, y, color, hAlign, vAlign, 1, Color( 0, 0, 0, 255 ) )
-		end
-
-		self:SetSize( self.markup:GetWidth( ), self.markup:GetHeight( ) )
-	end
-
-	function PANEL:Paint( w, h )
-		if ( !self.markup ) then return end
-		local alpha = 255
-		if ( self.start and self.finish ) then alpha = math.Clamp( 255 - math.TimeFraction( self.start, self.finish, CurTime( ) ) * 255, 0, 255 ) end
-		if ( catherine.chat.isOpened ) then alpha = 255 end
-		self:SetAlpha( alpha )
-		if ( alpha > 0 ) then
-			self.markup:Draw( 1, 0, 0, 0 )
-		end
-	end
-	vgui.Register( "catherine.vgui.ChatMarkUp", PANEL, "DPanel" )
-	
 	hook.Add( "PlayerBindPress", "catherine.chat.PlayerBindPress", function( pl, code, pressed )
 		if ( code:find( "messagemode" ) and pressed ) then
 			catherine.chat.SetStatus( true )
+			
 			return true
 		end
 	end )
@@ -427,10 +367,12 @@ else
 		for k, v in ipairs( data ) do
 			if ( type( v ) != "Player" ) then continue end
 			local pl, index = v, k
+			
 			table.remove( data, index )
 			table.insert( data, index, team.GetColor( pl:Team( ) ) )
 			table.insert( data, index + 1, pl:Name( ) )
 		end
+		
 		return chat.AddTextBuffer( unpack( data ) )
 	end
 	
@@ -478,13 +420,16 @@ else
 		local initHistoryKey = #catherine.chat.history + 1
 		local onEnterFunc = function( pnl )
 			local text = pnl:GetText( )
+			
 			if ( text != "" ) then
 				netstream.Start( "catherine.chat.Run", text:sub( 1 ) )
 				catherine.chat.history[ #catherine.chat.history + 1 ] = text:sub( 1 )
+				
 				if ( #catherine.chat.history > 20 ) then
 					table.remove( catherine.chat.history, 1 )
 				end
 			end
+			
 			catherine.chat.isOpened = false
 			
 			self:Remove( )
@@ -507,6 +452,7 @@ else
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 200 ) )
 			surface.SetDrawColor( 0, 0, 0, 200 )
 			surface.DrawOutlinedRect( 0, 0, w, h )
+			
 			pnl:DrawTextEntryText( color_black, color_black, color_black )
 		end
 		self.textEnt.OnTextChanged = function( pnl )

@@ -31,8 +31,6 @@ function catherine.character.GetVarAll( )
 end
 
 function catherine.character.FindVarByID( id )
-	if ( !id ) then return end
-	
 	for k, v in pairs( catherine.character.GetVarAll( ) ) do
 		if ( v.id == id ) then
 			return v
@@ -41,8 +39,6 @@ function catherine.character.FindVarByID( id )
 end
 
 function catherine.character.FindVarByField( field )
-	if ( !field ) then return end
-	
 	for k, v in pairs( catherine.character.GetVarAll( ) ) do
 		if ( v.field == field ) then
 			return v
@@ -277,7 +273,6 @@ if ( SERVER ) then
 	end
 	
 	function catherine.character.SetVar( pl, key, value, noSync )
-		if ( !IsValid( pl ) or !key ) then return end
 		local steamID = pl:SteamID( )
 		local varTable = catherine.character.FindVarByField( key )
 		if ( ( varTable and varTable.static ) or !catherine.character.networkRegistry[ steamID ] ) then return end
@@ -295,7 +290,6 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.SetCharVar( pl, key, value, noSync )
-		if ( !IsValid( pl ) or !key ) then return end
 		local steamID = pl:SteamID( )
 		if ( !catherine.character.networkRegistry[ steamID ] or !catherine.character.networkRegistry[ steamID ][ "_charVar" ] ) then return end
 		
@@ -509,6 +503,7 @@ else
 		if ( IsValid( catherine.vgui.character ) ) then
 			catherine.vgui.character:Close( )
 		end
+		
 		catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
 	end )
 	
@@ -558,12 +553,14 @@ end
 function catherine.character.GetVar( pl, key, default )
 	local steamID = pl:SteamID( )
 	if ( !catherine.character.networkRegistry[ steamID ] ) then return default end
+	
 	return catherine.character.networkRegistry[ steamID ][ key ] or default // 버그발생?
 end
 
 function catherine.character.GetCharVar( pl, key, default )
 	local steamID = pl:SteamID( )
 	if ( !catherine.character.networkRegistry[ steamID ] or !catherine.character.networkRegistry[ steamID ][ "_charVar" ] ) then return default end
+	
 	return catherine.character.networkRegistry[ steamID ][ "_charVar" ][ key ] or default // 버그발생?
 end
 

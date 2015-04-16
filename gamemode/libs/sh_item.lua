@@ -23,10 +23,12 @@ function catherine.item.Register( itemTable )
 		catherine.util.ErrorPrint( "Item register error, can't found item table!" )
 		return
 	end
+	
 	if ( itemTable.isBase ) then
 		catherine.item.bases[ itemTable.uniqueID ] = itemTable
 		return
 	end
+	
 	if ( itemTable.base ) then
 		local base = catherine.item.bases[ itemTable.base ]
 		if ( !base ) then return end
@@ -112,8 +114,6 @@ function catherine.item.FindBaseByID( id )
 end
 
 function catherine.item.Include( dir )
-	if ( !dir ) then return end
-
 	for k, v in pairs( file.Find( dir .. "/items/base/*", "LUA" ) ) do
 		catherine.util.Include( dir .. "/items/base/" .. v, "SHARED" )
 	end
@@ -167,6 +167,8 @@ if ( SERVER ) then
 			uniqueID = uniqueID,
 			itemCount = itemCount
 		} )
+		
+		return true
 	end
 
 	function catherine.item.Spawn( uniqueID, pos, ang, itemData )

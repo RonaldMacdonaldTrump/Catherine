@@ -27,7 +27,6 @@ function catherine.font.Register( uniqueID, font, size, weight, fontTable )
 end
 
 function catherine.font.GetByID( id )
-	if ( !id ) then return nil end
 	for k, v in pairs( catherine.font.Lists ) do
 		if ( v.uniqueID == id ) then
 			return v

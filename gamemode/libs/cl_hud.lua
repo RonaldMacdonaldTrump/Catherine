@@ -42,6 +42,7 @@ end
 
 function catherine.hud.Draw( )
 	if ( catherine.option.Get( "CONVAR_MAINHUD" ) == "0" ) then return end
+	
 	catherine.hud.Vignette( )
 	catherine.hud.ScreenDamageDraw( )
 	catherine.hud.AmmoDraw( )
@@ -137,15 +138,24 @@ function catherine.hud.WelcomeIntroDraw( )
 		t.backalpha = Lerp( 0.01, t.backalpha, 0 )
 	end
 	
-	if ( t.thirdTextTime + 6 <= CurTime( ) ) then t.second = true t.endIng = true end
-	if ( t.firstTextTime <= CurTime( ) and !t.first ) then t.firstalpha = Lerp( 0.03, t.firstalpha, 255 ) end
-	if ( t.secondTextTime <= CurTime( ) and !t.first ) then t.secondalpha = Lerp( 0.03, t.secondalpha, 255 ) end
-	local information = hook.Run( "GetSchemaInformation" )
+	if ( t.thirdTextTime + 6 <= CurTime( ) ) then
+		t.second = true
+		t.endIng = true
+	end
 	
+	if ( t.firstTextTime <= CurTime( ) and !t.first ) then
+		t.firstalpha = Lerp( 0.03, t.firstalpha, 255 )
+	end
+	
+	if ( t.secondTextTime <= CurTime( ) and !t.first ) then
+		t.secondalpha = Lerp( 0.03, t.secondalpha, 255 )
+	end
+
 	surface.SetDrawColor( 50, 50, 50, t.backalpha )
 	surface.SetMaterial( Material( "gui/center_gradient" ) )
 	surface.DrawTexturedRect( scrW / 2 - scrW / 2 / 2, scrH * 0.3 - ( scrH * 0.2 ) / 2, scrW / 2, scrH * 0.2 )
 	
+	local information = hook.Run( "GetSchemaInformation" )
 	draw.SimpleText( information.title, "catherine_schema_title", scrW / 2, scrH * 0.3 - 20, Color( 255, 255, 255, t.firstalpha ), 1, 1 )
 	draw.SimpleText( information.desc, "catherine_normal30", scrW / 2, scrH * 0.35, Color( 255, 255, 255, t.secondalpha ), 1, 1 )
 	draw.SimpleText( information.author, "catherine_normal20", scrW * 0.2, scrH * 0.8, Color( 255, 255, 255, t.thirdalpha ), 1, 1 )
@@ -177,7 +187,11 @@ end
 
 function catherine.hud.ProgressBarDraw( )
 	if ( !catherine.hud.ProgressBar ) then return end
-	if ( catherine.hud.ProgressBar.endTime <= CurTime( ) ) then catherine.hud.ProgressBar = nil return end
+	if ( catherine.hud.ProgressBar.endTime <= CurTime( ) ) then
+		catherine.hud.ProgressBar = nil
+		return
+	end
+	
 	local scrW, scrH = ScrW( ), ScrH( )
 	local fraction = 1 - math.TimeFraction( catherine.hud.ProgressBar.startTime, catherine.hud.ProgressBar.endTime, CurTime( ) )
 	

@@ -43,6 +43,7 @@ function catherine.notify.Draw( )
 			
 			if ( math.Round( v.a ) <= 0 ) then
 				table.remove( catherine.notify.Lists, k )
+				continue
 			end
 		else
 			v.a = Lerp( 0.05, v.a, 255 )

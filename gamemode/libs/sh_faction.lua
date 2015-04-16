@@ -25,8 +25,10 @@ function catherine.faction.Register( factionTable )
 		catherine.util.ErrorPrint( "Faction register error, can't found faction table!" )
 		return
 	end
+	
 	catherine.faction.Lists[ factionTable.index ] = factionTable
 	team.SetUp( factionTable.index, factionTable.name, factionTable.color )
+	
 	return factionTable.index
 end
 
@@ -35,7 +37,6 @@ function catherine.faction.New( uniqueID )
 end
 
 function catherine.faction.GetPlayerUsableFaction( pl )
-	if ( !IsValid( pl ) ) then return { } end
 	local factions = { }
 	
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
@@ -51,8 +52,6 @@ function catherine.faction.GetAll( )
 end
 
 function catherine.faction.FindByName( name )
-	if ( !name ) then return end
-	
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.name == name ) then
 			return v
@@ -61,8 +60,6 @@ function catherine.faction.FindByName( name )
 end
 
 function catherine.faction.FindByID( id )
-	if ( !id ) then return end
-	
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.uniqueID == id ) then
 			return v
@@ -71,8 +68,6 @@ function catherine.faction.FindByID( id )
 end
 
 function catherine.faction.FindByIndex( index )
-	if ( !index ) then return end
-	
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.index == index ) then
 			return v
@@ -81,8 +76,6 @@ function catherine.faction.FindByIndex( index )
 end
 
 function catherine.faction.Include( dir )
-	if ( !dir ) then return end
-	
 	for k, v in pairs( file.Find( dir .. "/factions/*.lua", "LUA" ) ) do
 		catherine.util.Include( dir .. "/factions/" .. v, "SHARED" )
 	end
@@ -90,7 +83,6 @@ end
 
 if ( SERVER ) then
 	function catherine.faction.AddWhiteList( pl, id )
-		if ( !IsValid( pl ) or !id ) then return end
 		local factionTable = catherine.faction.FindByID( id )
 		
 		if ( !factionTable or !factionTable.isWhitelist or catherine.faction.HasWhiteList( pl, id ) ) then
@@ -113,7 +105,6 @@ if ( SERVER ) then
 	end
 	
 	function catherine.faction.RemoveWhiteList( pl, id )
-		if ( !IsValid( pl ) or !id ) then return end
 		local factionTable = catherine.faction.FindByID( id )
 		
 		if ( !factionTable ) then
@@ -137,6 +128,7 @@ if ( SERVER ) then
 
 	function catherine.faction.HasWhiteList( pl, id )
 		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
+		
 		return table.HasValue( whiteLists, id )
 	end
 	
@@ -155,6 +147,7 @@ if ( SERVER ) then
 else
 	function catherine.faction.HasWhiteList( id )
 		local whiteLists = catherine.catData.GetVar( "whitelists", { } )
+		
 		return table.HasValue( whiteLists, id )
 	end
 	

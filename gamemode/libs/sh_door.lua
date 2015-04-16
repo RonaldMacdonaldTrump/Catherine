@@ -124,7 +124,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.door.GetDoorCost( pl, ent )
-		return catherine.configs.doorCost // to do;;
+		return catherine.configs.doorCost // 나중에 수정 -_-
 	end
 
 	function catherine.door.DataSave( )
@@ -173,9 +173,7 @@ else
 		catherine.vgui.door = vgui.Create( "catherine.vgui.door" )
 		catherine.vgui.door:InitializeDoor( Entity( data ) )
 	end )
-	
-	local toscreen = FindMetaTable("Vector").ToScreen
-	
+
 	function catherine.door.GetDetailString( ent )
 		local owner = ent:GetNetVar( "owners" )
 		
@@ -187,6 +185,8 @@ else
 			return LANG( "Door_Message_CantBuy" )
 		end
 	end
+	
+	local toscreen = FindMetaTable("Vector").ToScreen
 	
 	function catherine.door.DrawEntityTargetID( pl, ent, a )
 		if ( !catherine.entity.IsDoor( ent ) ) then return end
@@ -223,6 +223,7 @@ catherine.command.Register( {
 	command = "doorbuy",
 	runFunc = function( pl, args )
 		local success, langKey, par = catherine.door.Buy( pl, pl:GetEyeTrace( 70 ).Entity )
+		
 		if ( success ) then
 			catherine.util.NotifyLang( pl, "Door_Notify_Buy" )
 		else
@@ -235,6 +236,7 @@ catherine.command.Register( {
 	command = "doorsell",
 	runFunc = function( pl, args )
 		local success, langKey, par = catherine.door.Sell( pl, pl:GetEyeTrace( 70 ).Entity )
+		
 		if ( success ) then
 			catherine.util.NotifyLang( pl, "Door_Notify_Sell" )
 		else
@@ -250,6 +252,7 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			local success, langKey, par = catherine.door.SetDoorTitle( pl, pl:GetEyeTrace( 70 ).Entity, args[ 1 ], true )
+			
 			if ( success ) then
 				catherine.util.NotifyLang( pl, "Door_Notify_SetTitle" )
 			else

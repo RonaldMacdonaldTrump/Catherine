@@ -37,6 +37,7 @@ if ( SERVER ) then
 	function catherine.cash.Set( pl, amount )
 		amount = tonumber( amount )
 		if ( !amount ) then return false end
+		
 		catherine.character.SetVar( pl, "_cash", math.max( amount, 0 ) )
 		
 		return true
@@ -45,6 +46,7 @@ if ( SERVER ) then
 	function catherine.cash.Give( pl, amount )
 		amount = tonumber( amount )
 		if ( !amount ) then return false end
+		
 		catherine.character.SetVar( pl, "_cash", math.max( catherine.cash.Get( pl ) + amount, 0 ) )
 		
 		return true
@@ -53,6 +55,7 @@ if ( SERVER ) then
 	function catherine.cash.Take( pl, amount )
 		amount = tonumber( amount )
 		if ( !amount ) then return false end
+		
 		catherine.character.SetVar( pl, "_cash", math.max( catherine.cash.Get( pl ) - amount, 0 ) )
 		
 		return true
@@ -60,7 +63,7 @@ if ( SERVER ) then
 end
 
 function catherine.cash.Get( pl )
-	return tonumber( catherine.character.GetVar( pl, "_cash", 0 ) )
+	return catherine.character.GetVar( pl, "_cash", 0 )
 end
 
 catherine.command.Register( {

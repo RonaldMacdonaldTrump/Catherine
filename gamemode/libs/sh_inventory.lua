@@ -79,8 +79,6 @@ if ( SERVER ) then
 			}
 			
 			catherine.character.SetVar( pl, "_inv", inventory )
-		else
-			catherine.util.ErrorPrint( "Bad function id! - catherine.inventory.Work( )" )
 		end
 	end
 	

@@ -50,8 +50,6 @@ function catherine.class.FindByID( id )
 end
 
 function catherine.class.CanJoin( pl, uniqueID )
-	if ( !IsValid( pl ) or !uniqueID ) then return false end
-	
 	local classTable = catherine.class.FindByID( uniqueID )
 	
 	if ( !classTable ) then

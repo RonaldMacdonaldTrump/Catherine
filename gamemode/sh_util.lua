@@ -19,19 +19,14 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.util = catherine.util or { }
 
 function catherine.util.Print( col, message )
-	if ( !message ) then return end
-
 	MsgC( col or Color( 255, 255, 255 ), "[CAT] " .. message .. "\n" )
 end
 
 function catherine.util.ErrorPrint( message )
-	if ( !message ) then return end
-	
 	MsgC( Color( 0, 255, 255 ), "[CAT LUA ERROR] " .. message .. "\n" )
 end
 
 function catherine.util.Include( dir, typ )
-	if ( !dir ) then return end
 	dir = dir:lower( )
 	
 	if ( SERVER and ( typ == "SERVER" or dir:find( "sv_" ) ) ) then 
@@ -64,8 +59,6 @@ function catherine.util.CalcDistanceByPos( loc, target )
 end
 
 function catherine.util.FindPlayerByName( name )
-	if ( !name ) then return end
-	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( catherine.util.CheckStringMatch( v:Name( ), name ) ) then
 			return v
@@ -74,8 +67,6 @@ function catherine.util.FindPlayerByName( name )
 end
 
 function catherine.util.FindPlayerByStuff( use, str )
-	if ( !use or !str ) then return end
-
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( catherine.util.CheckStringMatch( v[ use ]( v ), str ) ) then
 			return v
@@ -90,8 +81,6 @@ function catherine.util.CheckStringMatch( one, two )
 end
 
 function catherine.util.GetUniqueName( name )
-	if ( !name ) then return end
-	
 	return name:sub( 4, -5 )
 end
 
@@ -102,7 +91,6 @@ function catherine.util.GetRealTime( )
 end
 
 function catherine.util.FolderDirectoryTranslate( dir )
-	if ( !dir ) then return end
 	if ( dir:sub( 1, 1 ) != "/" ) then dir = "/" .. dir end
 	local ex = string.Explode( "/", dir )
 	
@@ -174,32 +162,22 @@ if ( SERVER ) then
 	catherine.util.Receiver = catherine.util.Receiver or { String = { }, Query = { } }
 	
 	function catherine.util.Notify( pl, message, time )
-		if ( !IsValid( pl ) or !message ) then return end
-		
 		netstream.Start( pl, "catherine.util.Notify", { message, time } )
 	end
 	
 	function catherine.util.NotifyAll( message, time )
-		if ( !message ) then return end
-		
 		netstream.Start( player.GetAllByLoaded( ), "catherine.util.Notify", { message, time } )
 	end
 	
 	function catherine.util.NotifyAllLang( key, ... )
-		if ( !key ) then return end
-		
 		netstream.Start( player.GetAllByLoaded( ), "catherine.util.NotifyAllLang", { key, { ... } } )
 	end
 	
 	function catherine.util.NotifyLang( pl, key, ... )
-		if ( !IsValid( pl ) or !key ) then return end
-		
 		netstream.Start( pl, "catherine.util.Notify", { LANG( pl, key, ... ) } )
 	end
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
-		if ( !IsValid( pl ) or !message or !time ) then return end
-		
 		if ( func ) then
 			timer.Simple( time, function( )
 				if ( !IsValid( pl ) ) then return end
@@ -211,19 +189,14 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.TopNotify( pl, message )
-		if ( !IsValid( pl ) or message == nil ) then return end
-		
 		netstream.Start( pl, "catherine.util.TopNotify", message )
 	end
 
 	function catherine.util.PlaySound( pl, dir )
-		if ( !dir ) then return end
-		
 		netstream.Start( pl, "catherine.util.PlaySound", dir )
 	end
 
 	function catherine.util.AddResourceInFolder( dir )
-		if ( !dir ) then return end
 		local files, dirs = file.Find( dir .. "/*", "GAME" )
 		
 		for _, v in pairs( dirs ) do
@@ -237,7 +210,6 @@ if ( SERVER ) then
 	end
 
 	function catherine.util.StringReceiver( pl, id, msg, defV, func )
-		if ( !IsValid( pl ) or !id or !msg or !func ) then return end
 		local steamID = pl:SteamID( )
 		
 		catherine.util.Receiver.String[ steamID ] = catherine.util.Receiver.String[ steamID ] or { }
@@ -247,7 +219,6 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.QueryReceiver( pl, id, msg, func )
-		if ( !IsValid( pl ) or !id or !msg or !func ) then return end
 		local steamID = pl:SteamID( )
 		
 		catherine.util.Receiver.Query[ steamID ] = catherine.util.Receiver.Query[ steamID ] or { }
@@ -257,8 +228,6 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.ScreenColorEffect( pl, col, time, fadeTime )
-		if ( !IsValid( pl ) ) then return end
-		
 		netstream.Start( pl, "catherine.util.ScreenColorEffect", { col or Color( 255, 255, 255 ), time, fadeTime } )
 	end
 

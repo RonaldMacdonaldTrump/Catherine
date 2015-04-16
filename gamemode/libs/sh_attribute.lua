@@ -42,8 +42,6 @@ function catherine.attribute.GetAll( )
 end
 
 function catherine.attribute.FindByID( id )
-	if ( !id ) then return end
-	
 	for k, v in pairs( catherine.attribute.GetAll( ) ) do
 		if ( v.uniqueID == id ) then
 			return v

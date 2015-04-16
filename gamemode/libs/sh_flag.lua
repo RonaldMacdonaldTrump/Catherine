@@ -125,8 +125,8 @@ if ( SERVER ) then
 	end
 	
 	function catherine.flag.Has( pl, id )
-		if ( !IsValid( pl ) or !id ) then return end
 		local flagData = catherine.character.GetCharVar( pl, "flags", "" )
+		
 		return flagData:find( id )
 	end
 	
@@ -164,8 +164,8 @@ else
 	end )
 	
 	function catherine.flag.Has( id )
-		if ( !id ) then return end
 		local flagData = catherine.character.GetCharVar( LocalPlayer( ), "flags", "" )
+		
 		return flagData:find( id )
 	end
 	

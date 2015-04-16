@@ -21,19 +21,19 @@ catherine.bar.Lists = { }
 
 function catherine.bar.Register( target, targetMax, color, uniqueID )
 	for k, v in pairs( catherine.bar.Lists ) do
-		if ( !v.uniqueID ) then continue end
-		if ( v.uniqueID == uniqueID ) then
+		if ( v.uniqueID and v.uniqueID == uniqueID ) then
 			return
 		end
 	end
+	local index = #catherine.bar.Lists + 1
 	
-	catherine.bar.Lists[ #catherine.bar.Lists + 1 ] = {
+	catherine.bar.Lists[ index ] = {
 		target = target,
 		targetMax = targetMax,
 		color = color,
 		uniqueID = uniqueID,
 		ani = 0,
-		y = -10 + ( #catherine.bar.Lists + 1 ) * 14,
+		y = -10 + ( index * 14 ),
 		alpha = 0
 	}
 end
@@ -46,15 +46,18 @@ function catherine.bar.Draw( )
 	end
 	
 	local count = 0
+	
 	for k, v in pairs( catherine.bar.Lists ) do
 		if ( !v.target or !v.targetMax ) then continue end
 		local percent = ( math.min( v.target( ) / v.targetMax( ), 1 ) )
+		
 		if ( percent == 0 ) then
 			v.alpha = Lerp( 0.03, v.alpha, 0 )
 		else
 			count = count + 1
 			v.alpha = Lerp( 0.03, v.alpha, 255 )
 		end
+		
 		v.ani = math.Approach( v.ani, ( ScrW( ) * 0.3 ) * percent, 0.5 )
 		v.y = Lerp( 0.03, v.y, -5 + count * 10 )
 		
