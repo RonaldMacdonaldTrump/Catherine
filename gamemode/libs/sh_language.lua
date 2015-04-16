@@ -20,18 +20,10 @@ catherine.language = catherine.language or { }
 catherine.language.Lists = { }
 
 function catherine.language.Register( languageTable )
-	if ( !languageTable ) then
-		catherine.util.ErrorPrint( "Language register error, can't find language table!" )
-		return
-	end
 	catherine.language.Lists[ languageTable.uniqueID ] = languageTable
 end
 
 function catherine.language.New( uniqueID )
-	if ( !uniqueID ) then
-		catherine.util.ErrorPrint( "Language create error, can't find unique ID!" )
-		return
-	end
 	return { name = "Unknown", data = { }, uniqueID = uniqueID }
 end
 
@@ -44,16 +36,12 @@ function catherine.language.FindByID( uniqueID )
 end
 
 function catherine.language.Include( dir )
-	if ( !dir ) then return end
-	
 	for k, v in pairs( file.Find( dir .. "/languages/*.lua", "LUA" ) ) do
 		catherine.util.Include( dir .. "/languages/" .. v, "SHARED" )
 	end
 end
 
 function catherine.language.Merge( uniqueID, data )
-	if ( !uniqueID or !data ) then return end
-	
 	local languageTable = catherine.language.FindByID( uniqueID )
 	if ( !languageTable ) then return end
 	

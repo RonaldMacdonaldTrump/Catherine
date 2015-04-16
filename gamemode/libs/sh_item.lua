@@ -217,7 +217,7 @@ else
 	end
 	
 	function catherine.item.OpenEntityUseMenu( data )
-		local ent = data[ 1 ]
+		local ent = Entity( data[ 1 ] )
 		local uniqueID = data[ 2 ]
 		if ( !IsValid( ent ) or !IsValid( LocalPlayer( ):GetEyeTrace( ).Entity ) ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )

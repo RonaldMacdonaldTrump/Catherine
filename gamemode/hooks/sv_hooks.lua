@@ -18,7 +18,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 function GM:ShowHelp( pl )
 	if ( !pl:IsCharacterLoaded( ) ) then return end
-	
 	local success = hook.Run( "PostPressF1", pl )
 	if ( success ) then return end
 	
@@ -28,7 +27,6 @@ end
 function GM:ShowTeam( pl )
 	if ( !pl:IsCharacterLoaded( ) ) then return end
 	local ent = pl:GetEyeTrace( 70 ).Entity
-	
 	local success = hook.Run( "PostPressF2", pl )
 	if ( success ) then return end
 	
@@ -60,6 +58,7 @@ function GM:PlayerSpawn( pl )
 	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	player_manager.SetPlayerClass( pl, "catherine_player" )
+	
 	if ( pl:IsCharacterLoaded( ) and !pl.CAT_loadingChar ) then
 		hook.Run( "PlayerSpawnedInCharacter", pl )
 	end
@@ -71,20 +70,6 @@ function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
 	
 	if ( hitGroup == CAT_BODY_ID_HEAD ) then
 		catherine.util.ScreenColorEffect( pl, nil, 2, 0.005 )
-	--[[ // to do...; maybe ..
-	elseif ( hitGroup == CAT_BODY_ID_CHEST ) then
-		catherine.body.TakePercent( pl, CAT_BODY_ID_CHEST, 1 )
-	elseif ( hitGroup == CAT_BODY_ID_L_ARM ) then
-		catherine.body.TakePercent( pl, CAT_BODY_ID_L_ARM, 1 )
-	elseif ( hitGroup == CAT_BODY_ID_R_ARM ) then
-		catherine.body.TakePercent( pl, CAT_BODY_ID_R_ARM, 1 )
-	elseif ( hitGroup == CAT_BODY_ID_STOMACH ) then
-		catherine.body.TakePercent( pl, CAT_BODY_ID_STOMACH, 1 )
-	elseif ( hitGroup == CAT_BODY_ID_L_LEG ) then
-		catherine.body.TakePercent( pl, CAT_BODY_ID_L_LEG, 1 )
-	elseif ( hitGroup == CAT_BODY_ID_R_LEG ) then
-		catherine.body.TakePercent( pl, CAT_BODY_ID_R_LEG, 1 )
-	--]]
 	end
 end
 
@@ -96,26 +81,26 @@ end
 
 function GM:PlayerSetHandsModel( pl, ent )
 	local info = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl:GetModel( ) ) )
-	if ( !info ) then return end
-	ent:SetModel( info.model )
-	ent:SetSkin( info.skin )
-	ent:SetBodyGroups( info.body )
+	
+	if ( info ) then
+		ent:SetModel( info.model )
+		ent:SetSkin( info.skin )
+		ent:SetBodyGroups( info.body )
+	end
 end
 
 function GM:PlayerDisconnected( pl )
-	if ( IsValid( pl.dummy ) ) then
-		pl.dummy:Remove( )
-	end
+	// 나중에 추가 -_-
 end
 
 function GM:PlayerCanHearPlayersVoice( pl, target )
 	return catherine.configs.voiceAllow, catherine.configs.voice3D
 end
 
-// 철인 RP 방지 시스템
 function GM:EntityTakeDamage( pl, dmginfo )
 	if ( !pl:IsPlayer( ) or !dmginfo:IsBulletDamage( ) ) then return end
 	pl:SetRunSpeed( pl:GetWalkSpeed( ) )
+	
 	timer.Remove( "Catherine.timer.RunSpamProtection_" .. pl:SteamID( ) )
 	timer.Create( "Catherine.timer.RunSpamProtection_" .. pl:SteamID( ), 2, 1, function( )
 		pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
@@ -124,8 +109,7 @@ end
 
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Create("Catherine.timer.weapontoggle." .. pl:SteamID( ), 1, 1, function()
-			if ( !IsValid( pl ) ) then return end
+		timer.Create("Catherine.timer.WeaponToggle." .. pl:SteamID( ), 1, 1, function()
 			pl:ToggleWeaponRaised( )
 		end )
 	elseif ( key == IN_USE ) then
@@ -189,6 +173,7 @@ function GM:PostWeaponGive( pl )
 	if ( catherine.configs.giveHand ) then
 		pl:Give( "cat_fist" )
 	end
+	
 	if ( catherine.configs.giveKey ) then
 		pl:Give( "cat_key" )
 	end
@@ -200,7 +185,7 @@ end
 
 function GM:KeyRelease( pl, key )
 	if ( key = IN_RELOAD ) then
-		timer.Remove( "Catherine.timer.weapontoggle." .. pl:SteamID( ) )
+		timer.Remove( "Catherine.timer.WeaponToggle." .. pl:SteamID( ) )
 	end
 end
 
@@ -240,31 +225,31 @@ function GM:PlayerHurt( pl )
 	local hitGroup = pl:LastHitGroup( )
 	local sound = hook.Run( "GetPlayerPainSound", pl )
 	local gender = pl:GetGender( )
+	
 	if ( !sound ) then
 		if ( hitGroup == HITGROUP_HEAD) then
-			sound = "vo/npc/"..gender.."01/ow0" .. math.random(1, 2) .. ".wav"
+			sound = "vo/npc/" .. gender .. "01/ow0" .. math.random( 1, 2 ) .. ".wav"
 		elseif ( hitGroup == HITGROUP_CHEST or hitGroup == HITGROUP_GENERIC ) then
-			sound = "vo/npc/"..gender.."01/hitingut0" .. math.random(1, 2) .. ".wav"
+			sound = "vo/npc/" .. gender .. "01/hitingut0" .. math.random( 1, 2 ) .. ".wav"
 		elseif ( hitGroup == HITGROUP_LEFTLEG or hitGroup == HITGROUP_RIGHTLEG ) then
-			sound = "vo/npc/"..gender.."01/myleg0" .. math.random(1, 2) .. ".wav"
+			sound = "vo/npc/" .. gender .. "01/myleg0" .. math.random( 1, 2 ) .. ".wav"
 		elseif ( hitGroup == HITGROUP_LEFTARM or hitGroup == HITGROUP_RIGHTARM ) then
-			sound = "vo/npc/"..gender.."01/myarm0" .. math.random(1, 2) .. ".wav"
+			sound = "vo/npc/" .. gender .. "01/myarm0" .. math.random( 1, 2 ) .. ".wav"
 		elseif ( hitGroup == HITGROUP_GEAR ) then
-			sound = "vo/npc/"..gender.."01/startle0" .. math.random(1, 2) .. ".wav"
-		end;
+			sound = "vo/npc/" .. gender .. "01/startle0" .. math.random( 1, 2 ) .. ".wav"
+		end
 	end
-	pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ).. ".wav" )
+	
+	pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
 	hook.Run( "PlayerTakeDamage", pl )
+	
 	return true
 end
 
 function GM:PlayerDeathSound( pl )
 	pl:EmitSound( hook.Run( "GetPlayerDeathSound", pl ) or "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+	
 	return true
-end
-
-function GM:PlayerDeathThink( pl )
-	// do nothing :)
 end
 
 function GM:PlayerDeath( pl )
@@ -301,6 +286,7 @@ end
 
 function GM:GetFallDamage( pl, spd )
 	local custom = hook.Run( "GetCustomFallDamage", pl, spd )
+	
 	return custom or ( spd - 580 ) * 0.8
 end
 

@@ -34,14 +34,17 @@ function GM:HUDShouldDraw( name )
 			return false
 		end
 	end
+	
 	return true
 end
 
 function GM:CalcView( pl, pos, ang, fov )
 	if ( IsValid( catherine.vgui.character ) or !pl:IsCharacterLoaded( ) ) then
-		local data = { }
-		data.origin = catherine.configs.schematicViewPos.pos
-		data.angles = catherine.configs.schematicViewPos.ang
+		local data = {
+			origin = catherine.configs.schematicViewPos.pos,
+			angles = catherine.configs.schematicViewPos.ang
+		}
+
 		return data
 	end
 
@@ -90,6 +93,7 @@ function GM:DrawEntityTargetID( pl, ent, a )
 	local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 	local x, y, x2, y2 = pos.x, pos.y - 100, 0, 0
 	local name, desc = hook.Run( "GetPlayerInformation", pl, ent )
+	
 	draw.SimpleText( name, "catherine_normal25", x, y, Color( 255, 255, 255, a ), 1, 1 )
 	y = y + 20
 	draw.SimpleText( desc, "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
@@ -100,34 +104,45 @@ end
 
 function GM:PlayerInformationDraw( pl, target, x, y, a )
 	if ( target:Alive( ) ) then return end
+	
 	draw.SimpleText( ( target:GetGender( ) == "male" and "He" or "She" ) .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
 end
 
 function GM:ProgressEntityCache( pl )
 	if ( pl:IsCharacterLoaded( ) and catherine.nextCacheDo <= CurTime( ) ) then
-		local tr = { }
-		tr.start = pl:GetShootPos( )
-		tr.endpos = tr.start + pl:GetAimVector( ) * 160
-		tr.filter = pl
-		local ent = util.TraceLine( tr ).Entity
+		local data = { }
+		data.start = pl:GetShootPos( )
+		data.endpos = data.start + pl:GetAimVector( ) * 160
+		data.filter = pl
+		local ent = util.TraceLine( data ).Entity
+		
 		if ( IsValid( ent ) ) then 
 			catherine.entityCaches[ ent ] = true
 		else 
 			catherine.entityCaches[ ent ] = nil
 		end
+		
 		catherine.nextCacheDo = CurTime( ) + 0.5
 	end
 	
 	for k, v in pairs( catherine.entityCaches ) do
-		if ( !IsValid( k ) ) then catherine.entityCaches[ k ] = nil continue end
+		if ( !IsValid( k ) ) then
+			catherine.entityCaches[ k ] = nil
+			continue
+		end
+		
 		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k:GetPos( ), pl:GetPos( ), 100 ) )
 		k.alpha = a
+		
 		if ( math.Round( a ) <= 0 ) then
 			catherine.entityCaches[ k ] = nil
+			continue
 		end
+		
 		if ( k.DrawEntityTargetID ) then
 			k:DrawEntityTargetID( pl, k, a )
 		end
+		
 		hook.Run( "DrawEntityTargetID", pl, k, a )
 	end
 end
@@ -165,6 +180,7 @@ function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePo
 	eyeAng:RotateAroundAxis( eyeAng:Right( ), lowerAngle.r * fraction )
 	pl.wepRaisedFraction = Lerp( FrameTime( ) * 2, pl.wepRaisedFraction or 0, value )
 	viewModel:SetAngles( eyeAng )
+	
 	return oldEyePos, eyeAng
 end
 
@@ -257,6 +273,7 @@ netstream.Hook( "catherine.ShowHelp", function( )
 		catherine.vgui.information:Close( )
 		return
 	end
+	
 	catherine.vgui.information = vgui.Create( "catherine.vgui.information" )
 end )
 

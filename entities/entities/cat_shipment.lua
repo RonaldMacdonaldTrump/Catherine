@@ -52,6 +52,7 @@ if ( SERVER ) then
 			catherine.util.NotifyLang( pl, "Business_Notify_CantOpenShipment" )
 			return
 		end
+		
 		netstream.Start( pl, "catherine.business.EntityUseMenu", self:EntIndex( ) )
 	end
 	
@@ -65,6 +66,7 @@ if ( SERVER ) then
 	end
 else
 	local toscreen = FindMetaTable("Vector").ToScreen
+	
 	function ENT:DrawEntityTargetID( pl, ent, a )
 		if ( ent:GetClass( ) != "cat_shipment" ) then return end
 		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
