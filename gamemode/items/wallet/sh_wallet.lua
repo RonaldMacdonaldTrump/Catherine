@@ -54,7 +54,7 @@ ITEM.func.drop = {
 			catherine.util.Notify( pl, "You can't do that!" )
 			return
 		end
-		catherine.util.UniqueStringReceiver( pl, "Cash_UniqueDropMoney", "What amount for drop money?", "", catherine.cash.Get( pl ), function( _, val )
+		catherine.util.StringReceiver( pl, "Cash_UniqueDropMoney", "What amount for drop money?", catherine.cash.Get( pl ), function( _, val )
 			val = tonumber( val )
 			if ( !val ) then return end
 			if ( catherine.cash.Get( pl ) < val or val <= 0 ) then

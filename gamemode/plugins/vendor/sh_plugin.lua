@@ -63,6 +63,7 @@ function PLUGIN:GetVendorWorkingPlayers( )
 	return players
 end
 
+catherine.util.Include( "sh_language.lua" )
 catherine.util.Include( "sh_commands.lua" )
 catherine.util.Include( "sv_plugin.lua" )
 catherine.util.Include( "cl_plugin.lua" )

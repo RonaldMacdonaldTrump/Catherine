@@ -59,11 +59,11 @@ if ( SERVER ) then
 	function ENT:Use( pl )
 		local status, reason = PLUGIN:CanUseVendor( pl, self )
 		if ( !status ) then
-			catherine.util.Notify( pl, reason )
+			catherine.util.NotifyLang( pl, "Vendor_Message_CantUse" )
 			return
 		end
 		pl:SetNetVar( "vendor_work", true )
-		netstream.Start( pl, "catherine.plugin.vendor.VendorUse", self )
+		netstream.Start( pl, "catherine.plugin.vendor.VendorUse", self:EntIndex( ) )
 	end
 else
 	local toscreen = FindMetaTable("Vector").ToScreen

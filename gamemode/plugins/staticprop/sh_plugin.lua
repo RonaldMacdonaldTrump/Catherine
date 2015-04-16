@@ -17,33 +17,34 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "Save Prop"
+PLUGIN.name = "Static Prop"
 PLUGIN.author = "L7D"
 PLUGIN.desc = "Good stuff."
 
+catherine.util.Include( "sh_language.lua" )
+
 catherine.command.Register( {
 	command = "staticprop",
-	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
-		local tr = pl:GetEyeTraceNoCursor( )
-		local ent = tr.Entity
-		
+		local ent = pl:GetEyeTraceNoCursor( ).Entity
+
 		if ( IsValid( ent ) ) then
-			if ( ent:GetClass( ):find( "prop_" ) and !ent:IsDoor( ) ) then
-				ent:SetNetVar( "isPersistent", !ent:GetNetVar( "isPersistent", false ) )
+			if ( catherine.entity.IsProp( ent ) and !catherine.entity.IsDoor( ent ) ) then
+				ent:SetNetVar( "isStatic", !ent:GetNetVar( "isStatic", false ) )
 				
-				if ( ent:GetNetVar( "isPersistent" ) ) then
-					catherine.util.Notify( pl, "You has add this entity in static props." )
+				if ( ent:GetNetVar( "isStatic" ) ) then
+					catherine.util.NotifyLang( pl, "Staticprop_Notify_Add" )
 				else
-					catherine.util.Notify( pl, "You has remove this entity in static props." )
+					catherine.util.NotifyLang( pl, "Staticprop_Notify_Remove" )
 				end
 				
 				PLUGIN:DataSave( )
 			else
-				catherine.util.Notify( pl, "You can't work this for this entity!" )
+				catherine.util.NotifyLang( pl, "Staticprop_Notify_IsNotProp" )
 			end
 		else
-			catherine.util.Notify( pl, "This is not a prop!" )
+			catherine.util.NotifyLang( pl, "Entity_Notify_NotValid" )
 		end
 	end
 } )
@@ -52,24 +53,26 @@ if ( CLIENT ) then return end
 
 function PLUGIN:DataSave( )
 	local data = { }
+	
 	for k, v in pairs( ents.GetAll( ) ) do
-		if ( !v:GetNetVar( "isPersistent" ) ) then continue end
+		if ( !v:GetNetVar( "isStatic" ) ) then continue end
 		data[ #data + 1 ] = v
 	end
 	
 	if ( #data == 0 ) then return end
 	local persistentData = duplicator.CopyEnts( data )
 	if ( !persistentData ) then return end
-	catherine.data.Set( "props", persistentData )
+	
+	catherine.data.Set( "staticprops", persistentData )
 end
 
 function PLUGIN:DataLoad( )
-	local data = catherine.data.Get( "props", nil )
+	local data = catherine.data.Get( "staticprops" )
 	if ( !data ) then return end
 	
 	local ents, consts = duplicator.Paste( nil, data.Entities or { }, data.Contraints or { } )
 	
 	for k, v in pairs( ents ) do
-		v:SetNetVar( "isPersistent", true )
+		v:SetNetVar( "isStatic", true )
 	end
 end

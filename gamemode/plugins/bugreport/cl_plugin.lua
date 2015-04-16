@@ -19,13 +19,10 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local PLUGIN = PLUGIN
 
 netstream.Hook( "catherine.plugin.bugreport.SendResult", function( data )
+	if ( !IsValid( catherine.vgui.bugreport ) ) then return end
 	if ( type( data ) == "boolean" ) then
-		if ( IsValid( catherine.vgui.bugreport ) ) then
-			catherine.vgui.bugreport:SetNotify( true, "Your report has been sent, thank you! :)" )
-		end
+		catherine.vgui.bugreport:SetNotify( true, "Your report has been sent, thank you! :)" )
 	else
-		if ( IsValid( catherine.vgui.bugreport ) ) then
-			catherine.vgui.bugreport:SetNotify( false, data, false, true )
-		end
+		catherine.vgui.bugreport:SetNotify( false, data, false, true )
 	end
 end )

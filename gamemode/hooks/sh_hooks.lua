@@ -21,7 +21,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 	https://github.com/Chessnut/NutScript
 --]]
 
-Weapon_HoldType = {}
+Weapon_HoldType = { }
 Weapon_HoldType[ "" ] = "normal"
 Weapon_HoldType[ "physgun" ] = "smg"
 Weapon_HoldType[ "ar2" ] = "smg"
@@ -38,7 +38,7 @@ Weapon_HoldType[ "camera" ] = "smg"
 Weapon_HoldType[ "magic" ] = "normal"
 Weapon_HoldType[ "revolver" ] = "pistol"
 
-PlayerHoldType = {}
+PlayerHoldType = { }
 PlayerHoldType[ "" ] = "normal"
 PlayerHoldType[ "fist" ] = "normal"
 PlayerHoldType[ "pistol" ] = "normal"
@@ -173,14 +173,21 @@ function GM:PlayerNoClip( pl, bool )
 			pl:SetNoDraw( true )
 			pl:DrawShadow( false )
 			pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
-			if ( SERVER ) then catherine.network.SetNetVar( pl, "nocliping", true ) end
+			
+			if ( SERVER ) then
+				pl:SetNetVar( "nocliping", true )
+			end
 		else
 			pl:SetNoDraw( false )
 			pl:DrawShadow( true )
 			pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
-			if ( SERVER ) then catherine.network.SetNetVar( pl, "nocliping", false ) end
+			
+			if ( SERVER ) then
+				pl:SetNetVar( "nocliping", false )
+			end
 		end
 	end
+	
 	return pl:IsAdmin( )
 end
 

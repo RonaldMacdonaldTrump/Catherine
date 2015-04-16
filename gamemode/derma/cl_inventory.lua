@@ -20,14 +20,9 @@ local PANEL = { }
 
 function PANEL:Init( )
 	catherine.vgui.inventory = self
-	
-	self.inventory = nil
-	self.invWeightAni = 0
-	self.invWeight = 0
-	self.invMaxWeight = 0
-	
+
 	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
-	self:SetMenuName( "Inventory" )
+	self:SetMenuName( LANG( "Inventory_UI_Title" ) )
 
 	self.Lists = vgui.Create( "DPanelList", self )
 	self.Lists:SetPos( 110, 35 )
@@ -36,7 +31,7 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
 	self.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
 	
 	self.weight = vgui.Create( "catherine.vgui.weight", self )
@@ -44,39 +39,36 @@ function PANEL:Init( )
 	self.weight:SetSize( 90, 90 )
 	self.weight:SetCircleSize( 40 )
 
-	self:InitializeInventory( )
+	self:BuildInventory( )
 end
 
-function PANEL:InitializeInventory( )
-	local inventory = catherine.inventory.Get( )
+function PANEL:GetInventory( )
 	local tab = { }
 	
-	for k, v in pairs( inventory ) do
+	for k, v in pairs( catherine.inventory.Get( ) ) do
 		local itemTable = catherine.item.FindByID( k )
 		if ( !itemTable ) then continue end
+		
 		local category = itemTable.category
 		tab[ category ] = tab[ category ] or { }
 		tab[ category ][ v.uniqueID ] = v
 	end
 	
-	self.inventory = tab
 	self.weight:SetWeight( catherine.inventory.GetWeights( ) )
-	self:BuildInventory( )
+	return tab
 end
 
 function PANEL:BuildInventory( )
-	if ( !self.inventory ) then return end
 	self.Lists:Clear( )
 	local delta = 0
-	for k, v in pairs( self.inventory ) do
+	for k, v in pairs( self:GetInventory( ) ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( k )
 		form:SetAlpha( 0 )
 		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-			draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
@@ -102,9 +94,6 @@ function PANEL:BuildInventory( )
 			spawnIcon.DoClick = function( )
 				catherine.item.OpenMenuUse( v1.uniqueID )
 			end
-			spawnIcon.DoRightClick = function( )
-
-			end
 			spawnIcon.PaintOver = function( pnl, w, h )
 				if ( catherine.inventory.IsEquipped( v1.uniqueID ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
@@ -126,8 +115,8 @@ end
 
 vgui.Register( "catherine.vgui.inventory", PANEL, "catherine.vgui.menuBase" )
 
-hook.Add( "AddMenuItem", "catherine.vgui.inventory", function( tab )
-	tab[ "Inventory" ] = function( menuPnl, itemPnl )
-		return vgui.Create( "catherine.vgui.inventory", menuPnl )
-	end
+catherine.menu.Register( function( )
+	return LANG( "Inventory_UI_Title" )
+end, function( menuPnl, itemPnl )
+	return vgui.Create( "catherine.vgui.inventory", menuPnl )
 end )

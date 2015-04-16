@@ -21,50 +21,58 @@ PLUGIN.name = "Spawnpoint"
 PLUGIN.author = "L7D"
 PLUGIN.desc = "Good stuff."
 
+catherine.util.Include( "sh_language.lua" )
 catherine.util.Include( "sv_plugin.lua" )
 
 catherine.command.Register( {
 	command = "spawnpointadd",
-	syntax = "[faction]",
-	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
+	syntax = "[Faction Name]",
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
-			local factionTable = catherine.faction.FindByID( args[ 1 ] )
+			local factionTable = catherine.faction.FindByName( args[ 1 ] )
+			
 			if ( factionTable ) then
 				local map = game.GetMap( )
 				local faction = factionTable.uniqueID
+				
 				PLUGIN.Lists[ map ] = PLUGIN.Lists[ map ] or { }
 				PLUGIN.Lists[ map ][ faction ] = PLUGIN.Lists[ map ][ faction ] or { }
 				PLUGIN.Lists[ map ][ faction ][ #PLUGIN.Lists[ map ][ faction ] + 1 ] = pl:GetPos( )
 				
 				PLUGIN:SavePoints( )
 				
-				catherine.util.Notify( pl, "You added spawn point for " .. factionTable.name .. " faction!" )
+				catherine.util.NotifyLang( pl, "Spawnpoint_Notify_Add", factionTable.name )
 			else
-				catherine.util.Notify( pl, "Faction is a not valid!" )
+				catherine.util.NotifyLang( pl, "Faction_Notify_NotValid" )
 			end
 		else
-			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )
 
 catherine.command.Register( {
 	command = "spawnpointremove",
-	syntax = "[rad]",
-	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
+	syntax = "[Range]",
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local rad = math.max( tonumber( args[ 1 ] or "" ) or 140, 8 )
 		local pos = pl:GetPos( )
+		local map = game.GetMap( )
 		local i = 0
 
-		for k, v in pairs( PLUGIN.Lists[ game.GetMap( ) ] ) do
+		for k, v in pairs( PLUGIN.Lists[ map ] ) do
 			if ( v:Distance( pos ) <= rad ) then
 				i = i + 1
-				table.remove( PLUGIN.Lists[ game.GetMap( ) ], k )
+				table.remove( PLUGIN.Lists[ map ], k )
 			end
 		end
 		
-		catherine.util.Notify( pl, "You removed " .. i .. "'s spawn points!" )
+		if ( i != 0 ) then
+			catherine.util.NotifyLang( pl, "Spawnpoint_Notify_Remove", i )
+		else
+			catherine.util.NotifyLang( pl, "Spawnpoint_Notify_Remove_No" )
+		end
 	end
 } )

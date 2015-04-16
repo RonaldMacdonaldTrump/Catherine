@@ -40,7 +40,7 @@ function PANEL:Init( )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
-	self.Lists.Paint = function( pnl, w, h ) end
+	self.Lists:SetDrawBackground( false )
 	
 	self.descEnt = vgui.Create( "DTextEntry", self )
 	self.descEnt:SetPos( 90, 45 )
@@ -89,9 +89,9 @@ function PANEL:AddRPInformation( text )
 end
 
 function PANEL:Paint( w, h )
-	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 235 ) )
 		
-	surface.SetDrawColor( 200, 200, 200, 200 )
+	surface.SetDrawColor( 200, 200, 200, 235 )
 	surface.SetMaterial( Material( "gui/gradient_up" ) )
 	surface.DrawTexturedRect( 0, 0, w, h )
 	

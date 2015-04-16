@@ -37,11 +37,12 @@ else
 	function PLUGIN:PostPlayerDraw( pl )
 		if ( !pl:IsChatTyping( ) ) then return end
 		local text = "Typing ..."
-		
 		local a = catherine.util.GetAlphaFromDistance( LocalPlayer( ):GetPos( ), pl:GetPos( ), 312 )
+		
 		if ( math.Round( a ) <= 0 or !pl:Alive( ) or pl:GetMoveType( ) == MOVETYPE_NOCLIP ) then
 			return
 		end
+		
 		local ang = LocalPlayer( ):EyeAngles( )
 		local pos = pl:GetBonePosition( pl:LookupBone( "ValveBiped.Bip01_Head1" ) ) + Vector( 0, 0, 15 )
 		

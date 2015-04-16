@@ -40,8 +40,9 @@ end
 
 function PLUGIN:AddText( pl, text, size )
 	local tr = pl:GetEyeTraceNoCursor( )
+	local index = #self.textLists + 1
 	local data = {
-		index = #self.textLists + 1,
+		index = index,
 		pos = tr.HitPos + tr.HitNormal,
 		ang = tr.HitNormal:Angle( ),
 		text = text,
@@ -51,7 +52,7 @@ function PLUGIN:AddText( pl, text, size )
 	data.ang:RotateAroundAxis( data.ang:Up( ), 90 )
 	data.ang:RotateAroundAxis( data.ang:Forward( ), 90 )
 
-	self.textLists[ data.index ] = data
+	self.textLists[ index ] = data
 	
 	self:SyncTextAll( )
 	self:SaveTexts( )
@@ -60,6 +61,7 @@ end
 function PLUGIN:RemoveText( pos, range )
 	range = tonumber( range )
 	local count = 0
+	
 	for k, v in pairs( self.textLists ) do
 		if ( v.pos:Distance( pos ) <= range ) then
 			netstream.Start( nil, "catherine.plugin.goodtext.RemoveText", v.index )
@@ -74,7 +76,10 @@ function PLUGIN:RemoveText( pos, range )
 end
 
 function PLUGIN:SyncTextAll( pl )
-	if ( !pl ) then pl = nil end
+	if ( !pl ) then
+		pl = nil
+	end
+	
 	for k, v in pairs( self.textLists ) do
 		netstream.Start( pl, "catherine.plugin.goodtext.SyncText", { index = k, text = v.text, pos = v.pos, ang = v.ang, size = v.size } )
 	end

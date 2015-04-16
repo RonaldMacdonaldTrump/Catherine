@@ -57,15 +57,14 @@ function PANEL:BuildOption( )
 		form:SetSpacing( 0 )
 		form:SetAutoSize( true )
 		form.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-			draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
 		
 		for k1, v1 in pairs( v ) do
 			local item = vgui.Create( "catherine.vgui.optionItem" )
-			item:SetTall( 60 )
+			item:SetSize( self.Lists:GetWide( ), 60 )
 			item:SetOption( v1 )
 			form:AddItem( item )
 		end
@@ -108,6 +107,16 @@ function PANEL:Init( )
 		surface.PlaySound( "common/talk.wav" )
 		catherine.option.Toggle( self.optionTable.uniqueID )
 	end
+	
+	self.List = vgui.Create( "DButton", self )
+	self.List:SetSize( self:GetWide( ) * 0.3, 30 )
+	self.List:SetPos( self:GetWide( ) - self.List:GetWide( ) - 20, self:GetTall( ) / 2 - self.List:GetTall( ) / 2 )
+	self.List:SetVisible( false )
+	self.List:SetFont( "catherine_normal20" )
+	self.List:SetTextColor( Color( 50, 50, 50 ) )
+	self.List.Paint = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
+	end
 end
 
 function PANEL:Paint( w, h )
@@ -121,16 +130,36 @@ end
 function PANEL:PerformLayout( w, h )
 	self.Button:SetSize( 70, 30 )
 	self.Button:SetPos( w - self.Button:GetWide( ) - 20, h / 2 - self.Button:GetTall( ) / 2 )
+	self.List:SetSize( self:GetWide( ) * 0.3, 30 )
+	self.List:SetPos( self:GetWide( ) - self.List:GetWide( ) - 20, self:GetTall( ) / 2 - self.List:GetTall( ) / 2 )
 end
 
 function PANEL:SetOption( optionTable )
 	self.optionTable = optionTable
+
+	if ( optionTable.typ == CAT_OPTION_LIST ) then
+		self.Button:SetVisible( false )
+		self.List:SetVisible( true )
+
+		local data = optionTable.data( )
+		
+		self.List:SetText( data.curVal )
+
+		self.List.DoClick = function( )
+			local menu = DermaMenu( )
+			for k, v in pairs( data.data ) do
+				menu:AddOption( v.name, function( )
+					v.func( )
+					self.List:SetText( v.name )
+				end )
+			end
+			menu:Open( )
+		end
+	end
 end
 
 vgui.Register( "catherine.vgui.optionItem", PANEL, "DPanel" )
 
-hook.Add( "AddMenuItem", "catherine.vgui.option", function( tab )
-	tab[ "Setting" ] = function( menuPnl, itemPnl )
-		return vgui.Create( "catherine.vgui.option", menuPnl )
-	end
+catherine.menu.Register( "Setting", function( menuPnl, itemPnl )
+	return vgui.Create( "catherine.vgui.option", menuPnl )
 end )

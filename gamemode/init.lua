@@ -37,7 +37,6 @@ end
 
 schemaSettingsFix( )
 catherine.util.AddResourceInFolder( "materials/CAT" )
-catherine.util.AddResourceInFolder( "sound/CAT" )
 
 if ( game.IsDedicated( ) ) then
 	concommand.Remove( "gm_save" )

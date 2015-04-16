@@ -49,7 +49,7 @@ if ( SERVER ) then
 	end
 
 	function ENT:Use( pl )
-		netstream.Start( pl, "catherine.item.EntityUseMenu", { self, self:GetItemUniqueID( ) } )
+		netstream.Start( pl, "catherine.item.EntityUseMenu", { self:EntIndex( ), self:GetItemUniqueID( ) } )
 	end
 	
 	function ENT:Bomb( )
@@ -63,6 +63,7 @@ if ( SERVER ) then
 
 	function ENT:OnTakeDamage( dmg )
 		self:SetHealth( math.max( self:Health( ) - dmg:GetDamage( ), 0 ) )
+		
 		if ( self:Health( ) <= 0 ) then
 			self:Bomb( )
 			self:Remove( )
@@ -75,19 +76,26 @@ else
 		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		local itemTable = self:GetItemTable( )
-		if ( !itemTable ) then return end
-		local customDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, self:GetItemData( ) ) or nil
 		
-		draw.SimpleText( itemTable.name, "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( itemTable.desc, "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
-		if ( customDesc ) then
-			draw.SimpleText( customDesc, "catherine_outline15", x, y + 45, Color( 255, 255, 255, a ), 1, 1 )
+		if ( itemTable ) then
+			local customDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, self:GetItemData( ) ) or nil
+			
+			draw.SimpleText( itemTable.name, "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+			draw.SimpleText( itemTable.desc, "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
+			if ( customDesc ) then
+				draw.SimpleText( customDesc, "catherine_outline15", x, y + 45, Color( 255, 255, 255, a ), 1, 1 )
+			end
 		end
 	end
 end
 
 function ENT:GetItemTable( )
-	return catherine.item.FindByID( self:GetItemUniqueID( ) )
+	if ( !self.itemTable ) then
+		self.itemTable = catherine.item.FindByID( self:GetItemUniqueID( ) )
+		return self.itemTable
+	end
+	
+	return self.itemTable
 end
 
 function ENT:GetItemUniqueID( )
@@ -95,5 +103,10 @@ function ENT:GetItemUniqueID( )
 end
 
 function ENT:GetItemData( )
-	return self:GetNetVar( "itemData", { } )
+	if ( !self.itemData ) then
+		self.itemData = self:GetNetVar( "itemData", { } )
+		return self.itemData
+	end
+	
+	return self.itemData
 end

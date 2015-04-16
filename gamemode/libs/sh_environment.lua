@@ -37,7 +37,11 @@ catherine.environment.MonthBuffer = catherine.environment.MonthBuffer or {
 function catherine.environment.GetDateString( )
 	local d = catherine.environment.Buffer
 	local t = "AM"
-	if ( d.hour >= 12 ) then t = "PM" end
+	
+	if ( d.hour >= 12 ) then
+		t = "PM"
+	end
+	
 	return Format( "%s-%s-%s", d.year, d.month, d.day )
 end
 
@@ -48,21 +52,31 @@ end
 function catherine.environment.GetTimeString( )
 	local d = table.Copy( catherine.environment.Buffer )
 	local t = "AM"
-	if ( d.hour >= 12 ) then t = "PM" end
+	
+	if ( d.hour >= 12 ) then
+		t = "PM"
+	end
+	
 	if ( #tostring( d.minute ) == 1 ) then
 		d.minute = "0" .. d.minute
 	end
+	
 	return Format( "%s %s:%s", t, d.hour, d.minute )
 end
 
 if ( SERVER ) then
-	catherine.environment.NextTimeSync = catherine.environment.NextTimeSync or CurTime( ) + 60
+	catherine.environment.SyncTick = catherine.environment.SyncTick or CurTime( ) + 60
 	catherine.environment.TemperatureTick = catherine.environment.TemperatureTick or CurTime( )
 	catherine.environment.currentLightFlag = catherine.environment.currentLightFlag or nil
 
 	function catherine.environment.Work( )
 		if ( catherine.environment.TimeTick <= CurTime( ) ) then
 			local d = catherine.environment.Buffer
+			if ( !d.second ) then
+				//catherine.util.ErrorPrint( "catherine.environment.Work has error!" )
+				return
+			end
+			
 			d.second = d.second + 1
 			
 			if ( d.second >= 60 ) then
@@ -103,9 +117,9 @@ if ( SERVER ) then
 			catherine.environment.TemperatureTick = CurTime( ) + nextTick
 		end
 		
-		if ( catherine.environment.NextTimeSync <= CurTime( ) ) then
+		if ( catherine.environment.SyncTick <= CurTime( ) ) then
 			catherine.environment.SyncToAll( )
-			catherine.environment.NextTimeSync = CurTime( ) + 60
+			catherine.environment.SyncTick = CurTime( ) + 60
 		end
 	end
 
@@ -356,12 +370,9 @@ if ( SERVER ) then
 		return temp
 	end
 
-	function catherine.environment.SyncToPlayer( pl, func )
+	function catherine.environment.SyncToPlayer( pl )
 		if ( !IsValid( pl ) ) then return end
 		netstream.Start( pl, "catherine.environment.Sync", catherine.environment.Buffer )
-		if ( func ) then
-			func( )
-		end
 	end
 	
 	function catherine.environment.SendTemperatureToAll( )
@@ -377,9 +388,9 @@ if ( SERVER ) then
 	end
 	
 	function catherine.environment.DataLoad( )
-		local data = catherine.data.Get( "environment", catherine.configs.defaultRPInformation )
+		local data = catherine.data.Get( "environment", { } )
 
-		if ( table.Count( data ) == 0 ) then
+		if ( table.Count( data ) != 7 ) then
 			catherine.environment.Buffer = catherine.configs.defaultRPInformation
 		else
 			catherine.environment.Buffer = data
@@ -405,9 +416,14 @@ else
 	end )
 
 	function catherine.environment.WorkClient( )
-		if ( table.Count( catherine.environment.Buffer ) == 0 ) then return end
+		if ( table.Count( catherine.environment.Buffer ) != 7 ) then return end
 		if ( catherine.environment.TimeTick <= CurTime( ) ) then
 			local d = catherine.environment.Buffer
+			if ( !d.second ) then
+				catherine.util.ErrorPrint( "catherine.environment.Work has error!" )
+				return
+			end
+			
 			d.second = d.second + 1
 			
 			if ( d.second >= 60 ) then

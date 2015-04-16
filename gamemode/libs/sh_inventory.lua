@@ -26,65 +26,67 @@ if ( SERVER ) then
 	
 	function catherine.inventory.Work( pl, workID, data )
 		if ( !IsValid( pl ) or !workID or !data ) then return end
-		local workInv = catherine.character.SetGlobalVar
-		
+
 		if ( workID == CAT_INV_ACTION_ADD ) then
-			local inventory, itemTable, itemCount = catherine.inventory.Get( pl ), catherine.item.FindByID( data.uniqueID ), math.max( data.itemCount or 1, 1 ) or 1
-			local invData = inventory[ itemTable.uniqueID ]
+			local inventory = catherine.inventory.Get( pl )
+			local uniqueID = data.uniqueID
+			local itemCount = math.max( data.itemCount or 1, 1 ) or 1
+			local invData = inventory[ uniqueID ]
 			
 			if ( invData ) then
-				inventory[ itemTable.uniqueID ] = {
-					uniqueID = invData.uniqueID,
+				inventory[ uniqueID ] = {
+					uniqueID = uniqueID,
 					itemCount = invData.itemCount + itemCount,
 					itemData = invData.itemData
 				}
 			else
-				inventory[ itemTable.uniqueID ] = {
-					uniqueID = itemTable.uniqueID,
+				local itemTable = catherine.item.FindByID( uniqueID )
+				
+				inventory[ uniqueID ] = {
+					uniqueID = uniqueID,
 					itemCount = itemCount,
-					itemData = itemTable.itemData
+					itemData = itemTable.itemData or { }
 				}
 			end
 
-			catherine.character.SetGlobalVar( pl, "_inv", inventory )
+			catherine.character.SetVar( pl, "_inv", inventory )
 		elseif ( workID == CAT_INV_ACTION_REMOVE ) then
-			local invData = catherine.inventory.GetInvItem( pl, data.uniqueID )
-			if ( !invData ) then return end
-			
 			local inventory = catherine.inventory.Get( pl )
+			local uniqueID = data.uniqueID
+			local invData = inventory[ uniqueID ]
 			local itemCount = math.max( invData.itemCount - ( data.count or 1 ), 0 )
-			
-			if ( itemCount != 0 ) then
-				inventory[ data.uniqueID ] = {
-					uniqueID = invData.uniqueID,
+
+			if ( itemCount <= 0 ) then
+				inventory[ uniqueID ] = nil
+			else
+				inventory[ uniqueID ] = {
+					uniqueID = uniqueID,
 					itemCount = itemCount,
 					itemData = invData.itemData
 				}
-			else
-				inventory[ data.uniqueID ] = nil
 			end
 			
-			catherine.character.SetGlobalVar( pl, "_inv", inventory )
+			catherine.character.SetVar( pl, "_inv", inventory )
 		elseif ( workID == CAT_INV_ACTION_UPDATE ) then
-			local invData = catherine.inventory.GetInvItem( pl, data.uniqueID )
-			if ( !invData ) then return end
-			
 			local inventory = catherine.inventory.Get( pl )
+			local uniqueID = data.uniqueID
+			local invData = inventory[ uniqueID ]
 			
-			inventory[ data.uniqueID ] = {
-				uniqueID = invData.uniqueID,
+			inventory[ uniqueID ] = {
+				uniqueID = uniqueID,
 				itemCount = invData.itemCount,
 				itemData = data.newData
 			}
 			
-			catherine.character.SetGlobalVar( pl, "_inv", inventory )
-		else
-			catherine.util.ErrorPrint( "Bad function id! - catherine.inventory.Work( )" )
+			catherine.character.SetVar( pl, "_inv", inventory )
 		end
 	end
 	
+	function catherine.inventory.Get( pl )
+		return table.Copy( catherine.character.GetVar( pl, "_inv", { } ) )
+	end
+	
 	function catherine.inventory.GetInvItem( pl, uniqueID )
-		if ( !IsValid( pl ) or !uniqueID ) then return false end
 		return catherine.inventory.Get( pl )[ uniqueID ]
 	end
 
@@ -93,24 +95,19 @@ if ( SERVER ) then
 	end
 
 	function catherine.inventory.HasItem( pl, uniqueID )
-		if ( !IsValid( pl ) or !uniqueID ) then return false end
 		return catherine.inventory.Get( pl )[ uniqueID ] or false
-	end
-	
-	function catherine.inventory.Get( pl )
-		return table.Copy( catherine.character.GetGlobalVar( pl, "_inv", { } ) )
 	end
 
 	function catherine.inventory.GetItemInt( pl, uniqueID )
-		if ( !IsValid( pl ) or !uniqueID ) then return 0 end
 		local inventory = catherine.inventory.Get( pl )
-		if ( !inventory[ uniqueID ] ) then return 0 end
-		return inventory[ uniqueID ].itemCount or 0
+
+		return inventory[ uniqueID ] and inventory[ uniqueID ].itemCount or 0
 	end
 	
 	function catherine.inventory.GetWeights( pl, customAdd )
 		local inventory = catherine.inventory.Get( pl )
-		local invWeight, invMaxWeight = 0, catherine.configs.baseInventoryWeight
+		local invWeight = 0
+		local invMaxWeight = catherine.configs.baseInventoryWeight
 		
 		for k, v in pairs( inventory ) do
 			local itemTable = catherine.item.FindByID( k )
@@ -119,7 +116,8 @@ if ( SERVER ) then
 			if ( itemTable.isBag ) then
 				invMaxWeight = invMaxWeight + ( v.itemCount * ( itemTable.weightPlus or 0 ) )
 			end
-			invWeight = invWeight + ( v.itemCount * ( itemTable.weight or 0 ) )
+			
+			invWeight = invWeight + ( v.itemCount * ( itemTable.weight ) )
 		end
 		
 		return invWeight + ( customAdd or 0 ), invMaxWeight
@@ -127,27 +125,26 @@ if ( SERVER ) then
 	
 	function catherine.inventory.HasSpace( pl, customAdd )
 		local invWeight, invMaxWeight = catherine.inventory.GetWeights( pl, customAdd )
+		
 		return invWeight < invMaxWeight
 	end
 	
 	function catherine.inventory.GetItemData( pl, uniqueID, key, default )
-		if ( !IsValid( pl ) or !uniqueID or !key ) then return default end
 		local inventory = catherine.inventory.Get( pl )
-		if ( !inventory[ uniqueID ] or !inventory[ uniqueID ].itemData ) then return default end
-		return inventory[ uniqueID ].itemData[ key ]
+
+		return inventory[ uniqueID ] and inventory[ uniqueID ].itemData[ key ] or default
 	end
 	
 	function catherine.inventory.GetItemDatas( pl, uniqueID )
-		if ( !IsValid( pl ) or !uniqueID ) then return { } end
 		local inventory = catherine.inventory.Get( pl )
-		if ( !inventory[ uniqueID ] ) then return { } end
-		return inventory[ uniqueID ].itemData or { }
+		
+		return inventory[ uniqueID ] and inventory[ uniqueID ].itemData or { }
 	end
 	
 	function catherine.inventory.SetItemData( pl, uniqueID, key, newData )
-		if ( !IsValid( pl ) or !uniqueID or !key or newData == nil ) then return end
 		local itemData = catherine.inventory.GetItemDatas( pl, uniqueID )
 		itemData[ key ] = newData
+		
 		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
 			uniqueID = uniqueID,
 			newData = itemData
@@ -155,7 +152,6 @@ if ( SERVER ) then
 	end
 	
 	function catherine.inventory.SetItemDatas( pl, uniqueID, newData )
-		if ( !IsValid( pl ) or !uniqueID or newData == nil ) then return end
 		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
 			uniqueID = uniqueID,
 			newData = newData
@@ -185,35 +181,37 @@ if ( SERVER ) then
 	function META:SetInvItemDatas( uniqueID, newData )
 		catherine.inventory.SetItemDatas( self, uniqueID, newData )
 	end
-
-	hook.Add( "InitializeNetworking", "catherine.inventory.hooks.InitializeNetworking_0", function( pl, charVars )
+	
+	function catherine.inventory.CreateNetworkRegistry( pl, charVars )
 		if ( !charVars._inv ) then return end
-		local inventory, changed = charVars._inv, false
+		local inventory = charVars._inv
+		local changed = false
+		
 		for k, v in pairs( inventory ) do
 			if ( catherine.item.FindByID( k ) ) then continue end
 			inventory[ k ] = nil
 			changed = true
 		end
+		
 		if ( changed ) then
-			catherine.character.SetGlobalVar( pl, "_inv", inventory )
+			catherine.character.SetVar( pl, "_inv", inventory )
 		end
-	end )
+	end
+
+	hook.Add( "CreateNetworkRegistry", "catherine.inventory.CreateNetworkRegistry", catherine.inventory.CreateNetworkRegistry )
 else
 	function catherine.inventory.Get( )
-		return table.Copy( catherine.character.GetGlobalVar( LocalPlayer( ), "_inv", { } ) )
+		return table.Copy( catherine.character.GetVar( LocalPlayer( ), "_inv", { } ) )
 	end
 
 	function catherine.inventory.GetItemInt( uniqueID )
-		if ( !uniqueID ) then return 0 end
 		local inventory = catherine.inventory.Get( )
-		if ( !inventory[ uniqueID ] ) then return 0 end
-		return inventory[ uniqueID ].itemCount or 0
+
+		return inventory[ uniqueID ] and inventory[ uniqueID ].itemCount or 0
 	end
 	
 	function catherine.inventory.HasItem( uniqueID )
-		if ( !uniqueID ) then return false end
-		local inventory = catherine.inventory.Get( )
-		return inventory[ uniqueID ]
+		return catherine.inventory.Get( )[ uniqueID ]
 	end
 	
 	function catherine.inventory.IsEquipped( uniqueID )
@@ -222,7 +220,8 @@ else
 
 	function catherine.inventory.GetWeights( customAdd )
 		local inventory = catherine.inventory.Get( )
-		local invWeight, invMaxWeight = 0, catherine.configs.baseInventoryWeight
+		local invWeight = 0
+		local invMaxWeight = catherine.configs.baseInventoryWeight
 		
 		for k, v in pairs( inventory ) do
 			local itemTable = catherine.item.FindByID( k )
@@ -231,28 +230,28 @@ else
 			if ( itemTable.isBag ) then
 				invMaxWeight = invMaxWeight + ( v.itemCount * ( itemTable.weightPlus or 0 ) )
 			end
-			invWeight = invWeight + ( v.itemCount * ( itemTable.weight or 0 ) )
+			
+			invWeight = invWeight + ( v.itemCount * ( itemTable.weight ) )
 		end
 		
 		return invWeight + ( customAdd or 0 ), invMaxWeight
 	end
 
 	function catherine.inventory.GetItemData( uniqueID, key, default )
-		if ( !uniqueID or !key ) then return default end
 		local inventory = catherine.inventory.Get( )
-		if ( !inventory[ uniqueID ] or !inventory[ uniqueID ].itemData ) then return default end
-		return inventory[ uniqueID ].itemData[ key ]
+
+		return inventory[ uniqueID ] and inventory[ uniqueID ].itemData[ key ] or default
 	end
 	
 	function catherine.inventory.GetItemDatas( uniqueID )
-		if ( !uniqueID ) then return { } end
 		local inventory = catherine.inventory.Get( )
-		if ( !inventory[ uniqueID ] ) then return { } end
-		return inventory[ uniqueID ].itemData or { }
+
+		return inventory[ uniqueID ] and inventory[ uniqueID ].itemData or { }
 	end
 
 	function catherine.inventory.HasSpace( customAdd )
 		local invWeight, invMaxWeight = catherine.inventory.GetWeights( customAdd )
+		
 		return invWeight < invMaxWeight
 	end
 	
@@ -271,9 +270,12 @@ else
 	function META:GetInvItemDatas( uniqueID )
 		return catherine.inventory.GetItemDatas( uniqueID )
 	end
-
-	hook.Add( "NetworkGlobalVarChanged", "catherine.inventory.hooks.NetworkGlobalVarChanged_0", function( )
-		if ( !IsValid( catherine.vgui.inventory ) ) then return end
-		catherine.vgui.inventory:InitializeInventory( )
-	end )
+	
+	function catherine.inventory.CharacterVarChanged( )
+		if ( IsValid( catherine.vgui.inventory ) ) then
+			catherine.vgui.inventory:BuildInventory( )
+		end
+	end
+	
+	hook.Add( "CharacterVarChanged", "catherine.inventory.CharacterVarChanged", catherine.inventory.CharacterVarChanged )
 end

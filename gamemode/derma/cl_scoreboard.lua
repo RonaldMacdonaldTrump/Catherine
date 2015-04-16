@@ -25,7 +25,7 @@ function PANEL:Init( )
 	self.playerCount = #player.GetAll( )
 	
 	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
-	self:SetMenuName( "Player List" )
+	self:SetMenuName( LANG( "Scoreboard_UI_Title" ) )
 	
 	self.Lists = vgui.Create( "DPanelList", self )
 	self.Lists:SetPos( 10, 60 )
@@ -34,7 +34,7 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
 	self.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
 
 	self:SortPlayerLists( )
@@ -73,26 +73,25 @@ function PANEL:RefreshPlayerLists( )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( k )
 		form.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-			draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
 
-		local dpanelList = vgui.Create( "DPanelList", form )
-		dpanelList:SetSize( form:GetWide( ), form:GetTall( ) )
-		dpanelList:SetSpacing( 3 )
-		dpanelList:EnableHorizontal( true )
-		dpanelList:EnableVerticalScrollbar( false )	
+		local lists = vgui.Create( "DPanelList", form )
+		lists:SetSize( form:GetWide( ), form:GetTall( ) )
+		lists:SetSpacing( 3 )
+		lists:EnableHorizontal( true )
+		lists:EnableVerticalScrollbar( false )	
 		
-		form:AddItem( dpanelList )
+		form:AddItem( lists )
 		
 		for k1, v1 in pairs( v ) do
 			local know = self.player:IsKnow( v1 )
 			if ( self.player == v1 ) then know = true end
 			
 			local panel = vgui.Create( "DPanel" )
-			panel:SetSize( dpanelList:GetWide( ), 50 )
+			panel:SetSize( lists:GetWide( ), 50 )
 			panel.Paint = function( pnl, w, h )
 				if ( !IsValid( v1 ) ) then
 					self:RefreshPanel( )
@@ -105,18 +104,19 @@ function PANEL:RefreshPlayerLists( )
 					surface.SetDrawColor( 255, 255, 255, 255 )
 					surface.SetMaterial( Material( "icon16/award_star_gold_1.png" ) )
 					surface.DrawTexturedRect( w - 60, h / 2 - 16 / 2, 16, 16 )
-					draw.SimpleText( "Framework Author", "catherine_normal15", w - 70, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					
+					draw.SimpleText( LANG( "Scoreboard_UI_Author" ), "catherine_normal15", w - 70, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 				end
 				
 				draw.SimpleText( v1:Name( ), "catherine_normal20", 100, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-				draw.SimpleText( ( know == true and v1:Desc( ) or "You don't know this guy." ), "catherine_normal15", 100, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.SimpleText( ( know == true and v1:Desc( ) or LANG( "Scoreboard_UI_UnknownDesc" ) ), "catherine_normal15", 100, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 			end
 			
 			local avatar = vgui.Create( "AvatarImage", panel )
 			avatar:SetPos( 5, 5 )
 			avatar:SetSize( 40, 40 )
 			avatar:SetPlayer( v1, 64 )
-			avatar:SetToolTip( "This player Name is " .. v1:SteamName( ) .. "\nThis player Steam ID is " .. v1:SteamID( ) .. "\nThis player Ping is " .. v1:Ping( ) )
+			avatar:SetToolTip( LANG( "Scoreboard_UI_PlayerDetailStr", v1:SteamName( ), v1:SteamID( ), v1:Ping( ) ) )
 			
 			local spawnIcon = vgui.Create( "SpawnIcon", panel )
 			spawnIcon:SetPos( 50, 5 )
@@ -125,21 +125,21 @@ function PANEL:RefreshPlayerLists( )
 			spawnIcon:SetToolTip( false )
 			spawnIcon.PaintOver = function( pnl, w, h ) end
 			
-			dpanelList:AddItem( panel )
+			lists:AddItem( panel )
 			hF = hF + 51
 		end
 		
 		hF = hF + 10
 		form:SetSize( self.Lists:GetWide( ), hF )
-		dpanelList:SetSize( form:GetWide( ), form:GetTall( ) )
+		lists:SetSize( form:GetWide( ), form:GetTall( ) )
 		self.Lists:AddItem( form )
 	end
 end
 
 vgui.Register( "catherine.vgui.scoreboard", PANEL, "catherine.vgui.menuBase" )
 
-hook.Add( "AddMenuItem", "catherine.vgui.scoreboard", function( tab )
-	tab[ "Player List" ] = function( menuPnl, itemPnl )
-		return vgui.Create( "catherine.vgui.scoreboard", menuPnl )
-	end
+catherine.menu.Register( function( )
+	return LANG( "Scoreboard_UI_Title" )
+end, function( menuPnl, itemPnl )
+	return vgui.Create( "catherine.vgui.scoreboard", menuPnl )
 end )

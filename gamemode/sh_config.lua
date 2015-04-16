@@ -19,6 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.configs = catherine.configs or { }
 
 catherine.configs.OWNER = "" 
+catherine.configs.defaultLanguage = "english"
 
 catherine.configs.doorCost = 50
 catherine.configs.doorSellCost = 25
@@ -43,6 +44,7 @@ catherine.configs.alwaysRaised = {
 	weapon_physgun = true,
 	gmod_tool = true
 }
+catherine.configs.frameworkLogo = "CAT/logos/2.png"
 
 if ( SERVER ) then
 	catherine.configs.defaultRPInformation = {
@@ -52,7 +54,7 @@ if ( SERVER ) then
 		hour = 1,
 		month = 1,
 		second = 1,
-		temperature = 20
+		temperature = 25
 	}
 	catherine.configs.hintInterval = 30
 	catherine.configs.voiceAllow = false

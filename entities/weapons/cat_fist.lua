@@ -49,10 +49,7 @@ SWEP.UseHands = false
 function SWEP:Precache( )
 	util.PrecacheSound( "npc/vort/claw_swing1.wav" )
 	util.PrecacheSound( "npc/vort/claw_swing2.wav" )
-	util.PrecacheSound( "physics/plastic/plastic_box_impact_hard1.wav" )	
-	util.PrecacheSound( "physics/plastic/plastic_box_impact_hard2.wav" )	
-	util.PrecacheSound( "physics/plastic/plastic_box_impact_hard3.wav" )	
-	util.PrecacheSound( "physics/plastic/plastic_box_impact_hard4.wav" )	
+	util.PrecacheSound( "physics/wood/wood_crate_impact_hard2.wav" )
 end
 
 function SWEP:PreDrawViewModel( viewMdl, wep, pl )
@@ -67,58 +64,59 @@ end
 function SWEP:PrimaryAttack( )
 	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
-	local stamina = math.Clamp( catherine.character.GetCharacterVar( pl, "stamina", 100 ) - 10, 0, 100 )
+	local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
 	if ( !pl:GetWeaponRaised( ) or stamina < 10 ) then
 		return
 	end
-	catherine.character.SetCharacterVar( pl, "stamina", stamina )
+	
+	local tr = { }
+	tr.start = pl:GetShootPos( )
+	tr.endpos = tr.start + pl:GetAimVector( ) * self.HitDistance
+	tr.filter = pl
+		
+	local ent = util.TraceLine( tr ).Entity
+	
+	catherine.character.SetCharVar( pl, "stamina", stamina - 5 )
 	
 	pl:SetAnimation( PLAYER_ATTACK1 )
 	
-	local viewModel = pl:GetViewModel( )
-	viewModel:SendViewModelMatchingSequence( viewModel:LookupSequence( "fists_idle_0" .. math.random( 1, 2 ) ) )
+	local viewMdl = pl:GetViewModel( )
+	viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( "fists_idle_0" .. math.random( 1, 2 ) ) )
 	
 	timer.Simple( 0.1, function( )
-		viewModel:SendViewModelMatchingSequence( viewModel:LookupSequence( table.Random( { "fists_left", "fists_right" } ) ) )
+		viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( table.Random( { "fists_left", "fists_right" } ) ) )
 	end )
-	
-	self:EmitSound( "npc/vort/claw_swing" .. math.random( 1, 2 ) .. ".wav" )
-	pl:SendLua( "surface.PlaySound(\"npc/vort/claw_swing" .. math.random( 1, 2 ) .. ".wav\")" )
-	
+
+	pl:EmitSound( "npc/vort/claw_swing" .. math.random( 1, 2 ) .. ".wav" )
 	pl:LagCompensation( true )
-	local tr = util.TraceLine( {
-		start = pl:GetShootPos( ),
-		endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * self.HitDistance,
-		filter = pl
-	} )
-	
-	if ( tr.Hit ) then
-		self:EmitSound( "Flesh.ImpactHard" )
-		pl:SendLua( "surface.PlaySound( \"Flesh.ImpactHard\" )" )
-		if ( tr.Entity:IsPlayer( ) ) then
-			local damageInfo = DamageInfo( )
-			damageInfo:SetAttacker( pl )
-			damageInfo:SetInflictor( self )
-			damageInfo:SetDamage( math.random( 8, 12 ) )
-			tr.Entity:TakeDamageInfo( damageInfo )
+
+	if ( IsValid( ent ) ) then
+		pl:EmitSound( "Flesh.ImpactHard" )
+
+		if ( ent:IsPlayer( ) ) then
+			local dmgInfo = DamageInfo( )
+			dmgInfo:SetAttacker( pl )
+			dmgInfo:SetInflictor( self )
+			dmgInfo:SetDamage( math.random( 8, 12 ) )
+			ent:TakeDamageInfo( dmgInfo )
 		end
 	end
-	pl:LagCompensation( false )
 	
+	pl:LagCompensation( false )
 	self:SetNextPrimaryFire( CurTime( ) + self.Primary.Delay )
 end
 
 function SWEP:SecondaryAttack( )
 	if ( !IsFirstTimePredicted( ) ) then return end
 	local pl = self.Owner
-	local tr = util.TraceLine( {
+	local ent = util.TraceLine( {
 		start = pl:GetShootPos( ),
 		endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * self.HitDistance,
 		filter = pl
-	} )
+	} ).Entity
 	
-	if ( tr.Hit and tr.Entity:IsDoor( ) ) then
-		self:EmitSound( "physics/wood/wood_crate_impact_hard2.wav" )
+	if ( catherine.entity.IsDoor( ent ) ) then
+		self:EmitSound( "physics/wood/wood_crate_impact_hard2.wav", math.random( 50, 100 ) )
 	end
 	
 	self:SetNextSecondaryFire( CurTime( ) + self.Secondary.Delay )
@@ -127,11 +125,11 @@ end
 function SWEP:Deploy( )
 	if ( !IsValid( self.Owner ) ) then return end
 
-	local viewModel = self.Owner:GetViewModel()
-	viewModel:SendViewModelMatchingSequence( viewModel:LookupSequence( "fists_draw" ) )
+	local viewMdl = self.Owner:GetViewModel()
+	viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( "fists_draw" ) )
 	
-	timer.Simple( viewModel:SequenceDuration( ), function( ) 
-		viewModel:SendViewModelMatchingSequence( viewModel:LookupSequence( "fists_idle_0" .. math.random( 1, 2 ) ) )
+	timer.Simple( viewMdl:SequenceDuration( ), function( ) 
+		viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( "fists_idle_0" .. math.random( 1, 2 ) ) )
 	end )
 	
 	return true
@@ -139,5 +137,4 @@ end
 
 function SWEP:Initialize( )
 	self:SetHoldType( self.HoldType )
-	self.LastHand = 0
 end

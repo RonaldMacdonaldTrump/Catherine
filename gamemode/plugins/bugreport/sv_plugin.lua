@@ -51,7 +51,6 @@ function PLUGIN:FetchUserKey( )
 		},
 		function( data )
 			self.datas.UserKey = data
-			catherine.util.Print( Color( 0, 255, 0 ), "[Bug Report] Finished fetch user key!" )
 		end,
 		function( err )
 			catherine.util.Print( Color( 255, 0, 0 ), "[Bug Report] Can't fetch user key! - " .. err )
@@ -60,11 +59,15 @@ function PLUGIN:FetchUserKey( )
 end
 
 function PLUGIN:SendBugReport( pl, title, value )
-	if ( !IsValid( pl ) ) then return end
 	local function createCode( )
 		return Format( self.datas.Formats, pl:SteamName( ), pl:SteamID( ), pl:SteamID64( ), GetConVarString( "hostname" ), title, value )
 	end
-	if ( self.datas.UserKey == "" ) then netstream.Start( pl, "catherine.plugin.bugreport.SendResult", "[SERVER ERROR] Missing user account key." ) self:FetchUserKey( ) return end
+	
+	if ( self.datas.UserKey == "" ) then
+		netstream.Start( pl, "catherine.plugin.bugreport.SendResult", "[SERVER ERROR] Missing user account key." )
+		self:FetchUserKey( )
+		return
+	end
 	
 	http.Post( catherine.encrypt.Decode( self.datas.CreateURL ),
 		{
@@ -96,6 +99,7 @@ end
 function PLUGIN:PlayerAuthed( pl )
 	if ( self.IsLoaded ) then return end
 	if ( self.datas.UserKey != "" ) then return end
+	
 	self:FetchUserKey( )
 	self.IsLoaded = true
 end

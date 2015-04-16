@@ -117,7 +117,7 @@ function PLUGIN:SetVendorData( ent, id, data, noSync )
 	if ( !noSync ) then
 		local target = self:GetVendorWorkingPlayers( )
 		if ( #target != 0 ) then
-			netstream.Start( target, "catherine.plugin.vendor.RefreshRequest", ent )
+			netstream.Start( target, "catherine.plugin.vendor.RefreshRequest", ent:EntIndex( ) )
 		end
 	end
 end
@@ -135,12 +135,12 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		local itemTable = catherine.item.FindByID( uniqueID )
 
 		if ( !itemTable ) then
-			catherine.util.Notify( pl, "Item is not valid!" )
+			catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
 			return
 		end
 
 		if ( !catherine.inventory.HasItem( pl, uniqueID ) ) then
-			catherine.util.Notify( pl, "You don't have this item!" )
+			catherine.util.NotifyLang( pl, "Inventory_Notify_DontHave" )
 			return
 		end
 		
@@ -157,14 +157,14 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		local vendorInv = table.Copy( self:GetVendorData( ent, "inv", { } ) )
 		
 		if ( !vendorInv[ uniqueID ] ) then
-			catherine.util.Notify( pl, "This vendor has not stock for this item!" )
+			catherine.util.NotifyLang( pl, "Vendor_Notify_NoHasStock" )
 			return
 		end
 		
 		local itemCost = math.Round( ( vendorInv[ uniqueID ].cost * count ) / self.VENDOR_SOLD_DISCOUNTPER )
 		
 		if ( vendorCash < itemCost ) then
-			catherine.util.Notify( pl, "This vendor has not enough cash!" )
+			catherine.util.NotifyLang( pl, "Vendor_Notify_VendorNoHasCash", catherine.cash.GetOnlyName( ) )
 			return
 		end
 
@@ -181,14 +181,14 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		self:SetVendorData( ent, "cash", vendorCash - itemCost )
 		
 		hook.Run( "ItemVendorSolded", pl, itemTable )
-		catherine.util.Notify( pl, "You are sold '" .. itemTable.name .. "' at '" .. catherine.cash.GetName( itemCost ) .. "' from this vendor!" )
+		catherine.util.NotifyLang( pl, "Vendor_Notify_Sell", itemTable.name, catherine.cash.GetName( itemCost ) )
 	elseif ( workID == CAT_VENDOR_ACTION_SELL ) then
 		local uniqueID = data.uniqueID
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local count = math.max( data.count or 1, 1 )
 		
 		if ( !itemTable ) then
-			catherine.util.Notify( pl, "Item is not valid!" )
+			catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
 			return
 		end
 		
@@ -196,8 +196,8 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		local vendorCash = self:GetVendorData( ent, "cash", 0 )
 		local vendorInv = table.Copy( self:GetVendorData( ent, "inv", { } ) )
 
-		if ( !vendorInv[ uniqueID ] ) then
-			catherine.util.Notify( pl, "This vendor has not stock for this item!" )
+		if ( !vendorInv[ uniqueID ] or vendorInv[ uniqueID ].stock <= 0 ) then
+			catherine.util.NotifyLang( pl, "Vendor_Notify_NoHasStock" )
 			return
 		end
 		
@@ -208,7 +208,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		local itemCost = vendorInv[ uniqueID ].cost * count
 		
 		if ( itemCost > playerCash ) then
-			catherine.util.Notify( pl, "You don't have enough cash!" )
+			catherine.util.NotifyLang( pl, "Cash_Notify_HasNot", catherine.cash.GetOnlyName( ) )
 			return 
 		end
 
@@ -230,16 +230,16 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		self:SetVendorData( ent, "inv", vendorInv )
 		self:SetVendorData( ent, "cash", vendorCash + itemCost )
 		
-		catherine.util.Notify( pl, "You are brought '" .. itemTable.name .. "' at '" .. catherine.cash.GetName( itemCost ) .. "' from this vendor!" )
+		catherine.util.NotifyLang( pl, "Vendor_Notify_Buy", itemTable.name, catherine.cash.GetName( itemCost ) )
 	elseif ( workID == CAT_VENDOR_ACTION_SETTING_CHANGE ) then
 		if ( !pl:IsAdmin( ) ) then
-			catherine.util.Notify( pl, "You don't have permission!" )
+			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 			return
 		end
 		
 	elseif ( workID == CAT_VENDOR_ACTION_ITEM_CHANGE ) then
 		if ( !pl:IsAdmin( ) ) then
-			catherine.util.Notify( pl, "You don't have permission!" )
+			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 			return
 		end
 		
@@ -250,7 +250,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		local itemTable = catherine.item.FindByID( uniqueID )
 
 		if ( !itemTable ) then
-			catherine.util.Notify( pl, "Item is not valid!" )
+			catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
 			return
 		end
 
@@ -271,7 +271,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		local itemTable = catherine.item.FindByID( uniqueID )
 
 		if ( !itemTable ) then
-			catherine.util.Notify( pl, "Item is not valid!" )
+			catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
 			return
 		end
 		
@@ -290,12 +290,14 @@ function PLUGIN:CanUseVendor( pl, ent )
 	
 	local factionData = ent.vendorData.factions
 	if ( #factionData != 0 and !table.HasValue( factionData, pl:Team( ) ) ) then
-		return false, "faction"
+		//return false, "faction"
+		return false
 	end
 	
 	local classData = ent.vendorData.classes
 	if ( #classData != 0 and !table.HasValue( classData, pl:Class( ) ) ) then
-		return false, "class"
+		//return false, "class"
+		return false
 	end
 
 	return true

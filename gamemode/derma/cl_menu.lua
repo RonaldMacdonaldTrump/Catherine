@@ -45,13 +45,14 @@ function PANEL:Init( )
 	self.ListsBase:SetSize( self.w, 50 )
 	self.ListsBase:SetPos( 0, self.h )
 	self.ListsBase:MoveTo( 0, self.h - self.ListsBase:GetTall( ), 0.2, 0.1, nil, function( )
-		hook.Run( "AddMenuItem", self.menuItems )
-		
 		local delta = 0
-		for k, v in pairs( self.menuItems ) do
-			local itemPnl = self:AddMenuItem( k, v )
-			itemPnl:SetAlpha( 0 )
-			itemPnl:AlphaTo( 255, 0.2, delta )
+		
+		for k, v in pairs( catherine.menu.GetAll( ) ) do
+			if ( v.canLook and v.canLook( self.player ) == false ) then continue end
+			
+			local menuButton = self:AddMenuItem( type( v.name ) == "function" and v.name( self.player ) or v.name, v.func )
+			menuButton:SetAlpha( 0 )
+			menuButton:AlphaTo( 255, 0.2, delta )
 			delta = delta + 0.05
 		end
 	end )
@@ -64,12 +65,14 @@ function PANEL:Init( )
 end
 
 function PANEL:AddMenuItem( name, func )
-	local textW = surface.GetTextSize( name )
+	surface.SetFont( "catherine_normal20" )
+	local tw = surface.GetTextSize( name )
+	
 	local item = vgui.Create( "DButton" )
 	item:SetText( name )
 	item:SetFont( "catherine_normal20" )
 	item:SetTextColor( Color( 50, 50, 50 ) )
-	item:SetSize( textW + 50, self.ListsBase:GetTall( ) )
+	item:SetSize( tw + 30, self.ListsBase:GetTall( ) )
 	item.Paint = function( pnl, w, h )
 		if ( self.lastmenuName == name ) then
 			draw.RoundedBox( 0, 0, 0, w, 10, Color( 50, 50, 50, 255 ) )
@@ -109,16 +112,18 @@ function PANEL:AddMenuItem( name, func )
 end
 
 function PANEL:OnKeyCodePressed( key )
-	if ( key != KEY_TAB ) then return end
-	self:Close( )
+	if ( key == KEY_TAB ) then
+		self:Close( )
+	end
 end
 
 function PANEL:Paint( w, h )
 	if ( self.closeing ) then
-		self.blurAmount = Lerp( 0.03, self.blurAmount, 0 )
+		self.blurAmount = Lerp( 0.05, self.blurAmount, 0 )
 	else
-		self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
+		self.blurAmount = Lerp( 0.05, self.blurAmount, 3 )
 	end
+	
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 end
 
@@ -126,9 +131,11 @@ function PANEL:Close( )
 	CloseDermaMenus( )
 	gui.EnableScreenClicker( false )
 	self.closeing = true
+	
 	if ( IsValid( self.lastmenuPnl ) ) then
 		self.lastmenuPnl:Close( )
 	end
+	
 	self.ListsBase:MoveTo( self.w / 2 - self.ListsBase:GetWide( ) / 2, self.h, 0.2, 0, nil, function( anim, pnl )
 		if ( !IsValid( self ) ) then return end
 		self:Remove( )

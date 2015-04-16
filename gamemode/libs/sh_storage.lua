@@ -40,69 +40,12 @@ if ( SERVER ) then
 	end
 	
 	function catherine.storage.FindByModel( model )
-		if ( !model ) then return nil end
+		if ( !model ) then return end
 		for k, v in pairs( catherine.storage.GetAll( ) ) do
 			if ( v.model:lower( ) == model:lower( ) ) then
 				return v
 			end
 		end
-	end
-	
-	function catherine.storage.Make( ent, data )
-		if ( !IsValid( ent ) ) then return end
-		local originalData = catherine.storage.FindByModel( ent:GetModel( ) )
-		if ( !data ) then
-			data = catherine.storage.FindByModel( ent:GetModel( ) )
-			if ( !data ) then return end
-		end
-
-		ent.name = data.name or originalData.name
-		ent.desc = data.desc or originalData.desc
-		ent.inv = data.inv or { }
-		ent.isStorage = true
-		ent.maxWeight = data.maxWeight or originalData.maxWeight
-
-		ent:SetNetVar( "name", ent.name )
-		ent:SetNetVar( "desc", ent.desc )
-		ent:SetNetVar( "inv", ent.inv )
-		ent:SetNetVar( "maxWeight", ent.maxWeight )
-		ent:SetNetVar( "isStorage", true )
-		
-		ent.isCustomUse = true
-		ent.customUseFunction = function( pl )
-			netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
-		end
-	end
-	
-	function catherine.storage.SetInv( ent, data )
-		if ( !IsValid( ent ) or !data ) then return end
-		ent.inv = data
-		ent:SetNetVar( "inv", ent.inv )
-	end
-	
-	function catherine.storage.GetInv( ent )
-		if ( !IsValid( ent ) or !ent.isStorage ) then return { } end
-		return ent.inv or { }
-	end
-	
-	function catherine.storage.GetWeights( ent, customAdd )
-		local inventory = catherine.storage.GetInv( ent )
-		local weight, maxWeight = 0, ( ent.maxWeight or 0 )
-		for k, v in pairs( inventory ) do
-			local itemTable = catherine.item.FindByID( k )
-			if ( !itemTable ) then continue end
-			local itemInt = catherine.storage.GetItemInt( ent, k )
-			weight = weight + ( itemTable.weight * itemInt )
-		end
-		
-		return weight + ( customAdd or 0 ), maxWeight
-	end
-	
-	function catherine.storage.GetItemInt( ent, uniqueID )
-		if ( !IsValid( ent ) or !uniqueID ) then return 0 end
-		local inventory = catherine.storage.GetInv( ent )
-		if ( !inventory[ uniqueID ] ) then return 0 end
-		return inventory[ uniqueID ].itemCount or 0
 	end
 	
 	function catherine.storage.Work( pl, ent, workID, data )
@@ -111,13 +54,21 @@ if ( SERVER ) then
 		
 		if ( workID == CAT_STORAGE_ACTION_ADD ) then
 			local itemTable = catherine.item.FindByID( data )
-			if ( !itemTable or !catherine.inventory.HasItem( pl, data ) ) then
+			
+			if ( !itemTable ) then
+				catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
+				return
+			end
+			
+			if ( !catherine.inventory.HasItem( pl, data ) ) then
+				catherine.util.NotifyLang( pl, "Inventory_Notify_DontHave" )
 				return
 			end
 			
 			local weight, maxWeight = catherine.storage.GetWeights( ent, itemTable.weight )
+			
 			if ( weight >= maxWeight ) then
-				catherine.util.Notify( pl, "This storage don't have inventory space!" )
+				catherine.util.NotifyLang( pl, "Storage_Notify_HasNotSpace" )
 				return
 			end
 			
@@ -139,21 +90,25 @@ if ( SERVER ) then
 			end
 			
 			catherine.item.Take( pl, data )
-			hook.Run( "ItemStorageMoved", pl, itemTable )
 			catherine.storage.SetInv( ent, inventory )
+			hook.Run( "ItemStorageMoved", pl, itemTable )
 		elseif ( workID == CAT_STORAGE_ACTION_REMOVE ) then
 			local itemTable = catherine.item.FindByID( data )
+			
 			if ( !itemTable ) then
+				catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
 				return
 			end
 			
 			local inventory = catherine.storage.GetInv( ent )
+			
 			if ( !inventory[ data ] ) then
+				catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 				return
 			end
 
 			if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
-				catherine.util.Notify( pl, "You don't have inventory space!" )
+				catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 				return
 			end
 			
@@ -165,32 +120,80 @@ if ( SERVER ) then
 				itemData = invData.itemData
 			}
 			
-			if ( inventory[ data ].itemCount == 0 ) then
+			if ( inventory[ data ].itemCount <= 0 ) then
 				inventory[ data ] = nil
 			end
 			
 			catherine.item.Give( pl, data )
-			hook.Run( "ItemStorageTaked", pl, itemTable )
 			catherine.storage.SetInv( ent, inventory )
+			hook.Run( "ItemStorageTaked", pl, itemTable )
 		end
 		
-		netstream.Start( pl, "catherine.storage.ChangeResult", ent:EntIndex( ) )
+		netstream.Start( pl, "catherine.storage.RefreshPanel", ent:EntIndex( ) )
 	end
 	
-	function catherine.storage.DataSave( )
-		local data = { }
-		for k, v in pairs( ents.FindByClass( "prop_physics" ) ) do
-			if ( !v.isStorage ) then continue end
-			data[ #data + 1 ] = {
-				index = v:EntIndex( ),
-				inv = v.inv
-			}
+	function catherine.storage.Make( ent, data )
+		local originalData = catherine.storage.FindByModel( ent:GetModel( ) )
+		
+		if ( !data ) then
+			data = catherine.storage.FindByModel( ent:GetModel( ) )
+			if ( !data ) then return end
 		end
-		catherine.data.Set( "storage", data )
+
+		ent.name = data.name or originalData.name
+		ent.desc = data.desc or originalData.desc
+		ent.inv = data.inv or { }
+		ent.isStorage = true
+		ent.maxWeight = data.maxWeight or originalData.maxWeight
+
+		ent:SetNetVar( "name", ent.name )
+		ent:SetNetVar( "desc", ent.desc )
+		ent:SetNetVar( "inv", ent.inv )
+		ent:SetNetVar( "maxWeight", ent.maxWeight )
+		ent:SetNetVar( "isStorage", true )
+
+		catherine.entity.RegisterUseMenu( ent, {
+			{
+				uniqueID = "ID_OPEN",
+				text = "Open",
+				func = function( pl, ent )
+					netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
+				end
+			}
+		} )
 	end
 	
+	function catherine.storage.SetInv( ent, data )
+		ent.inv = data
+		ent:SetNetVar( "inv", ent.inv )
+	end
+	
+	function catherine.storage.GetInv( ent )
+		return ent.inv or { }
+	end
+	
+	function catherine.storage.GetWeights( ent, customAdd )
+		local inventory = catherine.storage.GetInv( ent )
+		local weight = 0
+		local maxWeight = ent.maxWeight or 0
+		
+		for k, v in pairs( inventory ) do
+			local itemTable = catherine.item.FindByID( k )
+			if ( !itemTable ) then continue end
+			
+			weight = weight + ( itemTable.weight * v.itemCount )
+		end
+		
+		return weight + ( customAdd or 0 ), maxWeight
+	end
+	
+	function catherine.storage.GetItemInt( ent, uniqueID )
+		local inventory = catherine.storage.GetInv( ent )
+		
+		return inventory[ uniqueID ] and inventory[ uniqueID ].itemCount or 0
+	end
+
 	function catherine.storage.GetDataByIndex( index, data )
-		if ( !index or !data ) then return nil end
 		for k, v in pairs( data ) do
 			if ( v.index == index ) then
 				return v
@@ -198,15 +201,30 @@ if ( SERVER ) then
 		end
 	end
 	
+	function catherine.storage.DataSave( )
+		local data = { }
+		
+		for k, v in pairs( ents.FindByClass( "prop_physics" ) ) do
+			if ( !v.isStorage ) then continue end
+			data[ #data + 1 ] = {
+				index = v:EntIndex( ),
+				inv = v.inv
+			}
+		end
+		
+		catherine.data.Set( "storage", data )
+	end
+	
 	function catherine.storage.DataLoad( )
 		local data = catherine.data.Get( "storage", { } )
 
 		for k, v in pairs( ents.FindByClass( "prop_physics" ) ) do
 			local storage = catherine.storage.GetDataByIndex( v:EntIndex( ), data )
+			
 			catherine.storage.Make( v, storage )
 		end
 	end
-	
+
 	function catherine.storage.PlayerSpawnedProp( pl, _, ent )
 		timer.Simple( 1, function( )
 			catherine.storage.Make( ent )
@@ -221,50 +239,51 @@ if ( SERVER ) then
 		catherine.storage.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ] )
 	end )
 else
-	netstream.Hook( "catherine.storage.Use", function( index )
+	netstream.Hook( "catherine.storage.Use", function( data )
 		if ( IsValid( catherine.vgui.storage ) ) then
 			catherine.vgui.storage:Remove( )
 			catherine.vgui.storage = nil
 		end
 		
 		catherine.vgui.storage = vgui.Create( "catherine.vgui.storage" )
-		catherine.vgui.storage:InitializeStorage( Entity( index ) )
+		catherine.vgui.storage:InitializeStorage( Entity( data ) )
 	end )
 	
-	netstream.Hook( "catherine.storage.ChangeResult", function( index )
-		if ( !IsValid( catherine.vgui.storage ) ) then return end
-		catherine.vgui.storage:InitializeStorage( Entity( index ) )
+	netstream.Hook( "catherine.storage.RefreshPanel", function( data )
+		if ( IsValid( catherine.vgui.storage ) ) then
+			catherine.vgui.storage:InitializeStorage( Entity( data ) )
+		end
 	end )
 	
 	function catherine.storage.GetInv( ent )
-		if ( !IsValid( ent ) or !ent:GetNetVar( "isStorage" ) ) then return { } end
 		return ent:GetNetVar( "inv", { } )
 	end
 	
 	function catherine.storage.GetWeights( ent, customAdd )
 		local inventory = catherine.storage.GetInv( ent )
-		local weight, maxWeight = 0, ( ent:GetNetVar( "maxWeight" ) or 0 )
+		local weight = 0
+		local maxWeight = ent:GetNetVar( "maxWeight" ) or 0
+		
 		for k, v in pairs( inventory ) do
 			local itemTable = catherine.item.FindByID( k )
 			if ( !itemTable ) then continue end
-			local itemInt = catherine.storage.GetItemInt( ent, k )
-			weight = weight + ( itemTable.weight * itemInt )
+			
+			weight = weight + ( itemTable.weight * v.itemCount )
 		end
 		
 		return weight + ( customAdd or 0 ), maxWeight
 	end
 	
 	function catherine.storage.GetItemInt( ent, uniqueID )
-		if ( !IsValid( ent ) or !uniqueID ) then return 0 end
 		local inventory = catherine.storage.GetInv( ent )
-		if ( !inventory[ uniqueID ] ) then return 0 end
-		return inventory[ uniqueID ].itemCount or 0
+		
+		return inventory[ uniqueID ] and inventory[ uniqueID ].itemCount or 0
 	end
 
 	local toscreen = FindMetaTable("Vector").ToScreen
 
 	function catherine.storage.DrawEntityTargetID( pl, ent, a )
-		if ( !IsValid( ent ) or !ent:GetNetVar( "isStorage", false ) ) then return end
+		if ( !ent:GetNetVar( "isStorage", false ) ) then return end
 		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		

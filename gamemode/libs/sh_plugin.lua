@@ -45,12 +45,20 @@ function catherine.plugin.LoadAll( dir )
 		
 		PLUGIN = nil
 	end
+	
+	if ( CLIENT ) then
+		local html = [[<b>Plugins</b><br>]]
+			
+		for k, v in pairs( catherine.plugin.GetAll( ) ) do
+			html = html .. "<p><b>&#10022; " .. v.name .. "</b><br>" .. v.desc .. "<br>By " .. v.author .. "<br>"
+		end
+			
+		catherine.help.Register( CAT_HELP_HTML, "Plugins", html )
+	end
 end
 
 function catherine.plugin.IncludeEntities( dir )
-	local files, _ = file.Find( dir .. "/entities/entities/*.lua", "LUA" )
-	
-	for k, v in pairs( files ) do
+	for k, v in pairs( file.Find( dir .. "/entities/entities/*.lua", "LUA" ) ) do
 		ENT = { Type = "anim", ClassName = v:sub( 1, #v - 4 ) }
 		
 		catherine.util.Include( dir .. "/entities/entities/" .. v, "SHARED" )
@@ -66,18 +74,4 @@ end
 
 function catherine.plugin.GetAll( )
 	return catherine.plugin.Lists
-end
-
-catherine.plugin.LoadAll( catherine.FolderName ) // need delete ;)
-
-if ( CLIENT ) then
-	hook.Add( "AddHelpItem", "catherine.plugin.AddHelpItem", function( data )
-		local html = [[<b>Plugins</b><br>]]
-		
-		for k, v in pairs( catherine.plugin.GetAll( ) ) do
-			html = html .. "<p><b>&#10022; " .. v.name .. "</b><br>" .. v.desc .. "<br>By " .. v.author .. "<br>"
-		end
-		
-		data:AddItem( "Plugins", html )
-	end )
 end

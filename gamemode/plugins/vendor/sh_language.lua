@@ -17,29 +17,15 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "Save Item"
-PLUGIN.author = "L7D"
-PLUGIN.desc = "Good stuff."
 
-if ( CLIENT ) then return end
-
-function PLUGIN:DataSave( )
-	local data = { }
-	
-	for k, v in pairs( ents.FindByClass( "cat_item" ) ) do
-		data[ #data + 1 ] = {
-			uniqueID = v:GetItemUniqueID( ),
-			itemData = v:GetItemData( ),
-			pos = v:GetPos( ),
-			ang = v:GetAngles( )
-		}
-	end
-	
-	catherine.data.Set( "items", data )
-end
-
-function PLUGIN:DataLoad( )
-	for k, v in pairs( catherine.data.Get( "items", { } ) ) do
-		catherine.item.Spawn( v.uniqueID, v.pos, v.ang, v.itemData )
-	end
-end
+catherine.language.Merge( "english", {
+	[ "Vendor_Notify_Buy" ] = "You are brought '%s' at '%s' from this vendor!",
+	[ "Vendor_Notify_Sell" ] = "You are sold '%s' at '%s' from this vendor!",
+	[ "Vendor_Notify_VendorNoHasCash" ] = "This vendor has not enough %s!",
+	[ "Vendor_Notify_NoHasStock" ] = "This vendor don't have this kind of item anymore!",
+	[ "Vendor_Notify_NotValid" ] = "This is not vendor!",
+	[ "Vendor_Notify_Add" ] = "You are added vendor.",
+	[ "Vendor_Notify_Remove" ] = "You are removed this vendor.",
+	[ "Vendor_Message_CantUse" ] = "You don't have permission using this vendor!",
+	[ "Vendor_NameQ" ] = "What are you want vendor name ?"
+} )

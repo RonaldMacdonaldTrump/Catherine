@@ -22,16 +22,16 @@ function PANEL:Init( )
 	catherine.vgui.attribute = self
 
 	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
-	self:SetMenuName( "Attribute" )
+	self:SetMenuName( LANG( "Attribute_UI_Title" ) )
 
 	self.Lists = vgui.Create( "DPanelList", self )
 	self.Lists:SetPos( 10, 35 )
 	self.Lists:SetSize( self.w - 20, self.h - 45 )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
-	self.Lists:EnableVerticalScrollbar( true )	
+	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
 
 	self:BuildAttribute( )
@@ -45,6 +45,7 @@ function PANEL:BuildAttribute( )
 		item:SetTall( 90 )
 		item:SetAttribute( v )
 		item:SetProgress( catherine.attribute.GetProgress( v ) )
+		item:SetAlpha( 0 )
 		item:AlphaTo( 255, 0.1, delta )
 		delta = delta + 0.05
 		
@@ -53,7 +54,6 @@ function PANEL:BuildAttribute( )
 end
 
 vgui.Register( "catherine.vgui.attribute", PANEL, "catherine.vgui.menuBase" )
-
 
 local PANEL = { }
 
@@ -99,8 +99,8 @@ end
 
 vgui.Register( "catherine.vgui.attributeItem", PANEL, "DPanel" )
 
-hook.Add( "AddMenuItem", "catherine.vgui.attribute", function( tab )
-	tab[ "Attribute" ] = function( menuPnl, itemPnl )
-		return vgui.Create( "catherine.vgui.attribute", menuPnl )
-	end
+catherine.menu.Register( function( )
+	return LANG( "Attribute_UI_Title" )
+end, function( menuPnl, itemPnl )
+	return vgui.Create( "catherine.vgui.attribute", menuPnl )
 end )

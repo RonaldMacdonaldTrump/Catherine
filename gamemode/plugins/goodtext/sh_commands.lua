@@ -39,6 +39,7 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		if ( !args[ 1 ] ) then args[ 1 ] = 256 end
 		local count = PLUGIN:RemoveText( pl:GetShootPos( ), args[ 1 ] )
+		
 		if ( count == 0 ) then
 			catherine.util.Notify( pl, "There are no texts at that location." )
 		else

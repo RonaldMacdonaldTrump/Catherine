@@ -49,9 +49,10 @@ if ( SERVER ) then
 
 	function ENT:Use( pl )
 		if ( pl:GetCharacterID( ) != self:GetNetVar( "owner", 0 ) ) then
-			catherine.util.Notify( pl, "You can't open this shipment!" )
+			catherine.util.NotifyLang( pl, "Business_Notify_CantOpenShipment" )
 			return
 		end
+		
 		netstream.Start( pl, "catherine.business.EntityUseMenu", self:EntIndex( ) )
 	end
 	
@@ -65,13 +66,14 @@ if ( SERVER ) then
 	end
 else
 	local toscreen = FindMetaTable("Vector").ToScreen
+	
 	function ENT:DrawEntityTargetID( pl, ent, a )
 		if ( ent:GetClass( ) != "cat_shipment" ) then return end
 		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		
-		draw.SimpleText( "Shipment", "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( "The Shipment", "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( LANG( "Business_UI_Shipment_Title" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( LANG( "Business_UI_Shipment_Desc" ), "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
 	end
 end
 

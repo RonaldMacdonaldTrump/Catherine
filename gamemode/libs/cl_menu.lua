@@ -16,30 +16,17 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-local PLUGIN = PLUGIN
-PLUGIN.name = "Save Item"
-PLUGIN.author = "L7D"
-PLUGIN.desc = "Good stuff."
+catherine.menu = catherine.menu or { }
+catherine.menu.Lists = { }
 
-if ( CLIENT ) then return end
-
-function PLUGIN:DataSave( )
-	local data = { }
-	
-	for k, v in pairs( ents.FindByClass( "cat_item" ) ) do
-		data[ #data + 1 ] = {
-			uniqueID = v:GetItemUniqueID( ),
-			itemData = v:GetItemData( ),
-			pos = v:GetPos( ),
-			ang = v:GetAngles( )
-		}
-	end
-	
-	catherine.data.Set( "items", data )
+function catherine.menu.Register( name, func, canLook )
+	catherine.menu.Lists[ #catherine.menu.Lists + 1 ] = {
+		name = name,
+		func = func,
+		canLook = canLook
+	}
 end
 
-function PLUGIN:DataLoad( )
-	for k, v in pairs( catherine.data.Get( "items", { } ) ) do
-		catherine.item.Spawn( v.uniqueID, v.pos, v.ang, v.itemData )
-	end
+function catherine.menu.GetAll( )
+	return catherine.menu.Lists
 end

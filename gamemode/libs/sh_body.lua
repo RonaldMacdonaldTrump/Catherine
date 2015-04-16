@@ -57,8 +57,8 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) or !bodyID or !per ) then return end
 		local varID = work[ bodyID ][ 1 ]
 		if ( !varID ) then return end
-		local curr = catherine.character.GetCharacterVar( pl, varID, 100 )
-		catherine.character.SetCharacterVar( pl, varID, math.Clamp( curr + per, 0, 100 ) )
+		local curr = catherine.character.GetCharVar( pl, varID, 100 )
+		catherine.character.SetCharVar( pl, varID, math.Clamp( curr + per, 0, 100 ) )
 	end
 	
 	function catherine.body.RunFunction( pl, bodyID )
@@ -71,22 +71,22 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) or !bodyID or !per ) then return end
 		local varID = work[ bodyID ][ 1 ]
 		if ( !varID ) then return end
-		local curr = catherine.character.GetCharacterVar( pl, varID, 100 )
-		catherine.character.SetCharacterVar( pl, varID, math.Clamp( curr - per, 0, 100 ) )
+		local curr = catherine.character.GetCharVar( pl, varID, 100 )
+		catherine.character.SetCharVar( pl, varID, math.Clamp( curr - per, 0, 100 ) )
 	end
 	
 	function catherine.body.SetPercent( pl, bodyID, per )
 		if ( !IsValid( pl ) or !bodyID or !per ) then return end
 		local varID = work[ bodyID ][ 1 ]
 		if ( !varID ) then return end
-		catherine.character.SetCharacterVar( pl, varID, math.Clamp( per, 0, 100 ) )
+		catherine.character.SetCharVar( pl, varID, math.Clamp( per, 0, 100 ) )
 	end
 	
 	function catherine.body.GetPercent( pl, bodyID, default )
 		if ( !IsValid( pl ) or !bodyID or !per ) then return end
 		local varID = work[ bodyID ][ 1 ]
 		if ( !varID ) then return end
-		return catherine.character.GetCharacterVar( pl, varID, default or 100 )
+		return catherine.character.GetCharVar( pl, varID, default or 100 )
 	end
 	
 	function catherine.body.Work( )
@@ -106,7 +106,7 @@ else
 		if ( !bodyID ) then return end
 		local varID = work[ bodyID ]
 		if ( !varID ) then return end
-		return catherine.character.GetCharacterVar( LocalPlayer( ), varID, default or 100 )
+		return catherine.character.GetCharVar( LocalPlayer( ), varID, default or 100 )
 	end
 end
 

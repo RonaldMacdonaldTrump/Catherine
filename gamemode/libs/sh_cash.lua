@@ -19,7 +19,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 if ( !catherine.command ) then
 	catherine.util.Include( "sh_command.lua" )
 end
-
 catherine.cash = catherine.cash or { }
 
 function catherine.cash.GetOnlyName( )
@@ -30,6 +29,72 @@ function catherine.cash.GetName( amount )
 	return amount .. " " .. catherine.configs.cashName
 end
 
+function catherine.cash.Has( pl, amount )
+	return catherine.cash.Get( pl ) >= amount
+end
+
+if ( SERVER ) then
+	function catherine.cash.Set( pl, amount )
+		amount = tonumber( amount )
+		if ( !amount ) then return false end
+		
+		catherine.character.SetVar( pl, "_cash", math.max( amount, 0 ) )
+		
+		return true
+	end
+	
+	function catherine.cash.Give( pl, amount )
+		amount = tonumber( amount )
+		if ( !amount ) then return false end
+		
+		catherine.character.SetVar( pl, "_cash", math.max( catherine.cash.Get( pl ) + amount, 0 ) )
+		
+		return true
+	end
+
+	function catherine.cash.Take( pl, amount )
+		amount = tonumber( amount )
+		if ( !amount ) then return false end
+		
+		catherine.character.SetVar( pl, "_cash", math.max( catherine.cash.Get( pl ) - amount, 0 ) )
+		
+		return true
+	end
+end
+
+function catherine.cash.Get( pl )
+	return tonumber( catherine.character.GetVar( pl, "_cash", 0 ) )
+end
+
+catherine.command.Register( {
+	command = "charsetcash",
+	syntax = "[name] [amount]",
+	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			if ( args[ 2 ] ) then
+				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
+				if ( IsValid( target ) and target:IsPlayer( ) ) then
+					local success = catherine.cash.Set( target, args[ 2 ] )
+					
+					if ( success ) then
+						catherine.util.NotifyAllLang( "Cash_Notify_Set", pl:Name( ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
+					else
+						catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+					end
+				else
+					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
+				end
+			else
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
+			end
+		else
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+		end
+	end
+} )
+
 catherine.command.Register( {
 	command = "chargivecash",
 	syntax = "[name] [amount]",
@@ -38,57 +103,58 @@ catherine.command.Register( {
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					local success = catherine.cash.Give( target, args[ 2 ] )
+					
 					if ( success ) then
-						catherine.util.Notify( pl, catherine.language.GetValue( pl, "Cash_GiveMessage01", target:Name( ), catherine.cash.GetName( args[ 2 ] ) ) )
+						catherine.util.NotifyAllLang( "Cash_Notify_Give", pl:Name( ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
 					else
-						catherine.util.Notify( pl, catherine.language.GetValue( pl, "UnknownError" ) )
+						catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
 					end
 				else
-					catherine.util.Notify( pl, catherine.language.GetValue( pl, "UnknownPlayerError" ) )
+					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
 			else
-				catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 2 ) )
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
 			end
 		else
-			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )
 
-if ( SERVER ) then
-	function catherine.cash.Set( pl, amount )
-		amount = tonumber( amount )
-		if ( !amount ) then return false end
-		catherine.character.SetGlobalVar( pl, "_cash", math.max( amount, 0 ) )
-		
-		return true
+catherine.command.Register( {
+	command = "chartakecash",
+	syntax = "[name] [amount]",
+	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			if ( args[ 2 ] ) then
+				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
+				if ( IsValid( target ) and target:IsPlayer( ) ) then
+					local success = catherine.cash.Take( target, args[ 2 ] )
+					
+					if ( success ) then
+						catherine.util.NotifyAllLang( "Cash_Notify_Take", pl:Name( ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
+					else
+						catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+					end
+				else
+					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
+				end
+			else
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
+			end
+		else
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+		end
 	end
-	
-	function catherine.cash.Give( pl, amount )
-		amount = tonumber( amount )
-		if ( !amount ) then return false end
-		catherine.character.SetGlobalVar( pl, "_cash", math.max( catherine.cash.Get( pl ) + amount, 0 ) )
-		
-		return true
-	end
-
-	function catherine.cash.Take( pl, amount )
-		amount = tonumber( amount )
-		if ( !amount ) then return false end
-		catherine.character.SetGlobalVar( pl, "_cash", math.max( catherine.cash.Get( pl ) - amount, 0 ) )
-		
-		return true
-	end
-end
-
-function catherine.cash.Get( pl )
-	return tonumber( catherine.character.GetGlobalVar( pl, "_cash", 0 ) )
-end
+} )
 
 if ( SERVER ) then return end
 
 hook.Add( "AddRPInformation", "catherine.cash.AddRPInformation", function( pnl, data )
-	data[ #data + 1 ] = "You have a " .. catherine.cash.GetName( catherine.cash.Get( LocalPlayer( ) ) ) .. "."
+	data[ #data + 1 ] = LANG( "Cash_UI_HasStr", catherine.cash.GetName( catherine.cash.Get( LocalPlayer( ) ) ) )
 end )

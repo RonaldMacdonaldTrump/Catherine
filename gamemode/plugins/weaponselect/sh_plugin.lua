@@ -22,7 +22,7 @@ PLUGIN.author = "L7D"
 PLUGIN.desc = "Good stuff."
 
 if ( SERVER ) then
-	concommand.Add( "cat.cmd.weaponselect", function( pl, _, args )
+	concommand.Add( "cat_ws_selectWeapon", function( pl, _, args )
 		pl:SelectWeapon( args[ 1 ] )
 	end )
 else
@@ -32,25 +32,31 @@ else
 	PLUGIN.markup = PLUGIN.markup or nil
 	
 	function PLUGIN:PlayerBindPress( pl, bind, pressed )
-		local wep, weps = pl:GetActiveWeapon( ), pl:GetWeapons( )
-
+		local wep = pl:GetActiveWeapon( )
+		local weps = pl:GetWeapons( )
 		if ( pl:InVehicle( ) or ( IsValid( wep ) and wep:GetClass( ) == "weapon_physgun" and pl:KeyDown( IN_ATTACK ) ) ) then return end
+		
 		bind = bind:lower( )
+		
 		if ( bind:find( "invnext" ) and pressed ) then
 			self.latestSlot = self.latestSlot + 1
+			
 			if ( self.latestSlot > #weps ) then
 				self.latestSlot = 1
 			end
 			
 			hook.Run( "OnWeaponSlotChanged", pl, self.latestSlot )
+			
 			return true
 		elseif ( bind:find( "invprev" ) and pressed ) then
 			self.latestSlot = self.latestSlot - 1
+			
 			if ( self.latestSlot <= 0 ) then
 				self.latestSlot = #weps
 			end
 			
 			hook.Run( "OnWeaponSlotChanged", pl, self.latestSlot )
+			
 			return true
 		elseif ( bind:find( "+attack" ) and pressed ) then
 			if ( self.noShowTime > CurTime( ) ) then
@@ -59,13 +65,15 @@ else
 				
 				for k, v in pairs( weps ) do
 					if ( k != self.latestSlot ) then continue end
-					RunConsoleCommand( "cat.cmd.weaponselect", v:GetClass( ) )
+					RunConsoleCommand( "cat_ws_selectWeapon", v:GetClass( ) )
+					
 					return true
 				end
 			end
 		elseif ( bind:find( "slot" ) ) then
 			self.latestSlot = math.Clamp( tonumber( bind:match( "slot(%d)" ) ) or 1, 1, #weps )
 			self.showTime = CurTime( ) + 4 self.noShowTime = CurTime( ) + 5
+			
 			return true
 		end
 	end
@@ -76,6 +84,7 @@ else
 		
 		for k, v in pairs( pl:GetWeapons( ) ) do
 			if ( k != self.latestSlot ) then continue end
+			
 			if ( v.Instructions and v.Instructions:find( "%S" ) ) then
 				self.markup = markup.Parse( "<font=catherine_outline15>" .. v.Instructions .. "</font>" )
 				return
@@ -90,12 +99,15 @@ else
 		
 		for k, v in pairs( LocalPlayer( ):GetWeapons( ) ) do
 			local col = Color( 255, 255, 255 )
+			
 			if ( k == self.latestSlot ) then
 				col = Color( 50, 50, 50 )
 			end
+			
 			col.a = math.Clamp( 255 - math.TimeFraction( self.showTime, self.noShowTime, CurTime( ) ) * 255, 0, 255 )
 			
 			draw.SimpleText( v:GetPrintName( ), "catherine_normal20", defx, defy + ( k * 25 ), col, TEXT_ALIGN_LEFT, 1 )
+			
 			if ( k == self.latestSlot and self.markup ) then
 				self.markup:Draw( defx + 128, defy + 24, 0, 1, col.a )
 			end

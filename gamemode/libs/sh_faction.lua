@@ -18,14 +18,17 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.faction = catherine.faction or { }
 catherine.faction.Lists = { }
+local META = FindMetaTable( "Player" )
 
 function catherine.faction.Register( factionTable )
 	if ( !factionTable or !factionTable.index ) then
 		catherine.util.ErrorPrint( "Faction register error, can't found faction table!" )
 		return
 	end
+	
 	catherine.faction.Lists[ factionTable.index ] = factionTable
 	team.SetUp( factionTable.index, factionTable.name, factionTable.color )
+	
 	return factionTable.index
 end
 
@@ -34,12 +37,13 @@ function catherine.faction.New( uniqueID )
 end
 
 function catherine.faction.GetPlayerUsableFaction( pl )
-	if ( !IsValid( pl ) ) then return { } end
 	local factions = { }
+	
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.isWhitelist and ( SERVER and catherine.faction.HasWhiteList( pl, v.uniqueID ) or catherine.faction.HasWhiteList( v.uniqueID ) ) == false ) then continue end
 		factions[ #factions + 1 ] = v
 	end
+	
 	return factions
 end
 
@@ -48,40 +52,30 @@ function catherine.faction.GetAll( )
 end
 
 function catherine.faction.FindByName( name )
-	if ( !name ) then return nil end
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.name == name ) then
 			return v
 		end
 	end
-	
-	return nil
 end
 
 function catherine.faction.FindByID( id )
-	if ( !id ) then return nil end
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.uniqueID == id ) then
 			return v
 		end
 	end
-	
-	return nil
 end
 
 function catherine.faction.FindByIndex( index )
-	if ( !index ) then return nil end
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.index == index ) then
 			return v
 		end
 	end
-	
-	return nil
 end
 
 function catherine.faction.Include( dir )
-	if ( !dir ) then return end
 	for k, v in pairs( file.Find( dir .. "/factions/*.lua", "LUA" ) ) do
 		catherine.util.Include( dir .. "/factions/" .. v, "SHARED" )
 	end
@@ -89,110 +83,133 @@ end
 
 if ( SERVER ) then
 	function catherine.faction.AddWhiteList( pl, id )
-		if ( !IsValid( pl ) or !id ) then return false, "player or faction id is not valid!" end
 		local factionTable = catherine.faction.FindByID( id )
-		if ( !factionTable or !factionTable.isWhitelist or catherine.faction.HasWhiteList( pl, id ) ) then return false, "faction is not whitelist or player already has whitelist!" end
-		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
+		
+		if ( !factionTable or !factionTable.isWhitelist or catherine.faction.HasWhiteList( pl, id ) ) then
+			return false, "Faction_Notify_NotValid", { id }
+		end
+		
+		if ( !factionTable.isWhitelist ) then
+			return false, "Faction_Notify_NotWhitelist", { id }
+		end
+		
+		if ( catherine.faction.HasWhiteList( pl, id ) ) then
+			return false, "Faction_Notify_AlreadyHas", { pl:Name( ), id }
+		end
+		
+		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
 		whiteLists[ #whiteLists + 1 ] = id
-		catherine.catData.Set( pl, "whitelists", whiteLists, false, true )
+		
+		catherine.catData.SetVar( pl, "whitelists", whiteLists, false, true )
 		return true
 	end
 	
 	function catherine.faction.RemoveWhiteList( pl, id )
-		if ( !IsValid( pl ) or !id ) then return false, "player or faction id is not valid!" end
 		local factionTable = catherine.faction.FindByID( id )
-		if ( !factionTable or !factionTable.isWhitelist ) then return false, "faction is not whitelist!" end
-		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
+		
+		if ( !factionTable ) then
+			return false, "Faction_Notify_NotValid", { id }
+		end
+		
+		if ( !factionTable.isWhitelist ) then
+			return false, "Faction_Notify_NotWhitelist", { id }
+		end
+		
+		if ( !catherine.faction.HasWhiteList( pl, id ) ) then
+			return false, "Faction_Notify_HasNot", { pl:Name( ), id }
+		end
+		
+		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
 		table.RemoveByValue( whiteLists, id )
-		catherine.catData.Set( pl, "whitelists", whiteLists, false, true )
+		
+		catherine.catData.SetVar( pl, "whitelists", whiteLists, false, true )
 		return true
 	end
 
 	function catherine.faction.HasWhiteList( pl, id )
-		local factionTable = catherine.faction.FindByID( id )
-		if ( !factionTable or !factionTable.isWhitelist ) then return false end
-		local whiteLists = catherine.catData.Get( pl, "whitelists", { } )
+		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
+		
 		return table.HasValue( whiteLists, id )
+	end
+	
+	function META:HasWhiteList( id )
+		return catherine.faction.HasWhiteList( self, id )
 	end
 	
 	function catherine.faction.PlayerFirstSpawned( pl )
 		local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
 		if ( !factionTable or !factionTable.PlayerFirstSpawned ) then return end
+		
 		factionTable:PlayerFirstSpawned( pl )
 	end
 	
 	hook.Add( "PlayerFirstSpawned", "catherine.faction.PlayerFirstSpawned", catherine.faction.PlayerFirstSpawned )
 else
 	function catherine.faction.HasWhiteList( id )
-		if ( !id ) then return false end
-		local factionTable = catherine.faction.FindByID( id )
-		if ( !factionTable or !factionTable.isWhitelist ) then return false end
-		local whiteLists = catherine.catData.Get( "whitelists", { } )
+		local whiteLists = catherine.catData.GetVar( "whitelists", { } )
+		
 		return table.HasValue( whiteLists, id )
 	end
-end
-
-local META = FindMetaTable( "Player" )
-
-function META:HasWhiteList( id )
-	if ( SERVER ) then
-		return catherine.faction.HasWhiteList( self, id )
-	else
+	
+	function META:HasWhiteList( id )
 		return catherine.faction.HasWhiteList( id )
 	end
 end
 
 catherine.command.Register( {
 	command = "plygivewhitelist",
-	syntax = "[name] [faction unique name]",
+	syntax = "[Name] [Faction Name]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					local success, reason = catherine.faction.AddWhiteList( target, args[ 2 ] )
+					local success, langKey, par = catherine.faction.AddWhiteList( target, args[ 2 ] )
+					
 					if ( success ) then
-						catherine.util.Notify( pl, catherine.language.GetValue( pl, "Faction_AddMessage01" ) )
+						catherine.util.NotifyAllLang( "Faction_Notify_Give", pl:Name( ), args[ 2 ], target:Name( ) )
 					else
-						catherine.util.Notify( pl, reason or catherine.language.GetValue( pl, "UnknownError" ) )
+						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
 				else
-					catherine.util.Notify( pl, catherine.language.GetValue( pl, "UnknownPlayerError" ) )
+					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
 			else
-				catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 2 ) )
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
 			end
 		else
-			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )
 
 catherine.command.Register( {
 	command = "plytakewhitelist",
-	syntax = "[name] [faction unique name]",
+	syntax = "[Name] [Faction Name]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					local success, reason = catherine.faction.RemoveWhiteList( target, args[ 2 ] )
+					local success, langKey, par = catherine.faction.RemoveWhiteList( target, args[ 2 ] )
+					
 					if ( success ) then
-						catherine.util.Notify( pl, catherine.language.GetValue( pl, "Faction_RemoveMessage01" ) )
+						catherine.util.NotifyAllLang( "Faction_Notify_Take", pl:Name( ), args[ 2 ], target:Name( ) )
 					else
-						catherine.util.Notify( pl, reason or catherine.language.GetValue( pl, "UnknownError" ) )
+						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
 				else
-					catherine.util.Notify( pl, catherine.language.GetValue( pl, "UnknownPlayerError" ) )
+					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
 			else
-				catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 2 ) )
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
 			end
 		else
-			catherine.util.Notify( pl, catherine.language.GetValue( pl, "ArgError", 1 ) )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )
-

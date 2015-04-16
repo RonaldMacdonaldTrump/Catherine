@@ -80,19 +80,25 @@ catherine.database.modules[ "mysqloo" ] = {
 			catherine.util.Print( Color( 255, 0, 0 ), "Can't load database module!!! - MySQLoo" )
 			return
 		end
+		
 		local function initialize( )
 			local queries = string.Explode( ";", CREATE_TABLES_USING_MYSQL )
 			for i = 1, 2 do
 				catherine.database.query( queries[ i ] )
 			end
 		end
+		
 		local info = catherine.database.information
 		catherine.database.object = mysqloo.connect( info.db_hostname, info.db_account_id, info.db_account_password, info.db_name, tonumber( info.db_port ) )
 		catherine.database.object.onConnected = function( )
 			catherine.database.Connected = true
 			catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using MySQLoo." )
 			initialize( )
-			if ( func ) then func( ) end
+			
+			if ( func ) then
+				func( )
+			end
+			
 			hook.Run( "DatabaseConnected" )
 		end
 		catherine.database.object.onConnectionFailed = function( _, err )
@@ -106,11 +112,13 @@ catherine.database.modules[ "mysqloo" ] = {
 		if ( !catherine.database.object ) then return end
 		local result = catherine.database.object:query( query )
 		if ( !result ) then return end
+		
 		if ( func ) then
 			function result:onSuccess( data )
 				func( data )
 			end
 		end
+		
 		function result:onError( err )
 			catherine.util.Print( Color( 255, 0, 0 ), "MySQLoo Query Error : " .. query .. " -> " .. err .. " !!!" )
 		end
@@ -118,6 +126,7 @@ catherine.database.modules[ "mysqloo" ] = {
 	end,
 	escape = function( val )
 		local typ = type( val )
+		
 		if ( typ == "string" ) then
 			if ( catherine.database.object ) then
 				return catherine.database.object:escape( val )
@@ -126,6 +135,7 @@ catherine.database.modules[ "mysqloo" ] = {
 			end
 		elseif ( typ == "number" ) then
 			val = tostring( val )
+			
 			if ( catherine.database.object ) then
 				return catherine.database.object:escape( val )
 			else
@@ -133,6 +143,7 @@ catherine.database.modules[ "mysqloo" ] = {
 			end
 		elseif ( typ == "table" ) then
 			val = util.TableToJSON( val )
+			
 			if ( catherine.database.object ) then
 				return catherine.database.object:escape( val )
 			else
@@ -146,23 +157,28 @@ catherine.database.modules[ "sqlite" ] = {
 		catherine.database.Connected = true
 		catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using SQLite." )
 		catherine.database.query( CREATE_TABLES_USING_SQLITE )
+		
 		if ( func ) then
 			func( )
 		end
+		
 		hook.Run( "DatabaseConnected" )
 	end,
 	query = function( query, func )
 		local result = sql.Query( query )
+		
 		if ( result == false ) then
 			catherine.util.Print( Color( 255, 0, 0 ), "SQLite Query Error : " .. query .. " -> " .. sql.LastError( ) .. " !!!" )
 			return
 		end
+		
 		if ( func ) then
 			func( result, tonumber( sql.QueryValue( "SELECT last_insert_rowid()" ) ) )
 		end
 	end,
 	escape = function( val )
 		local typ = type( val )
+		
 		if ( typ == "string" ) then
 			return sql.SQLStr( val, true )
 		elseif ( typ == "number" ) then
@@ -177,10 +193,12 @@ catherine.database.escape = catherine.database.escape or catherine.database.modu
 
 function catherine.database.Connect( func )
 	local modules = catherine.database.modules[ catherine.database.information.db_module ]
+	
 	if ( !modules ) then
 		catherine.util.Print( Color( 255, 255, 0 ), "Unknown MySQL module, using SQLite." )
 		modules = catherine.database.modules.sqlite
 	end
+	
 	modules.connect( func )
 	catherine.database.query = modules.query
 	catherine.database.escape = modules.escape
@@ -189,13 +207,17 @@ end
 function catherine.database.InsertDatas( tab, data, func )
 	if ( !catherine.database.Connected or !tab or !data ) then return end
 	local query = "INSERT INTO `" .. tab .. "` ( "
+	
 	for k, v in pairs( data ) do
 		query = query .. "`" .. k .. "`, "
 	end
+	
 	query = query:sub( 1, -3 ) .. " ) VALUES ( "
+	
 	for k, v in pairs( data ) do
 		query = query .. "'" .. catherine.database.escape( v ) .. "', "
 	end
+	
 	query = query:sub( 1, -3 ) .. " )"
 	catherine.database.query( query, func )
 end
@@ -203,22 +225,29 @@ end
 function catherine.database.UpdateDatas( tab, cre, newData, func )
 	if ( !catherine.database.Connected or !tab or !newData or !cre ) then return end
 	local query = "UPDATE `" .. tab .. "` SET "
+	
 	for k, v in pairs( newData ) do
 		query = query .. k .. " = '" .. catherine.database.escape( v ) .. "', "
 	end
+	
 	query = query:sub( 1, -3 ) .. " WHERE " .. cre
 	catherine.database.query( query, func )
 end
 
 function catherine.database.Query( query, func )
 	if ( !catherine.database.Connected or !query ) then return end
+	
 	catherine.database.query( query, func )
 end
 
 function catherine.database.GetDatas( tab, cre, func )
 	if ( !catherine.database.Connected or !tab ) then return end
 	local query = "SELECT * FROM " .. "`" .. tab .. "`"
-	if ( cre ) then query = query .. " WHERE " .. cre end
+	
+	if ( cre ) then
+		query = query .. " WHERE " .. cre
+	end
+	
 	catherine.database.query( query, func )
 end
 
@@ -231,6 +260,7 @@ concommand.Add( "cat_db_init", function( pl )
 		catherine.util.Notify( pl, "You do not have permission!" )
 		return
 	end
+	
 	catherine.database.Query( DROP_TABLES, function( )
 		catherine.util.Print( Color( 255, 0, 0 ), "Database has initialized." )
 		catherine.database.Connect( )
