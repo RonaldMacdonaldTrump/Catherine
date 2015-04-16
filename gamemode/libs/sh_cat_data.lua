@@ -16,7 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.catData = catherine.catData or { networkRegistry = { } }
+catherine.catData = catherine.catData or { }
+catherine.catData.networkRegistry = catherine.catData.networkRegistry or { }
 
 if ( SERVER ) then
 	function catherine.catData.SetVar( pl, key, value, noSync, save )
@@ -49,7 +50,7 @@ if ( SERVER ) then
 		if ( !catherine.catData.networkRegistry[ steamID ] ) then return end
 		
 		catherine.database.UpdateDatas( "catherine_players", "_steamID = '" .. steamID .. "'", {
-			_catData = util.TableToJSON( catherine.catData.networkRegistry[ steamID )
+			_catData = util.TableToJSON( catherine.catData.networkRegistry[ steamID ] )
 		} )
 	end
 	

@@ -184,7 +184,7 @@ function GM:PlayerSay( pl, text )
 end
 
 function GM:KeyRelease( pl, key )
-	if ( key = IN_RELOAD ) then
+	if ( key == IN_RELOAD ) then
 		timer.Remove( "Catherine.timer.WeaponToggle." .. pl:SteamID( ) )
 	end
 end

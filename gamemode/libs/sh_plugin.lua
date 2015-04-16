@@ -45,6 +45,16 @@ function catherine.plugin.LoadAll( dir )
 		
 		PLUGIN = nil
 	end
+	
+	if ( CLIENT ) then
+		local html = [[<b>Plugins</b><br>]]
+			
+		for k, v in pairs( catherine.plugin.GetAll( ) ) do
+			html = html .. "<p><b>&#10022; " .. v.name .. "</b><br>" .. v.desc .. "<br>By " .. v.author .. "<br>"
+		end
+			
+		catherine.help.Register( CAT_HELP_HTML, "Plugins", html )
+	end
 end
 
 function catherine.plugin.IncludeEntities( dir )
@@ -64,14 +74,4 @@ end
 
 function catherine.plugin.GetAll( )
 	return catherine.plugin.Lists
-end
-
-if ( CLIENT ) then
-	local html = [[<b>Plugins</b><br>]]
-		
-	for k, v in pairs( catherine.plugin.GetAll( ) ) do
-		html = html .. "<p><b>&#10022; " .. v.name .. "</b><br>" .. v.desc .. "<br>By " .. v.author .. "<br>"
-	end
-		
-	catherine.help.Register( CAT_HELP_HTML, "Plugins", html )
 end

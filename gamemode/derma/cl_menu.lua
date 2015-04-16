@@ -69,7 +69,7 @@ function PANEL:AddMenuItem( name, func )
 	item:SetText( name )
 	item:SetFont( "catherine_normal20" )
 	item:SetTextColor( Color( 50, 50, 50 ) )
-	item:SetSize( textW + 50, self.ListsBase:GetTall( ) )
+	item:SetSize( textW / 1.5, self.ListsBase:GetTall( ) )
 	item.Paint = function( pnl, w, h )
 		if ( self.lastmenuName == name ) then
 			draw.RoundedBox( 0, 0, 0, w, 10, Color( 50, 50, 50, 255 ) )
