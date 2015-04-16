@@ -35,20 +35,23 @@ BASE.func.equip = {
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
 		if ( !catherine.inventory.HasSpace( pl ) and type( ent ) == "Entity" ) then
-			catherine.util.Notify( pl, "You don't have inventory space!" )
+			catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 			return
 		end
+		
 		if ( type( ent ) == "Entity" ) then
 			catherine.item.Give( pl, itemTable.uniqueID )
 			ent:Remove( )
 		end
+		
 		local wep = pl:Give( itemTable.weaponClass )
+		
 		if ( IsValid( wep ) ) then
 			pl:SelectWeapon( itemTable.weaponClass )
 			wep:SetClip1( 0 )
 		end
-		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
 		
+		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
 		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", true )
 	end,
 	canLook = function( pl, itemTable )
@@ -63,6 +66,7 @@ BASE.func.unequip = {
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
 			pl:StripWeapon( itemTable.weaponClass )
 		end
+		
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
 		
 		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", false )
@@ -91,25 +95,31 @@ if ( SERVER ) then
 
 	hook.Add( "ItemDroped", "catherine.item.hooks.weapon_base.ItemDroped", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
+		
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
 			pl:StripWeapon( itemTable.weaponClass )
 		end
+		
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 	
 	hook.Add( "ItemStorageMoved", "catherine.item.hooks.weapon_base.ItemStorageMoved", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
+		
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
 			pl:StripWeapon( itemTable.weaponClass )
 		end
+		
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 	
 	hook.Add( "ItemVendorSolded", "catherine.item.hooks.weapon_base.ItemVendorSolded", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
+		
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
 			pl:StripWeapon( itemTable.weaponClass )
 		end
+		
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 end

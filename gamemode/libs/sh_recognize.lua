@@ -17,7 +17,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.recognize = catherine.recognize or { }
-// 참고 : 이 라이브러리는 최적화가 필요함;
 
 if ( SERVER ) then
 	function catherine.recognize.DoKnow( pl, code, target )
@@ -80,8 +79,8 @@ else
 		
 		menu:AddOption( LANG( "Recognize_UI_Option_LookingPlayer" ), function( )
 			local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
-			
-			if ( IsValid( ent ) ) then
+
+			if ( IsValid( ent ) and ent:IsPlayer( ) ) then
 				netstream.Start( "catherine.recognize.DoKnow", { 0, ent } )
 			else
 				catherine.notify.Add( LANG( "Entity_Notify_NotPlayer" ), 5 )
@@ -100,8 +99,8 @@ else
 			netstream.Start( "catherine.recognize.DoKnow", { 2 } )
 		end )
 		
-		Menu:Open( )
-		Menu:Center( )
+		menu:Open( )
+		menu:Center( )
 	end )
 
 	function GM:GetUnknownTargetName( pl, target )

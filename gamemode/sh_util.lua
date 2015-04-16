@@ -318,12 +318,14 @@ else
 
 	function catherine.util.PlayButtonSound( typ )
 		if ( typ == CAT_UTIL_BUTTOMSOUND_1 ) then
-			surface.PlaySound( "CAT/ui/one.wav" )
+
 		elseif ( typ == CAT_UTIL_BUTTOMSOUND_2 ) then
-			surface.PlaySound( "CAT/ui/two.wav" )
+
 		elseif ( typ == CAT_UTIL_BUTTOMSOUND_3 ) then
-			surface.PlaySound( "CAT/ui/three.wav" )
+
 		end
+		
+		// ^-^
 	end
 	
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )

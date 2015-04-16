@@ -205,8 +205,8 @@ if ( SERVER ) then
 		pl:SetNetVar( "charID", id )
 		pl:SetNetVar( "charLoaded", true )
 
-		if ( catherine.character.GetCharVar( pl, "isFirst", true ) == true ) then
-			catherine.character.SetCharVar( pl, "isFirst", false )
+		if ( catherine.character.GetCharVar( pl, "isFirst", 1 ) == 1 ) then
+			catherine.character.SetCharVar( pl, "isFirst", 0 )
 			hook.Run( "PlayerFirstSpawned", pl, id )
 		end
 		

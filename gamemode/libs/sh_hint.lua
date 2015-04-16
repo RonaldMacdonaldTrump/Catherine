@@ -54,29 +54,34 @@ else
 	catherine.option.Register( "CONVAR_HINT", "cat_convar_hint", "Hint", "Displays the hint.", "Framework Settings", CAT_OPTION_SWITCH )
 	
 	netstream.Hook( "catherine.hint.Receive", function( data )
+		local msg = catherine.hint.Lists[ data ].message
+		surface.SetFont( "catherine_normal25" )
+		local tw, th = surface.GetTextSize( msg )
+		
 		catherine.hint.CurHint = {
-			message = catherine.hint.Lists[ data ].message,
-			time = CurTime( ) + 10,
-			a = 0
+			message = msg,
+			time = CurTime( ) + 15,
+			targetX = ScrW( ) - ( tw / 2 ) - 10,
+			x = ScrW( )
 		}
 	end )
 	
 	function catherine.hint.Draw( )
 		if ( !catherine.hint.CurHint ) then return end
 		local t = catherine.hint.CurHint
-		
+
 		if ( t.time <= CurTime( ) ) then
-			t.a = Lerp( 0.01, t.a, 0 )
+			t.x = Lerp( 0.003, t.x, ScrW( ) * 1.5 )
 			
-			if ( math.Round( t.a ) <= 0 ) then
+			if ( math.Round( t.x ) >= ScrW( ) * 1.3 ) then
 				catherine.hint.CurHint = nil
 				return
 			end
 		else
-			t.a = Lerp( 0.01, t.a, 255 )
+			t.x = Lerp( 0.03, t.x, t.targetX )
 		end
-		
-		draw.SimpleText( t.message, "catherine_normal25", ScrW( ) - 10, 5, Color( 255, 255, 255, t.a ), TEXT_ALIGN_RIGHT )
+
+		draw.SimpleText( t.message, "catherine_normal25", t.x, 5, Color( 255, 255, 255, 255 ), 1 )
 	end
 end
 

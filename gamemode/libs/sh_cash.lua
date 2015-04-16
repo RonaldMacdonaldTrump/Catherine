@@ -63,7 +63,7 @@ if ( SERVER ) then
 end
 
 function catherine.cash.Get( pl )
-	return catherine.character.GetVar( pl, "_cash", 0 )
+	return tonumber( catherine.character.GetVar( pl, "_cash", 0 ) )
 end
 
 catherine.command.Register( {

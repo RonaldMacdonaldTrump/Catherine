@@ -52,5 +52,5 @@ catherine.font.Register( "catherine_outline30", font, 30, 1000, { outline = true
 catherine.font.Register( "catherine_outline25", font, 25, 1000, { outline = true } )
 catherine.font.Register( "catherine_outline20", font, 20, 1000, { outline = true } )
 catherine.font.Register( "catherine_outline15", font, 15, 1000, { outline = true } )
-catherine.font.Register( "catherine_introTitle", "Future Earth", ScreenScale( 50 ), 1000 )
-catherine.font.Register( "catherine_introSchema", "Future Earth", 30, 1000 )
+catherine.font.Register( "catherine_introTitle", "Garamond", ScreenScale( 50 ), 1000 )
+catherine.font.Register( "catherine_introSchema", "Garamond", 30, 1000 )
