@@ -32,6 +32,7 @@ if ( SERVER ) then
 					if ( globalVer == false ) then
 						catherine.network.SetNetGlobalVar( "cat_needUpdate", true )
 					end
+					
 					catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. catherine.version.Ver .. " -> " .. body .. "]" )
 					foundNew = true
 				else
@@ -53,11 +54,6 @@ if ( SERVER ) then
 		)
 	end
 	
-	netstream.Hook( "catherine.version.Check", function( pl )
-		if ( !pl:IsSuperAdmin( ) ) then return end
-		catherine.version.Check( pl )
-	end )
-	
 	function catherine.version.PlayerAuthed( )
 		if ( catherine.version.Checked ) then return end
 		catherine.version.Check( )
@@ -65,6 +61,11 @@ if ( SERVER ) then
 	end
 	
 	hook.Add( "PlayerAuthed", "catherine.version.PlayerAuthed", catherine.version.PlayerAuthed )
+	
+	netstream.Hook( "catherine.version.Check", function( pl )
+		if ( !pl:IsSuperAdmin( ) ) then return end
+		catherine.version.Check( pl )
+	end )
 else
 	netstream.Hook( "catherine.version.CheckResult", function( data )
 		if ( IsValid( catherine.vgui.version ) ) then

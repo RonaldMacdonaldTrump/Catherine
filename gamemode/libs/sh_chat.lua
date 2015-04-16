@@ -227,14 +227,17 @@ if ( SERVER ) then
 	end
 	
 	function catherine.chat.GetListener( pl, class )
-		local classTable, target = catherine.chat.FindByClass( class ), { pl }
-		if ( !classTable or ( classTable and !classTable.canHearRange ) ) then return target end
+		local classTable = catherine.chat.FindByClass( class )
+		local target = { pl }
+		
+		if ( !classTable or !classTable.canHearRange ) then return target end
+		
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			if ( pl == v ) then continue end
-			if ( catherine.util.CalcDistanceByPos( pl, v ) <= classTable.canHearRange ) then
+			if ( pl != v and catherine.util.CalcDistanceByPos( pl, v ) <= classTable.canHearRange ) then
 				target[ #target + 1 ] = v
 			end
 		end
+		
 		return target
 	end
 	

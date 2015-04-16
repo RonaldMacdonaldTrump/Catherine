@@ -18,20 +18,26 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.encrypt = catherine.encrypt or { }
 
-function catherine.encrypt.Encode( str )
-	if ( !str or type( str ) != "string" ) then return "" end
-	local toTable, k = string.Explode( "", str ), 0
+function catherine.encrypt.Encode( text )
+	local toTable = string.Explode( "", text )
+	local k = 0
 	
 	for i = 1, #toTable do
 		local randStr = ""
+		
 		if ( k != 0 ) then
 			for i2 = 1, k do
 				local charRand = string.char( math.random( 65, 90 ) )
 				local sizeRand = math.random( 0, 1 )
-				if ( sizeRand == 1 ) then charRand = charRand:lower( ) end
+				
+				if ( sizeRand == 1 ) then
+					charRand = charRand:lower( )
+				end
+				
 				randStr = randStr .. charRand
 			end
 		end
+		
 		k = k + 1
 		toTable[ i ] = toTable[ i ] .. randStr
 	end
@@ -39,12 +45,15 @@ function catherine.encrypt.Encode( str )
 	return table.concat( toTable, "" )
 end
 
-function catherine.encrypt.Decode( str )
-	if ( !str or type( str ) != "string" ) then return "" end
-	local tab, a, b, ap, bp = { }, 1, 1, 0, 1
+function catherine.encrypt.Decode( text )
+	local tab = { }
+	local a = 1
+	local b = 1
+	local ap = 0
+	local bp = 1
 	
-	for i = 1, #str do
-		local find = str:sub( a, b )
+	for i = 1, #text do
+		local find = text:sub( a, b )
 		if ( find == "" ) then break end
 		
 		ap = ap + 1

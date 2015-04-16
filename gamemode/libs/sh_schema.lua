@@ -47,7 +47,7 @@ function catherine.schema.GetUniqueID( )
 	return Schema and Schema.UniqueID or "catherine"
 end
 
-hook.NyanHookRun = hook.NyanHookRun or hook.Call
+hook.OriginalHookRun = hook.OriginalHookRun or hook.Call
 
 function hook.Call( name, gm, ... )
 	if ( catherine.plugin ) then
@@ -55,13 +55,17 @@ function hook.Call( name, gm, ... )
 			if ( !v[ name ] ) then continue end
 			local func = v[ name ]( v, ... )
 			if ( func == nil ) then continue end
+			
 			return func
 		end
 	end
+	
 	if ( Schema and Schema[ name ] ) then
 		local func = Schema[ name ]( Schema, ... )
 		if ( func == nil ) then return end
+		
 		return func
 	end
-	return hook.NyanHookRun( name, gm, ... )
+	
+	return hook.OriginalHookRun( name, gm, ... )
 end
