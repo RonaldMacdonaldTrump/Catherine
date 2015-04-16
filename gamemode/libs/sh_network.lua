@@ -64,7 +64,7 @@ if ( SERVER ) then
 		local conVert = { }
 		
 		for k, v in pairs( catherine.network.entityVars ) do
-			if ( k:IsPlayer( ) ) then
+			if ( k:IsPlayer( ) and k:IsValid( ) ) then
 				conVert[ k:SteamID( ) ] = v
 			else
 				conVert[ k:EntIndex( ) ] = v

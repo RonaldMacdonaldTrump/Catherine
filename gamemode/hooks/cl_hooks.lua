@@ -64,6 +64,7 @@ function GM:CalcView( pl, pos, ang, fov )
 end
 
 function GM:HUDDrawScoreBoard( )
+	if ( LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 
 	catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 6, 6 )
@@ -88,9 +89,11 @@ function GM:HUDDrawScoreBoard( )
 	draw.SimpleText( Schema and Schema.Title or "Unknown", "catherine_introSchema", scrW / 2, scrH * 0.6, Color( 235, 235, 235, catherine.intro.alpha ), 1, 1 )
 end
 
+local OFFSET_PLAYER = Vector( 0, 0, 30 )
+
 function GM:DrawEntityTargetID( pl, ent, a )
 	if ( !ent:IsPlayer( ) ) then return end
-	local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
+	local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) + OFFSET_PLAYER )
 	local x, y, x2, y2 = pos.x, pos.y - 100, 0, 0
 	local name, desc = hook.Run( "GetPlayerInformation", pl, ent )
 	

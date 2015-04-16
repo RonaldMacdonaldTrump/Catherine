@@ -58,7 +58,7 @@ function catherine.bar.Draw( )
 			v.alpha = Lerp( 0.03, v.alpha, 255 )
 		end
 		
-		v.ani = math.Approach( v.ani, ( ScrW( ) * 0.3 ) * percent, 0.5 )
+		v.ani = math.Approach( v.ani, ( ScrW( ) * 0.3 ) * percent, 1 )
 		v.y = Lerp( 0.03, v.y, -5 + count * 10 )
 		
 		surface.SetDrawColor( 255,255,255, v.alpha - 30 )

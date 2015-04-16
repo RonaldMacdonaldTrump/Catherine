@@ -40,7 +40,7 @@ function PANEL:SetMenuSize( w, h )
 	self.w, self.h = w, h
 	self:SetSize( w, h )
 	self:SetPos( 0 - w, 80 )
-	self:MoveTo( ScrW( ) / 2 - w / 2, 80, 0.3, 0 )
+	self:MoveTo( ScrW( ) / 2 - w / 2, 80, 0.2, 0 )
 	self:OnMenuSizeChanged( w, h )
 end
 
@@ -57,7 +57,7 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:Close( )
-	self:AlphaTo( 0, 0.4, 0, nil, function( )
+	self:AlphaTo( 0, 0.2, 0, nil, function( )
 		if ( !IsValid( self ) ) then return end
 		self:Remove( )
 		self = nil

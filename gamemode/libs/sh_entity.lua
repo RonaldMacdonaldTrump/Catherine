@@ -79,6 +79,7 @@ else
 		end
 		
 		menu:Open( )
+		menu:Center( )
 	end )
 	
 	netstream.Hook( "catherine.entity.RegisterUseMenu", function( data )
