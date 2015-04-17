@@ -40,7 +40,6 @@ if ( SERVER ) then
 	end
 	
 	function catherine.storage.FindByModel( model )
-		if ( !model ) then return end
 		for k, v in pairs( catherine.storage.GetAll( ) ) do
 			if ( v.model:lower( ) == model:lower( ) ) then
 				return v

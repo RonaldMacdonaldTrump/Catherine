@@ -112,6 +112,10 @@ function GM:PlayerInformationDraw( pl, target, x, y, a )
 	draw.SimpleText( ( target:GetGender( ) == "male" and "He" or "She" ) .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
 end
 
+function GM:GetUnknownTargetName( pl, target )
+	return LANG( "Recognize_UI_Unknown" )
+end
+
 function GM:ProgressEntityCache( pl )
 	if ( pl:IsCharacterLoaded( ) and catherine.nextCacheDo <= CurTime( ) ) then
 		local data = { }

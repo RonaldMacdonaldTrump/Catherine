@@ -60,10 +60,6 @@ if ( SERVER ) then
 		catherine.character.SetCharVar( pl, "recognize", { } )
 	end
 
-	function GM:GetUnknownTargetName( pl, target )
-		return LANG( pl, "Recognize_UI_Unknown" )
-	end
-
 	function catherine.recognize.PlayerDeath( pl )
 		catherine.recognize.Initialize( pl )
 	end
@@ -102,10 +98,6 @@ else
 		menu:Open( )
 		menu:Center( )
 	end )
-
-	function GM:GetUnknownTargetName( pl, target )
-		return LANG( "Recognize_UI_Unknown" )
-	end
 end
 
 function catherine.recognize.IsKnowTarget( pl, target )
@@ -122,16 +114,4 @@ local META = FindMetaTable( "Player" )
 
 function META:IsKnow( target )
 	return catherine.recognize.IsKnowTarget( self, target )
-end
-
-function GM:GetPlayerInformation( pl, target )
-	if ( pl == target ) then
-		return target:Name( ), target:Desc( )
-	end
-	
-	if ( pl:IsKnow( target ) ) then
-		return target:Name( ), target:Desc( )
-	end
-	
-	return hook.Run( "GetUnknownTargetName", pl, target ), target:Desc( )
 end
