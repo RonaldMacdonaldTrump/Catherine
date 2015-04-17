@@ -557,9 +557,7 @@ function PANEL:Init( )
 	self.model:EnableVerticalScrollbar( false )
 	
 	local factionTable = catherine.faction.FindByID( self.parent.createData.datas.faction )
-	
-	
-	
+
 	if ( factionTable ) then
 		for k, v in pairs( factionTable.models ) do
 			local spawnIcon = vgui.Create( "SpawnIcon" )
@@ -585,6 +583,7 @@ function PANEL:Init( )
 			if ( name ) then
 				self.nameEnt:SetText( name )
 				self.nameEnt:SetEditable( false )
+				self.data.name = self.nameEnt:GetText( )
 			end
 		end
 		
@@ -594,6 +593,7 @@ function PANEL:Init( )
 			if ( desc ) then
 				self.descEnt:SetText( desc )
 				self.descEnt:SetEditable( false )
+				self.data.desc = self.descEnt:GetText( )
 			end
 		end
 	else

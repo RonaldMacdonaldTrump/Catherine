@@ -69,6 +69,9 @@ function GM:PlayerSpawn( pl )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	player_manager.SetPlayerClass( pl, "catherine_player" )
 	
+	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
+	pl:AllowFlashlight( status )
+
 	if ( pl:IsCharacterLoaded( ) and !pl.CAT_loadingChar ) then
 		hook.Run( "PlayerSpawnedInCharacter", pl )
 	end
@@ -76,6 +79,7 @@ end
 
 function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
 	if ( !pl:IsPlayer( ) ) then return end
+
 	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 	
 	if ( hitGroup == CAT_BODY_ID_HEAD ) then
@@ -119,6 +123,10 @@ function GM:EntityTakeDamage( pl, dmginfo )
 	timer.Create( "Catherine.timer.RunSpamProtection_" .. pl:SteamID( ), 2, 1, function( )
 		pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
 	end )
+end
+
+function GM:PlayerCanFlashlight( pl )
+	return true
 end
 
 function GM:KeyPress( pl, key )
@@ -257,6 +265,7 @@ function GM:PlayerHurt( pl )
 		end
 	end
 	
+	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 	pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
 	hook.Run( "PlayerTakeDamage", pl )
 	
@@ -278,12 +287,12 @@ function GM:PlayerDeath( pl )
 		pl.ragdoll:Remove( )
 		pl.ragdoll = nil
 	end
-		
+
 	pl.CAT_healthRecoverBool = false
 	catherine.util.ProgressBar( pl, "You are now respawning.", catherine.configs.spawnTime, function( )
 		pl:Spawn( )
 	end )
-	
+
 	pl:SetNetVar( "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
 	pl:SetNetVar( "deathTime", CurTime( ) )
 	

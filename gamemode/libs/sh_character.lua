@@ -60,6 +60,7 @@ catherine.character.NewVar( "name", {
 		if ( data:len( ) >= catherine.configs.characterNameMinLen and data:len( ) < catherine.configs.characterNameMaxLen ) then
 			return true
 		end
+		
 		return false, "The character name must be at least " .. catherine.configs.characterNameMinLen .." characters long and up to " .. catherine.configs.characterNameMaxLen .. " characters!"
 	end
 } )
@@ -72,6 +73,7 @@ catherine.character.NewVar( "desc", {
 		if ( data:len( ) >= catherine.configs.characterDescMinLen and data:len( ) < catherine.configs.characterDescMaxLen ) then
 			return true
 		end
+		
 		return false, "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long and up to " .. catherine.configs.characterDescMaxLen .. " characters!"
 	end
 } )
@@ -83,6 +85,7 @@ catherine.character.NewVar( "model", {
 		if ( data == "" ) then
 			return false, "Please select character model!"
 		end
+		
 		return true
 	end
 } )
