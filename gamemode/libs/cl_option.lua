@@ -64,9 +64,10 @@ function catherine.option.GetAll( )
 	return catherine.option.Lists
 end
 
-catherine.option.Register( "CONVAR_BAR", "cat_convar_bar", "Bar", "Displays the Bar.", "Framework Settings", CAT_OPTION_SWITCH )
-catherine.option.Register( "CONVAR_MAINHUD", "cat_convar_hud", "Main HUD", "Displays the main HUD.", "Framework Settings", CAT_OPTION_SWITCH )
-catherine.option.Register( "CONVAR_LANGUAGE", "cat_convar_language", "Language", "The language.", "Framework Settings", CAT_OPTION_LIST, function( )
+local cat = "^Option_Category_01"
+catherine.option.Register( "CONVAR_BAR", "cat_convar_bar", "^Option_Str_BAR_Name", "^Option_Str_BAR_Desc", cat, CAT_OPTION_SWITCH )
+catherine.option.Register( "CONVAR_MAINHUD", "cat_convar_hud", "^Option_Str_MAINHUD_Name", "^Option_Str_MAINHUD_Desc", cat, CAT_OPTION_SWITCH )
+catherine.option.Register( "CONVAR_LANGUAGE", "cat_convar_language", "^Option_Str_MAINLANG_Name", "^Option_Str_MAINLANG_Desc", cat, CAT_OPTION_LIST, function( )
 	local lang = {
 		data = { },
 		curVal = "English"

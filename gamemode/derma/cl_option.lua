@@ -53,7 +53,7 @@ function PANEL:BuildOption( )
 	self.Lists:Clear( )
 	for k, v in pairs( self.optionTable or { } ) do
 		local form = vgui.Create( "DForm" )
-		form:SetName( k )
+		form:SetName( catherine.util.StuffLanguage( k ) )
 		form:SetSpacing( 0 )
 		form:SetAutoSize( true )
 		form.Paint = function( pnl, w, h )
@@ -122,8 +122,9 @@ end
 function PANEL:Paint( w, h )
 	if ( !self.optionTable ) then return end
 	local opt = self.optionTable
-	draw.SimpleText( opt.name, "catherine_normal25", 15, 15, Color( 30, 30, 30, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( opt.desc, "catherine_normal15", 15, 40, Color( 30, 30, 30, 255 ), TEXT_ALIGN_LEFT, 1 )
+	
+	draw.SimpleText( self.name, "catherine_normal25", 15, 15, Color( 30, 30, 30, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.desc, "catherine_normal15", 15, 40, Color( 30, 30, 30, 255 ), TEXT_ALIGN_LEFT, 1 )
 	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 end
 
@@ -136,7 +137,9 @@ end
 
 function PANEL:SetOption( optionTable )
 	self.optionTable = optionTable
-
+	self.name = catherine.util.StuffLanguage( self.optionTable.name )
+	self.desc = catherine.util.StuffLanguage( self.optionTable.desc )
+	
 	if ( optionTable.typ == CAT_OPTION_LIST ) then
 		self.Button:SetVisible( false )
 		self.List:SetVisible( true )

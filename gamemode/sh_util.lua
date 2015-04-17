@@ -177,6 +177,10 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.util.Notify", { LANG( pl, key, ... ) } )
 	end
 	
+	function catherine.util.StuffLanguage( pl, key, ... )
+		return key:sub( 1, 1 ) == "^" and LANG( pl, key, ... ) or key
+	end
+	
 	function catherine.util.ProgressBar( pl, message, time, func )
 		if ( func ) then
 			timer.Simple( time, function( )
@@ -326,6 +330,10 @@ else
 		end
 		
 		// ^-^
+	end
+	
+	function catherine.util.StuffLanguage( key, ... )
+		return key:sub( 1, 1 ) == "^" and LANG( key, ... ) or key
 	end
 	
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )

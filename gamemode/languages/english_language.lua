@@ -139,6 +139,27 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetStatus_True" ] = "You are set status to unbuyable this door.",
 	[ "Door_Notify_SetStatus_False" ] = "You are set status to buyable this door.",
 	
+	// Hint
+	[ "Hint_Message_01" ] = "Type // before your message to talk out-of-character.",
+	[ "Hint_Message_02" ] = "Type .// or [[ before your message to talk out-of-character locally.",
+	[ "Hint_Message_03" ] = "Press 'F1 key' to view your character and roleplay information.",
+	[ "Hint_Message_04" ] = "Press 'Tab key' to view the main menu.",
+	
+	// Option
+	[ "Option_Category_01" ] = "Framework Settings",
+
+	[ "Option_Str_BAR_Name" ] = "Show Bar",
+	[ "Option_Str_BAR_Desc" ] = "Displays the Bar.",
+	
+	[ "Option_Str_MAINHUD_Name" ] = "Show Main HUD",
+	[ "Option_Str_MAINHUD_Desc" ] = "Displays Main HUD.",
+	
+	[ "Option_Str_MAINLANG_Name" ] = "Main Language",
+	[ "Option_Str_MAINLANG_Desc" ] = "Change the Main Language.",
+	
+	[ "Option_Str_HINT_Name" ] = "Show Hint",
+	[ "Option_Str_HINT_Desc" ] = "Displays the hint.",
+	
 	// Basic
 	[ "Basic_UI_StringRequest" ] = "Request",
 	[ "Basic_UI_Question" ] = "Question",

@@ -51,7 +51,7 @@ else
 	catherine.hint.CurHint = catherine.hint.CurHint or nil
 	
 	CAT_CONVAR_HINT = CreateClientConVar( "cat_convar_hint", 1, true, true )
-	catherine.option.Register( "CONVAR_HINT", "cat_convar_hint", "Hint", "Displays the hint.", "Framework Settings", CAT_OPTION_SWITCH )
+	catherine.option.Register( "CONVAR_HINT", "cat_convar_hint", "^Option_Str_HINT_Name", "^Option_Str_HINT_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
 	
 	netstream.Hook( "catherine.hint.Receive", function( data )
 		local msg = catherine.hint.Lists[ data ].message
@@ -59,7 +59,7 @@ else
 		local tw, th = surface.GetTextSize( msg )
 		
 		catherine.hint.CurHint = {
-			message = msg,
+			message = catherine.util.StuffLanguage( msg ),
 			time = CurTime( ) + 15,
 			targetX = ScrW( ) - ( tw / 2 ) - 10,
 			x = ScrW( )
@@ -85,7 +85,6 @@ else
 	end
 end
 
-catherine.hint.Register( "Type // before your message to talk out-of-character." )
-catherine.hint.Register( "Type .// or [[ before your message to talk out-of-character locally." )
-catherine.hint.Register( "Press 'F1 key' to view your character and roleplay information." )
-catherine.hint.Register( "Press 'Tab key' to view the main menu." )
+for i = 1, 4 do
+	catherine.hint.Register( "^Hint_Message_0" .. i )
+end
