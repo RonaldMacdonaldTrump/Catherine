@@ -189,6 +189,8 @@ function PANEL:UseCharacterPanel( )
 	for k, v in pairs( self.loadCharacter.Lists ) do
 		local factionData = catherine.faction.FindByID( v.characterDatas._faction )
 		if ( !factionData ) then return end
+		local factionName = catherine.util.StuffLanguage( factionData.name )
+		
 		v.panel = vgui.Create( "DPanel", self.CharacterPanel )
 		v.panel:SetSize( baseW, baseH )
 		v.panel.x = 0
@@ -198,7 +200,7 @@ function PANEL:UseCharacterPanel( )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
 			draw.SimpleText( v.characterDatas._name, "catherine_normal20", w / 2, h - 90, Color( 0, 0, 0, 255 ), 1, 1 )
 			draw.SimpleText( v.characterDatas._desc, "catherine_normal15", w / 2, h - 70, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( factionData.name, "catherine_normal30", w / 2, 20, Color( 0, 0, 0, 255 ), 1, 1 )--]]
+			draw.SimpleText( factionName, "catherine_normal30", w / 2, 20, Color( 0, 0, 0, 255 ), 1, 1 )--]]
 		end
 		
 		v.panel.button = vgui.Create( "DButton", v.panel )
@@ -380,15 +382,17 @@ function PANEL:Init( )
 	self.Lists:SetSize( 0, self.h - 85 )
 	
 	for k, v in pairs( self.factionList ) do
+		local factionName = catherine.util.StuffLanguage( v.name )
+		
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( 200, self.Lists:GetTall( ) )
 		panel.Paint = function( pnl, w, h )
 			if ( self.data.faction == v.uniqueID ) then
 				draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 235 ) )
-				draw.SimpleText( v.name, "catherine_normal15", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
-				return
+				draw.SimpleText( factionName, "catherine_normal15", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
+			else
+				draw.SimpleText( factionName, "catherine_normal15", w / 2, h - 30, Color( 50, 50, 50, 255 ), 1, 1 )
 			end
-			draw.SimpleText( v.name, "catherine_normal15", w / 2, h - 30, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
 		
 		local model = vgui.Create( "DModelPanel", panel )
@@ -644,7 +648,9 @@ end
 
 vgui.Register( "catherine.character.stageTwo", PANEL, "DPanel" )
 
-catherine.menu.Register( "Character", function( menuPnl, itemPnl )
+catherine.menu.Register( function( )
+	return LANG( "Character_UI_Title" )
+end, function( menuPnl, itemPnl )
 	vgui.Create( "catherine.vgui.character" )
 	menuPnl:Close( )
 end )

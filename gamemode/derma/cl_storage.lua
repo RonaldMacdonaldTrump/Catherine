@@ -254,7 +254,10 @@ function PANEL:BuildStorage( )
 				netstream.Start( "catherine.storage.Work", {
 					self.ent:EntIndex( ),
 					CAT_STORAGE_ACTION_ADD,
-					v1.uniqueID
+					{
+						uniqueID = v1.uniqueID,
+						itemData = self.player:GetInvItemDatas( itemTable.uniqueID )
+					}
 				} )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )

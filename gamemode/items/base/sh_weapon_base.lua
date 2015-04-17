@@ -103,7 +103,7 @@ if ( SERVER ) then
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 	
-	hook.Add( "ItemStorageMoved", "catherine.item.hooks.weapon_base.ItemStorageMoved", function( pl, itemTable )
+	hook.Add( "ItemStorageMove", "catherine.item.hooks.weapon_base.ItemStorageMoved", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
 		
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then

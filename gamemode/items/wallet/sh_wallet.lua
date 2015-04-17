@@ -17,9 +17,9 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local ITEM = catherine.item.New( "wallet" )
-ITEM.name = "Wallet"
-ITEM.desc = catherine.configs.cashName .. " in a small stack."
-ITEM.category = "Wallet"
+ITEM.name = "^Item_Name_Wallet"
+ITEM.desc = "^Item_Desc_Wallet"
+ITEM.category = "^Item_Category_Wallet"
 ITEM.model = catherine.configs.cashModel
 ITEM.cost = 0
 ITEM.weight = 0.5
@@ -29,7 +29,7 @@ ITEM.itemData = {
 ITEM.IsPersistent = true
 ITEM.func = { }
 ITEM.func.take = {
-	text = "Take " .. catherine.configs.cashName,
+	text = "^Item_FuncStr01_Wallet",
 	icon = "icon16/money_add.png",
 	canShowIsWorld = true,
 	func = function( pl, itemTable, ent )
@@ -46,7 +46,7 @@ ITEM.func.take = {
 	end
 }
 ITEM.func.drop = {
-	text = "Drop " .. catherine.configs.cashName,
+	text = "^Item_FuncStr02_Wallet",
 	icon = "icon16/money_delete.png",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, isMenu )
@@ -74,7 +74,7 @@ if ( SERVER ) then
 	end )
 else
 	function ITEM:GetDesc( pl, itemTable, itemData, isInv )
-		return ( isInv and "You have " .. catherine.cash.GetName( catherine.cash.Get( pl ) ) .. "!" or catherine.cash.GetName( itemData.amount ) )
+		return ( isInv and LANG( "Cash_UI_HasStr", catherine.cash.GetName( catherine.cash.Get( pl ) ) ) )
 	end
 end
 

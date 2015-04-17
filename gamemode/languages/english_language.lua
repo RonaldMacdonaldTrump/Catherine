@@ -30,6 +30,7 @@ LANGUAGE.data = {
 	[ "Cash_Notify_NotValidAmount" ] = "Please enter right amount!",
 	
 	// Character
+	[ "Character_UI_Title" ] = "Character",
 	[ "Character_Notify_CantDeleteUsing" ] = "You can't delete using character!",
 	[ "Character_Notify_CantSwitchRagdolled" ] = "You can't switch character on ragdolled!",
 	[ "Character_Notify_IsNotValid" ] = "This character is not valid!",
@@ -107,6 +108,13 @@ LANGUAGE.data = {
 	[ "Item_Category_Other" ] = "Other",
 	[ "Item_Category_Weapon" ] = "Weapon",
 	[ "Item_Category_Storage" ] = "Storage",
+	
+	[ "Item_Category_Wallet" ] = "Wallet",
+	[ "Item_Name_Wallet" ] = "Wallet",
+	[ "Item_Desc_Wallet" ] = catherine.configs.cashName .. " in a small stack.",
+	[ "Item_FuncStr01_Wallet" ] = "Take " .. catherine.configs.cashName,
+	[ "Item_FuncStr02_Wallet" ] = "Drop " .. catherine.configs.cashName,
+	
 	[ "Item_FuncStr01_Weapon" ] = "Equip",
 	[ "Item_FuncStr02_Weapon" ] = "Unequip",
 	[ "Item_FuncStr01_Basic" ] = "Take",
@@ -158,6 +166,7 @@ LANGUAGE.data = {
 	[ "Hint_Message_04" ] = "Press 'Tab key' to view the main menu.",
 	
 	// Option
+	[ "Option_UI_Title" ] = "Option",
 	[ "Option_Category_01" ] = "Framework Settings",
 
 	[ "Option_Str_BAR_Name" ] = "Show Bar",

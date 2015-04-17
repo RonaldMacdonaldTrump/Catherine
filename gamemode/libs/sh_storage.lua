@@ -52,14 +52,15 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) or !IsValid( ent ) or !workID or !data ) then return end
 		
 		if ( workID == CAT_STORAGE_ACTION_ADD ) then
-			local itemTable = catherine.item.FindByID( data )
+			local uniqueID = data.uniqueID
+			local itemTable = catherine.item.FindByID( uniqueID )
 			
 			if ( !itemTable ) then
 				catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
 				return
 			end
 			
-			if ( !catherine.inventory.HasItem( pl, data ) ) then
+			if ( !catherine.inventory.HasItem( pl, uniqueID ) ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_DontHave" )
 				return
 			end
@@ -76,26 +77,27 @@ if ( SERVER ) then
 				return
 			end
 			
+			hook.Run( "ItemStorageMove", pl, itemTable )
+			
 			local inventory = catherine.storage.GetInv( ent )
-			local invData = inventory[ data ]
+			local invData = inventory[ uniqueID ]
 
 			if ( invData ) then
-				inventory[ data ] = {
+				inventory[ uniqueID ] = {
 					uniqueID = invData.uniqueID,
 					itemCount = invData.itemCount + 1,
-					itemData = invData.itemData
+					itemData = data.itemData or invData.itemData or itemTable.itemData or { }
 				}
 			else
-				inventory[ data ] = {
-					uniqueID = itemTable.uniqueID,
+				inventory[ uniqueID ] = {
+					uniqueID = uniqueID,
 					itemCount = 1,
-					itemData = itemTable.itemData or { }
+					itemData = data.itemData or itemTable.itemData or { }
 				}
 			end
-			
-			catherine.item.Take( pl, data )
+
+			catherine.item.Take( pl, uniqueID )
 			catherine.storage.SetInv( ent, inventory )
-			hook.Run( "ItemStorageMoved", pl, itemTable )
 		elseif ( workID == CAT_STORAGE_ACTION_REMOVE ) then
 			local itemTable = catherine.item.FindByID( data )
 			
@@ -105,7 +107,7 @@ if ( SERVER ) then
 			end
 			
 			local inventory = catherine.storage.GetInv( ent )
-			
+
 			if ( !inventory[ data ] ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 				return
@@ -116,8 +118,11 @@ if ( SERVER ) then
 				return
 			end
 			
+			hook.Run( "ItemStorageTake", pl, itemTable )
+			
 			local invData = inventory[ data ]
-
+			local itemDataBuffer = invData.itemData
+			
 			inventory[ data ] = {
 				uniqueID = invData.uniqueID,
 				itemCount = math.max( invData.itemCount - 1, 0 ),
@@ -128,9 +133,11 @@ if ( SERVER ) then
 				inventory[ data ] = nil
 			end
 			
-			catherine.item.Give( pl, data )
+			catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
+				uniqueID = data,
+				itemData = ( itemTable.useDynamicItemData and itemDataBuffer ) or itemTable.itemData
+			} )
 			catherine.storage.SetInv( ent, inventory )
-			hook.Run( "ItemStorageTaked", pl, itemTable )
 		end
 		
 		netstream.Start( pl, "catherine.storage.RefreshPanel", ent:EntIndex( ) )

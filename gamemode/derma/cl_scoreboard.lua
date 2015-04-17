@@ -71,7 +71,7 @@ function PANEL:RefreshPlayerLists( )
 		local hF = 0
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
-		form:SetName( k )
+		form:SetName( catherine.util.StuffLanguage( k ) )
 		form.Paint = function( pnl, w, h )
 			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end

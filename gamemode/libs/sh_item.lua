@@ -57,7 +57,7 @@ function catherine.item.Register( itemTable )
 					catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 					return
 				end
-				
+
 				catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 					uniqueID = itemTable.uniqueID,
 					itemData = ( itemTable.useDynamicItemData and ent:GetItemData( ) ) or itemTable.itemData
@@ -184,7 +184,7 @@ if ( SERVER ) then
 		ent:SetSkin( itemTable.skin or 0 )
 		ent:PhysicsInit( SOLID_VPHYSICS )
 		ent:InitializeItem( uniqueID, itemData or { } )
-		
+
 		local physObject = ent:GetPhysicsObject( )
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( true )
@@ -209,7 +209,7 @@ else
 		for k, v in pairs( itemTable and itemTable.func or { } ) do
 			if ( !v.canShowIsMenu or ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) ) then continue end
 			
-			menu:AddOption( v.text or "ERROR", function( )
+			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
 				netstream.Start( "catherine.item.Work", { uniqueID, k, true } )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
@@ -227,7 +227,7 @@ else
 		for k, v in pairs( itemTable and itemTable.func or { } ) do
 			if ( !v.canShowIsWorld or ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) ) then continue end
 
-			menu:AddOption( v.text or "ERROR", function( )
+			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
 				netstream.Start( "catherine.item.Work", { uniqueID, k, ent } )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end

@@ -276,9 +276,11 @@ if ( SERVER ) then
 	end
 	
 	function catherine.chat.CanChat( pl, classTable )
-		if ( classTable and classTable.canRun and classTable.canRun( pl ) == false ) then
-			return true
+		if ( classTable.canRun and classTable.canRun( pl ) == false ) then
+			return false
 		end
+		
+		return true
 	end
 	
 	function catherine.chat.Work( pl, text )
@@ -358,12 +360,12 @@ else
 	catherine.chat.isOpened = catherine.chat.isOpened or false
 	catherine.chat.msg = catherine.chat.msg or { }
 	catherine.chat.history = catherine.chat.history or { }
-	
+
 	local CHATBox_w, CHATBox_h = ScrW( ) * 0.5, ScrH( ) * 0.3
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
 	
 	netstream.Hook( "catherine.chat.Post", function( data )
-		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		local speaker, class, text, ex = data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ]
 		local class = catherine.chat.FindByClass( class )
 		

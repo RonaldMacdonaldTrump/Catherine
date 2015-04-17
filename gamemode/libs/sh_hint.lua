@@ -54,12 +54,12 @@ else
 	catherine.option.Register( "CONVAR_HINT", "cat_convar_hint", "^Option_Str_HINT_Name", "^Option_Str_HINT_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
 	
 	netstream.Hook( "catherine.hint.Receive", function( data )
-		local msg = catherine.hint.Lists[ data ].message
+		local msg = catherine.util.StuffLanguage( catherine.hint.Lists[ data ].message )
 		surface.SetFont( "catherine_normal25" )
 		local tw, th = surface.GetTextSize( msg )
 		
 		catherine.hint.CurHint = {
-			message = catherine.util.StuffLanguage( msg ),
+			message = msg,
 			time = CurTime( ) + 15,
 			targetX = ScrW( ) - ( tw / 2 ) - 10,
 			x = ScrW( )

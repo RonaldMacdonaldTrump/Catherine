@@ -46,6 +46,14 @@ function GM:ShowTeam( pl )
 	end
 end
 
+function GM:CanLookF1( pl )
+	return true
+end
+
+function GM:CanLookF2( pl )
+	return true
+end
+
 function GM:GetGameDescription( )
 	return "CAT - ".. ( Schema and Schema.Name or "Unknown" )
 end

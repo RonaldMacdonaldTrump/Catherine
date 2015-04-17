@@ -22,7 +22,7 @@ function PANEL:Init( )
 	catherine.vgui.option = self
 
 	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
-	self:SetMenuName( "Setting" )
+	self:SetMenuName( LANG( "Option_UI_Title" ) )
 	
 	self.optionTable = nil
 
@@ -41,16 +41,19 @@ end
 
 function PANEL:InitializeOption( )
 	local opt = { }
+	
 	for k, v in pairs( catherine.option.GetAll( ) ) do
 		opt[ v.category ] = opt[ v.category ] or { }
 		opt[ v.category ][ #opt[ v.category ] + 1 ] = v
 	end
+	
 	self.optionTable = opt
 	self:BuildOption( )
 end
 
 function PANEL:BuildOption( )
 	self.Lists:Clear( )
+	
 	for k, v in pairs( self.optionTable or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetName( catherine.util.StuffLanguage( k ) )
@@ -163,6 +166,8 @@ end
 
 vgui.Register( "catherine.vgui.optionItem", PANEL, "DPanel" )
 
-catherine.menu.Register( "Setting", function( menuPnl, itemPnl )
+catherine.menu.Register( function( )
+	return LANG( "Option_UI_Title" )
+end, function( menuPnl, itemPnl )
 	return vgui.Create( "catherine.vgui.option", menuPnl )
 end )
