@@ -141,7 +141,17 @@ if ( SERVER ) then
 	end
 	
 	function catherine.door.SetDoorStatus( pl, ent )
-	
+		local curStatus = ent:GetNetVar( "cantBuy", false )
+		
+		if ( curStatus ) then
+			ent:SetNetVar( "cantBuy", false )
+			
+			return true, "Door_Notify_SetStatus_False"
+		else
+			ent:SetNetVar( "cantBuy", true )
+			
+			return true, "Door_Notify_SetStatus_True"
+		end
 	end
 
 	function catherine.door.GetDoorCost( pl, ent )
@@ -154,12 +164,12 @@ if ( SERVER ) then
 		for k, v in pairs( ents.GetAll( ) ) do
 			if ( !catherine.entity.IsDoor( v ) ) then continue end
 			local title = v:GetNetVar( "title", "Door" )
-			local buyable = v:GetNetVar( "buyable", true )
-			if ( title == "Door" or buyable ) then continue end
+			local cantBuy = v:GetNetVar( "cantBuy", false )
+			if ( title == "Door" or !cantBuy ) then continue end
 			
 			data[ #data + 1 ] = {
 				title = title,
-				buyable = buyable,
+				cantBuy = cantBuy,
 				index = v:EntIndex( )
 			}
 		end
@@ -172,7 +182,7 @@ if ( SERVER ) then
 			for k1, v1 in pairs( catherine.data.Get( "doors", { } ) ) do
 				if ( IsValid( v ) and catherine.entity.IsDoor( v ) and v:EntIndex( ) == v1.index ) then
 					v:SetNetVar( "title", v1.title )
-					v:SetNetVar( "buyable", v1.buyable )
+					v:SetNetVar( "cantBuy", v1.cantBuy )
 				end
 			end
 		end
@@ -242,7 +252,7 @@ function catherine.door.IsHasDoorPermission( pl, ent )
 end
 
 function catherine.door.IsBuyableDoor( ent )
-	return ent:GetNetVar( "buyable", true )
+	return !ent:GetNetVar( "cantBuy", false )
 end
 
 catherine.command.Register( {
@@ -282,7 +292,7 @@ catherine.command.Register( {
 			if ( success ) then
 				catherine.util.NotifyLang( pl, "Door_Notify_SetTitle" )
 			else
-				catherine.util.NotifyLang( pl, langKey, unpack( par ) )
+				catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 			end
 		else
 			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
@@ -298,9 +308,7 @@ catherine.command.Register( {
 			local success, langKey, par = catherine.door.SetDoorStatus( pl, pl:GetEyeTrace( 70 ).Entity )
 			
 			if ( success ) then
-				catherine.util.NotifyLang( pl, "Door_Notify_SetStatus" )
-			else
-				catherine.util.NotifyLang( pl, langKey, unpack( par ) )
+				catherine.util.NotifyLang( pl, langKey )
 			end
 		else
 			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )

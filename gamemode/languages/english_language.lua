@@ -136,6 +136,8 @@ LANGUAGE.data = {
 	[ "Door_Notify_Buy" ] = "You are buy this door.",
 	[ "Door_Notify_Sell" ] = "You are sold this door.",
 	[ "Door_Notify_SetTitle" ] = "You are set title this door.",
+	[ "Door_Notify_SetStatus_True" ] = "You are set status to unbuyable this door.",
+	[ "Door_Notify_SetStatus_False" ] = "You are set status to buyable this door.",
 	
 	// Basic
 	[ "Basic_UI_StringRequest" ] = "Request",
