@@ -54,7 +54,7 @@ if ( SERVER ) then
 		} )
 	end
 	
-	function catherine.catData.GetVarsByDB( pl )
+	function catherine.catData.SyncToPlayer( pl )
 		local steamID = pl:SteamID( )
 		
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )

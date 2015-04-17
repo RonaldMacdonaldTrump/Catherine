@@ -190,6 +190,7 @@ if ( SERVER ) then
 		pl:SetModel( character._model )
 		pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
 		pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
+		player_manager.SetPlayerClass( pl, "catherine_player" ) // need?
 		
 		hook.Run( "PostWeaponGive", pl )
 

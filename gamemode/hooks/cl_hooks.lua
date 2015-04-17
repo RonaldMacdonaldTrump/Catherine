@@ -94,11 +94,12 @@ local OFFSET_PLAYER = Vector( 0, 0, 30 )
 function GM:DrawEntityTargetID( pl, ent, a )
 	if ( !ent:IsPlayer( ) ) then return end
 	local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) + OFFSET_PLAYER )
-	local x, y, x2, y2 = pos.x, pos.y - 100, 0, 0
+	local x, y = pos.x, pos.y - 100
 	local name, desc = hook.Run( "GetPlayerInformation", pl, ent )
 	
 	draw.SimpleText( name, "catherine_normal25", x, y, Color( 255, 255, 255, a ), 1, 1 )
 	y = y + 20
+	
 	draw.SimpleText( desc, "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 	y = y + 15
 	
