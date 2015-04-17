@@ -24,7 +24,7 @@ local META2 = FindMetaTable( "Player" )
 
 if ( SERVER ) then
 	catherine.network.NextOptimizeTick = catherine.network.NextOptimizeTick or CurTime( ) + catherine.configs.netRegistryOptimizeInterval
-	
+
 	function catherine.network.SetNetVar( ent, key, value, noSync )
 		catherine.network.entityRegistry[ ent ] = catherine.network.entityRegistry[ ent ] or { }
 		catherine.network.entityRegistry[ ent ][ key ] = value
@@ -97,8 +97,10 @@ if ( SERVER ) then
 	hook.Add( "PlayerDisconnected", "catherine.network.PlayerDisconnected", catherine.network.PlayerDisconnected )
 else
 	netstream.Hook( "catherine.network.SetNetVar", function( data )
-		catherine.network.entityRegistry[ data[ 1 ] ] = catherine.network.entityRegistry[ data[ 1 ] ] or { }
-		catherine.network.entityRegistry[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
+		local steamID = data[ 1 ]
+		
+		catherine.network.entityRegistry[ steamID ] = catherine.network.entityRegistry[ steamID ] or { }
+		catherine.network.entityRegistry[ steamID ][ data[ 2 ] ] = data[ 3 ]
 	end )
 	
 	netstream.Hook( "catherine.network.SetNetGlobalVar", function( data )
