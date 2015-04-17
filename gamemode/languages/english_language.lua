@@ -160,6 +160,14 @@ LANGUAGE.data = {
 	[ "Option_Str_HINT_Name" ] = "Show Hint",
 	[ "Option_Str_HINT_Desc" ] = "Displays the hint.",
 	
+	// Chat
+	[ "Chat_Str_IC" ] = "%s says %s",
+	[ "Chat_Str_Yell" ] = "%s yells %s",
+	[ "Chat_Str_Whisper" ] = "%s whispers %s",
+	[ "Chat_Str_Roll" ] = "%s roll %s",
+	[ "Chat_Str_Connect" ] = "%s has joined to server.",
+	[ "Chat_Str_Disconnect" ] = "%s has disconnected to server.",
+	
 	// Basic
 	[ "Basic_UI_StringRequest" ] = "Request",
 	[ "Basic_UI_Question" ] = "Question",

@@ -91,8 +91,12 @@ function GM:PlayerSetHandsModel( pl, ent )
 	end
 end
 
+function GM:PlayerAuthed( pl )
+	catherine.chat.Send( pl, "connect" )
+end
+
 function GM:PlayerDisconnected( pl )
-	// 나중에 추가 -_-
+	catherine.chat.Send( pl, "disconnect" )
 end
 
 function GM:PlayerCanHearPlayersVoice( pl, target )
