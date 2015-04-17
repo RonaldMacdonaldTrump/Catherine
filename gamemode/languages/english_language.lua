@@ -100,8 +100,18 @@ LANGUAGE.data = {
 	// Storage
 	[ "Storage_Notify_HasNotSpace" ] = "This storage don't have inventory space!",
 	
-	// Item
+	// Item SYSTEM
 	[ "Item_Notify_NoItemData" ] = "Is not an available item!",
+	
+	// Item Base
+	[ "Item_Category_Other" ] = "Other",
+	[ "Item_Category_Weapon" ] = "Weapon",
+	[ "Item_Category_Storage" ] = "Storage",
+	[ "Item_FuncStr01_Weapon" ] = "Equip",
+	[ "Item_FuncStr02_Weapon" ] = "Unequip",
+	
+	[ "Item_FuncStr01_Basic" ] = "Take",
+	[ "Item_FuncStr02_Basic" ] = "Drop",
 	
 	// Entity
 	[ "Entity_Notify_NotValid" ] = "This isn't a valid entity!",

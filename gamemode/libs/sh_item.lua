@@ -41,10 +41,10 @@ function catherine.item.Register( itemTable )
 	itemTable.useDynamicItemData = itemTable.useDynamicItemData or true
 	itemTable.itemData = itemTable.itemData or { }
 	itemTable.cost = itemTable.cost or 0
-	itemTable.category = itemTable.category or "Other"
+	itemTable.category = itemTable.category or "^Item_Category_Other"
 	local funcBuffer = {
 		take = {
-			text = "Take",
+			text = "^Item_FuncStr01_Basic",
 			icon = "icon16/basket_put.png",
 			canShowIsWorld = true,
 			func = function( pl, itemTable, ent )
@@ -69,7 +69,7 @@ function catherine.item.Register( itemTable )
 			end
 		},
 		drop = {
-			text = "Drop",
+			text = "^Item_FuncStr02_Basic",
 			icon = "icon16/basket_remove.png",
 			canShowIsMenu = true,
 			func = function( pl, itemTable )
@@ -181,6 +181,7 @@ if ( SERVER ) then
 		ent:SetAngles( ang or Angle( ) )
 		ent:Spawn( )
 		ent:SetModel( itemTable.model or "models/props_junk/watermelon01.mdl" )
+		ent:SetSkin( itemTable.skin or 0 )
 		ent:PhysicsInit( SOLID_VPHYSICS )
 		ent:InitializeItem( uniqueID, itemData or { } )
 		

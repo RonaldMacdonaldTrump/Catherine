@@ -19,14 +19,14 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local BASE = catherine.item.New( "BAG", nil, true )
 BASE.name = "Bag Base"
 BASE.desc = "A Bag."
-BASE.category = "Storage"
+BASE.category = "^Item_Category_Storage"
 BASE.cost = 0
 BASE.weight = 0
 BASE.weightPlus = 10
 BASE.isBag = true
 BASE.func = { }
 BASE.func.drop = {
-	text = "Drop",
+	text = "^Item_FuncStr02_Basic",
 	canShowIsMenu = true,
 	canLook = function( pl, itemTable )
 		local invWeight, invMaxWeight = catherine.inventory.GetWeights( )
