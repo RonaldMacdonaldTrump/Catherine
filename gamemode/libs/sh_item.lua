@@ -236,6 +236,10 @@ else
 		menu:Center( )
 	end
 	
+	function catherine.item.GetBasicDesc( itemTable )
+		return catherine.util.StuffLanguage( itemTable.name ) .. "\n" .. catherine.util.StuffLanguage( itemTable.desc )
+	end
+	
 	netstream.Hook( "catherine.item.EntityUseMenu", function( data )
 		catherine.item.OpenEntityUseMenu( data )
 	end )

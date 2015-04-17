@@ -71,6 +71,7 @@ if ( SERVER ) then
 	end
 else
 	local toscreen = FindMetaTable("Vector").ToScreen
+	
 	function ENT:DrawEntityTargetID( pl, ent, a )
 		if ( ent:GetClass( ) != "cat_item" ) then return end
 		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
@@ -80,8 +81,11 @@ else
 		if ( itemTable ) then
 			local customDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, self:GetItemData( ) ) or nil
 			
-			draw.SimpleText( itemTable.name, "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
-			draw.SimpleText( itemTable.desc, "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
+			ent.itemTable_name = ent.itemTable_name or catherine.util.StuffLanguage( itemTable.name )
+			ent.itemTable_desc = ent.itemTable_desc or catherine.util.StuffLanguage( itemTable.desc )
+			
+			draw.SimpleText( ent.itemTable_name, "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+			draw.SimpleText( ent.itemTable_desc, "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
 			if ( customDesc ) then
 				draw.SimpleText( customDesc, "catherine_outline15", x, y + 45, Color( 255, 255, 255, a ), 1, 1 )
 			end
@@ -92,6 +96,7 @@ end
 function ENT:GetItemTable( )
 	if ( !self.itemTable ) then
 		self.itemTable = catherine.item.FindByID( self:GetItemUniqueID( ) )
+		
 		return self.itemTable
 	end
 	
@@ -105,6 +110,7 @@ end
 function ENT:GetItemData( )
 	if ( !self.itemData ) then
 		self.itemData = self:GetNetVar( "itemData", { } )
+		
 		return self.itemData
 	end
 	

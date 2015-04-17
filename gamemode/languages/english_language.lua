@@ -109,9 +109,10 @@ LANGUAGE.data = {
 	[ "Item_Category_Storage" ] = "Storage",
 	[ "Item_FuncStr01_Weapon" ] = "Equip",
 	[ "Item_FuncStr02_Weapon" ] = "Unequip",
-	
 	[ "Item_FuncStr01_Basic" ] = "Take",
 	[ "Item_FuncStr02_Basic" ] = "Drop",
+	
+	[ "Item_Free" ] = "Free",
 	
 	// Entity
 	[ "Entity_Notify_NotValid" ] = "This isn't a valid entity!",
