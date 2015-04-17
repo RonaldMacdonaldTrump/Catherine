@@ -228,7 +228,11 @@ catherine.command.Register( {
 catherine.command.Register( {
 	command = "roll",
 	runFunc = function( pl, args )
-		catherine.chat.Send( pl, "roll", math.random( 1, 100 ) )
+		if ( args[ 1 ] ) then
+			args[ 1 ] = tonumber( args[ 1 ] )
+		end
+		
+		catherine.chat.Send( pl, "roll", math.random( 1, args[ 1 ] or 100 ) )
 	end
 } )
 
@@ -272,11 +276,9 @@ if ( SERVER ) then
 	end
 	
 	function catherine.chat.CanChat( pl, classTable )
-		if ( !IsValid( pl ) or !classTable ) then return false end
-		if ( classTable.canRun and classTable.canRun( pl ) == false ) then
-			return false
+		if ( classTable and classTable.canRun and classTable.canRun( pl ) == false ) then
+			return true
 		end
-		return true
 	end
 	
 	function catherine.chat.Work( pl, text )
@@ -335,11 +337,13 @@ if ( SERVER ) then
 	function catherine.chat.RunByClass( pl, class, text, target, ... )
 		local classTable = catherine.chat.FindByClass( class )
 		if ( !classTable ) then return end
+		
 		local adjustInfo = {
 			text = text,
 			class = class,
 			player = pl
 		}
+		
 		adjustInfo = hook.Run( "ChatAdjust", adjustInfo ) or adjustInfo
 		catherine.chat.Send( pl, classTable, adjustInfo.text, target, ... )
 		hook.Run( "ChatSended", adjustInfo )
