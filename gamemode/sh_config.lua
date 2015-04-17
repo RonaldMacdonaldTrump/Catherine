@@ -57,9 +57,10 @@ if ( SERVER ) then
 		temperature = 25
 	}
 	catherine.configs.hintInterval = 30
+	catherine.configs.netRegistryOptimizeInterval = 350
+	catherine.configs.saveInterval = 300
 	catherine.configs.voiceAllow = false
 	catherine.configs.voice3D = true
-	catherine.configs.saveInterval = 300
 	catherine.configs.giveHand = true
 	catherine.configs.giveKey = true
 	catherine.configs.spawnTime = 10
