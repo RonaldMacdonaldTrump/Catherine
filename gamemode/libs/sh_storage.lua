@@ -64,6 +64,11 @@ if ( SERVER ) then
 				return
 			end
 			
+			if ( itemTable.IsPersistent ) then
+				catherine.util.NotifyLang( pl, "Inventory_Notify_IsPersistent" )
+				return
+			end
+			
 			local weight, maxWeight = catherine.storage.GetWeights( ent, itemTable.weight )
 			
 			if ( weight >= maxWeight ) then

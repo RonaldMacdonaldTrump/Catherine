@@ -26,6 +26,7 @@ ITEM.weight = 0.5
 ITEM.itemData = {
 	amount = 0
 }
+ITEM.IsPersistent = true
 ITEM.func = { }
 ITEM.func.take = {
 	text = "Take " .. catherine.configs.cashName,
@@ -49,20 +50,16 @@ ITEM.func.drop = {
 	icon = "icon16/money_delete.png",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, isMenu )
-		local eyeTr = pl:GetEyeTrace( )
-		if ( pl:GetPos( ):Distance( eyeTr.HitPos ) > 100 ) then
-			catherine.util.Notify( pl, "You can't do that!" )
-			return
-		end
 		catherine.util.StringReceiver( pl, "Cash_UniqueDropMoney", "What amount for drop money?", catherine.cash.Get( pl ), function( _, val )
 			val = tonumber( val )
-			if ( !val ) then return end
-			if ( catherine.cash.Get( pl ) < val or val <= 0 ) then
-				catherine.util.Notify( pl, "You can't do that!" )
+			
+			if ( !catherine.cash.Has( pl, val ) ) then
+				catherine.util.NotifyLang( pl, "Cash_Notify_HasNot", catherine.cash.GetOnlyName( ) )
 				return
 			end
+			
 			catherine.cash.Take( pl, val )
-			catherine.item.Spawn( itemTable.uniqueID, eyeTr.HitPos, nil, { amount = val } )
+			catherine.item.Spawn( itemTable.uniqueID, catherine.util.GetItemDropPos( pl ), nil, { amount = val } )
 		end )
 	end,
 	canLook = function( pl )

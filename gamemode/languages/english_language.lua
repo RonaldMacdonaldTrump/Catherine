@@ -86,6 +86,7 @@ LANGUAGE.data = {
 	[ "Inventory_Notify_HasNotSpace" ] = "You don't have inventory space!",
 	[ "Inventory_Notify_CantDrop01" ] = "Is too far away for drop the item!",
 	[ "Inventory_Notify_DontHave" ] = "You don't have this item!",
+	[ "Inventory_Notify_IsPersistent" ] = "This item is persistent!",
 	
 	// Scoreboard
 	[ "Scoreboard_UI_Title" ] = "Player List",

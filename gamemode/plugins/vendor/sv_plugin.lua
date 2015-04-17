@@ -144,6 +144,11 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 			return
 		end
 		
+		if ( itemTable.IsPersistent ) then
+			catherine.util.NotifyLang( pl, "Inventory_Notify_IsPersistent" )
+			return
+		end
+		
 		--[[ // 나중에 ㅋ
 		// Vendor 가 사야할 아이템 숫자가 플레이어의 인벤토리 아이템 수보다 많을때?
 		if ( catherine.inventory.GetItemInt( pl, uniqueID ) < count ) then
