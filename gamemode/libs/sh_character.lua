@@ -602,7 +602,7 @@ do
 	end
 	
 	function META:FactionName( )
-		return team.GetName( self:Team( ) )
+		return catherine.util.StuffLanguage( team.GetName( self:Team( ) ) )
 	end
 	
 	META.Nick = META.Name
