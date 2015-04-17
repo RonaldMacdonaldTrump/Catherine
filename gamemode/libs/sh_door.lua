@@ -23,7 +23,7 @@ catherine.door = catherine.door or { }
 
 CAT_DOOR_CHANGEPERMISSION = 1
 
-CAT_DOOR_FLAG_MASTER = 1
+CAT_DOOR_FLAG_OWNER = 1
 CAT_DOOR_FLAG_ALL = 2
 CAT_DOOR_FLAG_BASIC = 3
 
@@ -36,10 +36,18 @@ if ( SERVER ) then
 		end
 		
 		if ( workID == CAT_DOOR_CHANGEPERMISSION ) then
-			if ( !catherine.door.IsDoorOwner( pl, ent ) ) then
+			if ( !catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_OWNER ) ) then
+				print( "you are not owner")
+				return
+			end
+			
+			local permissions = ent:GetNetVar( "permissions" )
+			
+			if ( !permissions ) then
 				catherine.util.NotifyLang( pl, "Door_Notify_NoOwner" )
 				return
 			end
+			
 			local target = catherine.util.FindPlayerByStuff( "SteamID", data[ 1 ] )
 			
 			if ( !IsValid( target ) ) then
@@ -47,12 +55,20 @@ if ( SERVER ) then
 				return
 			end
 			
-			local newData = ent:GetNetVar( "permission_guys", { } )
+			local has, flag = catherine.door.IsHasDoorPermission( target, ent )
 			
-			//if ( newData[ 
+			if ( has and flag == data[ 2 ] ) then
+				print("Already has")
+				return
+			end
 			
-			ent:SetNetVar( "permission_guys", newData )
-			
+			permissions[ #permissions + 1 ] = {
+				id = target:GetCharacterID( ),
+				permission = data[ 2 ]
+			}
+
+			ent:SetNetVar( "permissions", permissions )
+			print("Fin!")
 		else
 		
 		end
@@ -68,7 +84,7 @@ if ( SERVER ) then
 			return false, "Door_Notify_CantBuyable"
 		end
 
-		if ( ent:GetNetVar( "owner" ) ) then
+		if ( ent:GetNetVar( "permissions" ) ) then
 			return false, "Door_Notify_AlreadySold"
 		end
 		
@@ -78,10 +94,11 @@ if ( SERVER ) then
 		end
 		
 		catherine.cash.Take( pl, cost )
-		ent:SetNetVar( "owners", {
-			master = pl:GetCharacterID( ),
-			all = { },
-			basic = { }
+		ent:SetNetVar( "permissions", {
+			{
+				id = pl:GetCharacterID( ),
+				permission = CAT_DOOR_FLAG_OWNER
+			}
 		} )
 		
 		print("Fin")
@@ -94,12 +111,12 @@ if ( SERVER ) then
 			return false, "Entity_Notify_NotDoor"
 		end
 
-		if ( !catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_MASTER ) ) then
+		if ( !catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_OWNER ) ) then
 			return false, "Door_Notify_NoOwner"
 		end
 		
 		catherine.cash.Give( pl, catherine.door.GetDoorCost( pl, ent ) / 2 )
-		ent:SetNetVar( "owners", nil )
+		ent:SetNetVar( "permissions", nil )
 		
 		return true
 		// 판매시 주인이 임의로 설정한 커스텀 타이틀이 복귀되어야함 ^_^
@@ -122,6 +139,20 @@ if ( SERVER ) then
 		
 		return true
 	end
+	
+	function catherine.door.SetDoorStatus( pl, ent )
+		local curStatus = ent:GetNetVar( "cantBuy", false )
+		
+		if ( curStatus ) then
+			ent:SetNetVar( "cantBuy", false )
+			
+			return true, "Door_Notify_SetStatus_False"
+		else
+			ent:SetNetVar( "cantBuy", true )
+			
+			return true, "Door_Notify_SetStatus_True"
+		end
+	end
 
 	function catherine.door.GetDoorCost( pl, ent )
 		return catherine.configs.doorCost // 나중에 수정 -_-
@@ -133,12 +164,12 @@ if ( SERVER ) then
 		for k, v in pairs( ents.GetAll( ) ) do
 			if ( !catherine.entity.IsDoor( v ) ) then continue end
 			local title = v:GetNetVar( "title", "Door" )
-			local buyable = v:GetNetVar( "buyable", true )
-			if ( title == "Door" or buyable ) then continue end
+			local cantBuy = v:GetNetVar( "cantBuy", false )
+			if ( title == "Door" or !cantBuy ) then continue end
 			
 			data[ #data + 1 ] = {
 				title = title,
-				buyable = buyable,
+				cantBuy = cantBuy,
 				index = v:EntIndex( )
 			}
 		end
@@ -151,7 +182,7 @@ if ( SERVER ) then
 			for k1, v1 in pairs( catherine.data.Get( "doors", { } ) ) do
 				if ( IsValid( v ) and catherine.entity.IsDoor( v ) and v:EntIndex( ) == v1.index ) then
 					v:SetNetVar( "title", v1.title )
-					v:SetNetVar( "buyable", v1.buyable )
+					v:SetNetVar( "cantBuy", v1.cantBuy )
 				end
 			end
 		end
@@ -175,7 +206,7 @@ else
 	end )
 
 	function catherine.door.GetDetailString( ent )
-		local owner = ent:GetNetVar( "owners" )
+		local owner = ent:GetNetVar( "permissions" )
 		
 		if ( owner ) then
 			return LANG( "Door_Message_AlreadySold" )
@@ -200,23 +231,28 @@ else
 	hook.Add( "DrawEntityTargetID", "catherine.door.DrawEntityTargetID", catherine.door.DrawEntityTargetID )
 end
 
-function catherine.door.IsDoorOwner( pl, ent, ... )
-	local ownerTable = ent:GetNetVar( "owners" )
-	if ( !ownerTable ) then return end
-
-	for k, v in pairs( { ... } ) do
-		if ( v == CAT_DOOR_FLAG_MASTER ) then
-			return ownerTable.master == pl:GetCharacterID( ), CAT_DOOR_FLAG_MASTER
-		elseif ( v == CAT_DOOR_FLAG_ALL ) then
-			return table.HasValue( ownerTable.all, pl:GetCharacterID( ) ), CAT_DOOR_FLAG_ALL
-		elseif ( v == CAT_DOOR_FLAG_BASIC ) then
-			return table.HasValue( ownerTable.basic, pl:GetCharacterID( ) ), CAT_DOOR_FLAG_BASIC
-		end
+function catherine.door.IsDoorOwner( pl, ent, flag )
+	for k, v in pairs( ent:GetNetVar( "permissions", { } ) ) do
+		if ( !v.id != pl:GetCharacterID( ) ) then continue end
+		
+		return flag == v.permission
 	end
+	
+	return false
+end
+
+function catherine.door.IsHasDoorPermission( pl, ent )
+	for k, v in pairs( ent:GetNetVar( "permissions", { } ) ) do
+		if ( !v.id != pl:GetCharacterID( ) ) then continue end
+		
+		return true, v.permission
+	end
+	
+	return false
 end
 
 function catherine.door.IsBuyableDoor( ent )
-	return ent:GetNetVar( "buyable", true )
+	return !ent:GetNetVar( "cantBuy", false )
 end
 
 catherine.command.Register( {
@@ -256,7 +292,23 @@ catherine.command.Register( {
 			if ( success ) then
 				catherine.util.NotifyLang( pl, "Door_Notify_SetTitle" )
 			else
-				catherine.util.NotifyLang( pl, langKey, unpack( par ) )
+				catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
+			end
+		else
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+		end
+	end
+} )
+
+catherine.command.Register( {
+	command = "doorsetstatus",
+	canRun = function( pl ) return pl:IsAdmin( ) end,
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			local success, langKey, par = catherine.door.SetDoorStatus( pl, pl:GetEyeTrace( 70 ).Entity )
+			
+			if ( success ) then
+				catherine.util.NotifyLang( pl, langKey )
 			end
 		else
 			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )

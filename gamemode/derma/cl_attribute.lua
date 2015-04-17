@@ -82,8 +82,8 @@ function PANEL:Paint( w, h )
 		draw.RoundedBox( 0, 10, 10, 70, 70, Color( 50, 50, 50, 100 ) )
 	end
 	
-	draw.SimpleText( self.attributeTable.name, "catherine_normal35", 100, 30, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( self.attributeTable.desc, "catherine_normal15", 100, 60, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.attribute_name, "catherine_normal35", 100, 30, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.attribute_desc, "catherine_normal15", 100, 60, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
 	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 	
 	draw.SimpleText( math.Round( self.attTextAni * 100 ) .. " %", "catherine_normal20", w - ( h / 3 ) - 15, h / 2, Color( 90, 90, 90, 255 ), 1, 1 )
@@ -91,6 +91,8 @@ end
 
 function PANEL:SetAttribute( attributeTable )
 	self.attributeTable = attributeTable
+	self.attribute_name = catherine.util.StuffLanguage( self.attributeTable.name )
+	self.attribute_desc = catherine.util.StuffLanguage( self.attributeTable.desc )
 end
 
 function PANEL:SetProgress( progress )

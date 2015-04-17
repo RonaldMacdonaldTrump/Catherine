@@ -199,10 +199,11 @@ function PANEL:Refresh_List( id )
 		local buyalbeItems = self:GetBuyableItems( )
 		self.count = table.Count( buyalbeItems )
 		self.buyPanel.Lists:Clear( )
+		
 		for k, v in pairs( buyalbeItems ) do
 			local form = vgui.Create( "DForm" )
 			form:SetSize( self.buyPanel.Lists:GetWide( ), 64 )
-			form:SetName( k )
+			form:SetName( catherine.util.StuffLanguage( k ) )
 			form.Paint = function( pnl, w, h )
 				catherine.theme.Draw( CAT_THEME_FORM, w, h )
 			end
@@ -219,10 +220,10 @@ function PANEL:Refresh_List( id )
 				panel.Paint = function( pnl, w, h )
 					local cost = newData.cost or itemTable.cost
 					draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
-					draw.SimpleText( itemTable.name, "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-					draw.SimpleText( itemTable.desc, "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( catherine.util.StuffLanguage( itemTable.name ), "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( catherine.util.StuffLanguage( itemTable.desc ), "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 					
-					draw.SimpleText( cost == 0 and "Free" or catherine.cash.GetName( cost ), "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetName( cost ), "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 					
 					local stock = newData.stock
 					draw.SimpleText( ( stock or "0" ) .. "'s Stock", "catherine_normal15", w - 10, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
@@ -270,10 +271,11 @@ function PANEL:Refresh_List( id )
 		local sellableItems = self:GetSellableItems( )
 		self.count = table.Count( sellableItems )
 		self.sellPanel.Lists:Clear( )
+		
 		for k, v in pairs( sellableItems ) do
 			local form = vgui.Create( "DForm" )
 			form:SetSize( self.sellPanel.Lists:GetWide( ), 64 )
-			form:SetName( k )
+			form:SetName( catherine.util.StuffLanguage( k ) )
 			form.Paint = function( pnl, w, h )
 				catherine.theme.Draw( CAT_THEME_FORM, w, h )
 			end
@@ -289,11 +291,12 @@ function PANEL:Refresh_List( id )
 				panel:SetSize( form:GetWide( ), 50 )
 				panel.Paint = function( pnl, w, h )
 					local cost = math.Round( ( newData.cost or itemTable.cost ) / PLUGIN.VENDOR_SOLD_DISCOUNTPER )
-					draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
-					draw.SimpleText( itemTable.name, "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-					draw.SimpleText( itemTable.desc, "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 					
-					draw.SimpleText( cost == 0 and "Free" or catherine.cash.GetName( cost ), "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
+					draw.SimpleText( catherine.util.StuffLanguage( itemTable.name ), "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( catherine.util.StuffLanguage( itemTable.desc ), "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					
+					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetName( cost ), "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 					
 					local stock = newData.stock
 					draw.SimpleText( ( stock or "0" ) .. "'s Stock", "catherine_normal15", w - 10, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
@@ -343,7 +346,7 @@ function PANEL:Refresh_List( id )
 		for k, v in pairs( self:GetItemTables( ) ) do
 			local form = vgui.Create( "DForm" )
 			form:SetSize( self.manageItemPanel.Lists:GetWide( ), 64 )
-			form:SetName( k )
+			form:SetName( catherine.util.StuffLanguage( k ) )
 			form.Paint = function( pnl, w, h )
 				catherine.theme.Draw( CAT_THEME_FORM, w, h )
 			end
@@ -360,8 +363,8 @@ function PANEL:Refresh_List( id )
 				panel:SetSize( form:GetWide( ), 50 )
 				panel.Paint = function( pnl, w, h )
 					draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
-					draw.SimpleText( itemTable.name, "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-					draw.SimpleText( itemTable.desc, "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( catherine.util.StuffLanguage( itemTable.name ), "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( catherine.util.StuffLanguage( itemTable.desc ), "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 					draw.SimpleText( ( newData.cost or itemTable.cost ) .. " Cost", "catherine_normal15", w - 10, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 					
 					local mode = newData.type
@@ -481,7 +484,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 		
 		draw.SimpleText( "Item Setting", "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 		
-		draw.SimpleText( itemTable.name, "catherine_normal15", 10, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		draw.SimpleText( catherine.util.StuffLanguage( itemTable.name ), "catherine_normal15", 10, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 	end
 	
 	local pnlW, pnlH = self.itemInformationPanel:GetWide( ), self.itemInformationPanel:GetTall( )

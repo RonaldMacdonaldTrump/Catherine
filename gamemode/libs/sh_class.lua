@@ -141,5 +141,6 @@ function META:Class( )
 end
 
 function META:ClassName( )
-	return catherine.class.FindByID( self:Class( ) ) and catherine.class.FindByID( self:Class( ) ).name or nil
+	local classTable = catherine.class.FindByID( self:Class( ) )
+	return classTable and classTable.name or nil
 end

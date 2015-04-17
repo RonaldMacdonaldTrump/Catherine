@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
-
+/*
 local BASE = catherine.item.New( "CLOTHING", nil, true )
 BASE.name = "Clothing Base"
 BASE.desc = "A Cloth."
@@ -57,3 +57,4 @@ BASE.func.takeoff = {
 }
 
 catherine.item.Register( BASE )
+*/

@@ -46,6 +46,7 @@ function PANEL:Init( )
 	self.storageLists:EnableVerticalScrollbar( true )	
 	self.storageLists.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
+		
 		if ( self.storageInventory and table.Count( self.storageInventory ) == 0 ) then
 			draw.SimpleText( "This storage box has no items!", "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
@@ -59,6 +60,7 @@ function PANEL:Init( )
 	self.playerLists:EnableVerticalScrollbar( true )	
 	self.playerLists.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
+		
 		if ( self.playerInventory and table.Count( self.playerInventory ) == 0 ) then
 			draw.SimpleText( "You don't have any items!", "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
@@ -112,6 +114,7 @@ function PANEL:InitializeStorage( ent )
 		local itemTable = catherine.item.FindByID( k )
 		if ( !itemTable ) then continue end
 		local category = itemTable.category
+		
 		tab[ category ] = tab[ category ] or { }
 		tab[ category ][ v.uniqueID ] = v
 	end
@@ -126,6 +129,7 @@ function PANEL:InitializeStorage( ent )
 		local itemTable = catherine.item.FindByID( k )
 		if ( !itemTable ) then continue end
 		local category = itemTable.category
+		
 		tab[ category ] = tab[ category ] or { }
 		tab[ category ][ v.uniqueID ] = v
 	end
@@ -156,7 +160,7 @@ function PANEL:BuildStorage( )
 	for k, v in pairs( self.storageInventory ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.storageLists:GetWide( ), 54 )
-		form:SetName( k )
+		form:SetName( catherine.util.StuffLanguage( k ) )
 		form:SetAlpha( 0 )
 		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
@@ -183,9 +187,14 @@ function PANEL:BuildStorage( )
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( itemTable.model )
-			spawnIcon:SetToolTip( itemTable.name .. "\n" .. itemTable.desc .. ( itemDesc and "\n" .. itemDesc or "" ) )
+			spawnIcon:SetSkin( itemTable.skin or 0 )
+			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
 			spawnIcon.DoClick = function( )
-				netstream.Start( "catherine.storage.Work", { self.ent:EntIndex( ), CAT_STORAGE_ACTION_REMOVE, v1.uniqueID } )
+				netstream.Start( "catherine.storage.Work", {
+					self.ent:EntIndex( ),
+					CAT_STORAGE_ACTION_REMOVE,
+					v1.uniqueID
+				} )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
 				if ( catherine.inventory.IsEquipped( v1.uniqueID ) ) then
@@ -193,9 +202,11 @@ function PANEL:BuildStorage( )
 					surface.SetMaterial( Material( "icon16/accept.png" ) )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
+				
 				if ( itemTable.DrawInformation ) then
 					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemDatas( itemTable.uniqueID ) )
 				end
+				
 				if ( v1.itemCount > 1 ) then
 					draw.SimpleText( v1.itemCount, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
@@ -210,7 +221,7 @@ function PANEL:BuildStorage( )
 	for k, v in pairs( self.playerInventory ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.playerLists:GetWide( ), 54 )
-		form:SetName( k )
+		form:SetName( catherine.util.StuffLanguage( k ) )
 		form:SetAlpha( 0 )
 		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
@@ -237,9 +248,17 @@ function PANEL:BuildStorage( )
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( itemTable.model )
-			spawnIcon:SetToolTip( itemTable.name .. "\n" .. itemTable.desc .. ( itemDesc and "\n" .. itemDesc or "" ) )
+			spawnIcon:SetSkin( itemTable.skin or 0 )
+			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
 			spawnIcon.DoClick = function( )
-				netstream.Start( "catherine.storage.Work", { self.ent:EntIndex( ), CAT_STORAGE_ACTION_ADD, v1.uniqueID } )
+				netstream.Start( "catherine.storage.Work", {
+					self.ent:EntIndex( ),
+					CAT_STORAGE_ACTION_ADD,
+					{
+						uniqueID = v1.uniqueID,
+						itemData = self.player:GetInvItemDatas( itemTable.uniqueID )
+					}
+				} )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
 				if ( catherine.inventory.IsEquipped( v1.uniqueID ) ) then

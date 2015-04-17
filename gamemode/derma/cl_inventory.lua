@@ -61,10 +61,11 @@ end
 function PANEL:BuildInventory( )
 	self.Lists:Clear( )
 	local delta = 0
+	
 	for k, v in pairs( self:GetInventory( ) ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
-		form:SetName( k )
+		form:SetName( catherine.util.StuffLanguage( k ) )
 		form:SetAlpha( 0 )
 		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
@@ -90,7 +91,8 @@ function PANEL:BuildInventory( )
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( itemTable.model )
-			spawnIcon:SetToolTip( itemTable.name .. "\n" .. itemTable.desc .. ( itemDesc and "\n" .. itemDesc or "" ) )
+			spawnIcon:SetSkin( itemTable.skin or 0 )
+			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
 			spawnIcon.DoClick = function( )
 				catherine.item.OpenMenuUse( v1.uniqueID )
 			end
@@ -100,9 +102,11 @@ function PANEL:BuildInventory( )
 					surface.SetMaterial( Material( "icon16/accept.png" ) )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
+				
 				if ( itemTable.DrawInformation ) then
 					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemDatas( itemTable.uniqueID ) )
 				end
+				
 				if ( v1.itemCount > 1 ) then
 					draw.SimpleText( v1.itemCount, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end

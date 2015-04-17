@@ -60,16 +60,10 @@ catherine.chat.RegisterClass( "ic", {
 			name = desc
 		end
 		
-		chat.AddText( Color( 255, 255, 255 ), name .. " says " .. catherine.chat.PreSet( text ) )
+		chat.AddText( Color( 255, 255, 255 ), LANG( "Chat_Str_IC", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 300,
 	canRun = function( pl ) return pl:Alive( ) end
-} )
-
-catherine.chat.RegisterClass( "notify", {
-	onChat = function( _, text )
-		chat.AddText( Color( 255, 255, 255 ), text )
-	end
 } )
 
 catherine.chat.RegisterClass( "me", {
@@ -98,7 +92,7 @@ catherine.chat.RegisterClass( "roll", {
 			name = desc
 		end
 		
-		chat.AddText( Color( 158, 122, 19 ), name .. " roll number " .. text )
+		chat.AddText( Color( 158, 122, 19 ), LANG( "Chat_Str_Roll", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 600,
 	canRun = function( pl ) return pl:Alive( ) end
@@ -127,7 +121,7 @@ catherine.chat.RegisterClass( "yell", {
 			name = desc
 		end
 		
-		chat.AddText( Color( 255, 255, 255 ), name .. " yells " .. catherine.chat.PreSet( text ) )
+		chat.AddText( Color( 255, 255, 255 ), LANG( "Chat_Str_Yell", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 600,
 	command = { "/y", "/yell" },
@@ -141,8 +135,8 @@ catherine.chat.RegisterClass( "whisper", {
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
 			name = desc
 		end
-		
-		chat.AddText( Color( 255, 255, 255 ), name .. " whispers " .. catherine.chat.PreSet( text ) )
+
+		chat.AddText( Color( 255, 255, 255 ), LANG( "Chat_Str_Whisper", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 150,
 	command = { "/w", "/whisper" },
@@ -152,11 +146,13 @@ catherine.chat.RegisterClass( "whisper", {
 catherine.chat.RegisterClass( "ooc", {
 	onChat = function( pl, text )
 		local icon = Material( "icon16/user.png" )
+		
 		if ( pl:IsSuperAdmin( ) ) then
 			icon = Material( "icon16/shield.png" )
 		elseif ( pl:IsAdmin( ) ) then
 			icon = Material( "icon16/star.png" )
 		end
+		
 		chat.AddText( icon, Color( 250, 40, 40 ), "[OOC] ", pl, color_white, " : ".. text )
 	end,
 	global = true,
@@ -175,6 +171,36 @@ catherine.chat.RegisterClass( "looc", {
 		"/looc", ".//", "[["
 	},
 	noSpace = true
+} )
+
+catherine.chat.RegisterClass( "connect", {
+	onChat = function( pl, text )
+		local icon = Material( "icon16/user.png" )
+		
+		if ( pl:IsSuperAdmin( ) ) then
+			icon = Material( "icon16/shield.png" )
+		elseif ( pl:IsAdmin( ) ) then
+			icon = Material( "icon16/star.png" )
+		end
+		
+		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Connect", pl:SteamName( ) ) )
+	end,
+	global = true
+} )
+
+catherine.chat.RegisterClass( "disconnect", {
+	onChat = function( pl, text )
+		local icon = Material( "icon16/user.png" )
+		
+		if ( pl:IsSuperAdmin( ) ) then
+			icon = Material( "icon16/shield.png" )
+		elseif ( pl:IsAdmin( ) ) then
+			icon = Material( "icon16/star.png" )
+		end
+		
+		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
+	end,
+	global = true
 } )
 
 catherine.command.Register( {
@@ -202,7 +228,11 @@ catherine.command.Register( {
 catherine.command.Register( {
 	command = "roll",
 	runFunc = function( pl, args )
-		catherine.chat.Send( pl, "roll", math.random( 1, 100 ) )
+		if ( args[ 1 ] ) then
+			args[ 1 ] = tonumber( args[ 1 ] )
+		end
+		
+		catherine.chat.Send( pl, "roll", math.random( 1, args[ 1 ] or 100 ) )
 	end
 } )
 
@@ -246,10 +276,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.chat.CanChat( pl, classTable )
-		if ( !IsValid( pl ) or !classTable ) then return false end
 		if ( classTable.canRun and classTable.canRun( pl ) == false ) then
 			return false
 		end
+		
 		return true
 	end
 	
@@ -309,11 +339,13 @@ if ( SERVER ) then
 	function catherine.chat.RunByClass( pl, class, text, target, ... )
 		local classTable = catherine.chat.FindByClass( class )
 		if ( !classTable ) then return end
+		
 		local adjustInfo = {
 			text = text,
 			class = class,
 			player = pl
 		}
+		
 		adjustInfo = hook.Run( "ChatAdjust", adjustInfo ) or adjustInfo
 		catherine.chat.Send( pl, classTable, adjustInfo.text, target, ... )
 		hook.Run( "ChatSended", adjustInfo )
@@ -328,12 +360,12 @@ else
 	catherine.chat.isOpened = catherine.chat.isOpened or false
 	catherine.chat.msg = catherine.chat.msg or { }
 	catherine.chat.history = catherine.chat.history or { }
-	
+
 	local CHATBox_w, CHATBox_h = ScrW( ) * 0.5, ScrH( ) * 0.3
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
 	
 	netstream.Hook( "catherine.chat.Post", function( data )
-		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		local speaker, class, text, ex = data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ]
 		local class = catherine.chat.FindByClass( class )
 		

@@ -29,7 +29,7 @@ if ( SERVER ) then
 			catherine.character.SyncAllNetworkRegistry( pl )
 			catherine.environment.SyncToPlayer( pl )
 			catherine.character.SyncCharacterList( pl )
-			catherine.catData.GetVarsByDB( pl )
+			catherine.catData.SyncToPlayer( pl )
 
 			timer.Simple( 2, function( )
 				if ( !IsValid( pl ) ) then return end
@@ -68,7 +68,7 @@ if ( SERVER ) then
 			if ( !data or #data == 0 ) then
 				if ( steamID == catherine.configs.OWNER and pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
 					if ( ulx ) then
-						RunConsoleCommand( "ulx", "adduserid", pl:SteamID( ), "superadmin" )
+						RunConsoleCommand( "ulx", "adduserid", steamID, "superadmin" )
 						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl:SteamName( ) )
 					else
 						pl:SetUserGroup( "superadmin" )
@@ -141,8 +141,9 @@ if ( SERVER ) then
 			pl:SetMoveType( MOVETYPE_WALK )
 			pl:SetLocalVelocity( vector_origin )
 			pl:DropToFloor( )
+			
 			if ( IsValid( pl.ragdoll ) ) then
-				pl.ragdoll:SetNetVar( "player" )
+				pl.ragdoll:SetNetVar( "player", nil )
 			end
 			
 			for k, v in pairs( pl:GetNetVar( "weps", { } ) ) do

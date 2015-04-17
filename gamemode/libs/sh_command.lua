@@ -33,7 +33,6 @@ end
 
 function catherine.command.IsCommand( text )
 	if ( text:sub( 1, 1 ) != "/" ) then return end
-	
 	local toArgs = catherine.command.TransferToArgsTab( text )
 	local id = toArgs[ 1 ]:sub( 2, #toArgs[ 1 ] )
 	
@@ -88,7 +87,10 @@ if ( SERVER ) then
 			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 			return
 		end
-		if ( !commandTable.runFunc ) then return end
+		
+		if ( !commandTable.runFunc ) then
+			return
+		end
 		
 		commandTable.runFunc( pl, args )
 	end

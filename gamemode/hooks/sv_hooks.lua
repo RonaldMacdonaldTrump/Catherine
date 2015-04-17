@@ -18,30 +18,40 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 function GM:ShowHelp( pl )
 	if ( !pl:IsCharacterLoaded( ) ) then return end
-	local success = hook.Run( "PostPressF1", pl )
-	if ( success ) then return end
+	local status = hook.Run( "CanLookF1", pl )
+	if ( !status ) then return end
 	
 	netstream.Start( pl, "catherine.ShowHelp" )
 end
 
 function GM:ShowTeam( pl )
 	if ( !pl:IsCharacterLoaded( ) ) then return end
+	local status = hook.Run( "CanLookF2", pl )
+	if ( !status ) then return end
+	
 	local ent = pl:GetEyeTrace( 70 ).Entity
-	local success = hook.Run( "PostPressF2", pl )
-	if ( success ) then return end
 	
 	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
 		if ( catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_MASTER ) ) then
 			netstream.Start( pl, "catherine.door.DoorMenu", ent:EntIndex( ) )
 		else
 			catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )
-				if ( !bool ) then return end
-				catherine.door.Buy( pl, ent )
+				if ( bool ) then
+					catherine.door.Buy( pl, ent )
+				end
 			end )
 		end
 	else
 		netstream.Start( pl, "catherine.recognize.SelectMenu" )
 	end
+end
+
+function GM:CanLookF1( pl )
+	return true
+end
+
+function GM:CanLookF2( pl )
+	return true
 end
 
 function GM:GetGameDescription( )
@@ -89,8 +99,12 @@ function GM:PlayerSetHandsModel( pl, ent )
 	end
 end
 
+function GM:PlayerAuthed( pl )
+	catherine.chat.Send( pl, "connect" )
+end
+
 function GM:PlayerDisconnected( pl )
-	// 나중에 추가 -_-
+	catherine.chat.Send( pl, "disconnect" )
 end
 
 function GM:PlayerCanHearPlayersVoice( pl, target )
@@ -274,6 +288,10 @@ function GM:Tick( )
 		catherine.player.BunnyHopProtection( v )
 		catherine.player.HealthRecoverTick( v )
 	end
+end
+
+function GM:GetUnknownTargetName( pl, target )
+	return LANG( pl, "Recognize_UI_Unknown" )
 end
 
 function GM:Initialize( )

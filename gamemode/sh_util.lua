@@ -177,6 +177,10 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.util.Notify", { LANG( pl, key, ... ) } )
 	end
 	
+	function catherine.util.StuffLanguage( pl, key, ... )
+		return string.Left( key, 1 ) == "^" and LANG( pl, key:sub( 2 ), ... ) or key
+	end
+	
 	function catherine.util.ProgressBar( pl, message, time, func )
 		if ( func ) then
 			timer.Simple( time, function( )
@@ -259,14 +263,14 @@ else
 	CAT_UTIL_BUTTOMSOUND_3 = 3
 	
 	netstream.Hook( "catherine.util.StringReceiver", function( data )
-		Derma_StringRequest( data[ 2 ], LANG( "Basic_UI_StringRequest" ), data[ 3 ] or "", function( val )
+		Derma_StringRequest( catherine.util.StuffLanguage( data[ 2 ] ), LANG( "Basic_UI_StringRequest" ), data[ 3 ] or "", function( val )
 				netstream.Start( "catherine.util.StringReceiver_Receive", { data[ 1 ], val } )
 			end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
 		)
 	end )
 	
 	netstream.Hook( "catherine.util.QueryReceiver", function( data )
-		Derma_Query( data[ 2 ], LANG( "Basic_UI_Question" ), LANG( "Basic_UI_OK" ), function( )
+		Derma_Query( catherine.util.StuffLanguage( data[ 2 ] ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_OK" ), function( )
 				netstream.Start( "catherine.util.QueryReceiver_Receive", { data[ 1 ], true } )
 			end, LANG( "Basic_UI_NO" ), function( ) 
 				netstream.Start( "catherine.util.QueryReceiver_Receive", { data[ 1 ], false } )
@@ -326,6 +330,10 @@ else
 		end
 		
 		// ^-^
+	end
+	
+	function catherine.util.StuffLanguage( key, ... )
+		return string.Left( key, 1 ) == "^" and LANG( key:sub( 2 ), ... ) or key
 	end
 	
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )

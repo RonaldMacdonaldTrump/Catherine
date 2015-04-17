@@ -16,62 +16,56 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.network = catherine.network or { globalVars = { }, entityVars = { } }
+catherine.network = catherine.network or { globalRegistry = { }, entityRegistry = { } }
 local META = FindMetaTable( "Entity" )
 local META2 = FindMetaTable( "Player" )
 // 네트워킹 시스템; ^-^; 2015-03-10 학교 컴실에서.. // 이전
 // 새로운 네트워킹 시스템; ^-^; 2015-04-09 집에서..
 
 if ( SERVER ) then
+	catherine.network.NextOptimizeTick = catherine.network.NextOptimizeTick or CurTime( ) + catherine.configs.netRegistryOptimizeInterval
+	
 	function catherine.network.SetNetVar( ent, key, value, noSync )
-		catherine.network.entityVars[ ent ] = catherine.network.entityVars[ ent ] or { }
-		catherine.network.entityVars[ ent ][ key ] = value
+		catherine.network.entityRegistry[ ent ] = catherine.network.entityRegistry[ ent ] or { }
+		catherine.network.entityRegistry[ ent ][ key ] = value
 		
 		if ( !noSync ) then
-			local data = ent:EntIndex( )
-			
-			if ( ent:IsPlayer( ) ) then
-				data = ent:SteamID( )
-			end
-			
-			if ( value == nil ) then
-				netstream.Start( nil, "catherine.network.ClearNetVar", data )
-				return
-			end
-			
-			netstream.Start( nil, "catherine.network.SetNetVar", { data, key, value } )
+			netstream.Start( nil, "catherine.network.SetNetVar", { ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( ), key, value } )
 		end
 	end
 	
 	function catherine.network.GetNetVar( ent, key, default )
-		return catherine.network.entityVars[ ent ] and catherine.network.entityVars[ ent ][ key ] or default
+		return catherine.network.entityRegistry[ ent ] and catherine.network.entityRegistry[ ent ][ key ] or default
 	end
 	
 	function catherine.network.SetNetGlobalVar( key, value, noSync )
-		catherine.network.globalVars[ key ] = value
+		catherine.network.globalRegistry[ key ] = value
 		
 		if ( !noSync ) then
-			if ( value == nil ) then
-				netstream.Start( nil, "catherine.network.ClearNetGlobalVar", key )
-				return
-			end
-			
 			netstream.Start( nil, "catherine.network.SetNetGlobalVar", { key, value } )
 		end
 	end
 
 	function catherine.network.SyncAllVars( pl )
-		local conVert = { }
+		local convert = { }
 		
-		for k, v in pairs( catherine.network.entityVars ) do
-			if ( k:IsPlayer( ) and k:IsValid( ) ) then
-				conVert[ k:SteamID( ) ] = v
-			else
-				conVert[ k:EntIndex( ) ] = v
-			end
+		for k, v in pairs( catherine.network.entityRegistry ) do
+			if ( !IsValid( k ) or !k:IsValid( ) ) then continue end
+			
+			convert[ k:IsPlayer( ) and k:SteamID( ) or k:EntIndex( ) ] = v
 		end
 
-		netstream.Start( pl, "catherine.network.SyncAllVars", { conVert, catherine.network.globalVars } )
+		netstream.Start( pl, "catherine.network.SyncAllVars", { convert, catherine.network.globalRegistry } )
+	end
+	
+	function catherine.network.NetworkRegistryOptimize( )
+		for k, v in pairs( catherine.network.entityRegistry ) do
+			if ( IsValid( k ) and k:IsValid( ) ) then continue end
+			
+			catherine.network.entityRegistry[ k ] = nil
+		end
+		
+		catherine.network.SyncAllVars( )
 	end
 
 	function META:SetNetVar( key, value, noSync )
@@ -80,54 +74,59 @@ if ( SERVER ) then
 	
 	META2.SetNetVar = META.SetNetVar
 	
+	function catherine.network.Think( )
+		if ( catherine.network.NextOptimizeTick <= CurTime( ) ) then
+			catherine.network.NetworkRegistryOptimize( )
+			
+			catherine.network.NextOptimizeTick = CurTime( ) + catherine.configs.netRegistryOptimizeInterval
+		end
+	end
+	
 	function catherine.network.EntityRemoved( ent )
-		catherine.network.entityVars[ ent ] = nil
+		catherine.network.entityRegistry[ ent ] = nil
 		netstream.Start( nil, "catherine.network.ClearNetVar", ent:EntIndex( ) )
 	end
 	
 	function catherine.network.PlayerDisconnected( pl )
-		catherine.network.entityVars[ pl ] = nil
+		catherine.network.entityRegistry[ pl ] = nil
 		netstream.Start( nil, "catherine.network.ClearNetVar", pl:SteamID( ) )
 	end
 
+	hook.Add( "Think", "catherine.network.Think", catherine.network.Think )
 	hook.Add( "EntityRemoved", "catherine.network.EntityRemoved", catherine.network.EntityRemoved )
 	hook.Add( "PlayerDisconnected", "catherine.network.PlayerDisconnected", catherine.network.PlayerDisconnected )
 else
 	netstream.Hook( "catherine.network.SetNetVar", function( data )
-		catherine.network.entityVars[ data[ 1 ] ] = catherine.network.entityVars[ data[ 1 ] ] or { }
-		catherine.network.entityVars[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
+		catherine.network.entityRegistry[ data[ 1 ] ] = catherine.network.entityRegistry[ data[ 1 ] ] or { }
+		catherine.network.entityRegistry[ data[ 1 ] ][ data[ 2 ] ] = data[ 3 ]
 	end )
 	
 	netstream.Hook( "catherine.network.SetNetGlobalVar", function( data )
-		catherine.network.globalVars[ data[ 1 ] ] = data[ 2 ]
+		catherine.network.globalRegistry[ data[ 1 ] ] = data[ 2 ]
 	end )
 
 	netstream.Hook( "catherine.network.ClearNetVar", function( data )
-		catherine.network.entityVars[ data ] = nil
+		catherine.network.entityRegistry[ data ] = nil
 	end )
 	
 	netstream.Hook( "catherine.network.ClearNetGlobalVar", function( data )
-		catherine.network.globalVars[ data ] = nil
+		catherine.network.globalRegistry[ data ] = nil
 	end )
 	
 	netstream.Hook( "catherine.network.SyncAllVars", function( data )
-		catherine.network.entityVars = data[ 1 ]
-		catherine.network.globalVars = data[ 2 ]
+		catherine.network.entityRegistry = data[ 1 ]
+		catherine.network.globalRegistry = data[ 2 ]
 	end )
 	
 	function catherine.network.GetNetVar( ent, key, default )
-		local data = ent:EntIndex( )
+		local data = ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( )
 		
-		if ( ent:IsPlayer( ) ) then
-			data = ent:SteamID( )
-		end
-		
-		return catherine.network.entityVars[ data ] and catherine.network.entityVars[ data ][ key ] or default
+		return catherine.network.entityRegistry[ data ] and catherine.network.entityRegistry[ data ][ key ] or default
 	end
 end
 
 function catherine.network.GetNetGlobalVar( key, default )
-	return catherine.network.globalVars[ key ] or default
+	return catherine.network.globalRegistry[ key ] or default
 end
 
 function META:GetNetVar( key, default )

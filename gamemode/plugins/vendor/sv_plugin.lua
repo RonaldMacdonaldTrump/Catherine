@@ -144,6 +144,11 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 			return
 		end
 		
+		if ( itemTable.IsPersistent ) then
+			catherine.util.NotifyLang( pl, "Inventory_Notify_IsPersistent" )
+			return
+		end
+		
 		--[[ // 나중에 ㅋ
 		// Vendor 가 사야할 아이템 숫자가 플레이어의 인벤토리 아이템 수보다 많을때?
 		if ( catherine.inventory.GetItemInt( pl, uniqueID ) < count ) then
@@ -181,7 +186,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		self:SetVendorData( ent, "cash", vendorCash - itemCost )
 		
 		hook.Run( "ItemVendorSolded", pl, itemTable )
-		catherine.util.NotifyLang( pl, "Vendor_Notify_Sell", itemTable.name, catherine.cash.GetName( itemCost ) )
+		catherine.util.NotifyLang( pl, "Vendor_Notify_Sell", catherine.util.StuffLanguage( itemTable.name ), catherine.cash.GetName( itemCost ) )
 	elseif ( workID == CAT_VENDOR_ACTION_SELL ) then
 		local uniqueID = data.uniqueID
 		local itemTable = catherine.item.FindByID( uniqueID )
@@ -230,7 +235,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		self:SetVendorData( ent, "inv", vendorInv )
 		self:SetVendorData( ent, "cash", vendorCash + itemCost )
 		
-		catherine.util.NotifyLang( pl, "Vendor_Notify_Buy", itemTable.name, catherine.cash.GetName( itemCost ) )
+		catherine.util.NotifyLang( pl, "Vendor_Notify_Buy", catherine.util.StuffLanguage( itemTable.name ), catherine.cash.GetName( itemCost ) )
 	elseif ( workID == CAT_VENDOR_ACTION_SETTING_CHANGE ) then
 		if ( !pl:IsAdmin( ) ) then
 			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )

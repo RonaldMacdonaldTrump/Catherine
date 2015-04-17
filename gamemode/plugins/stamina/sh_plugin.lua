@@ -21,6 +21,16 @@ PLUGIN.name = "Stamina"
 PLUGIN.author = "L7D"
 PLUGIN.desc = "Good stuff."
 
+catherine.language.Merge( "english", {
+	[ "Stamina_Title" ] = "Stamina",
+	[ "Stamina_Desc" ] = "How long you can run for."
+} )
+
+catherine.language.Merge( "korean", {
+	[ "Stamina_Title" ] = "기력",
+	[ "Stamina_Desc" ] = "높을 수록 장시간을 달릴 수 있습니다."
+} )
+
 if ( SERVER ) then
 	function PLUGIN:PlayerSpawnedInCharacter( pl )
 		local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
@@ -80,4 +90,4 @@ else
 	end
 end
 
-CAT_ATT_STAMINA = catherine.attribute.Register( "stamina", "Stamina", "How long you can run for.", "CAT/attribute/stamina.png", 0, 100 )
+CAT_ATT_STAMINA = catherine.attribute.Register( "stamina", "^Stamina_Title", "^Stamina_Desc", "CAT/attribute/stamina.png", 0, 100 )

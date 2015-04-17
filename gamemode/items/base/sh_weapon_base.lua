@@ -19,7 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local BASE = catherine.item.New( "WEAPON", nil, true )
 BASE.name = "Weapon Base"
 BASE.desc = "A Weapon."
-BASE.category = "Weapon"
+BASE.category = "^Item_Category_Weapon"
 BASE.cost = 0
 BASE.weight = 0
 BASE.isWeapon = true
@@ -29,7 +29,7 @@ BASE.itemData = {
 }
 BASE.func = { }
 BASE.func.equip = {
-	text = "Equip",
+	text = "^Item_FuncStr01_Weapon",
 	icon = "icon16/ruby_get.png",
 	canShowIsWorld = true,
 	canShowIsMenu = true,
@@ -59,7 +59,7 @@ BASE.func.equip = {
 	end
 }
 BASE.func.unequip = {
-	text = "Unequip",
+	text = "^Item_FuncStr02_Weapon",
 	icon = "icon16/ruby_put.png",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
@@ -103,7 +103,7 @@ if ( SERVER ) then
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 	
-	hook.Add( "ItemStorageMoved", "catherine.item.hooks.weapon_base.ItemStorageMoved", function( pl, itemTable )
+	hook.Add( "ItemStorageMove", "catherine.item.hooks.weapon_base.ItemStorageMoved", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
 		
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then

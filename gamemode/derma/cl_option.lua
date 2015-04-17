@@ -22,7 +22,7 @@ function PANEL:Init( )
 	catherine.vgui.option = self
 
 	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
-	self:SetMenuName( "Setting" )
+	self:SetMenuName( LANG( "Option_UI_Title" ) )
 	
 	self.optionTable = nil
 
@@ -41,19 +41,22 @@ end
 
 function PANEL:InitializeOption( )
 	local opt = { }
+	
 	for k, v in pairs( catherine.option.GetAll( ) ) do
 		opt[ v.category ] = opt[ v.category ] or { }
 		opt[ v.category ][ #opt[ v.category ] + 1 ] = v
 	end
+	
 	self.optionTable = opt
 	self:BuildOption( )
 end
 
 function PANEL:BuildOption( )
 	self.Lists:Clear( )
+	
 	for k, v in pairs( self.optionTable or { } ) do
 		local form = vgui.Create( "DForm" )
-		form:SetName( k )
+		form:SetName( catherine.util.StuffLanguage( k ) )
 		form:SetSpacing( 0 )
 		form:SetAutoSize( true )
 		form.Paint = function( pnl, w, h )
@@ -122,8 +125,9 @@ end
 function PANEL:Paint( w, h )
 	if ( !self.optionTable ) then return end
 	local opt = self.optionTable
-	draw.SimpleText( opt.name, "catherine_normal25", 15, 15, Color( 30, 30, 30, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( opt.desc, "catherine_normal15", 15, 40, Color( 30, 30, 30, 255 ), TEXT_ALIGN_LEFT, 1 )
+	
+	draw.SimpleText( self.name, "catherine_normal25", 15, 15, Color( 30, 30, 30, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.desc, "catherine_normal15", 15, 40, Color( 30, 30, 30, 255 ), TEXT_ALIGN_LEFT, 1 )
 	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 end
 
@@ -136,7 +140,9 @@ end
 
 function PANEL:SetOption( optionTable )
 	self.optionTable = optionTable
-
+	self.name = catherine.util.StuffLanguage( self.optionTable.name )
+	self.desc = catherine.util.StuffLanguage( self.optionTable.desc )
+	
 	if ( optionTable.typ == CAT_OPTION_LIST ) then
 		self.Button:SetVisible( false )
 		self.List:SetVisible( true )
@@ -160,6 +166,8 @@ end
 
 vgui.Register( "catherine.vgui.optionItem", PANEL, "DPanel" )
 
-catherine.menu.Register( "Setting", function( menuPnl, itemPnl )
+catherine.menu.Register( function( )
+	return LANG( "Option_UI_Title" )
+end, function( menuPnl, itemPnl )
 	return vgui.Create( "catherine.vgui.option", menuPnl )
 end )

@@ -190,6 +190,7 @@ if ( SERVER ) then
 		pl:SetModel( character._model )
 		pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
 		pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
+		player_manager.SetPlayerClass( pl, "catherine_player" ) // need?
 		
 		hook.Run( "PostWeaponGive", pl )
 
@@ -404,6 +405,10 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.Save( pl )
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
+			catherine.util.ErrorPrint( "Character save error!, player is not valid!" )
+			return
+		end
 		hook.Run( "PostCharacterSave", pl )
 		
 		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
@@ -597,7 +602,7 @@ do
 	end
 	
 	function META:FactionName( )
-		return team.GetName( self:Team( ) )
+		return catherine.util.StuffLanguage( team.GetName( self:Team( ) ) )
 	end
 	
 	META.Nick = META.Name

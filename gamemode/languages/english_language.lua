@@ -30,6 +30,7 @@ LANGUAGE.data = {
 	[ "Cash_Notify_NotValidAmount" ] = "Please enter right amount!",
 	
 	// Character
+	[ "Character_UI_Title" ] = "Character",
 	[ "Character_Notify_CantDeleteUsing" ] = "You can't delete using character!",
 	[ "Character_Notify_CantSwitchRagdolled" ] = "You can't switch character on ragdolled!",
 	[ "Character_Notify_IsNotValid" ] = "This character is not valid!",
@@ -86,6 +87,7 @@ LANGUAGE.data = {
 	[ "Inventory_Notify_HasNotSpace" ] = "You don't have inventory space!",
 	[ "Inventory_Notify_CantDrop01" ] = "Is too far away for drop the item!",
 	[ "Inventory_Notify_DontHave" ] = "You don't have this item!",
+	[ "Inventory_Notify_IsPersistent" ] = "This item is persistent!",
 	
 	// Scoreboard
 	[ "Scoreboard_UI_Title" ] = "Player List",
@@ -99,8 +101,26 @@ LANGUAGE.data = {
 	// Storage
 	[ "Storage_Notify_HasNotSpace" ] = "This storage don't have inventory space!",
 	
-	// Item
+	// Item SYSTEM
 	[ "Item_Notify_NoItemData" ] = "Is not an available item!",
+	
+	// Item Base
+	[ "Item_Category_Other" ] = "Other",
+	[ "Item_Category_Weapon" ] = "Weapon",
+	[ "Item_Category_Storage" ] = "Storage",
+	
+	[ "Item_Category_Wallet" ] = "Wallet",
+	[ "Item_Name_Wallet" ] = "Wallet",
+	[ "Item_Desc_Wallet" ] = catherine.configs.cashName .. " in a small stack.",
+	[ "Item_FuncStr01_Wallet" ] = "Take " .. catherine.configs.cashName,
+	[ "Item_FuncStr02_Wallet" ] = "Drop " .. catherine.configs.cashName,
+	
+	[ "Item_FuncStr01_Weapon" ] = "Equip",
+	[ "Item_FuncStr02_Weapon" ] = "Unequip",
+	[ "Item_FuncStr01_Basic" ] = "Take",
+	[ "Item_FuncStr02_Basic" ] = "Drop",
+	
+	[ "Item_Free" ] = "Free",
 	
 	// Entity
 	[ "Entity_Notify_NotValid" ] = "This isn't a valid entity!",
@@ -136,6 +156,38 @@ LANGUAGE.data = {
 	[ "Door_Notify_Buy" ] = "You are buy this door.",
 	[ "Door_Notify_Sell" ] = "You are sold this door.",
 	[ "Door_Notify_SetTitle" ] = "You are set title this door.",
+	[ "Door_Notify_SetStatus_True" ] = "You are set status to unbuyable this door.",
+	[ "Door_Notify_SetStatus_False" ] = "You are set status to buyable this door.",
+	
+	// Hint
+	[ "Hint_Message_01" ] = "Type // before your message to talk out-of-character.",
+	[ "Hint_Message_02" ] = "Type .// or [[ before your message to talk out-of-character locally.",
+	[ "Hint_Message_03" ] = "Press 'F1 key' to view your character and roleplay information.",
+	[ "Hint_Message_04" ] = "Press 'Tab key' to view the main menu.",
+	
+	// Option
+	[ "Option_UI_Title" ] = "Option",
+	[ "Option_Category_01" ] = "Framework Settings",
+
+	[ "Option_Str_BAR_Name" ] = "Show Bar",
+	[ "Option_Str_BAR_Desc" ] = "Displays the Bar.",
+	
+	[ "Option_Str_MAINHUD_Name" ] = "Show Main HUD",
+	[ "Option_Str_MAINHUD_Desc" ] = "Displays Main HUD.",
+	
+	[ "Option_Str_MAINLANG_Name" ] = "Main Language",
+	[ "Option_Str_MAINLANG_Desc" ] = "Change the Main Language.",
+	
+	[ "Option_Str_HINT_Name" ] = "Show Hint",
+	[ "Option_Str_HINT_Desc" ] = "Displays the hint.",
+	
+	// Chat
+	[ "Chat_Str_IC" ] = "%s says %s",
+	[ "Chat_Str_Yell" ] = "%s yells %s",
+	[ "Chat_Str_Whisper" ] = "%s whispers %s",
+	[ "Chat_Str_Roll" ] = "%s roll %s",
+	[ "Chat_Str_Connect" ] = "%s has joined to server.",
+	[ "Chat_Str_Disconnect" ] = "%s has disconnected to server.",
 	
 	// Basic
 	[ "Basic_UI_StringRequest" ] = "Request",

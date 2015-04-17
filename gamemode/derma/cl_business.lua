@@ -105,6 +105,7 @@ function PANEL:InitializeBusiness( )
 		if ( v.showOnBusiness and v:showOnBusiness( self.player ) == false ) then continue end
 		if ( !table.HasValue( v.onBusinessFactions or { }, self.player:Team( ) ) ) then continue end
 		local category = v.category
+		
 		tab[ category ] = tab[ category ] or { }
 		tab[ category ][ v.uniqueID ] = v
 	end
@@ -115,14 +116,17 @@ end
 
 function PANEL:GetShipmentCount( )
 	local count = 0
+	
 	for k, v in pairs( self.shoppingcart ) do
 		count = count + v.count
 	end
+	
 	return count
 end
 
 function PANEL:BuildShoppingCart( )
 	self.Cart:Clear( )
+	
 	for k, v in pairs( self.shoppingcart ) do
 		local costs = 0
 		local itemTable = catherine.item.FindByID( v.uniqueID )
@@ -131,7 +135,7 @@ function PANEL:BuildShoppingCart( )
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Cart:GetWide( ), 40 )
 		panel.Paint = function( pnl, w, h )
-			draw.SimpleText( v.name, "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( catherine.util.StuffLanguage( v.name ), "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( v.count .. "'s / " .. catherine.cash.GetName( costs ), "catherine_normal15", w - 40, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 		end
@@ -145,10 +149,12 @@ function PANEL:BuildShoppingCart( )
 		removeItem:SetGradientColor( Color( 255, 255, 255, 150 ) )
 		removeItem.Click = function( )
 			self.shoppingcart[ k ].count = math.max( self.shoppingcart[ k ].count - 1, 0 )
+			
 			if ( self.shoppingcart[ k ].count == 0 ) then
 				self.shoppingcart[ k ] = nil
 				self.Cart:RemoveItem( panel )
 			end
+			
 			costs = itemTable.cost * v.count
 		end
 		removeItem.PaintBackground = function( pnl, w, h )
@@ -163,10 +169,11 @@ function PANEL:BuildBusiness( )
 	if ( !self.business ) then return end
 	self.Lists:Clear( )
 	local delta = 0
+	
 	for k, v in pairs( self.business ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
-		form:SetName( k )
+		form:SetName( catherine.util.StuffLanguage( k ) )
 		form:SetAlpha( 0 )
 		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
@@ -192,13 +199,14 @@ function PANEL:BuildBusiness( )
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( itemTable.model )
-			spawnIcon:SetToolTip( itemTable.name .. "\n" .. itemTable.desc .. "\n" .. ( itemTable.cost == 0 and "Free" or catherine.cash.GetName( itemTable.cost ) ) )
+			spawnIcon:SetSkin( itemTable.model or 0 )
+			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. "\n" .. ( itemTable.cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetName( itemTable.cost ) ) )
 			spawnIcon.DoClick = function( )
 				if ( self.shoppingcart[ itemTable.uniqueID ] ) then
 					self.shoppingcart[ itemTable.uniqueID ].count = self.shoppingcart[ itemTable.uniqueID ].count + 1
 				else
 					self.shoppingcart[ itemTable.uniqueID ] = {
-						name = itemTable.name,
+						name = catherine.util.StuffLanguage( itemTable.name ),
 						uniqueID = itemTable.uniqueID,
 						count = 1
 					}
@@ -265,11 +273,12 @@ end
 function PANEL:BuildShipment( )
 	if ( !self.shipments ) then return end
 	self.Lists:Clear( )
+	
 	for k, v in pairs( self.shipments ) do
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Lists:GetWide( ), 40 )
 		panel.Paint = function( pnl, w, h )
-			draw.SimpleText( v.name, "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( catherine.util.StuffLanguage( v.name ), "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( v.count .. "'s", "catherine_normal15", w - 80, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 		end
