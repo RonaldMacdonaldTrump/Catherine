@@ -404,6 +404,10 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.Save( pl )
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
+			catherine.util.ErrorPrint( "Character save error!, player is not valid!" )
+			return
+		end
 		hook.Run( "PostCharacterSave", pl )
 		
 		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
