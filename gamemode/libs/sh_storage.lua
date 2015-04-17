@@ -238,6 +238,7 @@ if ( SERVER ) then
 
 	function catherine.storage.PlayerSpawnedProp( pl, _, ent )
 		timer.Simple( 1, function( )
+			if ( !IsValid( ent ) ) then return end
 			catherine.storage.Make( ent )
 		end )
 	end

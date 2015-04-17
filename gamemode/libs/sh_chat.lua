@@ -428,7 +428,7 @@ else
 			table.remove( catherine.chat.msg, 1 )
 		end
 	end
-	
+
 	function catherine.chat.CreateBase( )
 		if ( IsValid( catherine.chat.backpanel ) ) then return end
 		catherine.chat.backpanel = vgui.Create( "DPanel" )
@@ -454,8 +454,9 @@ else
 			local text = pnl:GetText( )
 			
 			if ( text != "" ) then
-				netstream.Start( "catherine.chat.Run", text:sub( 1 ) )
-				catherine.chat.history[ #catherine.chat.history + 1 ] = text:sub( 1 )
+				text = string.utf8sub( text, 1 )
+				netstream.Start( "catherine.chat.Run", text )
+				catherine.chat.history[ #catherine.chat.history + 1 ] = text
 				
 				if ( #catherine.chat.history > 20 ) then
 					table.remove( catherine.chat.history, 1 )
@@ -497,13 +498,13 @@ else
 				if ( initHistoryKey > 1 ) then
 					initHistoryKey = initHistoryKey - 1
 					pnl:SetText( catherine.chat.history[ initHistoryKey ] )
-					pnl:SetCaretPos( #catherine.chat.history[ initHistoryKey ] )
+					pnl:SetCaretPos( string.utf8len( catherine.chat.history[ initHistoryKey ] ) )
 				end
 			elseif ( code == KEY_DOWN ) then
 				if ( initHistoryKey < #catherine.chat.history ) then
 					initHistoryKey = initHistoryKey + 1
 					pnl:SetText( catherine.chat.history[ initHistoryKey ] )
-					pnl:SetCaretPos( #catherine.chat.history[ initHistoryKey ] )
+					pnl:SetCaretPos( string.utf8len( catherine.chat.history[ initHistoryKey ] ) )
 				end
 			end
 		end

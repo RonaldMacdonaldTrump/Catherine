@@ -413,11 +413,19 @@ if ( SERVER ) then
 		
 		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
 		if ( !networkRegistry ) then return end
-		local id = pl:GetCharacterID( )
+		local steamID = pl:SteamID( )
 		
-		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. pl:SteamID( ) .. "'", networkRegistry, function( )
+		for k, v in pairs( networkRegistry ) do
+			if ( type( v ) == "Entity" and IsValid( v ) ) then
+				catherine.character.networkRegistry[ steamID ][ k ] = nil
+			end
+		end
+		
+		local id = pl:GetCharacterID( )
+
+		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. steamID .. "'", networkRegistry, function( )
 			catherine.character.RefreshCharacterBuffer( pl )
-			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl:Name( ) .. "'s [" .. id .. "] character." )
+			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl:SteamName( ) .. "'s [" .. id .. "] character." )
 		end )
 	end
 

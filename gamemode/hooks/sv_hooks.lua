@@ -219,7 +219,10 @@ GM.PlayerSpawnEffect = IsAdmin
 GM.PlayerSpawnNPC = IsAdmin
 GM.PlayerSpawnRagdoll = IsAdmin
 GM.PlayerSpawnVehicle = IsAdmin
-GM.PlayerSpawnSENT = IsAdmin
+
+function GM:PlayerSpawnSENT( pl )
+	return pl:HasFlag( "x" )
+end
 
 function GM:PlayerSpawnObject( pl )
 	return pl:HasFlag( "e" )
@@ -264,6 +267,10 @@ function GM:PlayerDeathSound( pl )
 	pl:EmitSound( hook.Run( "GetPlayerDeathSound", pl ) or "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
 	
 	return true
+end
+
+function GM:PlayerDeathThink( pl )
+
 end
 
 function GM:PlayerDeath( pl )

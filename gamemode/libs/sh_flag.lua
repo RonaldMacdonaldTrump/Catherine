@@ -72,6 +72,7 @@ catherine.flag.Register( "t", "Access to toolgun.", {
 	end
 } )
 catherine.flag.Register( "e", "Access to prop spawn." )
+catherine.flag.Register( "x", "Access to entity spawn." )
 
 if ( SERVER ) then
 	function catherine.flag.Give( pl, ids )
@@ -139,7 +140,7 @@ if ( SERVER ) then
 			if ( !catherine.flag.Has( pl, v.id ) or !v.onSpawn ) then continue end
 			v.onSpawn( pl )
 		end
-		
+
 		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl:GetCharacterID( ) ) then
 			netstream.Start( pl, "catherine.flag.BuildHelp" )
 			pl.CAT_flag_buildHelp = pl:GetCharacterID( )
