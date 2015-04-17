@@ -552,10 +552,12 @@ function PANEL:Init( )
 	self.model:EnableHorizontal( true )
 	self.model:EnableVerticalScrollbar( false )
 	
-	local factionTab = catherine.faction.FindByID( self.parent.createData.datas.faction )
+	local factionTable = catherine.faction.FindByID( self.parent.createData.datas.faction )
 	
-	if ( factionTab ) then
-		for k, v in pairs( factionTab.models ) do
+	
+	
+	if ( factionTable ) then
+		for k, v in pairs( factionTable.models ) do
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( 64, 64 )
 			spawnIcon:SetModel( v )
@@ -571,6 +573,24 @@ function PANEL:Init( )
 			end
 			
 			self.model:AddItem( spawnIcon )
+		end
+		
+		if ( factionTable.PostSetName ) then
+			local name = factionTable:PostSetName( self.parent.player )
+			
+			if ( name ) then
+				self.nameEnt:SetText( name )
+				self.nameEnt:SetEditable( false )
+			end
+		end
+		
+		if ( factionTable.PostSetDesc ) then
+			local desc = factionTable:PostSetDesc( self.parent.player )
+			
+			if ( desc ) then
+				self.descEnt:SetText( desc )
+				self.descEnt:SetEditable( false )
+			end
 		end
 	else
 		self:PrintErrorMessage( "Faction is not valid!" )
