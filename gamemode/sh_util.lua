@@ -178,7 +178,9 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.StuffLanguage( pl, key, ... )
-		return string.Left( key, 1 ) == "^" and LANG( pl, key:sub( 2 ), ... ) or key
+		local lang = string.Left( key, 1 ) == "^" and LANG( pl, key:sub( 2 ), ... ) or "-Error"
+		
+		return lang:find( "-Error" ) and key or lang
 	end
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
@@ -333,7 +335,9 @@ else
 	end
 	
 	function catherine.util.StuffLanguage( key, ... )
-		return string.Left( key, 1 ) == "^" and LANG( key:sub( 2 ), ... ) or key
+		local lang = string.Left( key, 1 ) == "^" and LANG( key:sub( 2 ), ... ) or "-Error"
+		
+		return lang:find( "-Error" ) and key or lang
 	end
 	
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )

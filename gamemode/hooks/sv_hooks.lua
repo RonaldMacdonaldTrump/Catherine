@@ -55,7 +55,7 @@ function GM:CanLookF2( pl )
 end
 
 function GM:GetGameDescription( )
-	return "CAT - ".. ( Schema and Schema.Name or "Unknown" )
+	return "CAT - " .. ( Schema and Schema.Name or "Unknown" )
 end
 
 function GM:PlayerSpray( pl )

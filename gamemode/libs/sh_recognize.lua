@@ -33,7 +33,7 @@ if ( SERVER ) then
 		for k, v in pairs( target or { } ) do
 			if ( !IsValid( v ) or v == pl ) then continue end
 			
-			catherine.recognize.RegisterKnowDouble( pl, v )
+			catherine.recognize.RegisterKnowSingle( pl, v )
 		end
 	end
 	
