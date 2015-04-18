@@ -46,15 +46,3 @@ if ( game.IsDedicated( ) ) then
 		catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 	end )
 end
-
-local art = [[
-      `~;;:`      ..     ~~~~..~~~. `.      `.   `.~~~~~`   `.~.      .`  `.       .`  `..~~~~.
-    OM8iIIio     8MM:    +++=MMi++= #M      iM~  #M=++++:  MM==i8M=  ~Mi  iMM:     Mi  iMoi+++=
-  ~Mo           ;M +M        M8     8M      =M~  8M        M8    =M. ~M=  =M`Mo    M=  =M`
-  MM            MI  M#       M8     8MooooooEM~  8Mi+++o   ME.~:=M=  ~M=  =M  MM   M=  =Mo+++o~
-  MM           #M=+ioM=      M8     8M ....`+M~  8M ....   M#I=+M+   ~M=  =M   OM~ M=  =M:`...
-  ;M+         iM.``` +M`     M8     8M      =M~  8M        M8    M8  ~M=  =M    IM:Mi  =M.
-   .8M8i==+8 :M=      MM     M#     #M      iM~  #Mi+++oi  M#    iM~ ~Mi  iM     `MMi  iMO++++o
-      `~;:.  ``        `     ``     ``       `   ``.....`  ``     ``  `    `       `    ``.....
-]]
-MsgC( Color( 0, 255, 0 ), art .. "\n" )
