@@ -60,7 +60,7 @@ catherine.chat.RegisterClass( "ic", {
 			name = desc
 		end
 		
-		chat.AddText( Color( 255, 255, 255 ), LANG( "Chat_Str_IC", name, catherine.chat.PreSet( text ) ) )
+		chat.AddText( Color( 255, 255, 150 ), LANG( "Chat_Str_IC", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 300,
 	canRun = function( pl ) return pl:Alive( ) end
@@ -121,7 +121,7 @@ catherine.chat.RegisterClass( "yell", {
 			name = desc
 		end
 		
-		chat.AddText( Color( 255, 255, 255 ), LANG( "Chat_Str_Yell", name, catherine.chat.PreSet( text ) ) )
+		chat.AddText( Color( 255, 255, 150 ), LANG( "Chat_Str_Yell", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 600,
 	command = { "/y", "/yell" },
@@ -136,7 +136,7 @@ catherine.chat.RegisterClass( "whisper", {
 			name = desc
 		end
 
-		chat.AddText( Color( 255, 255, 255 ), LANG( "Chat_Str_Whisper", name, catherine.chat.PreSet( text ) ) )
+		chat.AddText( Color( 255, 255, 150 ), LANG( "Chat_Str_Whisper", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 150,
 	command = { "/w", "/whisper" },
@@ -298,8 +298,9 @@ if ( SERVER ) then
 			class = class,
 			player = pl
 		}
+		
 		adjustInfo = hook.Run( "ChatAdjust", adjustInfo ) or adjustInfo
-		catherine.chat.Send( pl, classTable, adjustInfo.text )
+		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, adjustInfo.class ) or "" ) .. adjustInfo.text )
 		hook.Run( "ChatSended", adjustInfo )
 	end
 	
@@ -314,7 +315,7 @@ if ( SERVER ) then
 		}
 		
 		adjustInfo = hook.Run( "ChatAdjust", adjustInfo ) or adjustInfo
-		catherine.chat.Send( pl, classTable, adjustInfo.text, target, ... )
+		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, adjustInfo.class ) or "" ) .. adjustInfo.text, target, ... )
 		hook.Run( "ChatSended", adjustInfo )
 	end
 	

@@ -111,6 +111,12 @@ function catherine.hud.WelcomeIntroInitialize( )
 	t.secondTextTime = CurTime( ) + 3
 	t.thirdTextTime = CurTime( ) + 6
 	
+	local information = hook.Run( "GetSchemaInformation" )
+	
+	t.info_title = information.title
+	t.info_desc = information.desc
+	t.info_author = information.author
+
 	catherine.hud.welcomeIntro = t
 end
 
@@ -151,14 +157,13 @@ function catherine.hud.WelcomeIntroDraw( )
 		t.secondalpha = Lerp( 0.03, t.secondalpha, 255 )
 	end
 
-	surface.SetDrawColor( 50, 50, 50, t.backalpha )
+	surface.SetDrawColor( 70, 70, 70, t.backalpha )
 	surface.SetMaterial( Material( "gui/center_gradient" ) )
 	surface.DrawTexturedRect( scrW / 2 - scrW / 2 / 2, scrH * 0.3 - ( scrH * 0.2 ) / 2, scrW / 2, scrH * 0.2 )
-	
-	local information = hook.Run( "GetSchemaInformation" )
-	draw.SimpleText( information.title, "catherine_schema_title", scrW / 2, scrH * 0.3 - 20, Color( 255, 255, 255, t.firstalpha ), 1, 1 )
-	draw.SimpleText( information.desc, "catherine_normal30", scrW / 2, scrH * 0.35, Color( 255, 255, 255, t.secondalpha ), 1, 1 )
-	draw.SimpleText( information.author, "catherine_normal20", scrW * 0.2, scrH * 0.8, Color( 255, 255, 255, t.thirdalpha ), 1, 1 )
+
+	draw.SimpleText( t.info_title, "catherine_schema_title", scrW / 2, scrH * 0.3 - 20, Color( 255, 255, 255, t.firstalpha ), 1, 1 )
+	draw.SimpleText( t.info_desc, "catherine_normal30", scrW / 2, scrH * 0.35, Color( 255, 255, 255, t.secondalpha ), 1, 1 )
+	draw.SimpleText( t.info_author, "catherine_normal20", scrW * 0.2, scrH * 0.8, Color( 255, 255, 255, t.thirdalpha ), 1, 1 )
 end
 
 function catherine.hud.ProgressBarAdd( message, endTime )

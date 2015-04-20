@@ -53,8 +53,7 @@ function SWEP:PrimaryAttack( )
 	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
 	local ent = pl:GetEyeTrace( 70 ).Entity
-	
-	print(catherine.door.IsDoorOwner( pl, ent ))
+
 	if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) or ent.CAT_doorLocked or !catherine.door.IsDoorOwner( pl, ent ) ) then return end
 	
 	pl:Freeze( true )

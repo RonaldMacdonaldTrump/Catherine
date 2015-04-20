@@ -100,13 +100,13 @@ else
 		for k, v in pairs( LocalPlayer( ):GetWeapons( ) ) do
 			local col = Color( 255, 255, 255 )
 			
-			if ( k == self.latestSlot ) then
-				col = Color( 50, 50, 50 )
-			end
-			
 			col.a = math.Clamp( 255 - math.TimeFraction( self.showTime, self.noShowTime, CurTime( ) ) * 255, 0, 255 )
 			
-			draw.SimpleText( v:GetPrintName( ), "catherine_normal20", defx, defy + ( k * 25 ), col, TEXT_ALIGN_LEFT, 1 )
+			if ( k == self.latestSlot ) then
+				draw.SimpleText( ">", "catherine_normal25", defx - 20, defy + ( k * 30 ), col, TEXT_ALIGN_LEFT, 1 )
+			end
+			
+			draw.SimpleText( v:GetPrintName( ), "catherine_normal25", defx, defy + ( k * 30 ), col, TEXT_ALIGN_LEFT, 1 )
 			
 			if ( k == self.latestSlot and self.markup ) then
 				self.markup:Draw( defx + 128, defy + 24, 0, 1, col.a )

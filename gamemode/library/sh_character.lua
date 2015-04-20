@@ -155,6 +155,10 @@ if ( SERVER ) then
 	catherine.character.SaveTick = catherine.character.SaveTick or CurTime( ) + catherine.configs.saveInterval
 	
 	function catherine.character.New( pl, id )
+		if ( !pl:Alive( ) ) then
+			return false, "^Character_Notify_CantSwitchDeath"
+		end
+		
 		if ( catherine.player.IsRagdolled( pl ) ) then
 			return false, "^Character_Notify_CantSwitchRagdolled"
 		end

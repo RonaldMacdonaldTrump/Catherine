@@ -19,6 +19,13 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local LANGUAGE = catherine.language.New( "korean" )
 LANGUAGE.name = "Korean (한국어)"
 LANGUAGE.data = {
+	// Class
+	[ "Class_UI_Title" ] = "클래스",
+	[ "Class_UI_LimitStr" ] = "%s / %s",
+	[ "Class_UI_SalaryStr" ] = "한 시간에 %s",
+	[ "Class_UI_Unlimited" ] = "무제한",
+	[ "Class_UI_NoJoinable" ] = "당신이 가입할 수 있는 클래스가 없습니다.",
+	
 	// Cash
 	[ "Cash_UI_HasStr" ] = "당신은 %s " .. catherine.configs.cashName .. " 를 가지고 있습니다.",
 	[ "Cash_Notify_Set" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 설정하셨습니다.",
@@ -29,12 +36,26 @@ LANGUAGE.data = {
 	
 	// Character
 	[ "Character_UI_Title" ] = "캐릭터",
+	[ "Character_UI_CreateCharStr" ] = "새 인생 시작",
+	[ "Character_UI_LoadCharStr" ] = "인생 계속하기",
+	[ "Character_UI_Close" ] = "닫기",
+	[ "Character_UI_ChangeLogStr" ] = "업데이트 로그",
+	[ "Character_UI_ExitServerStr" ] = "서버에서 나가기",
+	[ "Character_UI_BackStr" ] = "돌아가기",
+	[ "Character_UI_DontHaveAny" ] = "캐릭터가 없습니다.",
+	[ "Character_UI_UseCharacter" ] = "이 캐릭터를 사용합니다.",
+	[ "Character_UI_DeleteCharacter" ] = "이 캐릭터를 삭제합니다.",
+	[ "Character_UI_CharInfo" ] = "캐릭터 정보",
+	[ "Character_UI_CharName" ] = "캐릭터 이름",
+	[ "Character_UI_CharDesc" ] = "캐릭터 설명",
+	[ "Character_Notify_DeleteQ" ] = "이 캐릭터를 정말로 삭제하시겠습니까?",
+	[ "Character_Notify_ExitQ" ] = "이 서버에서 정말로 나가시겠습니까?",
 	[ "Character_Notify_CantDeleteUsing" ] = "사용하고 있는 캐릭터를 지울 수 없습니다!",
 	[ "Character_Notify_CantSwitchRagdolled" ] = "기절한 상태에서는 캐릭터를 바꿀 수 없습니다!",
 	[ "Character_Notify_IsNotValid" ] = "이 캐릭터는 올바르지 않습니다!",
 	[ "Character_Notify_IsNotValidFaction" ] = "이 캐릭터의 팩션이 올바르지 않습니다!",
 	[ "Character_Notify_CantSwitchUsing" ] = "같은 캐릭터를 또 사용할 수 없습니다!",
-	
+	[ "Character_Notify_CantSwitchDeath" ] = "죽은 상태에서는 캐릭터를 바꿀 수 없습니다!",
 	[ "Character_Notify_SetName" ] = "%s 님이 %s 로 %s 의 캐릭터 이름을 바꾸셨습니다.",
 	[ "Character_Notify_SetDesc" ] = "%s 님이 %s 로 %s 의 캐릭터 설명을 바꾸셨습니다.",
 	[ "Character_Notify_SetModel" ] = "%s 님이 %s 로 %s 의 캐릭터 모델을 바꾸셨습니다.",
@@ -44,12 +65,14 @@ LANGUAGE.data = {
 	[ "Character_Notify_DescLimitHit" ] = "캐릭터 설명은 " .. catherine.configs.characterDescMinLen .."자 이상 " .. catherine.configs.characterDescMaxLen .. "자 이하 되어야 합니다!",
 		
 	// Faction
+	[ "Faction_UI_Title" ] = "팩션",
 	[ "Faction_Notify_Give" ] = "%s 님이 %s 팩션에 대한 권한을 %s 님에게 부여했습니다.",
 	[ "Faction_Notify_Take" ] = "%s 님이 %s 팩션에 대한 권한을 %s 님에게서 빼았었습니다.",
 	[ "Faction_Notify_NotValid" ] = "%s 는 올바르지 않은 팩션 입니다!",
 	[ "Faction_Notify_NotWhitelist" ] = "%s 는 화이트리스트가 아닙니다!",
 	[ "Faction_Notify_AlreadyHas" ] = "%s 님이 이미 %s 화이트리스트를 가지고 있습니다!",
 	[ "Faction_Notify_HasNot" ] = "%s 님은 %s 화이트리스트를 가지고 있지 않습니다!",
+	[ "Faction_Notify_SelectPlease" ] = "팩션을 선택하세요!",
 	
 	// Flag
 	[ "Flag_Notify_Give" ] = "%s 님이 %s 플래그를 %s 님에게 주셨습니다.",
@@ -199,9 +222,11 @@ LANGUAGE.data = {
 	[ "Basic_UI_StringRequest" ] = "요청",
 	[ "Basic_UI_Question" ] = "질문",
 	[ "Basic_UI_Notify" ] = "안내",
+	[ "Basic_UI_Continue" ] = "진행",
 	[ "Basic_UI_OK" ] = "확인",
 	[ "Basic_UI_YES" ] = "네",
-	[ "Basic_UI_NO" ] = "아니오"
+	[ "Basic_UI_NO" ] = "아니오",
+	[ "Basic_Framework_Author" ] = "%s 에 의해 개발 및 디자인.",
 }
 
 catherine.language.Register( LANGUAGE )

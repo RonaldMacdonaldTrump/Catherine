@@ -36,8 +36,10 @@ function PANEL:Init( )
 	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
+		
 		if ( self.business and table.Count( self.business ) == 0 ) then
-			draw.SimpleText( LANG( "Business_UI_NoBuyable" ), "catherine_normal25", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Business_UI_NoBuyable" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
 	end
 	
@@ -84,10 +86,13 @@ end
 
 function PANEL:RefreshShoppingCartInfo( )
 	local costs = 0
+	
 	for k, v in pairs( self.shoppingcart ) do
 		local itemTable = catherine.item.FindByID( v.uniqueID )
+		
 		costs = itemTable.cost * v.count
 	end
+	
 	self.shoppingcartInfo = costs
 end
 
@@ -130,12 +135,13 @@ function PANEL:BuildShoppingCart( )
 	for k, v in pairs( self.shoppingcart ) do
 		local costs = 0
 		local itemTable = catherine.item.FindByID( v.uniqueID )
+		local name = catherine.util.StuffLanguage( v.name )
 		costs = itemTable.cost * v.count
 		
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Cart:GetWide( ), 40 )
 		panel.Paint = function( pnl, w, h )
-			draw.SimpleText( catherine.util.StuffLanguage( v.name ), "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( name, "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( v.count .. "'s / " .. catherine.cash.GetName( costs ), "catherine_normal15", w - 40, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 		end
@@ -166,11 +172,10 @@ function PANEL:BuildShoppingCart( )
 end
 
 function PANEL:BuildBusiness( )
-	if ( !self.business ) then return end
 	self.Lists:Clear( )
 	local delta = 0
 	
-	for k, v in pairs( self.business ) do
+	for k, v in pairs( self.business or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
@@ -271,14 +276,15 @@ function PANEL:Init( )
 end
 
 function PANEL:BuildShipment( )
-	if ( !self.shipments ) then return end
 	self.Lists:Clear( )
 	
-	for k, v in pairs( self.shipments ) do
+	for k, v in pairs( self.shipments or { } ) do
+		local name = catherine.util.StuffLanguage( v.name )
+		
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Lists:GetWide( ), 40 )
 		panel.Paint = function( pnl, w, h )
-			draw.SimpleText( catherine.util.StuffLanguage( v.name ), "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( name, "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( v.count .. "'s", "catherine_normal15", w - 80, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 		end

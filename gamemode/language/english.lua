@@ -19,6 +19,13 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local LANGUAGE = catherine.language.New( "english" )
 LANGUAGE.name = "English"
 LANGUAGE.data = {
+	// Class
+	[ "Class_UI_Title" ] = "Class",
+	[ "Class_UI_LimitStr" ] = "%s / %s",
+	[ "Class_UI_SalaryStr" ] = "%s per hour",
+	[ "Class_UI_Unlimited" ] = "Unlimited",
+	[ "Class_UI_NoJoinable" ] = "You can't join anything.",
+	
 	// Cash
 	[ "Cash_UI_HasStr" ] = "You have a %s " .. catherine.configs.cashName ..".",
 	[ "Cash_Notify_Set" ] = "%s have set %s to %s",
@@ -29,12 +36,26 @@ LANGUAGE.data = {
 	
 	// Character
 	[ "Character_UI_Title" ] = "Character",
+	[ "Character_UI_CreateCharStr" ] = "Create Character",
+	[ "Character_UI_LoadCharStr" ] = "Load Character",
+	[ "Character_UI_Close" ] = "Close",
+	[ "Character_UI_ChangeLogStr" ] = "Update Log",
+	[ "Character_UI_ExitServerStr" ] = "Disconnect",
+	[ "Character_UI_BackStr" ] = "Back to main",
+	[ "Character_UI_DontHaveAny" ] = "You don't have any characters.",
+	[ "Character_UI_UseCharacter" ] = "Use this character.",
+	[ "Character_UI_DeleteCharacter" ] = "Delete this character.",
+	[ "Character_UI_CharInfo" ] = "Character Information",
+	[ "Character_UI_CharName" ] = "Character Name",
+	[ "Character_UI_CharDesc" ] = "Character Description",
+	[ "Character_Notify_DeleteQ" ] = "Are you sure you want to delete this character?",
+	[ "Character_Notify_ExitQ" ] = "Are you sure you want to disconnect from the server?",
 	[ "Character_Notify_CantDeleteUsing" ] = "You can't delete using character!",
 	[ "Character_Notify_CantSwitchRagdolled" ] = "You can't switch character on ragdolled!",
 	[ "Character_Notify_IsNotValid" ] = "This character is not valid!",
 	[ "Character_Notify_IsNotValidFaction" ] = "This character faction is not valid!",
 	[ "Character_Notify_CantSwitchUsing" ] = "You can't use same character!",
-	
+	[ "Character_Notify_CantSwitchDeath" ] = "You can't switch character on death!",
 	[ "Character_Notify_SetName" ] = "%s are set %s name for %s.",
 	[ "Character_Notify_SetDesc" ] = "%s are set %s description for %s.",
 	[ "Character_Notify_SetModel" ] = "%s are set %s model for %s.",
@@ -44,12 +65,14 @@ LANGUAGE.data = {
 	[ "Character_Notify_DescLimitHit" ] = "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long and up to " .. catherine.configs.characterDescMaxLen .. " characters!",
 	
 	// Faction
+	[ "Faction_UI_Title" ] = "Faction",
 	[ "Faction_Notify_Give" ] = "%s have given %s to %s",
 	[ "Faction_Notify_Take" ] = "%s have taken %s from %s",
 	[ "Faction_Notify_NotValid" ] = "%s is not valid faction!",
 	[ "Faction_Notify_NotWhitelist" ] = "%s is not a whitelist!",
 	[ "Faction_Notify_AlreadyHas" ] = "%s already has %s whitelist!",
 	[ "Faction_Notify_HasNot" ] = "%s has not a %s whitelist!",
+	[ "Faction_Notify_SelectPlease" ] = "Please select a faction!",
 	
 	// Flag
 	[ "Flag_Notify_Give" ] = "%s have given %s to %s",
@@ -199,9 +222,11 @@ LANGUAGE.data = {
 	[ "Basic_UI_StringRequest" ] = "Request",
 	[ "Basic_UI_Question" ] = "Question",
 	[ "Basic_UI_Notify" ] = "Notify",
+	[ "Basic_UI_Continue" ] = "Continue",
 	[ "Basic_UI_OK" ] = "OK",
 	[ "Basic_UI_YES" ] = "YES",
-	[ "Basic_UI_NO" ] = "NO"
+	[ "Basic_UI_NO" ] = "NO",
+	[ "Basic_Framework_Author" ] = "Development and design by %s.",
 }
 
 catherine.language.Register( LANGUAGE )

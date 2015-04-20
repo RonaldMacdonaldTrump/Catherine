@@ -132,6 +132,26 @@ if ( SERVER ) then
 	netstream.Hook( "catherine.class.Set", function( pl, data )
 		catherine.class.Set( pl, data )
 	end )
+else
+	function catherine.class.GetJoinable( )
+		local classes = { }
+		
+		for k, v in pairs( catherine.class.GetAll( ) ) do
+			if ( v.faction == LocalPlayer( ):Team( ) and LocalPlayer( ):Class( ) != v.uniqueID ) then
+				classes[ #classes + 1 ] = v
+			end
+		end
+		
+		return classes
+	end
+	
+	function catherine.class.CharacterCharVarChanged( )
+		if ( IsValid( catherine.vgui.class ) ) then
+			catherine.vgui.class:InitializeClasses( )
+		end
+	end
+	
+	hook.Add( "CharacterCharVarChanged", "catherine.class.CharacterCharVarChanged", catherine.class.CharacterCharVarChanged )
 end
 
 local META = FindMetaTable( "Player" )

@@ -86,7 +86,7 @@ function GM:HUDDrawScoreBoard( )
 	end
 	
 	draw.SimpleText( "CATHERINE", "catherine_introTitle", scrW / 2, scrH / 2, Color( 235, 235, 235, catherine.intro.alpha ), 1, 1 )
-	draw.SimpleText( Schema and Schema.Title or "Unknown", "catherine_introSchema", scrW / 2, scrH * 0.6, Color( 235, 235, 235, catherine.intro.alpha ), 1, 1 )
+	draw.SimpleText( Schema and catherine.util.StuffLanguage( "^Basic_Schema_Title" ) or "Unknown", "catherine_introSchema", scrW / 2, scrH * 0.6, Color( 235, 235, 235, catherine.intro.alpha ), 1, 1 )
 end
 
 local OFFSET_PLAYER = Vector( 0, 0, 30 )
@@ -196,7 +196,7 @@ function GM:GetSchemaInformation( )
 	return {
 		title = catherine.Name,
 		desc = catherine.Desc,
-		author = "Development and design by L7D."
+		author = LANG( "Basic_Framework_Author", catherine.Author )
 	}
 end
 
