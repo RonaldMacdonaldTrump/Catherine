@@ -61,7 +61,7 @@ catherine.character.NewVar( "name", {
 			return true
 		end
 		
-		return false, "Character_Notify_NameLimitHit"
+		return false, "^Character_Notify_NameLimitHit"
 	end
 } )
 
@@ -74,7 +74,7 @@ catherine.character.NewVar( "desc", {
 			return true
 		end
 		
-		return false, "Character_Notify_DescLimitHit"
+		return false, "^Character_Notify_DescLimitHit"
 	end
 } )
 
@@ -83,7 +83,7 @@ catherine.character.NewVar( "model", {
 	default = "models/breen.mdl",
 	checkValid = function( data )
 		if ( data == "" ) then
-			return false, "Please select character model!"
+			return false, "^Character_Notify_SelectModel"
 		end
 		
 		return true
@@ -156,25 +156,25 @@ if ( SERVER ) then
 	
 	function catherine.character.New( pl, id )
 		if ( catherine.player.IsRagdolled( pl ) ) then
-			return false, "Character_Notify_CantSwitchRagdolled"
+			return false, "^Character_Notify_CantSwitchRagdolled"
 		end
 		
 		local character = catherine.character.GetTargetCharacterByID( pl, id )
 		
 		if ( !character ) then
-			return false, "Character_Notify_IsNotValid"
+			return false, "^Character_Notify_IsNotValid"
 		end
 		
 		local factionTable = catherine.faction.FindByID( character._faction )
 		
 		if ( !factionTable ) then
-			return false, "Character_Notify_IsNotValidFaction"
+			return false, "^Character_Notify_IsNotValidFaction"
 		end
 
 		local prevID = pl:GetCharacterID( )
 		
 		if ( prevID == id ) then
-			return false, "Character_Notify_CantSwitchUsing"
+			return false, "^Character_Notify_CantSwitchUsing"
 		end
 		
 		hook.Run( "CharacterLoadingStart", pl, prevID, id )
@@ -265,7 +265,7 @@ if ( SERVER ) then
 	
 	function catherine.character.Delete( pl, id )
 		if ( pl:GetCharacterID( ) == id ) then
-			netstream.Start( pl, "catherine.character.DeleteResult", "Character_Notify_CantDeleteUsing" )
+			netstream.Start( pl, "catherine.character.DeleteResult", "^Character_Notify_CantDeleteUsing" )
 			return
 		end
 		

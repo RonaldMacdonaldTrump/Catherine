@@ -20,11 +20,11 @@ local LANGUAGE = catherine.language.New( "english" )
 LANGUAGE.name = "English"
 LANGUAGE.data = {
 	// Cash
-	[ "Cash_UI_HasStr" ] = "You have a %s.",
+	[ "Cash_UI_HasStr" ] = "You have a %s " .. catherine.configs.cashName ..".",
 	[ "Cash_Notify_Set" ] = "%s have set %s to %s",
 	[ "Cash_Notify_Give" ] = "%s have given %s to %s",
 	[ "Cash_Notify_Take" ] = "%s have taken %s from %s",
-	[ "Cash_Notify_HasNot" ] = "You don't have a enough %s!",
+	[ "Cash_Notify_HasNot" ] = "You don't have a enough " .. catherine.configs.cashName .. "!",
 	[ "Cash_Notify_NotValidAmount" ] = "Please enter right amount!",
 	
 	// Character
@@ -39,6 +39,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_SetDesc" ] = "%s are set %s description for %s.",
 	[ "Character_Notify_SetModel" ] = "%s are set %s model for %s.",
 	[ "Character_Notify_SetDescLC" ] = "You are set character description to %s.",
+	[ "Character_Notify_SelectModel" ] = "Please select character model!",
 	[ "Character_Notify_NameLimitHit" ] = "The character name must be at least " .. catherine.configs.characterNameMinLen .." characters long and up to " .. catherine.configs.characterNameMaxLen .. " characters!",
 	[ "Character_Notify_DescLimitHit" ] = "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long and up to " .. catherine.configs.characterDescMaxLen .. " characters!",
 	

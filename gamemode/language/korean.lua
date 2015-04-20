@@ -20,11 +20,11 @@ local LANGUAGE = catherine.language.New( "korean" )
 LANGUAGE.name = "Korean (한국어)"
 LANGUAGE.data = {
 	// Cash
-	[ "Cash_UI_HasStr" ] = "당신은 %s 를 가지고 있습니다.",
+	[ "Cash_UI_HasStr" ] = "당신은 %s " .. catherine.configs.cashName .. " 를 가지고 있습니다.",
 	[ "Cash_Notify_Set" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 설정하셨습니다.",
 	[ "Cash_Notify_Give" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 주셨습니다.",
 	[ "Cash_Notify_Take" ] = "%s 님이 %s 만큼의 돈을 %s 님에게서 빼았었습니다.",
-	[ "Cash_Notify_HasNot" ] = "당신은 충분한 %s 가 없습니다!",
+	[ "Cash_Notify_HasNot" ] = "당신은 충분한 " .. catherine.configs.cashName .. " 가 없습니다!",
 	[ "Cash_Notify_NotValidAmount" ] = "올바른 금액을 입력하세요!",
 	
 	// Character
@@ -39,6 +39,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_SetDesc" ] = "%s 님이 %s 로 %s 의 캐릭터 설명을 바꾸셨습니다.",
 	[ "Character_Notify_SetModel" ] = "%s 님이 %s 로 %s 의 캐릭터 모델을 바꾸셨습니다.",
 	[ "Character_Notify_SetDescLC" ] = "당신의 캐릭터 설명을 %s 로 바꿨습니다.",
+	[ "Character_Notify_SelectModel" ] = "캐릭터 모델을 선택하세요!",
 	[ "Character_Notify_NameLimitHit" ] = "캐릭터 이름은 " .. catherine.configs.characterNameMinLen .." 자 이상 " .. catherine.configs.characterNameMaxLen .. " 자 이하 되어야 합니다!",
 	[ "Character_Notify_DescLimitHit" ] = "캐릭터 설명은 " .. catherine.configs.characterDescMinLen .."자 이상 " .. catherine.configs.characterDescMaxLen .. "자 이하 되어야 합니다!",
 		

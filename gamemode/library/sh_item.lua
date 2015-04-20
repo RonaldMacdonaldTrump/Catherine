@@ -244,20 +244,3 @@ else
 		catherine.item.OpenEntityUseMenu( data )
 	end )
 end
-
-catherine.command.Register( {
-	command = "itemspawn",
-	syntax = "[Item ID]",
-	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
-	runFunc = function( pl, args )
-		if ( args[ 1 ] ) then
-			local success = catherine.item.Spawn( args[ 1 ], catherine.util.GetItemDropPos( pl ) )
-			
-			if ( !success ) then
-				catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
-			end
-		else
-			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
-		end
-	end
-} )

@@ -16,8 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.catData = catherine.catData or { }
-catherine.catData.networkRegistry = catherine.catData.networkRegistry or { }
+catherine.catData = catherine.catData or { networkRegistry = { } }
 
 if ( SERVER ) then
 	function catherine.catData.SetVar( pl, key, value, noSync, save )

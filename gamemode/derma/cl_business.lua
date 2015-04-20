@@ -69,7 +69,7 @@ function PANEL:Init( )
 					catherine.notify.Add( LANG( "Inventory_Notify_CantDrop01" ), 5 )
 				end
 			else
-				catherine.notify.Add( LANG( "Cash_Notify_HasNot", catherine.cash.GetOnlyName( ) ), 5 )
+				catherine.notify.Add( LANG( "Cash_Notify_HasNot" ), 5 )
 			end
 		else
 			catherine.notify.Add( LANG( "Business_Notify_NeedCartAdd" ), 5 )

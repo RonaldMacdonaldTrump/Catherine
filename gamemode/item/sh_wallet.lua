@@ -54,7 +54,7 @@ ITEM.func.drop = {
 			val = tonumber( val )
 			
 			if ( !catherine.cash.Has( pl, val ) ) then
-				catherine.util.NotifyLang( pl, "Cash_Notify_HasNot", catherine.cash.GetOnlyName( ) )
+				catherine.util.NotifyLang( pl, "Cash_Notify_HasNot" )
 				return
 			end
 			
@@ -74,7 +74,7 @@ if ( SERVER ) then
 	end )
 else
 	function ITEM:GetDesc( pl, itemTable, itemData, isInv )
-		return ( isInv and LANG( "Cash_UI_HasStr", catherine.cash.GetName( catherine.cash.Get( pl ) ) ) )
+		return isInv and LANG( "Cash_UI_HasStr", catherine.cash.Get( pl ) )
 	end
 end
 

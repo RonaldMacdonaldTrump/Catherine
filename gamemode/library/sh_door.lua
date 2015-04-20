@@ -90,7 +90,7 @@ if ( SERVER ) then
 		
 		local cost = catherine.door.GetDoorCost( pl, ent )
 		if ( !catherine.cash.Has( pl, cost ) ) then
-			return false, "Cash_Notify_HasNot", { catherine.cash.GetOnlyName( ) }
+			return false, "Cash_Notify_HasNot"
 		end
 		
 		catherine.cash.Take( pl, cost )
@@ -254,64 +254,3 @@ end
 function catherine.door.IsBuyableDoor( ent )
 	return !ent:GetNetVar( "cantBuy", false )
 end
-
-catherine.command.Register( {
-	command = "doorbuy",
-	runFunc = function( pl, args )
-		local success, langKey, par = catherine.door.Buy( pl, pl:GetEyeTrace( 70 ).Entity )
-		
-		if ( success ) then
-			catherine.util.NotifyLang( pl, "Door_Notify_Buy" )
-		else
-			catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
-		end
-	end
-} )
-
-catherine.command.Register( {
-	command = "doorsell",
-	runFunc = function( pl, args )
-		local success, langKey, par = catherine.door.Sell( pl, pl:GetEyeTrace( 70 ).Entity )
-		
-		if ( success ) then
-			catherine.util.NotifyLang( pl, "Door_Notify_Sell" )
-		else
-			catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
-		end
-	end
-} )
-
-catherine.command.Register( {
-	command = "doorsettitle",
-	syntax = "[Text]",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
-	runFunc = function( pl, args )
-		if ( args[ 1 ] ) then
-			local success, langKey, par = catherine.door.SetDoorTitle( pl, pl:GetEyeTrace( 70 ).Entity, args[ 1 ], true )
-			
-			if ( success ) then
-				catherine.util.NotifyLang( pl, "Door_Notify_SetTitle" )
-			else
-				catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
-			end
-		else
-			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
-		end
-	end
-} )
-
-catherine.command.Register( {
-	command = "doorsetstatus",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
-	runFunc = function( pl, args )
-		if ( args[ 1 ] ) then
-			local success, langKey, par = catherine.door.SetDoorStatus( pl, pl:GetEyeTrace( 70 ).Entity )
-			
-			if ( success ) then
-				catherine.util.NotifyLang( pl, langKey )
-			end
-		else
-			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
-		end
-	end
-} )

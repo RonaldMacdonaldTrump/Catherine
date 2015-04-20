@@ -203,39 +203,6 @@ catherine.chat.RegisterClass( "disconnect", {
 	global = true
 } )
 
-catherine.command.Register( {
-	command = "pm",
-	syntax = "[name] [text]",
-	runFunc = function( pl, args )
-		if ( args[ 1 ] ) then
-			if ( args[ 2 ] ) then
-				local target = catherine.util.FindPlayerByName( args[ 1 ] )
-				
-				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					catherine.chat.Send( pl, "pm", args[ 2 ], { pl, target }, target )
-				else
-					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
-				end
-			else
-				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
-			end
-		else
-			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
-		end
-	end
-} )
-
-catherine.command.Register( {
-	command = "roll",
-	runFunc = function( pl, args )
-		if ( args[ 1 ] ) then
-			args[ 1 ] = tonumber( args[ 1 ] )
-		end
-		
-		catherine.chat.Send( pl, "roll", math.random( 1, args[ 1 ] or 100 ) )
-	end
-} )
-
 if ( SERVER ) then
 	function catherine.chat.Send( pl, classTable, text, target, ... )
 		if ( type( classTable ) == "string" ) then
