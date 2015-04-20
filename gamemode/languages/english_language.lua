@@ -19,9 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local LANGUAGE = catherine.language.New( "english" )
 LANGUAGE.name = "English"
 LANGUAGE.data = {
-	[ "LanguageError01" ] = "Error Language",
-	
-	// Cash ^-^;
+	// Cash
 	[ "Cash_UI_HasStr" ] = "You have a %s.",
 	[ "Cash_Notify_Set" ] = "%s have set %s to %s",
 	[ "Cash_Notify_Give" ] = "%s have given %s to %s",
@@ -37,7 +35,13 @@ LANGUAGE.data = {
 	[ "Character_Notify_IsNotValidFaction" ] = "This character faction is not valid!",
 	[ "Character_Notify_CantSwitchUsing" ] = "You can't use same character!",
 	
-	// Faction ^-^;
+	[ "Character_Notify_SetName" ] = "%s are set %s name for %s.",
+	[ "Character_Notify_SetDesc" ] = "%s are set %s description for %s.",
+	[ "Character_Notify_SetModel" ] = "%s are set %s model for %s.",
+	[ "Character_Notify_SetDescLC" ] = "You are set character description to %s.",
+	[ "Character_Notify_DescLimitHit" ] = "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long and up to " .. catherine.configs.characterDescMaxLen .. " characters!",
+	
+	// Faction
 	[ "Faction_Notify_Give" ] = "%s have given %s to %s",
 	[ "Faction_Notify_Take" ] = "%s have taken %s from %s",
 	[ "Faction_Notify_NotValid" ] = "%s is not valid faction!",
@@ -45,7 +49,7 @@ LANGUAGE.data = {
 	[ "Faction_Notify_AlreadyHas" ] = "%s already has %s whitelist!",
 	[ "Faction_Notify_HasNot" ] = "%s has not a %s whitelist!",
 	
-	// Flag ^-^;
+	// Flag
 	[ "Flag_Notify_Give" ] = "%s have given %s to %s",
 	[ "Flag_Notify_Take" ] = "%s have taken %s to %s",
 	[ "Flag_Notify_AlreadyHas" ] = "%s already has %s flag!",

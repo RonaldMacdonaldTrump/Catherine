@@ -59,7 +59,7 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetVar( target, "_name", args[ 2 ] )
-					catherine.util.Notify( pl, "Set name" )
+					catherine.util.NotifyAllLang( pl, "Character_Notify_SetName", pl:Name( ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -82,7 +82,7 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetVar( target, "_desc", args[ 2 ] )
-					catherine.util.Notify( pl, "Set desc" )
+					catherine.util.NotifyAllLang( pl, "Character_Notify_SetDesc", pl:Name( ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -105,7 +105,7 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetVar( target, "_model", args[ 2 ] )
-					catherine.util.Notify( pl, "Set model" )
+					catherine.util.NotifyAllLang( pl, "Character_Notify_SetModel", pl:Name( ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -122,11 +122,13 @@ catherine.command.Register( {
 	command = "charphysdesc",
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
-			if ( args[ 1 ]:len( ) >= catherine.configs.characterDescMinLen and args[ 1 ]:len( ) < catherine.configs.characterDescMaxLen ) then
-				catherine.character.SetVar( pl, "_desc", args[ 1 ] )
-				catherine.util.Notify( pl, "Set your desc" )
+			local newDesc = args[ 1 ]
+			
+			if ( newDesc:len( ) >= catherine.configs.characterDescMinLen and newDesc:len( ) < catherine.configs.characterDescMaxLen ) then
+				catherine.character.SetVar( pl, "_desc", newDesc )
+				catherine.util.NotifyLang( pl, "Character_Notify_SetDescLC", newDesc )
 			else
-				catherine.util.Notify( pl, "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long and up to " .. catherine.configs.characterDescMaxLen .. " characters!" )
+				catherine.util.NotifyLang( pl, "Character_Notify_DescLimitHit" )
 			end
 		else
 			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
