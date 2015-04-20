@@ -28,6 +28,9 @@ function PANEL:Init( )
 	self.mainButtons = { }
 	self.mode = 0
 	
+	local schemaTitle = catherine.util.StuffLanguage( Schema and Schema.Title or "Example" )
+	local schemaDesc = catherine.util.StuffLanguage( Schema and Schema.Desc or "Test" )
+	
 	self:SetSize( self.w, self.h )
 	self:Center( )
 	self:SetTitle( "" )
@@ -35,10 +38,6 @@ function PANEL:Init( )
 	self:SetDraggable( false )
 	self:MakePopup( )
 	self.Paint = function( pnl, w, h )
-		self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
-	
-		catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
-	
 		if ( self.mode == 0 ) then
 			self.mainAlpha = Lerp( 0.03, self.mainAlpha, 255 )
 		else
@@ -57,18 +56,14 @@ function PANEL:Init( )
 		surface.SetMaterial( Material( "gui/gradient" ) )
 		surface.DrawTexturedRect( 0, ( h * 0.7 - 70 + 240 ) - 2, w * 0.4, 2 )
 
-		
-		draw.SimpleText( "Catherine Development Version", "catherine_normal15", 10, h - 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
-		
-		if ( !Schema ) then return end
-		draw.SimpleText( Schema.Title, "catherine_normal30", 30, h * 0.7 - 60, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
-		draw.SimpleText( Schema.Desc, "catherine_normal20", 30, h * 0.7 - 30, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+		draw.SimpleText( schemaTitle, "catherine_normal30", 30, h * 0.7 - 60, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+		draw.SimpleText( schemaDesc, "catherine_normal20", 30, h * 0.7 - 30, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 	end
 
 	self.createCharacter = vgui.Create( "catherine.vgui.button", self )
 	self.createCharacter:SetPos( 30, self.h * 0.7 )
 	self.createCharacter:SetSize( self.w * 0.2, 30 )
-	self.createCharacter:SetStr( "Create character" )
+	self.createCharacter:SetStr( LANG( "Character_UI_CreateCharStr" ) )
 	self.createCharacter:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.createCharacter.Click = function( )
 		self:JoinMenu( function( )
@@ -80,7 +75,7 @@ function PANEL:Init( )
 	self.useCharacter = vgui.Create( "catherine.vgui.button", self )
 	self.useCharacter:SetPos( 30, self.h * 0.7 + 40 )
 	self.useCharacter:SetSize( self.w * 0.2, 30 )
-	self.useCharacter:SetStr( "Load character" )
+	self.useCharacter:SetStr( LANG( "Character_UI_LoadCharStr" ) )
 	self.useCharacter:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.useCharacter.Click = function( )
 		self:JoinMenu( function( )
@@ -92,7 +87,7 @@ function PANEL:Init( )
 	self.changeLog = vgui.Create( "catherine.vgui.button", self )
 	self.changeLog:SetPos( 30, self.h * 0.7 + 80 )
 	self.changeLog:SetSize( self.w * 0.2, 30 )
-	self.changeLog:SetStr( "Change Log" )
+	self.changeLog:SetStr( LANG( "Character_UI_ChangeLogStr" ) )
 	self.changeLog:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.changeLog.Click = function( )
 		gui.OpenURL( "http://github.com/L7D/Catherine/commits" )
@@ -105,9 +100,9 @@ function PANEL:Init( )
 	self.disconnect:SetStr( "" )
 	self.disconnect.PaintOverAll = function( pnl )
 		if ( self.player:IsCharacterLoaded( ) ) then
-			pnl:SetStr( "Close" )
+			pnl:SetStr( LANG( "Character_UI_Close" ) )
 		else
-			pnl:SetStr( "Disconnect" )
+			pnl:SetStr( LANG( "Character_UI_ExitServerStr" ) )
 		end
 	end
 	self.disconnect:SetStrColor( Color( 255, 255, 255, 255 ) )
@@ -115,11 +110,11 @@ function PANEL:Init( )
 		if ( self.player:IsCharacterLoaded( ) ) then
 			self:Close( )
 		else
-			Derma_Query( "Are you sure you want to disconnect from the server?", "Disconnect from server", "Yes", function( )
+			Derma_Query( LANG( "Character_Notify_ExitQ" ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_YES" ), function( )
 				self:JoinMenu( function( )
 					RunConsoleCommand( "disconnect" )
 				end )
-			end, "No", function( ) end )
+			end, LANG( "Basic_UI_NO" ), function( ) end )
 		end
 	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.disconnect
@@ -127,7 +122,7 @@ function PANEL:Init( )
 	self.back = vgui.Create( "catherine.vgui.button", self )
 	self.back:SetPos( 30, 30 )
 	self.back:SetSize( self.w * 0.2, 30 )
-	self.back:SetStr( "Back to main" )
+	self.back:SetStr( LANG( "Character_UI_BackStr" ) )
 	self.back:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.back:SetVisible( false )
 	self.back:SetAlpha( 0 )
@@ -170,8 +165,9 @@ function PANEL:UseCharacterPanel( )
 			draw.SimpleText( errMsg, "catherine_normal30", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 			return
 		end
+		
 		if ( #self.loadCharacter.Lists == 0 ) then
-			draw.SimpleText( "You don't have any characters!", "catherine_normal30", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Character_UI_DontHaveAny" ), "catherine_normal30", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 
@@ -216,7 +212,7 @@ function PANEL:UseCharacterPanel( )
 		v.panel.useCharacter:SetSize( 16, 16 )
 		v.panel.useCharacter:SetPos( v.panel:GetWide( ) * 0.3, v.panel:GetTall( ) * 0.95 )
 		v.panel.useCharacter:SetText( "" )
-		v.panel.useCharacter:SetToolTip( "Use this character." )
+		v.panel.useCharacter:SetToolTip( LANG( "Character_UI_UseCharacter" ) )
 		v.panel.useCharacter.Paint = function( pnl, w, h )
 			surface.SetDrawColor( 255, 255, 255, 255 )
 			surface.SetMaterial( Material( "icon16/accept.png" ) )
@@ -230,16 +226,16 @@ function PANEL:UseCharacterPanel( )
 		v.panel.deleteCharacter:SetSize( 16, 16 )
 		v.panel.deleteCharacter:SetPos( v.panel:GetWide( ) * 0.6, v.panel:GetTall( ) * 0.95 )
 		v.panel.deleteCharacter:SetText( "" )
-		v.panel.deleteCharacter:SetToolTip( "Delete this character." )
+		v.panel.deleteCharacter:SetToolTip( LANG( "Character_UI_DeleteCharacter" ) )
 		v.panel.deleteCharacter.Paint = function( pnl, w, h )
 			surface.SetDrawColor( 255, 255, 255, 255 )
 			surface.SetMaterial( Material( "icon16/delete.png" ) )
 			surface.DrawTexturedRect( 0, 0, w, h )
 		end
 		v.panel.deleteCharacter.DoClick = function( )
-			Derma_Query( "Are you sure you want to delete this character?", "Delete Character", "Yes", function( )
+			Derma_Query( LANG( "Character_Notify_DeleteQ" ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_YES" ), function( )
 				netstream.Start( "catherine.character.Delete", v.characterDatas._id )
-			end, "No", function( ) end )
+			end, LANG( "Basic_UI_NO" ), function( ) end )
 		end
 		
 		v.panel.model = vgui.Create( "DModelPanel", v.panel )
@@ -354,7 +350,6 @@ end
 
 vgui.Register( "catherine.vgui.character", PANEL, "DFrame" )
 
-
 local PANEL = { }
 
 function PANEL:Init( )
@@ -374,7 +369,7 @@ function PANEL:Init( )
 	self.label01:SetPos( 10, 10 )
 	self.label01:SetColor( Color( 50, 50, 50, 255 ) )
 	self.label01:SetFont( "catherine_normal35" )
-	self.label01:SetText( "Faction" )
+	self.label01:SetText( LANG( "Faction_UI_Title" ) )
 	self.label01:SizeToContents( )
 
 	self.Lists = vgui.Create( "DHorizontalScroller", self )
@@ -429,7 +424,7 @@ function PANEL:Init( )
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
 	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 15 )
 	self.nextStage:SetSize( self.w * 0.2, 25 )
-	self.nextStage:SetStr( "Continue >" )
+	self.nextStage:SetStr( LANG( "Basic_UI_Continue" ) )
 	self.nextStage:SetStrFont( "catherine_normal25" )
 	self.nextStage:SetStrColor( Color( 50, 50, 50, 255 ) )
 	self.nextStage:SetGradientColor( Color( 50, 50, 50, 150 ) )
@@ -444,16 +439,16 @@ function PANEL:Init( )
 					self.parent.createData.currentStage = vgui.Create( "catherine.character.stageTwo", self.parent )
 				end )
 			else
-				self:PrintErrorMessage( "Faction is not valid!" )
+				self:PrintErrorMessage( LANG( "Faction_Notify_NotValid", self.data.faction ) )
 			end
 		else
-			self:PrintErrorMessage( "Please select a faction!" )
+			self:PrintErrorMessage( LANG( "Faction_Notify_SelectPlease" ) )
 		end
 	end
 end
 
 function PANEL:PrintErrorMessage( msg )
-	Derma_Message( msg, "Error", "OK" )
+	Derma_Message( msg, LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 	surface.PlaySound( "buttons/button2.wav" )
 end
 
@@ -502,14 +497,14 @@ function PANEL:Init( )
 	self.label01:SetPos( 10, 10 )
 	self.label01:SetColor( Color( 50, 50, 50, 255 ) )
 	self.label01:SetFont( "catherine_normal35" )
-	self.label01:SetText( "Information" )
+	self.label01:SetText( LANG( "Character_UI_CharInfo" ) )
 	self.label01:SizeToContents( )
 	
 	self.name = vgui.Create( "DLabel", self )
 	self.name:SetPos( 20, 60 )
 	self.name:SetColor( Color( 50, 50, 50, 255 ) )
 	self.name:SetFont( "catherine_normal20" )
-	self.name:SetText( "Name" )
+	self.name:SetText( LANG( "Character_UI_CharName" ) )
 	self.name:SizeToContents( )
 	
 	self.nameEnt = vgui.Create( "DTextEntry", self )
@@ -531,7 +526,7 @@ function PANEL:Init( )
 	self.desc:SetPos( 20, 100 )
 	self.desc:SetColor( Color( 50, 50, 50, 255 ) )
 	self.desc:SetFont( "catherine_normal20" )
-	self.desc:SetText( "Description" )
+	self.desc:SetText( LANG( "Character_UI_CharDesc" ) )
 	self.desc:SizeToContents( )
 	
 	self.descEnt = vgui.Create( "DTextEntry", self )
@@ -597,13 +592,13 @@ function PANEL:Init( )
 			end
 		end
 	else
-		self:PrintErrorMessage( "Faction is not valid!" )
+		self:PrintErrorMessage( LANG( "Faction_Notify_NotValid", self.parent.createData.datas.faction ) )
 	end
 	
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
 	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 15 )
 	self.nextStage:SetSize( self.w * 0.2, 25 )
-	self.nextStage:SetStr( "Continue >" )
+	self.nextStage:SetStr( LANG( "Basic_UI_Continue" ) )
 	self.nextStage:SetStrFont( "catherine_normal25" )
 	self.nextStage:SetStrColor( Color( 50, 50, 50, 255 ) )
 	self.nextStage:SetGradientColor( Color( 50, 50, 50, 150 ) )
@@ -614,8 +609,9 @@ function PANEL:Init( )
 			if ( vars and vars.checkValid ) then
 				count = count + 1
 				local success, reason = vars.checkValid( self.data[ vars.id ] )
+				
 				if ( success == false ) then
-					self:PrintErrorMessage( reason )
+					self:PrintErrorMessage( catherine.util.StuffLanguage( reason ) )
 					return
 				else
 					if ( count == 3 ) then
@@ -632,7 +628,7 @@ function PANEL:Init( )
 end
 
 function PANEL:PrintErrorMessage( msg )
-	Derma_Message( msg, "Error", "OK" )
+	Derma_Message( msg, LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 	surface.PlaySound( "buttons/button2.wav" )
 end
 

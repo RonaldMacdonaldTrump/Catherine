@@ -389,7 +389,7 @@ function PANEL:Init()
 	self:SetContentAlignment( 4 )
 	self:SetTextInset( 30, 0 )			-- Room for icon on left
 	self:SetChecked( false )
-	self:SetFont( "catherine_normal20" )
+	self:SetFont( "catherine_normal15" )
 	self:SetTextColor( Color( 50, 50, 50, 255 ) )
 	
 end
@@ -455,7 +455,9 @@ end
 -----------------------------------------------------------]]
 function PANEL:Paint( w, h )
 	if ( self.m_cursorEntered ) then
-		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
+		surface.SetDrawColor( 70, 70, 70, 255 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0, h - 1, w, 1 )
 	end
 
 	--

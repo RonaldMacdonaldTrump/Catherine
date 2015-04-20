@@ -1,0 +1,232 @@
+--[[
+< CATHERINE > - A free role-playing framework for Garry's Mod.
+Development and design by L7D.
+
+Catherine is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
+]]--
+
+local LANGUAGE = catherine.language.New( "korean" )
+LANGUAGE.name = "Korean (한국어)"
+LANGUAGE.data = {
+	// Class
+	[ "Class_UI_Title" ] = "클래스",
+	[ "Class_UI_LimitStr" ] = "%s / %s",
+	[ "Class_UI_SalaryStr" ] = "한 시간에 %s",
+	[ "Class_UI_Unlimited" ] = "무제한",
+	[ "Class_UI_NoJoinable" ] = "당신이 가입할 수 있는 클래스가 없습니다.",
+	
+	// Cash
+	[ "Cash_UI_HasStr" ] = "당신은 %s " .. catherine.configs.cashName .. " 를 가지고 있습니다.",
+	[ "Cash_Notify_Set" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 설정하셨습니다.",
+	[ "Cash_Notify_Give" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 주셨습니다.",
+	[ "Cash_Notify_Take" ] = "%s 님이 %s 만큼의 돈을 %s 님에게서 빼았었습니다.",
+	[ "Cash_Notify_HasNot" ] = "당신은 충분한 " .. catherine.configs.cashName .. " 가 없습니다!",
+	[ "Cash_Notify_NotValidAmount" ] = "올바른 금액을 입력하세요!",
+	
+	// Character
+	[ "Character_UI_Title" ] = "캐릭터",
+	[ "Character_UI_CreateCharStr" ] = "새 인생 시작",
+	[ "Character_UI_LoadCharStr" ] = "인생 계속하기",
+	[ "Character_UI_Close" ] = "닫기",
+	[ "Character_UI_ChangeLogStr" ] = "업데이트 로그",
+	[ "Character_UI_ExitServerStr" ] = "서버에서 나가기",
+	[ "Character_UI_BackStr" ] = "돌아가기",
+	[ "Character_UI_DontHaveAny" ] = "캐릭터가 없습니다.",
+	[ "Character_UI_UseCharacter" ] = "이 캐릭터를 사용합니다.",
+	[ "Character_UI_DeleteCharacter" ] = "이 캐릭터를 삭제합니다.",
+	[ "Character_UI_CharInfo" ] = "캐릭터 정보",
+	[ "Character_UI_CharName" ] = "캐릭터 이름",
+	[ "Character_UI_CharDesc" ] = "캐릭터 설명",
+	[ "Character_Notify_DeleteQ" ] = "이 캐릭터를 정말로 삭제하시겠습니까?",
+	[ "Character_Notify_ExitQ" ] = "이 서버에서 정말로 나가시겠습니까?",
+	[ "Character_Notify_CantDeleteUsing" ] = "사용하고 있는 캐릭터를 지울 수 없습니다!",
+	[ "Character_Notify_CantSwitchRagdolled" ] = "기절한 상태에서는 캐릭터를 바꿀 수 없습니다!",
+	[ "Character_Notify_IsNotValid" ] = "이 캐릭터는 올바르지 않습니다!",
+	[ "Character_Notify_IsNotValidFaction" ] = "이 캐릭터의 팩션이 올바르지 않습니다!",
+	[ "Character_Notify_CantSwitchUsing" ] = "같은 캐릭터를 또 사용할 수 없습니다!",
+	[ "Character_Notify_CantSwitchDeath" ] = "죽은 상태에서는 캐릭터를 바꿀 수 없습니다!",
+	[ "Character_Notify_SetName" ] = "%s 님이 %s 로 %s 의 캐릭터 이름을 바꾸셨습니다.",
+	[ "Character_Notify_SetDesc" ] = "%s 님이 %s 로 %s 의 캐릭터 설명을 바꾸셨습니다.",
+	[ "Character_Notify_SetModel" ] = "%s 님이 %s 로 %s 의 캐릭터 모델을 바꾸셨습니다.",
+	[ "Character_Notify_SetDescLC" ] = "당신의 캐릭터 설명을 %s 로 바꿨습니다.",
+	[ "Character_Notify_SelectModel" ] = "캐릭터 모델을 선택하세요!",
+	[ "Character_Notify_NameLimitHit" ] = "캐릭터 이름은 " .. catherine.configs.characterNameMinLen .." 자 이상 " .. catherine.configs.characterNameMaxLen .. " 자 이하 되어야 합니다!",
+	[ "Character_Notify_DescLimitHit" ] = "캐릭터 설명은 " .. catherine.configs.characterDescMinLen .."자 이상 " .. catherine.configs.characterDescMaxLen .. "자 이하 되어야 합니다!",
+		
+	// Faction
+	[ "Faction_UI_Title" ] = "팩션",
+	[ "Faction_Notify_Give" ] = "%s 님이 %s 팩션에 대한 권한을 %s 님에게 부여했습니다.",
+	[ "Faction_Notify_Take" ] = "%s 님이 %s 팩션에 대한 권한을 %s 님에게서 빼았었습니다.",
+	[ "Faction_Notify_NotValid" ] = "%s 는 올바르지 않은 팩션 입니다!",
+	[ "Faction_Notify_NotWhitelist" ] = "%s 는 화이트리스트가 아닙니다!",
+	[ "Faction_Notify_AlreadyHas" ] = "%s 님이 이미 %s 화이트리스트를 가지고 있습니다!",
+	[ "Faction_Notify_HasNot" ] = "%s 님은 %s 화이트리스트를 가지고 있지 않습니다!",
+	[ "Faction_Notify_SelectPlease" ] = "팩션을 선택하세요!",
+	
+	// Flag
+	[ "Flag_Notify_Give" ] = "%s 님이 %s 플래그를 %s 님에게 주셨습니다.",
+	[ "Flag_Notify_Take" ] = "%s 님이 %s 플래그를 %s 님에게서 빼았았습니다.",
+	[ "Flag_Notify_AlreadyHas" ] = "%s 님은 이미 %s 플래그를 가지고 있습니다!",
+	[ "Flag_Notify_HasNot" ] = "%s 님은 %s 플래그를 가지고 있지 않습니다!",
+	[ "Flag_Notify_NotValid" ] = "%s 는 올바르지 않은 플래그 입니다!",
+	
+	[ "UnknownError" ] = "알 수 없는 오류가 발생하였습니다, 죄송합니다!",
+	[ "Basic_Notify_UnknownPlayer" ] = "올바른 캐릭터의 이름을 입력하세요!",
+	[ "Basic_Notify_NoArg" ] = "%s 번째 인수를 입력하세요!",
+
+	// Version
+	[ "Version_UI_Title" ] = "캐서린 버전",
+	[ "Version_UI_YourVer_AV" ] = "버전 '%s'",
+	[ "Version_UI_YourVer_NO" ] = "버전 '올바르지 않음'",
+	[ "Version_UI_Checking" ] = "버전을 확인하는 중 ...",
+	[ "Version_UI_CheckButtonStr" ] = "버전 확인",
+	[ "Version_Notify_FoundNew" ] = "이 서버는 최신 버전의 캐서린으로 업데이트가 필요합니다!",
+	[ "Version_Notify_AlreadyNew" ] = "이 서버는 최신 버전의 캐서린을 사용하고 있습니다, 감사합니다.",
+	[ "Version_Notify_CheckError" ] = "버전을 확인하는 중 오류가 발생하였습니다. - %s",
+	
+	// Attribute
+	[ "Attribute_UI_Title" ] = "능력치",
+	
+	// Business
+	[ "Business_UI_Title" ] = "사업",
+	[ "Business_UI_NoBuyable" ] = "당신이 살 수 있는 물건이 없습니다!",
+	[ "Business_UI_BuyButtonStr" ] = "물건 구매 > %s",
+	[ "Business_UI_ShoppingCartStr" ] = "장바구니",
+	[ "Business_UI_TotalStr" ] = "전체 %s",
+	[ "Business_UI_Take" ] = "가지기",
+	[ "Business_UI_Shipment_Title" ] = "주문물",
+	[ "Business_UI_Shipment_Desc" ] = "상자 안에 물건들이 들어있습니다.",
+	[ "Business_Notify_BuyQ" ] = "이 물건들을 구매하시겠습니까?",
+	[ "Business_Notify_CantOpenShipment" ] = "당신은 이 주문물을 열 수 없습니다!",
+	[ "Business_Notify_NeedCartAdd" ] = "장바구니에 먼저 물건을 추가하세요!",
+	
+	// Inventory
+	[ "Inventory_UI_Title" ] = "인벤토리",
+	[ "Inventory_Notify_HasNotSpace" ] = "당신의 인벤토리에 공간이 없습니다!",
+	[ "Inventory_Notify_CantDrop01" ] = "그렇게 멀리 떨어트릴 수 없습니다!",
+	[ "Inventory_Notify_DontHave" ] = "당신은 이 물건을 가지고 있지 않습니다!",
+	[ "Inventory_Notify_IsPersistent" ] = "이 물건은 영구적으로 가지고 있어야 합니다!",
+	
+	// Scoreboard
+	[ "Scoreboard_UI_Title" ] = "플레이어 목록",
+	[ "Scoreboard_UI_Author" ] = "캐서린 개발자 ^-^",
+	[ "Scoreboard_UI_UnknownDesc" ] = "당신은 이 사람을 모릅니다.",
+	[ "Scoreboard_UI_PlayerDetailStr" ] = "이 사람의 스팀 이름은 %s\n이 사람의 스팀 고유 번호는 %s\n이 사람의 핑은 %s",
+	
+	// Help
+	[ "Help_UI_Title" ] = "도움 자료",
+	
+	// Storage
+	[ "Storage_Notify_HasNotSpace" ] = "이 저장소에는 공간이 없습니다!",
+	
+	// Item SYSTEM
+	[ "Item_Notify_NoItemData" ] = "올바르지 않은 물건 입니다!",
+	
+	// Item Base
+	[ "Item_Category_Other" ] = "기타",
+	[ "Item_Category_Weapon" ] = "무기",
+	[ "Item_Category_Storage" ] = "공간",
+	
+	[ "Item_Category_Wallet" ] = "지갑",
+	[ "Item_Name_Wallet" ] = "지갑",
+	[ "Item_Desc_Wallet" ] = catherine.configs.cashName .. " 가 쌓여있습니다.",
+	[ "Item_FuncStr01_Wallet" ] = catherine.configs.cashName .. " 가지기",
+	[ "Item_FuncStr02_Wallet" ] = catherine.configs.cashName .. " 떨어트리기",
+	
+	[ "Item_FuncStr01_Weapon" ] = "장착",
+	[ "Item_FuncStr02_Weapon" ] = "장착 해제",
+	[ "Item_FuncStr01_Basic" ] = "가지기",
+	[ "Item_FuncStr02_Basic" ] = "떨어트리기",
+	
+	[ "Item_Free" ] = "무료!",
+	
+	// Entity
+	[ "Entity_Notify_NotValid" ] = "이것은 올바르지 않은 엔티티 입니다!",
+	[ "Entity_Notify_NotPlayer" ] = "이것은 올바르지 않은 플레이어 입니다!",
+	[ "Entity_Notify_NotDoor" ] = "이것은 올바르지 않은 문 입니다!",
+	
+	// Command
+	[ "Command_Notify_NotFound" ] = "해당 명령어는 존재하지 않습니다!",
+	
+	// Player
+	[ "Player_Message_Ragdolled_01" ] = "정신을 차리고 있습니다 ...",
+	[ "Player_Message_HasNotPermission" ] = "당신은 권한이 없습니다!",
+	
+	// Recognize
+	[ "Recognize_UI_Option_LookingPlayer" ] = "보고 있는 사람에게 자신의 정보를 알려주기.",
+	[ "Recognize_UI_Option_TalkRange" ] = "조금 멀리 사람에게 자신의 정보를 알려주기.",
+	[ "Recognize_UI_Option_YellRange" ] = "매우 멀리 있는 사람에게도 자신의 정보를 알려주기.",
+	[ "Recognize_UI_Option_WhisperRange" ] = "주변의 사람들에게 자신의 정보를 알려주기.",
+	[ "Recognize_UI_Unknown" ] = "알 수 없음",
+	
+	// Door
+	[ "Door_Notify_CMD_Locked" ] = "이 문을 잠갔습니다.",
+	[ "Door_Notify_CMD_UnLocked" ] = "이 문을 잠금 해제 하였습니다.",
+	[ "Door_Notify_BuyQ" ] = "이 문을 정말로 구매하시겠습니까?",
+	[ "Door_Message_Locking" ] = "잠그는 중 ...",
+	[ "Door_Message_UnLocking" ] = "잠금 해제 중 ...",
+	[ "Door_Message_Buyable" ] = "이 문은 구매하실 수 있습니다.",
+	[ "Door_Message_CantBuy" ] = "이 문은 구매하실 수 없습니다.",
+	[ "Door_Message_AlreadySold" ] = "이 문은 이미 팔렸습니다.",
+	[ "Door_Notify_AlreadySold" ] = "이 문은 이미 누군가에게 팔렸습니다!",
+	[ "Door_Notify_NoOwner" ] = "당신은 이 문의 주인이 아닙니다!",
+	[ "Door_Notify_CantBuyable" ] = "이 문은 구매하실 수 없습니다!",
+	[ "Door_Notify_Buy" ] = "이 문을 구매했습니다.",
+	[ "Door_Notify_Sell" ] = "이 문을 판매했습니다.",
+	[ "Door_Notify_SetTitle" ] = "이 문의 글씨를 설정했습니다.",
+	[ "Door_Notify_SetStatus_True" ] = "이 문을 구매할 수 없게 하셨습니다.",
+	[ "Door_Notify_SetStatus_False" ] = "이 문을 구매할 수 있게 하셨습니다.",
+	
+	// Hint
+	[ "Hint_Message_01" ] = "// 를 채팅창에 쳐서 OOC 채팅을 하십시오.",
+	[ "Hint_Message_02" ] = ".// 또는 [[ 를 채팅창에 쳐서 LOOC 채팅을 하십시오.",
+	[ "Hint_Message_03" ] = "F1 버튼을 눌러 RP 정보를 보십시오.",
+	[ "Hint_Message_04" ] = "탭(Tab) 버튼을 눌러 메인 메뉴를 열 수 있습니다.",
+	
+	// Option
+	[ "Option_UI_Title" ] = "설정",
+	[ "Option_Category_01" ] = "프레임워크 설정",
+
+	[ "Option_Str_BAR_Name" ] = "상단바 표시",
+	[ "Option_Str_BAR_Desc" ] = "상단에 있는 바를 표시합니다.",
+	
+	[ "Option_Str_MAINHUD_Name" ] = "메인 HUD 표시",
+	[ "Option_Str_MAINHUD_Desc" ] = "메인 HUD 를 표시합니다.",
+	
+	[ "Option_Str_MAINLANG_Name" ] = "메인 언어",
+	[ "Option_Str_MAINLANG_Desc" ] = "메인 언어를 변경할 수 있습니다.",
+	
+	[ "Option_Str_HINT_Name" ] = "힌트 표시",
+	[ "Option_Str_HINT_Desc" ] = "RP 에 도움이 되는 힌트를 표시합니다.",
+	
+	// Chat
+	[ "Chat_Str_IC" ] = "%s 님의 말 %s",
+	[ "Chat_Str_Yell" ] = "%s 님의 소리치기 %s",
+	[ "Chat_Str_Whisper" ] = "%s 님의 속삭이기 %s",
+	[ "Chat_Str_Roll" ] = "%s 님이 주사위를 굴렸습니다. - %s",
+	[ "Chat_Str_Connect" ] = "%s 님이 서버에 들어오셨습니다.",
+	[ "Chat_Str_Disconnect" ] = "%s 님이 서버에서 나가셨습니다.",
+	
+	// Basic
+	[ "Basic_UI_StringRequest" ] = "요청",
+	[ "Basic_UI_Question" ] = "질문",
+	[ "Basic_UI_Notify" ] = "안내",
+	[ "Basic_UI_Continue" ] = "진행",
+	[ "Basic_UI_OK" ] = "확인",
+	[ "Basic_UI_YES" ] = "네",
+	[ "Basic_UI_NO" ] = "아니오",
+	[ "Basic_Framework_Author" ] = "%s 에 의해 개발 및 디자인.",
+}
+
+catherine.language.Register( LANGUAGE )

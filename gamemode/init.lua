@@ -23,11 +23,12 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
 local function schemaSettingsFix( )
-	local currGM = GetConVarString( "gamemode" ):lower( )
-	if ( currGM == "catherine" ) then
+	if ( GetConVarString( "gamemode" ):lower( ) == "catherine" ) then
 		local _, gmDirs = file.Find( "gamemodes/*", "GAME" )
+		
 		for k, v in pairs( gmDirs ) do
 			if ( !v:lower( ):find( "cat_" ) ) then continue end
+			
 			catherine.util.Print( Color( 255, 255, 0 ), "Don't setting gamemode to Catherine, automatic change to " .. v .. "!" )
 			RunConsoleCommand( "gamemode", v )
 			RunConsoleCommand( "changelevel", game.GetMap( ) )
