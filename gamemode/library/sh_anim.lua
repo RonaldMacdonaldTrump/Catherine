@@ -21,15 +21,15 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 	https://github.com/Chessnut/NutScript
 --]]
 catherine.anim = catherine.anim or { }
-catherine.anim.Classes = catherine.anim.Classes or { }
+catherine.anim.buffer = catherine.anim.buffer or { }
 
 function catherine.anim.SetModelAnimation( class, mdl )
-	catherine.anim.Classes[ mdl:lower( ) ] = class
+	catherine.anim.buffer[ mdl:lower( ) ] = class
 end
 
 function catherine.anim.GetModelAnimation( mdl )
 	mdl = mdl:lower( )
-	return catherine.anim.Classes[ mdl ] or ( mdl:find( "female" ) and "citizen_female" or "citizen_male" )
+	return catherine.anim.buffer[ mdl ] or ( mdl:find( "female" ) and "citizen_female" or "citizen_male" )
 end
 
 local pre = {

@@ -35,9 +35,7 @@ function catherine.notify.Add( message, time, sound )
 end
 
 function catherine.notify.Draw( )
-	if ( #catherine.notify.Lists == 0 ) then return end
-	
-	for k, v in pairs( catherine.notify.Lists ) do
+	for k, v in pairs( #catherine.notify.Lists != 0 and catherine.notify.Lists or { } ) do
 		if ( v.endTime <= CurTime( ) ) then
 			v.a = Lerp( 0.05, v.a, 0 )
 			

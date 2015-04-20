@@ -23,7 +23,16 @@ CAT_OPTION_LIST = 1
 
 function catherine.option.Register( uniqueID, conVar, name, desc, category, typ, data )
 	local optionTable = { }
-	table.Merge( optionTable, { uniqueID = uniqueID, name = name, desc = desc, conVar = conVar, typ = typ, category = category, data = data } )
+	
+	table.Merge( optionTable, {
+		uniqueID = uniqueID,
+		name = name,
+		desc = desc,
+		conVar = conVar,
+		typ = typ,
+		category = category,
+		data = data
+	} )
 	catherine.option.Lists[ uniqueID ] = optionTable
 end
 

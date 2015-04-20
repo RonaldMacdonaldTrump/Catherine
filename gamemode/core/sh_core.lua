@@ -82,7 +82,7 @@ function GM:CalcMainActivity( pl, velo )
 	if ( IsValid( wep ) ) then
 		holdType = catherine.util.GetHoldType( wep )
 
-		if ( wep.AlwaysRaised or catherine.configs.alwaysRaised[ wep:GetClass( ) ]) then
+		if ( wep.AlwaysRaised or catherine.configs.alwaysRaised[ wep:GetClass( ) ] ) then
 			status = WEAPON_RAISED
 		end
 	end
