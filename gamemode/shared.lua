@@ -18,15 +18,15 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 DeriveGamemode( "sandbox" )
 
-catherine.Name = "Catherine"
-catherine.Desc = "A free role-playing framework for Garry's Mod."
-catherine.Author = "L7D"
+GM.Name = "Catherine"
+GM.Desc = "A free role-playing framework for Garry's Mod."
+GM.Author = "L7D"
 
 AddCSLuaFile( "sh_util.lua" )
 include( "sh_util.lua" )
-catherine.util.Include( "sh_config.lua" )
-catherine.util.IncludeInDir( "libs", true )
-catherine.util.IncludeInDir( "hooks", true )
-catherine.util.IncludeInDir( "derma", true )
-catherine.util.IncludeInDir( "plugins", true )
-catherine.util.Include( "sh_commands.lua" )
+catherine.util.Include( "config/sh_config.lua" )
+catherine.util.Include( "sv_data.lua" )
+catherine.util.IncludeInDir( "gamemode/library", true )
+catherine.util.IncludeInDir( "gamemode/core", true )
+catherine.util.IncludeInDir( "gamemode/derma", true )
+catherine.util.Include( "command/sh_commands.lua" )

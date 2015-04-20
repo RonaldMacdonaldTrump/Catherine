@@ -76,8 +76,8 @@ function catherine.faction.FindByIndex( index )
 end
 
 function catherine.faction.Include( dir )
-	for k, v in pairs( file.Find( dir .. "/factions/*.lua", "LUA" ) ) do
-		catherine.util.Include( dir .. "/factions/" .. v, "SHARED" )
+	for k, v in pairs( file.Find( dir .. "/faction/*.lua", "LUA" ) ) do
+		catherine.util.Include( dir .. "/faction/" .. v, "SHARED" )
 	end
 end
 

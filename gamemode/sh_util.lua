@@ -43,9 +43,9 @@ function catherine.util.Include( dir, typ )
 	end
 end
 
-function catherine.util.IncludeInDir( dir, isCat )
-	if ( !dir or ( !isCat or dir:find( "schema/" ) ) and !Schema ) then return end
-	local dir2 = ( ( isCat and "catherine" ) or Schema.FolderName ) .. "/gamemode/" .. dir .. "/*.lua"
+function catherine.util.IncludeInDir( dir, IsCatherine )
+	if ( !dir or ( !IsCatherine or dir:find( "schema/" ) ) and !Schema ) then return end
+	local dir2 = ( ( IsCatherine and "catherine" ) or Schema.FolderName ) .. dir .. "/*.lua"
 	
 	for k, v in pairs( file.Find( dir2, "LUA" ) ) do
 		catherine.util.Include( dir .. "/" .. v )
@@ -75,8 +75,6 @@ function catherine.util.FindPlayerByStuff( use, str )
 end
 
 function catherine.util.CheckStringMatch( one, two )
-	if ( !one or !two ) then return false end
-	
 	return one:lower( ):match( two:lower( ) )
 end
 
@@ -91,7 +89,10 @@ function catherine.util.GetRealTime( )
 end
 
 function catherine.util.FolderDirectoryTranslate( dir )
-	if ( dir:sub( 1, 1 ) != "/" ) then dir = "/" .. dir end
+	if ( dir:sub( 1, 1 ) != "/" ) then
+		dir = "/" .. dir
+	end
+	
 	local ex = string.Explode( "/", dir )
 	
 	for k, v in pairs( ex ) do

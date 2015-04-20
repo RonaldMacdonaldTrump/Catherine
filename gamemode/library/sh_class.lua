@@ -83,8 +83,8 @@ function catherine.class.GetPlayers( uniqueID )
 end
 
 function catherine.class.Include( dir )
-	for k, v in pairs( file.Find( dir .. "/classes/*.lua", "LUA" ) ) do
-		catherine.util.Include( dir .. "/classes/" .. v, "SHARED" )
+	for k, v in pairs( file.Find( dir .. "/class/*.lua", "LUA" ) ) do
+		catherine.util.Include( dir .. "/class/" .. v, "SHARED" )
 	end
 end
 

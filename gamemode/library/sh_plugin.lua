@@ -18,13 +18,13 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.plugin = catherine.plugin or { Lists = { } }
 
-function catherine.plugin.LoadAll( dir )
-	local _, folders = file.Find( dir .. "/gamemode/plugins/*", "LUA" )
+function catherine.plugin.Include( dir )
+	local _, folders = file.Find( dir .. "/plugins/*", "LUA" )
 
 	for k, v in pairs( folders ) do
 		PLUGIN = catherine.plugin.Get( v ) or { }
 		
-		local Pdir = dir .. "/gamemode/plugins/" .. v
+		local Pdir = dir .. "/plugins/" .. v
 		
 		if ( file.Exists( Pdir .. "/sh_plugin.lua", "LUA" ) ) then
 			catherine.util.Include( Pdir .. "/sh_plugin.lua" )
@@ -36,8 +36,8 @@ function catherine.plugin.LoadAll( dir )
 				catherine.util.Include( Pdir .. "/derma/" .. v1 )
 			end
 			
-			for k1, v1 in pairs( file.Find( Pdir .. "/libs/*.lua", "LUA" ) ) do
-				catherine.util.Include( Pdir .. "/libs/" .. v1 )
+			for k1, v1 in pairs( file.Find( Pdir .. "/library/*.lua", "LUA" ) ) do
+				catherine.util.Include( Pdir .. "/library/" .. v1 )
 			end
 			
 			catherine.plugin.Lists[ v ] = PLUGIN

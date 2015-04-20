@@ -70,7 +70,7 @@ local DROP_TABLES = [[
 ]]
 
 catherine.database = catherine.database or { modules = { } }
-catherine.util.Include( "catherine/gamemode/sv_database_config.lua" )
+catherine.util.Include( "catherine/gamemode/config/sv_database.lua" )
 catherine.database.Connected = catherine.database.Connected or false
 catherine.database.ErrorMsg = catherine.database.ErrorMsg or "Server has not connected to Database."
 catherine.database.object = catherine.database.object or nil

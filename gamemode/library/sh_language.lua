@@ -36,8 +36,8 @@ function catherine.language.FindByID( uniqueID )
 end
 
 function catherine.language.Include( dir )
-	for k, v in pairs( file.Find( dir .. "/languages/*.lua", "LUA" ) ) do
-		catherine.util.Include( dir .. "/languages/" .. v, "SHARED" )
+	for k, v in pairs( file.Find( dir .. "/language/*.lua", "LUA" ) ) do
+		catherine.util.Include( dir .. "/language/" .. v, "SHARED" )
 	end
 end
 
