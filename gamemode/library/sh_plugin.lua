@@ -19,12 +19,12 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.plugin = catherine.plugin or { Lists = { } }
 
 function catherine.plugin.Include( dir )
-	local _, folders = file.Find( dir .. "/plugins/*", "LUA" )
-
+	local _, folders = file.Find( dir .. "/plugin/*", "LUA" )
+	
 	for k, v in pairs( folders ) do
 		PLUGIN = catherine.plugin.Get( v ) or { }
 		
-		local Pdir = dir .. "/plugins/" .. v
+		local Pdir = dir .. "/plugin/" .. v
 		
 		if ( file.Exists( Pdir .. "/sh_plugin.lua", "LUA" ) ) then
 			catherine.util.Include( Pdir .. "/sh_plugin.lua" )

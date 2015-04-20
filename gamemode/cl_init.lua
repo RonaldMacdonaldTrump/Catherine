@@ -16,7 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine = catherine or { vgui = { } }
+catherine = catherine or GM
+catherine.vgui = catherine.vgui or { }
 
 include( "shared.lua" )
 
