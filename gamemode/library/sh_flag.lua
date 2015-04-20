@@ -31,7 +31,6 @@ function catherine.flag.GetAll( )
 end
 
 function catherine.flag.FindByID( id )
-	if ( !id ) then return end
 	for k, v in pairs( catherine.flag.GetAll( ) ) do
 		if ( v.id == id ) then
 			return v

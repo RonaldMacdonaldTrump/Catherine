@@ -16,13 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-if ( !catherine.data ) then
-	catherine.util.Include( "sv_data.lua" )
-end
 catherine.door = catherine.door or { }
 
 CAT_DOOR_CHANGEPERMISSION = 1
-
 CAT_DOOR_FLAG_OWNER = 1
 CAT_DOOR_FLAG_ALL = 2
 CAT_DOOR_FLAG_BASIC = 3

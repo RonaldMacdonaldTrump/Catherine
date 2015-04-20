@@ -26,7 +26,7 @@ local doorClasses = {
 }
 
 function catherine.entity.IsDoor( ent )
-	return table.HasValue( doorClasses, ent:GetClass( ) ) // need lower?, idk ;)
+	return table.HasValue( doorClasses, ent:GetClass( ) )
 end
 
 function catherine.entity.IsProp( ent )

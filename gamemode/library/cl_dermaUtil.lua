@@ -47,18 +47,19 @@ function Derma_Message( strText, strTitle, strButtonText )
 	Okay:SetGradientColor( Color( 50, 50, 50, 255 ) )
 	Okay:SetStrFont( "catherine_normal20" )
 	Okay.Click = function( )
-		Window:Close()
+		Window:Close( )
 	end
 		
-	ButtonPanel:SetWide( Okay:GetWide() + 10 )
+	ButtonPanel:SetWide( Okay:GetWide( ) + 10 )
 
 	Window:SetSize( ScrW( ), ScrH( ) * 0.15 )
-	Window:Center()
+	Window:Center( )
 
-	ButtonPanel:CenterHorizontal()
+	ButtonPanel:CenterHorizontal( )
 	ButtonPanel:AlignBottom( 8 )
 	
-	Window:MakePopup()
-	Window:DoModal()
+	Window:MakePopup( )
+	Window:DoModal( )
+	
 	return Window
 end

@@ -38,10 +38,9 @@ if ( SERVER ) then
 	end
 	
 	function catherine.hint.Think( )
-		if ( #catherine.hint.Lists == 0 ) then return end
-		
-		if ( catherine.hint.NextSendTick <= CurTime( ) ) then
+		if ( #catherine.hint.Lists != 0 and catherine.hint.NextSendTick <= CurTime( ) ) then
 			catherine.hint.Work( )
+			
 			catherine.hint.NextSendTick = CurTime( ) + catherine.configs.hintInterval + math.random( 10, 20 )
 		end
 	end
