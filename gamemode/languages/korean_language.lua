@@ -39,6 +39,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_SetDesc" ] = "%s 님이 %s 로 %s 의 캐릭터 설명을 바꾸셨습니다.",
 	[ "Character_Notify_SetModel" ] = "%s 님이 %s 로 %s 의 캐릭터 모델을 바꾸셨습니다.",
 	[ "Character_Notify_SetDescLC" ] = "당신의 캐릭터 설명을 %s 로 바꿨습니다.",
+	[ "Character_Notify_NameLimitHit" ] = "캐릭터 이름은 " .. catherine.configs.characterNameMinLen .." 자 이상 " .. catherine.configs.characterNameMaxLen .. " 자 이하 되어야 합니다!",
 	[ "Character_Notify_DescLimitHit" ] = "캐릭터 설명은 " .. catherine.configs.characterDescMinLen .."자 이상 " .. catherine.configs.characterDescMaxLen .. "자 이하 되어야 합니다!",
 		
 	// Faction

@@ -614,8 +614,9 @@ function PANEL:Init( )
 			if ( vars and vars.checkValid ) then
 				count = count + 1
 				local success, reason = vars.checkValid( self.data[ vars.id ] )
+				
 				if ( success == false ) then
-					self:PrintErrorMessage( reason )
+					self:PrintErrorMessage( catherine.util.StuffLanguage( reason ) )
 					return
 				else
 					if ( count == 3 ) then

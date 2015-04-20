@@ -61,7 +61,7 @@ catherine.character.NewVar( "name", {
 			return true
 		end
 		
-		return false, "The character name must be at least " .. catherine.configs.characterNameMinLen .." characters long and up to " .. catherine.configs.characterNameMaxLen .. " characters!"
+		return false, "Character_Notify_NameLimitHit"
 	end
 } )
 
@@ -74,7 +74,7 @@ catherine.character.NewVar( "desc", {
 			return true
 		end
 		
-		return false, "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long and up to " .. catherine.configs.characterDescMaxLen .. " characters!"
+		return false, "Character_Notify_DescLimitHit"
 	end
 } )
 
@@ -259,13 +259,13 @@ if ( SERVER ) then
 			netstream.Start( pl, "catherine.character.UseResult", true )
 			catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [" .. pl:SteamName( ) .. "] " .. ( prevID or "None" ) .. " -> " .. id )
 		else
-			netstream.Start( pl, "catherine.character.UseResult", LANG( pl, reason ) )
+			netstream.Start( pl, "catherine.character.UseResult", reason )
 		end
 	end
 	
 	function catherine.character.Delete( pl, id )
 		if ( pl:GetCharacterID( ) == id ) then
-			netstream.Start( pl, "catherine.character.DeleteResult", LANG( pl, "Character_Notify_CantDeleteUsing" ) )
+			netstream.Start( pl, "catherine.character.DeleteResult", "Character_Notify_CantDeleteUsing" )
 			return
 		end
 		
@@ -490,7 +490,7 @@ else
 				end )
 			end
 		else
-			Derma_Message( data, LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+			Derma_Message( catherine.util.StuffLanguage( data ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 		end
 	end )
 	
@@ -500,7 +500,7 @@ else
 				catherine.vgui.character:Close( )
 			end
 		else
-			Derma_Message( data, LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+			Derma_Message( catherine.util.StuffLanguage( data ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 		end
 	end )
 	
@@ -511,7 +511,7 @@ else
 				catherine.vgui.character:UseCharacterPanel( )
 			end
 		else
-			Derma_Message( data, LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+			Derma_Message( catherine.util.StuffLanguage( data ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 		end
 	end )
 	

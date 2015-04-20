@@ -39,6 +39,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_SetDesc" ] = "%s are set %s description for %s.",
 	[ "Character_Notify_SetModel" ] = "%s are set %s model for %s.",
 	[ "Character_Notify_SetDescLC" ] = "You are set character description to %s.",
+	[ "Character_Notify_NameLimitHit" ] = "The character name must be at least " .. catherine.configs.characterNameMinLen .." characters long and up to " .. catherine.configs.characterNameMaxLen .. " characters!",
 	[ "Character_Notify_DescLimitHit" ] = "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long and up to " .. catherine.configs.characterDescMaxLen .. " characters!",
 	
 	// Faction
