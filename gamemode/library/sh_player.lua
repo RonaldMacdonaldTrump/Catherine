@@ -101,6 +101,10 @@ if ( SERVER ) then
 		end
 	end
 	
+	function catherine.player.ToggleTie( pl, target )
+	
+	end
+	
 	function catherine.player.BunnyHopProtection( pl )
 		if ( pl:KeyPressed( IN_JUMP ) and ( pl.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
 			if ( !pl.CAT_nextBunnyCheck ) then

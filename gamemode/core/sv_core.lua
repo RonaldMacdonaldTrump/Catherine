@@ -146,7 +146,7 @@ function GM:KeyPress( pl, key )
 		if ( !IsValid( ent ) ) then return end
 		
 		if ( ent:IsPlayer( ) and catherine.player.IsTied( ent ) ) then
-			
+			catherine.player.ToggleTie( pl, ent )
 		end
 		
 		if ( catherine.entity.IsDoor( ent ) ) then
