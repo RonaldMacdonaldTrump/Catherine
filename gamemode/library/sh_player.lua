@@ -307,6 +307,10 @@ function catherine.player.IsRagdolled( pl )
 	return pl:GetNetVar( "isRagdolled", nil )
 end
 
+function catherine.player.IsTied( pl )
+	return pl:GetNetVar( "isTied", false )
+end
+
 function player.GetAllByLoaded( )
 	local players = { }
 	
