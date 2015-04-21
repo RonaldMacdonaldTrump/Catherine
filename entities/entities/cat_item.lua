@@ -73,7 +73,6 @@ else
 	local toscreen = FindMetaTable("Vector").ToScreen
 	
 	function ENT:DrawEntityTargetID( pl, ent, a )
-		if ( ent:GetClass( ) != "cat_item" ) then return end
 		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		local itemTable = self:GetItemTable( )
