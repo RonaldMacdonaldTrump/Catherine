@@ -101,8 +101,77 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.player.ToggleTie( pl, target )
-	
+	function catherine.player.SetTie( pl, target, bool, force, removeItem )
+		if ( bool ) then
+			if ( catherine.player.IsTied( pl ) and !force ) then
+				catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
+				return
+			end
+		
+			if ( catherine.player.IsTied( target ) ) then
+				catherine.util.NotifyLang( pl, "Item_Notify01_ZT" )
+				return
+			end
+			
+			if ( !catherine.inventory.HasItem( pl, "zip_tie" ) ) then
+				catherine.util.NotifyLang( pl, "Item_Notify02_ZT" )
+				return
+			end
+			
+			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message01_ZT" ), 2, function( )
+				local tr = { }
+				tr.start = pl:GetShootPos( )
+				tr.endpos = tr.start + pl:GetAimVector( ) * 60
+				tr.filter = pl
+				
+				target = util.TraceLine( tr ).Entity
+				
+				if ( !IsValid( target ) ) then return end
+				
+				if ( target:GetClass( ) == "prop_ragdoll" ) then
+					target = target:GetNetVar( "player" )
+				end
+				
+				if ( IsValid( target ) ) then
+					catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, {
+						uniqueID = "zip_tie"
+					} )
+				
+					target:SetNetVar( "isTied", true )
+				end
+			end )
+			
+			
+		else
+			if ( catherine.player.IsTied( pl ) and !force ) then
+				catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
+				return
+			end
+			
+			if ( !catherine.player.IsTied( target ) ) then
+				catherine.util.NotifyLang( pl, "Item_Notify04_ZT" )
+				return
+			end
+			
+			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message02_ZT" ), 2, function( )
+				local tr = { }
+				tr.start = pl:GetShootPos( )
+				tr.endpos = tr.start + pl:GetAimVector( ) * 60
+				tr.filter = pl
+				
+				target = util.TraceLine( tr ).Entity
+				
+				if ( !IsValid( target ) ) then return end
+				
+				if ( target:GetClass( ) == "prop_ragdoll" ) then
+					target = target:GetNetVar( "player" )
+				end
+		
+				if ( IsValid( target ) ) then
+					target:SetNetVar( "isTied", false )
+				end
+			end )
+		end
 	end
 	
 	function catherine.player.BunnyHopProtection( pl )

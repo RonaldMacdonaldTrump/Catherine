@@ -33,27 +33,16 @@ if ( SERVER ) then
 		for k, v in pairs( target or { } ) do
 			if ( !IsValid( v ) or v == pl ) then continue end
 			
-			catherine.recognize.RegisterKnowSingle( pl, v )
+			catherine.recognize.RegisterKnow( pl, v )
 		end
 	end
 	
-	function catherine.recognize.RegisterKnowSingle( pl, target )
-		local recognizeLists = catherine.character.GetCharVar( pl, "recognize", { } )
+	function catherine.recognize.RegisterKnow( pl, target )
+		local recognizeLists = catherine.character.GetCharVar( target, "recognize", { } )
 		
-		recognizeLists[ #recognizeLists + 1 ] = target:GetCharacterID( )
+		recognizeLists[ #recognizeLists + 1 ] = pl:GetCharacterID( )
 		
-		catherine.character.SetCharVar( pl, "recognize", recognizeLists )
-	end
-	
-	function catherine.recognize.RegisterKnowDouble( pl, target )
-		local player_recognizeLists = catherine.character.GetCharVar( pl, "recognize", { } )
-		local target_recognizeLists = catherine.character.GetCharVar( target, "recognize", { } )
-		
-		player_recognizeLists[ #player_recognizeLists + 1 ] = target:GetCharacterID( )
-		target_recognizeLists[ #target_recognizeLists + 1 ] = pl:GetCharacterID( )
-		
-		catherine.character.SetCharVar( pl, "recognize", player_recognizeLists )
-		catherine.character.SetCharVar( target, "recognize", target_recognizeLists )
+		catherine.character.SetCharVar( target, "recognize", recognizeLists )
 	end
 	
 	function catherine.recognize.Initialize( pl )

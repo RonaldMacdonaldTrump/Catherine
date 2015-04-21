@@ -145,11 +145,17 @@ function GM:KeyPress( pl, key )
 		
 		if ( !IsValid( ent ) ) then return end
 		
-		if ( ent:IsPlayer( ) and catherine.player.IsTied( ent ) ) then
-			catherine.player.ToggleTie( pl, ent )
+		if ( ent:GetClass( ) == "prop_ragdoll" ) then
+			ent = ent:GetNetVar( "player" )
 		end
 		
-		if ( catherine.entity.IsDoor( ent ) ) then
+		if ( IsValid( ent ) and ent:IsPlayer( ) and catherine.player.IsTied( ent ) ) then
+			catherine.player.SetTie( pl, ent, false )
+			
+			return true
+		end
+
+		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
 			if ( pl.canUseDoor == nil ) then
 				pl.canUseDoor = true
 			end
@@ -186,7 +192,7 @@ function GM:KeyPress( pl, key )
 			end )
 			
 			return hook.Run( "PlayerUseDoor", pl, ent )
-		elseif ( ent.IsCustomUse ) then
+		elseif ( IsValid( ent ) and ent.IsCustomUse ) then
 			netstream.Start( pl, "catherine.entity.CustomUseMenu", ent:EntIndex( ) )
 		end
 	end
@@ -194,12 +200,10 @@ end
 
 function GM:PlayerUse( pl, ent )
 	if ( catherine.player.IsTied( pl ) ) then
-		if (client:GetNetVar("tied") and SERVER and client:GetNutVar("nextTieMsg", 0) < CurTime()) then
-			nut.util.Notify("You can not do this when tied.", client)
-			
-			pl:SetNetVar( "nextTiedMSG", CurTime( ) + 2 )
+		if ( ( pl.CAT_tiedMSG or CurTime( ) ) <= CurTime( ) ) then
+			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
+			pl.CAT_tiedMSG = CurTime( ) + 5
 		end
-
 		return false
 	end
 	

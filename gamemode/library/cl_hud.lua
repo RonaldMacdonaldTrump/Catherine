@@ -43,6 +43,7 @@ end
 function catherine.hud.Draw( )
 	if ( catherine.option.Get( "CONVAR_MAINHUD" ) == "0" ) then return end
 	
+	catherine.hud.ZipTie( )
 	catherine.hud.Vignette( )
 	catherine.hud.ScreenDamageDraw( )
 	catherine.hud.AmmoDraw( )
@@ -50,6 +51,16 @@ function catherine.hud.Draw( )
 	catherine.hud.ProgressBarDraw( )
 	catherine.hud.TopNotifyDraw( )
 	catherine.hud.WelcomeIntroDraw( )
+end
+
+function catherine.hud.ZipTie( )
+	if ( catherine.player.IsTied( LocalPlayer( ) ) ) then
+		surface.SetDrawColor( 70, 70, 70, 255 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( ScrW( ) / 2 - ScrW( ) / 2 / 2, ScrH( ) * 0.3 - ( ScrH( ) * 0.2 ) / 2, ScrW( ) / 2, ScrH( ) * 0.1 )
+		
+		draw.SimpleText( LANG( "Item_Message03_ZT" ), "catherine_normal35", ScrW( ) / 2, ScrH( ) * 0.3 - 45, Color( 255, 255, 255, 255 ), 1, 1 )
+	end
 end
 
 function catherine.hud.DeathScreen( )

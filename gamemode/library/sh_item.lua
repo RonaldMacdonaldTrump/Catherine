@@ -48,6 +48,11 @@ function catherine.item.Register( itemTable )
 			icon = "icon16/basket_put.png",
 			canShowIsWorld = true,
 			func = function( pl, itemTable, ent )
+				if ( catherine.player.IsTied( pl ) ) then
+					catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
+					return
+				end
+			
 				if ( !IsValid( ent ) ) then
 					catherine.util.NotifyLang( pl, "Entity_Notify_NotValid" )
 					return
@@ -73,6 +78,11 @@ function catherine.item.Register( itemTable )
 			icon = "icon16/basket_remove.png",
 			canShowIsMenu = true,
 			func = function( pl, itemTable )
+				if ( catherine.player.IsTied( pl ) ) then
+					catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
+					return
+				end
+				
 				local uniqueID = itemTable.uniqueID
 
 				local ent = catherine.item.Spawn( uniqueID, catherine.util.GetItemDropPos( pl ), nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )

@@ -15,10 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
-
+// 버그가 많음;
 catherine.environment = catherine.environment or { }
 catherine.environment.TimeTick = CurTime( ) + 0.2
-catherine.environment.Buffer = catherine.environment.Buffer or { }
+catherine.environment.Buffer = catherine.environment.Buffer or catherine.configs.defaultRPInformation
 catherine.environment.MonthBuffer = catherine.environment.MonthBuffer or {
 	31,
 	28,
@@ -384,19 +384,28 @@ if ( SERVER ) then
 	end
 
 	function catherine.environment.DataSave( )
+		print("Saved data!")
 		catherine.data.Set( "environment", catherine.environment.Buffer )
 	end
 	
 	function catherine.environment.DataLoad( )
+	
+		print("Enviroment Load start!")
 		local data = catherine.data.Get( "environment", { } )
 
+		
+		PrintTable(data)
 		if ( table.Count( data ) != 7 ) then
 			catherine.environment.Buffer = catherine.configs.defaultRPInformation
+			print("1")
 		else
 			catherine.environment.Buffer = data
+			print("2")
 		end
 		
 		catherine.environment.AutomaticDayNight( )
+		
+		print("Loaded!@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 	end
 
 	hook.Add( "Think", "catherine.environment.Work", catherine.environment.Work )
