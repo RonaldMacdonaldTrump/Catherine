@@ -56,6 +56,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_IsNotValidFaction" ] = "이 캐릭터의 팩션이 올바르지 않습니다!",
 	[ "Character_Notify_CantSwitchUsing" ] = "같은 캐릭터를 또 사용할 수 없습니다!",
 	[ "Character_Notify_CantSwitchDeath" ] = "죽은 상태에서는 캐릭터를 바꿀 수 없습니다!",
+	[ "Character_Notify_CantSwitchTied" ] = "수갑에 묶인 상태에서는 캐릭터를 바꿀 수 없습니다!",
 	[ "Character_Notify_SetName" ] = "%s 님이 %s 로 %s 의 캐릭터 이름을 바꾸셨습니다.",
 	[ "Character_Notify_SetDesc" ] = "%s 님이 %s 로 %s 의 캐릭터 설명을 바꾸셨습니다.",
 	[ "Character_Notify_SetModel" ] = "%s 님이 %s 로 %s 의 캐릭터 모델을 바꾸셨습니다.",
@@ -144,6 +145,14 @@ LANGUAGE.data = {
 	[ "Item_FuncStr01_Wallet" ] = catherine.configs.cashName .. " 가지기",
 	[ "Item_FuncStr02_Wallet" ] = catherine.configs.cashName .. " 떨어트리기",
 	
+	[ "Item_Notify01_ZT" ] = "이 사람은 이미 묶여있습니다!",
+	[ "Item_Notify02_ZT" ] = "당신은 수갑이 없습니다!",
+	[ "Item_Notify03_ZT" ] = "당신은 수갑에 묶여있습니다!",
+	[ "Item_Notify04_ZT" ] = "이 사람은 수갑에 묶여있지 않습니다!",
+	[ "Item_Message01_ZT" ] = "수갑을 묶는 중 입니다 ...",
+	[ "Item_Message02_ZT" ] = "수갑을 푸는 중 입니다 ...",
+	[ "Item_Message03_ZT" ] = "당신은 수갑에 묶여있습니다.",
+	
 	[ "Item_FuncStr01_Weapon" ] = "장착",
 	[ "Item_FuncStr02_Weapon" ] = "장착 해제",
 	[ "Item_FuncStr01_Basic" ] = "가지기",
@@ -162,6 +171,8 @@ LANGUAGE.data = {
 	// Player
 	[ "Player_Message_Ragdolled_01" ] = "정신을 차리고 있습니다 ...",
 	[ "Player_Message_HasNotPermission" ] = "당신은 권한이 없습니다!",
+	[ "Player_Message_UnTie" ] = "'사용' 키를 눌러 수갑을 풀어주세요.",
+	[ "Player_Message_TiedBlock" ] = "수갑에 묶인 상태에서는 할 수 없습니다.",
 	
 	// Recognize
 	[ "Recognize_UI_Option_LookingPlayer" ] = "보고 있는 사람에게 자신의 정보를 알려주기.",
@@ -187,6 +198,7 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetTitle" ] = "이 문의 글씨를 설정했습니다.",
 	[ "Door_Notify_SetStatus_True" ] = "이 문을 구매할 수 없게 하셨습니다.",
 	[ "Door_Notify_SetStatus_False" ] = "이 문을 구매할 수 있게 하셨습니다.",
+	[ "Door_UI_Default" ] = "문",
 	
 	// Hint
 	[ "Hint_Message_01" ] = "// 를 채팅창에 쳐서 OOC 채팅을 하십시오.",

@@ -37,6 +37,7 @@ ITEM.func.take = {
 			catherine.util.Notify( pl, "This isn't a valid entity!" )
 			return
 		end
+		
 		local itemData = ent:GetItemData( )
 		catherine.cash.Give( pl, itemData.amount )
 		ent:Remove( )
@@ -50,6 +51,11 @@ ITEM.func.drop = {
 	icon = "icon16/money_delete.png",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, isMenu )
+		if ( catherine.player.IsTied( pl ) ) then
+			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
+			return
+		end
+				
 		catherine.util.StringReceiver( pl, "Cash_UniqueDropMoney", "What amount for drop money?", catherine.cash.Get( pl ), function( _, val )
 			val = tonumber( val )
 			

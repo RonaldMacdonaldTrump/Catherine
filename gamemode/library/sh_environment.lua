@@ -15,10 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
-
+// 버그가 많음;
 catherine.environment = catherine.environment or { }
 catherine.environment.TimeTick = CurTime( ) + 0.2
-catherine.environment.Buffer = catherine.environment.Buffer or { }
+catherine.environment.Buffer = catherine.environment.Buffer or catherine.configs.defaultRPInformation
 catherine.environment.MonthBuffer = catherine.environment.MonthBuffer or {
 	31,
 	28,
@@ -73,7 +73,7 @@ if ( SERVER ) then
 		if ( catherine.environment.TimeTick <= CurTime( ) ) then
 			local d = catherine.environment.Buffer
 			if ( !d.second ) then
-				//catherine.util.ErrorPrint( "catherine.environment.Work has error!" )
+				catherine.util.ErrorPrint( "catherine.environment.Work has error!" )
 				return
 			end
 			
@@ -367,7 +367,7 @@ if ( SERVER ) then
 			temp = temp + math.random( -5, 5 )
 		end
 
-		return temp
+		return math.Clamp( temp, 0, 35 )
 	end
 
 	function catherine.environment.SyncToPlayer( pl )
@@ -399,7 +399,7 @@ if ( SERVER ) then
 		catherine.environment.AutomaticDayNight( )
 	end
 
-	hook.Add( "Think", "catherine.environment.Work", catherine.environment.Work )
+	hook.Add( "Think", "catherine.environment.Think", catherine.environment.Work )
 	hook.Add( "DataSave", "catherine.environment.DataSave", catherine.environment.DataSave )
 	hook.Add( "DataLoad", "catherine.environment.DataLoad", catherine.environment.DataLoad )
 else

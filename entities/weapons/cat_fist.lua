@@ -115,7 +115,7 @@ function SWEP:SecondaryAttack( )
 		filter = pl
 	} ).Entity
 	
-	if ( catherine.entity.IsDoor( ent ) ) then
+	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
 		self:EmitSound( "physics/wood/wood_crate_impact_hard2.wav", math.random( 50, 100 ) )
 	end
 	

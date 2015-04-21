@@ -59,7 +59,7 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetVar( target, "_name", args[ 2 ] )
-					catherine.util.NotifyAllLang( pl, "Character_Notify_SetName", pl:Name( ), args[ 2 ], target:Name( ) )
+					catherine.util.NotifyAllLang( "Character_Notify_SetName", pl:Name( ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -82,7 +82,7 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetVar( target, "_desc", args[ 2 ] )
-					catherine.util.NotifyAllLang( pl, "Character_Notify_SetDesc", pl:Name( ), args[ 2 ], target:Name( ) )
+					catherine.util.NotifyAllLang( "Character_Notify_SetDesc", pl:Name( ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -105,7 +105,7 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetVar( target, "_model", args[ 2 ] )
-					catherine.util.NotifyAllLang( pl, "Character_Notify_SetModel", pl:Name( ), args[ 2 ], target:Name( ) )
+					catherine.util.NotifyAllLang( "Character_Notify_SetModel", pl:Name( ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end

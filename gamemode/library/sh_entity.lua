@@ -73,7 +73,7 @@ else
 		local menu = DermaMenu( )
 		
 		for k, v in pairs( IsValid( ent ) and ent:GetNetVar( "customUseClient" ) or { } ) do
-			menu:AddOption( v.text, function( )
+			menu:AddOption( catherine.util.StuffLanguage( v.text ), function( )
 				netstream.Start( "catherine.entity.CustomUseMenu_Receive", { index, v.uniqueID } )
 			end )
 		end

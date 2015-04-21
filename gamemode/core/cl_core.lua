@@ -89,19 +89,102 @@ function GM:HUDDrawScoreBoard( )
 	draw.SimpleText( Schema and catherine.util.StuffLanguage( "^Basic_Schema_Title" ) or "Unknown", "catherine_introSchema", scrW / 2, scrH * 0.6, Color( 235, 235, 235, catherine.intro.alpha ), 1, 1 )
 end
 
+function GM:PostDrawTranslucentRenderables( depth, skybox )
+	if ( depth or skybox ) then return end
+
+	for k, v in pairs( ents.FindInSphere( LocalPlayer( ):GetPos( ), 256 ) ) do
+		if ( !IsValid( v ) or !catherine.entity.IsDoor( v ) ) then continue end
+		
+		hook.Run( "DrawDoorText", v, v:GetPos( ), v:GetAngles( ) )
+	end
+end
+
+function GM:DrawDoorText( ent, pos, ang )
+	local a = catherine.util.GetAlphaFromDistance( ent:GetPos( ), LocalPlayer( ):GetPos( ), 256 )
+
+	if ( math.Round( a ) <= 0 ) then
+		return
+	end
+	
+	local data = catherine.door.CalcDoorTextPos( ent )
+	
+	local title = ent:GetNetVar( "title", LANG( "Door_UI_Default" ) )
+	local desc = catherine.door.GetDetailString( ent )
+	
+	surface.SetFont( "catherine_normal50" )
+	local titleW, titleH = surface.GetTextSize( title )
+	local descW, descH = surface.GetTextSize( desc )
+	
+	local longW = titleW
+
+	if ( descW > longW ) then
+		longW = descW
+	end
+
+	local scale = math.abs( ( data.w * 0.8) / longW )
+	local titleScale = math.min( scale, 0.1 )
+	local descScale = math.min( scale, 0.03 )
+	local longH = titleH + descScale + 8
+	
+	cam.Start3D2D( data.pos, data.ang, titleScale )
+		surface.SetDrawColor( 0, 0, 0, a * 1.5 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0 - longW / 2, 0 - 40, longW, longH + 70 )
+		
+		surface.SetDrawColor( 255, 255, 255, a )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0 - longW / 2, 0 - 40, longW, 1 )
+		
+		surface.SetDrawColor( 255, 255, 255, a )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0 - longW / 2, 80, longW, 1 )
+		
+		draw.SimpleText( title, "catherine_normal40", 0, 0, Color( 235, 235, 235, a ), 1, 1 )
+	cam.End3D2D( )
+	
+	cam.Start3D2D( data.posBack, data.angBack, titleScale )
+		surface.SetDrawColor( 0, 0, 0, a * 1.5 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0 - longW / 2, 0 - 40, longW, longH + 70 )
+		
+		surface.SetDrawColor( 255, 255, 255, a )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0 - longW / 2, 0 - 40, longW, 1 )
+		
+		surface.SetDrawColor( 255, 255, 255, a )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0 - longW / 2, 80, longW, 1 )
+		
+		draw.SimpleText( title, "catherine_normal40", 0, 0, Color( 235, 235, 235, a ), 1, 1 )
+	cam.End3D2D( )
+	
+	cam.Start3D2D( data.pos, data.ang, descScale )
+		draw.SimpleText( desc, "catherine_normal50", 0, 90, Color( 235, 235, 235, a ), 1, 1 )
+	cam.End3D2D( )
+	
+	cam.Start3D2D( data.posBack, data.angBack, descScale )
+		draw.SimpleText( desc, "catherine_normal50", 0, 90, Color( 235, 235, 235, a ), 1, 1 )
+	cam.End3D2D( )
+end
+
 local OFFSET_PLAYER = Vector( 0, 0, 30 )
 
 function GM:DrawEntityTargetID( pl, ent, a )
 	if ( !ent:IsPlayer( ) ) then return end
 	local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) + OFFSET_PLAYER )
 	local x, y = pos.x, pos.y - 100
-	local name, desc = hook.Run( "GetPlayerInformation", pl, ent )
+	local name, desc = hook.Run( "GetPlayerInformation", pl, ent, true )
 	
 	draw.SimpleText( name, "catherine_normal25", x, y, Color( 255, 255, 255, a ), 1, 1 )
 	y = y + 20
 	
 	draw.SimpleText( desc, "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
-	y = y + 15
+	y = y + 20
+
+	if ( catherine.player.IsTied( ent ) ) then
+		draw.SimpleText( LANG( "Player_Message_UnTie" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		y = y + 20
+	end
 	
 	hook.Run( "PlayerInformationDraw", pl, ent, x, y, a )
 end

@@ -336,6 +336,7 @@ else
 		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		local speaker, class, text, ex = data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ]
 		local class = catherine.chat.FindByClass( class )
+		if ( !IsValid( speaker ) ) then return end
 		
 		class.onChat( speaker, text, ex )
 	end )

@@ -54,7 +54,7 @@ if ( SERVER ) then
 			local inventory = catherine.inventory.Get( pl )
 			local uniqueID = data.uniqueID
 			local invData = inventory[ uniqueID ]
-			local itemCount = math.max( invData.itemCount - ( data.count or 1 ), 0 )
+			local itemCount = invData.itemCount - ( data.count or 1 )
 
 			if ( itemCount <= 0 ) then
 				inventory[ uniqueID ] = nil
@@ -81,11 +81,11 @@ if ( SERVER ) then
 			catherine.character.SetVar( pl, "_inv", inventory )
 		end
 	end
-	
+
 	function catherine.inventory.Get( pl )
 		return table.Copy( catherine.character.GetVar( pl, "_inv", { } ) )
 	end
-	
+
 	function catherine.inventory.GetInvItem( pl, uniqueID )
 		return catherine.inventory.Get( pl )[ uniqueID ]
 	end

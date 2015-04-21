@@ -56,6 +56,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_IsNotValidFaction" ] = "This character faction is not valid!",
 	[ "Character_Notify_CantSwitchUsing" ] = "You can't use same character!",
 	[ "Character_Notify_CantSwitchDeath" ] = "You can't switch character on death!",
+	[ "Character_Notify_CantSwitchTied" ] = "You can't switch character on tied!",
 	[ "Character_Notify_SetName" ] = "%s are set %s name for %s.",
 	[ "Character_Notify_SetDesc" ] = "%s are set %s description for %s.",
 	[ "Character_Notify_SetModel" ] = "%s are set %s model for %s.",
@@ -144,6 +145,14 @@ LANGUAGE.data = {
 	[ "Item_FuncStr01_Wallet" ] = "Take " .. catherine.configs.cashName,
 	[ "Item_FuncStr02_Wallet" ] = "Drop " .. catherine.configs.cashName,
 	
+	[ "Item_Notify01_ZT" ] = "This player is already tied!",
+	[ "Item_Notify02_ZT" ] = "You don't have Zip Tie!",
+	[ "Item_Notify03_ZT" ] = "You are tied!",
+	[ "Item_Notify04_ZT" ] = "This player not tied!",
+	[ "Item_Message01_ZT" ] = "Tieing ...",
+	[ "Item_Message02_ZT" ] = "Untieing ...",
+	[ "Item_Message03_ZT" ] = "You are tied.",
+	
 	[ "Item_FuncStr01_Weapon" ] = "Equip",
 	[ "Item_FuncStr02_Weapon" ] = "Unequip",
 	[ "Item_FuncStr01_Basic" ] = "Take",
@@ -162,6 +171,8 @@ LANGUAGE.data = {
 	// Player
 	[ "Player_Message_Ragdolled_01" ] = "You are regaining consciousness ...",
 	[ "Player_Message_HasNotPermission" ] = "You don't have permission!",
+	[ "Player_Message_UnTie" ] = "Press 'Use' to untie.",
+	[ "Player_Message_TiedBlock" ] = "You can not do this when tied.",
 	
 	// Recognize
 	[ "Recognize_UI_Option_LookingPlayer" ] = "Recognize for looking player.",
@@ -187,6 +198,7 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetTitle" ] = "You are set title this door.",
 	[ "Door_Notify_SetStatus_True" ] = "You are set status to unbuyable this door.",
 	[ "Door_Notify_SetStatus_False" ] = "You are set status to buyable this door.",
+	[ "Door_UI_Default" ] = "Door",
 	
 	// Hint
 	[ "Hint_Message_01" ] = "Type // before your message to talk out-of-character.",

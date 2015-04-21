@@ -67,6 +67,7 @@ function GM:PlayerSpawn( pl )
 	pl:Freeze( false )
 	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
+	pl:SetNetVar( "isTied", false )
 	player_manager.SetPlayerClass( pl, "catherine_player" )
 	
 	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
@@ -144,7 +145,17 @@ function GM:KeyPress( pl, key )
 		
 		if ( !IsValid( ent ) ) then return end
 		
-		if ( catherine.entity.IsDoor( ent ) ) then
+		if ( ent:GetClass( ) == "prop_ragdoll" ) then
+			ent = ent:GetNetVar( "player" )
+		end
+		
+		if ( IsValid( ent ) and ent:IsPlayer( ) and catherine.player.IsTied( ent ) ) then
+			catherine.player.SetTie( pl, ent, false )
+			
+			return true
+		end
+
+		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
 			if ( pl.canUseDoor == nil ) then
 				pl.canUseDoor = true
 			end
@@ -181,13 +192,21 @@ function GM:KeyPress( pl, key )
 			end )
 			
 			return hook.Run( "PlayerUseDoor", pl, ent )
-		elseif ( ent.IsCustomUse ) then
+		elseif ( IsValid( ent ) and ent.IsCustomUse ) then
 			netstream.Start( pl, "catherine.entity.CustomUseMenu", ent:EntIndex( ) )
 		end
 	end
 end
 
 function GM:PlayerUse( pl, ent )
+	if ( catherine.player.IsTied( pl ) ) then
+		if ( ( pl.CAT_tiedMSG or CurTime( ) ) <= CurTime( ) ) then
+			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
+			pl.CAT_tiedMSG = CurTime( ) + 5
+		end
+		return false
+	end
+	
 	return catherine.entity.IsDoor( ent ) and pl.canUseDoor or true
 end
 
@@ -326,9 +345,11 @@ end
 
 function GM:InitPostEntity( )
 	hook.Run( "DataLoad" )
+	hook.Run( "SchemaDataLoad" )
 end
 
 function GM:ShutDown( )
 	hook.Run( "PostDataSave" )
 	hook.Run( "DataSave" )
+	hook.Run( "SchemaDataSave" )
 end
