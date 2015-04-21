@@ -162,6 +162,8 @@ LANGUAGE.data = {
 	// Player
 	[ "Player_Message_Ragdolled_01" ] = "정신을 차리고 있습니다 ...",
 	[ "Player_Message_HasNotPermission" ] = "당신은 권한이 없습니다!",
+	[ "Player_Message_UnTie" ] = "'사용' 키를 눌러 수갑을 풀어주세요.",
+	[ "Player_Message_TiedBlock" ] = "수갑에 묶인 상태에서는 할 수 없습니다.",
 	
 	// Recognize
 	[ "Recognize_UI_Option_LookingPlayer" ] = "보고 있는 사람에게 자신의 정보를 알려주기.",

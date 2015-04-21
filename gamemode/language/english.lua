@@ -162,6 +162,8 @@ LANGUAGE.data = {
 	// Player
 	[ "Player_Message_Ragdolled_01" ] = "You are regaining consciousness ...",
 	[ "Player_Message_HasNotPermission" ] = "You don't have permission!",
+	[ "Player_Message_UnTie" ] = "Press 'Use' to untie.",
+	[ "Player_Message_TiedBlock" ] = "You can not do this when tied.",
 	
 	// Recognize
 	[ "Recognize_UI_Option_LookingPlayer" ] = "Recognize for looking player.",

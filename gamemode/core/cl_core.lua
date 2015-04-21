@@ -101,7 +101,12 @@ function GM:DrawEntityTargetID( pl, ent, a )
 	y = y + 20
 	
 	draw.SimpleText( desc, "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
-	y = y + 15
+	y = y + 20
+	
+	if ( catherine.player.IsTied( ent ) ) then
+		draw.SimpleText( LANG( "Player_Message_UnTie" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		y = y + 20
+	end
 	
 	hook.Run( "PlayerInformationDraw", pl, ent, x, y, a )
 end

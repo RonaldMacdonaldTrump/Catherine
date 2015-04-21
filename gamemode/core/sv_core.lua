@@ -67,6 +67,7 @@ function GM:PlayerSpawn( pl )
 	pl:Freeze( false )
 	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
+	pl:SetNetVar( "isTied", false )
 	player_manager.SetPlayerClass( pl, "catherine_player" )
 	
 	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
@@ -144,6 +145,10 @@ function GM:KeyPress( pl, key )
 		
 		if ( !IsValid( ent ) ) then return end
 		
+		if ( ent:IsPlayer( ) and catherine.player.IsTied( ent ) ) then
+			
+		end
+		
 		if ( catherine.entity.IsDoor( ent ) ) then
 			if ( pl.canUseDoor == nil ) then
 				pl.canUseDoor = true
@@ -188,6 +193,16 @@ function GM:KeyPress( pl, key )
 end
 
 function GM:PlayerUse( pl, ent )
+	if ( catherine.player.IsTied( pl ) ) then
+		if (client:GetNetVar("tied") and SERVER and client:GetNutVar("nextTieMsg", 0) < CurTime()) then
+			nut.util.Notify("You can not do this when tied.", client)
+			
+			pl:SetNetVar( "nextTiedMSG", CurTime( ) + 2 )
+		end
+
+		return false
+	end
+	
 	return catherine.entity.IsDoor( ent ) and pl.canUseDoor or true
 end
 
