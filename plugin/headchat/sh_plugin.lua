@@ -21,6 +21,14 @@ PLUGIN.name = "Head Chat"
 PLUGIN.author = "L7D"
 PLUGIN.desc = "Good stuff"
 
+catherine.language.Merge( "english", {
+	[ "HeadChat_Talking" ] = "Talking ..."
+} )
+
+catherine.language.Merge( "korean", {
+	[ "HeadChat_Talking" ] = "말 하는 중 ..."
+} )
+
 if ( SERVER ) then
 	netstream.Hook( "catherine.plugin.headchat.Chat", function( pl, data )
 		pl:SetNetVar( "typing", data )
@@ -36,7 +44,7 @@ else
 	
 	function PLUGIN:PostPlayerDraw( pl )
 		if ( !pl:IsChatTyping( ) ) then return end
-		local text = "Typing ..."
+		local text = LANG( "HeadChat_Talking" )
 		local a = catherine.util.GetAlphaFromDistance( LocalPlayer( ):GetPos( ), pl:GetPos( ), 312 )
 		
 		if ( math.Round( a ) <= 0 or !pl:Alive( ) or pl:GetMoveType( ) == MOVETYPE_NOCLIP ) then

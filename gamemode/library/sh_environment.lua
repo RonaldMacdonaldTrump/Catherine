@@ -73,7 +73,7 @@ if ( SERVER ) then
 		if ( catherine.environment.TimeTick <= CurTime( ) ) then
 			local d = catherine.environment.Buffer
 			if ( !d.second ) then
-				//catherine.util.ErrorPrint( "catherine.environment.Work has error!" )
+				catherine.util.ErrorPrint( "catherine.environment.Work has error!" )
 				return
 			end
 			
@@ -367,7 +367,7 @@ if ( SERVER ) then
 			temp = temp + math.random( -5, 5 )
 		end
 
-		return temp
+		return math.Clamp( temp, 0, 35 )
 	end
 
 	function catherine.environment.SyncToPlayer( pl )
@@ -384,31 +384,22 @@ if ( SERVER ) then
 	end
 
 	function catherine.environment.DataSave( )
-		print("Saved data!")
 		catherine.data.Set( "environment", catherine.environment.Buffer )
 	end
 	
 	function catherine.environment.DataLoad( )
-	
-		print("Enviroment Load start!")
 		local data = catherine.data.Get( "environment", { } )
 
-		
-		PrintTable(data)
 		if ( table.Count( data ) != 7 ) then
 			catherine.environment.Buffer = catherine.configs.defaultRPInformation
-			print("1")
 		else
 			catherine.environment.Buffer = data
-			print("2")
 		end
 		
 		catherine.environment.AutomaticDayNight( )
-		
-		print("Loaded!@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 	end
 
-	hook.Add( "Think", "catherine.environment.Work", catherine.environment.Work )
+	hook.Add( "Think", "catherine.environment.Think", catherine.environment.Work )
 	hook.Add( "DataSave", "catherine.environment.DataSave", catherine.environment.DataSave )
 	hook.Add( "DataLoad", "catherine.environment.DataLoad", catherine.environment.DataLoad )
 else

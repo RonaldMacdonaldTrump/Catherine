@@ -70,13 +70,13 @@ if ( SERVER ) then
 		end
 	end
 else
-	local toscreen = FindMetaTable("Vector").ToScreen
+	local toscreen = FindMetaTable( "Vector" ).ToScreen
 	
 	function ENT:DrawEntityTargetID( pl, ent, a )
 		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		local itemTable = self:GetItemTable( )
-		
+
 		if ( itemTable ) then
 			local customDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, self:GetItemData( ) ) or nil
 			

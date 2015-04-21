@@ -345,9 +345,11 @@ end
 
 function GM:InitPostEntity( )
 	hook.Run( "DataLoad" )
+	hook.Run( "SchemaDataLoad" )
 end
 
 function GM:ShutDown( )
 	hook.Run( "PostDataSave" )
 	hook.Run( "DataSave" )
+	hook.Run( "SchemaDataSave" )
 end

@@ -45,17 +45,17 @@ catherine.configs.alwaysRaised = {
 	gmod_tool = true
 }
 catherine.configs.frameworkLogo = "CAT/logos/2.png"
+catherine.configs.defaultRPInformation = {
+	year = 2015,
+	minute = 1,
+	day = 1,
+	hour = 1,
+	month = 1,
+	second = 1,
+	temperature = 25
+}
 
 if ( SERVER ) then
-	catherine.configs.defaultRPInformation = {
-		year = 2015,
-		minute = 1,
-		day = 1,
-		hour = 1,
-		month = 1,
-		second = 1,
-		temperature = 25
-	}
 	catherine.configs.hintInterval = 30
 	catherine.configs.netRegistryOptimizeInterval = 350
 	catherine.configs.saveInterval = 300

@@ -212,19 +212,83 @@ else
 			return LANG( "Door_Message_CantBuy" )
 		end
 	end
-	
-	local toscreen = FindMetaTable("Vector").ToScreen
-	
-	function catherine.door.DrawEntityTargetID( pl, ent, a )
-		if ( !catherine.entity.IsDoor( ent ) ) then return end
-		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
-		local x, y = pos.x, pos.y
+
+	function catherine.door.CalcDoorTextPos( ent, rev )
+		local max = ent:OBBMaxs( )
+		local min = ent:OBBMins( )
 		
-		draw.SimpleText( ent:GetNetVar( "title", "Door" ), "catherine_outline20", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( catherine.door.GetDetailString( ent ), "catherine_outline15", x, y + 20, Color( 255, 255, 255, a ), 1, 1 )
+		local data = { }
+		data.endpos = ent:LocalToWorld( ent:OBBCenter( ) )
+		data.filter = ents.FindInSphere( data.endpos, 23 )
+		
+		for k, v in pairs( data.filter ) do
+			if ( v != ent ) then continue end
+			
+			data.filter[ k ] = nil
+		end
+		
+		local len = 0
+		local w = 0
+		local size = min - max
+		
+		size.x = math.abs( size.x )
+		size.y = math.abs( size.y )
+		size.z = math.abs( size.z )
+		
+		if ( size.z < size.x and size.z < size.y ) then
+			len = size.z
+			w = size.y
+			
+			if ( rev ) then
+				data.start = data.endpos - ( ent:GetUp( ) * len )
+			else
+				data.start = data.endpos + ( ent:GetUp( ) * len )
+			end
+		elseif ( size.x < size.y ) then
+			len = size.x
+			w = size.y
+			
+			if ( rev ) then
+				data.start = data.endpos - ( ent:GetForward( ) * len )
+			else
+				data.start = data.endpos + ( ent:GetForward( ) * len )
+			end
+		elseif ( size.y < size.x ) then
+			len = size.y
+			w = size.x
+			
+			if ( rev ) then
+				data.start = data.endpos - ( ent:GetRight( ) * len )
+			else
+				data.start = data.endpos + ( ent:GetRight( ) * len )
+			end
+		end
+
+		local tr = util.TraceLine( data )
+
+		if ( tr.HitWorld and !rev ) then
+			return catherine.door.CalcDoorTextPos( ent, true )
+		end
+
+		local ang = tr.HitNormal:Angle( )
+		local pos = tr.HitPos - ( ( ( data.endpos - tr.HitPos ):Length( ) * 2 ) + 2 ) * tr.HitNormal
+		local angBack = tr.HitNormal:Angle( )
+		local posBack = tr.HitPos + ( tr.HitNormal * 2 )
+		
+		ang:RotateAroundAxis( ang:Forward( ), 90 )
+		ang:RotateAroundAxis( ang:Right( ), 90 )
+		angBack:RotateAroundAxis( angBack:Forward( ), 90 )
+		angBack:RotateAroundAxis( angBack:Right( ), -90 )
+		
+		return {
+			pos = pos,
+			ang = ang,
+			hitWorld = tr.HitWorld,
+			w = math.abs( w ),
+			posBack = posBack,
+			angBack = angBack
+		}
 	end
-	
-	hook.Add( "DrawEntityTargetID", "catherine.door.DrawEntityTargetID", catherine.door.DrawEntityTargetID )
 end
 
 function catherine.door.IsDoorOwner( pl, ent, flag )

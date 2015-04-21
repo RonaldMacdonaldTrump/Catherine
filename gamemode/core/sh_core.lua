@@ -238,14 +238,14 @@ function GM:DoAnimationEvent( pl, event, data )
 	return nil
 end
 
-function GM:GetPlayerInformation( pl, target )
+function GM:GetPlayerInformation( pl, target, isFull )
 	if ( pl == target ) then
-		return target:Name( ), target:Desc( )
+		return pl:Name( ), pl:Desc( )
 	end
 	
 	if ( pl:IsKnow( target ) ) then
 		return target:Name( ), target:Desc( )
 	end
 	
-	return hook.Run( "GetUnknownTargetName", pl, target ), target:Desc( )
+	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target:Desc( ) or ( string.utf8sub( target:Desc( ), 1, 37 ) .. "..." )
 end
