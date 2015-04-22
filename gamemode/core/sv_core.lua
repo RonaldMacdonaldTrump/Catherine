@@ -91,7 +91,14 @@ end
 function GM:PlayerSpawnedInCharacter( pl )
 	catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 	hook.Run( "OnSpawnedInCharacter", pl )
-	hook.Run( "PostWeaponGive", pl )
+	
+	if ( catherine.configs.giveHand ) then
+		pl:Give( "cat_fist" )
+	end
+	
+	if ( catherine.configs.giveKey ) then
+		pl:Give( "cat_key" )
+	end
 end
 
 function GM:PlayerSetHandsModel( pl, ent )
@@ -106,10 +113,16 @@ end
 
 function GM:PlayerAuthed( pl )
 	catherine.chat.Send( pl, "connect" )
+	
+	hook.Run( "PlayerInitSpawned", pl )
 end
 
 function GM:PlayerDisconnected( pl )
 	catherine.chat.Send( pl, "disconnect" )
+	
+	if ( pl:IsCharacterLoaded( ) ) then
+		hook.Run( "PlayerDisconnectedInCharacter", pl )
+	end
 end
 
 function GM:PlayerCanHearPlayersVoice( pl, target )
@@ -149,48 +162,17 @@ function GM:KeyPress( pl, key )
 			ent = ent:GetNetVar( "player" )
 		end
 		
-		if ( IsValid( ent ) and ent:IsPlayer( ) and catherine.player.IsTied( ent ) ) then
-			catherine.player.SetTie( pl, ent, false )
-			
-			return true
+		if ( IsValid( ent ) and ent:IsPlayer( ) ) then
+			return hook.Run( "PlayerInteract", pl, ent )
 		end
 
 		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
-			if ( pl.canUseDoor == nil ) then
-				pl.canUseDoor = true
+			if ( hook.Run( "PlayerCanUseDoor", pl, ent ) == false ) then
+				return
 			end
 			
-			if ( !pl.doorSpamCount ) then
-				pl.doorSpamCount = 0
-			end
-			
-			if ( pl.lookingDoorEntity == nil ) then
-				pl.lookingDoorEntity = ent
-			end
-			
-			pl.doorSpamCount = pl.doorSpamCount + 1
-			
-			if ( pl.lookingDoorEntity == ent and pl.doorSpamCount >= 10 ) then
-				pl.lookingDoorEntity = nil
-				pl.doorSpamCount = 0
-				pl.canUseDoor = false
-				catherine.util.Notify( pl, "Do not door-spam!" )
-				
-				timer.Create( "Catherine.timer.doorSpamDelay", 1, 1, function( )
-					pl.canUseDoor = true
-				end )
-				timer.Remove( "Catherine.timer.doorSpamInit" )
-			elseif ( pl.lookingDoorEntity != ent ) then
-				pl.lookingDoorEntity = ent
-				pl.doorSpamCount = 1
-			end
-			
-			timer.Remove( "Catherine.timer.doorSpamInit" )
-			timer.Create( "Catherine.timer.doorSpamInit", 1, 1, function( )
-				pl.canUseDoor = true
-				pl.doorSpamCount = 0
-			end )
-			
+			catherine.door.DoorSpamProtection( pl, ent )
+
 			return hook.Run( "PlayerUseDoor", pl, ent )
 		elseif ( IsValid( ent ) and ent.IsCustomUse ) then
 			netstream.Start( pl, "catherine.entity.CustomUseMenu", ent:EntIndex( ) )
@@ -204,20 +186,11 @@ function GM:PlayerUse( pl, ent )
 			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 			pl.CAT_tiedMSG = CurTime( ) + 5
 		end
+		
 		return false
 	end
 	
-	return catherine.entity.IsDoor( ent ) and pl.canUseDoor or true
-end
-
-function GM:PostWeaponGive( pl )
-	if ( catherine.configs.giveHand ) then
-		pl:Give( "cat_fist" )
-	end
-	
-	if ( catherine.configs.giveKey ) then
-		pl:Give( "cat_key" )
-	end
+	return catherine.entity.IsDoor( ent ) and !pl.CAT_cantUseDoor or true
 end
 
 function GM:PlayerSay( pl, text )

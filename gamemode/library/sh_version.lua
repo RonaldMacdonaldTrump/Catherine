@@ -25,12 +25,12 @@ if ( SERVER ) then
 	function catherine.version.Check( pl )
 		http.Fetch( catherine.encrypt.Decode( serverURL ), 
 			function( body )
-				local globalVer = catherine.network.GetNetGlobalVar( "cat_needUpdate", false )
+				local globalVer = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
 				local foundNew = false
 				
 				if ( body != catherine.version.Ver ) then
 					if ( globalVer == false ) then
-						catherine.network.SetNetGlobalVar( "cat_needUpdate", true )
+						catherine.net.SetNetGlobalVar( "cat_needUpdate", true )
 					end
 					
 					catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. catherine.version.Ver .. " -> " .. body .. "]" )
@@ -38,7 +38,7 @@ if ( SERVER ) then
 				else
 					foundNew = false
 					if ( globalVer == true ) then
-						catherine.network.SetNetGlobalVar( "cat_needUpdate", false )
+						catherine.net.SetNetGlobalVar( "cat_needUpdate", false )
 					end
 				end
 				

@@ -149,6 +149,42 @@ if ( SERVER ) then
 			return true, "Door_Notify_SetStatus_True"
 		end
 	end
+	
+	function catherine.door.DoorSpamProtection( pl, ent )
+		local steamID = pl:SteamID( )
+		
+		if ( !pl.CAT_lastDoor ) then
+			pl.CAT_lastDoor = ent
+		end
+		
+		pl.CAT_doorSpamCount = pl.CAT_doorSpamCount + 1 or 1
+		
+		if ( pl.CAT_lastDoor == ent and pl.CAT_doorSpamCount >= 10 ) then
+			pl.lookingDoorEntity = nil
+			pl.CAT_doorSpamCount = 0
+			pl.CAT_cantUseDoor = true
+			catherine.util.NotifyLang( pl, "Door_Notify_DoorSpam" )
+			
+			timer.Create( "Catherine.timer.DoorSpamDelta_" .. steamID, 1, 1, function( )
+				if ( !IsValid( pl ) ) then return end
+				
+				pl.CAT_cantUseDoor = nil
+			end )
+			
+			timer.Remove( "Catherine.timer.DoorSpamCountInitizlie_" .. steamID )
+		elseif ( pl.CAT_lastDoor != ent ) then
+			pl.CAT_lastDoor = ent
+			pl.CAT_doorSpamCount = 1
+		end
+		
+		timer.Remove( "Catherine.timer.DoorSpamCountInitizlie_" .. steamID )
+		timer.Create( "Catherine.timer.DoorSpamCountInitizlie_" .. steamID, 1, 1, function( )
+			if ( !IsValid( pl ) ) then return end
+			
+			pl.CAT_cantUseDoor = nil
+			pl.CAT_doorSpamCount = nil
+		end )
+	end
 
 	function catherine.door.GetDoorCost( pl, ent )
 		return catherine.configs.doorCost // 나중에 수정 -_-

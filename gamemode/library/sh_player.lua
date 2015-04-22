@@ -25,7 +25,7 @@ if ( SERVER ) then
 		
 		local function loadFramework( )
 			catherine.player.PlayerInformationInitialize( pl )
-			catherine.network.SyncAllVars( pl )
+			catherine.net.SyncAllVars( pl )
 			catherine.character.SyncAllNetworkRegistry( pl )
 			catherine.environment.SyncToPlayer( pl )
 			catherine.character.SyncCharacterList( pl )
@@ -138,10 +138,10 @@ if ( SERVER ) then
 					} )
 				
 					target:SetNetVar( "isTied", true )
+					
+					return true
 				end
 			end )
-			
-			
 		else
 			if ( catherine.player.IsTied( pl ) and !force ) then
 				catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
@@ -169,6 +169,8 @@ if ( SERVER ) then
 		
 				if ( IsValid( target ) ) then
 					target:SetNetVar( "isTied", false )
+					
+					return true
 				end
 			end )
 		end

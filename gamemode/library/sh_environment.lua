@@ -16,10 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 // 버그가 많음;
-catherine.environment = catherine.environment or { }
+catherine.environment = catherine.environment or { buffer = catherine.configs.defaultRPInformation }
 catherine.environment.TimeTick = CurTime( ) + 0.2
-catherine.environment.Buffer = catherine.environment.Buffer or catherine.configs.defaultRPInformation
-catherine.environment.MonthBuffer = catherine.environment.MonthBuffer or {
+local monthLen = {
 	31,
 	28,
 	31,
@@ -35,7 +34,7 @@ catherine.environment.MonthBuffer = catherine.environment.MonthBuffer or {
 }
 
 function catherine.environment.GetDateString( )
-	local d = catherine.environment.Buffer
+	local d = catherine.environment.buffer
 	local t = "AM"
 	
 	if ( d.hour >= 12 ) then
@@ -46,11 +45,11 @@ function catherine.environment.GetDateString( )
 end
 
 function catherine.environment.GetTemperatureString( )
-	return catherine.environment.Buffer.temperature .. " ℃"
+	return catherine.environment.buffer.temperature .. " ℃"
 end
 
 function catherine.environment.GetTimeString( )
-	local d = table.Copy( catherine.environment.Buffer )
+	local d = table.Copy( catherine.environment.buffer )
 	local t = "AM"
 	
 	if ( d.hour >= 12 ) then
@@ -71,7 +70,7 @@ if ( SERVER ) then
 
 	function catherine.environment.Work( )
 		if ( catherine.environment.TimeTick <= CurTime( ) ) then
-			local d = catherine.environment.Buffer
+			local d = catherine.environment.buffer
 			if ( !d.second ) then
 				catherine.util.ErrorPrint( "catherine.environment.Work has error!" )
 				return
@@ -95,7 +94,7 @@ if ( SERVER ) then
 				d.hour = 1
 			end
 			
-			if ( d.day >= catherine.environment.MonthBuffer[ d.month ] ) then
+			if ( d.day >= monthLen[ d.month ] ) then
 				d.month = d.month + 1
 				d.day = 1
 			end
@@ -111,7 +110,7 @@ if ( SERVER ) then
 		if ( catherine.environment.TemperatureTick <= CurTime( ) ) then
 			local nextTick = math.random( 60, 200 )
 			
-			catherine.environment.Buffer.temperature = catherine.environment.CalcTemperature( )
+			catherine.environment.buffer.temperature = catherine.environment.CalcTemperature( )
 
 			catherine.environment.SendTemperatureToAll( )
 			catherine.environment.TemperatureTick = CurTime( ) + nextTick
@@ -322,11 +321,11 @@ if ( SERVER ) then
 	end
 	
 	function catherine.environment.GetHour( )
-		return catherine.environment.Buffer.hour or 1
+		return catherine.environment.buffer.hour or 1
 	end
 	
 	function catherine.environment.GetTemperature( )
-		return catherine.environment.Buffer.temperature or 30
+		return catherine.environment.buffer.temperature or 30
 	end
 
 	function catherine.environment.AutomaticDayNight( )
@@ -372,28 +371,28 @@ if ( SERVER ) then
 
 	function catherine.environment.SyncToPlayer( pl )
 		if ( !IsValid( pl ) ) then return end
-		netstream.Start( pl, "catherine.environment.Sync", catherine.environment.Buffer )
+		netstream.Start( pl, "catherine.environment.Sync", catherine.environment.buffer )
 	end
 	
 	function catherine.environment.SendTemperatureToAll( )
-		netstream.Start( nil, "catherine.environment.SendTemperatureToAll", catherine.environment.Buffer.temperature )
+		netstream.Start( nil, "catherine.environment.SendTemperatureToAll", catherine.environment.buffer.temperature )
 	end
 	
 	function catherine.environment.SyncToAll( )
-		netstream.Start( nil, "catherine.environment.Sync", catherine.environment.Buffer )
+		netstream.Start( nil, "catherine.environment.Sync", catherine.environment.buffer )
 	end
 
 	function catherine.environment.DataSave( )
-		catherine.data.Set( "environment", catherine.environment.Buffer )
+		catherine.data.Set( "environment", catherine.environment.buffer )
 	end
 	
 	function catherine.environment.DataLoad( )
 		local data = catherine.data.Get( "environment", { } )
 
 		if ( table.Count( data ) != 7 ) then
-			catherine.environment.Buffer = catherine.configs.defaultRPInformation
+			catherine.environment.buffer = catherine.configs.defaultRPInformation
 		else
-			catherine.environment.Buffer = data
+			catherine.environment.buffer = data
 		end
 		
 		catherine.environment.AutomaticDayNight( )
@@ -404,11 +403,11 @@ if ( SERVER ) then
 	hook.Add( "DataLoad", "catherine.environment.DataLoad", catherine.environment.DataLoad )
 else
 	netstream.Hook( "catherine.environment.Sync", function( data )
-		catherine.environment.Buffer = data
+		catherine.environment.buffer = data
 	end )
 	
 	netstream.Hook( "catherine.environment.SendTemperatureToAll", function( data )
-		catherine.environment.Buffer.temperature = data
+		catherine.environment.buffer.temperature = data
 	end )
 
 	netstream.Hook( "catherine.environment.SetLightFlag", function( )
@@ -416,9 +415,9 @@ else
 	end )
 
 	function catherine.environment.WorkClient( )
-		if ( table.Count( catherine.environment.Buffer ) != 7 ) then return end
+		if ( table.Count( catherine.environment.buffer ) != 7 ) then return end
 		if ( catherine.environment.TimeTick <= CurTime( ) ) then
-			local d = catherine.environment.Buffer
+			local d = catherine.environment.buffer
 			if ( !d.second ) then
 				catherine.util.ErrorPrint( "catherine.environment.Work has error!" )
 				return
@@ -441,7 +440,7 @@ else
 				d.hour = 1
 			end
 			
-			if ( d.day >= catherine.environment.MonthBuffer[ d.month ] ) then
+			if ( d.day >= monthLen[ d.month ] ) then
 				d.month = d.month + 1
 				d.day = 1
 			end

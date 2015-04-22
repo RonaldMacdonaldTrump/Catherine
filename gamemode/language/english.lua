@@ -198,6 +198,7 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetTitle" ] = "You are set title this door.",
 	[ "Door_Notify_SetStatus_True" ] = "You are set status to unbuyable this door.",
 	[ "Door_Notify_SetStatus_False" ] = "You are set status to buyable this door.",
+	[ "Door_Notify_DoorSpam" ] = "Do not door-spam!",
 	[ "Door_UI_Default" ] = "Door",
 	
 	// Hint

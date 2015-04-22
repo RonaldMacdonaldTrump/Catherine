@@ -198,6 +198,7 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetTitle" ] = "이 문의 글씨를 설정했습니다.",
 	[ "Door_Notify_SetStatus_True" ] = "이 문을 구매할 수 없게 하셨습니다.",
 	[ "Door_Notify_SetStatus_False" ] = "이 문을 구매할 수 있게 하셨습니다.",
+	[ "Door_Notify_DoorSpam" ] = "문장난을 하지 마세요!",
 	[ "Door_UI_Default" ] = "문",
 	
 	// Hint
