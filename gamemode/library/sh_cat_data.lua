@@ -26,11 +26,7 @@ if ( SERVER ) then
 		catherine.catData.networkRegistry[ steamID ][ key ] = value
 		
 		if ( !noSync ) then
-			if ( value == nil ) then
-				netstream.Start( pl, "catherine.catData.Clear", key )
-			else
-				netstream.Start( pl, "catherine.catData.SetVar", { key, value } )
-			end
+			netstream.Start( pl, "catherine.catData.SetVar", { key, value } )
 		end
 		
 		if ( save ) then

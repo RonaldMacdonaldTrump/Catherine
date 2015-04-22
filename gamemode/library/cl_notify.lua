@@ -17,13 +17,13 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.notify = catherine.notify or { }
-catherine.notify.Lists = { }
+catherine.notify.lists = { }
 
 function catherine.notify.Add( message, time, sound )
-	local index = #catherine.notify.Lists + 1
+	local index = #catherine.notify.lists + 1
 	
 	surface.PlaySound( sound or "buttons/button24.wav" )
-	catherine.notify.Lists[ index ] = {
+	catherine.notify.lists[ index ] = {
 		message = message or "Error",
 		endTime = CurTime( ) + ( time or 5 ),
 		x = ScrW( ) / 2 - ( ScrW( ) * 0.4 ) / 2,
@@ -35,12 +35,12 @@ function catherine.notify.Add( message, time, sound )
 end
 
 function catherine.notify.Draw( )
-	for k, v in pairs( #catherine.notify.Lists != 0 and catherine.notify.Lists or { } ) do
+	for k, v in pairs( #catherine.notify.lists != 0 and catherine.notify.lists or { } ) do
 		if ( v.endTime <= CurTime( ) ) then
 			v.a = Lerp( 0.05, v.a, 0 )
 			
 			if ( math.Round( v.a ) <= 0 ) then
-				table.remove( catherine.notify.Lists, k )
+				table.remove( catherine.notify.lists, k )
 				continue
 			end
 		else

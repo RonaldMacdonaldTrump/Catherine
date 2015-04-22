@@ -21,6 +21,7 @@ catherine.font.Lists = { }
 
 function catherine.font.Register( uniqueID, font, size, weight, fontTable )
 	if ( !fontTable ) then fontTable = { } end
+	
 	table.Merge( fontTable, { uniqueID = uniqueID, font = font, size = size, weight = weight } )
 	catherine.font.Lists[ #catherine.font.Lists + 1 ] = fontTable
 	surface.CreateFont( uniqueID, fontTable )

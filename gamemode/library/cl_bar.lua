@@ -17,17 +17,18 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.bar = catherine.bar or { }
-catherine.bar.Lists = { }
+catherine.bar.lists = { }
 
 function catherine.bar.Register( target, targetMax, color, uniqueID )
-	for k, v in pairs( catherine.bar.Lists ) do
+	for k, v in pairs( catherine.bar.lists ) do
 		if ( v.uniqueID and v.uniqueID == uniqueID ) then
 			return
 		end
 	end
-	local index = #catherine.bar.Lists + 1
 	
-	catherine.bar.Lists[ index ] = {
+	local index = #catherine.bar.lists + 1
+	
+	catherine.bar.lists[ index ] = {
 		target = target,
 		targetMax = targetMax,
 		color = color,
@@ -47,7 +48,7 @@ function catherine.bar.Draw( )
 	
 	local count = 0
 	
-	for k, v in pairs( catherine.bar.Lists ) do
+	for k, v in pairs( catherine.bar.lists ) do
 		if ( !v.target or !v.targetMax ) then continue end
 		local percent = ( math.min( v.target( ) / v.targetMax( ), 1 ) )
 		
@@ -68,7 +69,7 @@ function catherine.bar.Draw( )
 		draw.RoundedBox( 0, 5, v.y, v.ani, 5, Color( v.color.r, v.color.g, v.color.b, v.alpha ) )
 	end
 	
-	hook.Run( "HUDDrawBarBottom", 5, catherine.bar.Lists[ #catherine.bar.Lists ].y )
+	hook.Run( "HUDDrawBarBottom", 5, catherine.bar.lists[ #catherine.bar.lists ].y )
 end
 
 do

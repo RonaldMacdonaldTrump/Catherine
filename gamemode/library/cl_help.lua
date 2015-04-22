@@ -16,12 +16,12 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.help = catherine.help or { Lists = { } }
+catherine.help = catherine.help or { lists = { } }
 CAT_HELP_HTML = 1
 CAT_HELP_WEBPAGE = 2
 
 function catherine.help.Register( types, category, codes )
-	catherine.help.Lists[ category ] = {
+	catherine.help.lists[ category ] = {
 		types = types,
 		category = category,
 		codes = codes
@@ -29,7 +29,7 @@ function catherine.help.Register( types, category, codes )
 end
 
 function catherine.help.GetAll( )
-	return catherine.help.Lists
+	return catherine.help.lists
 end
 
 catherine.help.Register( CAT_HELP_HTML, "Credit", [[

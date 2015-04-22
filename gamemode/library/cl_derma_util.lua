@@ -17,7 +17,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 function Derma_Message( strText, strTitle, strButtonText )
-
 	local Window = vgui.Create( "DFrame" )
 		Window:SetTitle( "" )
 		Window:SetDraggable( false )

@@ -36,6 +36,10 @@ function catherine.plugin.Include( dir )
 				catherine.util.Include( Pdir .. "/derma/" .. v1 )
 			end
 			
+			for k1, v1 in pairs( file.Find( Pdir .. "/attribute/*.lua", "LUA" ) ) do
+				catherine.util.Include( Pdir .. "/attribute/" .. v1 )
+			end
+			
 			for k1, v1 in pairs( file.Find( Pdir .. "/library/*.lua", "LUA" ) ) do
 				catherine.util.Include( Pdir .. "/library/" .. v1 )
 			end

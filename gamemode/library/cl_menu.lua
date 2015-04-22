@@ -17,10 +17,10 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.menu = catherine.menu or { }
-catherine.menu.Lists = { }
+catherine.menu.lists = { }
 
 function catherine.menu.Register( name, func, canLook )
-	catherine.menu.Lists[ #catherine.menu.Lists + 1 ] = {
+	catherine.menu.lists[ #catherine.menu.lists + 1 ] = {
 		name = name,
 		func = func,
 		canLook = canLook
@@ -28,5 +28,5 @@ function catherine.menu.Register( name, func, canLook )
 end
 
 function catherine.menu.GetAll( )
-	return catherine.menu.Lists
+	return catherine.menu.lists
 end

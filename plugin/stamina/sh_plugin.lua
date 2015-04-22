@@ -89,5 +89,3 @@ else
 		end, Color( 0, 206, 209 ), "stamina" )
 	end
 end
-
-CAT_ATT_STAMINA = catherine.attribute.Register( "stamina", "^Stamina_Title", "^Stamina_Desc", "CAT/attribute/stamina.png", 0, 100 )
