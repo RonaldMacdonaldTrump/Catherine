@@ -378,6 +378,10 @@ function META:IsFemale( )
 	end
 end
 
+function META:IsChatTyping( )
+	return self:GetNetVar( "isTyping", false )
+end
+
 function catherine.player.IsRagdolled( pl )
 	return pl:GetNetVar( "isRagdolled", nil )
 end

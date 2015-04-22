@@ -326,3 +326,7 @@ function GM:ShutDown( )
 	hook.Run( "DataSave" )
 	hook.Run( "SchemaDataSave" )
 end
+
+netstream.Hook( "catherine.IsTyping", function( pl, data )
+	pl:SetNetVar( "isTyping", data )
+end )

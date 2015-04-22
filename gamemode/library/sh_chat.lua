@@ -208,6 +208,7 @@ if ( SERVER ) then
 		if ( type( classTable ) == "string" ) then
 			classTable = catherine.chat.FindByClass( classTable )
 		end
+		
 		if ( !classTable or type( classTable ) != "table" ) then return end
 		local class = classTable.class
 		
@@ -220,6 +221,7 @@ if ( SERVER ) then
 				end
 			else
 				local listener = catherine.chat.GetListener( pl, class )
+				
 				for k, v in pairs( listener ) do
 					netstream.Start( v, "catherine.chat.Post", { pl, class, text, { ... } } )
 				end
@@ -243,11 +245,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.chat.CanChat( pl, classTable )
-		if ( classTable.canRun and classTable.canRun( pl ) == false ) then
-			return false
-		end
-		
-		return true
+		return classTable.canRun and classTable.canRun( pl ) or true
 	end
 	
 	function catherine.chat.Work( pl, text )
@@ -268,6 +266,7 @@ if ( SERVER ) then
 		end
 		
 		local fix, isFin, noSpace = "", false, classTable.noSpace
+		
 		if ( type( commandTable ) == "table" ) then
 			for k, v in ipairs( commandTable ) do
 				if ( text:sub( 1, #v + ( noSpace and 0 or 1 ) ) == v .. ( noSpace and "" or " " ) ) then
@@ -283,6 +282,7 @@ if ( SERVER ) then
 
 		if ( isFin ) then
 			text = text:sub( #fix + 1 )
+			
 			if ( noSpace and text:sub( 1, 1 ):match( "%s" ) ) then
 				text = text:sub( 2 )
 			end

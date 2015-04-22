@@ -29,19 +29,7 @@ catherine.language.Merge( "korean", {
 	[ "HeadChat_Talking" ] = "말 하는 중 ..."
 } )
 
-if ( SERVER ) then
-	netstream.Hook( "catherine.plugin.headchat.Chat", function( pl, data )
-		pl:SetNetVar( "typing", data )
-	end )
-else
-	function PLUGIN:StartChat( )
-		netstream.Start( "catherine.plugin.headchat.Chat", true )
-	end
-	
-	function PLUGIN:FinishChat( )
-		netstream.Start( "catherine.plugin.headchat.Chat", false )
-	end
-	
+if ( CLIENT ) then
 	function PLUGIN:PostPlayerDraw( pl )
 		if ( !pl:IsChatTyping( ) ) then return end
 		local text = LANG( "HeadChat_Talking" )
@@ -65,10 +53,4 @@ else
 			draw.SimpleText( text, "catherine_normal50", 0 - tw / 2, 0, Color( 255, 255, 255, a ) )
 		cam.End3D2D( )
 	end
-end
-
-local META = FindMetaTable( "Player" )
-
-function META:IsChatTyping( )
-	return self:GetNetVar( "typing", false )
 end

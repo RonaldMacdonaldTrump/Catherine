@@ -167,6 +167,14 @@ function GM:DrawDoorText( ent, pos, ang )
 	cam.End3D2D( )
 end
 
+function GM:StartChat( )
+	netstream.Start( "catherine.IsTyping", true )
+end
+
+function GM:FinishChat( )
+	netstream.Start( "catherine.IsTyping", false )
+end
+
 local OFFSET_PLAYER = Vector( 0, 0, 30 )
 
 function GM:DrawEntityTargetID( pl, ent, a )
