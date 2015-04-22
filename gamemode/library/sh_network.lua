@@ -50,7 +50,7 @@ if ( SERVER ) then
 		local convert = { }
 		
 		for k, v in pairs( catherine.network.entityRegistry ) do
-			if ( !IsValid( k ) or !k:IsValid( ) ) then continue end
+			if ( !IsValid( k ) ) then continue end
 			
 			convert[ k:IsPlayer( ) and k:SteamID( ) or k:EntIndex( ) ] = v
 		end
@@ -60,7 +60,7 @@ if ( SERVER ) then
 	
 	function catherine.network.NetworkRegistryOptimize( )
 		for k, v in pairs( catherine.network.entityRegistry ) do
-			if ( IsValid( k ) and k:IsValid( ) ) then continue end
+			if ( IsValid( k ) ) then continue end
 			
 			catherine.network.entityRegistry[ k ] = nil
 		end

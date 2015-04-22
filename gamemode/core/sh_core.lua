@@ -67,7 +67,7 @@ WEAPON_RAISED = 2
 
 function GM:CalcMainActivity( pl, velo )
 	local mdl = pl:GetModel( ):lower( )
-	local class = catherine.anim.GetModelAnimation( mdl )
+	local class = catherine.animation.Get( mdl )
 	local wep = pl:GetActiveWeapon( )
 	local holdType = "normal"
 	local status = WEAPON_LOWERED
@@ -127,7 +127,7 @@ function GM:CalcMainActivity( pl, velo )
 			act = act .. "_crouch"
 		end
 
-		local aniClass = catherine.anim[ class ]
+		local aniClass = catherine.animation[ class ]
 
 		if ( !aniClass ) then
 			class = "citizen_male"
@@ -193,7 +193,7 @@ end
 
 function GM:DoAnimationEvent( pl, event, data )
 	local mdl = pl:GetModel( ):lower( )
-	local class = catherine.anim.GetModelAnimation( mdl )
+	local class = catherine.animation.Get( mdl )
 
 	if ( mdl:find( "/player/" ) or mdl:find( "/playermodel" ) or class == "player" ) then
 		return self.BaseClass:DoAnimationEvent( pl, event, data )
@@ -201,9 +201,8 @@ function GM:DoAnimationEvent( pl, event, data )
 
 	local wep = pl:GetActiveWeapon( )
 	local holdType = "normal"
-	local class = catherine.anim.GetModelAnimation( mdl )
 
-	if ( !catherine.anim[ class ] ) then
+	if ( !catherine.animation[ class ] ) then
 		class = "citizen_male"
 	end
 
@@ -211,11 +210,11 @@ function GM:DoAnimationEvent( pl, event, data )
 		holdType = catherine.util.GetHoldType( wep )
 	end
 
-	if ( !catherine.anim[ class ][ holdType ] ) then
+	if ( !catherine.animation[ class ][ holdType ] ) then
 		holdType = "normal"
 	end
 
-	local ani = catherine.anim[ class ][ holdType ]
+	local ani = catherine.animation[ class ][ holdType ]
 
 	if ( event == PLAYERANIMEVENT_ATTACK_PRIMARY ) then
 		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )

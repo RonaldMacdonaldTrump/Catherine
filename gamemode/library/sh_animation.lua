@@ -17,54 +17,52 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 --[[
-	This code has brought by Nutscript.
+	This code has brought in NutScript.
 	https://github.com/Chessnut/NutScript
 --]]
-catherine.anim = catherine.anim or { }
-catherine.anim.buffer = catherine.anim.buffer or { }
+catherine.animation = catherine.animation or { buffer = { } }
 
-function catherine.anim.SetModelAnimation( class, mdl )
-	catherine.anim.buffer[ mdl:lower( ) ] = class
+function catherine.animation.Register( class, mdl )
+	catherine.animation.buffer[ mdl:lower( ) ] = class
 end
 
-function catherine.anim.GetModelAnimation( mdl )
+function catherine.animation.Get( mdl )
 	mdl = mdl:lower( )
-	return catherine.anim.buffer[ mdl ] or ( mdl:find( "female" ) and "citizen_female" or "citizen_male" )
+	
+	return catherine.animation.buffer[ mdl ] or ( mdl:find( "female" ) and "citizen_female" or "citizen_male" )
 end
 
-local pre = {
-	"male", "female"
-}
-
-for i = 1, 2 do
-	for k, v in pairs( file.Find("models/humans/group01/" .. pre[ i ] .. "_*.mdl", "GAME" ) ) do
-		catherine.anim.SetModelAnimation( "citizen_" .. pre[ i ], "models/humans/group01/" .. v )
+local function RegisterCitizen( gender )
+	for k, v in pairs( file.Find("models/humans/group01/" .. gender .. "_*.mdl", "GAME" ) ) do
+		catherine.animation.Register( "citizen_" .. gender, "models/humans/group01/" .. v )
 	end
 
-	for k, v in pairs( file.Find("models/humans/group02/" .. pre[ i ] .. "_*.mdl", "GAME" ) ) do
-		catherine.anim.SetModelAnimation( "citizen_" .. pre[ i ], "models/humans/group02/" .. v )
+	for k, v in pairs( file.Find("models/humans/group02/" .. gender .. "_*.mdl", "GAME" ) ) do
+		catherine.animation.Register( "citizen_" .. gender, "models/humans/group02/" .. v )
 	end
 
-	for k, v in pairs( file.Find("models/humans/group03/" .. pre[ i ] .. "_*.mdl", "GAME" ) ) do
-		catherine.anim.SetModelAnimation( "citizen_" .. pre[ i ], "models/humans/group03/" .. v )
+	for k, v in pairs( file.Find("models/humans/group03/" .. gender .. "_*.mdl", "GAME" ) ) do
+		catherine.animation.Register( "citizen_" .. gender, "models/humans/group03/" .. v )
 	end
 
-	for k, v in pairs( file.Find("models/humans/group04/" .. pre[ i ] .. "_*.mdl", "GAME" ) ) do
-		catherine.anim.SetModelAnimation( "citizen_" .. pre[ i ], "models/humans/group04/" .. v )
+	for k, v in pairs( file.Find("models/humans/group04/" .. gender .. "_*.mdl", "GAME" ) ) do
+		catherine.animation.Register( "citizen_" .. gender, "models/humans/group04/" .. v )
 	end
 end
 
-catherine.anim.SetModelAnimation( "citizen_female", "models/mossman.mdl" )
-catherine.anim.SetModelAnimation( "citizen_female", "models/alyx.mdl" )
-catherine.anim.SetModelAnimation( "metrocop", "models/police.mdl" )
-catherine.anim.SetModelAnimation( "overwatch", "models/combine_super_soldier.mdl" )
-catherine.anim.SetModelAnimation( "overwatch", "models/combine_soldier_prisonguard.mdl" )
-catherine.anim.SetModelAnimation( "overwatch", "models/combine_soldier.mdl" )
-catherine.anim.SetModelAnimation( "vort", "models/vortigaunt.mdl" )
-catherine.anim.SetModelAnimation( "vort", "models/vortigaunt_slave.mdl" )
-catherine.anim.SetModelAnimation( "metrocop", "models/dpfilms/metropolice/playermodels/pm_skull_police.mdl" )
+RegisterCitizen( "male" )
+RegisterCitizen( "female" )
+catherine.animation.Register( "citizen_female", "models/mossman.mdl" )
+catherine.animation.Register( "citizen_female", "models/alyx.mdl" )
+catherine.animation.Register( "metrocop", "models/police.mdl" )
+catherine.animation.Register( "overwatch", "models/combine_super_soldier.mdl" )
+catherine.animation.Register( "overwatch", "models/combine_soldier_prisonguard.mdl" )
+catherine.animation.Register( "overwatch", "models/combine_soldier.mdl" )
+catherine.animation.Register( "vort", "models/vortigaunt.mdl" )
+catherine.animation.Register( "vort", "models/vortigaunt_slave.mdl" )
+catherine.animation.Register( "metrocop", "models/dpfilms/metropolice/playermodels/pm_skull_police.mdl" )
 
-catherine.anim.citizen_male = {
+catherine.animation.citizen_male = {
 	normal = {
 		idle = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
 		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
@@ -117,7 +115,7 @@ catherine.anim.citizen_male = {
 	glide = ACT_GLIDE
 }
 
-catherine.anim.citizen_female = {
+catherine.animation.citizen_female = {
 	normal = {
 		idle = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
 		idle_crouch = {ACT_COVER_LOW, ACT_COVER_LOW},
@@ -170,7 +168,7 @@ catherine.anim.citizen_female = {
 	glide = ACT_GLIDE
 }
 
-catherine.anim.metrocop = {
+catherine.animation.metrocop = {
 	normal = {
 		idle = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
 		idle_crouch = {ACT_COVER_PISTOL_LOW, ACT_COVER_SMG1_LOW},
@@ -220,7 +218,7 @@ catherine.anim.metrocop = {
 	glide = ACT_GLIDE
 }
 
-catherine.anim.overwatch = {
+catherine.animation.overwatch = {
 	normal = {
 		idle = {"idle_unarmed", "man_gun"},
 		idle_crouch = {"crouchidle", "crouchidle"},
@@ -267,7 +265,7 @@ catherine.anim.overwatch = {
 	glide = ACT_GLIDE
 }
 
-catherine.anim.vort = {
+catherine.animation.vort = {
 	normal = {
 		idle = {ACT_IDLE, "actionidle"},
 		idle_crouch = {"crouchidle", "crouchidle"},
