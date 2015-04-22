@@ -310,3 +310,42 @@ catherine.animation.vort = {
 	},
 	glide = ACT_GLIDE
 }
+
+if ( SERVER ) then
+	function catherine.animation.SetSeqAnimation( pl, seq, time, doFunc, func )
+		local rightSeq, len = pl:LookupSequence( seq )
+		time = time or len
+
+		if ( !rightSeq or rightSeq == -1 ) then
+			return
+		end
+		
+		pl:SetNetVar( "seqAni", seq )
+
+		if ( doFunc ) then
+			doFunc( )
+		end
+
+		if ( time > 0 ) then
+			timer.Create( "Catherine.timer.SeqAnimation_" .. pl:SteamID( ), time, 1, function( )
+				if ( !IsValid( pl ) ) then return end
+				
+				catherine.animation.ResetSeqAnimation( pl )
+
+				if ( func ) then
+					func( )
+				end
+			end )
+		end
+
+		return time, rightSeq
+	end
+
+	function catherine.animation.ResetSeqAnimation( pl )
+		pl:SetNetVar( "seqAni", false )
+	end
+end
+
+function catherine.animation.GetSeqAnimation( pl )
+	return pl:GetNetVar( "seqAni", false )
+end

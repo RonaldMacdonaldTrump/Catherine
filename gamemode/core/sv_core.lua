@@ -37,7 +37,7 @@ function GM:ShowTeam( pl )
 		else
 			catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )
 				if ( bool ) then
-					catherine.door.Buy( pl, ent )
+					catherine.command.Run( pl, "doorbuy" )
 				end
 			end )
 		end
@@ -189,8 +189,10 @@ function GM:PlayerUse( pl, ent )
 		
 		return false
 	end
+
+	local isDoor = catherine.entity.IsDoor( ent )
 	
-	return catherine.entity.IsDoor( ent ) and !pl.CAT_cantUseDoor or true
+	return ( isDoor and !pl.CAT_cantUseDoor == true ) and true or !isDoor and true
 end
 
 function GM:PlayerSay( pl, text )

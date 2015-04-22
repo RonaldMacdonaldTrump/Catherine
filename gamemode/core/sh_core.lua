@@ -150,18 +150,25 @@ function GM:CalcMainActivity( pl, velo )
 			pl.CalcIdle = aniClass.normal.idle_crouch[ 1 ]
 		elseif ( ani ) then
 			val = ani[ status ]
+			
 			if ( type( val ) == "string" ) then
 				pl.CalcOver = pl:LookupSequence( val )
 			else
 				pl.CalcIdle = val
 			end
 		end
+		
+		local seqAni = pl:GetNetVar( "seqAni" )
+
+		if ( seqAni ) then
+			pl.CalcOver = pl:LookupSequence( seqAni )
+		end
 
 		if ( CLIENT ) then
 			pl:SetIK( false )
 		end
 
-		local norm = math.NormalizeAngle( velo:Angle( ).yaw - pl:EyeAngles( ).y)
+		local norm = math.NormalizeAngle( velo:Angle( ).yaw - pl:EyeAngles( ).y )
 		pl:SetPoseParameter( "move_yaw", norm )
 		return pl.CalcIdle or ACT_IDLE, pl.CalcOver or -1
 	end

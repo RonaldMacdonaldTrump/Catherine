@@ -15,7 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
-
+// 이 라이브러리는 현재 개발중 입니다!
+// This library is still developing!
 catherine.door = catherine.door or { }
 
 CAT_DOOR_CHANGEPERMISSION = 1
@@ -73,19 +74,23 @@ if ( SERVER ) then
 	function catherine.door.Buy( pl, ent )
 		if ( !IsValid( pl ) ) then print("!")return end
 		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
+			print("Boo")
 			return false, "Entity_Notify_NotDoor"
 		end
 		
 		if ( !catherine.door.IsBuyableDoor( ent ) ) then
+			print("shit")
 			return false, "Door_Notify_CantBuyable"
 		end
 
 		if ( ent:GetNetVar( "permissions" ) ) then
+			print("?!")
 			return false, "Door_Notify_AlreadySold"
 		end
 		
 		local cost = catherine.door.GetDoorCost( pl, ent )
 		if ( !catherine.cash.Has( pl, cost ) ) then
+			print("No..")
 			return false, "Cash_Notify_HasNot"
 		end
 		
@@ -157,7 +162,11 @@ if ( SERVER ) then
 			pl.CAT_lastDoor = ent
 		end
 		
-		pl.CAT_doorSpamCount = pl.CAT_doorSpamCount + 1 or 1
+		if ( !pl.CAT_doorSpamCount ) then
+			pl.CAT_doorSpamCount = 0
+		end
+		
+		pl.CAT_doorSpamCount = pl.CAT_doorSpamCount + 1
 		
 		if ( pl.CAT_lastDoor == ent and pl.CAT_doorSpamCount >= 10 ) then
 			pl.lookingDoorEntity = nil
