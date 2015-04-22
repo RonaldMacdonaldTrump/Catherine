@@ -329,4 +329,6 @@ end
 
 netstream.Hook( "catherine.IsTyping", function( pl, data )
 	pl:SetNetVar( "isTyping", data )
+	
+	hook.Run( "ChatTypingChanged", pl, data )
 end )
