@@ -64,13 +64,8 @@ function catherine.attribute.FindByID( id )
 end
 
 function catherine.attribute.FindByIndex( index )
-	for k, v in pairs( catherine.attribute.GetAll( ) ) do
-		if ( v.index == index ) then
-			return v
-		end
-	end
+	return catherine.attribute.lists[ index ]
 end
-// 필요없나?
 
 function catherine.attribute.Include( dir )
 	for k, v in pairs( file.Find( dir .. "/attribute/*.lua", "LUA" ) ) do
