@@ -304,10 +304,6 @@ function GM:GetUnknownTargetName( pl, target )
 	return LANG( pl, "Recognize_UI_Unknown" )
 end
 
-function GM:Initialize( )
-	hook.Run( "GamemodeInitialized" )
-end
-
 function GM:PlayerShouldTakeDamage( )
 	return true
 end

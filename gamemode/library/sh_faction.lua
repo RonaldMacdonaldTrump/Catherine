@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.faction = catherine.faction or { }
-catherine.faction.Lists = { }
+catherine.faction.lists = { }
 local META = FindMetaTable( "Player" )
 
 function catherine.faction.Register( factionTable )
@@ -26,14 +26,18 @@ function catherine.faction.Register( factionTable )
 		return
 	end
 	
-	catherine.faction.Lists[ factionTable.index ] = factionTable
+	catherine.faction.lists[ factionTable.index ] = factionTable
 	team.SetUp( factionTable.index, factionTable.name, factionTable.color )
 	
 	return factionTable.index
 end
 
 function catherine.faction.New( uniqueID )
-	return { uniqueID = uniqueID, index = table.Count( catherine.faction.Lists ) + 1 }
+	return { uniqueID = uniqueID, index = table.Count( catherine.faction.lists ) + 1 }
+end
+
+function catherine.faction.GetAll( )
+	return catherine.faction.lists
 end
 
 function catherine.faction.GetPlayerUsableFaction( pl )
@@ -41,14 +45,11 @@ function catherine.faction.GetPlayerUsableFaction( pl )
 	
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.isWhitelist and ( SERVER and catherine.faction.HasWhiteList( pl, v.uniqueID ) or catherine.faction.HasWhiteList( v.uniqueID ) ) == false ) then continue end
+		
 		factions[ #factions + 1 ] = v
 	end
 	
 	return factions
-end
-
-function catherine.faction.GetAll( )
-	return catherine.faction.Lists
 end
 
 function catherine.faction.FindByName( name )
@@ -68,11 +69,7 @@ function catherine.faction.FindByID( id )
 end
 
 function catherine.faction.FindByIndex( index )
-	for k, v in pairs( catherine.faction.GetAll( ) ) do
-		if ( v.index == index ) then
-			return v
-		end
-	end
+	return catherine.faction.lists[ index ]
 end
 
 function catherine.faction.Include( dir )
@@ -94,7 +91,7 @@ if ( SERVER ) then
 		end
 		
 		if ( catherine.faction.HasWhiteList( pl, id ) ) then
-			return false, "Faction_Notify_AlreadyHas", { pl:Name( ), id }
+			return false, "Faction_Notify_AlreadyHas", { pl.Name( pl ), id }
 		end
 		
 		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
@@ -116,7 +113,7 @@ if ( SERVER ) then
 		end
 		
 		if ( !catherine.faction.HasWhiteList( pl, id ) ) then
-			return false, "Faction_Notify_HasNot", { pl:Name( ), id }
+			return false, "Faction_Notify_HasNot", { pl.Name( pl ), id }
 		end
 		
 		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
@@ -137,7 +134,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.faction.PlayerFirstSpawned( pl )
-		local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
+		local factionTable = catherine.faction.FindByIndex( pl.Team( pl ) )
 		if ( !factionTable or !factionTable.PlayerFirstSpawned ) then return end
 		
 		factionTable:PlayerFirstSpawned( pl )

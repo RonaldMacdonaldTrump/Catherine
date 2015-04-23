@@ -32,18 +32,7 @@ function catherine.attribute.Register( attributeTable )
 	attributeTable.max = attributeTable.max or 100
 	
 	catherine.attribute.lists[ attributeTable.index ] = attributeTable
-	--[[
-	local index = #catherine.attribute.lists + 1
-	
-	catherine.attribute.lists[ uniqueID ] = {
-		uniqueID = uniqueID,
-		name = name,
-		desc = desc,
-		image = image,
-		default = default or 0,
-		max = max or 100
-	}--]]
-	
+
 	return attributeTable.index
 end
 
@@ -140,7 +129,10 @@ if ( SERVER ) then
 			for k, v in pairs( attributeAll ) do
 				if ( attribute[ k ] ) then continue end
 				
-				attribute[ k ] = { per = 0, progress = v.default }
+				attribute[ k ] = {
+					per = 0,
+					progress = v.default
+				}
 				changed = true
 			end
 		end
@@ -158,7 +150,7 @@ else
 		return attribute[ index ] and attribute[ index ].progress or 0
 	end
 end
-/*
+/* // 예전 코드 -_-
 
 function catherine.attribute.Register( uniqueID, name, desc, image, default, max )
 	local index = #catherine.attribute.lists + 1

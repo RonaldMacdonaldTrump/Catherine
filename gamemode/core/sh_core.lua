@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 --[[
-	This code has brought by nutscript.
+	This code has brought in nutscript.
 	https://github.com/Chessnut/NutScript
 --]]
 
@@ -64,6 +64,10 @@ local NormalHoldTypes = {
 }
 WEAPON_LOWERED = 1
 WEAPON_RAISED = 2
+
+function GM:Initialize( )
+	hook.Run( "GamemodeInitialized" )
+end
 
 function GM:CalcMainActivity( pl, velo )
 	local mdl = pl:GetModel( ):lower( )
