@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.class = catherine.class or { }
-catherine.class.Lists = { }
+catherine.class.lists = { }
 
 function catherine.class.Register( classTable )
 	if ( !classTable or !classTable.index ) then
@@ -31,17 +31,17 @@ function catherine.class.Register( classTable )
 		end
 	end
 	
-	catherine.class.Lists[ classTable.index ] = classTable
+	catherine.class.lists[ classTable.index ] = classTable
 	
 	return classTable.index
 end
 
 function catherine.class.New( uniqueID )
-	return { uniqueID = uniqueID, index = table.Count( catherine.class.Lists ) + 1 }
+	return { uniqueID = uniqueID, index = table.Count( catherine.class.lists ) + 1 }
 end
 
 function catherine.class.GetAll( )
-	return catherine.class.Lists
+	return catherine.class.lists
 end
 
 function catherine.class.FindByID( id )
@@ -53,11 +53,7 @@ function catherine.class.FindByID( id )
 end
 
 function catherine.class.FindByIndex( index )
-	for k, v in pairs( catherine.class.GetAll( ) ) do
-		if ( v.index == index ) then
-			return v
-		end
-	end
+	return catherine.class.lists[ index ]
 end
 
 function catherine.class.CanJoin( pl, index )
@@ -67,7 +63,7 @@ function catherine.class.CanJoin( pl, index )
 		return false, "Class error"
 	end
 
-	if ( pl:Team( ) != classTable.faction ) then
+	if ( pl.Team( pl ) != classTable.faction ) then
 		return false, "Team error"
 	end
 
@@ -87,6 +83,7 @@ function catherine.class.GetPlayers( index )
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( catherine.character.GetCharVar( v, "class", "" ) != index ) then continue end
+		
 		players[ #players + 1 ] = v
 	end
 
@@ -102,7 +99,7 @@ end
 if ( SERVER ) then
 	function catherine.class.Set( pl, index )
 		if ( !index ) then
-			local defaultClass = catherine.class.GetDefaultClass( pl:Team( ) )
+			local defaultClass = catherine.class.GetDefaultClass( pl.Team( pl ) )
 			if ( !defaultClass ) then return end
 			local defaultModel = catherine.character.GetCharVar( pl, "originalModel" )
 			if ( !defaultModel ) then return end
@@ -123,7 +120,7 @@ if ( SERVER ) then
 		
 		if ( classTable.model ) then
 			if ( !catherine.character.GetCharVar( pl, "originalModel" ) ) then
-				catherine.character.SetCharVar( pl, "originalModel", pl:GetModel( ) )
+				catherine.character.SetCharVar( pl, "originalModel", pl.GetModel( pl ) )
 			end
 			
 			pl:SetModel( ( type( classTable.model ) == "table" and table.Random( classTable.model ) or classTable.model ) )
@@ -145,10 +142,11 @@ if ( SERVER ) then
 	end )
 else
 	function catherine.class.GetJoinable( )
+		local pl = LocalPlayer( )
 		local classes = { }
 		
 		for k, v in pairs( catherine.class.GetAll( ) ) do
-			if ( v.faction == LocalPlayer( ):Team( ) and LocalPlayer( ):Class( ) != v.index ) then
+			if ( v.faction == pl.Team( pl ) and pl.Class( pl ) != v.index ) then
 				classes[ #classes + 1 ] = v
 			end
 		end

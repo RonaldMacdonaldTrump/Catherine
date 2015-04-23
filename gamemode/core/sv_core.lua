@@ -218,9 +218,18 @@ local IsAdmin = function( _, pl ) return pl:IsAdmin( ) end
 GM.PlayerGiveSWEP = IsAdmin
 GM.PlayerSpawnSWEP = IsAdmin
 GM.PlayerSpawnEffect = IsAdmin
-GM.PlayerSpawnNPC = IsAdmin
-GM.PlayerSpawnRagdoll = IsAdmin
-GM.PlayerSpawnVehicle = IsAdmin
+
+function GM:PlayerSpawnRagdoll( pl )
+	return pl:HasFlag( "R" )
+end
+
+function GM:PlayerSpawnNPC( pl )
+	return pl:HasFlag( "n" )
+end
+
+function GM:PlayerSpawnVehicle( pl )
+	return pl:HasFlag( "V" )
+end
 
 function GM:PlayerSpawnSENT( pl )
 	return pl:HasFlag( "x" )
