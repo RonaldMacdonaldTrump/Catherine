@@ -353,7 +353,7 @@ if ( SERVER ) then
 
 	function catherine.environment.SetLightFlag( flag )
 		engine.LightStyle( 0, flag )
-		catherine.netXync.Send( nil, "catherine.environment.SetLightFlag" )
+		netstream.Start( nil, "catherine.environment.SetLightFlag" )
 	end
 	
 	function catherine.environment.CalcTemperature( )
@@ -371,15 +371,15 @@ if ( SERVER ) then
 
 	function catherine.environment.SyncToPlayer( pl )
 		if ( !IsValid( pl ) ) then return end
-		catherine.netXync.Send( pl, "catherine.environment.Sync", catherine.environment.buffer )
+		netstream.Start( pl, "catherine.environment.Sync", catherine.environment.buffer )
 	end
 	
 	function catherine.environment.SendTemperatureToAll( )
-		catherine.netXync.Send( nil, "catherine.environment.SendTemperatureToAll", catherine.environment.buffer.temperature )
+		netstream.Start( nil, "catherine.environment.SendTemperatureToAll", catherine.environment.buffer.temperature )
 	end
 	
 	function catherine.environment.SyncToAll( )
-		catherine.netXync.Send( nil, "catherine.environment.Sync", catherine.environment.buffer )
+		netstream.Start( nil, "catherine.environment.Sync", catherine.environment.buffer )
 	end
 
 	function catherine.environment.DataSave( )
@@ -402,15 +402,15 @@ if ( SERVER ) then
 	hook.Add( "DataSave", "catherine.environment.DataSave", catherine.environment.DataSave )
 	hook.Add( "DataLoad", "catherine.environment.DataLoad", catherine.environment.DataLoad )
 else
-	catherine.netXync.Receiver( "catherine.environment.Sync", function( data )
+	netstream.Hook( "catherine.environment.Sync", function( data )
 		catherine.environment.buffer = data
 	end )
 	
-	catherine.netXync.Receiver( "catherine.environment.SendTemperatureToAll", function( data )
+	netstream.Hook( "catherine.environment.SendTemperatureToAll", function( data )
 		catherine.environment.buffer.temperature = data
 	end )
 
-	catherine.netXync.Receiver( "catherine.environment.SetLightFlag", function( )
+	netstream.Hook( "catherine.environment.SetLightFlag", function( )
 		render.RedownloadAllLightmaps( )
 	end )
 

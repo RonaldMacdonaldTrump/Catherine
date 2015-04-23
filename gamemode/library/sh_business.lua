@@ -49,14 +49,14 @@ if ( SERVER ) then
 		end
 		
 		catherine.cash.Take( pl, cost )
-		catherine.netXync.Send( pl, "catherine.business.Result", true )
+		netstream.Start( pl, "catherine.business.Result", true )
 	end
 	
-	catherine.netXync.Receiver( "catherine.business.BuyItems", function( pl, data )
+	netstream.Hook( "catherine.business.BuyItems", function( pl, data )
 		catherine.business.BuyItems( pl, data )
 	end )
 	
-	catherine.netXync.Receiver( "catherine.business.RemoveShipment", function( pl, data )
+	netstream.Hook( "catherine.business.RemoveShipment", function( pl, data )
 		data = Entity( data )
 		
 		if ( IsValid( data ) ) then
@@ -64,13 +64,13 @@ if ( SERVER ) then
 		end
 	end )
 else
-	catherine.netXync.Receiver( "catherine.business.Result", function( data )
+	netstream.Hook( "catherine.business.Result", function( data )
 		if ( data == true and IsValid( catherine.vgui.business ) ) then
 			catherine.vgui.business:Close( )
 		end
 	end )
 	
-	catherine.netXync.Receiver( "catherine.business.EntityUseMenu", function( data )
+	netstream.Hook( "catherine.business.EntityUseMenu", function( data )
 		local ent = Entity( data )
 		
 		if ( IsValid( catherine.vgui.shipment ) ) then

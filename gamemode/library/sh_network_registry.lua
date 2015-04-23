@@ -30,7 +30,7 @@ if ( SERVER ) then
 		catherine.net.entityRegistry[ ent ][ key ] = value
 		
 		if ( !noSync ) then
-			catherine.netXync.Send( nil, "catherine.net.SetNetVar", { ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( ), key, value } )
+			netstream.Start( nil, "catherine.net.SetNetVar", { ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( ), key, value } )
 		end
 	end
 	
@@ -42,7 +42,7 @@ if ( SERVER ) then
 		catherine.net.globalRegistry[ key ] = value
 		
 		if ( !noSync ) then
-			catherine.netXync.Send( nil, "catherine.net.SetNetGlobalVar", { key, value } )
+			netstream.Start( nil, "catherine.net.SetNetGlobalVar", { key, value } )
 		end
 	end
 
@@ -55,7 +55,7 @@ if ( SERVER ) then
 			convert[ k:IsPlayer( ) and k:SteamID( ) or k:EntIndex( ) ] = v
 		end
 
-		catherine.netXync.Send( pl, "catherine.net.SyncAllVars", { convert, catherine.net.globalRegistry } )
+		netstream.Start( pl, "catherine.net.SyncAllVars", { convert, catherine.net.globalRegistry } )
 	end
 	
 	function catherine.net.NetworkRegistryOptimize( )
@@ -84,38 +84,38 @@ if ( SERVER ) then
 	
 	function catherine.net.EntityRemoved( ent )
 		catherine.net.entityRegistry[ ent ] = nil
-		catherine.netXync.Send( nil, "catherine.net.ClearNetVar", ent:EntIndex( ) )
+		netstream.Start( nil, "catherine.net.ClearNetVar", ent:EntIndex( ) )
 	end
 	
 	function catherine.net.PlayerDisconnectedInCharacter( pl )
 		catherine.net.entityRegistry[ pl ] = nil
-		catherine.netXync.Send( nil, "catherine.net.ClearNetVar", pl:SteamID( ) )
+		netstream.Start( nil, "catherine.net.ClearNetVar", pl:SteamID( ) )
 	end
 
 	hook.Add( "Think", "catherine.net.Think", catherine.net.Think )
 	hook.Add( "EntityRemoved", "catherine.net.EntityRemoved", catherine.net.EntityRemoved )
 	hook.Add( "PlayerDisconnectedInCharacter", "catherine.net.PlayerDisconnectedInCharacter", catherine.net.PlayerDisconnectedInCharacter )
 else
-	catherine.netXync.Receiver( "catherine.net.SetNetVar", function( data )
+	netstream.Hook( "catherine.net.SetNetVar", function( data )
 		local steamID = data[ 1 ]
 		
 		catherine.net.entityRegistry[ steamID ] = catherine.net.entityRegistry[ steamID ] or { }
 		catherine.net.entityRegistry[ steamID ][ data[ 2 ] ] = data[ 3 ]
 	end )
 	
-	catherine.netXync.Receiver( "catherine.net.SetNetGlobalVar", function( data )
+	netstream.Hook( "catherine.net.SetNetGlobalVar", function( data )
 		catherine.net.globalRegistry[ data[ 1 ] ] = data[ 2 ]
 	end )
 
-	catherine.netXync.Receiver( "catherine.net.ClearNetVar", function( data )
+	netstream.Hook( "catherine.net.ClearNetVar", function( data )
 		catherine.net.entityRegistry[ data ] = nil
 	end )
 	
-	catherine.netXync.Receiver( "catherine.net.ClearNetGlobalVar", function( data )
+	netstream.Hook( "catherine.net.ClearNetGlobalVar", function( data )
 		catherine.net.globalRegistry[ data ] = nil
 	end )
 	
-	catherine.netXync.Receiver( "catherine.net.SyncAllVars", function( data )
+	netstream.Hook( "catherine.net.SyncAllVars", function( data )
 		catherine.net.entityRegistry = data[ 1 ]
 		catherine.net.globalRegistry = data[ 2 ]
 	end )

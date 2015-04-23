@@ -58,8 +58,10 @@ catherine.command.Register( {
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
+					local nameBuffer = target:Name( )
+					
 					catherine.character.SetVar( target, "_name", args[ 2 ] )
-					catherine.util.NotifyAllLang( "Character_Notify_SetName", pl:Name( ), args[ 2 ], target:Name( ) )
+					catherine.util.NotifyAllLang( "Character_Notify_SetName", pl:Name( ), args[ 2 ], nameBuffer )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end

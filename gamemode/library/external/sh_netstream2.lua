@@ -44,7 +44,7 @@ function netstream.Split(data)
 end;
 
 -- A function to hook a data stream.
-function catherine.netXync.Receiver(name, Callback)
+function netstream.Hook(name, Callback)
 	netstream.stored[name] = Callback;
 end;
 
@@ -52,7 +52,7 @@ if (SERVER) then
 	util.AddNetworkString("NetStreamDS");
 
 	-- A function to start a net stream.
-	function catherine.netXync.Send(player, name, ...)
+	function netstream.Start(player, name, ...)
 		local recipients = {};
 		local bShouldSend = false;
 	
@@ -119,7 +119,7 @@ if (SERVER) then
 	end);
 else
 	-- A function to start a net stream.
-	function catherine.netXync.Send(name, ...)
+	function netstream.Start(name, ...)
 		local dataTable = {...};
 		local encodedData = pon.encode(dataTable);
 		

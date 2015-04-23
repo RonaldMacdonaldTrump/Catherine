@@ -257,11 +257,11 @@ if ( SERVER ) then
 	hook.Add( "DataSave", "catherine.door.DataSave", catherine.door.DataSave )
 	hook.Add( "DataLoad", "catherine.door.DataLoad", catherine.door.DataLoad )
 	
-	catherine.netXync.Receiver( "catherine.door.Work", function( pl, data )
+	netstream.Hook( "catherine.door.Work", function( pl, data )
 		catherine.door.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ] )
 	end )
 else
-	catherine.netXync.Receiver( "catherine.door.DoorMenu", function( data )
+	netstream.Hook( "catherine.door.DoorMenu", function( data )
 		if ( IsValid( catherine.vgui.door ) ) then
 			catherine.vgui.door:Remove( )
 			catherine.vgui.door = nil

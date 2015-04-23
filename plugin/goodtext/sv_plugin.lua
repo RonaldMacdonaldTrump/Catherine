@@ -64,7 +64,7 @@ function PLUGIN:RemoveText( pos, range )
 	
 	for k, v in pairs( self.textLists ) do
 		if ( v.pos:Distance( pos ) <= range ) then
-			catherine.netXync.Send( nil, "catherine.plugin.goodtext.RemoveText", v.index )
+			netstream.Start( nil, "catherine.plugin.goodtext.RemoveText", v.index )
 			table.remove( self.textLists, k )
 			count = count + 1
 		end
@@ -81,6 +81,6 @@ function PLUGIN:SyncTextAll( pl )
 	end
 	
 	for k, v in pairs( self.textLists ) do
-		catherine.netXync.Send( pl, "catherine.plugin.goodtext.SyncText", { index = k, text = v.text, pos = v.pos, ang = v.ang, size = v.size } )
+		netstream.Start( pl, "catherine.plugin.goodtext.SyncText", { index = k, text = v.text, pos = v.pos, ang = v.ang, size = v.size } )
 	end
 end

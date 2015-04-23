@@ -26,7 +26,7 @@ if ( SERVER ) then
 		catherine.catData.networkRegistry[ steamID ][ key ] = value
 		
 		if ( !noSync ) then
-			catherine.netXync.Send( pl, "catherine.catData.SetVar", { key, value } )
+			netstream.Start( pl, "catherine.catData.SetVar", { key, value } )
 		end
 		
 		if ( save ) then
@@ -56,7 +56,7 @@ if ( SERVER ) then
 			if ( !data ) then return end
 			
 			catherine.catData.networkRegistry[ steamID ] = util.JSONToTable( data[ 1 ][ "_catData" ] )
-			catherine.netXync.Send( pl, "catherine.catData.Sync", catherine.catData.networkRegistry[ steamID ] )
+			netstream.Start( pl, "catherine.catData.Sync", catherine.catData.networkRegistry[ steamID ] )
 		end )
 	end
 
@@ -67,15 +67,15 @@ if ( SERVER ) then
 	
 	hook.Add( "PlayerDisconnected", "catherine.catData.PlayerDisconnected", catherine.catData.PlayerDisconnected )
 else
-	catherine.netXync.Receiver( "catherine.catData.SetVar", function( data )
+	netstream.Hook( "catherine.catData.SetVar", function( data )
 		catherine.catData.networkRegistry[ data[ 1 ] ] = data[ 2 ]
 	end )
 	
-	catherine.netXync.Receiver( "catherine.catData.Clear", function( data )
+	netstream.Hook( "catherine.catData.Clear", function( data )
 		catherine.catData.networkRegistry[ data ] = nil
 	end )
 	
-	catherine.netXync.Receiver( "catherine.catData.Sync", function( data )
+	netstream.Hook( "catherine.catData.Sync", function( data )
 		catherine.catData.networkRegistry = data
 	end )
 	

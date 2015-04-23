@@ -140,7 +140,7 @@ if ( SERVER ) then
 			catherine.storage.SetInv( ent, inventory )
 		end
 		
-		catherine.netXync.Send( pl, "catherine.storage.RefreshPanel", ent:EntIndex( ) )
+		netstream.Start( pl, "catherine.storage.RefreshPanel", ent:EntIndex( ) )
 	end
 	
 	function catherine.storage.Make( ent, data )
@@ -168,7 +168,7 @@ if ( SERVER ) then
 				uniqueID = "ID_OPEN",
 				text = "Open",
 				func = function( pl, ent )
-					catherine.netXync.Send( pl, "catherine.storage.Use", ent:EntIndex( ) )
+					netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
 				end
 			}
 		} )
@@ -247,11 +247,11 @@ if ( SERVER ) then
 	hook.Add( "DataLoad", "catherine.storage.DataLoad", catherine.storage.DataLoad )
 	hook.Add( "PlayerSpawnedProp", "catherine.storage.PlayerSpawnedProp", catherine.storage.PlayerSpawnedProp )
 	
-	catherine.netXync.Receiver( "catherine.storage.Work", function( pl, data )
+	netstream.Hook( "catherine.storage.Work", function( pl, data )
 		catherine.storage.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ] )
 	end )
 else
-	catherine.netXync.Receiver( "catherine.storage.Use", function( data )
+	netstream.Hook( "catherine.storage.Use", function( data )
 		if ( IsValid( catherine.vgui.storage ) ) then
 			catherine.vgui.storage:Remove( )
 			catherine.vgui.storage = nil
@@ -261,7 +261,7 @@ else
 		catherine.vgui.storage:InitializeStorage( Entity( data ) )
 	end )
 	
-	catherine.netXync.Receiver( "catherine.storage.RefreshPanel", function( data )
+	netstream.Hook( "catherine.storage.RefreshPanel", function( data )
 		if ( IsValid( catherine.vgui.storage ) ) then
 			catherine.vgui.storage:InitializeStorage( Entity( data ) )
 		end

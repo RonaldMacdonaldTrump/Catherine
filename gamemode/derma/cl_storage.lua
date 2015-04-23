@@ -190,7 +190,7 @@ function PANEL:BuildStorage( )
 			spawnIcon:SetSkin( itemTable.skin or 0 )
 			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
 			spawnIcon.DoClick = function( )
-				catherine.netXync.Send( "catherine.storage.Work", {
+				netstream.Start( "catherine.storage.Work", {
 					self.ent:EntIndex( ),
 					CAT_STORAGE_ACTION_REMOVE,
 					v1.uniqueID
@@ -251,7 +251,7 @@ function PANEL:BuildStorage( )
 			spawnIcon:SetSkin( itemTable.skin or 0 )
 			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
 			spawnIcon.DoClick = function( )
-				catherine.netXync.Send( "catherine.storage.Work", {
+				netstream.Start( "catherine.storage.Work", {
 					self.ent:EntIndex( ),
 					CAT_STORAGE_ACTION_ADD,
 					{

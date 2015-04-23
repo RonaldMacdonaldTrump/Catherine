@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.version = catherine.version or { Ver = "2015-04-22" }
+catherine.version = catherine.version or { Ver = "2015-04-23" }
 
 if ( SERVER ) then
 	catherine.version.Checked = catherine.version.Checked or false
@@ -43,12 +43,12 @@ if ( SERVER ) then
 				end
 				
 				if ( IsValid( pl ) ) then
-					catherine.netXync.Send( pl, "catherine.version.CheckResult", { false, foundNew and LANG( pl, "Version_Notify_FoundNew" ) or LANG( pl, "Version_Notify_AlreadyNew" ) } )
+					netstream.Start( pl, "catherine.version.CheckResult", { false, foundNew and LANG( pl, "Version_Notify_FoundNew" ) or LANG( pl, "Version_Notify_AlreadyNew" ) } )
 				end
 			end, function( err )
 				catherine.util.Print( Color( 255, 0, 0 ), "Update check error! - " .. err )
 				if ( IsValid( pl ) ) then
-					catherine.netXync.Send( pl, "catherine.version.CheckResult", { false, LANG( pl, "Version_Notify_CheckError", err ) } )
+					netstream.Start( pl, "catherine.version.CheckResult", { false, LANG( pl, "Version_Notify_CheckError", err ) } )
 				end
 			end
 		)
@@ -62,12 +62,12 @@ if ( SERVER ) then
 	
 	hook.Add( "PlayerAuthed", "catherine.version.PlayerAuthed", catherine.version.PlayerAuthed )
 	
-	catherine.netXync.Receiver( "catherine.version.Check", function( pl )
+	netstream.Hook( "catherine.version.Check", function( pl )
 		if ( !pl:IsSuperAdmin( ) ) then return end
 		catherine.version.Check( pl )
 	end )
 else
-	catherine.netXync.Receiver( "catherine.version.CheckResult", function( data )
+	netstream.Hook( "catherine.version.CheckResult", function( data )
 		if ( IsValid( catherine.vgui.version ) ) then
 			catherine.vgui.version.status = data[ 1 ]
 			catherine.vgui.version:Refresh( )

@@ -18,7 +18,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 local PLUGIN = PLUGIN
 
-catherine.netXync.Receiver( "catherine.plugin.goodtext.SyncText", function( data )
+netstream.Hook( "catherine.plugin.goodtext.SyncText", function( data )
 	local index = data.index
 	
 	if ( !PLUGIN.textLists[ index ] or ( PLUGIN.textLists[ index ] and PLUGIN.textLists[ index ].text != data.text ) ) then
@@ -26,7 +26,7 @@ catherine.netXync.Receiver( "catherine.plugin.goodtext.SyncText", function( data
 	end
 end )
 
-catherine.netXync.Receiver( "catherine.plugin.goodtext.RemoveText", function( data )
+netstream.Hook( "catherine.plugin.goodtext.RemoveText", function( data )
 	if ( !PLUGIN.textLists[ data ] ) then return end
 	
 	PLUGIN.textLists[ data ] = nil

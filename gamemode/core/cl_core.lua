@@ -168,11 +168,11 @@ function GM:DrawDoorText( ent, pos, ang )
 end
 
 function GM:StartChat( )
-	catherine.netXync.Send( "catherine.IsTyping", true )
+	netstream.Start( "catherine.IsTyping", true )
 end
 
 function GM:FinishChat( )
-	catherine.netXync.Send( "catherine.IsTyping", false )
+	netstream.Start( "catherine.IsTyping", false )
 end
 
 local OFFSET_PLAYER = Vector( 0, 0, 30 )
@@ -356,7 +356,7 @@ function GM:PostPlayerDraw( pl )
 end
 --]]
 
-catherine.netXync.Receiver( "catherine.LoadingStatus", function( data )
+netstream.Hook( "catherine.LoadingStatus", function( data )
 	catherine.loading.status = data[ 1 ]
 	catherine.loading.msg = data[ 2 ]
 	
@@ -366,7 +366,7 @@ catherine.netXync.Receiver( "catherine.LoadingStatus", function( data )
 	end
 end )
 
-catherine.netXync.Receiver( "catherine.ShowHelp", function( )
+netstream.Hook( "catherine.ShowHelp", function( )
 	if ( IsValid( catherine.vgui.information ) ) then
 		catherine.vgui.information:Close( )
 		return
@@ -375,17 +375,17 @@ catherine.netXync.Receiver( "catherine.ShowHelp", function( )
 	catherine.vgui.information = vgui.Create( "catherine.vgui.information" )
 end )
 
-catherine.netXync.Receiver( "catherine.IntroStart", function( )
+netstream.Hook( "catherine.IntroStart", function( )
 	timer.Simple( 1, function( )
 		catherine.intro.loading = true
 		catherine.intro.intro = true
 	end )
 end )
 
-catherine.netXync.Receiver( "catherine.IntroStop", function( )
+netstream.Hook( "catherine.IntroStop", function( )
 	catherine.intro.intro = false
 end )
 
-catherine.netXync.Receiver( "catherine.loadingFinished", function( )
+netstream.Hook( "catherine.loadingFinished", function( )
 	catherine.intro.loading = false
 end )

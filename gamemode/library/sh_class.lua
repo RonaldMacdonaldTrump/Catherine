@@ -137,7 +137,7 @@ if ( SERVER ) then
 		end
 	end
 
-	catherine.netXync.Receiver( "catherine.class.Set", function( pl, data )
+	netstream.Hook( "catherine.class.Set", function( pl, data )
 		catherine.class.Set( pl, data )
 	end )
 else
@@ -146,7 +146,7 @@ else
 		local classes = { }
 		
 		for k, v in pairs( catherine.class.GetAll( ) ) do
-			if ( v.faction == pl.Team( pl ) and pl.Class( pl ) != v.index ) then
+			if ( v.faction == pl.Team( pl ) and pl.Class( pl ) != v.index and !v.cantJoinUsingMenu ) then
 				classes[ #classes + 1 ] = v
 			end
 		end

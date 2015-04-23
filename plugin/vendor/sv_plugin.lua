@@ -117,7 +117,7 @@ function PLUGIN:SetVendorData( ent, id, data, noSync )
 	if ( !noSync ) then
 		local target = self:GetVendorWorkingPlayers( )
 		if ( #target != 0 ) then
-			catherine.netXync.Send( target, "catherine.plugin.vendor.RefreshRequest", ent:EntIndex( ) )
+			netstream.Start( target, "catherine.plugin.vendor.RefreshRequest", ent:EntIndex( ) )
 		end
 	end
 end
@@ -316,10 +316,10 @@ function PLUGIN:DataSave( )
 	self:SaveVendors( )
 end
 
-catherine.netXync.Receiver( "catherine.plugin.vendor.VendorWork", function( pl, data )
+netstream.Hook( "catherine.plugin.vendor.VendorWork", function( pl, data )
 	PLUGIN:VendorWork( pl, data[ 1 ], data[ 2 ], data[ 3 ] )
 end )
 
-catherine.netXync.Receiver( "catherine.plugin.vendor.VendorClose", function( pl )
+netstream.Hook( "catherine.plugin.vendor.VendorClose", function( pl )
 	pl:SetNetVar( "vendor_work", nil )
 end )

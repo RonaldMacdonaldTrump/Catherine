@@ -219,7 +219,7 @@ function PANEL:UseCharacterPanel( )
 			surface.DrawTexturedRect( 0, 0, w, h )
 		end
 		v.panel.useCharacter.DoClick = function( )
-			catherine.netXync.Send( "catherine.character.Use", v.characterDatas._id )
+			netstream.Start( "catherine.character.Use", v.characterDatas._id )
 		end
 		
 		v.panel.deleteCharacter = vgui.Create( "DButton", v.panel )
@@ -234,7 +234,7 @@ function PANEL:UseCharacterPanel( )
 		end
 		v.panel.deleteCharacter.DoClick = function( )
 			Derma_Query( LANG( "Character_Notify_DeleteQ" ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_YES" ), function( )
-				catherine.netXync.Send( "catherine.character.Delete", v.characterDatas._id )
+				netstream.Start( "catherine.character.Delete", v.characterDatas._id )
 			end, LANG( "Basic_UI_NO" ), function( ) end )
 		end
 		
@@ -618,7 +618,7 @@ function PANEL:Init( )
 						self:AlphaTo( 0, 0.3, 0 )
 						self:MoveTo( 0 - self.w, self.parent.h / 2 - self.h / 2, 0.3, 0 )
 						table.Merge( self.parent.createData.datas, self.data )
-						catherine.netXync.Send( "catherine.character.Create", self.parent.createData.datas )
+						netstream.Start( "catherine.character.Create", self.parent.createData.datas )
 						return
 					end
 				end

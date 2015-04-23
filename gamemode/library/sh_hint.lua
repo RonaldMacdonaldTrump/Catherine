@@ -36,7 +36,7 @@ if ( SERVER ) then
 		for k, v in pairs( hintTable and player.GetAllByLoaded( ) or { } ) do
 			if ( v:GetInfo( "cat_convar_hint" ) == "0" or hintTable.canLook and hintTable.canLook( v ) == false ) then continue end
 			
-			catherine.netXync.Send( v, "catherine.hint.Receive", rand )
+			netstream.Start( v, "catherine.hint.Receive", rand )
 		end
 	end
 	
@@ -55,7 +55,7 @@ else
 	CAT_CONVAR_HINT = CreateClientConVar( "cat_convar_hint", 1, true, true )
 	catherine.option.Register( "CONVAR_HINT", "cat_convar_hint", "^Option_Str_HINT_Name", "^Option_Str_HINT_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
 	
-	catherine.netXync.Receiver( "catherine.hint.Receive", function( data )
+	netstream.Hook( "catherine.hint.Receive", function( data )
 		local msg = catherine.util.StuffLanguage( catherine.hint.lists[ data ].message )
 		surface.SetFont( "catherine_normal25" )
 		local tw, th = surface.GetTextSize( msg )

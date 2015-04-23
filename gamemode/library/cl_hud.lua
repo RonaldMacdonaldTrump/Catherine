@@ -32,7 +32,7 @@ catherine.hud = catherine.hud or {
 	deathAlpha = 0
 }
 
-catherine.netXync.Receiver( "catherine.hud.WelcomeIntroStart", function( )
+netstream.Hook( "catherine.hud.WelcomeIntroStart", function( )
 	catherine.hud.WelcomeIntroInitialize( )
 end )
 

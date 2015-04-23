@@ -133,7 +133,7 @@ function PANEL:SendReport( )
 		return
 	end
 	self:SetNotify( false, "Sending report, please wait :) ...", true )
-	catherine.netXync.Send( "catherine.plugin.bugreport.Send", { self.data.title, self.data.value } )
+	netstream.Start( "catherine.plugin.bugreport.Send", { self.data.title, self.data.value } )
 end
 
 function PANEL:MenuPaint( w, h )
