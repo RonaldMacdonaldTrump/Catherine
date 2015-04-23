@@ -41,7 +41,6 @@ if ( SERVER ) then
 	util.AddNetworkString( "Catherine.netXync.Core" )
 	
 	function catherine.netXync.Send( receivers, uniqueID, ... )
-		
 		if ( type( receivers ) != "table" ) then
 			receivers = receivers and { receivers } or player.GetAll( )
 		end
@@ -49,23 +48,34 @@ if ( SERVER ) then
 		local dataTable = { ... }
 		
 		if ( table.Count( dataTable ) == 0 ) then
-		
+			net.Start( "Catherine.netXync.Core" )
+				net.WriteString( uniqueID )
+				net.WriteBit( false )
+			net.Send( receivers )
 		else
 			local encode = catherine.netXync.Encode( dataTable )
+			local len = #encode
 			
+			if ( !encode or len <= 0 ) then return end
 			
+			net.Start( "Catherine.netXync.Core" )
+				net.WriteString( uniqueID )
+				net.WriteBit( true )
+				net.WriteUInt( len, 32 )
+				net.WriteData( encode, len )
+			net.Send( receivers )
 		end
 	end
 	
 	net.Receive( "Catherine.netXync.Core", function( len, pl )
 		local NetXync_UniqueID = net.ReadString( )
-		local NetXync_Status = net.ReadString( )
-		local NetXync_Length = net.ReadUInt( 32 )
-		local NetXync_DataTable = net.ReadData( NetXync_Length )
+		local NetXync_Status = net.ReadBit( )
 
-		if ( NetXync_Status == "1" ) then
+		if ( NetXync_Status == true ) then
+			local NetXync_Length = net.ReadUInt( 32 )
+			local NetXync_DataTable = net.ReadData( NetXync_Length )
 			local success, val = pcall( catherine.netXync.Decode, NetXync_DataTable )
-			local func = catherine.netXync.buffer[ uniqueID ]
+			local func = catherine.netXync.buffer[ NetXync_UniqueID ]
 			
 			if ( func ) then
 				if ( success ) then
@@ -77,7 +87,7 @@ if ( SERVER ) then
 				MsgC( Color( 0, 255, 255 ), "[NetXync ERROR] Catherine NetXync '" .. NetXync_UniqueID .. "' has failed to run.\n'Callback not found.\n" )
 			end
 		else
-			local func = catherine.netXync.buffer[ uniqueID ]
+			local func = catherine.netXync.buffer[ NetXync_UniqueID ]
 			
 			if ( func ) then
 				func( pl )
@@ -85,8 +95,58 @@ if ( SERVER ) then
 				MsgC( Color( 0, 255, 255 ), "[NetXync ERROR] Catherine NetXync '" .. NetXync_UniqueID .. "' has failed to run.\n'Callback not found.\n" )
 			end
 		end
-		
 	end )
 else
-
+	net.Receive( "Catherine.netXync.Core", function( len )
+		local NetXync_UniqueID = net.ReadString( )
+		local NetXync_Status = net.ReadBit( )
+		
+		if ( NetXync_Status == true ) then
+			local NetXync_Length = net.ReadUInt( 32 )
+			local NetXync_DataTable = net.ReadData( NetXync_Length )
+			local success, val = pcall( catherine.netXync.Decode, NetXync_DataTable )
+			local func = catherine.netXync.buffer[ NetXync_UniqueID ]
+			
+			if ( func ) then
+				if ( success ) then
+					func( pl, unpack( val ) )
+				else
+					MsgC( Color( 0, 255, 255 ), "[NetXync ERROR] Catherine NetXync '" .. NetXync_UniqueID .. "' has failed to run.\n'" .. val .. "'\n" )
+				end
+			else
+				MsgC( Color( 0, 255, 255 ), "[NetXync ERROR] Catherine NetXync '" .. NetXync_UniqueID .. "' has failed to run.\n'Callback not found.\n" )
+			end
+		else
+			local func = catherine.netXync.buffer[ NetXync_UniqueID ]
+			
+			if ( func ) then
+				func( pl )
+			else
+				MsgC( Color( 0, 255, 255 ), "[NetXync ERROR] Catherine NetXync '" .. NetXync_UniqueID .. "' has failed to run.\n'Callback not found.\n" )
+			end
+		end
+	end )
+	
+	function catherine.netXync.Send( uniqueID, ... )
+		local dataTable = { ... }
+		
+		if ( table.Count( dataTable ) == 0 ) then
+			net.Start( "Catherine.netXync.Core" )
+				net.WriteString( uniqueID )
+				net.WriteBit( false )
+			net.SendToServer( )
+		else
+			local encode = catherine.netXync.Encode( dataTable )
+			local len = #encode
+			
+			if ( !encode or len <= 0 ) then return end
+			
+			net.Start( "Catherine.netXync.Core" )
+				net.WriteString( uniqueID )
+				net.WriteBit( true )
+				net.WriteUInt( len, 32 )
+				net.WriteData( encode, len )
+			net.SendToServer( )
+		end
+	end
 end
