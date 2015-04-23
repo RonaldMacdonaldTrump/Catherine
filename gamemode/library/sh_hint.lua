@@ -17,18 +17,21 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.hint = catherine.hint or { }
-catherine.hint.Lists = { }
+catherine.hint.lists = { }
 
 function catherine.hint.Register( message, canLook )
-	catherine.hint.Lists[ #catherine.hint.Lists + 1 ] = { message = message, canLook = canLook }
+	catherine.hint.lists[ #catherine.hint.lists + 1 ] = {
+		message = message,
+		canLook = canLook
+	}
 end
 
 if ( SERVER ) then
-	catherine.hint.NextSendTick = catherine.hint.NextSendTick or CurTime( ) + catherine.configs.hintInterval
+	catherine.hint.NextTick = catherine.hint.NextTick or CurTime( ) + catherine.configs.hintInterval
 	
 	function catherine.hint.Work( )
-		local rand = math.random( 1, #catherine.hint.Lists )
-		local hintTable = catherine.hint.Lists[ rand ]
+		local rand = math.random( 1, #catherine.hint.lists )
+		local hintTable = catherine.hint.lists[ rand ]
 
 		for k, v in pairs( hintTable and player.GetAllByLoaded( ) or { } ) do
 			if ( v:GetInfo( "cat_convar_hint" ) == "0" or hintTable.canLook and hintTable.canLook( v ) == false ) then continue end
@@ -38,10 +41,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.hint.Think( )
-		if ( #catherine.hint.Lists != 0 and catherine.hint.NextSendTick <= CurTime( ) ) then
+		if ( #catherine.hint.lists != 0 and catherine.hint.NextTick <= CurTime( ) ) then
 			catherine.hint.Work( )
 			
-			catherine.hint.NextSendTick = CurTime( ) + catherine.configs.hintInterval + math.random( 10, 20 )
+			catherine.hint.NextTick = CurTime( ) + catherine.configs.hintInterval + math.random( 10, 20 )
 		end
 	end
 
@@ -53,7 +56,7 @@ else
 	catherine.option.Register( "CONVAR_HINT", "cat_convar_hint", "^Option_Str_HINT_Name", "^Option_Str_HINT_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
 	
 	catherine.netXync.Receiver( "catherine.hint.Receive", function( data )
-		local msg = catherine.util.StuffLanguage( catherine.hint.Lists[ data ].message )
+		local msg = catherine.util.StuffLanguage( catherine.hint.lists[ data ].message )
 		surface.SetFont( "catherine_normal25" )
 		local tw, th = surface.GetTextSize( msg )
 		
