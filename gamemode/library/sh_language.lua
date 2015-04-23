@@ -16,11 +16,10 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.language = catherine.language or { }
-catherine.language.Lists = { }
+catherine.language = catherine.language or { lists = { } }
 
 function catherine.language.Register( languageTable )
-	catherine.language.Lists[ languageTable.uniqueID ] = languageTable
+	catherine.language.lists[ languageTable.uniqueID ] = languageTable
 end
 
 function catherine.language.New( uniqueID )
@@ -28,11 +27,11 @@ function catherine.language.New( uniqueID )
 end
 
 function catherine.language.GetAll( )
-	return catherine.language.Lists
+	return catherine.language.lists
 end
 
 function catherine.language.FindByID( uniqueID )
-	return catherine.language.Lists[ uniqueID ]
+	return catherine.language.lists[ uniqueID ]
 end
 
 function catherine.language.Include( dir )
@@ -52,18 +51,18 @@ catherine.language.Include( catherine.FolderName .. "/gamemode" )
 
 if ( SERVER ) then
 	function LANG( pl, key, ... )
-		local languageTable = catherine.language.Lists[ pl:GetInfo( "cat_convar_language" ) ] or catherine.language.Lists[ "english" ]
+		local languageTable = catherine.language.lists[ pl:GetInfo( "cat_convar_language" ) ] or catherine.language.lists[ "english" ]
 		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
 		
-		return string.format( languageTable.data[ key ], ... )
+		return Format( languageTable.data[ key ], ... )
 	end
 else
 	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", catherine.configs.defaultLanguage, true, true )
 
 	function LANG( key, ... )
-		local languageTable = catherine.language.Lists[ CAT_CONVAR_LANGUAGE:GetString( ) ] or catherine.language.Lists[ "english" ]
+		local languageTable = catherine.language.lists[ CAT_CONVAR_LANGUAGE:GetString( ) ] or catherine.language.lists[ "english" ]
 		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
 		
-		return string.format( languageTable.data[ key ], ... )
+		return Format( languageTable.data[ key ], ... )
 	end
 end

@@ -84,8 +84,8 @@ function catherine.item.Register( itemTable )
 				end
 				
 				local uniqueID = itemTable.uniqueID
-
 				local ent = catherine.item.Spawn( uniqueID, catherine.util.GetItemDropPos( pl ), nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )
+				
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, {
 					uniqueID = uniqueID
 				} )
@@ -130,9 +130,9 @@ function catherine.item.Include( dir )
 	
 	local itemFiles, itemFolders = file.Find( dir .. "/item/*", "LUA" )
 	
+	table.RemoveByValue( itemFolders, "base" )
+	
 	for k, v in pairs( itemFolders ) do
-		if ( v == "base" ) then continue end
-		
 		for k1, v1 in pairs( file.Find( dir .. "/item/" .. v .. "/*.lua", "LUA" ) ) do
 			catherine.util.Include( dir .. "/item/" .. v .. "/" .. v1, "SHARED" )
 		end
@@ -147,7 +147,6 @@ catherine.item.Include( catherine.FolderName .. "/gamemode" )
 
 if ( SERVER ) then
 	function catherine.item.Work( pl, uniqueID, funcID, ent_isMenu )
-		if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) or !uniqueID or !funcID ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )
 		if ( !itemTable or !itemTable.func or !itemTable.func[ funcID ] ) then return end
 		
@@ -196,6 +195,7 @@ if ( SERVER ) then
 		ent:InitializeItem( uniqueID, itemData or { } )
 
 		local physObject = ent:GetPhysicsObject( )
+		
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( true )
 			physObject:Wake( )
@@ -211,7 +211,15 @@ if ( SERVER ) then
 	catherine.netXync.Receiver( "catherine.item.Give", function( pl, data )
 		catherine.item.Give( pl, data )
 	end )
+	
+	catherine.netXync.Receiver( "catherine.item.Take", function( pl, data )
+		catherine.item.Take( pl, data )
+	end )
 else
+	catherine.netXync.Receiver( "catherine.item.EntityUseMenu", function( data )
+		catherine.item.OpenEntityUseMenu( data )
+	end )
+	
 	function catherine.item.OpenMenuUse( uniqueID )
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local menu = DermaMenu( )
@@ -249,8 +257,4 @@ else
 	function catherine.item.GetBasicDesc( itemTable )
 		return catherine.util.StuffLanguage( itemTable.name ) .. "\n" .. catherine.util.StuffLanguage( itemTable.desc )
 	end
-	
-	catherine.netXync.Receiver( "catherine.item.EntityUseMenu", function( data )
-		catherine.item.OpenEntityUseMenu( data )
-	end )
 end

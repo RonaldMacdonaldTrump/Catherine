@@ -40,7 +40,7 @@ if ( SERVER ) then
 	function catherine.recognize.RegisterKnow( pl, target )
 		local recognizeLists = catherine.character.GetCharVar( target, "recognize", { } )
 		
-		recognizeLists[ #recognizeLists + 1 ] = pl:GetCharacterID( )
+		recognizeLists[ #recognizeLists + 1 ] = pl.GetCharacterID( pl )
 		
 		catherine.character.SetCharVar( target, "recognize", recognizeLists )
 	end
@@ -90,13 +90,13 @@ else
 end
 
 function catherine.recognize.IsKnowTarget( pl, target )
-	local factionTable = catherine.faction.FindByIndex( target:Team( ) )
+	local factionTable = catherine.faction.FindByIndex( target.Team( target ) ) // Code optimize.
 	
 	if ( factionTable and factionTable.alwaysRecognized ) then
 		return true
 	end
 
-	return table.HasValue( catherine.character.GetCharVar( pl, "recognize", { } ), target:GetCharacterID( ) )
+	return table.HasValue( catherine.character.GetCharVar( pl, "recognize", { } ), target.GetCharacterID( target ) ) // Code optimize.
 end
 
 local META = FindMetaTable( "Player" )
