@@ -51,7 +51,7 @@ function PANEL:Init( )
 	self.check.Click = function( pnl )
 		if ( pnl.Cant ) then return end
 		self.status = true
-		netstream.Start( "catherine.version.Check" )
+		catherine.netXync.Send( "catherine.version.Check" )
 	end
 end
 

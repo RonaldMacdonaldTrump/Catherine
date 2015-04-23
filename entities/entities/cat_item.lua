@@ -49,7 +49,7 @@ if ( SERVER ) then
 	end
 
 	function ENT:Use( pl )
-		netstream.Start( pl, "catherine.item.EntityUseMenu", { self:EntIndex( ), self:GetItemUniqueID( ) } )
+		catherine.netXync.Send( pl, "catherine.item.EntityUseMenu", { self:EntIndex( ), self:GetItemUniqueID( ) } )
 	end
 	
 	function ENT:Bomb( )

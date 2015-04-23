@@ -43,12 +43,12 @@ if ( SERVER ) then
 				end
 				
 				if ( IsValid( pl ) ) then
-					netstream.Start( pl, "catherine.version.CheckResult", { false, foundNew and LANG( pl, "Version_Notify_FoundNew" ) or LANG( pl, "Version_Notify_AlreadyNew" ) } )
+					catherine.netXync.Send( pl, "catherine.version.CheckResult", { false, foundNew and LANG( pl, "Version_Notify_FoundNew" ) or LANG( pl, "Version_Notify_AlreadyNew" ) } )
 				end
 			end, function( err )
 				catherine.util.Print( Color( 255, 0, 0 ), "Update check error! - " .. err )
 				if ( IsValid( pl ) ) then
-					netstream.Start( pl, "catherine.version.CheckResult", { false, LANG( pl, "Version_Notify_CheckError", err ) } )
+					catherine.netXync.Send( pl, "catherine.version.CheckResult", { false, LANG( pl, "Version_Notify_CheckError", err ) } )
 				end
 			end
 		)
@@ -62,12 +62,12 @@ if ( SERVER ) then
 	
 	hook.Add( "PlayerAuthed", "catherine.version.PlayerAuthed", catherine.version.PlayerAuthed )
 	
-	netstream.Hook( "catherine.version.Check", function( pl )
+	catherine.netXync.Receiver( "catherine.version.Check", function( pl )
 		if ( !pl:IsSuperAdmin( ) ) then return end
 		catherine.version.Check( pl )
 	end )
 else
-	netstream.Hook( "catherine.version.CheckResult", function( data )
+	catherine.netXync.Receiver( "catherine.version.CheckResult", function( data )
 		if ( IsValid( catherine.vgui.version ) ) then
 			catherine.vgui.version.status = data[ 1 ]
 			catherine.vgui.version:Refresh( )

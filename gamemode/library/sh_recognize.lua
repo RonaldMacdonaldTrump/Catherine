@@ -55,33 +55,33 @@ if ( SERVER ) then
 	
 	hook.Add( "PlayerDeath", "catherine.recognize.PlayerDeath", catherine.recognize.PlayerDeath )
 	
-	netstream.Hook( "catherine.recognize.DoKnow", function( pl, data )
+	catherine.netXync.Receiver( "catherine.recognize.DoKnow", function( pl, data )
 		catherine.recognize.DoKnow( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
-	netstream.Hook( "catherine.recognize.SelectMenu", function( )
+	catherine.netXync.Receiver( "catherine.recognize.SelectMenu", function( )
 		local menu = DermaMenu( )
 		
 		menu:AddOption( LANG( "Recognize_UI_Option_LookingPlayer" ), function( )
 			local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
 
 			if ( IsValid( ent ) and ent:IsPlayer( ) ) then
-				netstream.Start( "catherine.recognize.DoKnow", { 0, ent } )
+				catherine.netXync.Send( "catherine.recognize.DoKnow", { 0, ent } )
 			else
 				catherine.notify.Add( LANG( "Entity_Notify_NotPlayer" ), 5 )
 			end
 		end )
 		
 		menu:AddOption( LANG( "Recognize_UI_Option_TalkRange" ), function( )
-			netstream.Start( "catherine.recognize.DoKnow", { 0 } )
+			catherine.netXync.Send( "catherine.recognize.DoKnow", { 0 } )
 		end )
 		
 		menu:AddOption( LANG( "Recognize_UI_Option_WhisperRange" ), function( )
-			netstream.Start( "catherine.recognize.DoKnow", { 1 } )
+			catherine.netXync.Send( "catherine.recognize.DoKnow", { 1 } )
 		end )
 		
 		menu:AddOption( LANG( "Recognize_UI_Option_YellRange" ), function( )
-			netstream.Start( "catherine.recognize.DoKnow", { 2 } )
+			catherine.netXync.Send( "catherine.recognize.DoKnow", { 2 } )
 		end )
 		
 		menu:Open( )

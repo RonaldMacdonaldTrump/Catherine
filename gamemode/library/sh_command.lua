@@ -105,18 +105,18 @@ if ( SERVER ) then
 	
 	function catherine.command.PlayerSpawnedInCharacter( pl )
 		if ( !pl.CAT_command_buildHelp or pl.CAT_command_buildHelp != pl:GetCharacterID( ) ) then
-			netstream.Start( pl, "catherine.command.BuildHelp" )
+			catherine.netXync.Send( pl, "catherine.command.BuildHelp" )
 			pl.CAT_command_buildHelp = pl:GetCharacterID( )
 		end
 	end
 	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.command.PlayerSpawnedInCharacter", catherine.command.PlayerSpawnedInCharacter )
 	
-	netstream.Hook( "catherine.command.Run", function( pl, data )
+	catherine.netXync.Receiver( "catherine.command.Run", function( pl, data )
 		catherine.command.Run( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
-	netstream.Hook( "catherine.command.BuildHelp", function( data )
+	catherine.netXync.Receiver( "catherine.command.BuildHelp", function( data )
 		local html = [[<b>Commands</b><br>]]
 	
 		for k, v in pairs( catherine.command.GetAll( ) ) do
@@ -128,6 +128,6 @@ else
 	end )
 	
 	function catherine.command.Run( id, args )
-		netstream.Start( "catherine.command.Run", { id, args } )
+		catherine.netXync.Send( "catherine.command.Run", { id, args } )
 	end
 end

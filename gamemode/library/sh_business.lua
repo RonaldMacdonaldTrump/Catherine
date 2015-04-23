@@ -49,33 +49,35 @@ if ( SERVER ) then
 		end
 		
 		catherine.cash.Take( pl, cost )
-		netstream.Start( pl, "catherine.business.Result", true )
+		catherine.netXync.Send( pl, "catherine.business.Result", true )
 	end
 	
-	netstream.Hook( "catherine.business.BuyItems", function( pl, data )
+	catherine.netXync.Receiver( "catherine.business.BuyItems", function( pl, data )
 		catherine.business.BuyItems( pl, data )
 	end )
 	
-	netstream.Hook( "catherine.business.RemoveShipment", function( pl, data )
+	catherine.netXync.Receiver( "catherine.business.RemoveShipment", function( pl, data )
 		data = Entity( data )
+		
 		if ( IsValid( data ) ) then
 			data:Remove( )
 		end
 	end )
 else
-	netstream.Hook( "catherine.business.Result", function( data )
+	catherine.netXync.Receiver( "catherine.business.Result", function( data )
 		if ( data == true and IsValid( catherine.vgui.business ) ) then
 			catherine.vgui.business:Close( )
 		end
 	end )
 	
-	netstream.Hook( "catherine.business.EntityUseMenu", function( data )
+	catherine.netXync.Receiver( "catherine.business.EntityUseMenu", function( data )
 		local ent = Entity( data )
 		
 		if ( IsValid( catherine.vgui.shipment ) ) then
 			catherine.vgui.shipment:Remove( )
 			catherine.vgui.shipment = nil
 		end
+		
 		catherine.vgui.shipment = vgui.Create( "catherine.vgui.shipment" )
 		catherine.vgui.shipment:InitializeShipment( ent, ent:GetShipLists( ) )
 	end )

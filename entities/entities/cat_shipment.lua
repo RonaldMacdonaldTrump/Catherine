@@ -53,7 +53,7 @@ if ( SERVER ) then
 			return
 		end
 		
-		netstream.Start( pl, "catherine.business.EntityUseMenu", self:EntIndex( ) )
+		catherine.netXync.Send( pl, "catherine.business.EntityUseMenu", self:EntIndex( ) )
 	end
 	
 	function ENT:OnRemove( )

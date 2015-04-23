@@ -19,7 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local PLUGIN = PLUGIN
 PLUGIN.VENDOR_NOANI = PLUGIN.VENDOR_NOANI or false
 
-netstream.Hook( "catherine.plugin.vendor.RefreshRequest", function( data )
+catherine.netXync.Receiver( "catherine.plugin.vendor.RefreshRequest", function( data )
 	PLUGIN.VENDOR_NOANI = true
 	local menuID = nil
 	if ( IsValid( catherine.vgui.vendor ) ) then
@@ -36,7 +36,7 @@ netstream.Hook( "catherine.plugin.vendor.RefreshRequest", function( data )
 	PLUGIN.VENDOR_NOANI = false
 end )
 
-netstream.Hook( "catherine.plugin.vendor.VendorUse", function( data )
+catherine.netXync.Receiver( "catherine.plugin.vendor.VendorUse", function( data )
 	if ( IsValid( catherine.vgui.vendor ) ) then
 		catherine.vgui.vendor:Remove( )
 		catherine.vgui.vendor = nil

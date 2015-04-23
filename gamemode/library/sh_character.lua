@@ -207,7 +207,7 @@ if ( SERVER ) then
 		catherine.character.SetCharVar( pl, "class", nil )
 		
 		if ( prevID == nil ) then
-			netstream.Start( pl, "catherine.hud.WelcomeIntroStart" )
+			catherine.netXync.Send( pl, "catherine.hud.WelcomeIntroStart" )
 		end
 		
 		hook.Run( "PlayerSpawnedInCharacter", pl )
@@ -242,7 +242,7 @@ if ( SERVER ) then
 					local success, reason = v.checkValid( var )
 					
 					if ( success == false ) then
-						netstream.Start( pl, "catherine.character.CreateResult", reason ) // need language;
+						catherine.netXync.Send( pl, "catherine.character.CreateResult", reason ) // need language;
 						return
 					end
 				end
@@ -253,7 +253,7 @@ if ( SERVER ) then
 
 		catherine.database.InsertDatas( "catherine_characters", charVars, function( )
 			catherine.util.Print( Color( 0, 255, 0 ), "Character created! [" .. pl:SteamName( ) .. "]" )
-			netstream.Start( pl, "catherine.character.CreateResult", true )
+			catherine.netXync.Send( pl, "catherine.character.CreateResult", true )
 			catherine.character.SyncCharacterList( pl )
 		end )
 	end
@@ -262,22 +262,22 @@ if ( SERVER ) then
 		local success, reason = catherine.character.New( pl, id )
 		
 		if ( success ) then
-			netstream.Start( pl, "catherine.character.UseResult", true )
+			catherine.netXync.Send( pl, "catherine.character.UseResult", true )
 			catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [" .. pl:SteamName( ) .. "] " .. ( prevID or "None" ) .. " -> " .. id )
 		else
-			netstream.Start( pl, "catherine.character.UseResult", reason )
+			catherine.netXync.Send( pl, "catherine.character.UseResult", reason )
 		end
 	end
 	
 	function catherine.character.Delete( pl, id )
 		if ( pl:GetCharacterID( ) == id ) then
-			netstream.Start( pl, "catherine.character.DeleteResult", "^Character_Notify_CantDeleteUsing" )
+			catherine.netXync.Send( pl, "catherine.character.DeleteResult", "^Character_Notify_CantDeleteUsing" )
 			return
 		end
 		
 		catherine.database.Query( "DELETE FROM `catherine_characters` WHERE _steamID = '" .. pl:SteamID( ) .. "' AND _id = '" .. id .. "'", function( data )
 			catherine.character.SyncCharacterList( pl, function( )
-				netstream.Start( pl, "catherine.character.DeleteResult", true )
+				catherine.netXync.Send( pl, "catherine.character.DeleteResult", true )
 			end )
 		end )
 	end
@@ -293,7 +293,7 @@ if ( SERVER ) then
 			local target = nil
 			if ( globalVar and globalVar.doLocal ) then target = pl end
 			
-			netstream.Start( target, "catherine.character.SetVar", { steamID, key, value } )
+			catherine.netXync.Send( target, "catherine.character.SetVar", { steamID, key, value } )
 		end
 		
 		hook.Run( "CharacterVarChanged", pl, key, value )
@@ -306,7 +306,7 @@ if ( SERVER ) then
 		catherine.character.networkRegistry[ steamID ][ "_charVar" ][ key ] = value
 		
 		if ( !noSync ) then
-			netstream.Start( pl, "catherine.character.SetCharVar", { steamID, key, value } )
+			catherine.netXync.Send( pl, "catherine.character.SetCharVar", { steamID, key, value } )
 		end
 		
 		hook.Run( "CharacterCharVarChanged", pl, key, value )
@@ -321,7 +321,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.character.OpenMenu( pl )
-		netstream.Start( pl, "catherine.character.OpenMenu" )
+		catherine.netXync.Send( pl, "catherine.character.OpenMenu" )
 	end
 	
 	function catherine.character.SyncCharacterList( pl, func )
@@ -330,7 +330,7 @@ if ( SERVER ) then
 		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data ) then
 				catherine.character.buffers[ steamID ] = { }
-				netstream.Start( pl, "catherine.character.SyncCharacterList", { } )
+				catherine.netXync.Send( pl, "catherine.character.SyncCharacterList", { } )
 				
 				if ( func ) then
 					func( )
@@ -347,7 +347,7 @@ if ( SERVER ) then
 			end
 			
 			catherine.character.buffers[ steamID ] = data
-			netstream.Start( pl, "catherine.character.SyncCharacterList", data )
+			catherine.netXync.Send( pl, "catherine.character.SyncCharacterList", data )
 			
 			if ( func ) then
 				func( )
@@ -395,11 +395,11 @@ if ( SERVER ) then
 		end
 		
 		hook.Run( "CreateNetworkRegistry", pl, catherine.character.networkRegistry[ steamID ] )
-		netstream.Start( nil, "catherine.character.CreateNetworkRegistry", { steamID, catherine.character.networkRegistry[ steamID ] } )
+		catherine.netXync.Send( nil, "catherine.character.CreateNetworkRegistry", { steamID, catherine.character.networkRegistry[ steamID ] } )
 	end
 
 	function catherine.character.SyncAllNetworkRegistry( pl )
-		netstream.Start( pl, "catherine.character.SyncAllNetworkRegistry", catherine.character.networkRegistry )
+		catherine.netXync.Send( pl, "catherine.character.SyncAllNetworkRegistry", catherine.character.networkRegistry )
 	end
 
 	function catherine.character.GetNetworkRegistry( pl )
@@ -410,7 +410,7 @@ if ( SERVER ) then
 		local steamID = pl:SteamID( )
 		
 		catherine.character.networkRegistry[ steamID ] = nil
-		netstream.Start( nil, "catherine.character.DeleteNetworkRegistry", steamID )
+		catherine.netXync.Send( nil, "catherine.character.DeleteNetworkRegistry", steamID )
 	end
 
 	function catherine.character.Save( pl )
@@ -472,21 +472,21 @@ if ( SERVER ) then
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected", catherine.character.PlayerDisconnected )
 	hook.Add( "DataSave", "catherine.character.DataSave", catherine.character.DataSave )
 
-	netstream.Hook( "catherine.character.Create", function( pl, data )
+	catherine.netXync.Receiver( "catherine.character.Create", function( pl, data )
 		catherine.character.Create( pl, data )
 	end )
 	
-	netstream.Hook( "catherine.character.Use", function( pl, data )
+	catherine.netXync.Receiver( "catherine.character.Use", function( pl, data )
 		catherine.character.Use( pl, data )
 	end )
 	
-	netstream.Hook( "catherine.character.Delete", function( pl, data )
+	catherine.netXync.Receiver( "catherine.character.Delete", function( pl, data )
 		catherine.character.Delete( pl, data )
 	end )
 else
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
 	
-	netstream.Hook( "catherine.character.CreateResult", function( data )
+	catherine.netXync.Receiver( "catherine.character.CreateResult", function( data )
 		if ( data == true ) then
 			if ( IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.createData.currentStage ) ) then
 				catherine.vgui.character.createData.currentStage:AlphaTo( 0, 0.2, 0, function( _, pnl )
@@ -500,7 +500,7 @@ else
 		end
 	end )
 	
-	netstream.Hook( "catherine.character.UseResult", function( data )
+	catherine.netXync.Receiver( "catherine.character.UseResult", function( data )
 		if ( data == true ) then
 			if ( IsValid( catherine.vgui.character ) ) then
 				catherine.vgui.character:Close( )
@@ -510,7 +510,7 @@ else
 		end
 	end )
 	
-	netstream.Hook( "catherine.character.DeleteResult", function( data )
+	catherine.netXync.Receiver( "catherine.character.DeleteResult", function( data )
 		if ( data == true ) then
 			if ( IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.CharacterPanel ) ) then
 				catherine.vgui.character.CharacterPanel:Remove( )
@@ -521,7 +521,7 @@ else
 		end
 	end )
 	
-	netstream.Hook( "catherine.character.OpenMenu", function( data )
+	catherine.netXync.Receiver( "catherine.character.OpenMenu", function( data )
 		if ( IsValid( catherine.vgui.character ) ) then
 			catherine.vgui.character:Close( )
 		end
@@ -529,7 +529,7 @@ else
 		catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
 	end )
 	
-	netstream.Hook( "catherine.character.CreateNetworkRegistry", function( data )
+	catherine.netXync.Receiver( "catherine.character.CreateNetworkRegistry", function( data )
 		local steamID = data[ 1 ]
 		local registry = data[ 2 ]
 		
@@ -537,15 +537,15 @@ else
 		hook.Run( "CreateNetworkRegistry", catherine.util.FindPlayerByStuff( "SteamID", steamID ), registry )
 	end )
 
-	netstream.Hook( "catherine.character.DeleteNetworkRegistry", function( data )
+	catherine.netXync.Receiver( "catherine.character.DeleteNetworkRegistry", function( data )
 		catherine.character.networkRegistry[ data ] = nil
 	end )
 
-	netstream.Hook( "catherine.character.SyncAllNetworkRegistry", function( data )
+	catherine.netXync.Receiver( "catherine.character.SyncAllNetworkRegistry", function( data )
 		catherine.character.networkRegistry = data
 	end )
 	
-	netstream.Hook( "catherine.character.SetVar", function( data )
+	catherine.netXync.Receiver( "catherine.character.SetVar", function( data )
 		local steamID = data[ 1 ]
 		local key = data[ 2 ]
 		local value = data[ 3 ]
@@ -556,7 +556,7 @@ else
 		hook.Run( "CharacterVarChanged", catherine.util.FindPlayerByStuff( "SteamID", steamID ), key, value )
 	end )
 
-	netstream.Hook( "catherine.character.SetCharVar", function( data )
+	catherine.netXync.Receiver( "catherine.character.SetCharVar", function( data )
 		local steamID = data[ 1 ]
 		local key = data[ 2 ]
 		local value = data[ 3 ]
@@ -567,7 +567,7 @@ else
 		hook.Run( "CharacterCharVarChanged", catherine.util.FindPlayerByStuff( "SteamID", steamID ), key, value )
 	end )
 
-	netstream.Hook( "catherine.character.SyncCharacterList", function( data )
+	catherine.netXync.Receiver( "catherine.character.SyncCharacterList", function( data )
 		catherine.character.localCharacters = data
 	end )
 end

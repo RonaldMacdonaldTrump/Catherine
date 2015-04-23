@@ -204,11 +204,11 @@ if ( SERVER ) then
 		return ent
 	end
 
-	netstream.Hook( "catherine.item.Work", function( pl, data )
+	catherine.netXync.Receiver( "catherine.item.Work", function( pl, data )
 		catherine.item.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ] )
 	end )
 	
-	netstream.Hook( "catherine.item.Give", function( pl, data )
+	catherine.netXync.Receiver( "catherine.item.Give", function( pl, data )
 		catherine.item.Give( pl, data )
 	end )
 else
@@ -220,7 +220,7 @@ else
 			if ( !v.canShowIsMenu or ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) ) then continue end
 			
 			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
-				netstream.Start( "catherine.item.Work", { uniqueID, k, true } )
+				catherine.netXync.Send( "catherine.item.Work", { uniqueID, k, true } )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
 		
@@ -238,7 +238,7 @@ else
 			if ( !v.canShowIsWorld or ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) ) then continue end
 
 			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
-				netstream.Start( "catherine.item.Work", { uniqueID, k, ent } )
+				catherine.netXync.Send( "catherine.item.Work", { uniqueID, k, ent } )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
 		
@@ -250,7 +250,7 @@ else
 		return catherine.util.StuffLanguage( itemTable.name ) .. "\n" .. catherine.util.StuffLanguage( itemTable.desc )
 	end
 	
-	netstream.Hook( "catherine.item.EntityUseMenu", function( data )
+	catherine.netXync.Receiver( "catherine.item.EntityUseMenu", function( data )
 		catherine.item.OpenEntityUseMenu( data )
 	end )
 end

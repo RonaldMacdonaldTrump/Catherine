@@ -162,19 +162,19 @@ if ( SERVER ) then
 	catherine.util.Receiver = catherine.util.Receiver or { String = { }, Query = { } }
 	
 	function catherine.util.Notify( pl, message, time )
-		netstream.Start( pl, "catherine.util.Notify", { message, time } )
+		catherine.netXync.Send( pl, "catherine.util.Notify", { message, time } )
 	end
 	
 	function catherine.util.NotifyAll( message, time )
-		netstream.Start( player.GetAllByLoaded( ), "catherine.util.Notify", { message, time } )
+		catherine.netXync.Send( player.GetAllByLoaded( ), "catherine.util.Notify", { message, time } )
 	end
 	
 	function catherine.util.NotifyAllLang( key, ... )
-		netstream.Start( player.GetAllByLoaded( ), "catherine.util.NotifyAllLang", { key, { ... } } )
+		catherine.netXync.Send( player.GetAllByLoaded( ), "catherine.util.NotifyAllLang", { key, { ... } } )
 	end
 	
 	function catherine.util.NotifyLang( pl, key, ... )
-		netstream.Start( pl, "catherine.util.Notify", { LANG( pl, key, ... ) } )
+		catherine.netXync.Send( pl, "catherine.util.Notify", { LANG( pl, key, ... ) } )
 	end
 	
 	function catherine.util.StuffLanguage( pl, key, ... )
@@ -191,15 +191,15 @@ if ( SERVER ) then
 			end )
 		end
 		
-		netstream.Start( pl, "catherine.util.ProgressBar", { message, time } )
+		catherine.netXync.Send( pl, "catherine.util.ProgressBar", { message, time } )
 	end
 	
 	function catherine.util.TopNotify( pl, message )
-		netstream.Start( pl, "catherine.util.TopNotify", message )
+		catherine.netXync.Send( pl, "catherine.util.TopNotify", message )
 	end
 
 	function catherine.util.PlaySound( pl, dir )
-		netstream.Start( pl, "catherine.util.PlaySound", dir )
+		catherine.netXync.Send( pl, "catherine.util.PlaySound", dir )
 	end
 
 	function catherine.util.AddResourceInFolder( dir )
@@ -221,7 +221,7 @@ if ( SERVER ) then
 		catherine.util.Receiver.String[ steamID ] = catherine.util.Receiver.String[ steamID ] or { }
 		catherine.util.Receiver.String[ steamID ][ id ] = func
 		
-		netstream.Start( pl, "catherine.util.StringReceiver", { id, msg, defV or "" } )
+		catherine.netXync.Send( pl, "catherine.util.StringReceiver", { id, msg, defV or "" } )
 	end
 	
 	function catherine.util.QueryReceiver( pl, id, msg, func )
@@ -230,14 +230,14 @@ if ( SERVER ) then
 		catherine.util.Receiver.Query[ steamID ] = catherine.util.Receiver.Query[ steamID ] or { }
 		catherine.util.Receiver.Query[ steamID ][ id ] = func
 		
-		netstream.Start( pl, "catherine.util.QueryReceiver", { id, msg } )
+		catherine.netXync.Send( pl, "catherine.util.QueryReceiver", { id, msg } )
 	end
 	
 	function catherine.util.ScreenColorEffect( pl, col, time, fadeTime )
-		netstream.Start( pl, "catherine.util.ScreenColorEffect", { col or Color( 255, 255, 255 ), time, fadeTime } )
+		catherine.netXync.Send( pl, "catherine.util.ScreenColorEffect", { col or Color( 255, 255, 255 ), time, fadeTime } )
 	end
 
-	netstream.Hook( "catherine.util.StringReceiver_Receive", function( pl, data )
+	catherine.netXync.Receiver( "catherine.util.StringReceiver_Receive", function( pl, data )
 		local id = data[ 1 ]
 		local steamID = pl:SteamID( )
 		local rec = catherine.util.Receiver.String
@@ -248,7 +248,7 @@ if ( SERVER ) then
 		catherine.util.Receiver.String[ steamID ][ id ] = nil
 	end )
 	
-	netstream.Hook( "catherine.util.QueryReceiver_Receive", function( pl, data )
+	catherine.netXync.Receiver( "catherine.util.QueryReceiver_Receive", function( pl, data )
 		local id = data[ 1 ]
 		local steamID = pl:SteamID( )
 		local rec = catherine.util.Receiver.Query
@@ -264,23 +264,23 @@ else
 	CAT_UTIL_BUTTOMSOUND_2 = 2
 	CAT_UTIL_BUTTOMSOUND_3 = 3
 	
-	netstream.Hook( "catherine.util.StringReceiver", function( data )
+	catherine.netXync.Receiver( "catherine.util.StringReceiver", function( data )
 		Derma_StringRequest( catherine.util.StuffLanguage( data[ 2 ] ), LANG( "Basic_UI_StringRequest" ), data[ 3 ] or "", function( val )
-				netstream.Start( "catherine.util.StringReceiver_Receive", { data[ 1 ], val } )
+				catherine.netXync.Send( "catherine.util.StringReceiver_Receive", { data[ 1 ], val } )
 			end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
 		)
 	end )
 	
-	netstream.Hook( "catherine.util.QueryReceiver", function( data )
+	catherine.netXync.Receiver( "catherine.util.QueryReceiver", function( data )
 		Derma_Query( catherine.util.StuffLanguage( data[ 2 ] ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_OK" ), function( )
-				netstream.Start( "catherine.util.QueryReceiver_Receive", { data[ 1 ], true } )
+				catherine.netXync.Send( "catherine.util.QueryReceiver_Receive", { data[ 1 ], true } )
 			end, LANG( "Basic_UI_NO" ), function( ) 
-				netstream.Start( "catherine.util.QueryReceiver_Receive", { data[ 1 ], false } )
+				catherine.netXync.Send( "catherine.util.QueryReceiver_Receive", { data[ 1 ], false } )
 			end
 		)
 	end )
 	
-	netstream.Hook( "catherine.util.ScreenColorEffect", function( data )
+	catherine.netXync.Receiver( "catherine.util.ScreenColorEffect", function( data )
 		local col = data[ 1 ]
 		local time = CurTime( ) + ( data[ 2 ] or 0.1 )
 		local fadeTime = data[ 3 ] or 0.03
@@ -298,23 +298,23 @@ else
 		end )
 	end )
 	
-	netstream.Hook( "catherine.util.PlaySound", function( data )
+	catherine.netXync.Receiver( "catherine.util.PlaySound", function( data )
 		surface.PlaySound( data )
 	end )
 
-	netstream.Hook( "catherine.util.Notify", function( data )
+	catherine.netXync.Receiver( "catherine.util.Notify", function( data )
 		catherine.notify.Add( data[ 1 ], data[ 2 ] )
 	end )
 	
-	netstream.Hook( "catherine.util.NotifyAllLang", function( data )
+	catherine.netXync.Receiver( "catherine.util.NotifyAllLang", function( data )
 		catherine.notify.Add( LANG( data[ 1 ], unpack( data[ 2 ] ) ) )
 	end )
 
-	netstream.Hook( "catherine.util.ProgressBar", function( data )
+	catherine.netXync.Receiver( "catherine.util.ProgressBar", function( data )
 		catherine.hud.ProgressBarAdd( data[ 1 ], data[ 2 ] )
 	end )
 	
-	netstream.Hook( "catherine.util.TopNotify", function( data )
+	catherine.netXync.Receiver( "catherine.util.TopNotify", function( data )
 		if ( data == false ) then
 			catherine.hud.TopNotify = nil
 			return

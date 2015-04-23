@@ -79,7 +79,7 @@ function PANEL:BuildClasses( )
 		button:SetText( "" )
 		button:SetDrawBackground( false )
 		button.DoClick = function( )
-			netstream.Start( "catherine.class.Set", v.uniqueID )
+			catherine.netXync.Send( "catherine.class.Set", v.uniqueID )
 		end
 		
 		local spawnIcon = vgui.Create( "SpawnIcon", panel )

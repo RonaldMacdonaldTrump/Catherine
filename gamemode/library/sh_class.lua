@@ -140,7 +140,7 @@ if ( SERVER ) then
 		end
 	end
 
-	netstream.Hook( "catherine.class.Set", function( pl, data )
+	catherine.netXync.Receiver( "catherine.class.Set", function( pl, data )
 		catherine.class.Set( pl, data )
 	end )
 else

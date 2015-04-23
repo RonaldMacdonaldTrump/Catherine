@@ -21,7 +21,7 @@ function GM:ShowHelp( pl )
 	local status = hook.Run( "CanLookF1", pl )
 	if ( !status ) then return end
 	
-	netstream.Start( pl, "catherine.ShowHelp" )
+	catherine.netXync.Send( pl, "catherine.ShowHelp" )
 end
 
 function GM:ShowTeam( pl )
@@ -33,7 +33,7 @@ function GM:ShowTeam( pl )
 	
 	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
 		if ( catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_MASTER ) ) then
-			netstream.Start( pl, "catherine.door.DoorMenu", ent:EntIndex( ) )
+			catherine.netXync.Send( pl, "catherine.door.DoorMenu", ent:EntIndex( ) )
 		else
 			catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )
 				if ( bool ) then
@@ -42,7 +42,7 @@ function GM:ShowTeam( pl )
 			end )
 		end
 	else
-		netstream.Start( pl, "catherine.recognize.SelectMenu" )
+		catherine.netXync.Send( pl, "catherine.recognize.SelectMenu" )
 	end
 end
 
@@ -175,7 +175,7 @@ function GM:KeyPress( pl, key )
 
 			return hook.Run( "PlayerUseDoor", pl, ent )
 		elseif ( IsValid( ent ) and ent.IsCustomUse ) then
-			netstream.Start( pl, "catherine.entity.CustomUseMenu", ent:EntIndex( ) )
+			catherine.netXync.Send( pl, "catherine.entity.CustomUseMenu", ent:EntIndex( ) )
 		end
 	end
 end
@@ -329,7 +329,7 @@ function GM:ShutDown( )
 	hook.Run( "SchemaDataSave" )
 end
 
-netstream.Hook( "catherine.IsTyping", function( pl, data )
+catherine.netXync.Receiver( "catherine.IsTyping", function( pl, data )
 	pl:SetNetVar( "isTyping", data )
 	
 	hook.Run( "ChatTypingChanged", pl, data )

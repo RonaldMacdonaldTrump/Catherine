@@ -65,7 +65,7 @@ function PANEL:Init( )
 			if ( catherine.cash.Get( self.player ) >= self.shoppingcartInfo ) then
 				if ( self.player:GetPos( ):Distance( self.player:GetEyeTraceNoCursor( ).HitPos ) <= 150 ) then
 					Derma_Query( LANG( "Business_Notify_BuyQ" ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_YES" ), function( )
-						netstream.Start( "catherine.business.BuyItems", self.shoppingcart )
+						catherine.netXync.Send( "catherine.business.BuyItems", self.shoppingcart )
 					end, LANG( "Basic_UI_NO" ), function( ) end )
 				else
 					catherine.notify.Add( LANG( "Inventory_Notify_CantDrop01" ), 5 )
@@ -311,10 +311,10 @@ function PANEL:BuildShipment( )
 				self.shipments[ k ] = nil
 				self.Lists:RemoveItem( panel )
 			end
-			netstream.Start( "catherine.item.Give", v.uniqueID )
+			catherine.netXync.Send( "catherine.item.Give", v.uniqueID )
 			
 			if ( table.Count( self.shipments ) == 0 and IsValid( self.ent ) ) then
-				netstream.Start( "catherine.business.RemoveShipment", self.ent:EntIndex( ) )
+				catherine.netXync.Send( "catherine.business.RemoveShipment", self.ent:EntIndex( ) )
 			end
 		end
 		takeItem.PaintBackground = function( pnl, w, h )

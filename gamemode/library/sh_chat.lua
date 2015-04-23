@@ -213,17 +213,17 @@ if ( SERVER ) then
 		local class = classTable.class
 		
 		if ( classTable.global and !target ) then
-			netstream.Start( nil, "catherine.chat.Post", { pl, class, text, { ... } } )
+			catherine.netXync.Send( nil, "catherine.chat.Post", { pl, class, text, { ... } } )
 		else
 			if ( type( target ) == "table" and #target > 0 ) then
 				for k, v in pairs( target ) do
-					netstream.Start( v, "catherine.chat.Post", { pl, class, text, { ... } } )
+					catherine.netXync.Send( v, "catherine.chat.Post", { pl, class, text, { ... } } )
 				end
 			else
 				local listener = catherine.chat.GetListener( pl, class )
 				
 				for k, v in pairs( listener ) do
-					netstream.Start( v, "catherine.chat.Post", { pl, class, text, { ... } } )
+					catherine.netXync.Send( v, "catherine.chat.Post", { pl, class, text, { ... } } )
 				end
 			end
 		end
@@ -319,7 +319,7 @@ if ( SERVER ) then
 		hook.Run( "ChatSended", adjustInfo )
 	end
 	
-	netstream.Hook( "catherine.chat.Run", function( pl, data )
+	catherine.netXync.Receiver( "catherine.chat.Run", function( pl, data )
 		hook.Run( "PlayerSay", pl, data, true )
 	end )
 else
@@ -332,7 +332,7 @@ else
 	local CHATBox_w, CHATBox_h = ScrW( ) * 0.5, ScrH( ) * 0.3
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
 	
-	netstream.Hook( "catherine.chat.Post", function( data )
+	catherine.netXync.Receiver( "catherine.chat.Post", function( data )
 		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		local speaker, class, text, ex = data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ]
 		local class = catherine.chat.FindByClass( class )
@@ -424,7 +424,7 @@ else
 			
 			if ( text != "" ) then
 				text = string.utf8sub( text, 1 )
-				netstream.Start( "catherine.chat.Run", text )
+				catherine.netXync.Send( "catherine.chat.Run", text )
 				catherine.chat.history[ #catherine.chat.history + 1 ] = text
 				
 				if ( #catherine.chat.history > 20 ) then

@@ -190,7 +190,7 @@ function PANEL:Init( )
 	self.close.Click = function( )
 		if ( self.closeing ) then return end
 		self:Close( )
-		netstream.Start( "catherine.plugin.vendor.VendorClose" )
+		catherine.netXync.Send( "catherine.plugin.vendor.VendorClose" )
 	end
 end
 
@@ -245,7 +245,7 @@ function PANEL:Refresh_List( id )
 						Derma_Message( "No stock!", "Sorry!", "OK" )
 						return
 					end
-					netstream.Start( "catherine.plugin.vendor.VendorWork", {
+					catherine.netXync.Send( "catherine.plugin.vendor.VendorWork", {
 						self.ent,
 						CAT_VENDOR_ACTION_SELL,
 						{
@@ -318,7 +318,7 @@ function PANEL:Refresh_List( id )
 						Derma_Message( "No stock!", "Sorry!", "OK" )
 						return
 					end
-					netstream.Start( "catherine.plugin.vendor.VendorWork", {
+					catherine.netXync.Send( "catherine.plugin.vendor.VendorWork", {
 						self.ent,
 						CAT_VENDOR_ACTION_BUY,
 						{
@@ -497,7 +497,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	self.itemInformationPanel.save:SetStrColor( Color( 50, 50, 50, 255 ) )
 	self.itemInformationPanel.save:SetGradientColor( Color( 50, 50, 50, 255 ) )
 	self.itemInformationPanel.save.Click = function( )
-		netstream.Start( "catherine.plugin.vendor.VendorWork", {
+		catherine.netXync.Send( "catherine.plugin.vendor.VendorWork", {
 			self.ent,
 			CAT_VENDOR_ACTION_ITEM_CHANGE,
 			{
@@ -519,7 +519,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	self.itemInformationPanel.dis:SetStrColor( Color( 255, 50, 50, 255 ) )
 	self.itemInformationPanel.dis:SetGradientColor( Color( 255, 50, 50, 255 ) )
 	self.itemInformationPanel.dis.Click = function( )
-		netstream.Start( "catherine.plugin.vendor.VendorWork", {
+		catherine.netXync.Send( "catherine.plugin.vendor.VendorWork", {
 			self.ent,
 			CAT_VENDOR_ACTION_ITEM_UNCHANGE,
 			newData.uniqueID
@@ -549,7 +549,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	self.itemInformationPanel.typeChange.Click = function( )
 		local menu = DermaMenu( )
 		menu:AddOption( "Only Buy", function( )
-			netstream.Start( "catherine.plugin.vendor.VendorWork", {
+			catherine.netXync.Send( "catherine.plugin.vendor.VendorWork", {
 				self.ent,
 				CAT_VENDOR_ACTION_ITEM_CHANGE,
 				{
@@ -564,7 +564,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 		end )
 		
 		menu:AddOption( "Only Sell", function( )
-			netstream.Start( "catherine.plugin.vendor.VendorWork", {
+			catherine.netXync.Send( "catherine.plugin.vendor.VendorWork", {
 				self.ent,
 				CAT_VENDOR_ACTION_ITEM_CHANGE,
 				{
@@ -579,7 +579,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 		end )
 		
 		menu:AddOption( "Buy and Sell", function( )
-			netstream.Start( "catherine.plugin.vendor.VendorWork", {
+			catherine.netXync.Send( "catherine.plugin.vendor.VendorWork", {
 				self.ent,
 				CAT_VENDOR_ACTION_ITEM_CHANGE,
 				{

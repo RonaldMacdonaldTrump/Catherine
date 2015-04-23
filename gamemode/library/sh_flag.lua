@@ -95,7 +95,7 @@ if ( SERVER ) then
 		end
 		
 		catherine.character.SetCharVar( pl, "flags", result )
-		netstream.Start( pl, "catherine.flag.BuildHelp" )
+		catherine.netXync.Send( pl, "catherine.flag.BuildHelp" )
 		return true
 	end
 	
@@ -120,7 +120,7 @@ if ( SERVER ) then
 		end
 		
 		catherine.character.SetCharVar( pl, "flags", result )
-		netstream.Start( pl, "catherine.flag.BuildHelp" )
+		catherine.netXync.Send( pl, "catherine.flag.BuildHelp" )
 		return true
 	end
 	
@@ -141,14 +141,14 @@ if ( SERVER ) then
 		end
 
 		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl:GetCharacterID( ) ) then
-			netstream.Start( pl, "catherine.flag.BuildHelp" )
+			catherine.netXync.Send( pl, "catherine.flag.BuildHelp" )
 			pl.CAT_flag_buildHelp = pl:GetCharacterID( )
 		end
 	end
 	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.flag.PlayerSpawnedInCharacter", catherine.flag.PlayerSpawnedInCharacter )
 else
-	netstream.Hook( "catherine.flag.BuildHelp", function( data )
+	catherine.netXync.Receiver( "catherine.flag.BuildHelp", function( data )
 		local html = [[<b>Flags</b><br>]]
 		
 		for k, v in pairs( catherine.flag.GetAll( ) ) do

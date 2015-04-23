@@ -18,7 +18,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.netXync = catherine.netXync or { buffer = { } }
 catherine.netXync.usingJSON = false
-local type, pcall, MsgC, pairs, player = type, pcall, MsgC, pairs, player
+local type, pcall, MsgC, pairs, player, table, unpack = type, pcall, MsgC, pairs, player, table, unpack
 
 if ( !pon ) then
 	catherine.netXync.usingJSON = true
@@ -38,7 +38,7 @@ function catherine.netXync.Decode( val )
 end
 
 if ( SERVER ) then
-	util.AddNetworkString( "Catherine.netXync.Core" )
+	util.AddNetworkString( "Catherine.netXync.Worker" )
 	
 	function catherine.netXync.Send( receivers, uniqueID, ... )
 		if ( type( receivers ) != "table" ) then
@@ -48,7 +48,7 @@ if ( SERVER ) then
 		local dataTable = { ... }
 		
 		if ( table.Count( dataTable ) == 0 ) then
-			net.Start( "Catherine.netXync.Core" )
+			net.Start( "Catherine.netXync.Worker" )
 				net.WriteString( uniqueID )
 				net.WriteBit( false )
 			net.Send( receivers )
@@ -58,7 +58,7 @@ if ( SERVER ) then
 			
 			if ( !encode or len <= 0 ) then return end
 			
-			net.Start( "Catherine.netXync.Core" )
+			net.Start( "Catherine.netXync.Worker" )
 				net.WriteString( uniqueID )
 				net.WriteBit( true )
 				net.WriteUInt( len, 32 )
@@ -67,7 +67,7 @@ if ( SERVER ) then
 		end
 	end
 	
-	net.Receive( "Catherine.netXync.Core", function( len, pl )
+	net.Receive( "Catherine.netXync.Worker", function( len, pl )
 		local NetXync_UniqueID = net.ReadString( )
 		local NetXync_Status = net.ReadBit( )
 
@@ -97,7 +97,7 @@ if ( SERVER ) then
 		end
 	end )
 else
-	net.Receive( "Catherine.netXync.Core", function( len )
+	net.Receive( "Catherine.netXync.Worker", function( len )
 		local NetXync_UniqueID = net.ReadString( )
 		local NetXync_Status = net.ReadBit( )
 		
@@ -131,7 +131,7 @@ else
 		local dataTable = { ... }
 		
 		if ( table.Count( dataTable ) == 0 ) then
-			net.Start( "Catherine.netXync.Core" )
+			net.Start( "Catherine.netXync.Worker" )
 				net.WriteString( uniqueID )
 				net.WriteBit( false )
 			net.SendToServer( )
@@ -141,7 +141,7 @@ else
 			
 			if ( !encode or len <= 0 ) then return end
 			
-			net.Start( "Catherine.netXync.Core" )
+			net.Start( "Catherine.netXync.Worker" )
 				net.WriteString( uniqueID )
 				net.WriteBit( true )
 				net.WriteUInt( len, 32 )

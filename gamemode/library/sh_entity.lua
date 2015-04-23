@@ -63,18 +63,18 @@ if ( SERVER ) then
 
 	hook.Add( "EntityRemoved", "catherine.entity.EntityRemoved", catherine.entity.EntityRemoved )
 
-	netstream.Hook( "catherine.entity.CustomUseMenu_Receive", function( pl, data )
+	catherine.netXync.Receiver( "catherine.entity.CustomUseMenu_Receive", function( pl, data )
 		catherine.entity.RunUseMenu( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
-	netstream.Hook( "catherine.entity.CustomUseMenu", function( data )
+	catherine.netXync.Receiver( "catherine.entity.CustomUseMenu", function( data )
 		local index = data
 		local ent = Entity( index )
 		local menu = DermaMenu( )
 		
 		for k, v in pairs( IsValid( ent ) and ent:GetNetVar( "customUseClient" ) or { } ) do
 			menu:AddOption( catherine.util.StuffLanguage( v.text ), function( )
-				netstream.Start( "catherine.entity.CustomUseMenu_Receive", { index, v.uniqueID } )
+				catherine.netXync.Send( "catherine.entity.CustomUseMenu_Receive", { index, v.uniqueID } )
 			end )
 		end
 		
@@ -82,11 +82,11 @@ else
 		menu:Center( )
 	end )
 	
-	netstream.Hook( "catherine.entity.RegisterUseMenu", function( data )
+	catherine.netXync.Receiver( "catherine.entity.RegisterUseMenu", function( data )
 		catherine.entity.CustomUse[ data[ 1 ] ] = data[ 2 ]
 	end )
 	
-	netstream.Hook( "catherine.entity.ClearCustomUse", function( data )
+	catherine.netXync.Receiver( "catherine.entity.ClearCustomUse", function( data )
 		catherine.entity.CustomUse[ data ] = nil
 	end )
 end

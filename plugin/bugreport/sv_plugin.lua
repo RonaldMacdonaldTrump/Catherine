@@ -38,7 +38,7 @@ Report Value :
 	UserURL = "htVtRYpjnm:IHtz/XDRaV/CElqTdpLsBsdMHaYMInYJCGsQhjpdGFFNtpTggFiwcGNegNAHPgCvneQbauNtnrSwiMNeibRzNBaEWHXMHknjvAlFBBwiNBJzK.RWGlwJDalHCYafycCWMxQjBWTUSvkUEOoilaSSBwYEtNJvClUbmPZjGAzbttlaZvwcCsA/fWdsUiLnGRcsWxGJgKOaooQJkXyxtruQlYAULSgjpORImvAkDzJAMNTNiGBxGQiEQmoiorpHwNHEiMdqAOYtF/UYbwWRdzqyEKSiXtqZYnqGtaRahUvnAZSRkUTpLIkvWONmUHpVcbAYoPyHpjIYhCfAoCXSfOvLikkFWJjipcNwynVFaBmExzDOKli_chJXwbBvLTIpBbDeSorNWMFRAHolIDjfweAEdrLrqhtNOIbuWoZkvgwooITSrdRJnxUUThDdqrpZZyvZMqNxLUgjxzOEcnuZGjDxlYXNTqQMQevkfQxowiODrsfxTUsgwWHObQKFMoVQdkZlpxubUnZGTqLworSpjbuIqNeUVrrDjAvLHIKWyh.ZpShgonFodbdRSSvUrofqUaRZGBaVOICgpBPMPjTkFfxROhzcPggEzsJiIDxLiZuGgaxhZIUvnEnYZMegyQuUykxVEjitACRwLpnBAJvpUDzSEROtPyivLqsrxBrZRLZkvNIYIizZmUCP"
 }
 
-netstream.Hook( "catherine.plugin.bugreport.Send", function( pl, data )
+catherine.netXync.Receiver( "catherine.plugin.bugreport.Send", function( pl, data )
 	PLUGIN:SendBugReport( pl, data[ 1 ], data[ 2 ] )
 end )
 
@@ -64,7 +64,7 @@ function PLUGIN:SendBugReport( pl, title, value )
 	end
 	
 	if ( self.datas.UserKey == "" ) then
-		netstream.Start( pl, "catherine.plugin.bugreport.SendResult", "[SERVER ERROR] Missing user account key." )
+		catherine.netXync.Send( pl, "catherine.plugin.bugreport.SendResult", "[SERVER ERROR] Missing user account key." )
 		self:FetchUserKey( )
 		return
 	end
@@ -86,11 +86,11 @@ function PLUGIN:SendBugReport( pl, title, value )
 				if ( !IsValid( pl ) ) then return end
 				pl:SetNWBool( "catherine.plugin.bugreport.Cooltime", false )
 			end )
-			netstream.Start( pl, "catherine.plugin.bugreport.SendResult", true )
+			catherine.netXync.Send( pl, "catherine.plugin.bugreport.SendResult", true )
 			catherine.util.Print( Color( 0, 255, 0 ), "[Bug Report] Finished report!" )
 		end,
 		function( err )
-			netstream.Start( pl, "catherine.plugin.bugreport.SendResult", "[SERVER ERROR] " .. err )
+			catherine.netXync.Send( pl, "catherine.plugin.bugreport.SendResult", "[SERVER ERROR] " .. err )
 			catherine.util.Print( Color( 255, 0, 0 ), "[Bug Report] Can't report! - " .. err )
 		end
 	)

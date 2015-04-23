@@ -33,12 +33,12 @@ if ( SERVER ) then
 
 			timer.Simple( 2, function( )
 				if ( !IsValid( pl ) ) then return end
-				netstream.Start( pl, "catherine.loadingFinished" )
+				catherine.netXync.Send( pl, "catherine.loadingFinished" )
 				
 				timer.Simple( 1, function( )
 					if ( !IsValid( pl ) ) then return end
 					
-					netstream.Start( pl, "catherine.IntroStop" )
+					catherine.netXync.Send( pl, "catherine.IntroStop" )
 					timer.Simple( 1, function( )
 						if ( !IsValid( pl ) ) then return end
 						
@@ -50,15 +50,15 @@ if ( SERVER ) then
 			end )
 		end
 		
-		netstream.Hook( "catherine.player.CheckLocalPlayer_Receive", function( )
-			netstream.Start( pl, "catherine.IntroStart" )
+		catherine.netXync.Receiver( "catherine.player.CheckLocalPlayer_Receive", function( )
+			catherine.netXync.Send( pl, "catherine.IntroStart" )
 			loadFramework( )
 		end )
 		
 		pl:Freeze( true )
 		pl:Lock( )
 		
-		netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
+		catherine.netXync.Send( pl, "catherine.player.CheckLocalPlayer" )
 	end
 
 	function catherine.player.PlayerInformationInitialize( pl )
@@ -340,11 +340,11 @@ if ( SERVER ) then
 else
 	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 1
 	
-	netstream.Hook( "catherine.player.CheckLocalPlayer", function( )
+	catherine.netXync.Receiver( "catherine.player.CheckLocalPlayer", function( )
 		hook.Add( "Tick", "catherine.player.CheckLocalPlayer.Tick", function( )
 			if ( catherine.player.nextLocalPlayerCheck <= CurTime( ) ) then
 				if ( IsValid( LocalPlayer( ) ) ) then
-					netstream.Start( "catherine.player.CheckLocalPlayer_Receive" )
+					catherine.netXync.Send( "catherine.player.CheckLocalPlayer_Receive" )
 					hook.Remove( "Tick", "catherine.player.CheckLocalPlayer.Tick" )
 					catherine.player.nextLocalPlayerCheck = nil
 					return

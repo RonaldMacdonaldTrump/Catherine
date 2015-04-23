@@ -18,7 +18,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 local PLUGIN = PLUGIN
 
-netstream.Hook( "catherine.plugin.bugreport.SendResult", function( data )
+catherine.netXync.Receiver( "catherine.plugin.bugreport.SendResult", function( data )
 	if ( !IsValid( catherine.vgui.bugreport ) ) then return end
 	if ( type( data ) == "boolean" ) then
 		catherine.vgui.bugreport:SetNotify( true, "Your report has been sent, thank you! :)" )
