@@ -20,6 +20,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.door = catherine.door or { }
 
 CAT_DOOR_CHANGEPERMISSION = 1
+CAT_DOOR_CHANGE_DESC = 2
+
 CAT_DOOR_FLAG_OWNER = 1
 CAT_DOOR_FLAG_ALL = 2
 CAT_DOOR_FLAG_BASIC = 3
@@ -57,6 +59,14 @@ if ( SERVER ) then
 			if ( has and flag == data[ 2 ] ) then
 				print("Already has")
 				return
+			elseif ( has and data[ 2 ] == "0" ) then
+				for k, v in pairs( permissions ) do
+					if ( v.id == target:GetCharacterID( ) ) then
+						table.remove( permissions, k )
+						print("Fin!")
+						return
+					end
+				end
 			end
 			
 			permissions[ #permissions + 1 ] = {
@@ -66,8 +76,22 @@ if ( SERVER ) then
 
 			ent:SetNetVar( "permissions", permissions )
 			print("Fin!")
-		else
-		
+		elseif ( workID == CAT_DOOR_CHANGE_DESC ) then
+			local permissions = ent:GetNetVar( "permissions" )
+			
+			if ( !permissions ) then
+				catherine.util.NotifyLang( pl, "Door_Notify_NoOwner" )
+				return
+			end
+			
+			local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
+			//
+			if ( !has or flag == CAT_DOOR_FLAG_BASIC ) then
+				print("No permission!")
+				return
+			end
+			
+			ent:SetNetVar( "customDesc", data )
 		end
 	end
 	
@@ -118,9 +142,9 @@ if ( SERVER ) then
 		
 		catherine.cash.Give( pl, catherine.door.GetDoorCost( pl, ent ) / 2 )
 		ent:SetNetVar( "permissions", nil )
+		ent:SetNetVar( "customDesc", nil )
 		
 		return true
-		// 판매시 주인이 임의로 설정한 커스텀 타이틀이 복귀되어야함 ^_^
 	end
 	
 	function catherine.door.SetDoorTitle( pl, ent, title, force )
@@ -135,6 +159,7 @@ if ( SERVER ) then
 			if ( !catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_MASTER, CAT_DOOR_FLAG_ALL ) ) then
 				return false, "Door_Notify_NoOwner"
 			end
+			
 			ent:SetNetVar( "title", title )
 		end
 		
@@ -248,13 +273,18 @@ else
 
 	function catherine.door.GetDetailString( ent )
 		local owner = ent:GetNetVar( "permissions" )
+		local customDesc = ent:GetNetVar( "customDesc" )
 		
-		if ( owner ) then
-			return LANG( "Door_Message_AlreadySold" )
-		elseif ( !owner and catherine.door.IsBuyableDoor( ent ) ) then
-			return LANG( "Door_Message_Buyable" )
+		if ( customDesc ) then
+			return customDesc
 		else
-			return LANG( "Door_Message_CantBuy" )
+			if ( owner ) then
+				return LANG( "Door_Message_AlreadySold" )
+			elseif ( !owner and catherine.door.IsBuyableDoor( ent ) ) then
+				return LANG( "Door_Message_Buyable" )
+			else
+				return LANG( "Door_Message_CantBuy" )
+			end
 		end
 	end
 
