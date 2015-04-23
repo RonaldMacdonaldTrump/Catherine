@@ -50,11 +50,11 @@ function GM:CalcView( pl, pos, ang, fov )
 
 	local ent = Entity( pl:GetNetVar( "ragdollEnt", 0 ) )
 	if ( IsValid( ent ) and catherine.player.IsRagdolled( pl ) ) then
-		local index = ent:LookupAttachment( "eyes" )
+		local index = ent.LookupAttachment( ent, "eyes" )
 		local view = { }
 		
 		if ( !index ) then return end
-		local data = ent:GetAttachment( index )
+		local data = ent.GetAttachment( ent, index )
 		
 		view.origin = data and data.Pos
 		view.angles = data and data.Ang
@@ -92,7 +92,7 @@ end
 function GM:PostDrawTranslucentRenderables( depth, skybox )
 	if ( depth or skybox ) then return end
 
-	for k, v in pairs( ents.FindInSphere( LocalPlayer( ):GetPos( ), 256 ) ) do
+	for k, v in pairs( ents.FindInSphere( LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 ) ) do
 		if ( !IsValid( v ) or !catherine.entity.IsDoor( v ) ) then continue end
 		
 		hook.Run( "DrawDoorText", v, v:GetPos( ), v:GetAngles( ) )
@@ -100,7 +100,7 @@ function GM:PostDrawTranslucentRenderables( depth, skybox )
 end
 
 function GM:DrawDoorText( ent, pos, ang )
-	local a = catherine.util.GetAlphaFromDistance( ent:GetPos( ), LocalPlayer( ):GetPos( ), 256 )
+	local a = catherine.util.GetAlphaFromDistance( ent:GetPos( ), LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 )
 
 	if ( math.Round( a ) <= 0 ) then
 		return
@@ -178,8 +178,8 @@ end
 local OFFSET_PLAYER = Vector( 0, 0, 30 )
 
 function GM:DrawEntityTargetID( pl, ent, a )
-	if ( !ent:IsPlayer( ) ) then return end
-	local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) + OFFSET_PLAYER )
+	if ( !ent.IsPlayer( ent ) ) then return end
+	local pos = toscreen( ent.LocalToWorld( ent, ent.OBBCenter( ent ) ) + OFFSET_PLAYER )
 	local x, y = pos.x, pos.y - 100
 	local name, desc = hook.Run( "GetPlayerInformation", pl, ent, true )
 	
@@ -198,9 +198,9 @@ function GM:DrawEntityTargetID( pl, ent, a )
 end
 
 function GM:PlayerInformationDraw( pl, target, x, y, a )
-	if ( target:Alive( ) ) then return end
+	if ( target.Alive( target ) ) then return end
 	
-	draw.SimpleText( ( target:GetGender( ) == "male" and "He" or "She" ) .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
+	draw.SimpleText( ( target.GetGender( target ) == "male" and "He" or "She" ) .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
 end
 
 function GM:GetUnknownTargetName( pl, target )
@@ -210,16 +210,12 @@ end
 function GM:ProgressEntityCache( pl )
 	if ( pl:IsCharacterLoaded( ) and catherine.nextCacheDo <= CurTime( ) ) then
 		local data = { }
-		data.start = pl:GetShootPos( )
-		data.endpos = data.start + pl:GetAimVector( ) * 160
+		data.start = pl.GetShootPos( pl )
+		data.endpos = data.start + pl.GetAimVector( pl ) * 160
 		data.filter = pl
 		local ent = util.TraceLine( data ).Entity
-		
-		if ( IsValid( ent ) ) then 
-			catherine.entityCaches[ ent ] = true
-		else 
-			catherine.entityCaches[ ent ] = nil
-		end
+
+		catherine.entityCaches[ ent ] = IsValid( ent ) and true or nil
 		
 		catherine.nextCacheDo = CurTime( ) + 0.5
 	end
@@ -230,7 +226,7 @@ function GM:ProgressEntityCache( pl )
 			continue
 		end
 		
-		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k:GetPos( ), pl:GetPos( ), 100 ) )
+		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k.GetPos( k ), pl.GetPos( pl ), 100 ) )
 		k.alpha = a
 		
 		if ( math.Round( a ) <= 0 ) then
@@ -256,13 +252,14 @@ function GM:HUDPaint( )
 	catherine.hint.Draw( )
 	hook.Run( "HUDDraw" )
 	
-	if ( pl:Alive( ) ) then
+	if ( pl.Alive( pl ) ) then
 		hook.Run( "ProgressEntityCache", pl )
 	end
 end
 
 function GM:PostRenderVGUI( )
 	if ( IsValid( catherine.vgui.character ) ) then return end
+	
 	catherine.notify.Draw( )
 end
 
@@ -293,6 +290,7 @@ end
 
 function GM:ScoreboardShow( )
 	if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+	
 	if ( IsValid( catherine.vgui.menu ) ) then
 		catherine.vgui.menu:Close( )
 		gui.EnableScreenClicker( false )
@@ -361,6 +359,7 @@ end
 catherine.netXync.Receiver( "catherine.LoadingStatus", function( data )
 	catherine.loading.status = data[ 1 ]
 	catherine.loading.msg = data[ 2 ]
+	
 	if ( data[ 3 ] == true ) then
 		catherine.loading.errorMsg = data[ 2 ]
 		catherine.loading.msg = ""
