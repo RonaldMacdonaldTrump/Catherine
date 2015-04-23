@@ -17,19 +17,19 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.chat = catherine.chat or { }
-catherine.chat.Classes = { }
+catherine.chat.lists = { }
 
 function catherine.chat.RegisterClass( class, tab )
 	table.Merge( tab, { class = class } )
-	catherine.chat.Classes[ #catherine.chat.Classes + 1 ] = tab
+	catherine.chat.lists[ class ] = tab
+end
+
+function catherine.chat.GetAllClasses( )
+	return catherine.chat.lists
 end
 
 function catherine.chat.FindByClass( class )
-	for k, v in pairs( catherine.chat.Classes ) do
-		if ( v.class == class ) then
-			return v
-		end
-	end
+	catherine.chat.lists[ class ]
 end
 
 function catherine.chat.PreSet( text )
@@ -37,7 +37,7 @@ function catherine.chat.PreSet( text )
 end
 
 function catherine.chat.FetchClassByText( text )
-	for k, v in pairs( catherine.chat.Classes ) do
+	for k, v in pairs( catherine.chat.GetAllClasses( ) ) do
 		local command = v.command or ""
 		
 		if ( type( command ) == "table" ) then
@@ -231,9 +231,8 @@ if ( SERVER ) then
 	
 	function catherine.chat.GetListener( pl, class )
 		local classTable = catherine.chat.FindByClass( class )
+		if ( !classTable or !classTable.canHearRange ) then return { pl } end
 		local target = { pl }
-		
-		if ( !classTable or !classTable.canHearRange ) then return target end
 		
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			if ( pl != v and catherine.util.CalcDistanceByPos( pl, v ) <= classTable.canHearRange ) then

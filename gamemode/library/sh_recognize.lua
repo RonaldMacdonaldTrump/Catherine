@@ -17,6 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.recognize = catherine.recognize or { }
+// 이 라이브러리는 최대한 최적화 하였습니다, 마지막 갱신 : 2015-04-23
 
 if ( SERVER ) then
 	function catherine.recognize.DoKnow( pl, code, target )
@@ -24,14 +25,12 @@ if ( SERVER ) then
 
 		if ( code == 0 and !target ) then
 			target = catherine.chat.GetListener( pl, "ic" )
-		elseif ( code == 1 ) then
-			target = catherine.chat.GetListener( pl, "whisper" )
-		elseif ( code == 2 ) then
-			target = catherine.chat.GetListener( pl, "yell" )
+		else
+			target = catherine.chat.GetListener( pl, code == 1 and "whisper" or "yell" )
 		end
 
 		for k, v in pairs( target or { } ) do
-			if ( !IsValid( v ) or v == pl ) then continue end
+			if ( v == pl or !IsValid( v ) ) then continue end
 			
 			catherine.recognize.RegisterKnow( pl, v )
 		end
