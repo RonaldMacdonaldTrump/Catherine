@@ -16,44 +16,46 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.chat = catherine.chat or { }
-catherine.chat.lists = { }
+catherine.chat = catherine.chat or { lists = { } }
 
-function catherine.chat.RegisterClass( class, tab )
-	table.Merge( tab, { class = class } )
-	catherine.chat.lists[ class ] = tab
+function catherine.chat.Register( uniqueID, classTable )
+	classTable = classTable or { }
+	
+	table.Merge( classTable, {
+		uniqueID = uniqueID
+	} )
+	
+	catherine.chat.lists[ uniqueID ] = classTable
 end
 
-function catherine.chat.GetAllClasses( )
+function catherine.chat.GetAll( )
 	return catherine.chat.lists
 end
 
-function catherine.chat.FindByClass( class )
-	return catherine.chat.lists[ class ]
+function catherine.chat.FindByID( uniqueID )
+	return catherine.chat.lists[ uniqueID ]
 end
 
-function catherine.chat.PreSet( text )
-	return "\"" .. text .. "\""
-end
-
-function catherine.chat.FetchClassByText( text )
-	for k, v in pairs( catherine.chat.GetAllClasses( ) ) do
+function catherine.chat.FindIDByText( text )
+	for k, v in pairs( catherine.chat.GetAll( ) ) do
 		local command = v.command or ""
 		
-		if ( type( command ) == "table" ) then
-			for k2, v2 in pairs( command ) do
-				if ( text:sub( 1, #v2 ) == v2 ) then
-					return v.class or "ic"
-				end
-			end
+		for k2, v2 in pairs( type( command ) == "table" and command or { } ) do
+			if ( text:sub( 1, #v2 ) != v2 ) then continue end
+			
+			return v.class or "ic"
 		end
 	end
 	
 	return "ic"
 end
 
-catherine.chat.RegisterClass( "ic", {
-	onChat = function( pl, text )
+function catherine.chat.PreSet( text )
+	return "\"" .. text .. "\""
+end
+
+catherine.chat.Register( "ic", {
+	func = function( pl, text )
 		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
 		
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
@@ -63,11 +65,11 @@ catherine.chat.RegisterClass( "ic", {
 		chat.AddText( Color( 255, 255, 150 ), LANG( "Chat_Str_IC", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 300,
-	canRun = function( pl ) return pl:Alive( ) end
+	canRun = function( pl ) return pl.Alive( pl ) end
 } )
 
-catherine.chat.RegisterClass( "me", {
-	onChat = function( pl, text )
+catherine.chat.Register( "me", {
+	func = function( pl, text )
 		chat.AddText( Color( 255, 150, 255 ), "** " .. pl:Name( ) .. " " .. text )
 	end,
 	command = { "/me" },
@@ -75,8 +77,8 @@ catherine.chat.RegisterClass( "me", {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
-catherine.chat.RegisterClass( "it", {
-	onChat = function( pl, text )
+catherine.chat.Register( "it", {
+	func = function( pl, text )
 		chat.AddText( Color( 255, 150, 0 ), "*** " .. pl:Name( ) .. " " .. text )
 	end,
 	command = { "/it" },
@@ -84,8 +86,8 @@ catherine.chat.RegisterClass( "it", {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
-catherine.chat.RegisterClass( "roll", {
-	onChat = function( pl, text )
+catherine.chat.Register( "roll", {
+	func = function( pl, text )
 		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
 		
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
@@ -98,23 +100,23 @@ catherine.chat.RegisterClass( "roll", {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
-catherine.chat.RegisterClass( "pm", {
-	onChat = function( pl, text, ex )
+catherine.chat.Register( "pm", {
+	func = function( pl, text, ex )
 		chat.AddText( Color( 255, 255, 0 ), "[PM] " .. pl:Name( ) .. " : " .. text )
 	end,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
-catherine.chat.RegisterClass( "event", {
-	onChat = function( _, text )
+catherine.chat.Register( "event", {
+	func = function( _, text )
 		chat.AddText( Color( 194, 93, 39 ), text )
 	end,
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	command = { "/event" }
 } )
 
-catherine.chat.RegisterClass( "yell", {
-	onChat = function( pl, text )
+catherine.chat.Register( "yell", {
+	func = function( pl, text )
 		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
 		
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
@@ -128,8 +130,8 @@ catherine.chat.RegisterClass( "yell", {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
-catherine.chat.RegisterClass( "whisper", {
-	onChat = function( pl, text )
+catherine.chat.Register( "whisper", {
+	func = function( pl, text )
 		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
 		
 		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
@@ -143,8 +145,8 @@ catherine.chat.RegisterClass( "whisper", {
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
-catherine.chat.RegisterClass( "ooc", {
-	onChat = function( pl, text )
+catherine.chat.Register( "ooc", {
+	func = function( pl, text )
 		local icon = Material( "icon16/user.png" )
 		
 		if ( pl:IsSuperAdmin( ) ) then
@@ -155,15 +157,15 @@ catherine.chat.RegisterClass( "ooc", {
 		
 		chat.AddText( icon, Color( 250, 40, 40 ), "[OOC] ", pl, color_white, " : ".. text )
 	end,
-	global = true,
+	isGlobal = true,
 	command = {
 		"/ooc", "//"
 	},
 	noSpace = true
 } )
 
-catherine.chat.RegisterClass( "looc", {
-	onChat = function( pl, text )
+catherine.chat.Register( "looc", {
+	func = function( pl, text )
 		chat.AddText( Color( 250, 255, 40 ), "[LOOC] ", pl, color_white, " : ".. text )
 	end,
 	canHearRange = 600,
@@ -173,8 +175,8 @@ catherine.chat.RegisterClass( "looc", {
 	noSpace = true
 } )
 
-catherine.chat.RegisterClass( "connect", {
-	onChat = function( pl, text )
+catherine.chat.Register( "connect", {
+	func = function( pl, text )
 		local icon = Material( "icon16/user.png" )
 		
 		if ( pl:IsSuperAdmin( ) ) then
@@ -185,11 +187,11 @@ catherine.chat.RegisterClass( "connect", {
 		
 		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Connect", pl:SteamName( ) ) )
 	end,
-	global = true
+	isGlobal = true
 } )
 
-catherine.chat.RegisterClass( "disconnect", {
-	onChat = function( pl, text )
+catherine.chat.Register( "disconnect", {
+	func = function( pl, text )
 		local icon = Material( "icon16/user.png" )
 		
 		if ( pl:IsSuperAdmin( ) ) then
@@ -200,19 +202,19 @@ catherine.chat.RegisterClass( "disconnect", {
 		
 		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
 	end,
-	global = true
+	isGlobal = true
 } )
 
 if ( SERVER ) then
 	function catherine.chat.Send( pl, classTable, text, target, ... )
 		if ( type( classTable ) == "string" ) then
-			classTable = catherine.chat.FindByClass( classTable )
+			classTable = catherine.chat.FindByID( classTable )
 		end
 		
 		if ( !classTable or type( classTable ) != "table" ) then return end
 		local class = classTable.class
 		
-		if ( classTable.global and !target ) then
+		if ( classTable.isGlobal and !target ) then
 			netstream.Start( nil, "catherine.chat.Post", { pl, class, text, { ... } } )
 		else
 			if ( type( target ) == "table" and #target > 0 ) then
@@ -230,7 +232,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.chat.GetListener( pl, class )
-		local classTable = catherine.chat.FindByClass( class )
+		local classTable = catherine.chat.FindByID( class )
 		if ( !classTable or !classTable.canHearRange ) then return { pl } end
 		local target = { pl }
 		
@@ -248,8 +250,8 @@ if ( SERVER ) then
 	end
 	
 	function catherine.chat.Work( pl, text )
-		local class = catherine.chat.FetchClassByText( text )
-		local classTable = catherine.chat.FindByClass( class )
+		local class = catherine.chat.FindIDByText( text )
+		local classTable = catherine.chat.FindByID( class )
 		if ( !classTable ) then return end
 		
 		if ( !catherine.chat.CanChat( pl, classTable ) ) then
@@ -304,7 +306,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.chat.RunByClass( pl, class, text, target, ... )
-		local classTable = catherine.chat.FindByClass( class )
+		local classTable = catherine.chat.FindByID( class )
 		if ( !classTable ) then return end
 		
 		local adjustInfo = {
@@ -334,10 +336,10 @@ else
 	netstream.Hook( "catherine.chat.Post", function( data )
 		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		local speaker, class, text, ex = data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ]
-		local class = catherine.chat.FindByClass( class )
+		local class = catherine.chat.FindByID( class )
 		if ( !IsValid( speaker ) ) then return end
 		
-		class.onChat( speaker, text, ex )
+		class.func( speaker, text, ex )
 	end )
 	
 	catherine.hud.RegisterBlockModule( "CHudChat" )
