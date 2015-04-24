@@ -30,26 +30,26 @@ function catherine.plugin.Include( dir )
 			catherine.util.Include( pluginDir .. "/sh_plugin.lua" )
 			catherine.item.Include( pluginDir )
 			
-			catherine.plugin.IncludeEntities( Pdir )
+			catherine.plugin.IncludeEntities( pluginDir )
 			
-			for k1, v1 in pairs( file.Find( Pdir .. "/derma/*.lua", "LUA" ) ) do
-				catherine.util.Include( Pdir .. "/derma/" .. v1 )
+			for k1, v1 in pairs( file.Find( pluginDir .. "/derma/*.lua", "LUA" ) ) do
+				catherine.util.Include( pluginDir .. "/derma/" .. v1 )
 			end
 			
-			for k1, v1 in pairs( file.Find( Pdir .. "/attribute/*.lua", "LUA" ) ) do
-				catherine.util.Include( Pdir .. "/attribute/" .. v1 )
+			for k1, v1 in pairs( file.Find( pluginDir .. "/attribute/*.lua", "LUA" ) ) do
+				catherine.util.Include( pluginDir .. "/attribute/" .. v1 )
 			end
 			
-			for k1, v1 in pairs( file.Find( Pdir .. "/library/*.lua", "LUA" ) ) do
-				catherine.util.Include( Pdir .. "/library/" .. v1 )
+			for k1, v1 in pairs( file.Find( pluginDir .. "/library/*.lua", "LUA" ) ) do
+				catherine.util.Include( pluginDir .. "/library/" .. v1 )
 			end
 			
-			for k1, v1 in pairs( file.Find( Pdir .. "/class/*.lua", "LUA" ) ) do
-				catherine.util.Include( Pdir .. "/class/" .. v1 )
+			for k1, v1 in pairs( file.Find( pluginDir .. "/class/*.lua", "LUA" ) ) do
+				catherine.util.Include( pluginDir .. "/class/" .. v1 )
 			end
 			
-			for k1, v1 in pairs( file.Find( Pdir .. "/faction/*.lua", "LUA" ) ) do
-				catherine.util.Include( Pdir .. "/faction/" .. v1 )
+			for k1, v1 in pairs( file.Find( pluginDir .. "/faction/*.lua", "LUA" ) ) do
+				catherine.util.Include( pluginDir .. "/faction/" .. v1 )
 			end
 			
 			catherine.plugin.lists[ v ] = PLUGIN

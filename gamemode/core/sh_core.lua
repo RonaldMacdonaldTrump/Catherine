@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 --[[
-	This code has brought in nutscript.
+	This code has brought by nutscript.
 	https://github.com/Chessnut/NutScript
 --]]
 
@@ -64,10 +64,6 @@ local NormalHoldTypes = {
 }
 WEAPON_LOWERED = 1
 WEAPON_RAISED = 2
-
-function GM:Initialize( )
-	hook.Run( "GamemodeInitialized" )
-end
 
 function GM:CalcMainActivity( pl, velo )
 	local mdl = pl:GetModel( ):lower( )
@@ -154,7 +150,7 @@ function GM:CalcMainActivity( pl, velo )
 			pl.CalcIdle = aniClass.normal.idle_crouch[ 1 ]
 		elseif ( ani ) then
 			val = ani[ status ]
-			
+
 			if ( type( val ) == "string" ) then
 				pl.CalcOver = pl:LookupSequence( val )
 			else
@@ -174,6 +170,7 @@ function GM:CalcMainActivity( pl, velo )
 
 		local norm = math.NormalizeAngle( velo:Angle( ).yaw - pl:EyeAngles( ).y )
 		pl:SetPoseParameter( "move_yaw", norm )
+
 		return pl.CalcIdle or ACT_IDLE, pl.CalcOver or -1
 	end
 end
@@ -213,6 +210,88 @@ function GM:DoAnimationEvent( pl, event, data )
 	local wep = pl:GetActiveWeapon( )
 	local holdType = "normal"
 
+	if ( !catherine.animation[ class ] ) then
+		class = "citizen_male"
+	end
+
+	if ( IsValid( wep ) ) then
+		holdType = catherine.util.GetHoldType( wep )
+	end
+
+	if ( !catherine.animation[ class ][ holdType ] ) then
+		holdType = "normal"
+	end
+
+	local ani = catherine.animation[ class ][ holdType ]
+
+	if ( event == PLAYERANIMEVENT_ATTACK_PRIMARY ) then
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
+
+		return ACT_VM_PRIMARYATTACK
+	elseif ( event == PLAYERANIMEVENT_ATTACK_SECONDARY ) then
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
+
+		return ACT_VM_SECONDARYATTACK
+	elseif ( event == PLAYERANIMEVENT_RELOAD ) then
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.reload or ACT_GESTURE_RELOAD_SMG1, true )
+
+		return ACT_INVALID
+	elseif ( event == PLAYERANIMEVENT_CANCEL_RELOAD ) then
+		pl:AnimResetGestureSlot( GESTURE_SLOT_ATTACK_AND_RELOAD )
+
+		return ACT_INVALID
+	end
+
+	return nil
+end
+
+function GM:GetPlayerInformation( pl, target, isFull )
+	if ( pl == target ) then
+		return pl:Name( ), pl:Desc( )
+	end
+	
+	if ( pl:IsKnow( target ) ) then
+		return target:Name( ), target:Desc( )
+	end
+	
+	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target:Desc( ) or ( string.utf8sub( target:Desc( ), 1, 37 ) .. "..." )
+end
+
+function GM:PlayerNoClip( pl, bool )
+	if ( pl:IsAdmin( ) ) then
+		if ( pl:GetMoveType( ) == MOVETYPE_WALK ) then
+			pl:SetNoDraw( true )
+			pl:DrawShadow( false )
+			pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
+			
+			if ( SERVER ) then
+				pl:SetNetVar( "nocliping", true )
+			end
+		else
+			pl:SetNoDraw( false )
+			pl:DrawShadow( true )
+			pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
+			
+			if ( SERVER ) then
+				pl:SetNetVar( "nocliping", false )
+			end
+		end
+	end
+	
+	return pl:IsAdmin( )
+end
+
+function GM:DoAnimationEvent( pl, event, data )
+	local mdl = pl:GetModel( ):lower( )
+	local class = catherine.animation.Get( mdl )
+
+	if ( mdl:find( "/player/" ) or mdl:find( "/playermodel" ) or class == "player" ) then
+		return self.BaseClass:DoAnimationEvent( pl, event, data )
+	end
+
+	local wep = pl:GetActiveWeapon( )
+	local holdType = "normal"
+	
 	if ( !catherine.animation[ class ] ) then
 		class = "citizen_male"
 	end

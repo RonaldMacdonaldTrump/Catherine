@@ -44,10 +44,10 @@ function catherine.hud.Draw( pl )
 	if ( catherine.option.Get( "CONVAR_MAINHUD" ) == "0" ) then return end
 	
 	catherine.hud.ZipTie( pl )
-	catherine.hud.Vignette( )
-	catherine.hud.ScreenDamageDraw( )
-	catherine.hud.AmmoDraw( )
-	catherine.hud.DeathScreen( )
+	catherine.hud.Vignette( pl )
+	catherine.hud.ScreenDamageDraw( pl )
+	catherine.hud.AmmoDraw( pl )
+	catherine.hud.DeathScreen( pl )
 	catherine.hud.ProgressBarDraw( )
 	catherine.hud.TopNotifyDraw( )
 	catherine.hud.WelcomeIntroDraw( )
@@ -68,10 +68,10 @@ function catherine.hud.DeathScreen( pl )
 	draw.RoundedBox( 0, 0, 0, ScrW( ), ScrH( ), Color( 0, 0, 0, catherine.hud.deathAlpha ) )
 end
 
-function catherine.hud.Vignette( )
+function catherine.hud.Vignette( pl )
 	if ( catherine.hud.checkV <= CurTime( ) ) then
 		local data = { }
-		data.start = LocalPlayer( ):GetPos( )
+		data.start = pl.GetPos( pl )
 		data.endpos = data.start + Vector( 0, 0, 2000 )
 		local tr = util.TraceLine( data )
 		
@@ -91,13 +91,13 @@ function catherine.hud.Vignette( )
 	surface.DrawTexturedRect( 0, 0, ScrW( ), ScrH( ) )
 end
 
-function catherine.hud.ScreenDamageDraw( ) end
+function catherine.hud.ScreenDamageDraw( pl ) end
 
-function catherine.hud.AmmoDraw( )
-	local wep = LocalPlayer( ):GetActiveWeapon( )
+function catherine.hud.AmmoDraw( pl )
+	local wep = pl.GetActiveWeapon( pl )
 	if ( !IsValid( wep ) or ( wep.DrawHUD == false ) ) then return end
-	local clip1 = wep:Clip1( )
-	local pre = LocalPlayer( ):GetAmmoCount( wep:GetPrimaryAmmoType( ) )
+	local clip1 = wep.Clip1( wep )
+	local pre = pl.GetAmmoCount( pl, wep.GetPrimaryAmmoType( wep ) )
 	//local sec = LocalPlayer( ):GetAmmoCount( wep:GetSecondaryAmmoType( ) ) -- ^_^;
 	catherine.hud.clip1 = Lerp( 0.03, catherine.hud.clip1, clip1 )
 	catherine.hud.pre = Lerp( 0.03, catherine.hud.pre, pre )
