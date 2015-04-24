@@ -17,9 +17,36 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.log = catherine.log or { }
+catherine.log.logString = { }
+//CAT_LOG_FLAG_CHAT
+
+function catherine.log.RegisterLogString( key, str )
+	catherine.log.logString[ key ] = str
+end
+	
+function catherine.log.FindLogStringByKey( key )
+	return catherine.log.logString[ key ]
+end
 
 if ( SERVER ) then
+	function catherine.log.Add( flag, id, ... )
 	
-else
+		
+	end
+	
+	function catherine.log.Initialize( )
+		file.CreateDir( "catherine" )
+		file.CreateDir( "catherine/log" )
+		
+		local date = os.date( "*t" )
+		file.CreateDir( "catherine/log/" .. ( date.year .. "-" .. date.month .. "-" .. date.day ) )
+	end
 
+	hook.Add( "Initialize", "catherine.log.Initialize", catherine.log.Initialize )
+
+else
+	netstream.Hook( "catherine.log.Send", function( data )
+	
+		MsgC( Color( 50, 200, 50 ), "[CAT LOG] " .. 
+	end )
 end
