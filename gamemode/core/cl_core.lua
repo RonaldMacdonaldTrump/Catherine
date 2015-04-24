@@ -99,6 +99,14 @@ function GM:PostDrawTranslucentRenderables( depth, skybox )
 	end
 end
 
+function GM:PlayerBindPress( pl, code, pressed )
+	if ( code:find( "messagemode" ) and pressed ) then
+		catherine.chat.SetStatus( true )
+		
+		return true
+	end
+end
+
 function GM:DrawDoorText( ent, pos, ang )
 	local a = catherine.util.GetAlphaFromDistance( ent:GetPos( ), LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 )
 

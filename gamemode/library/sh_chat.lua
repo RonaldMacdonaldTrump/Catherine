@@ -49,7 +49,7 @@ function catherine.chat.FindIDByText( text )
 		for k2, v2 in pairs( type( command ) == "table" and command or { } ) do
 			if ( text:sub( 1, #v2 ) != v2 ) then continue end
 			
-			return v.class or "ic"
+			return k or "ic"
 		end
 	end
 	
@@ -241,36 +241,36 @@ if ( SERVER ) then
 			return
 		end
 		
-		local adjustInfo = {
+		local chatInformation = {
 			text = text,
-			class = class,
-			player = pl
+			uniqueID = classTable.uniqueID,
+			pl = pl
 		}
 		
-		adjustInfo = hook.Run( "ChatAdjust", adjustInfo ) or adjustInfo
-		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, adjustInfo.class ) or "" ) .. adjustInfo.text )
-		hook.Run( "ChatSended", adjustInfo )
+		chatInformation = hook.Run( "OnChatControl", chatInformation ) or chatInformation
+		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, classTable ) or "" ) .. chatInformation.text )
+		hook.Run( "ChatPosted", chatInformation )
 	end
 	
 	function catherine.chat.Send( pl, classTable, text, target, ... )
 		classTable = type( classTable ) == "string" and catherine.chat.FindByID( classTable ) or classTable
 		if ( !classTable or type( classTable ) != "table" ) then return end
-		local class = classTable.class
+		local uniqueID = classTable.uniqueID
 		
 		if ( classTable.isGlobal and !target ) then
-			netstream.Start( nil, "catherine.chat.Post", { pl, class, text, { ... } } )
+			netstream.Start( nil, "catherine.chat.Post", { pl, uniqueID, text, { ... } } )
 		else
 			if ( type( target ) == "table" and #target > 0 ) then
 				netstream.Start( target, "catherine.chat.Post", {
 					pl,
-					class,
+					uniqueID,
 					text,
 					{ ... }
 				} )
 			else
 				netstream.Start( catherine.chat.GetListener( pl, classTable ), "catherine.chat.Post", {
 					pl,
-					class,
+					uniqueID,
 					text,
 					{ ... }
 				} )
@@ -278,7 +278,7 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.chat.GetListener( pl, class )
+	function catherine.chat.GetListener( pl, uniqueID )
 		classTable = type( classTable ) == "string" and catherine.chat.FindByID( classTable ) or classTable
 		if ( !classTable or !classTable.canHearRange ) then return { pl } end
 		local target = { pl }
@@ -297,19 +297,19 @@ if ( SERVER ) then
 		return classTable.canRun and classTable.canRun( pl ) or true
 	end
 	
-	function catherine.chat.RunByClass( pl, class, text, target, ... )
-		local classTable = catherine.chat.FindByID( class )
+	function catherine.chat.RunByID( pl, uniqueID, text, target, ... )
+		local classTable = catherine.chat.FindByID( uniqueID )
 		if ( !classTable ) then return end
 		
-		local adjustInfo = {
+		local chatInformation = {
 			text = text,
-			class = class,
-			player = pl
+			uniqueID = classTable.uniqueID,
+			pl = pl
 		}
 		
-		adjustInfo = hook.Run( "ChatAdjust", adjustInfo ) or adjustInfo
-		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, adjustInfo.class ) or "" ) .. adjustInfo.text, target, ... )
-		hook.Run( "ChatSended", adjustInfo )
+		chatInformation = hook.Run( "OnChatControl", chatInformation ) or chatInformation
+		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, classTable ) or "" ) .. chatInformation.text, target, ... )
+		hook.Run( "ChatPosted", chatInformation )
 	end
 	
 	netstream.Hook( "catherine.chat.Run", function( pl, data )
@@ -327,23 +327,18 @@ else
 	
 	netstream.Hook( "catherine.chat.Post", function( data )
 		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
-		local speaker, class, text, ex = data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ]
-		local class = catherine.chat.FindByID( class )
-		if ( !IsValid( speaker ) ) then return end
-		
-		class.func( speaker, text, ex )
+		local speaker = data[ 1 ]
+		local classTable = catherine.chat.FindByID( data[ 2 ] )
+		local text = data[ 3 ]
+		local ex = data[ 4 ]
+
+		if ( classTable and IsValid( speaker ) ) then
+			classTable.func( speaker, text, ex )
+		end
 	end )
 	
 	catherine.hud.RegisterBlockModule( "CHudChat" )
-
-	hook.Add( "PlayerBindPress", "catherine.chat.PlayerBindPress", function( pl, code, pressed )
-		if ( code:find( "messagemode" ) and pressed ) then
-			catherine.chat.SetStatus( true )
-			
-			return true
-		end
-	end )
-
+	
 	chat.AddTextBuffer = chat.AddTextBuffer or chat.AddText
 	
 	function chat.AddText( ... )
