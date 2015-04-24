@@ -56,18 +56,24 @@ function hook.Call( name, gm, ... )
 	if ( catherine.plugin ) then
 		for k, v in pairs( catherine.plugin.GetAll( ) ) do
 			if ( !v[ name ] ) then continue end
-			local func = v[ name ]( v, ... )
-			if ( func == nil ) then continue end
+			local success, result = pcall( v[ name ], v, ... )
 			
-			return func
+			if ( success ) then
+				if ( result != nil ) then
+					return result
+				end
+			else
+				MsgC( Color( 0, 255, 255 ), "SORRY, On the plugin <" .. k .. ">'s hooks <" .. name .. "> has a critical error ...\n\n
+			end
 		end
 	end
 	
 	if ( Schema and Schema[ name ] ) then
-		local func = Schema[ name ]( Schema, ... )
-		if ( func == nil ) then return end
-		
-		return func
+		local result = Schema[ name ]( Schema, ... )
+
+		if ( result != nil ) then
+			return result
+		end
 	end
 	
 	return hook.OriginalHookRun( name, gm, ... )
