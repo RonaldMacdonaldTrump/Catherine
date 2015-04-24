@@ -207,10 +207,7 @@ catherine.chat.Register( "disconnect", {
 
 if ( SERVER ) then
 	function catherine.chat.Send( pl, classTable, text, target, ... )
-		if ( type( classTable ) == "string" ) then
-			classTable = catherine.chat.FindByID( classTable )
-		end
-		
+		classTable = type( classTable ) == "string" and catherine.chat.FindByID( classTable ) or classTable
 		if ( !classTable or type( classTable ) != "table" ) then return end
 		local class = classTable.class
 		
@@ -218,26 +215,31 @@ if ( SERVER ) then
 			netstream.Start( nil, "catherine.chat.Post", { pl, class, text, { ... } } )
 		else
 			if ( type( target ) == "table" and #target > 0 ) then
-				for k, v in pairs( target ) do
-					netstream.Start( v, "catherine.chat.Post", { pl, class, text, { ... } } )
-				end
+				netstream.Start( target, "catherine.chat.Post", {
+					pl,
+					class,
+					text,
+					{ ... }
+				} )
 			else
-				local listener = catherine.chat.GetListener( pl, class )
-				
-				for k, v in pairs( listener ) do
-					netstream.Start( v, "catherine.chat.Post", { pl, class, text, { ... } } )
-				end
+				netstream.Start( catherine.chat.GetListener( pl, classTable ), "catherine.chat.Post", {
+					pl,
+					class,
+					text,
+					{ ... }
+				} )
 			end
 		end
 	end
 	
 	function catherine.chat.GetListener( pl, class )
-		local classTable = catherine.chat.FindByID( class )
+		classTable = type( classTable ) == "string" and catherine.chat.FindByID( classTable ) or classTable
 		if ( !classTable or !classTable.canHearRange ) then return { pl } end
 		local target = { pl }
+		local range = classTable.canHearRange
 		
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			if ( pl != v and catherine.util.CalcDistanceByPos( pl, v ) <= classTable.canHearRange ) then
+			if ( pl != v and catherine.util.CalcDistanceByPos( pl, v ) <= range ) then
 				target[ #target + 1 ] = v
 			end
 		end
