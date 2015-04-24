@@ -196,7 +196,7 @@ function GM:PlayerUse( pl, ent )
 end
 
 function GM:PlayerSay( pl, text )
-	catherine.chat.Work( pl, text )
+	catherine.chat.Run( pl, text )
 end
 
 function GM:KeyRelease( pl, key )

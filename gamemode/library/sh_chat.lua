@@ -212,7 +212,7 @@ catherine.chat.Register( "disconnect", {
 } )
 
 if ( SERVER ) then
-	function catherine.chat.Work( pl, text )
+	function catherine.chat.Run( pl, text )
 		local classTable = catherine.chat.FindByID( catherine.chat.FindIDByText( text ) )
 		if ( !classTable ) then return end
 		
@@ -222,29 +222,17 @@ if ( SERVER ) then
 		end
 
 		local commandTable = classTable.command or { }
-		local commandTableType = type( commandTable )
-		local fix = ""
-		local isFin = false
 		local noSpace = classTable.noSpace
 		
-		if ( type( commandTable ) == "table" ) then
-			for k, v in ipairs( commandTable ) do
-				if ( text:sub( 1, #v + ( noSpace and 0 or 1 ) ) == v .. ( noSpace and "" or " " ) ) then
-					isFin = true
-					fix = v .. ( noSpace and "" or " " )
-					break
-				end
-			end
-		elseif ( type( commandTable ) == "string" ) then
-			isFin = text:sub( 1, #commandTable + ( noSpace and 1 or 0 ) ) == commandTable .. ( noSpace and "" or " " )
-			fix = commandTable .. ( noSpace and "" or " " )
-		end
-
-		if ( isFin ) then
-			text = text:sub( #fix + 1 )
+		for k, v in ipairs( type( commandTable ) == "table" and commandTable or { commandTable } ) do
+			if ( text:sub( 1, #v + ( noSpace and 0 or 1 ) ) == v .. ( noSpace and "" or " " ) ) then
+				text = text:sub( #( v .. ( noSpace and "" or " " ) ) + 1 )
 			
-			if ( noSpace and text:sub( 1, 1 ):match( "%s" ) ) then
-				text = text:sub( 2 )
+				if ( noSpace and text:sub( 1, 1 ):match( "%s" ) ) then
+					text = text:sub( 2 )
+				end
+
+				break
 			end
 		end
 
@@ -309,7 +297,7 @@ if ( SERVER ) then
 		return classTable.canRun and classTable.canRun( pl ) or true
 	end
 	
-	function catherine.chat.WorkByClass( pl, class, text, target, ... )
+	function catherine.chat.RunByClass( pl, class, text, target, ... )
 		local classTable = catherine.chat.FindByID( class )
 		if ( !classTable ) then return end
 		
