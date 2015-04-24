@@ -87,6 +87,22 @@ function catherine.util.GetRealTime( )
 	return one.year .. "-" .. one.month .. "-" .. one.day .. " | " .. dst .. " " .. hour .. ":" .. os.date( "%M" )
 end
 
+function catherine.util.GetAdmins( isSuperAdmin )
+	local players = { }
+	
+	if ( isSuperAdmin ) then
+		for k, v in pairs( player.GetAllByLoaded( ) ) do
+			players[ #players + 1 ] = v:IsSuperAdmin( ) and v
+		end
+	else
+		for k, v in pairs( player.GetAllByLoaded( ) ) do
+			players[ #players + 1 ] = v:IsAdmin( ) and v
+		end
+	end
+	
+	return players
+end
+
 function catherine.util.FolderDirectoryTranslate( dir )
 	if ( dir:sub( 1, 1 ) != "/" ) then
 		dir = "/" .. dir

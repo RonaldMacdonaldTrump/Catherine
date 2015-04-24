@@ -249,19 +249,22 @@ if ( SERVER ) then
 		end
 
 		catherine.database.InsertDatas( "catherine_characters", charVars, function( )
-			catherine.util.Print( Color( 0, 255, 0 ), "Character created! [" .. pl:SteamName( ) .. "]" )
+			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has created a '" .. charVars._name .. "' character.", true )
 			netstream.Start( pl, "catherine.character.CreateResult", true )
 			catherine.character.SyncCharacterList( pl )
 		end )
 	end
 	
 	function catherine.character.Use( pl, id )
-		local prevID = pl:GetCharacterID( )
+		local steamName = pl.SteamName( pl )
+		local charName = pl.Name( pl )
+		local prevName = steamName == charName and "NO Character" or charName
 		local success, reason = catherine.character.New( pl, id )
 		
 		if ( success ) then
 			netstream.Start( pl, "catherine.character.UseResult", true )
-			catherine.util.Print( Color( 0, 255, 0 ), "Character loaded! [" .. pl:SteamName( ) .. "] " .. ( prevID or "None" ) .. " -> " .. id )
+			
+			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, steamName .. ", " .. pl.SteamID( pl ) .. " has loaded a '" .. charName .. "' character. [Previous Character Name : " .. prevName .. "]", true )
 		else
 			netstream.Start( pl, "catherine.character.UseResult", reason )
 		end
@@ -275,6 +278,7 @@ if ( SERVER ) then
 		
 		catherine.database.Query( "DELETE FROM `catherine_characters` WHERE _steamID = '" .. pl:SteamID( ) .. "' AND _id = '" .. id .. "'", function( data )
 			catherine.character.SyncCharacterList( pl, function( )
+				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has deleted a '" .. id .. "' character.", true )
 				netstream.Start( pl, "catherine.character.DeleteResult", true )
 			end )
 		end )
@@ -376,6 +380,7 @@ if ( SERVER ) then
 		for k, v in pairs( data ) do
 			local varTable = catherine.character.FindVarByField( k )
 			if ( ( varTable and !varTable.doConversion ) or type( v ) == "table" ) then continue end
+			
 			data[ k ] = util.JSONToTable( v )
 		end
 		
@@ -443,6 +448,7 @@ if ( SERVER ) then
 				catherine.character.Save( v )
 			end
 			
+			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, #player.GetAllByLoaded( ) .. "'s characters saved.", true )
 			catherine.character.SaveTick = CurTime( ) + catherine.configs.saveInterval
 		end
 	end
@@ -451,6 +457,8 @@ if ( SERVER ) then
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			catherine.character.Save( v )
 		end
+		
+		catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, #player.GetAllByLoaded( ) .. "'s characters saved." )
 	end
 	
 	function catherine.character.PlayerDisconnected( pl )

@@ -17,36 +17,33 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.log = catherine.log or { }
-catherine.log.logString = { }
-//CAT_LOG_FLAG_CHAT
-
-function catherine.log.RegisterLogString( key, str )
-	catherine.log.logString[ key ] = str
-end
-	
-function catherine.log.FindLogStringByKey( key )
-	return catherine.log.logString[ key ]
-end
+CAT_LOG_FLAG_IMPORTANT = 1
+CAT_LOG_FLAG_BASIC = 2
+local printColor = Color( 50, 200, 50 )
 
 if ( SERVER ) then
-	function catherine.log.Add( flag, id, ... )
-	
+	function catherine.log.Add( flag, str, isStream )
+		flag = flag or CAT_LOG_FLAG_BASIC
 		
+		local time = os.date( "*t" )
+		local today = time.year .. "-" .. time.month .. "-" .. time.day
+
+		if ( isStream ) then
+			netstream.Start( catherine.util.GetAdmins( ), "catherine.log.Send", str )
+		end
+		
+		MsgC( printColor, "[CAT LOG] " .. str .. "\n" )
+		file.Append( "catherine/log/" .. today .. ".txt", ( flag == CAT_LOG_FLAG_IMPORTANT and "*****" or "" ) .. "[" .. os.date( "%X" ) .. "]" .. ( str or "No Str" ) .. "\n" )
 	end
 	
 	function catherine.log.Initialize( )
 		file.CreateDir( "catherine" )
 		file.CreateDir( "catherine/log" )
-		
-		local date = os.date( "*t" )
-		file.CreateDir( "catherine/log/" .. ( date.year .. "-" .. date.month .. "-" .. date.day ) )
 	end
 
 	hook.Add( "Initialize", "catherine.log.Initialize", catherine.log.Initialize )
-
 else
 	netstream.Hook( "catherine.log.Send", function( data )
-	
-		MsgC( Color( 50, 200, 50 ), "[CAT LOG] " .. 
+		MsgC( printColor, "[CAT LOG] " .. data .. "\n" )
 	end )
 end

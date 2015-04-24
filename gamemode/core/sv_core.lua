@@ -113,12 +113,14 @@ end
 
 function GM:PlayerAuthed( pl )
 	catherine.chat.Send( pl, "connect" )
+	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has connected a server." )
 	
 	hook.Run( "PlayerInitSpawned", pl )
 end
 
 function GM:PlayerDisconnected( pl )
 	catherine.chat.Send( pl, "disconnect" )
+	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has disconnected a server." )
 	
 	if ( pl:IsCharacterLoaded( ) ) then
 		hook.Run( "PlayerDisconnectedInCharacter", pl )
@@ -299,6 +301,8 @@ function GM:PlayerDeath( pl )
 	pl:SetNetVar( "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
 	pl:SetNetVar( "deathTime", CurTime( ) )
 	
+	catherine.log.Add( nil, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has a died [Character Name : " .. pl.Name( pl ) .. "]", true )
+	
 	hook.Run( "PlayerGone", pl )
 end
 
@@ -326,9 +330,13 @@ end
 function GM:InitPostEntity( )
 	hook.Run( "DataLoad" )
 	hook.Run( "SchemaDataLoad" )
+	
+	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has loaded." )
 end
 
 function GM:ShutDown( )
+	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Shutting down ... :)" )
+	
 	hook.Run( "PostDataSave" )
 	hook.Run( "DataSave" )
 	hook.Run( "SchemaDataSave" )

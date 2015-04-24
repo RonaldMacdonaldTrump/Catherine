@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
+local startTime = SysTime( )
 
 DeriveGamemode( "sandbox" )
 
@@ -31,3 +32,5 @@ catherine.util.IncludeInDir( "library", "catherine/gamemode/" )
 catherine.util.IncludeInDir( "core", "catherine/gamemode/" )
 catherine.util.IncludeInDir( "derma", "catherine/gamemode/" )
 catherine.util.Include( "command/sh_commands.lua" )
+
+MsgC( Color( 0, 255, 0 ), "Catherine took " .. math.Round( SysTime( ) - startTime, 3 ) .. " second(s) to initialize.\n" )
