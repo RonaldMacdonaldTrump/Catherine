@@ -22,13 +22,13 @@ function catherine.plugin.Include( dir )
 	local _, folders = file.Find( dir .. "/plugin/*", "LUA" )
 	
 	for k, v in pairs( folders ) do
-		PLUGIN = catherine.plugin.Get( v ) or { }
+		PLUGIN = catherine.plugin.Get( v ) or { FolderName = dir .. "/plugin/" .. v }
 		
-		local Pdir = dir .. "/plugin/" .. v
+		local pluginDir = PLUGIN.FolderName
 		
-		if ( file.Exists( Pdir .. "/sh_plugin.lua", "LUA" ) ) then
-			catherine.util.Include( Pdir .. "/sh_plugin.lua" )
-			catherine.item.Include( Pdir )
+		if ( file.Exists( pluginDir .. "/sh_plugin.lua", "LUA" ) ) then
+			catherine.util.Include( pluginDir .. "/sh_plugin.lua" )
+			catherine.item.Include( pluginDir )
 			
 			catherine.plugin.IncludeEntities( Pdir )
 			
@@ -44,7 +44,17 @@ function catherine.plugin.Include( dir )
 				catherine.util.Include( Pdir .. "/library/" .. v1 )
 			end
 			
+			for k1, v1 in pairs( file.Find( Pdir .. "/class/*.lua", "LUA" ) ) do
+				catherine.util.Include( Pdir .. "/class/" .. v1 )
+			end
+			
+			for k1, v1 in pairs( file.Find( Pdir .. "/faction/*.lua", "LUA" ) ) do
+				catherine.util.Include( Pdir .. "/faction/" .. v1 )
+			end
+			
 			catherine.plugin.lists[ v ] = PLUGIN
+		else
+			MsgC( Color( 255, 255, 0 ), "[CAT ERROR] SORRY, The plugin <test> are do not have files named sh_plugin.lua, failed to loading it ...\n" )
 		end
 		
 		PLUGIN = nil
