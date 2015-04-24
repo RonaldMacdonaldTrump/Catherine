@@ -16,10 +16,10 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.debugger = catherine.debugger or { }
+catherine.sphynX = catherine.sphynX or { }
 
 if ( SERVER ) then
-	function catherine.debugger.( )
+	function catherine.sphynX.Work( )
 	
 	
 	end
