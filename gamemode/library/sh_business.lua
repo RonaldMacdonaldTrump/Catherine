@@ -43,6 +43,7 @@ if ( SERVER ) then
 		ent:InitializeShipment( pl, shipLists )
 		
 		local physObject = ent:GetPhysicsObject( )
+		
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( true )
 			physObject:Wake( )

@@ -40,10 +40,10 @@ function catherine.hud.RegisterBlockModule( name )
 	catherine.hud.blockedModules[ #catherine.hud.blockedModules + 1 ] = name
 end
 
-function catherine.hud.Draw( )
+function catherine.hud.Draw( pl )
 	if ( catherine.option.Get( "CONVAR_MAINHUD" ) == "0" ) then return end
 	
-	catherine.hud.ZipTie( )
+	catherine.hud.ZipTie( pl )
 	catherine.hud.Vignette( )
 	catherine.hud.ScreenDamageDraw( )
 	catherine.hud.AmmoDraw( )
@@ -53,8 +53,8 @@ function catherine.hud.Draw( )
 	catherine.hud.WelcomeIntroDraw( )
 end
 
-function catherine.hud.ZipTie( )
-	if ( catherine.player.IsTied( LocalPlayer( ) ) ) then
+function catherine.hud.ZipTie( pl )
+	if ( catherine.player.IsTied( pl ) ) then
 		surface.SetDrawColor( 70, 70, 70, 255 )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
 		surface.DrawTexturedRect( ScrW( ) / 2 - ScrW( ) / 2 / 2, ScrH( ) * 0.3 - ( ScrH( ) * 0.2 ) / 2, ScrW( ) / 2, ScrH( ) * 0.1 )
@@ -63,8 +63,8 @@ function catherine.hud.ZipTie( )
 	end
 end
 
-function catherine.hud.DeathScreen( )
-	catherine.hud.deathAlpha = Lerp( 0.03, catherine.hud.deathAlpha, LocalPlayer( ):Alive( ) and 0 or 255 )
+function catherine.hud.DeathScreen( pl )
+	catherine.hud.deathAlpha = Lerp( 0.03, catherine.hud.deathAlpha, pl.Alive( pl ) and 0 or 255 )
 	draw.RoundedBox( 0, 0, 0, ScrW( ), ScrH( ), Color( 0, 0, 0, catherine.hud.deathAlpha ) )
 end
 

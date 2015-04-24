@@ -64,7 +64,7 @@ function GM:CalcView( pl, pos, ang, fov )
 end
 
 function GM:HUDDrawScoreBoard( )
-	if ( LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+	if ( LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 
 	catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 6, 6 )
@@ -108,7 +108,7 @@ function GM:PlayerBindPress( pl, code, pressed )
 end
 
 function GM:DrawDoorText( ent, pos, ang )
-	local a = catherine.util.GetAlphaFromDistance( ent:GetPos( ), LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 )
+	local a = catherine.util.GetAlphaFromDistance( ent.GetPos( ent ), LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 )
 
 	if ( math.Round( a ) <= 0 ) then
 		return
@@ -129,7 +129,7 @@ function GM:DrawDoorText( ent, pos, ang )
 		longW = descW
 	end
 
-	local scale = math.abs( ( data.w * 0.8) / longW )
+	local scale = math.abs( ( data.w * 0.8 ) / longW )
 	local titleScale = math.min( scale, 0.1 )
 	local descScale = math.min( scale, 0.03 )
 	local longH = titleH + descScale + 8
@@ -224,7 +224,6 @@ function GM:ProgressEntityCache( pl )
 		local ent = util.TraceLine( data ).Entity
 
 		catherine.entityCaches[ ent ] = IsValid( ent ) and true or nil
-		
 		catherine.nextCacheDo = CurTime( ) + 0.5
 	end
 	
@@ -234,7 +233,7 @@ function GM:ProgressEntityCache( pl )
 			continue
 		end
 		
-		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k.GetPos( k ), pl.GetPos( pl ), 100 ) )
+		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k.GetPos( k ), pl.GetPos( pl ), 256 ) )
 		k.alpha = a
 		
 		if ( math.Round( a ) <= 0 ) then
@@ -255,9 +254,9 @@ function GM:HUDPaint( )
 	local pl = LocalPlayer( )
 	
 	hook.Run( "HUDBackgroundDraw" )
-	catherine.hud.Draw( )
-	catherine.bar.Draw( )
-	catherine.hint.Draw( )
+	catherine.hud.Draw( pl )
+	catherine.bar.Draw( pl )
+	catherine.hint.Draw( pl )
 	hook.Run( "HUDDraw" )
 	
 	if ( pl.Alive( pl ) ) then

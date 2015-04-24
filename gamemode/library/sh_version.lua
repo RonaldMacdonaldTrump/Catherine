@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.version = catherine.version or { Ver = "2015-04-23" }
+catherine.version = catherine.version or { Ver = "2015-04-24" }
 
 if ( SERVER ) then
 	catherine.version.Checked = catherine.version.Checked or false
@@ -37,6 +37,7 @@ if ( SERVER ) then
 					foundNew = true
 				else
 					foundNew = false
+					
 					if ( globalVer == true ) then
 						catherine.net.SetNetGlobalVar( "cat_needUpdate", false )
 					end
@@ -47,6 +48,7 @@ if ( SERVER ) then
 				end
 			end, function( err )
 				catherine.util.Print( Color( 255, 0, 0 ), "Update check error! - " .. err )
+				
 				if ( IsValid( pl ) ) then
 					netstream.Start( pl, "catherine.version.CheckResult", { false, LANG( pl, "Version_Notify_CheckError", err ) } )
 				end
@@ -56,6 +58,7 @@ if ( SERVER ) then
 	
 	function catherine.version.PlayerAuthed( )
 		if ( catherine.version.Checked ) then return end
+		
 		catherine.version.Check( )
 		catherine.version.Checked = true
 	end
@@ -64,6 +67,7 @@ if ( SERVER ) then
 	
 	netstream.Hook( "catherine.version.Check", function( pl )
 		if ( !pl:IsSuperAdmin( ) ) then return end
+		
 		catherine.version.Check( pl )
 	end )
 else

@@ -55,7 +55,7 @@ function PANEL:Init( )
 	end
 end
 
-function PANEL:Rebuild( )
+function PANEL:Refresh( )
 	self.version = catherine.version.Ver
 	self.needUpdate = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
 end

@@ -388,6 +388,7 @@ else
 
 	function catherine.chat.CreateBase( )
 		if ( IsValid( catherine.chat.backpanel ) ) then return end
+		
 		catherine.chat.backpanel = vgui.Create( "DPanel" )
 		catherine.chat.backpanel:SetPos( CHATBox_x, CHATBox_y )
 		catherine.chat.backpanel:SetSize( CHATBox_w, CHATBox_h - 30 )
@@ -405,7 +406,6 @@ else
 		catherine.chat.isOpened = bool
 		
 		local self = catherine.chat.chatpanel
-		
 		local initHistoryKey = #catherine.chat.history + 1
 		local onEnterFunc = function( pnl )
 			local text = pnl:GetText( )
