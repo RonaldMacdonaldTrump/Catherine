@@ -17,9 +17,12 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.sphynX = catherine.sphynX or { }
+CAT_SPHYN_X_FLAG_PLUGIN = 1
+CAT_SPHYN_X_FLAG_SCHEMA = 2
+CAT_SPHYN_X_FLAG_FRAMEWORK = 3
 
 if ( SERVER ) then
-	function catherine.sphynX.Work( )
+	function catherine.sphynX.Do( flag, )
 	
 	
 	end

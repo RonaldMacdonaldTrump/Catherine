@@ -62,6 +62,9 @@ function hook.Call( name, gm, ... )
 			
 			return result
 		else
+			catherine.sphynX.Do( CAT_SPHYN_X_FLAG_PLUGIN, {
+				hook
+			}
 			MsgC( Color( 0, 255, 255 ), "[CAT ERROR] SORRY, On the plugin <" .. k .. ">'s hooks <" .. name .. "> has a critical error ...\n\n" .. result .. "\n" )
 		end
 	end
@@ -74,6 +77,7 @@ function hook.Call( name, gm, ... )
 				return result
 			end
 		else
+			catherine.sphynX.Do( )
 			MsgC( Color( 0, 255, 255 ), "[CAT ERROR] SORRY, Schema hooks <" .. name .. "> has a critical error ...\n\n" .. result .. "\n" )
 		end
 	end
