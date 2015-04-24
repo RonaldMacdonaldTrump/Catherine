@@ -22,7 +22,9 @@ CAT_SPHYN_X_FLAG_SCHEMA = 2
 CAT_SPHYN_X_FLAG_FRAMEWORK = 3
 
 if ( SERVER ) then
-	function catherine.sphynX.Do( flag, )
+	catherine.sphynX.buffer = catherine.sphynX.buffer or { }
+	
+	function catherine.sphynX.Do( flag, workTable, func )
 	
 	
 	end
