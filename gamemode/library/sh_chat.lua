@@ -25,6 +25,12 @@ function catherine.chat.Register( uniqueID, classTable )
 		uniqueID = uniqueID
 	} )
 	
+	if ( classTable.command and #classTable.command > 1 ) then
+		table.sort( classTable.command, function( a, b )
+			return string.utf8len( a ) > string.utf8len( b )
+		end )
+	end
+	
 	catherine.chat.lists[ uniqueID ] = classTable
 end
 
@@ -206,6 +212,58 @@ catherine.chat.Register( "disconnect", {
 } )
 
 if ( SERVER ) then
+	function catherine.chat.Work( pl, text )
+		local classTable = catherine.chat.FindByID( catherine.chat.FindIDByText( text ) )
+		if ( !classTable ) then return end
+		
+		if ( !catherine.chat.CanChat( pl, classTable ) ) then
+			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
+			return
+		end
+
+		local commandTable = classTable.command or { }
+		local commandTableType = type( commandTable )
+		local fix = ""
+		local isFin = false
+		local noSpace = classTable.noSpace
+		
+		if ( type( commandTable ) == "table" ) then
+			for k, v in ipairs( commandTable ) do
+				if ( text:sub( 1, #v + ( noSpace and 0 or 1 ) ) == v .. ( noSpace and "" or " " ) ) then
+					isFin = true
+					fix = v .. ( noSpace and "" or " " )
+					break
+				end
+			end
+		elseif ( type( commandTable ) == "string" ) then
+			isFin = text:sub( 1, #commandTable + ( noSpace and 1 or 0 ) ) == commandTable .. ( noSpace and "" or " " )
+			fix = commandTable .. ( noSpace and "" or " " )
+		end
+
+		if ( isFin ) then
+			text = text:sub( #fix + 1 )
+			
+			if ( noSpace and text:sub( 1, 1 ):match( "%s" ) ) then
+				text = text:sub( 2 )
+			end
+		end
+
+		if ( catherine.command.IsCommand( text ) ) then
+			catherine.command.RunByText( pl, text )
+			return
+		end
+		
+		local adjustInfo = {
+			text = text,
+			class = class,
+			player = pl
+		}
+		
+		adjustInfo = hook.Run( "ChatAdjust", adjustInfo ) or adjustInfo
+		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, adjustInfo.class ) or "" ) .. adjustInfo.text )
+		hook.Run( "ChatSended", adjustInfo )
+	end
+	
 	function catherine.chat.Send( pl, classTable, text, target, ... )
 		classTable = type( classTable ) == "string" and catherine.chat.FindByID( classTable ) or classTable
 		if ( !classTable or type( classTable ) != "table" ) then return end
@@ -251,63 +309,7 @@ if ( SERVER ) then
 		return classTable.canRun and classTable.canRun( pl ) or true
 	end
 	
-	function catherine.chat.Work( pl, text )
-		local class = catherine.chat.FindIDByText( text )
-		local classTable = catherine.chat.FindByID( class )
-		if ( !classTable ) then return end
-		
-		if ( !catherine.chat.CanChat( pl, classTable ) ) then
-			catherine.util.Notify( pl, "You can run this work now!" )
-			return
-		end
-
-		local commandTable = classTable.command or { }
-		if ( type( commandTable ) == "table" and #commandTable > 1 ) then
-			table.sort( classTable.command, function( a, b )
-				return #a > #b
-			end )
-		end
-		
-		local fix, isFin, noSpace = "", false, classTable.noSpace
-		
-		if ( type( commandTable ) == "table" ) then
-			for k, v in ipairs( commandTable ) do
-				if ( text:sub( 1, #v + ( noSpace and 0 or 1 ) ) == v .. ( noSpace and "" or " " ) ) then
-					isFin = true
-					fix = v .. ( noSpace and "" or " " )
-					break
-				end
-			end
-		elseif ( type( commandTable ) == "string" ) then
-			isFin = text:sub( 1, #commandTable + ( noSpace and 1 or 0 ) ) == commandTable .. ( noSpace and "" or " " )
-			fix = commandTable .. ( noSpace and "" or " " )
-		end
-
-		if ( isFin ) then
-			text = text:sub( #fix + 1 )
-			
-			if ( noSpace and text:sub( 1, 1 ):match( "%s" ) ) then
-				text = text:sub( 2 )
-			end
-		end
-
-		if ( catherine.command.IsCommand( text ) ) then
-			catherine.command.RunByText( pl, text )
-			return
-		end
-		
-		local adjustInfo = {
-			text = text,
-			class = class,
-			player = pl
-		}
-		
-		adjustInfo = hook.Run( "ChatAdjust", adjustInfo ) or adjustInfo
-		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, adjustInfo.class ) or "" ) .. adjustInfo.text )
-		hook.Run( "ChatSended", adjustInfo )
-	end
-	
-	function catherine.chat.RunByClass( pl, class, text, target, ... )
+	function catherine.chat.WorkByClass( pl, class, text, target, ... )
 		local classTable = catherine.chat.FindByID( class )
 		if ( !classTable ) then return end
 		
