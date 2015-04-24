@@ -16,19 +16,19 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.command = catherine.command or { Lists = { } }
+catherine.command = catherine.command or { lists = { } }
 
 function catherine.command.Register( tab )
 	tab.syntax = tab.syntax or "[None]"
-	catherine.command.Lists[ tab.command ] = tab
+	catherine.command.lists[ tab.command ] = tab
 end
 
 function catherine.command.GetAll( )
-	return catherine.command.Lists
+	return catherine.command.lists
 end
 
 function catherine.command.FindByCMD( id )
-	return catherine.command.Lists[ id ]
+	return catherine.command.lists[ id ]
 end
 
 function catherine.command.IsCommand( text )
@@ -36,7 +36,7 @@ function catherine.command.IsCommand( text )
 	local toArgs = catherine.command.TransferToArgsTab( text )
 	local id = toArgs[ 1 ]:sub( 2, #toArgs[ 1 ] )
 	
-	return catherine.command.Lists[ id ]
+	return catherine.command.lists[ id ]
 end
 
 function catherine.command.TransferToArgsTab( text )
@@ -51,18 +51,15 @@ function catherine.command.TransferToArgsTab( text )
 		if ( k == "\"" or k == "'" ) then
 			local match = text:sub( i ):match( "%b" .. k .. k )
 			
-			if ( match ) then
-				curstr = ""
-				skip = i + #match
-				args[ #args + 1 ] = match:sub( 2, -2 )
-			else
-				curstr = curstr .. k
-			end
+			curstr = match and ( "" ) or ( curstr .. k )
+			skip = i + #match
+			args[ #args + 1 ] = match:sub( 2, -2 )
 		elseif ( k == " " and curstr != "" ) then
 			args[ #args + 1 ] = curstr
 			curstr = ""
 		else
 			if ( k == " " and curstr == "" ) then continue end
+			
 			curstr = curstr .. k
 		end 
 	end

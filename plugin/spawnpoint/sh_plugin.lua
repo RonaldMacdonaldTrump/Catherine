@@ -36,9 +36,9 @@ catherine.command.Register( {
 				local map = game.GetMap( )
 				local faction = factionTable.uniqueID
 				
-				PLUGIN.Lists[ map ] = PLUGIN.Lists[ map ] or { }
-				PLUGIN.Lists[ map ][ faction ] = PLUGIN.Lists[ map ][ faction ] or { }
-				PLUGIN.Lists[ map ][ faction ][ #PLUGIN.Lists[ map ][ faction ] + 1 ] = pl:GetPos( )
+				PLUGIN.lists[ map ] = PLUGIN.lists[ map ] or { }
+				PLUGIN.lists[ map ][ faction ] = PLUGIN.lists[ map ][ faction ] or { }
+				PLUGIN.lists[ map ][ faction ][ #PLUGIN.lists[ map ][ faction ] + 1 ] = pl:GetPos( )
 				
 				PLUGIN:SavePoints( )
 				
@@ -62,10 +62,10 @@ catherine.command.Register( {
 		local map = game.GetMap( )
 		local i = 0
 
-		for k, v in pairs( PLUGIN.Lists[ map ] ) do
+		for k, v in pairs( PLUGIN.lists[ map ] ) do
 			if ( v:Distance( pos ) <= rad ) then
 				i = i + 1
-				table.remove( PLUGIN.Lists[ map ], k )
+				table.remove( PLUGIN.lists[ map ], k )
 			end
 		end
 		

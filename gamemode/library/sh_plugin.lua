@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.plugin = catherine.plugin or { Lists = { } }
+catherine.plugin = catherine.plugin or { lists = { } }
 
 function catherine.plugin.Include( dir )
 	local _, folders = file.Find( dir .. "/plugin/*", "LUA" )
@@ -44,7 +44,7 @@ function catherine.plugin.Include( dir )
 				catherine.util.Include( Pdir .. "/library/" .. v1 )
 			end
 			
-			catherine.plugin.Lists[ v ] = PLUGIN
+			catherine.plugin.lists[ v ] = PLUGIN
 		end
 		
 		PLUGIN = nil
@@ -72,10 +72,10 @@ function catherine.plugin.IncludeEntities( dir )
 	end
 end
 
-function catherine.plugin.Get( id )
-	return catherine.plugin.Lists[ id ]
+function catherine.plugin.GetAll( )
+	return catherine.plugin.lists
 end
 
-function catherine.plugin.GetAll( )
-	return catherine.plugin.Lists
+function catherine.plugin.Get( id )
+	return catherine.plugin.lists[ id ]
 end

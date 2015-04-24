@@ -36,6 +36,14 @@ function catherine.option.Register( uniqueID, conVar, name, desc, category, typ,
 	catherine.option.lists[ uniqueID ] = optionTable
 end
 
+function catherine.option.GetAll( )
+	return catherine.option.lists
+end
+
+function catherine.option.FindByID( uniqueID )
+	return catherine.option.lists[ uniqueID ]
+end
+
 function catherine.option.Remove( uniqueID )
 	catherine.option.lists[ uniqueID ] = nil
 end
@@ -63,14 +71,6 @@ function catherine.option.Get( uniqueID )
 	else
 		return GetConVarString( optionTable.conVar )
 	end
-end
-
-function catherine.option.FindByID( uniqueID )
-	return catherine.option.lists[ uniqueID ]
-end
-
-function catherine.option.GetAll( )
-	return catherine.option.lists
 end
 
 local cat = "^Option_Category_01"

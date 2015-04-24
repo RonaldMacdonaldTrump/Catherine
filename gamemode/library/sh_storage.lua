@@ -21,10 +21,10 @@ CAT_STORAGE_ACTION_ADD = 1
 CAT_STORAGE_ACTION_REMOVE = 2
 
 if ( SERVER ) then
-	catherine.storage.Lists = { }
+	catherine.storage.lists = { }
 	
 	function catherine.storage.Register( name, desc, model, maxWeight )
-		catherine.storage.Lists[ #catherine.storage.Lists + 1 ] = {
+		catherine.storage.lists[ #catherine.storage.lists + 1 ] = {
 			name = name,
 			desc = desc,
 			model = model,
@@ -36,7 +36,7 @@ if ( SERVER ) then
 	catherine.storage.Register( "Desk", "A Desk.", "models/props_interiors/Furniture_Desk01a.mdl", 12 )
 	
 	function catherine.storage.GetAll( )
-		return catherine.storage.Lists
+		return catherine.storage.lists
 	end
 	
 	function catherine.storage.FindByModel( model )
