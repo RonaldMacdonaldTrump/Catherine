@@ -35,7 +35,7 @@ if ( SERVER ) then
 		self:SetUseType( SIMPLE_USE )
 		self:PrecacheGibs( )
 		
-		local physObject = self:GetPhysicsObject( )
+		local physObject = self.GetPhysicsObject( self )
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( true )
 			physObject:Wake( )
@@ -58,8 +58,8 @@ if ( SERVER ) then
 	
 	function ENT:OnRemove( )
 		local eff = EffectData( )
-		eff:SetStart( self:GetPos( ) )
-		eff:SetOrigin( self:GetPos( ) )
+		eff:SetStart( self.GetPos( self ) )
+		eff:SetOrigin( self.GetPos( self ) )
 		eff:SetScale( 8 )
 		util.Effect( "GlassImpact", eff, true, true )
 		self:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav" )

@@ -469,7 +469,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 		self.itemInformationPanel = nil
 	end
 
-	local x, y = self:GetPos( )
+	local x, y = self.GetPos( self )
 	local newData = data or { uniqueID = itemTable.uniqueID, stock = 0, cost = itemTable.cost, type = 1 }
 	
 	self.itemInformationPanel = vgui.Create( "DPanel" )

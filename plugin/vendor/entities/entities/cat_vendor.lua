@@ -37,7 +37,7 @@ if ( SERVER ) then
 		self:SetMoveType( MOVETYPE_NONE )
 		self:SetUseType( SIMPLE_USE )
 		
-		local physObject = self:GetPhysicsObject( )
+		local physObject = self.GetPhysicsObject( self )
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( false )
 			physObject:Sleep( )
@@ -69,7 +69,7 @@ else
 	local toscreen = FindMetaTable( "Vector" ).ToScreen
 	
 	function ENT:Think( )
-		self:SetEyeTarget( LocalPlayer( ):GetPos( ) )
+		self:SetEyeTarget( LocalPlayer( ).GetPos( LocalPlayer( ) ) )
 	end
 	
 	function ENT:DrawEntityTargetID( pl, ent, a )

@@ -32,7 +32,7 @@ else
 	PLUGIN.markup = PLUGIN.markup or nil
 	
 	function PLUGIN:PlayerBindPress( pl, bind, pressed )
-		local wep = pl:GetActiveWeapon( )
+		local wep = pl.GetActiveWeapon( pl )
 		local weps = pl:GetWeapons( )
 		if ( pl:InVehicle( ) or ( IsValid( wep ) and wep:GetClass( ) == "weapon_physgun" and pl:KeyDown( IN_ATTACK ) ) ) then return end
 		

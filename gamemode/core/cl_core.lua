@@ -39,7 +39,7 @@ function GM:HUDShouldDraw( name )
 end
 
 function GM:CalcView( pl, pos, ang, fov )
-	if ( IsValid( catherine.vgui.character ) or !pl:IsCharacterLoaded( ) ) then
+	if ( IsValid( catherine.vgui.character ) or !pl.IsCharacterLoaded( pl ) ) then
 		local data = {
 			origin = catherine.configs.schematicViewPos.pos,
 			angles = catherine.configs.schematicViewPos.ang
@@ -95,7 +95,7 @@ function GM:PostDrawTranslucentRenderables( depth, skybox )
 	for k, v in pairs( ents.FindInSphere( LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 ) ) do
 		if ( !IsValid( v ) or !catherine.entity.IsDoor( v ) ) then continue end
 		
-		hook.Run( "DrawDoorText", v, v:GetPos( ), v:GetAngles( ) )
+		hook.Run( "DrawDoorText", v, v.GetPos( v ), v.GetAngles( v ) )
 	end
 end
 
@@ -216,7 +216,7 @@ function GM:GetUnknownTargetName( pl, target )
 end
 
 function GM:ProgressEntityCache( pl )
-	if ( pl:IsCharacterLoaded( ) and catherine.nextCacheDo <= CurTime( ) ) then
+	if ( pl.IsCharacterLoaded( pl ) and catherine.nextCacheDo <= CurTime( ) ) then
 		local data = { }
 		data.start = pl.GetShootPos( pl )
 		data.endpos = data.start + pl.GetAimVector( pl ) * 160
@@ -274,13 +274,13 @@ function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePo
 	if ( !IsValid( weapon ) ) then return end
 	local pl = LocalPlayer( )
 	local value = 0
-	if ( !pl:GetWeaponRaised( ) ) then value = 100 end
+	if ( !pl.GetWeaponRaised( pl ) ) then value = 100 end
 	local fraction = ( pl.wepRaisedFraction or 0 ) / 100
 	local lowerAngle = weapon.LowerAngles or Angle( 30, -30, -25 )
 	
-	eyeAng:RotateAroundAxis( eyeAng:Up( ), lowerAngle.p * fraction )
-	eyeAng:RotateAroundAxis( eyeAng:Forward( ), lowerAngle.y * fraction )
-	eyeAng:RotateAroundAxis( eyeAng:Right( ), lowerAngle.r * fraction )
+	eyeAng:RotateAroundAxis( eyeAng.Up( eyeAng ), lowerAngle.p * fraction )
+	eyeAng:RotateAroundAxis( eyeAng.Forward( eyeAng ), lowerAngle.y * fraction )
+	eyeAng:RotateAroundAxis( eyeAng.Right( eyeAng ), lowerAngle.r * fraction )
 	pl.wepRaisedFraction = Lerp( FrameTime( ) * 2, pl.wepRaisedFraction or 0, value )
 	viewModel:SetAngles( eyeAng )
 	
@@ -296,7 +296,7 @@ function GM:GetSchemaInformation( )
 end
 
 function GM:ScoreboardShow( )
-	if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+	if ( !LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then return end
 	
 	if ( IsValid( catherine.vgui.menu ) ) then
 		catherine.vgui.menu:Close( )
@@ -325,8 +325,8 @@ function GM:RenderScreenspaceEffects( )
 end
 --[[
 function GM:PostPlayerDraw( pl )
-	if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) ) then return end
-	local wep = pl:GetActiveWeapon( )
+	if ( !IsValid( pl ) or !pl.IsCharacterLoaded( pl ) ) then return end
+	local wep = pl.GetActiveWeapon( pl )
 	local curClass = ( IsValid( wep ) and wep:GetClass( ):lower( ) or "" )
 	
 	for k, v in pairs( pl:GetWeapons( ) ) do

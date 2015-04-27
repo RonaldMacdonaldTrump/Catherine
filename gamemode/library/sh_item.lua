@@ -194,7 +194,7 @@ if ( SERVER ) then
 		ent:PhysicsInit( SOLID_VPHYSICS )
 		ent:InitializeItem( uniqueID, itemData or { } )
 
-		local physObject = ent:GetPhysicsObject( )
+		local physObject = ent.GetPhysicsObject( ent )
 		
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( true )
@@ -221,11 +221,12 @@ else
 	end )
 	
 	function catherine.item.OpenMenuUse( uniqueID )
+		local pl = LocalPlayer( )
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local menu = DermaMenu( )
 		
 		for k, v in pairs( itemTable and itemTable.func or { } ) do
-			if ( !v.canShowIsMenu or ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) ) then continue end
+			if ( !v.canShowIsMenu or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
 			
 			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
 				netstream.Start( "catherine.item.Work", { uniqueID, k, true } )
@@ -236,14 +237,15 @@ else
 	end
 	
 	function catherine.item.OpenEntityUseMenu( data )
+		local pl = LocalPlayer( )
 		local ent = Entity( data[ 1 ] )
 		local uniqueID = data[ 2 ]
-		if ( !IsValid( ent ) or !IsValid( LocalPlayer( ):GetEyeTrace( ).Entity ) ) then return end
+		if ( !IsValid( ent ) or !IsValid( pl.GetEyeTrace( pl ).Entity ) ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local menu = DermaMenu( )
 		
 		for k, v in pairs( itemTable and itemTable.func or { } ) do
-			if ( !v.canShowIsWorld or ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) ) then continue end
+			if ( !v.canShowIsWorld or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
 
 			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
 				netstream.Start( "catherine.item.Work", { uniqueID, k, ent } )

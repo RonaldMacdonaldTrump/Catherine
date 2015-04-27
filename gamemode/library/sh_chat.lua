@@ -80,7 +80,7 @@ catherine.chat.Register( "me", {
 	end,
 	command = { "/me" },
 	canHearRange = 1500,
-	canRun = function( pl ) return pl:Alive( ) end
+	canRun = function( pl ) return pl.Alive( pl ) end
 } )
 
 catherine.chat.Register( "it", {
@@ -89,7 +89,7 @@ catherine.chat.Register( "it", {
 	end,
 	command = { "/it" },
 	canHearRange = 1000,
-	canRun = function( pl ) return pl:Alive( ) end
+	canRun = function( pl ) return pl.Alive( pl ) end
 } )
 
 catherine.chat.Register( "roll", {
@@ -103,14 +103,14 @@ catherine.chat.Register( "roll", {
 		chat.AddText( Color( 158, 122, 19 ), LANG( "Chat_Str_Roll", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 600,
-	canRun = function( pl ) return pl:Alive( ) end
+	canRun = function( pl ) return pl.Alive( pl ) end
 } )
 
 catherine.chat.Register( "pm", {
 	func = function( pl, text, ex )
 		chat.AddText( Color( 255, 255, 0 ), "[PM] " .. pl.Name( pl ) .. " : " .. text )
 	end,
-	canRun = function( pl ) return pl:Alive( ) end
+	canRun = function( pl ) return pl.Alive( pl ) end
 } )
 
 catherine.chat.Register( "event", {
@@ -133,7 +133,7 @@ catherine.chat.Register( "yell", {
 	end,
 	canHearRange = 600,
 	command = { "/y", "/yell" },
-	canRun = function( pl ) return pl:Alive( ) end
+	canRun = function( pl ) return pl.Alive( pl ) end
 } )
 
 catherine.chat.Register( "whisper", {
@@ -148,7 +148,7 @@ catherine.chat.Register( "whisper", {
 	end,
 	canHearRange = 150,
 	command = { "/w", "/whisper" },
-	canRun = function( pl ) return pl:Alive( ) end
+	canRun = function( pl ) return pl.Alive( pl ) end
 } )
 
 catherine.chat.Register( "ooc", {
@@ -326,7 +326,7 @@ else
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
 	
 	netstream.Hook( "catherine.chat.Post", function( data )
-		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then return end
 		local speaker = data[ 1 ]
 		local classTable = catherine.chat.FindByID( data[ 2 ] )
 		local text = data[ 3 ]
@@ -342,7 +342,7 @@ else
 	chat.AddTextBuffer = chat.AddTextBuffer or chat.AddText
 	
 	function chat.AddText( ... )
-		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+		if ( !LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then return end
 		local data = { }
 		local lastColor = Color( 255, 255, 255 )
 
@@ -400,7 +400,7 @@ else
 	end
 	
 	function catherine.chat.SetStatus( bool )
-		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+		if ( !LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then return end
 		
 		catherine.chat.CreateBase( )
 		catherine.chat.isOpened = bool

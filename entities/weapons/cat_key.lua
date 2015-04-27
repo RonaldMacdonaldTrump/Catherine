@@ -27,7 +27,7 @@ SWEP.CanFireLowered = true
 SWEP.DrawHUD = false
 
 function SWEP:PreDrawViewModel( viewMdl, wep, pl )
-	local fists = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl:GetModel( ) ) )
+	local fists = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl.GetModel( pl ) ) )
 	if ( fists and fists.model ) then
 		viewMdl:SetModel( fists.model )
 		viewMdl:SetSkin( fists.skin )

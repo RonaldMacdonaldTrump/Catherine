@@ -38,7 +38,7 @@ catherine.command.Register( {
 				
 				PLUGIN.lists[ map ] = PLUGIN.lists[ map ] or { }
 				PLUGIN.lists[ map ][ faction ] = PLUGIN.lists[ map ][ faction ] or { }
-				PLUGIN.lists[ map ][ faction ][ #PLUGIN.lists[ map ][ faction ] + 1 ] = pl:GetPos( )
+				PLUGIN.lists[ map ][ faction ][ #PLUGIN.lists[ map ][ faction ] + 1 ] = pl.GetPos( pl )
 				
 				PLUGIN:SavePoints( )
 				
@@ -58,7 +58,7 @@ catherine.command.Register( {
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local rad = math.max( tonumber( args[ 1 ] or "" ) or 140, 8 )
-		local pos = pl:GetPos( )
+		local pos = pl.GetPos( pl )
 		local map = game.GetMap( )
 		local i = 0
 

@@ -33,9 +33,9 @@ if ( CLIENT ) then
 	function PLUGIN:PostPlayerDraw( pl )
 		if ( !pl:IsChatTyping( ) ) then return end
 		local text = LANG( "HeadChat_Talking" )
-		local a = catherine.util.GetAlphaFromDistance( LocalPlayer( ):GetPos( ), pl:GetPos( ), 312 )
+		local a = catherine.util.GetAlphaFromDistance( LocalPlayer( ).GetPos( LocalPlayer( ) ), pl.GetPos( pl ), 312 )
 		
-		if ( math.Round( a ) <= 0 or !pl:Alive( ) or pl:GetMoveType( ) == MOVETYPE_NOCLIP ) then
+		if ( math.Round( a ) <= 0 or !pl.Alive( pl ) or pl:GetMoveType( ) == MOVETYPE_NOCLIP ) then
 			return
 		end
 		

@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 --[[
-	This code has brought by nutscript.
+	This code has brought in nutscript.
 	https://github.com/Chessnut/NutScript
 --]]
 
@@ -51,7 +51,7 @@ PlayerHoldType[ "knife" ] = "normal"
 PlayerHoldType[ "duel" ] = "normal"
 PlayerHoldType[ "bugbait" ] = "normal"
 
-local Length2D = FindMetaTable("Vector").Length2D
+local twoD = FindMetaTable( "Vector" ).Length2D
 local NormalHoldTypes = {
 	normal = true,
 	fist = true,
@@ -66,28 +66,28 @@ WEAPON_LOWERED = 1
 WEAPON_RAISED = 2
 
 function GM:CalcMainActivity( pl, velo )
-	local mdl = pl:GetModel( ):lower( )
+	local mdl = pl.GetModel( pl ):lower( )
 	local class = catherine.animation.Get( mdl )
-	local wep = pl:GetActiveWeapon( )
+	local wep = pl.GetActiveWeapon( pl )
 	local holdType = "normal"
 	local status = WEAPON_LOWERED
 	local act = "idle"
 
-	if ( Length2D( velo ) >= catherine.configs.playerDefaultRunSpeed - 10 ) then
+	if ( twoD( velo ) >= catherine.configs.playerDefaultRunSpeed - 10 ) then
 		act = "run"
-	elseif ( Length2D( velo ) >= 5 ) then
+	elseif ( twoD( velo ) >= 5 ) then
 		act = "walk"
 	end
 
 	if ( IsValid( wep ) ) then
 		holdType = catherine.util.GetHoldType( wep )
 
-		if ( wep.AlwaysRaised or catherine.configs.alwaysRaised[ wep:GetClass( ) ] ) then
+		if ( wep.AlwaysRaised or catherine.configs.alwaysRaised[ wep.GetClass( wep ) ] ) then
 			status = WEAPON_RAISED
 		end
 	end
 
-	if ( pl:GetWeaponRaised( ) ) then
+	if ( pl.GetWeaponRaised( pl ) ) then
 		status = WEAPON_RAISED
 	end
 
@@ -95,11 +95,11 @@ function GM:CalcMainActivity( pl, velo )
 		local calcIdle, calcOver = self.BaseClass:CalcMainActivity( pl, velo )
 
 		if ( status == WEAPON_LOWERED ) then
-			if ( pl:Crouching( ) ) then
+			if ( pl.Crouching( pl ) ) then
 				act = act.."_crouch"
 			end
 
-			if ( !pl:OnGround( ) ) then
+			if ( !pl.OnGround( pl ) ) then
 				act = "jump"
 			end
 
@@ -120,10 +120,10 @@ function GM:CalcMainActivity( pl, velo )
 		return pl.CalcIdle, pl.CalcOver
 	end
 	
-	if ( pl:IsCharacterLoaded( ) and pl:Alive( ) ) then
+	if ( pl.IsCharacterLoaded( pl ) and pl.Alive( pl ) ) then
 		pl.CalcOver = -1
 
-		if ( pl:Crouching( ) ) then
+		if ( pl.Crouching( pl ) ) then
 			act = act .. "_crouch"
 		end
 
@@ -144,9 +144,9 @@ function GM:CalcMainActivity( pl, velo )
 		local ani = aniClass[ holdType ][ act ]
 		local val = ACT_IDLE
 
-		if ( !pl:OnGround( ) ) then
+		if ( !pl.OnGround( pl ) ) then
 			pl.CalcIdle = aniClass.glide or ACT_GLIDE
-		elseif ( pl:InVehicle( ) ) then
+		elseif ( pl.InVehicle( pl ) ) then
 			pl.CalcIdle = aniClass.normal.idle_crouch[ 1 ]
 		elseif ( ani ) then
 			val = ani[ status ]
@@ -168,7 +168,7 @@ function GM:CalcMainActivity( pl, velo )
 			pl:SetIK( false )
 		end
 
-		local norm = math.NormalizeAngle( velo:Angle( ).yaw - pl:EyeAngles( ).y )
+		local norm = math.NormalizeAngle( velo.Angle( velo ).yaw - pl.EyeAngles( pl ).y )
 		pl:SetPoseParameter( "move_yaw", norm )
 
 		return pl.CalcIdle or ACT_IDLE, pl.CalcOver or -1
@@ -200,14 +200,14 @@ function GM:PlayerNoClip( pl, bool )
 end
 
 function GM:DoAnimationEvent( pl, event, data )
-	local mdl = pl:GetModel( ):lower( )
+	local mdl = pl.GetModel( pl ):lower( )
 	local class = catherine.animation.Get( mdl )
 
 	if ( mdl:find( "/player/" ) or mdl:find( "/playermodel" ) or class == "player" ) then
 		return self.BaseClass:DoAnimationEvent( pl, event, data )
 	end
 
-	local wep = pl:GetActiveWeapon( )
+	local wep = pl.GetActiveWeapon( pl )
 	local holdType = "normal"
 
 	if ( !catherine.animation[ class ] ) then
@@ -250,46 +250,50 @@ function GM:GetPlayerInformation( pl, target, isFull )
 		return pl.Name( pl ), pl:Desc( )
 	end
 	
-	if ( pl:IsKnow( target ) ) then
-		return target:Name( ), target:Desc( )
+	if ( pl.IsKnow( pl, target ) ) then
+		return target.Name( target ), target.Desc( target )
 	end
 	
-	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target:Desc( ) or ( string.utf8sub( target:Desc( ), 1, 37 ) .. "..." )
+	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target.Desc( target ) or ( string.utf8sub( target.Desc( target ), 1, 37 ) .. "..." )
 end
 
 function GM:PlayerNoClip( pl, bool )
-	if ( pl:IsAdmin( ) ) then
-		if ( pl:GetMoveType( ) == MOVETYPE_WALK ) then
-			pl:SetNoDraw( true )
-			pl:DrawShadow( false )
-			pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
-			
-			if ( SERVER ) then
-				pl:SetNetVar( "nocliping", true )
-			end
-		else
-			pl:SetNoDraw( false )
-			pl:DrawShadow( true )
-			pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
-			
-			if ( SERVER ) then
-				pl:SetNetVar( "nocliping", false )
-			end
+	local isAdmin = pl.IsAdmin( pl )
+	
+	if ( !isAdmin ) then
+		return isAdmin
+	end
+	
+	if ( pl.GetMoveType( pl ) == MOVETYPE_WALK ) then
+		pl:SetNoDraw( true )
+		pl:DrawShadow( false )
+		pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
+		
+		if ( SERVER ) then
+			pl:SetNetVar( "nocliping", true )
+		end
+	else
+		pl:SetNoDraw( false )
+		pl:DrawShadow( true )
+		pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
+		
+		if ( SERVER ) then
+			pl:SetNetVar( "nocliping", false )
 		end
 	end
 	
-	return pl:IsAdmin( )
+	return isAdmin
 end
 
 function GM:DoAnimationEvent( pl, event, data )
-	local mdl = pl:GetModel( ):lower( )
+	local mdl = pl.GetModel( pl ):lower( )
 	local class = catherine.animation.Get( mdl )
 
 	if ( mdl:find( "/player/" ) or mdl:find( "/playermodel" ) or class == "player" ) then
 		return self.BaseClass:DoAnimationEvent( pl, event, data )
 	end
 
-	local wep = pl:GetActiveWeapon( )
+	local wep = pl.GetActiveWeapon( pl )
 	local holdType = "normal"
 	
 	if ( !catherine.animation[ class ] ) then

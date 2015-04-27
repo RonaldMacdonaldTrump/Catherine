@@ -53,7 +53,7 @@ function SWEP:Precache( )
 end
 
 function SWEP:PreDrawViewModel( viewMdl, wep, pl )
-	local fists = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl:GetModel( ) ) )
+	local fists = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl.GetModel( pl ) ) )
 	
 	if ( fists and fists.model ) then
 		viewMdl:SetModel( fists.model )
@@ -66,7 +66,7 @@ function SWEP:PrimaryAttack( )
 	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
 	local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
-	if ( !pl:GetWeaponRaised( ) or stamina < 10 ) then
+	if ( !pl.GetWeaponRaised( pl ) or stamina < 10 ) then
 		return
 	end
 	

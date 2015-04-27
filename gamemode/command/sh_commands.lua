@@ -18,7 +18,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.command.Register( {
 	command = "fallover",
-	canRun = function( pl ) return pl:Alive( ) end,
+	canRun = function( pl ) return pl.Alive( pl ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			args[ 1 ] = tonumber( args[ 1 ] )
@@ -30,7 +30,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "chargetup",
-	canRun = function( pl ) return pl:Alive( ) end,
+	canRun = function( pl ) return pl.Alive( pl ) end,
 	runFunc = function( pl, args )
 		if ( !pl.CAT_gettingup ) then
 			if ( catherine.player.IsRagdolled( pl ) ) then
