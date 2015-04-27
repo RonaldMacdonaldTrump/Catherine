@@ -23,8 +23,8 @@ if ( SERVER ) then
 	function catherine.recognize.DoKnow( pl, code, target )
 		target = { target } or nil
 
-		if ( code == 0 and !target ) then
-			target = catherine.chat.GetListener( pl, "ic" )
+		if ( code == 0 ) then
+			target = target or catherine.chat.GetListener( pl, "ic" )
 		else
 			target = catherine.chat.GetListener( pl, code == 1 and "whisper" or "yell" )
 		end
