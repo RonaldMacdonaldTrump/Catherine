@@ -19,7 +19,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 if ( !catherine.character ) then
 	catherine.util.Include( "sh_character.lua" )
 end
-catherine.attribute = catherine.attribute or { lists = { } }
+catherine.attribute = catherine.attribute or { }
+catherine.attribute.lists = { }
 
 function catherine.attribute.Register( attributeTable )
 	if ( !attributeTable or !attributeTable.index ) then

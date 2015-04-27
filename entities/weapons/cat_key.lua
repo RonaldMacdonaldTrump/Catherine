@@ -54,7 +54,9 @@ function SWEP:PrimaryAttack( )
 	local pl = self.Owner
 	local ent = pl:GetEyeTrace( 70 ).Entity
 
-	if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) or ent.CAT_doorLocked or !catherine.door.IsDoorOwner( pl, ent ) ) then return end
+	if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) or ent.CAT_doorLocked ) then return end
+	local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
+	if ( !has or flag == 0 ) then return end
 	
 	pl:Freeze( true )
 	catherine.util.ProgressBar( pl, LANG( pl, "Door_Message_Locking" ), 2, function( )
@@ -74,8 +76,10 @@ function SWEP:SecondaryAttack( )
 	local pl = self.Owner
 	local ent = pl:GetEyeTrace( 70 ).Entity
 	
-	if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) or !ent.CAT_doorLocked or !catherine.door.IsDoorOwner( pl, ent ) ) then return end
-
+	if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) or !ent.CAT_doorLocked ) then return end
+	local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
+	if ( !has or flag == 0 ) then return end
+	
 	pl:Freeze( true )
 	catherine.util.ProgressBar( pl, LANG( pl, "Door_Message_UnLocking" ), 2, function( )
 		if ( IsValid( ent ) ) then

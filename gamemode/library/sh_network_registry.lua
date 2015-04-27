@@ -121,7 +121,7 @@ else
 	end )
 	
 	function catherine.net.GetNetVar( ent, key, default )
-		local data = ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( )
+		local data = ent.IsPlayer( ent ) and ent.SteamID( ent ) or ent.EntIndex( ent )
 		
 		return catherine.net.entityRegistry[ data ] and catherine.net.entityRegistry[ data ][ key ] or default
 	end

@@ -256,7 +256,7 @@ if ( SERVER ) then
 		classTable = type( classTable ) == "string" and catherine.chat.FindByID( classTable ) or classTable
 		if ( !classTable or type( classTable ) != "table" ) then return end
 		local uniqueID = classTable.uniqueID
-		
+
 		if ( classTable.isGlobal and !target ) then
 			netstream.Start( nil, "catherine.chat.Post", { pl, uniqueID, text, { ... } } )
 		else
@@ -278,7 +278,7 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.chat.GetListener( pl, uniqueID )
+	function catherine.chat.GetListener( pl, classTable )
 		classTable = type( classTable ) == "string" and catherine.chat.FindByID( classTable ) or classTable
 		if ( !classTable or !classTable.canHearRange ) then return { pl } end
 		local target = { pl }

@@ -56,25 +56,33 @@ if ( SERVER ) then
 			
 			local has, flag = catherine.door.IsHasDoorPermission( target, ent )
 			
-			if ( has and flag == data[ 2 ] ) then
-				print("Already has")
+			if ( flag == CAT_DOOR_FLAG_OWNER ) then
+				print("Cant change owner!")
 				return
-			elseif ( has and data[ 2 ] == 0 ) then
-				for k, v in pairs( permissions ) do
-					if ( v.id == target:GetCharacterID( ) ) then
-						table.remove( permissions, k )
-						print("Fin!")
-						return
-					end
+			else
+				if ( has and flag == data[ 2 ] ) then
+					print("Already has")
+					return
+				elseif ( has and data[ 2 ] == 0 ) then
+					permissions[ target.GetCharacterID( target ) ] = nil
+					ent:SetNetVar( "permissions", permissions )
+					netstream.Start( pl, "catherine.door.DoorMenuRefresh" )
+					print("Remove Fin!")
+					return
 				end
 			end
 			
-			permissions[ #permissions + 1 ] = {
-				id = target:GetCharacterID( ),
+			PrintTable(permissions)
+			
+			local targetID = target.GetCharacterID( target )
+			
+			permissions[ targetID ] = {
+				id = targetID,
 				permission = data[ 2 ]
 			}
 
 			ent:SetNetVar( "permissions", permissions )
+			netstream.Start( pl, "catherine.door.DoorMenuRefresh" )
 			print("Fin!")
 		elseif ( workID == CAT_DOOR_CHANGE_DESC ) then
 			local permissions = ent.GetNetVar( ent, "permissions" )
@@ -118,10 +126,14 @@ if ( SERVER ) then
 			return false, "Cash_Notify_HasNot"
 		end
 		
+		local id = pl.GetCharacterID( pl )
+		
+		print(id)
+		
 		catherine.cash.Take( pl, cost )
 		ent:SetNetVar( "permissions", {
-			{
-				id = pl:GetCharacterID( ),
+			[ id ] = {
+				id = id,
 				permission = CAT_DOOR_FLAG_OWNER
 			}
 		} )
@@ -263,6 +275,14 @@ if ( SERVER ) then
 		catherine.door.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ] )
 	end )
 else
+	netstream.Hook( "catherine.door.DoorMenuRefresh", function( data )
+		print("Ref!")
+		if ( IsValid( catherine.vgui.door ) ) then
+			print("IsValid")
+			catherine.vgui.door:Refresh( )
+		end
+	end )
+	
 	netstream.Hook( "catherine.door.DoorMenu", function( data )
 		if ( IsValid( catherine.vgui.door ) ) then
 			catherine.vgui.door:Remove( )
@@ -317,27 +337,27 @@ else
 			w = size.y
 			
 			if ( rev ) then
-				data.start = data.endpos - ( ent.Up( ent ) * len )
+				data.start = data.endpos - ( ent.GetUp( ent ) * len )
 			else
-				data.start = data.endpos + ( ent.Up( ent ) * len )
+				data.start = data.endpos + ( ent.GetUp( ent ) * len )
 			end
 		elseif ( size.x < size.y ) then
 			len = size.x
 			w = size.y
 			
 			if ( rev ) then
-				data.start = data.endpos - ( ent.Forward( ent ) * len )
+				data.start = data.endpos - ( ent.GetForward( ent ) * len )
 			else
-				data.start = data.endpos + ( ent.Forward( ent ) * len )
+				data.start = data.endpos + ( ent.GetForward( ent ) * len )
 			end
 		elseif ( size.y < size.x ) then
 			len = size.y
 			w = size.x
 			
 			if ( rev ) then
-				data.start = data.endpos - ( ent.Right( ent ) * len )
+				data.start = data.endpos - ( ent.GetRight( ent ) * len )
 			else
-				data.start = data.endpos + ( ent.Right( ent ) * len )
+				data.start = data.endpos + ( ent.GetRight( ent ) * len )
 			end
 		end
 
@@ -369,23 +389,30 @@ else
 end
 
 function catherine.door.IsDoorOwner( pl, ent, flag )
-	for k, v in pairs( ent.GetNetVar( ent, "permissions", { } ) ) do
-		if ( v.id != pl.GetCharacterID( pl ) ) then continue end
-		
-		return flag == v.permission
+	local permissions = ent.GetNetVar( ent, "permissions", { } )
+	local targetID = pl.GetCharacterID( pl )
+	
+	PrintTable(permissions)
+	print(type(targetID))
+	
+	print(permissions[targetID])
+	
+	if ( permissions[ targetID ] ) then
+		return permissions[ targetID ].permission == flag
 	end
 	
 	return false
 end
 
 function catherine.door.IsHasDoorPermission( pl, ent )
-	for k, v in pairs( ent.GetNetVar( ent, "permissions", { } ) ) do
-		if ( v.id != pl.GetCharacterID( pl ) ) then continue end
-		
-		return true, v.permission
+	local permissions = ent.GetNetVar( ent, "permissions", { } )
+	local targetID = pl.GetCharacterID( pl )
+	
+	if ( permissions[ targetID ] ) then
+		return true, permissions[ targetID ].permission or 0
 	end
 	
-	return false
+	return false, 0
 end
 
 function catherine.door.IsBuyableDoor( ent )

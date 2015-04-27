@@ -31,7 +31,7 @@ end
 
 if ( SERVER ) then
 	catherine.entity.customUse = catherine.entity.customUse or { }
-	
+
 	function catherine.entity.RegisterUseMenu( ent, menuTable )
 		local forServer = { }
 		local forClient = { }
@@ -63,7 +63,7 @@ if ( SERVER ) then
 		catherine.entity.RunUseMenu( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
-	netstream.Hook( "catherine.entity.customUseMenu", function( data )
+	netstream.Hook( "catherine.entity.CustomUseMenu", function( data )
 		local index = data
 		local ent = Entity( index )
 		local menu = DermaMenu( )

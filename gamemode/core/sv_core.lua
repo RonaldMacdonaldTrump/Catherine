@@ -32,7 +32,7 @@ function GM:ShowTeam( pl )
 	local ent = pl.GetEyeTrace( pl, 70 ).Entity
 	
 	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
-		if ( catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_MASTER ) ) then
+		if ( catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_OWNER ) ) then
 			netstream.Start( pl, "catherine.door.DoorMenu", ent.EntIndex( ent ) )
 		else
 			catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )

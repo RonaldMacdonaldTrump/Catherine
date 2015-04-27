@@ -38,12 +38,48 @@ function PANEL:Init( )
 	
 	self.playerLists = vgui.Create( "DPanelList", self )
 	self.playerLists:SetPos( self.w / 2, 35 )
-	self.playerLists:SetSize( self.w / 2 - 10, self.h - 85 )
+	self.playerLists:SetSize( self.w / 2 - 10, self.h - 45 )
 	self.playerLists:SetSpacing( 5 )
 	self.playerLists:EnableHorizontal( false )
 	self.playerLists:EnableVerticalScrollbar( true )	
 	self.playerLists.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
+	end
+	
+	self.doorDescEnt = vgui.Create( "DTextEntry", self )
+	self.doorDescEnt:SetPos( 10, 55 )
+	self.doorDescEnt:SetSize( self.w / 2 - 20, 30 )
+	self.doorDescEnt:SetFont( "catherine_normal15" )
+	self.doorDescEnt:SetText( "" )
+	self.doorDescEnt:SetAllowNonAsciiCharacters( true )
+	self.doorDescEnt.Paint = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, 1, Color( 50, 50, 50, 255 ) )
+		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
+		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+	end
+	self.doorDescEnt.OnEnter = function( pnl )
+		netstream.Start( "catherine.door.Work", {
+			self.ent,
+			CAT_DOOR_CHANGE_DESC,
+			pnl:GetText( )
+		} )
+	end
+	self.doorDescEnt.OnTextChanged = function( pnl )
+		
+	end
+	
+	self.sellDoor = vgui.Create( "catherine.vgui.button", self )
+	self.sellDoor:SetPos( 10, self.h - 40 )
+	self.sellDoor:SetSize( self.w / 2 - 20, 30 )
+	self.sellDoor:SetStr( LANG( "Door_UI_DoorSellStr" ) )
+	self.sellDoor:SetStrFont( "catherine_normal20" )
+	self.sellDoor:SetStrColor( Color( 50, 50, 50, 255 ) )
+	self.sellDoor:SetGradientColor( Color( 255, 255, 255, 150 ) )
+	self.sellDoor.Click = function( )
+		
+	end
+	self.sellDoor.PaintBackground = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 225, 225, 225, 255 ) )
 	end
 	
 	self.close = vgui.Create( "catherine.vgui.button", self )
@@ -62,27 +98,31 @@ end
 function PANEL:BuildPlayerList( )
 	self.playerLists:Clear( )
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		local isMaster = catherine.door.IsDoorOwner( v, self.ent, CAT_DOOR_FLAG_MASTER )
-		local isAll = catherine.door.IsDoorOwner( v, self.ent, CAT_DOOR_FLAG_ALL )
-		local isBasic = catherine.door.IsDoorOwner( v, self.ent, CAT_DOOR_FLAG_BASIC )
+		local has, flag = catherine.door.IsHasDoorPermission( v, self.ent )
 
 		
 		local panel = vgui.Create( "DPanel" )
-		panel:SetSize( self.playerLists:GetWide( ), 30 )
+		panel:SetSize( self.playerLists:GetWide( ), 60 )
 		panel.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
-			draw.SimpleText( v:Name( ), "catherine_normal20", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			
-			if ( isMaster ) then
-				draw.SimpleText( "MASTER", "catherine_normal20", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
-			elseif ( isAll ) then
-				draw.SimpleText( "ALL", "catherine_normal20", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
-			elseif ( isBasic ) then
-				draw.SimpleText( "BASIC", "catherine_normal20", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
-			else
-				draw.SimpleText( "NO PERMISSION", "catherine_normal20", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			draw.SimpleText( v:Name( ), "catherine_normal20", 70, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+
+			if ( flag == CAT_DOOR_FLAG_OWNER ) then
+				draw.SimpleText( LANG( "Door_UI_OwnerStr" ), "catherine_normal25", w - 20, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			elseif ( flag == CAT_DOOR_FLAG_ALL ) then
+				draw.SimpleText( LANG( "Door_UI_AllStr" ), "catherine_normal25", w - 20, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			elseif ( flag == CAT_DOOR_FLAG_BASIC ) then
+				draw.SimpleText( LANG( "Door_UI_BasicStr" ), "catherine_normal25", w - 20, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			end
 		end
+		
+		local spawnIcon = vgui.Create( "SpawnIcon", panel )
+		spawnIcon:SetPos( 5, 5 )
+		spawnIcon:SetSize( 50, 50 )
+		spawnIcon:SetModel( v.GetModel( v ) )
+		spawnIcon:SetToolTip( false )
+		spawnIcon:SetDisabled( true )
+		spawnIcon.PaintOver = function( ) end
 		
 		local button = vgui.Create( "DButton", panel )
 		button:SetSize( panel:GetWide( ), panel:GetTall( ) )
@@ -91,16 +131,37 @@ function PANEL:BuildPlayerList( )
 		button.DoClick = function( )
 			local menu = DermaMenu( )
 			
-			menu:AddOption( "All permission.", function( )
-			
+			menu:AddOption( LANG( "Door_UI_AllPerStr" ), function( )
+				netstream.Start( "catherine.door.Work", {
+					self.ent,
+					CAT_DOOR_CHANGEPERMISSION,
+					{
+						v.SteamID( v ),
+						CAT_DOOR_FLAG_ALL
+					}
+				} )
 			end )
 			
-			menu:AddOption( "Basic permission.", function( )
-			
+			menu:AddOption( LANG( "Door_UI_BasicPerStr" ), function( )
+				netstream.Start( "catherine.door.Work", {
+					self.ent,
+					CAT_DOOR_CHANGEPERMISSION,
+					{
+						v.SteamID( v ),
+						CAT_DOOR_FLAG_BASIC
+					}
+				} )
 			end )
 			
-			menu:AddOption( "Remove permission.", function( )
-			
+			menu:AddOption( LANG( "Door_UI_RemPerStr" ), function( )
+				netstream.Start( "catherine.door.Work", {
+					self.ent,
+					CAT_DOOR_CHANGEPERMISSION,
+					{
+						v.SteamID( v ),
+						0
+					}
+				} )
 			end )
 			
 			menu:Open( )
@@ -112,7 +173,13 @@ end
 
 function PANEL:InitializeDoor( ent )
 	self.ent = ent
-	
+	self.doorDescEnt:SetText( self.ent.GetNetVar( self.ent, "customDesc", "" ) )
+
+	self:BuildPlayerList( )
+end
+
+function PANEL:Refresh( )
+	self.doorDescEnt:SetText( self.ent.GetNetVar( self.ent, "customDesc", "" ) )
 	self:BuildPlayerList( )
 end
 
@@ -120,11 +187,9 @@ function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	
 	if ( !IsValid( self.ent ) ) then return end
-	local title = self.ent.GetNetVar( ent, "title" )
-	
-	if ( title ) then
-		draw.SimpleText( title, "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-	end
+
+	draw.SimpleText( self.ent.GetNetVar( self.ent, "title", LANG( "Door_UI_Default" ) ), "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	draw.SimpleText( LANG( "Door_UI_DoorDescStr" ), "catherine_normal15", 10, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 end
 
 function PANEL:Think( )

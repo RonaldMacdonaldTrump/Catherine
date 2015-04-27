@@ -200,6 +200,14 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetStatus_False" ] = "You are set status to buyable this door.",
 	[ "Door_Notify_DoorSpam" ] = "Do not door-spam!",
 	[ "Door_UI_Default" ] = "Door",
+	[ "Door_UI_DoorDescStr" ] = "Door Description",
+	[ "Door_UI_DoorSellStr" ] = "Sell Door",
+	[ "Door_UI_AllPerStr" ] = "All Permission",
+	[ "Door_UI_BasicPerStr" ] = "Basic Permission",
+	[ "Door_UI_RemPerStr" ] = "Permission Remove",
+	[ "Door_UI_OwnerStr" ] = "Owner",
+	[ "Door_UI_AllStr" ] = "All",
+	[ "Door_UI_BasicStr" ] = "Basic",
 	
 	// Hint
 	[ "Hint_Message_01" ] = "Type // before your message to talk out-of-character.",

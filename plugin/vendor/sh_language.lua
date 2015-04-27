@@ -29,3 +29,15 @@ catherine.language.Merge( "english", {
 	[ "Vendor_Message_CantUse" ] = "You don't have permission using this vendor!",
 	[ "Vendor_NameQ" ] = "What are you want vendor name ?"
 } )
+
+catherine.language.Merge( "korean", {
+	[ "Vendor_Notify_Buy" ] = "당신은 '%s' 를 '%s' 에 구입하였습니다.",
+	[ "Vendor_Notify_Sell" ] = "당신은 '%s' 를 '%s' 에 파셨습니다.",
+	[ "Vendor_Notify_VendorNoHasCash" ] = "이 상인은 %s 가 없습니다!",
+	[ "Vendor_Notify_NoHasStock" ] = "이 상인은 재고가 없습니다!",
+	[ "Vendor_Notify_NotValid" ] = "이것은 상인이 아닙니다!",
+	[ "Vendor_Notify_Add" ] = "상인을 추가했습니다.",
+	[ "Vendor_Notify_Remove" ] = "상인을 제거했습니다.",
+	[ "Vendor_Message_CantUse" ] = "이 상인을 사용할 권한이 없습니다!",
+	[ "Vendor_NameQ" ] = "상인의 이름을 무엇으로 하시겠습니까?"
+} )

@@ -200,6 +200,14 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetStatus_False" ] = "이 문을 구매할 수 있게 하셨습니다.",
 	[ "Door_Notify_DoorSpam" ] = "문장난을 하지 마세요!",
 	[ "Door_UI_Default" ] = "문",
+	[ "Door_UI_DoorDescStr" ] = "문 설명",
+	[ "Door_UI_DoorSellStr" ] = "문 팔기",
+	[ "Door_UI_AllPerStr" ] = "모든 권한",
+	[ "Door_UI_BasicPerStr" ] = "기본 권한",
+	[ "Door_UI_RemPerStr" ] = "권한 해제",
+	[ "Door_UI_OwnerStr" ] = "주인",
+	[ "Door_UI_AllStr" ] = "모든 권한",
+	[ "Door_UI_BasicStr" ] = "기본 권한",
 	
 	// Hint
 	[ "Hint_Message_01" ] = "// 를 채팅창에 쳐서 OOC 채팅을 하십시오.",
