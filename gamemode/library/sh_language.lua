@@ -51,7 +51,7 @@ catherine.language.Include( catherine.FolderName .. "/gamemode" )
 
 if ( SERVER ) then
 	function LANG( pl, key, ... )
-		local languageTable = catherine.language.lists[ pl:GetInfo( "cat_convar_language" ) ] or catherine.language.lists[ "english" ]
+		local languageTable = catherine.language.lists[ pl.GetInfo( pl, "cat_convar_language" ) ] or catherine.language.lists[ "english" ]
 		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
 		
 		return Format( languageTable.data[ key ], ... )
@@ -60,7 +60,7 @@ else
 	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", catherine.configs.defaultLanguage, true, true )
 
 	function LANG( key, ... )
-		local languageTable = catherine.language.lists[ CAT_CONVAR_LANGUAGE:GetString( ) ] or catherine.language.lists[ "english" ]
+		local languageTable = catherine.language.lists[ CAT_CONVAR_LANGUAGE.GetString( CAT_CONVAR_LANGUAGE ) ] or catherine.language.lists[ "english" ]
 		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
 		
 		return Format( languageTable.data[ key ], ... )

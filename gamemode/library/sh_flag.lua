@@ -20,9 +20,15 @@ catherine.flag = catherine.flag or { lists = { } }
 local META = FindMetaTable( "Player" )
 
 function catherine.flag.Register( id, desc, flagTable )
-	if ( !flagTable ) then flagTable = { } end
+	if ( !flagTable ) then
+		flagTable = { }
+	end
 	
-	table.Merge( flagTable, { id = id, desc = desc } )
+	table.Merge( flagTable, {
+		id = id,
+		desc = desc
+	} )
+	
 	catherine.flag.lists[ id ] = flagTable
 end
 
@@ -38,7 +44,7 @@ function catherine.flag.GetAllToString( )
 	local flags = ""
 	
 	for k, v in pairs( catherine.flag.GetAll( ) ) do
-		flags = flags .. v.id
+		flags = flags .. k
 	end
 	
 	return flags
@@ -143,9 +149,9 @@ if ( SERVER ) then
 			v.onSpawn( pl )
 		end
 
-		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl:GetCharacterID( ) ) then
+		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl.GetCharacterID( pl ) ) then
 			netstream.Start( pl, "catherine.flag.BuildHelp" )
-			pl.CAT_flag_buildHelp = pl:GetCharacterID( )
+			pl.CAT_flag_buildHelp = pl.GetCharacterID( pl )
 		end
 	end
 	

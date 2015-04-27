@@ -34,7 +34,7 @@ if ( SERVER ) then
 		local hintTable = catherine.hint.lists[ rand ]
 
 		for k, v in pairs( hintTable and player.GetAllByLoaded( ) or { } ) do
-			if ( v:GetInfo( "cat_convar_hint" ) == "0" or hintTable.canLook and hintTable.canLook( v ) == false ) then continue end
+			if ( v.GetInfo( v, "cat_convar_hint" ) == "0" or hintTable.canLook and hintTable.canLook( v ) == false ) then continue end
 			
 			netstream.Start( v, "catherine.hint.Receive", rand )
 		end
@@ -50,7 +50,7 @@ if ( SERVER ) then
 
 	hook.Add( "Think", "catherine.hint.Think", catherine.hint.Think )
 else
-	catherine.hint.CurHint = catherine.hint.CurHint or nil
+	catherine.hint.curHint = catherine.hint.curHint or nil
 	
 	CAT_CONVAR_HINT = CreateClientConVar( "cat_convar_hint", 1, true, true )
 	catherine.option.Register( "CONVAR_HINT", "cat_convar_hint", "^Option_Str_HINT_Name", "^Option_Str_HINT_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
@@ -60,7 +60,7 @@ else
 		surface.SetFont( "catherine_normal25" )
 		local tw, th = surface.GetTextSize( msg )
 		
-		catherine.hint.CurHint = {
+		catherine.hint.curHint = {
 			message = msg,
 			time = CurTime( ) + 15,
 			targetX = ScrW( ) - ( tw / 2 ) - 10,
@@ -69,14 +69,14 @@ else
 	end )
 	
 	function catherine.hint.Draw( )
-		if ( !catherine.hint.CurHint ) then return end
-		local t = catherine.hint.CurHint
+		if ( !catherine.hint.curHint ) then return end
+		local t = catherine.hint.curHint
 
 		if ( t.time <= CurTime( ) ) then
 			t.x = Lerp( 0.003, t.x, ScrW( ) * 1.5 )
 			
 			if ( math.Round( t.x ) >= ScrW( ) * 1.3 ) then
-				catherine.hint.CurHint = nil
+				catherine.hint.curHint = nil
 				return
 			end
 		else

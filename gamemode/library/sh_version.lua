@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.version = catherine.version or { Ver = "2015-04-24" }
+catherine.version = catherine.version or { Ver = "2015-04-27" }
 
 if ( SERVER ) then
 	catherine.version.Checked = catherine.version.Checked or false
@@ -66,7 +66,7 @@ if ( SERVER ) then
 	hook.Add( "PlayerAuthed", "catherine.version.PlayerAuthed", catherine.version.PlayerAuthed )
 	
 	netstream.Hook( "catherine.version.Check", function( pl )
-		if ( !pl:IsSuperAdmin( ) ) then return end
+		if ( !pl.IsSuperAdmin( pl ) ) then return end
 		
 		catherine.version.Check( pl )
 	end )

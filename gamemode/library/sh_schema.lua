@@ -26,8 +26,8 @@ function catherine.schema.Initialization( )
 		FolderName = GM.FolderName,
 		Title = "Example",
 		Desc = "A schema.",
-		IntroTitle = "A Schema",
-		IntroDesc = "Welcome..."
+		IntroTitle = "Example",
+		IntroDesc = "A schema."
 	}
 	
 	local schemaFolderName = Schema.FolderName
@@ -62,10 +62,7 @@ function hook.Call( name, gm, ... )
 			
 			return result
 		else
-		--[[
-			catherine.sphynX.Do( CAT_SPHYN_X_FLAG_PLUGIN, {
-				hookID = name
-			} )--]]
+			// catherine.sphynX.Do( )
 			ErrorNoHalt( "[CAT ERROR] SORRY, On the plugin <" .. k .. ">'s hooks <" .. name .. "> has a critical error ...\n" .. result .. "\n" )
 		end
 	end
@@ -78,7 +75,7 @@ function hook.Call( name, gm, ... )
 				return result
 			end
 		else
-			//catherine.sphynX.Do( )
+			// catherine.sphynX.Do( )
 			ErrorNoHalt( "[CAT ERROR] SORRY, Schema hooks <" .. name .. "> has a critical error ...\n" .. result .. "\n" )
 		end
 	end

@@ -59,7 +59,7 @@ if ( SERVER ) then
 			if ( has and flag == data[ 2 ] ) then
 				print("Already has")
 				return
-			elseif ( has and data[ 2 ] == "0" ) then
+			elseif ( has and data[ 2 ] == 0 ) then
 				for k, v in pairs( permissions ) do
 					if ( v.id == target:GetCharacterID( ) ) then
 						table.remove( permissions, k )
@@ -156,7 +156,9 @@ if ( SERVER ) then
 		if ( force ) then
 			ent:SetNetVar( "title", title )
 		else
-			if ( !catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_MASTER, CAT_DOOR_FLAG_ALL ) ) then
+			local has, flag = catherine.door.IsHasDoorPermission( target, ent )
+			
+			if ( !has or flag == CAT_DOOR_FLAG_BASIC ) then
 				return false, "Door_Notify_NoOwner"
 			end
 			
@@ -246,7 +248,7 @@ if ( SERVER ) then
 	function catherine.door.DataLoad( )
 		for k, v in pairs( ents.GetAll( ) ) do
 			for k1, v1 in pairs( catherine.data.Get( "doors", { } ) ) do
-				if ( IsValid( v ) and catherine.entity.IsDoor( v ) and v:EntIndex( ) == v1.index ) then
+				if ( IsValid( v ) and catherine.entity.IsDoor( v ) and v.EntIndex( v ) == v1.index ) then
 					v:SetNetVar( "title", v1.title )
 					v:SetNetVar( "cantBuy", v1.cantBuy )
 				end
@@ -289,11 +291,11 @@ else
 	end
 
 	function catherine.door.CalcDoorTextPos( ent, rev )
-		local max = ent:OBBMaxs( )
-		local min = ent:OBBMins( )
+		local max = ent.OBBMaxs( ent )
+		local min = ent.OBBMins( ent )
 		
 		local data = { }
-		data.endpos = ent:LocalToWorld( ent:OBBCenter( ) )
+		data.endpos = ent.LocalToWorld( ent, ent.OBBCenter( ent ) )
 		data.filter = ents.FindInSphere( data.endpos, 23 )
 		
 		for k, v in pairs( data.filter ) do
@@ -315,27 +317,27 @@ else
 			w = size.y
 			
 			if ( rev ) then
-				data.start = data.endpos - ( ent:GetUp( ) * len )
+				data.start = data.endpos - ( ent.Up( ent ) * len )
 			else
-				data.start = data.endpos + ( ent:GetUp( ) * len )
+				data.start = data.endpos + ( ent.Up( ent ) * len )
 			end
 		elseif ( size.x < size.y ) then
 			len = size.x
 			w = size.y
 			
 			if ( rev ) then
-				data.start = data.endpos - ( ent:GetForward( ) * len )
+				data.start = data.endpos - ( ent.Forward( ent ) * len )
 			else
-				data.start = data.endpos + ( ent:GetForward( ) * len )
+				data.start = data.endpos + ( ent.Forward( ent ) * len )
 			end
 		elseif ( size.y < size.x ) then
 			len = size.y
 			w = size.x
 			
 			if ( rev ) then
-				data.start = data.endpos - ( ent:GetRight( ) * len )
+				data.start = data.endpos - ( ent.Right( ent ) * len )
 			else
-				data.start = data.endpos + ( ent:GetRight( ) * len )
+				data.start = data.endpos + ( ent.Right( ent ) * len )
 			end
 		end
 
@@ -345,15 +347,15 @@ else
 			return catherine.door.CalcDoorTextPos( ent, true )
 		end
 
-		local ang = tr.HitNormal:Angle( )
+		local ang = tr.HitNormal.Angle( tr.HitNormal )
 		local pos = tr.HitPos - ( ( ( data.endpos - tr.HitPos ):Length( ) * 2 ) + 2 ) * tr.HitNormal
-		local angBack = tr.HitNormal:Angle( )
+		local angBack = tr.HitNormal.Angle( tr.HitNormal )
 		local posBack = tr.HitPos + ( tr.HitNormal * 2 )
 		
-		ang:RotateAroundAxis( ang:Forward( ), 90 )
-		ang:RotateAroundAxis( ang:Right( ), 90 )
-		angBack:RotateAroundAxis( angBack:Forward( ), 90 )
-		angBack:RotateAroundAxis( angBack:Right( ), -90 )
+		ang:RotateAroundAxis( ang.Forward( ang ), 90 )
+		ang:RotateAroundAxis( ang.Right( ang ), 90 )
+		angBack:RotateAroundAxis( angBack.Forward( angBack ), 90 )
+		angBack:RotateAroundAxis( angBack.Right( angBack ), -90 )
 		
 		return {
 			pos = pos,
@@ -368,7 +370,7 @@ end
 
 function catherine.door.IsDoorOwner( pl, ent, flag )
 	for k, v in pairs( ent.GetNetVar( ent, "permissions", { } ) ) do
-		if ( !v.id != pl:GetCharacterID( ) ) then continue end
+		if ( v.id != pl.GetCharacterID( pl ) ) then continue end
 		
 		return flag == v.permission
 	end
@@ -378,7 +380,7 @@ end
 
 function catherine.door.IsHasDoorPermission( pl, ent )
 	for k, v in pairs( ent.GetNetVar( ent, "permissions", { } ) ) do
-		if ( !v.id != pl:GetCharacterID( ) ) then continue end
+		if ( v.id != pl.GetCharacterID( pl ) ) then continue end
 		
 		return true, v.permission
 	end

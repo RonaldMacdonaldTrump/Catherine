@@ -42,7 +42,7 @@ if ( SERVER ) then
 		end
 		
 		ent.IsCustomUse = true
-		catherine.entity.customUse[ ent:EntIndex( ) ] = forServer
+		catherine.entity.customUse[ ent.EntIndex( ent ) ] = forServer
 
 		ent:SetNetVar( "customUseClient", forClient )
 	end

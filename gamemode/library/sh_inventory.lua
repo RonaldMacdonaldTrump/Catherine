@@ -56,14 +56,14 @@ if ( SERVER ) then
 			local invData = inventory[ uniqueID ]
 			local itemCount = invData.itemCount - ( data.count or 1 )
 
-			if ( itemCount <= 0 ) then
-				inventory[ uniqueID ] = nil
-			else
+			if ( itemCount > 0 ) then
 				inventory[ uniqueID ] = {
 					uniqueID = uniqueID,
 					itemCount = itemCount,
 					itemData = invData.itemData
 				}
+			else
+				inventory[ uniqueID ] = nil
 			end
 			
 			catherine.character.SetVar( pl, "_inv", inventory )
@@ -183,8 +183,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.inventory.CreateNetworkRegistry( pl, charVars )
-		if ( !charVars._inv ) then return end
-		local inventory = charVars._inv
+		local inventory = charVars._inv or { }
 		local changed = false
 		
 		for k, v in pairs( inventory ) do
