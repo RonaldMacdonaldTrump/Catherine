@@ -198,7 +198,6 @@ if ( SERVER ) then
 		pl.SetModel( pl, character._model )
 		pl.SetWalkSpeed( pl, catherine.configs.playerDefaultWalkSpeed )
 		pl.SetRunSpeed( pl, catherine.configs.playerDefaultRunSpeed )
-		player_manager.SetPlayerClass( pl, "catherine_player" ) // need?
 
 		catherine.character.CreateNetworkRegistry( pl, id, character )
 		catherine.character.SetCharVar( pl, "class", nil )

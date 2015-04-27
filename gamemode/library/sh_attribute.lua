@@ -146,7 +146,7 @@ if ( SERVER ) then
 else
 	function catherine.attribute.GetProgress( index )
 		local attribute = catherine.character.GetVar( LocalPlayer( ), "_att", { } )
-		
+
 		return attribute[ index ] and attribute[ index ].progress or 0
 	end
 end

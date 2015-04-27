@@ -24,6 +24,7 @@ function PANEL:Init( )
 	self.ent = nil
 	self.entCheck = CurTime( ) + 1
 	self.closeing = false
+	self.mode = 0
 	
 	self.player = LocalPlayer( )
 	self.w, self.h = ScrW( ) * 0.7, ScrH( ) * 0.6
@@ -44,6 +45,11 @@ function PANEL:Init( )
 	self.playerLists:EnableVerticalScrollbar( true )	
 	self.playerLists.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
+		
+		if ( self.mode != CAT_DOOR_FLAG_OWNER ) then
+			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Door_Notify_NoOwner" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+		end
 	end
 	
 	self.doorDescEnt = vgui.Create( "DTextEntry", self )
@@ -58,14 +64,16 @@ function PANEL:Init( )
 		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
 	end
 	self.doorDescEnt.OnEnter = function( pnl )
+		if ( self.mode == CAT_DOOR_FLAG_BASIC ) then
+			catherine.notify.Add( LANG( "Door_Notify_NoOwner" ) )
+			return
+		end
+		
 		netstream.Start( "catherine.door.Work", {
 			self.ent,
 			CAT_DOOR_CHANGE_DESC,
 			pnl:GetText( )
 		} )
-	end
-	self.doorDescEnt.OnTextChanged = function( pnl )
-		
 	end
 	
 	self.sellDoor = vgui.Create( "catherine.vgui.button", self )
@@ -76,7 +84,13 @@ function PANEL:Init( )
 	self.sellDoor:SetStrColor( Color( 50, 50, 50, 255 ) )
 	self.sellDoor:SetGradientColor( Color( 255, 255, 255, 150 ) )
 	self.sellDoor.Click = function( )
+		if ( self.mode != CAT_DOOR_FLAG_OWNER ) then
+			catherine.notify.Add( LANG( "Door_Notify_NoOwner" ) )
+			return
+		end
 		
+		catherine.command.Run( "doorsell" )
+		self:Close( )
 	end
 	self.sellDoor.PaintBackground = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 225, 225, 225, 255 ) )
@@ -91,12 +105,15 @@ function PANEL:Init( )
 	self.close:SetGradientColor( Color( 255, 150, 150, 255 ) )
 	self.close.Click = function( )
 		if ( self.closeing ) then return end
+		
 		self:Close( )
 	end
 end
 
 function PANEL:BuildPlayerList( )
 	self.playerLists:Clear( )
+	if ( self.mode != CAT_DOOR_FLAG_OWNER ) then return end
+	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		local has, flag = catherine.door.IsHasDoorPermission( v, self.ent )
 
@@ -134,7 +151,7 @@ function PANEL:BuildPlayerList( )
 			menu:AddOption( LANG( "Door_UI_AllPerStr" ), function( )
 				netstream.Start( "catherine.door.Work", {
 					self.ent,
-					CAT_DOOR_CHANGEPERMISSION,
+					CAT_DOOR_CHANGE_PERMISSION,
 					{
 						v.SteamID( v ),
 						CAT_DOOR_FLAG_ALL
@@ -145,7 +162,7 @@ function PANEL:BuildPlayerList( )
 			menu:AddOption( LANG( "Door_UI_BasicPerStr" ), function( )
 				netstream.Start( "catherine.door.Work", {
 					self.ent,
-					CAT_DOOR_CHANGEPERMISSION,
+					CAT_DOOR_CHANGE_PERMISSION,
 					{
 						v.SteamID( v ),
 						CAT_DOOR_FLAG_BASIC
@@ -156,7 +173,7 @@ function PANEL:BuildPlayerList( )
 			menu:AddOption( LANG( "Door_UI_RemPerStr" ), function( )
 				netstream.Start( "catherine.door.Work", {
 					self.ent,
-					CAT_DOOR_CHANGEPERMISSION,
+					CAT_DOOR_CHANGE_PERMISSION,
 					{
 						v.SteamID( v ),
 						0
@@ -171,10 +188,20 @@ function PANEL:BuildPlayerList( )
 	end
 end
 
-function PANEL:InitializeDoor( ent )
+function PANEL:InitializeDoor( ent, flag )
 	self.ent = ent
 	self.doorDescEnt:SetText( self.ent.GetNetVar( self.ent, "customDesc", "" ) )
+	
+	self.mode = flag
 
+	if ( flag == CAT_DOOR_FLAG_ALL or flag == CAT_DOOR_FLAG_BASIC ) then
+		self.sellDoor:SetVisible( false )
+	end
+	
+	if ( flag == CAT_DOOR_FLAG_BASIC ) then
+		self.doorDescEnt:SetVisible( false )
+	end
+	
 	self:BuildPlayerList( )
 end
 
@@ -189,6 +216,9 @@ function PANEL:Paint( w, h )
 	if ( !IsValid( self.ent ) ) then return end
 
 	draw.SimpleText( self.ent.GetNetVar( self.ent, "title", LANG( "Door_UI_Default" ) ), "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	
+	if ( self.mode == CAT_DOOR_FLAG_BASIC ) then return end
+	
 	draw.SimpleText( LANG( "Door_UI_DoorDescStr" ), "catherine_normal15", 10, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 end
 

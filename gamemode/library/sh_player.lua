@@ -378,6 +378,10 @@ function META:IsFemale( )
 	end
 end
 
+function META:IsNoclipping( )
+	return self.GetNetVar( self, "nocliping", false )
+end
+
 function META:IsChatTyping( )
 	return self.GetNetVar( self, "isTyping", false )
 end

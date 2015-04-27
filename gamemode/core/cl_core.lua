@@ -27,6 +27,8 @@ catherine.entityCaches = { }
 catherine.weaponModels = catherine.weaponModels or { }
 catherine.nextCacheDo = CurTime( )
 local toscreen = FindMetaTable( "Vector" ).ToScreen
+local OFFSET_PLAYER = Vector( 0, 0, 30 )
+local OFFSET_AD_ESP = Vector( 0, 0, 50 )
 
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hud.blockedModules ) do
@@ -36,6 +38,23 @@ function GM:HUDShouldDraw( name )
 	end
 	
 	return true
+end
+
+function GM:HUDPaintBackground( )
+	local lp = LocalPlayer( )
+	if ( !lp.IsNoclipping( lp ) or !lp.IsAdmin( lp ) ) then return end
+	
+	for k, v in pairs( player.GetAllByLoaded( ) ) do
+		if ( lp == v ) then continue end
+		
+		local pos = toscreen( v.LocalToWorld( v, v.OBBCenter( v ) + OFFSET_AD_ESP ) )
+
+		draw.SimpleText( v.Name( v ), "catherine_normal20", pos.x, pos.y, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.SimpleText( v.SteamID( v ), "catherine_normal15", pos.x, pos.y + 20, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.SimpleText( "Health : " .. v.Health( v ) .. "%", "catherine_normal15", pos.x, pos.y + 40, Color( 255, 255, 255, 255 ), 1, 1 )
+		
+		hook.Run( "AdminESPDrawed", lp, v, pos.x, pos.y )
+	end
 end
 
 function GM:SpawnMenuEnabled( )
@@ -186,8 +205,6 @@ end
 function GM:FinishChat( )
 	netstream.Start( "catherine.IsTyping", false )
 end
-
-local OFFSET_PLAYER = Vector( 0, 0, 30 )
 
 function GM:DrawEntityTargetID( pl, ent, a )
 	if ( !ent.IsPlayer( ent ) ) then return end

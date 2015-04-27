@@ -32,8 +32,15 @@ function GM:ShowTeam( pl )
 	local ent = pl.GetEyeTrace( pl, 70 ).Entity
 	
 	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
-		if ( catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_OWNER ) ) then
-			netstream.Start( pl, "catherine.door.DoorMenu", ent.EntIndex( ent ) )
+		local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
+		
+		if ( has ) then
+			if ( flag == CAT_DOOR_FLAG_BASIC ) then return end
+			
+			netstream.Start( pl, "catherine.door.DoorMenu", {
+				ent.EntIndex( ent ),
+				flag
+			} )
 		else
 			catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )
 				if ( bool ) then
@@ -68,8 +75,8 @@ function GM:PlayerSpawn( pl )
 	pl.ConCommand( pl, "-duck" )
 	pl.SetColor( pl, Color( 255, 255, 255, 255 ) )
 	pl.SetNetVar( pl, "isTied", false )
-	player_manager.SetPlayerClass( pl, "catherine_player" )
-	
+	pl:SetupHands( )
+
 	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
 	pl.AllowFlashlight( pl, status )
 

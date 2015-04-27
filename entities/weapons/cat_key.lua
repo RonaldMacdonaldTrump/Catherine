@@ -83,7 +83,7 @@ function SWEP:SecondaryAttack( )
 	pl:Freeze( true )
 	catherine.util.ProgressBar( pl, LANG( pl, "Door_Message_UnLocking" ), 2, function( )
 		if ( IsValid( ent ) ) then
-			ent.CAT_doorLocked = true
+			ent.CAT_doorLocked = false
 			ent:Fire( "Unlock" )
 			ent:EmitSound( "doors/door_latch3.wav" )
 		end

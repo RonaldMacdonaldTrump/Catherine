@@ -19,7 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 // This library is still developing!
 catherine.door = catherine.door or { }
 
-CAT_DOOR_CHANGEPERMISSION = 1
+CAT_DOOR_CHANGE_PERMISSION = 1
 CAT_DOOR_CHANGE_DESC = 2
 
 CAT_DOOR_FLAG_OWNER = 1
@@ -34,9 +34,9 @@ if ( SERVER ) then
 			return
 		end
 		
-		if ( workID == CAT_DOOR_CHANGEPERMISSION ) then
+		if ( workID == CAT_DOOR_CHANGE_PERMISSION ) then
 			if ( !catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_OWNER ) ) then
-				print( "you are not owner")
+				catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 				return
 			end
 			
@@ -57,23 +57,21 @@ if ( SERVER ) then
 			local has, flag = catherine.door.IsHasDoorPermission( target, ent )
 			
 			if ( flag == CAT_DOOR_FLAG_OWNER ) then
-				print("Cant change owner!")
+				catherine.util.NotifyLang( pl, "Door_Notify_CantChangeOwner" )
 				return
 			else
 				if ( has and flag == data[ 2 ] ) then
-					print("Already has")
+					catherine.util.NotifyLang( pl, "Door_Notify_AlreadyHasPer" )
 					return
 				elseif ( has and data[ 2 ] == 0 ) then
 					permissions[ target.GetCharacterID( target ) ] = nil
 					ent:SetNetVar( "permissions", permissions )
 					netstream.Start( pl, "catherine.door.DoorMenuRefresh" )
-					print("Remove Fin!")
+					catherine.util.NotifyLang( pl, "Door_Notify_RemPer" )
 					return
 				end
 			end
-			
-			PrintTable(permissions)
-			
+
 			local targetID = target.GetCharacterID( target )
 			
 			permissions[ targetID ] = {
@@ -83,7 +81,7 @@ if ( SERVER ) then
 
 			ent:SetNetVar( "permissions", permissions )
 			netstream.Start( pl, "catherine.door.DoorMenuRefresh" )
-			print("Fin!")
+			catherine.util.NotifyLang( pl, "Door_Notify_ChangePer" )
 		elseif ( workID == CAT_DOOR_CHANGE_DESC ) then
 			local permissions = ent.GetNetVar( ent, "permissions" )
 			
@@ -93,43 +91,38 @@ if ( SERVER ) then
 			end
 			
 			local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
-			//
+
 			if ( !has or flag == CAT_DOOR_FLAG_BASIC ) then
-				print("No permission!")
+				catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 				return
 			end
 			
-			ent:SetNetVar( "customDesc", data )
+			ent:SetNetVar( "customDesc", data != "" and data or nil )
+			catherine.util.NotifyLang( pl, "Door_Notify_SetTitle" )
 		end
 	end
 	
 	function catherine.door.Buy( pl, ent )
-		if ( !IsValid( pl ) ) then print("!")return end
+		if ( !IsValid( pl ) ) then return end
 		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
-			print("Boo")
 			return false, "Entity_Notify_NotDoor"
 		end
 		
 		if ( !catherine.door.IsBuyableDoor( ent ) ) then
-			print("shit")
 			return false, "Door_Notify_CantBuyable"
 		end
 
 		if ( ent.GetNetVar( ent, "permissions" ) ) then
-			print("?!")
 			return false, "Door_Notify_AlreadySold"
 		end
 		
 		local cost = catherine.door.GetDoorCost( pl, ent )
 		if ( !catherine.cash.Has( pl, cost ) ) then
-			print("No..")
 			return false, "Cash_Notify_HasNot"
 		end
 		
 		local id = pl.GetCharacterID( pl )
-		
-		print(id)
-		
+
 		catherine.cash.Take( pl, cost )
 		ent:SetNetVar( "permissions", {
 			[ id ] = {
@@ -138,7 +131,6 @@ if ( SERVER ) then
 			}
 		} )
 		
-		print("Fin")
 		return true
 	end
 	
@@ -276,9 +268,7 @@ if ( SERVER ) then
 	end )
 else
 	netstream.Hook( "catherine.door.DoorMenuRefresh", function( data )
-		print("Ref!")
 		if ( IsValid( catherine.vgui.door ) ) then
-			print("IsValid")
 			catherine.vgui.door:Refresh( )
 		end
 	end )
@@ -290,7 +280,7 @@ else
 		end
 		
 		catherine.vgui.door = vgui.Create( "catherine.vgui.door" )
-		catherine.vgui.door:InitializeDoor( Entity( data ) )
+		catherine.vgui.door:InitializeDoor( Entity( data[ 1 ] ), data[ 2 ] )
 	end )
 
 	function catherine.door.GetDetailString( ent )
@@ -391,12 +381,7 @@ end
 function catherine.door.IsDoorOwner( pl, ent, flag )
 	local permissions = ent.GetNetVar( ent, "permissions", { } )
 	local targetID = pl.GetCharacterID( pl )
-	
-	PrintTable(permissions)
-	print(type(targetID))
-	
-	print(permissions[targetID])
-	
+
 	if ( permissions[ targetID ] ) then
 		return permissions[ targetID ].permission == flag
 	end

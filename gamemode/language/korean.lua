@@ -199,6 +199,12 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetStatus_True" ] = "이 문을 구매할 수 없게 하셨습니다.",
 	[ "Door_Notify_SetStatus_False" ] = "이 문을 구매할 수 있게 하셨습니다.",
 	[ "Door_Notify_DoorSpam" ] = "문장난을 하지 마세요!",
+	
+	[ "Door_Notify_ChangePer" ] = "이 사람의 권한을 바꾸셨습니다.",
+	[ "Door_Notify_RemPer" ] = "이 사람의 권한을 없앴습니다.",
+	[ "Door_Notify_AlreadyHasPer" ] = "이미 이 사람은 이 권한을 가지고 있습니다!",
+	[ "Door_Notify_CantChangeOwner" ] = "주인의 권한을 바꿀 수 없습니다!",
+	
 	[ "Door_UI_Default" ] = "문",
 	[ "Door_UI_DoorDescStr" ] = "문 설명",
 	[ "Door_UI_DoorSellStr" ] = "문 팔기",
