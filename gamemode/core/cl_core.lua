@@ -38,6 +38,10 @@ function GM:HUDShouldDraw( name )
 	return true
 end
 
+function GM:SpawnMenuEnabled( )
+	return LocalPlayer( ).IsAdmin( LocalPlayer( ) )
+end
+
 function GM:CalcView( pl, pos, ang, fov )
 	if ( IsValid( catherine.vgui.character ) or !pl.IsCharacterLoaded( pl ) ) then
 		local data = {
