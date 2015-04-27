@@ -37,7 +37,7 @@ function catherine.geometry.DrawCircle( originX, originY, radius, thick, startAn
         
 	if ( thick ) then
 		if ( distAng > 0 ) then
-			for i = 0, iter-1 do
+			for i = 0, iter - 1 do
 				local eradius = radius + thick
 				local cur1 = stepAng * i + startAng
 				local cur2 = cur1 + stepAng
