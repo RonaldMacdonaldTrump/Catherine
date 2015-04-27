@@ -88,7 +88,7 @@ if ( SERVER ) then
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
 			if ( !catherine.inventory.IsEquipped( pl, k ) ) then continue end
 			catherine.item.Work( pl, k, "unequip" )
-			catherine.item.Spawn( k, pl:GetPos( ) )
+			catherine.item.Spawn( k, pl.GetPos( pl ) )
 			catherine.item.Take( pl, k )
 		end
 	end )

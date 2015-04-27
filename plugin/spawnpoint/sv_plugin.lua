@@ -17,14 +17,14 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.Lists = PLUGIN.Lists or { }
+PLUGIN.lists = PLUGIN.lists or { }
 
 function PLUGIN:SavePoints( )
-	catherine.data.Set( "spawnpoints", self.Lists )
+	catherine.data.Set( "spawnpoints", self.lists )
 end
 
 function PLUGIN:LoadPoints( )
-	self.Lists = catherine.data.Get( "spawnpoints", { } )
+	self.lists = catherine.data.Get( "spawnpoints", { } )
 end
 
 function PLUGIN:DataLoad( )
@@ -37,9 +37,9 @@ end
 
 function PLUGIN:GetRandomPos( faction )
 	local map = game.GetMap( )
-	if ( !faction or !self.Lists[ map ] or !self.Lists[ map ][ faction ] or #self.Lists[ map ][ faction ] == 0 ) then return end
+	if ( !faction or !self.lists[ map ] or !self.lists[ map ][ faction ] or #self.lists[ map ][ faction ] == 0 ) then return end
 	
-	return table.Random( self.Lists[ map ][ faction ] )
+	return table.Random( self.lists[ map ][ faction ] )
 end
 
 function PLUGIN:PlayerSpawnedInCharacter( pl )

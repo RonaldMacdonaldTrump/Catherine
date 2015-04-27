@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.option = catherine.option or { }
-catherine.option.Lists = { }
+catherine.option.lists = { }
 CAT_OPTION_SWITCH = 0
 CAT_OPTION_LIST = 1
 
@@ -33,11 +33,19 @@ function catherine.option.Register( uniqueID, conVar, name, desc, category, typ,
 		category = category,
 		data = data
 	} )
-	catherine.option.Lists[ uniqueID ] = optionTable
+	catherine.option.lists[ uniqueID ] = optionTable
+end
+
+function catherine.option.GetAll( )
+	return catherine.option.lists
+end
+
+function catherine.option.FindByID( uniqueID )
+	return catherine.option.lists[ uniqueID ]
 end
 
 function catherine.option.Remove( uniqueID )
-	catherine.option.Lists[ uniqueID ] = nil
+	catherine.option.lists[ uniqueID ] = nil
 end
 
 function catherine.option.Set( uniqueID, val )
@@ -63,14 +71,6 @@ function catherine.option.Get( uniqueID )
 	else
 		return GetConVarString( optionTable.conVar )
 	end
-end
-
-function catherine.option.FindByID( uniqueID )
-	return catherine.option.Lists[ uniqueID ]
-end
-
-function catherine.option.GetAll( )
-	return catherine.option.Lists
 end
 
 local cat = "^Option_Category_01"

@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.version = catherine.version or { Ver = "2015-04-21" }
+catherine.version = catherine.version or { Ver = "2015-04-27" }
 
 if ( SERVER ) then
 	catherine.version.Checked = catherine.version.Checked or false
@@ -25,20 +25,21 @@ if ( SERVER ) then
 	function catherine.version.Check( pl )
 		http.Fetch( catherine.encrypt.Decode( serverURL ), 
 			function( body )
-				local globalVer = catherine.network.GetNetGlobalVar( "cat_needUpdate", false )
+				local globalVer = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
 				local foundNew = false
 				
 				if ( body != catherine.version.Ver ) then
 					if ( globalVer == false ) then
-						catherine.network.SetNetGlobalVar( "cat_needUpdate", true )
+						catherine.net.SetNetGlobalVar( "cat_needUpdate", true )
 					end
 					
 					catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. catherine.version.Ver .. " -> " .. body .. "]" )
 					foundNew = true
 				else
 					foundNew = false
+					
 					if ( globalVer == true ) then
-						catherine.network.SetNetGlobalVar( "cat_needUpdate", false )
+						catherine.net.SetNetGlobalVar( "cat_needUpdate", false )
 					end
 				end
 				
@@ -47,6 +48,7 @@ if ( SERVER ) then
 				end
 			end, function( err )
 				catherine.util.Print( Color( 255, 0, 0 ), "Update check error! - " .. err )
+				
 				if ( IsValid( pl ) ) then
 					netstream.Start( pl, "catherine.version.CheckResult", { false, LANG( pl, "Version_Notify_CheckError", err ) } )
 				end
@@ -56,6 +58,7 @@ if ( SERVER ) then
 	
 	function catherine.version.PlayerAuthed( )
 		if ( catherine.version.Checked ) then return end
+		
 		catherine.version.Check( )
 		catherine.version.Checked = true
 	end
@@ -63,7 +66,8 @@ if ( SERVER ) then
 	hook.Add( "PlayerAuthed", "catherine.version.PlayerAuthed", catherine.version.PlayerAuthed )
 	
 	netstream.Hook( "catherine.version.Check", function( pl )
-		if ( !pl:IsSuperAdmin( ) ) then return end
+		if ( !pl.IsSuperAdmin( pl ) ) then return end
+		
 		catherine.version.Check( pl )
 	end )
 else

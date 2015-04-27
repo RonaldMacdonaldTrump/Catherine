@@ -16,22 +16,27 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.font = catherine.font or { }
-catherine.font.Lists = { }
+catherine.font = catherine.font or { lists = { } }
 
 function catherine.font.Register( uniqueID, font, size, weight, fontTable )
-	if ( !fontTable ) then fontTable = { } end
-	table.Merge( fontTable, { uniqueID = uniqueID, font = font, size = size, weight = weight } )
-	catherine.font.Lists[ #catherine.font.Lists + 1 ] = fontTable
+	fontTable = fontTable or { }
+	
+	table.Merge( fontTable, {
+		uniqueID = uniqueID,
+		font = font,
+		size = size,
+		weight = weight
+	} )
+	catherine.font.lists[ uniqueID ] = fontTable
 	surface.CreateFont( uniqueID, fontTable )
 end
 
-function catherine.font.GetByID( id )
-	for k, v in pairs( catherine.font.Lists ) do
-		if ( v.uniqueID == id ) then
-			return v
-		end
-	end
+function catherine.font.GetAll( )
+	return catherine.font.lists
+end
+
+function catherine.font.GetByID( uniqueID )
+	return catherine.font.lists[ uniqueID ]
 end
 
 local font = catherine.configs.Font

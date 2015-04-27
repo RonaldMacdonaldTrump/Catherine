@@ -72,8 +72,8 @@ function PLUGIN:SaveVendors( )
 			status = v.vendorData.status,
 			items = v.vendorData.items,
 			model = v:GetModel( ),
-			pos = v:GetPos( ),
-			ang = v:GetAngles( )
+			pos = v.GetPos( v ),
+			ang = v.GetAngles( v )
 		}
 	end
 	

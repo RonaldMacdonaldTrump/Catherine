@@ -60,7 +60,7 @@ end
 
 function PLUGIN:SendBugReport( pl, title, value )
 	local function createCode( )
-		return Format( self.datas.Formats, pl:SteamName( ), pl:SteamID( ), pl:SteamID64( ), GetConVarString( "hostname" ), title, value )
+		return Format( self.datas.Formats, pl.SteamName( pl ), pl.SteamID( pl ), pl:SteamID64( ), GetConVarString( "hostname" ), title, value )
 	end
 	
 	if ( self.datas.UserKey == "" ) then
@@ -78,11 +78,11 @@ function PLUGIN:SendBugReport( pl, title, value )
 			api_paste_private = "2",
 			api_paste_expire_date = "N",
 			api_paste_format = "text",
-			api_paste_name = pl:SteamName( ) .. "'s bug report."
+			api_paste_name = pl.SteamName( pl ) .. "'s bug report."
 		},
 		function( data )
 			pl:SetNWBool( "catherine.plugin.bugreport.Cooltime", true )
-			timer.Create( "catherine.plugin.bugreport.Cooltime_" .. pl:SteamID( ), 500, 1, function( )
+			timer.Create( "catherine.plugin.bugreport.Cooltime_" .. pl.SteamID( pl ), 500, 1, function( )
 				if ( !IsValid( pl ) ) then return end
 				pl:SetNWBool( "catherine.plugin.bugreport.Cooltime", false )
 			end )

@@ -43,6 +43,7 @@ if ( SERVER ) then
 		ent:InitializeShipment( pl, shipLists )
 		
 		local physObject = ent:GetPhysicsObject( )
+		
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( true )
 			physObject:Wake( )
@@ -58,6 +59,7 @@ if ( SERVER ) then
 	
 	netstream.Hook( "catherine.business.RemoveShipment", function( pl, data )
 		data = Entity( data )
+		
 		if ( IsValid( data ) ) then
 			data:Remove( )
 		end
@@ -76,6 +78,7 @@ else
 			catherine.vgui.shipment:Remove( )
 			catherine.vgui.shipment = nil
 		end
+		
 		catherine.vgui.shipment = vgui.Create( "catherine.vgui.shipment" )
 		catherine.vgui.shipment:InitializeShipment( ent, ent:GetShipLists( ) )
 	end )

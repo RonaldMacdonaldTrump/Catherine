@@ -26,8 +26,8 @@ function catherine.schema.Initialization( )
 		FolderName = GM.FolderName,
 		Title = "Example",
 		Desc = "A schema.",
-		IntroTitle = "A Schema",
-		IntroDesc = "Welcome..."
+		IntroTitle = "Example",
+		IntroDesc = "A schema."
 	}
 	
 	local schemaFolderName = Schema.FolderName
@@ -35,6 +35,7 @@ function catherine.schema.Initialization( )
 	catherine.faction.Include( schemaFolderName .. "/gamemode/schema" )
 	catherine.class.Include( schemaFolderName .. "/gamemode/schema" )
 	catherine.item.Include( schemaFolderName .. "/gamemode/schema" )
+	catherine.attribute.Include( schemaFolderName .. "/gamemode/schema" )
 	catherine.util.Include( "schema/sh_schema.lua" )
 	catherine.language.Include( schemaFolderName .. "/gamemode/schema" )
 	catherine.util.IncludeInDir( "schema/library", schemaFolderName .. "/gamemode/" )
@@ -49,25 +50,35 @@ function catherine.schema.GetUniqueID( )
 	return Schema and Schema.UniqueID or "catherine"
 end
 
-hook.OriginalHookRun = hook.OriginalHookRun or hook.Call
+hook.CallBackup = hook.CallBackup or hook.Call
 
 function hook.Call( name, gm, ... )
-	if ( catherine.plugin ) then
-		for k, v in pairs( catherine.plugin.GetAll( ) ) do
-			if ( !v[ name ] ) then continue end
-			local func = v[ name ]( v, ... )
-			if ( func == nil ) then continue end
+	for k, v in pairs( catherine.plugin and catherine.plugin.GetAll( ) or { } ) do
+		if ( !v[ name ] ) then continue end
+		local success, result = pcall( v[ name ], v, ... )
+		
+		if ( success ) then
+			if ( result == nil ) then continue end
 			
-			return func
+			return result
+		else
+			// catherine.sphynX.Do( )
+			ErrorNoHalt( "[CAT ERROR] SORRY, On the plugin <" .. k .. ">'s hooks <" .. name .. "> has a critical error ...\n" .. result .. "\n" )
 		end
 	end
 	
 	if ( Schema and Schema[ name ] ) then
-		local func = Schema[ name ]( Schema, ... )
-		if ( func == nil ) then return end
-		
-		return func
+		local success, result = pcall( Schema[ name ], Schema, ... )
+
+		if ( success ) then
+			if ( result != nil ) then
+				return result
+			end
+		else
+			// catherine.sphynX.Do( )
+			ErrorNoHalt( "[CAT ERROR] SORRY, Schema hooks <" .. name .. "> has a critical error ...\n" .. result .. "\n" )
+		end
 	end
 	
-	return hook.OriginalHookRun( name, gm, ... )
+	return hook.CallBackup( name, gm, ... )
 end

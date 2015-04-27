@@ -24,6 +24,7 @@ catherine.Author = "L7D"
 
 AddCSLuaFile( "sh_util.lua" )
 include( "sh_util.lua" )
+
 catherine.util.Include( "config/sh_config.lua" )
 catherine.util.Include( "sv_data.lua" )
 catherine.util.IncludeInDir( "library", "catherine/gamemode/" )

@@ -16,26 +16,22 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.entity = catherine.entity or { CustomUse = { } }
+catherine.entity = catherine.entity or { }
 local META = FindMetaTable( "Entity" )
-local doorClasses = {
-	"func_door",
-	"func_door_rotating",
-	"prop_door_rotating",
-	"prop_dynamic"
-}
 
 function catherine.entity.IsDoor( ent )
-	return table.HasValue( doorClasses, ent:GetClass( ) )
+	local class = ent.GetClass( ent )
+	
+	return class == "func_door" or class == "func_door_rotating" or class == "prop_door_rotating" or class == "prop_dynamic"
 end
 
 function catherine.entity.IsProp( ent )
-	return ent:GetClass( ):find( "prop_" )
+	return ent.GetClass( ent ):find( "prop_" )
 end
 
 if ( SERVER ) then
-	catherine.entity.CustomUse = catherine.entity.CustomUse or { }
-	
+	catherine.entity.customUse = catherine.entity.customUse or { }
+
 	function catherine.entity.RegisterUseMenu( ent, menuTable )
 		local forServer = { }
 		local forClient = { }
@@ -46,24 +42,24 @@ if ( SERVER ) then
 		end
 		
 		ent.IsCustomUse = true
-		catherine.entity.CustomUse[ ent:EntIndex( ) ] = forServer
+		catherine.entity.customUse[ ent.EntIndex( ent ) ] = forServer
 
 		ent:SetNetVar( "customUseClient", forClient )
 	end
 	
 	function catherine.entity.RunUseMenu( pl, index, uniqueID )
-		if ( !catherine.entity.CustomUse[ index ] or !catherine.entity.CustomUse[ index ][ uniqueID ] ) then return end
+		if ( !catherine.entity.customUse[ index ] or !catherine.entity.customUse[ index ][ uniqueID ] ) then return end
 		
-		catherine.entity.CustomUse[ index ][ uniqueID ]( pl, Entity( index ) )
+		catherine.entity.customUse[ index ][ uniqueID ]( pl, Entity( index ) )
 	end
 	
 	function catherine.entity.EntityRemoved( ent )
-		catherine.entity.CustomUse[ ent:EntIndex( ) ] = nil
+		catherine.entity.customUse[ ent:EntIndex( ) ] = nil
 	end
 
 	hook.Add( "EntityRemoved", "catherine.entity.EntityRemoved", catherine.entity.EntityRemoved )
 
-	netstream.Hook( "catherine.entity.CustomUseMenu_Receive", function( pl, data )
+	netstream.Hook( "catherine.entity.customUseMenu_Receive", function( pl, data )
 		catherine.entity.RunUseMenu( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
@@ -72,21 +68,13 @@ else
 		local ent = Entity( index )
 		local menu = DermaMenu( )
 		
-		for k, v in pairs( IsValid( ent ) and ent:GetNetVar( "customUseClient" ) or { } ) do
+		for k, v in pairs( IsValid( ent ) and ent.GetNetVar( ent, "customUseClient" ) or { } ) do
 			menu:AddOption( catherine.util.StuffLanguage( v.text ), function( )
-				netstream.Start( "catherine.entity.CustomUseMenu_Receive", { index, v.uniqueID } )
+				netstream.Start( "catherine.entity.customUseMenu_Receive", { index, v.uniqueID } )
 			end )
 		end
 		
 		menu:Open( )
 		menu:Center( )
-	end )
-	
-	netstream.Hook( "catherine.entity.RegisterUseMenu", function( data )
-		catherine.entity.CustomUse[ data[ 1 ] ] = data[ 2 ]
-	end )
-	
-	netstream.Hook( "catherine.entity.ClearCustomUse", function( data )
-		catherine.entity.CustomUse[ data ] = nil
 	end )
 end

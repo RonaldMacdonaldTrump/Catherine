@@ -49,7 +49,7 @@ local Ammo_Types = {
 }
 
 function PLUGIN:PostCharacterSave( pl )
-	local wep = pl:GetActiveWeapon( )
+	local wep = pl.GetActiveWeapon( pl )
 	local tab = { }
 	
 	for k, v in pairs( Ammo_Types ) do

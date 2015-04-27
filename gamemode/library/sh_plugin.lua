@@ -16,31 +16,45 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.plugin = catherine.plugin or { Lists = { } }
+catherine.plugin = catherine.plugin or { lists = { } }
 
 function catherine.plugin.Include( dir )
 	local _, folders = file.Find( dir .. "/plugin/*", "LUA" )
 	
 	for k, v in pairs( folders ) do
-		PLUGIN = catherine.plugin.Get( v ) or { }
+		PLUGIN = catherine.plugin.Get( v ) or { FolderName = dir .. "/plugin/" .. v }
 		
-		local Pdir = dir .. "/plugin/" .. v
+		local pluginDir = PLUGIN.FolderName
 		
-		if ( file.Exists( Pdir .. "/sh_plugin.lua", "LUA" ) ) then
-			catherine.util.Include( Pdir .. "/sh_plugin.lua" )
-			catherine.item.Include( Pdir )
+		if ( file.Exists( pluginDir .. "/sh_plugin.lua", "LUA" ) ) then
+			catherine.util.Include( pluginDir .. "/sh_plugin.lua" )
+			catherine.item.Include( pluginDir )
 			
-			catherine.plugin.IncludeEntities( Pdir )
+			catherine.plugin.IncludeEntities( pluginDir )
 			
-			for k1, v1 in pairs( file.Find( Pdir .. "/derma/*.lua", "LUA" ) ) do
-				catherine.util.Include( Pdir .. "/derma/" .. v1 )
+			for k1, v1 in pairs( file.Find( pluginDir .. "/derma/*.lua", "LUA" ) ) do
+				catherine.util.Include( pluginDir .. "/derma/" .. v1 )
 			end
 			
-			for k1, v1 in pairs( file.Find( Pdir .. "/library/*.lua", "LUA" ) ) do
-				catherine.util.Include( Pdir .. "/library/" .. v1 )
+			for k1, v1 in pairs( file.Find( pluginDir .. "/attribute/*.lua", "LUA" ) ) do
+				catherine.util.Include( pluginDir .. "/attribute/" .. v1 )
 			end
 			
-			catherine.plugin.Lists[ v ] = PLUGIN
+			for k1, v1 in pairs( file.Find( pluginDir .. "/library/*.lua", "LUA" ) ) do
+				catherine.util.Include( pluginDir .. "/library/" .. v1 )
+			end
+			
+			for k1, v1 in pairs( file.Find( pluginDir .. "/class/*.lua", "LUA" ) ) do
+				catherine.util.Include( pluginDir .. "/class/" .. v1 )
+			end
+			
+			for k1, v1 in pairs( file.Find( pluginDir .. "/faction/*.lua", "LUA" ) ) do
+				catherine.util.Include( pluginDir .. "/faction/" .. v1 )
+			end
+			
+			catherine.plugin.lists[ v ] = PLUGIN
+		else
+			MsgC( Color( 255, 255, 0 ), "[CAT ERROR] SORRY, The plugin <test> are do not have files named sh_plugin.lua, failed to loading it ...\n" )
 		end
 		
 		PLUGIN = nil
@@ -68,10 +82,10 @@ function catherine.plugin.IncludeEntities( dir )
 	end
 end
 
-function catherine.plugin.Get( id )
-	return catherine.plugin.Lists[ id ]
+function catherine.plugin.GetAll( )
+	return catherine.plugin.lists
 end
 
-function catherine.plugin.GetAll( )
-	return catherine.plugin.Lists
+function catherine.plugin.Get( id )
+	return catherine.plugin.lists[ id ]
 end

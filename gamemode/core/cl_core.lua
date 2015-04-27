@@ -26,7 +26,9 @@ catherine.intro = catherine.intro or {
 catherine.entityCaches = { }
 catherine.weaponModels = catherine.weaponModels or { }
 catherine.nextCacheDo = CurTime( )
-local toscreen = FindMetaTable("Vector").ToScreen
+local toscreen = FindMetaTable( "Vector" ).ToScreen
+local OFFSET_PLAYER = Vector( 0, 0, 30 )
+local OFFSET_AD_ESP = Vector( 0, 0, 50 )
 
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hud.blockedModules ) do
@@ -38,8 +40,29 @@ function GM:HUDShouldDraw( name )
 	return true
 end
 
+function GM:HUDPaintBackground( )
+	local lp = LocalPlayer( )
+	if ( !lp.IsNoclipping( lp ) or !lp.IsAdmin( lp ) ) then return end
+	
+	for k, v in pairs( player.GetAllByLoaded( ) ) do
+		if ( lp == v ) then continue end
+		
+		local pos = toscreen( v.LocalToWorld( v, v.OBBCenter( v ) + OFFSET_AD_ESP ) )
+
+		draw.SimpleText( v.Name( v ), "catherine_normal20", pos.x, pos.y, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.SimpleText( v.SteamID( v ), "catherine_normal15", pos.x, pos.y + 20, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.SimpleText( "Health : " .. v.Health( v ) .. "%", "catherine_normal15", pos.x, pos.y + 40, Color( 255, 255, 255, 255 ), 1, 1 )
+		
+		hook.Run( "AdminESPDrawed", lp, v, pos.x, pos.y )
+	end
+end
+
+function GM:SpawnMenuEnabled( )
+	return LocalPlayer( ).IsAdmin( LocalPlayer( ) )
+end
+
 function GM:CalcView( pl, pos, ang, fov )
-	if ( IsValid( catherine.vgui.character ) or !pl:IsCharacterLoaded( ) ) then
+	if ( IsValid( catherine.vgui.character ) or !pl.IsCharacterLoaded( pl ) ) then
 		local data = {
 			origin = catherine.configs.schematicViewPos.pos,
 			angles = catherine.configs.schematicViewPos.ang
@@ -48,13 +71,13 @@ function GM:CalcView( pl, pos, ang, fov )
 		return data
 	end
 
-	local ent = Entity( pl:GetNetVar( "ragdollEnt", 0 ) )
+	local ent = Entity( pl.GetNetVar( pl, "ragdollEnt", 0 ) )
 	if ( IsValid( ent ) and catherine.player.IsRagdolled( pl ) ) then
-		local index = ent:LookupAttachment( "eyes" )
+		local index = ent.LookupAttachment( ent, "eyes" )
 		local view = { }
 		
 		if ( !index ) then return end
-		local data = ent:GetAttachment( index )
+		local data = ent.GetAttachment( ent, index )
 		
 		view.origin = data and data.Pos
 		view.angles = data and data.Ang
@@ -64,7 +87,7 @@ function GM:CalcView( pl, pos, ang, fov )
 end
 
 function GM:HUDDrawScoreBoard( )
-	if ( LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+	if ( LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 
 	catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 6, 6 )
@@ -92,15 +115,23 @@ end
 function GM:PostDrawTranslucentRenderables( depth, skybox )
 	if ( depth or skybox ) then return end
 
-	for k, v in pairs( ents.FindInSphere( LocalPlayer( ):GetPos( ), 256 ) ) do
+	for k, v in pairs( ents.FindInSphere( LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 ) ) do
 		if ( !IsValid( v ) or !catherine.entity.IsDoor( v ) ) then continue end
 		
-		hook.Run( "DrawDoorText", v, v:GetPos( ), v:GetAngles( ) )
+		hook.Run( "DrawDoorText", v, v.GetPos( v ), v.GetAngles( v ) )
+	end
+end
+
+function GM:PlayerBindPress( pl, code, pressed )
+	if ( code:find( "messagemode" ) and pressed ) then
+		catherine.chat.SetStatus( true )
+		
+		return true
 	end
 end
 
 function GM:DrawDoorText( ent, pos, ang )
-	local a = catherine.util.GetAlphaFromDistance( ent:GetPos( ), LocalPlayer( ):GetPos( ), 256 )
+	local a = catherine.util.GetAlphaFromDistance( ent.GetPos( ent ), LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 )
 
 	if ( math.Round( a ) <= 0 ) then
 		return
@@ -108,7 +139,7 @@ function GM:DrawDoorText( ent, pos, ang )
 	
 	local data = catherine.door.CalcDoorTextPos( ent )
 	
-	local title = ent:GetNetVar( "title", LANG( "Door_UI_Default" ) )
+	local title = ent.GetNetVar( ent, "title", LANG( "Door_UI_Default" ) )
 	local desc = catherine.door.GetDetailString( ent )
 	
 	surface.SetFont( "catherine_normal50" )
@@ -121,7 +152,7 @@ function GM:DrawDoorText( ent, pos, ang )
 		longW = descW
 	end
 
-	local scale = math.abs( ( data.w * 0.8) / longW )
+	local scale = math.abs( ( data.w * 0.8 ) / longW )
 	local titleScale = math.min( scale, 0.1 )
 	local descScale = math.min( scale, 0.03 )
 	local longH = titleH + descScale + 8
@@ -167,11 +198,17 @@ function GM:DrawDoorText( ent, pos, ang )
 	cam.End3D2D( )
 end
 
-local OFFSET_PLAYER = Vector( 0, 0, 30 )
+function GM:StartChat( )
+	netstream.Start( "catherine.IsTyping", true )
+end
+
+function GM:FinishChat( )
+	netstream.Start( "catherine.IsTyping", false )
+end
 
 function GM:DrawEntityTargetID( pl, ent, a )
-	if ( !ent:IsPlayer( ) ) then return end
-	local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) + OFFSET_PLAYER )
+	if ( !ent.IsPlayer( ent ) ) then return end
+	local pos = toscreen( ent.LocalToWorld( ent, ent.OBBCenter( ent ) ) + OFFSET_PLAYER )
 	local x, y = pos.x, pos.y - 100
 	local name, desc = hook.Run( "GetPlayerInformation", pl, ent, true )
 	
@@ -190,9 +227,9 @@ function GM:DrawEntityTargetID( pl, ent, a )
 end
 
 function GM:PlayerInformationDraw( pl, target, x, y, a )
-	if ( target:Alive( ) ) then return end
+	if ( target.Alive( target ) ) then return end
 	
-	draw.SimpleText( ( target:GetGender( ) == "male" and "He" or "She" ) .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
+	draw.SimpleText( ( target.GetGender( target ) == "male" and "He" or "She" ) .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
 end
 
 function GM:GetUnknownTargetName( pl, target )
@@ -200,19 +237,14 @@ function GM:GetUnknownTargetName( pl, target )
 end
 
 function GM:ProgressEntityCache( pl )
-	if ( pl:IsCharacterLoaded( ) and catherine.nextCacheDo <= CurTime( ) ) then
+	if ( pl.IsCharacterLoaded( pl ) and catherine.nextCacheDo <= CurTime( ) ) then
 		local data = { }
-		data.start = pl:GetShootPos( )
-		data.endpos = data.start + pl:GetAimVector( ) * 160
+		data.start = pl.GetShootPos( pl )
+		data.endpos = data.start + pl.GetAimVector( pl ) * 160
 		data.filter = pl
 		local ent = util.TraceLine( data ).Entity
-		
-		if ( IsValid( ent ) ) then 
-			catherine.entityCaches[ ent ] = true
-		else 
-			catherine.entityCaches[ ent ] = nil
-		end
-		
+
+		catherine.entityCaches[ ent ] = IsValid( ent ) and true or nil
 		catherine.nextCacheDo = CurTime( ) + 0.5
 	end
 	
@@ -222,7 +254,7 @@ function GM:ProgressEntityCache( pl )
 			continue
 		end
 		
-		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k:GetPos( ), pl:GetPos( ), 100 ) )
+		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k.GetPos( k ), pl.GetPos( pl ), 256 ) )
 		k.alpha = a
 		
 		if ( math.Round( a ) <= 0 ) then
@@ -243,18 +275,19 @@ function GM:HUDPaint( )
 	local pl = LocalPlayer( )
 	
 	hook.Run( "HUDBackgroundDraw" )
-	catherine.hud.Draw( )
-	catherine.bar.Draw( )
-	catherine.hint.Draw( )
+	catherine.hud.Draw( pl )
+	catherine.bar.Draw( pl )
+	catherine.hint.Draw( pl )
 	hook.Run( "HUDDraw" )
 	
-	if ( pl:Alive( ) ) then
+	if ( pl.Alive( pl ) ) then
 		hook.Run( "ProgressEntityCache", pl )
 	end
 end
 
 function GM:PostRenderVGUI( )
 	if ( IsValid( catherine.vgui.character ) ) then return end
+	
 	catherine.notify.Draw( )
 end
 
@@ -262,13 +295,13 @@ function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePo
 	if ( !IsValid( weapon ) ) then return end
 	local pl = LocalPlayer( )
 	local value = 0
-	if ( !pl:GetWeaponRaised( ) ) then value = 100 end
+	if ( !pl.GetWeaponRaised( pl ) ) then value = 100 end
 	local fraction = ( pl.wepRaisedFraction or 0 ) / 100
 	local lowerAngle = weapon.LowerAngles or Angle( 30, -30, -25 )
 	
-	eyeAng:RotateAroundAxis( eyeAng:Up( ), lowerAngle.p * fraction )
-	eyeAng:RotateAroundAxis( eyeAng:Forward( ), lowerAngle.y * fraction )
-	eyeAng:RotateAroundAxis( eyeAng:Right( ), lowerAngle.r * fraction )
+	eyeAng:RotateAroundAxis( eyeAng.Up( eyeAng ), lowerAngle.p * fraction )
+	eyeAng:RotateAroundAxis( eyeAng.Forward( eyeAng ), lowerAngle.y * fraction )
+	eyeAng:RotateAroundAxis( eyeAng.Right( eyeAng ), lowerAngle.r * fraction )
 	pl.wepRaisedFraction = Lerp( FrameTime( ) * 2, pl.wepRaisedFraction or 0, value )
 	viewModel:SetAngles( eyeAng )
 	
@@ -284,7 +317,8 @@ function GM:GetSchemaInformation( )
 end
 
 function GM:ScoreboardShow( )
-	if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+	if ( !LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then return end
+	
 	if ( IsValid( catherine.vgui.menu ) ) then
 		catherine.vgui.menu:Close( )
 		gui.EnableScreenClicker( false )
@@ -312,8 +346,8 @@ function GM:RenderScreenspaceEffects( )
 end
 --[[
 function GM:PostPlayerDraw( pl )
-	if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) ) then return end
-	local wep = pl:GetActiveWeapon( )
+	if ( !IsValid( pl ) or !pl.IsCharacterLoaded( pl ) ) then return end
+	local wep = pl.GetActiveWeapon( pl )
 	local curClass = ( IsValid( wep ) and wep:GetClass( ):lower( ) or "" )
 	
 	for k, v in pairs( pl:GetWeapons( ) ) do
@@ -353,6 +387,7 @@ end
 netstream.Hook( "catherine.LoadingStatus", function( data )
 	catherine.loading.status = data[ 1 ]
 	catherine.loading.msg = data[ 2 ]
+	
 	if ( data[ 3 ] == true ) then
 		catherine.loading.errorMsg = data[ 2 ]
 		catherine.loading.msg = ""

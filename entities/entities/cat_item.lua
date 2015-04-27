@@ -35,11 +35,13 @@ if ( SERVER ) then
 		self:SetUseType( SIMPLE_USE )
 		self:SetHealth( 40 )
 		
-		local physObject = self:GetPhysicsObject( )
+		local physObject = self.GetPhysicsObject( self )
+		
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( true )
 			physObject:Wake( )
 		end
+		
 		self:PhysicsInitBox( Vector( -2, -2, -2 ), Vector( 2, 2, 2 ) )
 	end
 
@@ -54,17 +56,17 @@ if ( SERVER ) then
 	
 	function ENT:Bomb( )
 		local eff = EffectData( )
-		eff:SetStart( self:GetPos( ) )
-		eff:SetOrigin( self:GetPos( ) )
+		eff:SetStart( self.GetPos( self ) )
+		eff:SetOrigin( self.GetPos( self ) )
 		eff:SetScale( 8 )
 		util.Effect( "GlassImpact", eff, true, true )
 		self:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav" )
 	end
 
 	function ENT:OnTakeDamage( dmg )
-		self:SetHealth( math.max( self:Health( ) - dmg:GetDamage( ), 0 ) )
+		self:SetHealth( math.max( self.Health( self ) - dmg:GetDamage( ), 0 ) )
 		
-		if ( self:Health( ) <= 0 ) then
+		if ( self.Health( self ) <= 0 ) then
 			self:Bomb( )
 			self:Remove( )
 		end
@@ -73,7 +75,7 @@ else
 	local toscreen = FindMetaTable( "Vector" ).ToScreen
 	
 	function ENT:DrawEntityTargetID( pl, ent, a )
-		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
+		local pos = toscreen( self.LocalToWorld( self, self.OBBCenter( self ) ) )
 		local x, y = pos.x, pos.y
 		local itemTable = self:GetItemTable( )
 

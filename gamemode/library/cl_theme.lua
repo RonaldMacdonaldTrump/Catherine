@@ -20,7 +20,6 @@ catherine.theme = catherine.theme or { }
 CAT_THEME_MENU_BACKGROUND = 1
 CAT_THEME_PNLLIST = 2
 CAT_THEME_FORM = 3
-
 local func = {
 	[ CAT_THEME_MENU_BACKGROUND ] = function( w, h )
 		draw.RoundedBox( 0, 0, 25, w, h, Color( 255, 255, 255, 235 ) )
@@ -38,6 +37,6 @@ local func = {
 	end
 }
 
-function catherine.theme.Draw( types, w, h )
-	func[ types ]( w, h )
+function catherine.theme.Draw( typ, w, h )
+	func[ typ ]( w, h )
 end

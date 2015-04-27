@@ -20,25 +20,28 @@ if ( !catherine.character ) then
 	catherine.util.Include( "sh_character.lua" )
 end
 catherine.attribute = catherine.attribute or { }
-catherine.attribute.Lists = { }
+catherine.attribute.lists = { }
 
-function catherine.attribute.Register( uniqueID, name, desc, image, default, max )
-	local index = #catherine.attribute.Lists + 1
+function catherine.attribute.Register( attributeTable )
+	if ( !attributeTable or !attributeTable.index ) then
+		catherine.util.ErrorPrint( "Attribute register error, can't found attribute table!" )
+		return
+	end
 	
-	catherine.attribute.Lists[ index ] = {
-		uniqueID = uniqueID,
-		name = name,
-		desc = desc,
-		image = image,
-		default = default or 0,
-		max = max or 100
-	}
+	attributeTable.default = attributeTable.default or 0
+	attributeTable.max = attributeTable.max or 100
 	
-	return catherine.attribute.Lists[ index ]
+	catherine.attribute.lists[ attributeTable.index ] = attributeTable
+
+	return attributeTable.index
+end
+
+function catherine.attribute.New( uniqueID )
+	return { uniqueID = uniqueID, index = table.Count( catherine.attribute.lists ) + 1 }
 end
 
 function catherine.attribute.GetAll( )
-	return catherine.attribute.Lists
+	return catherine.attribute.lists
 end
 
 function catherine.attribute.FindByID( id )
@@ -49,54 +52,63 @@ function catherine.attribute.FindByID( id )
 	end
 end
 
+function catherine.attribute.FindByIndex( index )
+	return catherine.attribute.lists[ index ]
+end
+
+function catherine.attribute.Include( dir )
+	for k, v in pairs( file.Find( dir .. "/attribute/*.lua", "LUA" ) ) do
+		catherine.util.Include( dir .. "/attribute/" .. v, "SHARED" )
+	end
+end
+
 if ( SERVER ) then
-	function catherine.attribute.SetProgress( pl, attributeTable, progress )
-		if ( !attributeTable or !progress ) then return end
+	function catherine.attribute.SetProgress( pl, index, progress )
 		local attribute = catherine.character.GetVar( pl, "_att", { } )
-		local uniqueID = attributeTable.uniqueID
+		local attributeTable = catherine.attribute.FindByIndex( index )
+		if ( !attributeTable ) then return end
 		
-		attribute[ uniqueID ] = attribute[ uniqueID ] or {
+		attribute[ index ] = attribute[ index ] or {
 			per = 0,
 			progress = attributeTable.default
 		}
-		attribute[ uniqueID ].progress = math.Clamp( progress, 0, attributeTable.max )
+		attribute[ index ].progress = math.Clamp( progress, 0, attributeTable.max )
 		
 		catherine.character.SetVar( pl, "_att", attribute )
 	end
 	
-	function catherine.attribute.AddProgress( pl, attributeTable, progress )
-		if ( !attributeTable or !progress ) then return end
+	function catherine.attribute.AddProgress( pl, index, progress )
 		local attribute = catherine.character.GetVar( pl, "_att", { } )
-		local uniqueID = attributeTable.uniqueID
+		local attributeTable = catherine.attribute.FindByIndex( index )
+		if ( !attributeTable ) then return end
 		
-		attribute[ uniqueID ] = attribute[ uniqueID ] or {
+		attribute[ index ] = attribute[ index ] or {
 			per = 0,
 			progress = attributeTable.default
 		}
-		attribute[ uniqueID ].progress = math.Clamp( attribute[ uniqueID ].progress + progress, 0, attributeTable.max )
+		attribute[ index ].progress = math.Clamp( attribute[ index ].progress + progress, 0, attributeTable.max )
 		
 		catherine.character.SetVar( pl, "_att", attribute )
 	end
 	
-	function catherine.attribute.RemoveProgress( pl, attributeTable, progress )
-		if ( !attributeTable or !progress ) then return end
+	function catherine.attribute.RemoveProgress( pl, index, progress )
 		local attribute = catherine.character.GetVar( pl, "_att", { } )
-		local uniqueID = attributeTable.uniqueID
+		local attributeTable = catherine.attribute.FindByIndex( index )
+		if ( !attributeTable ) then return end
 		
-		attribute[ uniqueID ] = attribute[ uniqueID ] or {
+		attribute[ index ] = attribute[ index ] or {
 			per = 0,
 			progress = attributeTable.default
 		}
-		attribute[ uniqueID ].progress = math.Clamp( attribute[ uniqueID ].progress - progress, 0, attributeTable.max )
+		attribute[ index ].progress = math.Clamp( attribute[ index ].progress - progress, 0, attributeTable.max )
 		
 		catherine.character.SetVar( pl, "_att", attribute )
 	end
 
-	function catherine.attribute.GetProgress( pl, attributeTable )
+	function catherine.attribute.GetProgress( pl, index )
 		local attribute = catherine.character.GetVar( pl, "_att", { } )
-		local uniqueID = attributeTable.uniqueID
-		
-		return attribute[ uniqueID ] and attribute[ uniqueID ].progress or 0
+
+		return attribute[ index ] and attribute[ index ].progress or 0
 	end
 
 	function catherine.attribute.CreateNetworkRegistry( pl, charVars )
@@ -107,15 +119,20 @@ if ( SERVER ) then
 		local attributeAll = catherine.attribute.GetAll( )
 		
 		for k, v in pairs( attribute ) do
-			if ( catherine.attribute.FindByID( k ) ) then continue end
+			if ( catherine.attribute.FindByIndex( k ) ) then continue end
+			
 			attribute[ k ] = nil
 			changed = true
 		end
 
 		if ( count != #attributeAll ) then
 			for k, v in pairs( attributeAll ) do
-				if ( attribute[ v.uniqueID ] ) then continue end
-				attribute[ v.uniqueID ] = { per = 0, progress = v.default }
+				if ( attribute[ k ] ) then continue end
+				
+				attribute[ k ] = {
+					per = 0,
+					progress = v.default
+				}
 				changed = true
 			end
 		end
@@ -127,10 +144,9 @@ if ( SERVER ) then
 
 	hook.Add( "CreateNetworkRegistry", "catherine.attribute.CreateNetworkRegistry", catherine.attribute.CreateNetworkRegistry )
 else
-	function catherine.attribute.GetProgress( attributeTable )
+	function catherine.attribute.GetProgress( index )
 		local attribute = catherine.character.GetVar( LocalPlayer( ), "_att", { } )
-		local uniqueID = attributeTable.uniqueID
-		
-		return attribute[ uniqueID ] and attribute[ uniqueID ].progress or 0
+
+		return attribute[ index ] and attribute[ index ].progress or 0
 	end
 end

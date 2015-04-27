@@ -54,12 +54,12 @@ end
 function catherine.util.CalcDistanceByPos( loc, target )
 	if ( !IsValid( loc ) or !IsValid( target ) ) then return 0 end
 	
-	return loc:GetPos( ):Distance( target:GetPos( ) )
+	return loc.GetPos( loc ):Distance( target.GetPos( target ) )
 end
 
 function catherine.util.FindPlayerByName( name )
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		if ( catherine.util.CheckStringMatch( v:Name( ), name ) ) then
+		if ( catherine.util.CheckStringMatch( v.Name( v ), name ) ) then
 			return v
 		end
 	end
@@ -74,11 +74,11 @@ function catherine.util.FindPlayerByStuff( use, str )
 end
 
 function catherine.util.CheckStringMatch( one, two )
-	return one:lower( ):match( two:lower( ) )
+	return one.lower( one ):match( two.lower( two ) )
 end
 
 function catherine.util.GetUniqueName( name )
-	return name:sub( 4, -5 )
+	return name.sub( name, 4, -5 )
 end
 
 function catherine.util.GetRealTime( )
@@ -87,8 +87,24 @@ function catherine.util.GetRealTime( )
 	return one.year .. "-" .. one.month .. "-" .. one.day .. " | " .. dst .. " " .. hour .. ":" .. os.date( "%M" )
 end
 
+function catherine.util.GetAdmins( isSuperAdmin )
+	local players = { }
+	
+	if ( isSuperAdmin ) then
+		for k, v in pairs( player.GetAllByLoaded( ) ) do
+			players[ #players + 1 ] = v.IsSuperAdmin( v ) and v
+		end
+	else
+		for k, v in pairs( player.GetAllByLoaded( ) ) do
+			players[ #players + 1 ] = v.IsAdmin( v ) and v
+		end
+	end
+	
+	return players
+end
+
 function catherine.util.FolderDirectoryTranslate( dir )
-	if ( dir:sub( 1, 1 ) != "/" ) then
+	if ( dir.sub( dir, 1, 1 ) != "/" ) then
 		dir = "/" .. dir
 	end
 	
@@ -96,6 +112,7 @@ function catherine.util.FolderDirectoryTranslate( dir )
 	
 	for k, v in pairs( ex ) do
 		if ( v != "" ) then continue end
+		
 		table.remove( ex, k )
 	end
 	
@@ -104,8 +121,8 @@ end
 
 function catherine.util.GetItemDropPos( pl )
 	local data = { }
-	data.start = pl:GetShootPos( ) - pl:GetAimVector( ) * 64
-	data.endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * 86
+	data.start = pl.GetShootPos( pl ) - pl.GetAimVector( pl ) * 64
+	data.endpos = pl.GetShootPos( pl ) + pl.GetAimVector( pl ) * 86
 	data.filter = pl
 	local tr = util.TraceLine( data )
 
@@ -145,7 +162,7 @@ local translateHoldType = {
 }
 
 function catherine.util.GetHoldType( wep )
-	local holdType = holdTypes[ wep:GetClass( ) ]
+	local holdType = holdTypes[ wep.GetClass( wep ) ]
 	
 	if ( holdType ) then
 		return holdType
@@ -159,7 +176,7 @@ end
 catherine.util.IncludeInDir( "library/external", "catherine/gamemode/" )
 
 if ( SERVER ) then
-	catherine.util.Receiver = catherine.util.Receiver or { String = { }, Query = { } }
+	catherine.util.receiver = catherine.util.receiver or { str = { }, qry = { } }
 	
 	function catherine.util.Notify( pl, message, time )
 		netstream.Start( pl, "catherine.util.Notify", { message, time } )
@@ -178,15 +195,16 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.StuffLanguage( pl, key, ... )
-		local lang = string.Left( key, 1 ) == "^" and LANG( pl, key:sub( 2 ), ... ) or "-Error"
+		local lang = key.Left( key, 1 ) == "^" and LANG( pl, key.sub( key, 2 ), ... ) or "-Error"
 		
-		return lang:find( "-Error" ) and key or lang
+		return lang.find( lang, "-Error" ) and key or lang
 	end
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
 		if ( func ) then
 			timer.Simple( time, function( )
 				if ( !IsValid( pl ) ) then return end
+				
 				func( pl )
 			end )
 		end
@@ -205,8 +223,9 @@ if ( SERVER ) then
 	function catherine.util.AddResourceInFolder( dir )
 		local files, dirs = file.Find( dir .. "/*", "GAME" )
 		
+		table.RemoveByValue( dirs, ".svn" )
+		
 		for _, v in pairs( dirs ) do
-			if ( v == ".svn" ) then	continue end
 			catherine.util.AddResourceInFolder( dir .. "/" .. v )
 		end
 		
@@ -216,19 +235,19 @@ if ( SERVER ) then
 	end
 
 	function catherine.util.StringReceiver( pl, id, msg, defV, func )
-		local steamID = pl:SteamID( )
+		local steamID = pl.SteamID( pl )
 		
-		catherine.util.Receiver.String[ steamID ] = catherine.util.Receiver.String[ steamID ] or { }
-		catherine.util.Receiver.String[ steamID ][ id ] = func
+		catherine.util.receiver.str[ steamID ] = catherine.util.receiver.str[ steamID ] or { }
+		catherine.util.receiver.str[ steamID ][ id ] = func
 		
 		netstream.Start( pl, "catherine.util.StringReceiver", { id, msg, defV or "" } )
 	end
 	
 	function catherine.util.QueryReceiver( pl, id, msg, func )
-		local steamID = pl:SteamID( )
+		local steamID = pl.SteamID( pl )
 		
-		catherine.util.Receiver.Query[ steamID ] = catherine.util.Receiver.Query[ steamID ] or { }
-		catherine.util.Receiver.Query[ steamID ][ id ] = func
+		catherine.util.receiver.qry[ steamID ] = catherine.util.receiver.qry[ steamID ] or { }
+		catherine.util.receiver.qry[ steamID ][ id ] = func
 		
 		netstream.Start( pl, "catherine.util.QueryReceiver", { id, msg } )
 	end
@@ -239,24 +258,24 @@ if ( SERVER ) then
 
 	netstream.Hook( "catherine.util.StringReceiver_Receive", function( pl, data )
 		local id = data[ 1 ]
-		local steamID = pl:SteamID( )
-		local rec = catherine.util.Receiver.String
+		local steamID = pl.SteamID( pl )
+		local rec = catherine.util.receiver.str
 		
 		if ( !rec[ steamID ] or !rec[ steamID ][ id ] ) then return end
 		
 		rec[ steamID ][ id ]( pl, data[ 2 ] )
-		catherine.util.Receiver.String[ steamID ][ id ] = nil
+		catherine.util.receiver.str[ steamID ][ id ] = nil
 	end )
 	
 	netstream.Hook( "catherine.util.QueryReceiver_Receive", function( pl, data )
 		local id = data[ 1 ]
-		local steamID = pl:SteamID( )
-		local rec = catherine.util.Receiver.Query
+		local steamID = pl.SteamID( pl )
+		local rec = catherine.util.receiver.qry
 		
 		if ( !rec[ steamID ] or !rec[ steamID ][ id ] ) then return end
 		
 		rec[ steamID ][ id ]( pl, data[ 2 ] )
-		catherine.util.Receiver.Query[ steamID ][ id ] = nil
+		catherine.util.receiver.qry[ steamID ][ id ] = nil
 	end )
 else
 	catherine.util.blurTexture = Material( "pp/blurscreen" )
@@ -290,10 +309,12 @@ else
 		hook.Add( "HUDPaint", "catherine.util.ScreenColorEffect", function( )
 			if ( time <= CurTime( ) ) then
 				a = Lerp( fadeTime, a, 0 )
+				
 				if ( math.Round( a ) <= 0 ) then
 					hook.Remove( "HUDPaint", "catherine.util.ScreenColorEffect" )
 				end
 			end
+			
 			draw.RoundedBox( 0, 0, 0, ScrW( ), ScrH( ), Color( col.r, col.g, col.b, a ) )
 		end )
 	end )
@@ -319,6 +340,7 @@ else
 			catherine.hud.TopNotify = nil
 			return
 		end
+		
 		catherine.hud.TopNotifyAdd( data )
 	end )
 
@@ -335,7 +357,7 @@ else
 	end
 	
 	function catherine.util.StuffLanguage( key, ... )
-		local lang = string.Left( key, 1 ) == "^" and LANG( key:sub( 2 ), ... ) or "-Error"
+		local lang = key.Left( key, 1 ) == "^" and LANG( key.sub( key, 2 ), ... ) or "-Error"
 		
 		return lang:find( "-Error" ) and key or lang
 	end
@@ -357,7 +379,7 @@ else
 	function catherine.util.GetAlphaFromDistance( base, x, max )
 		if ( !base or !x or !max ) then return 255 end
 		
-		return ( 1 - ( ( x:Distance( base ) ) / max ) ) * 255
+		return ( 1 - ( ( x.Distance( x, base ) ) / max ) ) * 255
 	end
 	
 	function catherine.util.BlurDraw( x, y, w, h, amount )

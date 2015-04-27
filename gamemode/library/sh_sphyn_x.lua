@@ -16,15 +16,18 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-local PLAYER = { }
-PLAYER.DisplayName = "Catherine Player"
+catherine.sphynX = catherine.sphynX or { }
+CAT_SPHYN_X_FLAG_PLUGIN = 1
+CAT_SPHYN_X_FLAG_SCHEMA = 2
+CAT_SPHYN_X_FLAG_FRAMEWORK = 3
 
-function PLAYER:Loadout( )
-	self.Player:SetupHands( )
+if ( SERVER ) then
+	catherine.sphynX.buffer = catherine.sphynX.buffer or { }
+	
+	function catherine.sphynX.Do( flag, workTable, func )
+	
+	
+	end
+else
+
 end
-
-function PLAYER:GetHandsModel( )
-	return player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( self.Player:GetModel( ) ) )
-end
-
-player_manager.RegisterClass( "catherine_player", PLAYER, "player_default" )

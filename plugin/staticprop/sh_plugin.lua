@@ -31,9 +31,9 @@ catherine.command.Register( {
 
 		if ( IsValid( ent ) ) then
 			if ( catherine.entity.IsProp( ent ) and !catherine.entity.IsDoor( ent ) ) then
-				ent:SetNetVar( "isStatic", !ent:GetNetVar( "isStatic", false ) )
+				ent:SetNetVar( "isStatic", !ent.GetNetVar( ent, "isStatic", false ) )
 				
-				if ( ent:GetNetVar( "isStatic" ) ) then
+				if ( ent.GetNetVar( ent, "isStatic" ) ) then
 					catherine.util.NotifyLang( pl, "Staticprop_Notify_Add" )
 				else
 					catherine.util.NotifyLang( pl, "Staticprop_Notify_Remove" )

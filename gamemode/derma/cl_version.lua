@@ -22,7 +22,7 @@ function PANEL:Init( )
 	catherine.vgui.version = self
 	
 	self.version = catherine.version.Ver
-	self.needUpdate = catherine.network.GetNetGlobalVar( "cat_needUpdate", false )
+	self.needUpdate = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
 	self.status = false
 	self.mat = {
 		Material( "icon16/accept.png" ),
@@ -55,9 +55,9 @@ function PANEL:Init( )
 	end
 end
 
-function PANEL:Rebuild( )
+function PANEL:Refresh( )
 	self.version = catherine.version.Ver
-	self.needUpdate = catherine.network.GetNetGlobalVar( "cat_needUpdate", false )
+	self.needUpdate = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
 end
 
 function PANEL:MenuPaint( w, h )

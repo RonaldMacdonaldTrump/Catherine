@@ -20,17 +20,13 @@ catherine.catData = catherine.catData or { networkRegistry = { } }
 
 if ( SERVER ) then
 	function catherine.catData.SetVar( pl, key, value, noSync, save )
-		local steamID = pl:SteamID( )
+		local steamID = pl.SteamID( pl )
 		
 		catherine.catData.networkRegistry[ steamID ] = catherine.catData.networkRegistry[ steamID ] or { }
 		catherine.catData.networkRegistry[ steamID ][ key ] = value
 		
 		if ( !noSync ) then
-			if ( value == nil ) then
-				netstream.Start( pl, "catherine.catData.Clear", key )
-			else
-				netstream.Start( pl, "catherine.catData.SetVar", { key, value } )
-			end
+			netstream.Start( pl, "catherine.catData.SetVar", { key, value } )
 		end
 		
 		if ( save ) then
@@ -39,13 +35,13 @@ if ( SERVER ) then
 	end
 
 	function catherine.catData.GetVar( pl, key, default )
-		local steamID = pl:SteamID( )
+		local steamID = pl.SteamID( pl )
 		
 		return catherine.catData.networkRegistry[ steamID ] and catherine.catData.networkRegistry[ steamID ][ key ] or default
 	end
 	
 	function catherine.catData.Save( pl )
-		local steamID = pl:SteamID( )
+		local steamID = pl.SteamID( pl )
 		if ( !catherine.catData.networkRegistry[ steamID ] ) then return end
 		
 		catherine.database.UpdateDatas( "catherine_players", "_steamID = '" .. steamID .. "'", {
@@ -54,7 +50,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.catData.SyncToPlayer( pl )
-		local steamID = pl:SteamID( )
+		local steamID = pl.SteamID( pl )
 		
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data ) then return end
@@ -66,7 +62,7 @@ if ( SERVER ) then
 
 	function catherine.catData.PlayerDisconnected( pl )
 		catherine.catData.Save( pl )
-		catherine.catData.networkRegistry[ pl:SteamID( ) ] = nil
+		catherine.catData.networkRegistry[ pl.SteamID( pl ) ] = nil
 	end
 	
 	hook.Add( "PlayerDisconnected", "catherine.catData.PlayerDisconnected", catherine.catData.PlayerDisconnected )

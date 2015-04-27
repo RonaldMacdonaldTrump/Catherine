@@ -44,7 +44,7 @@ function PANEL:BuildAttribute( )
 		local item = vgui.Create( "catherine.vgui.attributeItem" )
 		item:SetTall( 90 )
 		item:SetAttribute( v )
-		item:SetProgress( catherine.attribute.GetProgress( v ) )
+		item:SetProgress( catherine.attribute.GetProgress( k ) )
 		item:SetAlpha( 0 )
 		item:AlphaTo( 255, 0.1, delta )
 		delta = delta + 0.05

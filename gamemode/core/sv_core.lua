@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 function GM:ShowHelp( pl )
-	if ( !pl:IsCharacterLoaded( ) ) then return end
+	if ( !pl.IsCharacterLoaded( pl ) ) then return end
 	local status = hook.Run( "CanLookF1", pl )
 	if ( !status ) then return end
 	
@@ -25,19 +25,26 @@ function GM:ShowHelp( pl )
 end
 
 function GM:ShowTeam( pl )
-	if ( !pl:IsCharacterLoaded( ) ) then return end
+	if ( !pl.IsCharacterLoaded( pl ) ) then return end
 	local status = hook.Run( "CanLookF2", pl )
 	if ( !status ) then return end
 	
-	local ent = pl:GetEyeTrace( 70 ).Entity
+	local ent = pl.GetEyeTrace( pl, 70 ).Entity
 	
 	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
-		if ( catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_MASTER ) ) then
-			netstream.Start( pl, "catherine.door.DoorMenu", ent:EntIndex( ) )
+		local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
+		
+		if ( has ) then
+			if ( flag == CAT_DOOR_FLAG_BASIC ) then return end
+			
+			netstream.Start( pl, "catherine.door.DoorMenu", {
+				ent.EntIndex( ent ),
+				flag
+			} )
 		else
 			catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )
 				if ( bool ) then
-					catherine.door.Buy( pl, ent )
+					catherine.command.Run( pl, "doorbuy" )
 				end
 			end )
 		end
@@ -63,23 +70,23 @@ function GM:PlayerSpray( pl )
 end
 
 function GM:PlayerSpawn( pl )
-	pl:SetNoDraw( false )
-	pl:Freeze( false )
-	pl:ConCommand( "-duck" )
-	pl:SetColor( Color( 255, 255, 255, 255 ) )
-	pl:SetNetVar( "isTied", false )
-	player_manager.SetPlayerClass( pl, "catherine_player" )
-	
-	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
-	pl:AllowFlashlight( status )
+	pl.SetNoDraw( pl, false )
+	pl.Freeze( pl, false )
+	pl.ConCommand( pl, "-duck" )
+	pl.SetColor( pl, Color( 255, 255, 255, 255 ) )
+	pl.SetNetVar( pl, "isTied", false )
+	pl:SetupHands( )
 
-	if ( pl:IsCharacterLoaded( ) and !pl.CAT_loadingChar ) then
+	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
+	pl.AllowFlashlight( pl, status )
+
+	if ( pl.IsCharacterLoaded( pl ) and !pl.CAT_loadingChar ) then
 		hook.Run( "PlayerSpawnedInCharacter", pl )
 	end
 end
 
 function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
-	if ( !pl:IsPlayer( ) ) then return end
+	if ( !pl.IsPlayer( pl ) ) then return end
 
 	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 	
@@ -91,25 +98,40 @@ end
 function GM:PlayerSpawnedInCharacter( pl )
 	catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 	hook.Run( "OnSpawnedInCharacter", pl )
-	hook.Run( "PostWeaponGive", pl )
+	
+	if ( catherine.configs.giveHand ) then
+		pl.Give( pl, "cat_fist" )
+	end
+	
+	if ( catherine.configs.giveKey ) then
+		pl.Give( pl, "cat_key" )
+	end
 end
 
 function GM:PlayerSetHandsModel( pl, ent )
-	local info = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl:GetModel( ) ) )
+	local info = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl.GetModel( pl ) ) )
 	
 	if ( info ) then
-		ent:SetModel( info.model )
-		ent:SetSkin( info.skin )
-		ent:SetBodyGroups( info.body )
+		ent.SetModel( ent, info.model )
+		ent.SetSkin( ent, info.skin )
+		ent.SetBodyGroups( ent, info.body )
 	end
 end
 
 function GM:PlayerAuthed( pl )
 	catherine.chat.Send( pl, "connect" )
+	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has connected a server." )
+	
+	hook.Run( "PlayerInitSpawned", pl )
 end
 
 function GM:PlayerDisconnected( pl )
 	catherine.chat.Send( pl, "disconnect" )
+	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has disconnected a server." )
+	
+	if ( pl.IsCharacterLoaded( pl ) ) then
+		hook.Run( "PlayerDisconnectedInCharacter", pl )
+	end
 end
 
 function GM:PlayerCanHearPlayersVoice( pl, target )
@@ -117,12 +139,14 @@ function GM:PlayerCanHearPlayersVoice( pl, target )
 end
 
 function GM:EntityTakeDamage( pl, dmginfo )
-	if ( !pl:IsPlayer( ) or !dmginfo:IsBulletDamage( ) ) then return end
-	pl:SetRunSpeed( pl:GetWalkSpeed( ) )
+	if ( !pl.IsPlayer( pl ) or !dmginfo.IsBulletDamage( dmginfo ) ) then return end
 	
-	timer.Remove( "Catherine.timer.RunSpamProtection_" .. pl:SteamID( ) )
-	timer.Create( "Catherine.timer.RunSpamProtection_" .. pl:SteamID( ), 2, 1, function( )
-		pl:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
+	pl.SetRunSpeed( pl, pl.GetWalkSpeed( pl ) )
+	
+	local steamID = pl.SteamID( pl )
+	timer.Remove( "Catherine.timer.RunSpamProtection_" .. steamID )
+	timer.Create( "Catherine.timer.RunSpamProtection_" .. steamID, 2, 1, function( )
+		pl.SetRunSpeed( pl, catherine.configs.playerDefaultRunSpeed )
 	end )
 end
 
@@ -132,68 +156,36 @@ end
 
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Create("Catherine.timer.WeaponToggle." .. pl:SteamID( ), 1, 1, function()
-			pl:ToggleWeaponRaised( )
+		timer.Create( "Catherine.timer.WeaponToggle." .. pl.SteamID( pl ), 1, 1, function( )
+			pl.ToggleWeaponRaised( pl )
 		end )
 	elseif ( key == IN_USE ) then
-		local tr = { }
-		tr.start = pl:GetShootPos( )
-		tr.endpos = tr.start + pl:GetAimVector( ) * 60
-		tr.filter = pl
-		
-		local ent = util.TraceLine( tr ).Entity
+		local data = { }
+		data.start = pl.GetShootPos( pl )
+		data.endpos = data.start + pl.GetAimVector( pl ) * 60
+		data.filter = pl
+		local ent = util.TraceLine( data ).Entity
 		
 		if ( !IsValid( ent ) ) then return end
 		
-		if ( ent:GetClass( ) == "prop_ragdoll" ) then
-			ent = ent:GetNetVar( "player" )
+		if ( ent.GetClass( ent ) == "prop_ragdoll" ) then
+			ent = ent.GetNetVar( ent, "player" )
 		end
 		
-		if ( IsValid( ent ) and ent:IsPlayer( ) and catherine.player.IsTied( ent ) ) then
-			catherine.player.SetTie( pl, ent, false )
-			
-			return true
+		if ( IsValid( ent ) and ent.IsPlayer( ent ) ) then
+			return hook.Run( "PlayerInteract", pl, ent )
 		end
 
 		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
-			if ( pl.canUseDoor == nil ) then
-				pl.canUseDoor = true
+			if ( hook.Run( "PlayerCanUseDoor", pl, ent ) == false ) then
+				return
 			end
 			
-			if ( !pl.doorSpamCount ) then
-				pl.doorSpamCount = 0
-			end
-			
-			if ( pl.lookingDoorEntity == nil ) then
-				pl.lookingDoorEntity = ent
-			end
-			
-			pl.doorSpamCount = pl.doorSpamCount + 1
-			
-			if ( pl.lookingDoorEntity == ent and pl.doorSpamCount >= 10 ) then
-				pl.lookingDoorEntity = nil
-				pl.doorSpamCount = 0
-				pl.canUseDoor = false
-				catherine.util.Notify( pl, "Do not door-spam!" )
-				
-				timer.Create( "Catherine.timer.doorSpamDelay", 1, 1, function( )
-					pl.canUseDoor = true
-				end )
-				timer.Remove( "Catherine.timer.doorSpamInit" )
-			elseif ( pl.lookingDoorEntity != ent ) then
-				pl.lookingDoorEntity = ent
-				pl.doorSpamCount = 1
-			end
-			
-			timer.Remove( "Catherine.timer.doorSpamInit" )
-			timer.Create( "Catherine.timer.doorSpamInit", 1, 1, function( )
-				pl.canUseDoor = true
-				pl.doorSpamCount = 0
-			end )
-			
+			catherine.door.DoorSpamProtection( pl, ent )
+
 			return hook.Run( "PlayerUseDoor", pl, ent )
 		elseif ( IsValid( ent ) and ent.IsCustomUse ) then
-			netstream.Start( pl, "catherine.entity.CustomUseMenu", ent:EntIndex( ) )
+			netstream.Start( pl, "catherine.entity.CustomUseMenu", ent.EntIndex( ent ) )
 		end
 	end
 end
@@ -204,71 +196,73 @@ function GM:PlayerUse( pl, ent )
 			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 			pl.CAT_tiedMSG = CurTime( ) + 5
 		end
+		
 		return false
 	end
-	
-	return catherine.entity.IsDoor( ent ) and pl.canUseDoor or true
-end
 
-function GM:PostWeaponGive( pl )
-	if ( catherine.configs.giveHand ) then
-		pl:Give( "cat_fist" )
-	end
+	local isDoor = catherine.entity.IsDoor( ent )
 	
-	if ( catherine.configs.giveKey ) then
-		pl:Give( "cat_key" )
-	end
+	return ( isDoor and !pl.CAT_cantUseDoor == true ) and true or !isDoor and true
 end
 
 function GM:PlayerSay( pl, text )
-	catherine.chat.Work( pl, text )
+	catherine.chat.Run( pl, text )
 end
 
 function GM:KeyRelease( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Remove( "Catherine.timer.WeaponToggle." .. pl:SteamID( ) )
+		timer.Remove( "Catherine.timer.WeaponToggle." .. pl.SteamID( pl ) )
 	end
 end
 
 function GM:PlayerInitialSpawn( pl )
 	timer.Simple( 1, function( )
-		pl:SetNoDraw( true )
+		pl.SetNoDraw( pl, true )
 	end )
 	
 	catherine.player.Initialize( pl )
 end
 
-local IsAdmin = function( _, pl ) return pl:IsAdmin( ) end
+local IsAdmin = function( _, pl ) return pl.IsAdmin( pl ) end
 
 GM.PlayerGiveSWEP = IsAdmin
 GM.PlayerSpawnSWEP = IsAdmin
 GM.PlayerSpawnEffect = IsAdmin
-GM.PlayerSpawnNPC = IsAdmin
-GM.PlayerSpawnRagdoll = IsAdmin
-GM.PlayerSpawnVehicle = IsAdmin
+
+function GM:PlayerSpawnRagdoll( pl )
+	return pl.HasFlag( pl, "R" )
+end
+
+function GM:PlayerSpawnNPC( pl )
+	return pl.HasFlag( pl, "n" )
+end
+
+function GM:PlayerSpawnVehicle( pl )
+	return pl.HasFlag( pl, "V" )
+end
 
 function GM:PlayerSpawnSENT( pl )
-	return pl:HasFlag( "x" )
+	return pl.HasFlag( pl, "x" )
 end
 
 function GM:PlayerSpawnObject( pl )
-	return pl:HasFlag( "e" )
+	return pl.HasFlag( pl, "e" )
 end
 
 function GM:PlayerSpawnProp( pl )
-	return pl:HasFlag( "e" )
+	return pl.HasFlag( pl, "e" )
 end
 
 function GM:PlayerHurt( pl )
-	if ( pl:Health( ) <= 0 ) then
+	if ( pl.Health( pl ) <= 0 ) then
 		return true
 	end
 	
 	pl.CAT_healthRecover = true
 	
-	local hitGroup = pl:LastHitGroup( )
+	local hitGroup = pl.LastHitGroup( pl )
 	local sound = hook.Run( "GetPlayerPainSound", pl )
-	local gender = pl:GetGender( )
+	local gender = pl.GetGender( pl )
 	
 	if ( !sound ) then
 		if ( hitGroup == HITGROUP_HEAD) then
@@ -292,7 +286,7 @@ function GM:PlayerHurt( pl )
 end
 
 function GM:PlayerDeathSound( pl )
-	pl:EmitSound( hook.Run( "GetPlayerDeathSound", pl ) or "vo/npc/" .. pl:GetGender( ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+	pl.EmitSound( pl, hook.Run( "GetPlayerDeathSound", pl ) or "vo/npc/" .. pl.GetGender( pl ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
 	
 	return true
 end
@@ -303,17 +297,19 @@ end
 
 function GM:PlayerDeath( pl )
 	if ( IsValid( pl.ragdoll ) ) then
-		pl.ragdoll:Remove( )
+		pl.ragdoll.Remove( pl.ragdoll )
 		pl.ragdoll = nil
 	end
 
 	pl.CAT_healthRecoverBool = false
 	catherine.util.ProgressBar( pl, "You are now respawning.", catherine.configs.spawnTime, function( )
-		pl:Spawn( )
+		pl.Spawn( pl )
 	end )
 
-	pl:SetNetVar( "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
-	pl:SetNetVar( "deathTime", CurTime( ) )
+	pl.SetNetVar( pl, "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
+	pl.SetNetVar( pl, "deathTime", CurTime( ) )
+	
+	catherine.log.Add( nil, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has a died [Character Name : " .. pl.Name( pl ) .. "]", true )
 	
 	hook.Run( "PlayerGone", pl )
 end
@@ -329,10 +325,6 @@ function GM:GetUnknownTargetName( pl, target )
 	return LANG( pl, "Recognize_UI_Unknown" )
 end
 
-function GM:Initialize( )
-	hook.Run( "GamemodeInitialized" )
-end
-
 function GM:PlayerShouldTakeDamage( )
 	return true
 end
@@ -346,10 +338,20 @@ end
 function GM:InitPostEntity( )
 	hook.Run( "DataLoad" )
 	hook.Run( "SchemaDataLoad" )
+	
+	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has loaded." )
 end
 
 function GM:ShutDown( )
+	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Shutting down ... :)" )
+	
 	hook.Run( "PostDataSave" )
 	hook.Run( "DataSave" )
 	hook.Run( "SchemaDataSave" )
 end
+
+netstream.Hook( "catherine.IsTyping", function( pl, data )
+	pl.SetNetVar( pl, "isTyping", data )
+	
+	hook.Run( "ChatTypingChanged", pl, data )
+end )

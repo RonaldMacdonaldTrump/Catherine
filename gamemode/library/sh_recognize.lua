@@ -17,21 +17,20 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.recognize = catherine.recognize or { }
+// 이 라이브러리는 최대한 최적화 하였습니다, 마지막 갱신 : 2015-04-23
 
 if ( SERVER ) then
 	function catherine.recognize.DoKnow( pl, code, target )
 		target = { target } or nil
 
-		if ( code == 0 and !target ) then
-			target = catherine.chat.GetListener( pl, "ic" )
-		elseif ( code == 1 ) then
-			target = catherine.chat.GetListener( pl, "whisper" )
-		elseif ( code == 2 ) then
-			target = catherine.chat.GetListener( pl, "yell" )
+		if ( code == 0 ) then
+			target = target or catherine.chat.GetListener( pl, "ic" )
+		else
+			target = catherine.chat.GetListener( pl, code == 1 and "whisper" or "yell" )
 		end
 
 		for k, v in pairs( target or { } ) do
-			if ( !IsValid( v ) or v == pl ) then continue end
+			if ( v == pl or !IsValid( v ) ) then continue end
 			
 			catherine.recognize.RegisterKnow( pl, v )
 		end
@@ -40,7 +39,7 @@ if ( SERVER ) then
 	function catherine.recognize.RegisterKnow( pl, target )
 		local recognizeLists = catherine.character.GetCharVar( target, "recognize", { } )
 		
-		recognizeLists[ #recognizeLists + 1 ] = pl:GetCharacterID( )
+		recognizeLists[ #recognizeLists + 1 ] = pl.GetCharacterID( pl )
 		
 		catherine.character.SetCharVar( target, "recognize", recognizeLists )
 	end
@@ -63,9 +62,9 @@ else
 		local menu = DermaMenu( )
 		
 		menu:AddOption( LANG( "Recognize_UI_Option_LookingPlayer" ), function( )
-			local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
+			local ent = LocalPlayer( ).GetEyeTrace( LocalPlayer( ), 70 ).Entity
 
-			if ( IsValid( ent ) and ent:IsPlayer( ) ) then
+			if ( IsValid( ent ) and ent.IsPlayer( ent ) ) then
 				netstream.Start( "catherine.recognize.DoKnow", { 0, ent } )
 			else
 				catherine.notify.Add( LANG( "Entity_Notify_NotPlayer" ), 5 )
@@ -90,13 +89,9 @@ else
 end
 
 function catherine.recognize.IsKnowTarget( pl, target )
-	local factionTable = catherine.faction.FindByIndex( target:Team( ) )
-	
-	if ( factionTable and factionTable.alwaysRecognized ) then
-		return true
-	end
+	local factionTable = catherine.faction.FindByIndex( target.Team( target ) ) // Code optimize.
 
-	return table.HasValue( catherine.character.GetCharVar( pl, "recognize", { } ), target:GetCharacterID( ) )
+	return ( factionTable and factionTable.alwaysRecognized ) and true or table.HasValue( catherine.character.GetCharVar( pl, "recognize", { } ), target.GetCharacterID( target ) ) // Code optimize.
 end
 
 local META = FindMetaTable( "Player" )

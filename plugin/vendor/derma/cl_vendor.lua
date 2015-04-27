@@ -469,7 +469,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 		self.itemInformationPanel = nil
 	end
 
-	local x, y = self:GetPos( )
+	local x, y = self.GetPos( self )
 	local newData = data or { uniqueID = itemTable.uniqueID, stock = 0, cost = itemTable.cost, type = 1 }
 	
 	self.itemInformationPanel = vgui.Create( "DPanel" )
@@ -641,7 +641,7 @@ function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	
 	if ( !IsValid( self.ent ) ) then return end
-	local name = self.ent:GetNetVar( "name" )
+	local name = self.ent.GetNetVar( self.ent, "name" )
 	
 	if ( name ) then
 		draw.SimpleText( name, "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
@@ -650,7 +650,7 @@ end
 
 function PANEL:InitializeVendor( ent )
 	self.ent = ent
-	self.vendorData.inv = ent:GetNetVar( "inv", { } )
+	self.vendorData.inv = ent.GetNetVar( ent, "inv", { } )
 end
 
 function PANEL:Think( )

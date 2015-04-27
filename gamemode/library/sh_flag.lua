@@ -16,33 +16,35 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.flag = catherine.flag or { }
-catherine.flag.Lists = { }
+catherine.flag = catherine.flag or { lists = { } }
 local META = FindMetaTable( "Player" )
 
 function catherine.flag.Register( id, desc, flagTable )
-	if ( !flagTable ) then flagTable = { } end
-	table.Merge( flagTable, { id = id, desc = desc } )
-	catherine.flag.Lists[ #catherine.flag.Lists + 1 ] = flagTable
+	if ( !flagTable ) then
+		flagTable = { }
+	end
+	
+	table.Merge( flagTable, {
+		id = id,
+		desc = desc
+	} )
+	
+	catherine.flag.lists[ id ] = flagTable
 end
 
 function catherine.flag.GetAll( )
-	return catherine.flag.Lists
+	return catherine.flag.lists
 end
 
 function catherine.flag.FindByID( id )
-	for k, v in pairs( catherine.flag.GetAll( ) ) do
-		if ( v.id == id ) then
-			return v
-		end
-	end
+	return catherine.flag.lists[ id ]
 end
 
 function catherine.flag.GetAllToString( )
 	local flags = ""
 	
 	for k, v in pairs( catherine.flag.GetAll( ) ) do
-		flags = flags .. v.id
+		flags = flags .. k
 	end
 	
 	return flags
@@ -72,48 +74,56 @@ catherine.flag.Register( "t", "Access to toolgun.", {
 } )
 catherine.flag.Register( "e", "Access to prop spawn." )
 catherine.flag.Register( "x", "Access to entity spawn." )
+catherine.flag.Register( "V", "Access to vehicle spawn." )
+catherine.flag.Register( "n", "Access to NPC spawn." )
+catherine.flag.Register( "R", "Access to ragdoll spawn." )
 
 if ( SERVER ) then
-	function catherine.flag.Give( pl, ids )
-		if ( !IsValid( pl ) or !ids ) then return end
-		local ex = string.Explode( "", ids )
-		local result = catherine.character.GetCharVar( pl, "flags", "" )
+	function catherine.flag.Give( pl, flagID )
+		local ex = string.Explode( "", flagID )
+		local flags = catherine.character.GetCharVar( pl, "flags", "" )
 		
 		for k, v in pairs( ex ) do
 			local flagTable = catherine.flag.FindByID( v )
+			
 			if ( !flagTable ) then
 				return false, "Flag_Notify_NotValid", { v }
 			end
+			
 			if ( catherine.flag.Has( pl, v ) ) then
-				return false, "Flag_Notify_AlreadyHas", { pl:Name( ), v }
+				return false, "Flag_Notify_AlreadyHas", { pl.Name( pl ), v }
 			end
 			
-			result = result .. v
+			flags = flags .. v
+			
 			if ( flagTable.onGive ) then
 				flagTable.onGive( pl )
 			end
 		end
 		
-		catherine.character.SetCharVar( pl, "flags", result )
+		catherine.character.SetCharVar( pl, "flags", flags )
 		netstream.Start( pl, "catherine.flag.BuildHelp" )
+		
 		return true
 	end
 	
-	function catherine.flag.Take( pl, ids )
-		if ( !IsValid( pl ) or !ids ) then return end
-		local ex = string.Explode( "", ids )
-		local result = catherine.character.GetCharVar( pl, "flags", "" )
+	function catherine.flag.Take( pl, flagID )
+		local ex = string.Explode( "", flagID )
+		local flags = catherine.character.GetCharVar( pl, "flags", "" )
 		
 		for k, v in pairs( ex ) do
 			local flagTable = catherine.flag.FindByID( v )
+			
 			if ( !flagTable ) then
 				return false, "Flag_Notify_NotValid", { v }
 			end
+			
 			if ( !catherine.flag.Has( pl, v ) ) then
-				return false, "Flag_Notify_HasNot", { pl:Name( ), v }
+				return false, "Flag_Notify_HasNot", { pl.Name( pl ), v }
 			end
 			
-			result = result:gsub( v, "" )
+			flags = flags:gsub( v, "" )
+			
 			if ( flagTable.onTake ) then
 				flagTable.onTake( pl )
 			end
@@ -121,13 +131,12 @@ if ( SERVER ) then
 		
 		catherine.character.SetCharVar( pl, "flags", result )
 		netstream.Start( pl, "catherine.flag.BuildHelp" )
+		
 		return true
 	end
 	
 	function catherine.flag.Has( pl, id )
-		local flagData = catherine.character.GetCharVar( pl, "flags", "" )
-		
-		return flagData:find( id )
+		return catherine.character.GetCharVar( pl, "flags", "" ):find( id )
 	end
 	
 	function META:HasFlag( id )
@@ -140,9 +149,9 @@ if ( SERVER ) then
 			v.onSpawn( pl )
 		end
 
-		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl:GetCharacterID( ) ) then
+		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl.GetCharacterID( pl ) ) then
 			netstream.Start( pl, "catherine.flag.BuildHelp" )
-			pl.CAT_flag_buildHelp = pl:GetCharacterID( )
+			pl.CAT_flag_buildHelp = pl.GetCharacterID( pl )
 		end
 	end
 	
@@ -152,10 +161,7 @@ else
 		local html = [[<b>Flags</b><br>]]
 		
 		for k, v in pairs( catherine.flag.GetAll( ) ) do
-			local col = "<font color=\"red\">&#10005;</font>"
-			if ( catherine.flag.Has( v.id ) ) then
-				col = "<font color=\"green\">&#10004;</font>"
-			end
+			local col = catherine.flag.Has( v.id ) and ( "<font color=\"green\">&#10004;</font>" ) or ( "<font color=\"red\">&#10005;</font>" )
 
 			html = html .. "<p>" .. col .. "<b> " .. v.id .. "</b><br>" .. v.desc .. "<br>"
 		end
@@ -164,9 +170,7 @@ else
 	end )
 	
 	function catherine.flag.Has( id )
-		local flagData = catherine.character.GetCharVar( LocalPlayer( ), "flags", "" )
-		
-		return flagData:find( id )
+		return catherine.character.GetCharVar( LocalPlayer( ), "flags", "" ):find( id )
 	end
 	
 	function META:HasFlag( id )

@@ -44,7 +44,7 @@ function PANEL:Init( )
 	
 	self.descEnt = vgui.Create( "DTextEntry", self )
 	self.descEnt:SetPos( 90, 45 )
-	self.descEnt:SetSize( self.w - 100, 30 )	
+	self.descEnt:SetSize( self.w - 100, 30 )
 	self.descEnt:SetFont( "catherine_normal15" )
 	self.descEnt:SetText( self.player:Desc( ) )
 	self.descEnt:SetAllowNonAsciiCharacters( true )

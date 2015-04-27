@@ -15,10 +15,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
-
+// 이 라이브러리는 현재 개발중 입니다!
+// This library is still developing!
 catherine.door = catherine.door or { }
 
-CAT_DOOR_CHANGEPERMISSION = 1
+CAT_DOOR_CHANGE_PERMISSION = 1
+CAT_DOOR_CHANGE_DESC = 2
+
 CAT_DOOR_FLAG_OWNER = 1
 CAT_DOOR_FLAG_ALL = 2
 CAT_DOOR_FLAG_BASIC = 3
@@ -31,13 +34,13 @@ if ( SERVER ) then
 			return
 		end
 		
-		if ( workID == CAT_DOOR_CHANGEPERMISSION ) then
+		if ( workID == CAT_DOOR_CHANGE_PERMISSION ) then
 			if ( !catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_OWNER ) ) then
-				print( "you are not owner")
+				catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 				return
 			end
 			
-			local permissions = ent:GetNetVar( "permissions" )
+			local permissions = ent.GetNetVar( ent, "permissions" )
 			
 			if ( !permissions ) then
 				catherine.util.NotifyLang( pl, "Door_Notify_NoOwner" )
@@ -53,25 +56,54 @@ if ( SERVER ) then
 			
 			local has, flag = catherine.door.IsHasDoorPermission( target, ent )
 			
-			if ( has and flag == data[ 2 ] ) then
-				print("Already has")
+			if ( flag == CAT_DOOR_FLAG_OWNER ) then
+				catherine.util.NotifyLang( pl, "Door_Notify_CantChangeOwner" )
 				return
+			else
+				if ( has and flag == data[ 2 ] ) then
+					catherine.util.NotifyLang( pl, "Door_Notify_AlreadyHasPer" )
+					return
+				elseif ( has and data[ 2 ] == 0 ) then
+					permissions[ target.GetCharacterID( target ) ] = nil
+					ent:SetNetVar( "permissions", permissions )
+					netstream.Start( pl, "catherine.door.DoorMenuRefresh" )
+					catherine.util.NotifyLang( pl, "Door_Notify_RemPer" )
+					return
+				end
 			end
+
+			local targetID = target.GetCharacterID( target )
 			
-			permissions[ #permissions + 1 ] = {
-				id = target:GetCharacterID( ),
+			permissions[ targetID ] = {
+				id = targetID,
 				permission = data[ 2 ]
 			}
 
 			ent:SetNetVar( "permissions", permissions )
-			print("Fin!")
-		else
-		
+			netstream.Start( pl, "catherine.door.DoorMenuRefresh" )
+			catherine.util.NotifyLang( pl, "Door_Notify_ChangePer" )
+		elseif ( workID == CAT_DOOR_CHANGE_DESC ) then
+			local permissions = ent.GetNetVar( ent, "permissions" )
+			
+			if ( !permissions ) then
+				catherine.util.NotifyLang( pl, "Door_Notify_NoOwner" )
+				return
+			end
+			
+			local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
+
+			if ( !has or flag == CAT_DOOR_FLAG_BASIC ) then
+				catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
+				return
+			end
+			
+			ent:SetNetVar( "customDesc", data != "" and data or nil )
+			catherine.util.NotifyLang( pl, "Door_Notify_SetTitle" )
 		end
 	end
 	
 	function catherine.door.Buy( pl, ent )
-		if ( !IsValid( pl ) ) then print("!")return end
+		if ( !IsValid( pl ) ) then return end
 		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
 			return false, "Entity_Notify_NotDoor"
 		end
@@ -80,7 +112,7 @@ if ( SERVER ) then
 			return false, "Door_Notify_CantBuyable"
 		end
 
-		if ( ent:GetNetVar( "permissions" ) ) then
+		if ( ent.GetNetVar( ent, "permissions" ) ) then
 			return false, "Door_Notify_AlreadySold"
 		end
 		
@@ -89,15 +121,16 @@ if ( SERVER ) then
 			return false, "Cash_Notify_HasNot"
 		end
 		
+		local id = pl.GetCharacterID( pl )
+
 		catherine.cash.Take( pl, cost )
 		ent:SetNetVar( "permissions", {
-			{
-				id = pl:GetCharacterID( ),
+			[ id ] = {
+				id = id,
 				permission = CAT_DOOR_FLAG_OWNER
 			}
 		} )
 		
-		print("Fin")
 		return true
 	end
 	
@@ -113,9 +146,9 @@ if ( SERVER ) then
 		
 		catherine.cash.Give( pl, catherine.door.GetDoorCost( pl, ent ) / 2 )
 		ent:SetNetVar( "permissions", nil )
+		ent:SetNetVar( "customDesc", nil )
 		
 		return true
-		// 판매시 주인이 임의로 설정한 커스텀 타이틀이 복귀되어야함 ^_^
 	end
 	
 	function catherine.door.SetDoorTitle( pl, ent, title, force )
@@ -127,9 +160,12 @@ if ( SERVER ) then
 		if ( force ) then
 			ent:SetNetVar( "title", title )
 		else
-			if ( !catherine.door.IsDoorOwner( pl, ent, CAT_DOOR_FLAG_MASTER, CAT_DOOR_FLAG_ALL ) ) then
+			local has, flag = catherine.door.IsHasDoorPermission( target, ent )
+			
+			if ( !has or flag == CAT_DOOR_FLAG_BASIC ) then
 				return false, "Door_Notify_NoOwner"
 			end
+			
 			ent:SetNetVar( "title", title )
 		end
 		
@@ -137,7 +173,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.door.SetDoorStatus( pl, ent )
-		local curStatus = ent:GetNetVar( "cantBuy", false )
+		local curStatus = ent.GetNetVar( ent, "cantBuy", false )
 		
 		if ( curStatus ) then
 			ent:SetNetVar( "cantBuy", false )
@@ -148,6 +184,46 @@ if ( SERVER ) then
 			
 			return true, "Door_Notify_SetStatus_True"
 		end
+	end
+	
+	function catherine.door.DoorSpamProtection( pl, ent )
+		local steamID = pl.SteamID( pl )
+		
+		if ( !pl.CAT_lastDoor ) then
+			pl.CAT_lastDoor = ent
+		end
+		
+		if ( !pl.CAT_doorSpamCount ) then
+			pl.CAT_doorSpamCount = 0
+		end
+		
+		pl.CAT_doorSpamCount = pl.CAT_doorSpamCount + 1
+		
+		if ( pl.CAT_lastDoor == ent and pl.CAT_doorSpamCount >= 10 ) then
+			pl.lookingDoorEntity = nil
+			pl.CAT_doorSpamCount = 0
+			pl.CAT_cantUseDoor = true
+			catherine.util.NotifyLang( pl, "Door_Notify_DoorSpam" )
+			
+			timer.Create( "Catherine.timer.DoorSpamDelta_" .. steamID, 1, 1, function( )
+				if ( !IsValid( pl ) ) then return end
+				
+				pl.CAT_cantUseDoor = nil
+			end )
+			
+			timer.Remove( "Catherine.timer.DoorSpamCountInitizlie_" .. steamID )
+		elseif ( pl.CAT_lastDoor != ent ) then
+			pl.CAT_lastDoor = ent
+			pl.CAT_doorSpamCount = 1
+		end
+		
+		timer.Remove( "Catherine.timer.DoorSpamCountInitizlie_" .. steamID )
+		timer.Create( "Catherine.timer.DoorSpamCountInitizlie_" .. steamID, 1, 1, function( )
+			if ( !IsValid( pl ) ) then return end
+			
+			pl.CAT_cantUseDoor = nil
+			pl.CAT_doorSpamCount = nil
+		end )
 	end
 
 	function catherine.door.GetDoorCost( pl, ent )
@@ -176,7 +252,7 @@ if ( SERVER ) then
 	function catherine.door.DataLoad( )
 		for k, v in pairs( ents.GetAll( ) ) do
 			for k1, v1 in pairs( catherine.data.Get( "doors", { } ) ) do
-				if ( IsValid( v ) and catherine.entity.IsDoor( v ) and v:EntIndex( ) == v1.index ) then
+				if ( IsValid( v ) and catherine.entity.IsDoor( v ) and v.EntIndex( v ) == v1.index ) then
 					v:SetNetVar( "title", v1.title )
 					v:SetNetVar( "cantBuy", v1.cantBuy )
 				end
@@ -191,6 +267,12 @@ if ( SERVER ) then
 		catherine.door.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ] )
 	end )
 else
+	netstream.Hook( "catherine.door.DoorMenuRefresh", function( data )
+		if ( IsValid( catherine.vgui.door ) ) then
+			catherine.vgui.door:Refresh( )
+		end
+	end )
+	
 	netstream.Hook( "catherine.door.DoorMenu", function( data )
 		if ( IsValid( catherine.vgui.door ) ) then
 			catherine.vgui.door:Remove( )
@@ -198,27 +280,32 @@ else
 		end
 		
 		catherine.vgui.door = vgui.Create( "catherine.vgui.door" )
-		catherine.vgui.door:InitializeDoor( Entity( data ) )
+		catherine.vgui.door:InitializeDoor( Entity( data[ 1 ] ), data[ 2 ] )
 	end )
 
 	function catherine.door.GetDetailString( ent )
-		local owner = ent:GetNetVar( "permissions" )
+		local owner = ent.GetNetVar( ent, "permissions" )
+		local customDesc = ent.GetNetVar( ent, "customDesc" )
 		
-		if ( owner ) then
-			return LANG( "Door_Message_AlreadySold" )
-		elseif ( !owner and catherine.door.IsBuyableDoor( ent ) ) then
-			return LANG( "Door_Message_Buyable" )
+		if ( customDesc ) then
+			return customDesc
 		else
-			return LANG( "Door_Message_CantBuy" )
+			if ( owner ) then
+				return LANG( "Door_Message_AlreadySold" )
+			elseif ( !owner and catherine.door.IsBuyableDoor( ent ) ) then
+				return LANG( "Door_Message_Buyable" )
+			else
+				return LANG( "Door_Message_CantBuy" )
+			end
 		end
 	end
 
 	function catherine.door.CalcDoorTextPos( ent, rev )
-		local max = ent:OBBMaxs( )
-		local min = ent:OBBMins( )
+		local max = ent.OBBMaxs( ent )
+		local min = ent.OBBMins( ent )
 		
 		local data = { }
-		data.endpos = ent:LocalToWorld( ent:OBBCenter( ) )
+		data.endpos = ent.LocalToWorld( ent, ent.OBBCenter( ent ) )
 		data.filter = ents.FindInSphere( data.endpos, 23 )
 		
 		for k, v in pairs( data.filter ) do
@@ -240,27 +327,27 @@ else
 			w = size.y
 			
 			if ( rev ) then
-				data.start = data.endpos - ( ent:GetUp( ) * len )
+				data.start = data.endpos - ( ent.GetUp( ent ) * len )
 			else
-				data.start = data.endpos + ( ent:GetUp( ) * len )
+				data.start = data.endpos + ( ent.GetUp( ent ) * len )
 			end
 		elseif ( size.x < size.y ) then
 			len = size.x
 			w = size.y
 			
 			if ( rev ) then
-				data.start = data.endpos - ( ent:GetForward( ) * len )
+				data.start = data.endpos - ( ent.GetForward( ent ) * len )
 			else
-				data.start = data.endpos + ( ent:GetForward( ) * len )
+				data.start = data.endpos + ( ent.GetForward( ent ) * len )
 			end
 		elseif ( size.y < size.x ) then
 			len = size.y
 			w = size.x
 			
 			if ( rev ) then
-				data.start = data.endpos - ( ent:GetRight( ) * len )
+				data.start = data.endpos - ( ent.GetRight( ent ) * len )
 			else
-				data.start = data.endpos + ( ent:GetRight( ) * len )
+				data.start = data.endpos + ( ent.GetRight( ent ) * len )
 			end
 		end
 
@@ -270,15 +357,15 @@ else
 			return catherine.door.CalcDoorTextPos( ent, true )
 		end
 
-		local ang = tr.HitNormal:Angle( )
+		local ang = tr.HitNormal.Angle( tr.HitNormal )
 		local pos = tr.HitPos - ( ( ( data.endpos - tr.HitPos ):Length( ) * 2 ) + 2 ) * tr.HitNormal
-		local angBack = tr.HitNormal:Angle( )
+		local angBack = tr.HitNormal.Angle( tr.HitNormal )
 		local posBack = tr.HitPos + ( tr.HitNormal * 2 )
 		
-		ang:RotateAroundAxis( ang:Forward( ), 90 )
-		ang:RotateAroundAxis( ang:Right( ), 90 )
-		angBack:RotateAroundAxis( angBack:Forward( ), 90 )
-		angBack:RotateAroundAxis( angBack:Right( ), -90 )
+		ang:RotateAroundAxis( ang.Forward( ang ), 90 )
+		ang:RotateAroundAxis( ang.Right( ang ), 90 )
+		angBack:RotateAroundAxis( angBack.Forward( angBack ), 90 )
+		angBack:RotateAroundAxis( angBack.Right( angBack ), -90 )
 		
 		return {
 			pos = pos,
@@ -292,25 +379,27 @@ else
 end
 
 function catherine.door.IsDoorOwner( pl, ent, flag )
-	for k, v in pairs( ent:GetNetVar( "permissions", { } ) ) do
-		if ( !v.id != pl:GetCharacterID( ) ) then continue end
-		
-		return flag == v.permission
+	local permissions = ent.GetNetVar( ent, "permissions", { } )
+	local targetID = pl.GetCharacterID( pl )
+
+	if ( permissions[ targetID ] ) then
+		return permissions[ targetID ].permission == flag
 	end
 	
 	return false
 end
 
 function catherine.door.IsHasDoorPermission( pl, ent )
-	for k, v in pairs( ent:GetNetVar( "permissions", { } ) ) do
-		if ( !v.id != pl:GetCharacterID( ) ) then continue end
-		
-		return true, v.permission
+	local permissions = ent.GetNetVar( ent, "permissions", { } )
+	local targetID = pl.GetCharacterID( pl )
+	
+	if ( permissions[ targetID ] ) then
+		return true, permissions[ targetID ].permission or 0
 	end
 	
-	return false
+	return false, 0
 end
 
 function catherine.door.IsBuyableDoor( ent )
-	return !ent:GetNetVar( "cantBuy", false )
+	return !ent.GetNetVar( ent, "cantBuy", false )
 end

@@ -21,10 +21,10 @@ CAT_STORAGE_ACTION_ADD = 1
 CAT_STORAGE_ACTION_REMOVE = 2
 
 if ( SERVER ) then
-	catherine.storage.Lists = { }
+	catherine.storage.lists = { }
 	
 	function catherine.storage.Register( name, desc, model, maxWeight )
-		catherine.storage.Lists[ #catherine.storage.Lists + 1 ] = {
+		catherine.storage.lists[ #catherine.storage.lists + 1 ] = {
 			name = name,
 			desc = desc,
 			model = model,
@@ -36,7 +36,7 @@ if ( SERVER ) then
 	catherine.storage.Register( "Desk", "A Desk.", "models/props_interiors/Furniture_Desk01a.mdl", 12 )
 	
 	function catherine.storage.GetAll( )
-		return catherine.storage.Lists
+		return catherine.storage.lists
 	end
 	
 	function catherine.storage.FindByModel( model )
@@ -268,13 +268,13 @@ else
 	end )
 	
 	function catherine.storage.GetInv( ent )
-		return ent:GetNetVar( "inv", { } )
+		return ent.GetNetVar( ent, "inv", { } )
 	end
 	
 	function catherine.storage.GetWeights( ent, customAdd )
 		local inventory = catherine.storage.GetInv( ent )
 		local weight = 0
-		local maxWeight = ent:GetNetVar( "maxWeight" ) or 0
+		local maxWeight = ent.GetNetVar( ent, "maxWeight" ) or 0
 		
 		for k, v in pairs( inventory ) do
 			local itemTable = catherine.item.FindByID( k )
@@ -292,15 +292,15 @@ else
 		return inventory[ uniqueID ] and inventory[ uniqueID ].itemCount or 0
 	end
 
-	local toscreen = FindMetaTable("Vector").ToScreen
+	local toscreen = FindMetaTable( "Vector" ).ToScreen
 
 	function catherine.storage.DrawEntityTargetID( pl, ent, a )
-		if ( !ent:GetNetVar( "isStorage", false ) ) then return end
-		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
+		if ( !ent.GetNetVar( ent, "isStorage", false ) ) then return end
+		local pos = toscreen( ent.LocalToWorld( ent, ent.OBBCenter( ent ) ) )
 		local x, y = pos.x, pos.y
 		
-		draw.SimpleText( ent:GetNetVar( "name", "" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( ent:GetNetVar( "desc", "" ), "catherine_outline20", x, y + 30, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent.GetNetVar( ent, "name", "" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent.GetNetVar( ent, "desc", "" ), "catherine_outline20", x, y + 30, Color( 255, 255, 255, a ), 1, 1 )
 	end
 	
 	hook.Add( "DrawEntityTargetID", "catherine.storage.DrawEntityTargetID", catherine.storage.DrawEntityTargetID )

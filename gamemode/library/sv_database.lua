@@ -83,6 +83,7 @@ catherine.database.modules[ "mysqloo" ] = {
 		
 		local function initialize( )
 			local queries = string.Explode( ";", CREATE_TABLES_USING_MYSQL )
+
 			for i = 1, 2 do
 				catherine.database.query( queries[ i ] )
 			end
@@ -256,8 +257,8 @@ if ( !catherine.database.Connected ) then
 end
 
 concommand.Add( "cat_db_init", function( pl )
-	if ( IsValid( pl ) and !pl:IsSuperAdmin( ) ) then
-		catherine.util.Notify( pl, "You do not have permission!" )
+	if ( IsValid( pl ) and !pl.IsSuperAdmin( pl ) ) then
+		catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 		return
 	end
 	

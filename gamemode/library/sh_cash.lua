@@ -33,6 +33,10 @@ function catherine.cash.Has( pl, amount )
 	return catherine.cash.Get( pl ) >= math.max( amount or 0, 0 )
 end
 
+function catherine.cash.Get( pl )
+	return tonumber( catherine.character.GetVar( pl, "_cash", 0 ) )
+end
+
 if ( SERVER ) then
 	function catherine.cash.Set( pl, amount )
 		amount = tonumber( amount )
@@ -64,8 +68,4 @@ else
 	hook.Add( "AddRPInformation", "catherine.cash.AddRPInformation", function( pnl, data )
 		data[ #data + 1 ] = LANG( "Cash_UI_HasStr", catherine.cash.Get( LocalPlayer( ) ) )
 	end )
-end
-
-function catherine.cash.Get( pl )
-	return tonumber( catherine.character.GetVar( pl, "_cash", 0 ) )
 end

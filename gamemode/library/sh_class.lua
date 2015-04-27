@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.class = catherine.class or { }
-catherine.class.Lists = { }
+catherine.class.lists = { }
 
 function catherine.class.Register( classTable )
 	if ( !classTable or !classTable.index ) then
@@ -30,15 +30,18 @@ function catherine.class.Register( classTable )
 			return true
 		end
 	end
-	catherine.class.Lists[ classTable.index ] = classTable
+	
+	catherine.class.lists[ classTable.index ] = classTable
+	
+	return classTable.index
 end
 
 function catherine.class.New( uniqueID )
-	return { uniqueID = uniqueID, index = table.Count( catherine.class.Lists ) + 1 }
+	return { uniqueID = uniqueID, index = table.Count( catherine.class.lists ) + 1 }
 end
 
 function catherine.class.GetAll( )
-	return catherine.class.Lists
+	return catherine.class.lists
 end
 
 function catherine.class.FindByID( id )
@@ -49,33 +52,38 @@ function catherine.class.FindByID( id )
 	end
 end
 
-function catherine.class.CanJoin( pl, uniqueID )
-	local classTable = catherine.class.FindByID( uniqueID )
+function catherine.class.FindByIndex( index )
+	return catherine.class.lists[ index ]
+end
+
+function catherine.class.CanJoin( pl, index )
+	local classTable = catherine.class.FindByIndex( index )
 	
 	if ( !classTable ) then
 		return false, "Class error"
 	end
 
-	if ( pl:Team( ) != classTable.faction ) then
+	if ( pl.Team( pl ) != classTable.faction ) then
 		return false, "Team error"
 	end
 
-	if ( catherine.character.GetCharVar( pl, "class", "" ) == uniqueID ) then
+	if ( catherine.character.GetCharVar( pl, "class", "" ) == index ) then
 		return false, "Same class"
 	end
 	
-	if ( classTable.limit and ( #catherine.class.GetPlayers( uniqueID ) >= classTable.limit ) ) then
+	if ( classTable.limit and ( #catherine.class.GetPlayers( index ) >= classTable.limit ) ) then
 		return false, "Hit limit"
 	end
 	
 	return classTable:onCanJoin( pl )
 end
 
-function catherine.class.GetPlayers( uniqueID )
+function catherine.class.GetPlayers( index )
 	local players = { }
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		if ( catherine.character.GetCharVar( v, "class", "" ) != uniqueID ) then continue end
+		if ( catherine.character.GetCharVar( v, "class", "" ) != index ) then continue end
+		
 		players[ #players + 1 ] = v
 	end
 
@@ -89,36 +97,36 @@ function catherine.class.Include( dir )
 end
 
 if ( SERVER ) then
-	function catherine.class.Set( pl, uniqueID )
-		if ( !uniqueID ) then
-			local defaultClass = catherine.class.GetDefaultClass( pl:Team( ) )
+	function catherine.class.Set( pl, index )
+		if ( !index ) then
+			local defaultClass = catherine.class.GetDefaultClass( pl.Team( pl ) )
 			if ( !defaultClass ) then return end
 			local defaultModel = catherine.character.GetCharVar( pl, "originalModel" )
 			if ( !defaultModel ) then return end
 			
-			catherine.character.SetCharVar( pl, "class", defaultClass.uniqueID )
+			catherine.character.SetCharVar( pl, "class", defaultClass.index )
 			pl:SetModel( defaultModel )
 			return
 		end
 		
-		local success, reason = catherine.class.CanJoin( pl, uniqueID )
+		local success, reason = catherine.class.CanJoin( pl, index )
 
 		if ( !success ) then
 			catherine.util.NotifyLang( pl, reason )
 			return
 		end
 		
-		local classTable = catherine.class.FindByID( uniqueID )
+		local classTable = catherine.class.FindByIndex( index )
 		
 		if ( classTable.model ) then
 			if ( !catherine.character.GetCharVar( pl, "originalModel" ) ) then
-				catherine.character.SetCharVar( pl, "originalModel", pl:GetModel( ) )
+				catherine.character.SetCharVar( pl, "originalModel", pl.GetModel( pl ) )
 			end
 			
 			pl:SetModel( ( type( classTable.model ) == "table" and table.Random( classTable.model ) or classTable.model ) )
 		end
 		
-		catherine.character.SetCharVar( pl, "class", uniqueID )
+		catherine.character.SetCharVar( pl, "class", index )
 	end
 
 	function catherine.class.GetDefaultClass( factionID )
@@ -134,10 +142,11 @@ if ( SERVER ) then
 	end )
 else
 	function catherine.class.GetJoinable( )
+		local pl = LocalPlayer( )
 		local classes = { }
 		
 		for k, v in pairs( catherine.class.GetAll( ) ) do
-			if ( v.faction == LocalPlayer( ):Team( ) and LocalPlayer( ):Class( ) != v.uniqueID ) then
+			if ( v.faction == pl.Team( pl ) and pl.Class( pl ) != v.index and !v.cantJoinUsingMenu ) then
 				classes[ #classes + 1 ] = v
 			end
 		end
@@ -161,6 +170,7 @@ function META:Class( )
 end
 
 function META:ClassName( )
-	local classTable = catherine.class.FindByID( self:Class( ) )
+	local classTable = catherine.class.FindByIndex( self:Class( ) )
+	
 	return classTable and classTable.name or nil
 end

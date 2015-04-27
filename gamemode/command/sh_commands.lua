@@ -18,7 +18,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.command.Register( {
 	command = "fallover",
-	canRun = function( pl ) return pl:Alive( ) end,
+	canRun = function( pl ) return pl.Alive( pl ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			args[ 1 ] = tonumber( args[ 1 ] )
@@ -30,7 +30,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "chargetup",
-	canRun = function( pl ) return pl:Alive( ) end,
+	canRun = function( pl ) return pl.Alive( pl ) end,
 	runFunc = function( pl, args )
 		if ( !pl.CAT_gettingup ) then
 			if ( catherine.player.IsRagdolled( pl ) ) then
@@ -51,15 +51,17 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charsetname",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
+					local nameBuffer = target:Name( )
+					
 					catherine.character.SetVar( target, "_name", args[ 2 ] )
-					catherine.util.NotifyAllLang( "Character_Notify_SetName", pl:Name( ), args[ 2 ], target:Name( ) )
+					catherine.util.NotifyAllLang( "Character_Notify_SetName", pl.Name( pl ), args[ 2 ], nameBuffer )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -74,7 +76,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charsetdesc",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
@@ -82,7 +84,7 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetVar( target, "_desc", args[ 2 ] )
-					catherine.util.NotifyAllLang( "Character_Notify_SetDesc", pl:Name( ), args[ 2 ], target:Name( ) )
+					catherine.util.NotifyAllLang( "Character_Notify_SetDesc", pl.Name( pl ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -97,7 +99,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charsetmodel",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
@@ -105,7 +107,7 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetVar( target, "_model", args[ 2 ] )
-					catherine.util.NotifyAllLang( "Character_Notify_SetModel", pl:Name( ), args[ 2 ], target:Name( ) )
+					catherine.util.NotifyAllLang( "Character_Notify_SetModel", pl.Name( pl ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -138,7 +140,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorlock",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
 		
@@ -154,7 +156,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorunlock",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
 		
@@ -181,7 +183,7 @@ catherine.command.Register( {
 					local success, langKey, par = catherine.flag.Give( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Flag_Notify_Give", pl:Name( ), args[ 2 ], target:Name( ) )
+						catherine.util.NotifyAllLang( "Flag_Notify_Give", pl.Name( pl ), args[ 2 ], target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
@@ -210,7 +212,7 @@ catherine.command.Register( {
 					local success, langKey, par = catherine.flag.Take( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Flag_Notify_Take", pl:Name( ), args[ 2 ], target:Name( ) )
+						catherine.util.NotifyAllLang( "Flag_Notify_Take", pl.Name( pl ), args[ 2 ], target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
@@ -256,7 +258,7 @@ catherine.command.Register( {
 					local success = catherine.cash.Set( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Cash_Notify_Set", pl:Name( ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
+						catherine.util.NotifyAllLang( "Cash_Notify_Set", pl.Name( pl ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
 					end
@@ -285,7 +287,7 @@ catherine.command.Register( {
 					local success = catherine.cash.Give( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Cash_Notify_Give", pl:Name( ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
+						catherine.util.NotifyAllLang( "Cash_Notify_Give", pl.Name( pl ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
 					end
@@ -314,7 +316,7 @@ catherine.command.Register( {
 					local success = catherine.cash.Take( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Cash_Notify_Take", pl:Name( ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
+						catherine.util.NotifyAllLang( "Cash_Notify_Take", pl.Name( pl ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
 					end
@@ -359,7 +361,7 @@ catherine.command.Register( {
 catherine.command.Register( {
 	command = "doorsettitle",
 	syntax = "[Text]",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			local success, langKey, par = catherine.door.SetDoorTitle( pl, pl:GetEyeTrace( 70 ).Entity, args[ 1 ], true )
@@ -377,7 +379,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorsetstatus",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			local success, langKey, par = catherine.door.SetDoorStatus( pl, pl:GetEyeTrace( 70 ).Entity )
@@ -400,11 +402,11 @@ catherine.command.Register( {
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
-				if ( IsValid( target ) and target:IsPlayer( ) ) then
+				if ( IsValid( target ) and target.IsPlayer( target ) ) then
 					local success, langKey, par = catherine.faction.AddWhiteList( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Faction_Notify_Give", pl:Name( ), args[ 2 ], target:Name( ) )
+						catherine.util.NotifyAllLang( "Faction_Notify_Give", pl.Name( pl ), args[ 2 ], target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
@@ -429,11 +431,11 @@ catherine.command.Register( {
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
-				if ( IsValid( target ) and target:IsPlayer( ) ) then
+				if ( IsValid( target ) and target.IsPlayer( target ) ) then
 					local success, langKey, par = catherine.faction.RemoveWhiteList( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Faction_Notify_Take", pl:Name( ), args[ 2 ], target:Name( ) )
+						catherine.util.NotifyAllLang( "Faction_Notify_Take", pl.Name( pl ), args[ 2 ], target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
@@ -457,7 +459,7 @@ catherine.command.Register( {
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
-				if ( IsValid( target ) and target:IsPlayer( ) ) then
+				if ( IsValid( target ) and target.IsPlayer( target ) ) then
 					catherine.chat.Send( pl, "pm", args[ 2 ], { pl, target }, target )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
@@ -479,5 +481,15 @@ catherine.command.Register( {
 		end
 		
 		catherine.chat.Send( pl, "roll", math.random( 1, args[ 1 ] or 100 ) )
+	end
+} )
+
+catherine.command.Register( {
+	command = "cleardecals",
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	runFunc = function( pl, args )
+		for k, v in pairs( player.GetAll( ) ) do
+			v:ConCommand( "cl_removedecals" )
+		end
 	end
 } )

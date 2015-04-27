@@ -198,7 +198,22 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetTitle" ] = "You are set title this door.",
 	[ "Door_Notify_SetStatus_True" ] = "You are set status to unbuyable this door.",
 	[ "Door_Notify_SetStatus_False" ] = "You are set status to buyable this door.",
+	[ "Door_Notify_DoorSpam" ] = "Do not door-spam!",
+	
+	[ "Door_Notify_ChangePer" ] = "You are changed permission for this guy.",
+	[ "Door_Notify_RemPer" ] = "You are removed this permission for this guy.",
+	[ "Door_Notify_AlreadyHasPer" ] = "This guy already has this permission!",
+	[ "Door_Notify_CantChangeOwner" ] = "Can't change owner permission!",
+	
 	[ "Door_UI_Default" ] = "Door",
+	[ "Door_UI_DoorDescStr" ] = "Door Description",
+	[ "Door_UI_DoorSellStr" ] = "Sell Door",
+	[ "Door_UI_AllPerStr" ] = "All Permission",
+	[ "Door_UI_BasicPerStr" ] = "Basic Permission",
+	[ "Door_UI_RemPerStr" ] = "Permission Remove",
+	[ "Door_UI_OwnerStr" ] = "Owner",
+	[ "Door_UI_AllStr" ] = "All",
+	[ "Door_UI_BasicStr" ] = "Basic",
 	
 	// Hint
 	[ "Hint_Message_01" ] = "Type // before your message to talk out-of-character.",

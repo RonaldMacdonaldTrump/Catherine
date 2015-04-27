@@ -84,8 +84,8 @@ function catherine.item.Register( itemTable )
 				end
 				
 				local uniqueID = itemTable.uniqueID
-
 				local ent = catherine.item.Spawn( uniqueID, catherine.util.GetItemDropPos( pl ), nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )
+				
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, {
 					uniqueID = uniqueID
 				} )
@@ -130,9 +130,9 @@ function catherine.item.Include( dir )
 	
 	local itemFiles, itemFolders = file.Find( dir .. "/item/*", "LUA" )
 	
+	table.RemoveByValue( itemFolders, "base" )
+	
 	for k, v in pairs( itemFolders ) do
-		if ( v == "base" ) then continue end
-		
 		for k1, v1 in pairs( file.Find( dir .. "/item/" .. v .. "/*.lua", "LUA" ) ) do
 			catherine.util.Include( dir .. "/item/" .. v .. "/" .. v1, "SHARED" )
 		end
@@ -147,7 +147,6 @@ catherine.item.Include( catherine.FolderName .. "/gamemode" )
 
 if ( SERVER ) then
 	function catherine.item.Work( pl, uniqueID, funcID, ent_isMenu )
-		if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) or !uniqueID or !funcID ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )
 		if ( !itemTable or !itemTable.func or !itemTable.func[ funcID ] ) then return end
 		
@@ -195,7 +194,8 @@ if ( SERVER ) then
 		ent:PhysicsInit( SOLID_VPHYSICS )
 		ent:InitializeItem( uniqueID, itemData or { } )
 
-		local physObject = ent:GetPhysicsObject( )
+		local physObject = ent.GetPhysicsObject( ent )
+		
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( true )
 			physObject:Wake( )
@@ -211,13 +211,22 @@ if ( SERVER ) then
 	netstream.Hook( "catherine.item.Give", function( pl, data )
 		catherine.item.Give( pl, data )
 	end )
+	
+	netstream.Hook( "catherine.item.Take", function( pl, data )
+		catherine.item.Take( pl, data )
+	end )
 else
+	netstream.Hook( "catherine.item.EntityUseMenu", function( data )
+		catherine.item.OpenEntityUseMenu( data )
+	end )
+	
 	function catherine.item.OpenMenuUse( uniqueID )
+		local pl = LocalPlayer( )
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local menu = DermaMenu( )
 		
 		for k, v in pairs( itemTable and itemTable.func or { } ) do
-			if ( !v.canShowIsMenu or ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) ) then continue end
+			if ( !v.canShowIsMenu or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
 			
 			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
 				netstream.Start( "catherine.item.Work", { uniqueID, k, true } )
@@ -228,14 +237,15 @@ else
 	end
 	
 	function catherine.item.OpenEntityUseMenu( data )
+		local pl = LocalPlayer( )
 		local ent = Entity( data[ 1 ] )
 		local uniqueID = data[ 2 ]
-		if ( !IsValid( ent ) or !IsValid( LocalPlayer( ):GetEyeTrace( ).Entity ) ) then return end
+		if ( !IsValid( ent ) or !IsValid( pl.GetEyeTrace( pl ).Entity ) ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local menu = DermaMenu( )
 		
 		for k, v in pairs( itemTable and itemTable.func or { } ) do
-			if ( !v.canShowIsWorld or ( v.canLook and v.canLook( LocalPlayer( ), itemTable ) == false ) ) then continue end
+			if ( !v.canShowIsWorld or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
 
 			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
 				netstream.Start( "catherine.item.Work", { uniqueID, k, ent } )
@@ -249,8 +259,4 @@ else
 	function catherine.item.GetBasicDesc( itemTable )
 		return catherine.util.StuffLanguage( itemTable.name ) .. "\n" .. catherine.util.StuffLanguage( itemTable.desc )
 	end
-	
-	netstream.Hook( "catherine.item.EntityUseMenu", function( data )
-		catherine.item.OpenEntityUseMenu( data )
-	end )
 end
