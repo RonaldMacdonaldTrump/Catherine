@@ -16,17 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.entity = catherine.entity or { customUse = { } }
+catherine.entity = catherine.entity or { }
 local META = FindMetaTable( "Entity" )
-local doorClasses = {
-	"func_door",
-	"func_door_rotating",
-	"prop_door_rotating",
-	"prop_dynamic"
-}
 
 function catherine.entity.IsDoor( ent )
-	return table.HasValue( doorClasses, ent:GetClass( ) )
+	local class = ent:GetClass( )
+	
+	return class == "func_door" or class == "func_door_rotating" or class == "prop_door_rotating" or class == "prop_dynamic"
 end
 
 function catherine.entity.IsProp( ent )
@@ -34,6 +30,8 @@ function catherine.entity.IsProp( ent )
 end
 
 if ( SERVER ) then
+	catherine.entity.customUse = catherine.entity.customUse or { }
+	
 	function catherine.entity.RegisterUseMenu( ent, menuTable )
 		local forServer = { }
 		local forClient = { }
@@ -78,13 +76,5 @@ else
 		
 		menu:Open( )
 		menu:Center( )
-	end )
-	
-	netstream.Hook( "catherine.entity.RegisterUseMenu", function( data )
-		catherine.entity.customUse[ data[ 1 ] ] = data[ 2 ]
-	end )
-	
-	netstream.Hook( "catherine.entity.ClearCustomUse", function( data )
-		catherine.entity.customUse[ data ] = nil
 	end )
 end
