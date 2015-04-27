@@ -20,13 +20,13 @@ catherine.entity = catherine.entity or { }
 local META = FindMetaTable( "Entity" )
 
 function catherine.entity.IsDoor( ent )
-	local class = ent:GetClass( )
+	local class = ent.GetClass( ent )
 	
 	return class == "func_door" or class == "func_door_rotating" or class == "prop_door_rotating" or class == "prop_dynamic"
 end
 
 function catherine.entity.IsProp( ent )
-	return ent:GetClass( ):find( "prop_" )
+	return ent.GetClass( ent ):find( "prop_" )
 end
 
 if ( SERVER ) then
@@ -68,7 +68,7 @@ else
 		local ent = Entity( index )
 		local menu = DermaMenu( )
 		
-		for k, v in pairs( IsValid( ent ) and ent:GetNetVar( "customUseClient" ) or { } ) do
+		for k, v in pairs( IsValid( ent ) and ent.GetNetVar( ent, "customUseClient" ) or { } ) do
 			menu:AddOption( catherine.util.StuffLanguage( v.text ), function( )
 				netstream.Start( "catherine.entity.customUseMenu_Receive", { index, v.uniqueID } )
 			end )

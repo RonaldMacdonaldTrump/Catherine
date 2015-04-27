@@ -46,7 +46,7 @@ function PLUGIN:GetVendorDatas( ent )
 	local datas = { }
 
 	for k, v in pairs( varsID ) do
-		datas[ v ] = ent:GetNetVar( v )
+		datas[ v ] = ent.GetNetVar( ent, v )
 	end
 	
 	return datas

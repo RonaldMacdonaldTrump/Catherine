@@ -66,18 +66,17 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.plugin.vendor.VendorUse", self:EntIndex( ) )
 	end
 else
-	local toscreen = FindMetaTable("Vector").ToScreen
+	local toscreen = FindMetaTable( "Vector" ).ToScreen
 	
 	function ENT:Think( )
 		self:SetEyeTarget( LocalPlayer( ):GetPos( ) )
 	end
 	
 	function ENT:DrawEntityTargetID( pl, ent, a )
-		if ( ent:GetClass( ) != "cat_vendor" ) then return end
-		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
+		local pos = toscreen( self.LocalToWorld( self, self.OBBCenter( self ) ) )
 		local x, y = pos.x, pos.y
 		
-		draw.SimpleText( ent:GetNetVar( "name" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( ent:GetNetVar( "desc" ), "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent.GetNetVar( ent, "name" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent.GetNetVar( ent, "desc" ), "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
 	end
 end

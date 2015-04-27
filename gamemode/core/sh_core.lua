@@ -158,7 +158,7 @@ function GM:CalcMainActivity( pl, velo )
 			end
 		end
 		
-		local seqAni = pl:GetNetVar( "seqAni" )
+		local seqAni = pl.GetNetVar( pl, "seqAni" )
 
 		if ( seqAni ) then
 			pl.CalcOver = pl:LookupSequence( seqAni )
@@ -247,7 +247,7 @@ end
 
 function GM:GetPlayerInformation( pl, target, isFull )
 	if ( pl == target ) then
-		return pl:Name( ), pl:Desc( )
+		return pl.Name( pl ), pl:Desc( )
 	end
 	
 	if ( pl:IsKnow( target ) ) then
@@ -329,7 +329,7 @@ end
 
 function GM:GetPlayerInformation( pl, target, isFull )
 	if ( pl == target ) then
-		return pl:Name( ), pl:Desc( )
+		return pl.Name( pl ), pl:Desc( )
 	end
 	
 	if ( pl:IsKnow( target ) ) then

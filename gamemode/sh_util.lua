@@ -232,7 +232,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.util.StringReceiver( pl, id, msg, defV, func )
-		local steamID = pl:SteamID( )
+		local steamID = pl.SteamID( pl )
 		
 		catherine.util.Receiver.String[ steamID ] = catherine.util.Receiver.String[ steamID ] or { }
 		catherine.util.Receiver.String[ steamID ][ id ] = func
@@ -241,7 +241,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.QueryReceiver( pl, id, msg, func )
-		local steamID = pl:SteamID( )
+		local steamID = pl.SteamID( pl )
 		
 		catherine.util.Receiver.Query[ steamID ] = catherine.util.Receiver.Query[ steamID ] or { }
 		catherine.util.Receiver.Query[ steamID ][ id ] = func
@@ -255,7 +255,7 @@ if ( SERVER ) then
 
 	netstream.Hook( "catherine.util.StringReceiver_Receive", function( pl, data )
 		local id = data[ 1 ]
-		local steamID = pl:SteamID( )
+		local steamID = pl.SteamID( pl )
 		local rec = catherine.util.Receiver.String
 		
 		if ( !rec[ steamID ] or !rec[ steamID ][ id ] ) then return end
@@ -266,7 +266,7 @@ if ( SERVER ) then
 	
 	netstream.Hook( "catherine.util.QueryReceiver_Receive", function( pl, data )
 		local id = data[ 1 ]
-		local steamID = pl:SteamID( )
+		local steamID = pl.SteamID( pl )
 		local rec = catherine.util.Receiver.Query
 		
 		if ( !rec[ steamID ] or !rec[ steamID ][ id ] ) then return end

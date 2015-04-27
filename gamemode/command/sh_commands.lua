@@ -61,7 +61,7 @@ catherine.command.Register( {
 					local nameBuffer = target:Name( )
 					
 					catherine.character.SetVar( target, "_name", args[ 2 ] )
-					catherine.util.NotifyAllLang( "Character_Notify_SetName", pl:Name( ), args[ 2 ], nameBuffer )
+					catherine.util.NotifyAllLang( "Character_Notify_SetName", pl.Name( pl ), args[ 2 ], nameBuffer )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -84,7 +84,7 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetVar( target, "_desc", args[ 2 ] )
-					catherine.util.NotifyAllLang( "Character_Notify_SetDesc", pl:Name( ), args[ 2 ], target:Name( ) )
+					catherine.util.NotifyAllLang( "Character_Notify_SetDesc", pl.Name( pl ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -107,7 +107,7 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetVar( target, "_model", args[ 2 ] )
-					catherine.util.NotifyAllLang( "Character_Notify_SetModel", pl:Name( ), args[ 2 ], target:Name( ) )
+					catherine.util.NotifyAllLang( "Character_Notify_SetModel", pl.Name( pl ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -183,7 +183,7 @@ catherine.command.Register( {
 					local success, langKey, par = catherine.flag.Give( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Flag_Notify_Give", pl:Name( ), args[ 2 ], target:Name( ) )
+						catherine.util.NotifyAllLang( "Flag_Notify_Give", pl.Name( pl ), args[ 2 ], target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
@@ -212,7 +212,7 @@ catherine.command.Register( {
 					local success, langKey, par = catherine.flag.Take( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Flag_Notify_Take", pl:Name( ), args[ 2 ], target:Name( ) )
+						catherine.util.NotifyAllLang( "Flag_Notify_Take", pl.Name( pl ), args[ 2 ], target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
@@ -258,7 +258,7 @@ catherine.command.Register( {
 					local success = catherine.cash.Set( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Cash_Notify_Set", pl:Name( ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
+						catherine.util.NotifyAllLang( "Cash_Notify_Set", pl.Name( pl ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
 					end
@@ -287,7 +287,7 @@ catherine.command.Register( {
 					local success = catherine.cash.Give( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Cash_Notify_Give", pl:Name( ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
+						catherine.util.NotifyAllLang( "Cash_Notify_Give", pl.Name( pl ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
 					end
@@ -316,7 +316,7 @@ catherine.command.Register( {
 					local success = catherine.cash.Take( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Cash_Notify_Take", pl:Name( ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
+						catherine.util.NotifyAllLang( "Cash_Notify_Take", pl.Name( pl ), catherine.cash.GetName( args[ 2 ] ), target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
 					end
@@ -406,7 +406,7 @@ catherine.command.Register( {
 					local success, langKey, par = catherine.faction.AddWhiteList( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Faction_Notify_Give", pl:Name( ), args[ 2 ], target:Name( ) )
+						catherine.util.NotifyAllLang( "Faction_Notify_Give", pl.Name( pl ), args[ 2 ], target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
@@ -435,7 +435,7 @@ catherine.command.Register( {
 					local success, langKey, par = catherine.faction.RemoveWhiteList( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Faction_Notify_Take", pl:Name( ), args[ 2 ], target:Name( ) )
+						catherine.util.NotifyAllLang( "Faction_Notify_Take", pl.Name( pl ), args[ 2 ], target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end

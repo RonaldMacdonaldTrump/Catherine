@@ -73,7 +73,7 @@ else
 	local toscreen = FindMetaTable( "Vector" ).ToScreen
 	
 	function ENT:DrawEntityTargetID( pl, ent, a )
-		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
+		local pos = toscreen( self.LocalToWorld( self, self.OBBCenter( self ) ) )
 		local x, y = pos.x, pos.y
 		local itemTable = self:GetItemTable( )
 

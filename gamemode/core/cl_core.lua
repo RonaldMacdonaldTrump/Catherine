@@ -26,7 +26,7 @@ catherine.intro = catherine.intro or {
 catherine.entityCaches = { }
 catherine.weaponModels = catherine.weaponModels or { }
 catherine.nextCacheDo = CurTime( )
-local toscreen = FindMetaTable("Vector").ToScreen
+local toscreen = FindMetaTable( "Vector" ).ToScreen
 
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hud.blockedModules ) do
@@ -48,7 +48,7 @@ function GM:CalcView( pl, pos, ang, fov )
 		return data
 	end
 
-	local ent = Entity( pl:GetNetVar( "ragdollEnt", 0 ) )
+	local ent = Entity( pl.GetNetVar( pl, "ragdollEnt", 0 ) )
 	if ( IsValid( ent ) and catherine.player.IsRagdolled( pl ) ) then
 		local index = ent.LookupAttachment( ent, "eyes" )
 		local view = { }
@@ -116,7 +116,7 @@ function GM:DrawDoorText( ent, pos, ang )
 	
 	local data = catherine.door.CalcDoorTextPos( ent )
 	
-	local title = ent:GetNetVar( "title", LANG( "Door_UI_Default" ) )
+	local title = ent.GetNetVar( ent, "title", LANG( "Door_UI_Default" ) )
 	local desc = catherine.door.GetDetailString( ent )
 	
 	surface.SetFont( "catherine_normal50" )

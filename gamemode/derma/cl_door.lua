@@ -120,7 +120,7 @@ function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	
 	if ( !IsValid( self.ent ) ) then return end
-	local title = self.ent:GetNetVar( "title" )
+	local title = self.ent.GetNetVar( ent, "title" )
 	
 	if ( title ) then
 		draw.SimpleText( title, "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )

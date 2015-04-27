@@ -276,7 +276,7 @@ if ( SERVER ) then
 			return
 		end
 		
-		catherine.database.Query( "DELETE FROM `catherine_characters` WHERE _steamID = '" .. pl:SteamID( ) .. "' AND _id = '" .. id .. "'", function( data )
+		catherine.database.Query( "DELETE FROM `catherine_characters` WHERE _steamID = '" .. pl.SteamID( pl ) .. "' AND _id = '" .. id .. "'", function( data )
 			catherine.character.SyncCharacterList( pl, function( )
 				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has deleted a '" .. id .. "' character.", true )
 				netstream.Start( pl, "catherine.character.DeleteResult", true )
@@ -367,7 +367,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.GetTargetCharacterByID( pl, id )
-		for k, v in pairs( catherine.character.buffers[ pl:SteamID( ) ] or { } ) do
+		for k, v in pairs( catherine.character.buffers[ pl.SteamID( pl ) ] or { } ) do
 			for k1, v1 in pairs( v ) do
 				if ( k1 == "_id" and v1 == id ) then
 					return catherine.character.ConvertDataTable( v )
@@ -438,7 +438,7 @@ if ( SERVER ) then
 
 		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. steamID .. "'", networkRegistry, function( )
 			catherine.character.RefreshCharacterBuffer( pl )
-			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl:SteamName( ) .. "'s [" .. id .. "] character." )
+			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl.SteamName( pl ) .. "'s [" .. id .. "] character." )
 		end )
 	end
 

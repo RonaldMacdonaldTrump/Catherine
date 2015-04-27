@@ -76,7 +76,7 @@ catherine.chat.Register( "ic", {
 
 catherine.chat.Register( "me", {
 	func = function( pl, text )
-		chat.AddText( Color( 255, 150, 255 ), "** " .. pl:Name( ) .. " " .. text )
+		chat.AddText( Color( 255, 150, 255 ), "** " .. pl.Name( pl ) .. " " .. text )
 	end,
 	command = { "/me" },
 	canHearRange = 1500,
@@ -85,7 +85,7 @@ catherine.chat.Register( "me", {
 
 catherine.chat.Register( "it", {
 	func = function( pl, text )
-		chat.AddText( Color( 255, 150, 0 ), "*** " .. pl:Name( ) .. " " .. text )
+		chat.AddText( Color( 255, 150, 0 ), "*** " .. pl.Name( pl ) .. " " .. text )
 	end,
 	command = { "/it" },
 	canHearRange = 1000,
@@ -108,7 +108,7 @@ catherine.chat.Register( "roll", {
 
 catherine.chat.Register( "pm", {
 	func = function( pl, text, ex )
-		chat.AddText( Color( 255, 255, 0 ), "[PM] " .. pl:Name( ) .. " : " .. text )
+		chat.AddText( Color( 255, 255, 0 ), "[PM] " .. pl.Name( pl ) .. " : " .. text )
 	end,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
@@ -191,7 +191,7 @@ catherine.chat.Register( "connect", {
 			icon = Material( "icon16/star.png" )
 		end
 		
-		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Connect", pl:SteamName( ) ) )
+		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Connect", pl.SteamName( pl ) ) )
 	end,
 	isGlobal = true
 } )
@@ -206,7 +206,7 @@ catherine.chat.Register( "disconnect", {
 			icon = Material( "icon16/star.png" )
 		end
 		
-		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
+		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Disconnect", pl.SteamName( pl ) ) )
 	end,
 	isGlobal = true
 } )
@@ -359,7 +359,7 @@ else
 			
 			table.remove( data, index )
 			table.insert( data, index, team.GetColor( pl:Team( ) ) )
-			table.insert( data, index + 1, pl:Name( ) )
+			table.insert( data, index + 1, pl.Name( pl ) )
 		end
 		
 		return chat.AddTextBuffer( unpack( data ) )

@@ -65,11 +65,10 @@ if ( SERVER ) then
 		self:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav" )
 	end
 else
-	local toscreen = FindMetaTable("Vector").ToScreen
+	local toscreen = FindMetaTable( "Vector" ).ToScreen
 	
 	function ENT:DrawEntityTargetID( pl, ent, a )
-		if ( ent:GetClass( ) != "cat_shipment" ) then return end
-		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
+		local pos = toscreen( self.LocalToWorld( self, self.OBBCenter( self ) ) )
 		local x, y = pos.x, pos.y
 		
 		draw.SimpleText( LANG( "Business_UI_Shipment_Title" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )

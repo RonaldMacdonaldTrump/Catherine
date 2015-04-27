@@ -62,22 +62,22 @@ if ( SERVER ) then
 	end
 
 	function catherine.player.PlayerInformationInitialize( pl )
-		local steamID = pl:SteamID( )
+		local steamID = pl.SteamID( pl )
 		
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data or #data == 0 ) then
-				if ( steamID == catherine.configs.OWNER and pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
+				if ( steamID == catherine.configs.OWNER and pl.GetNWString( pl, "usergroup" ):lower( ) == "user" ) then
 					if ( ulx ) then
 						RunConsoleCommand( "ulx", "adduserid", steamID, "superadmin" )
-						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl:SteamName( ) )
+						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl.SteamName( pl ) )
 					else
 						pl:SetUserGroup( "superadmin" )
-						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set : " .. pl:SteamName( ) )
+						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set : " .. pl.SteamName( pl ) )
 					end
 				end
 				
 				catherine.database.InsertDatas( "catherine_players", {
-					_steamName = pl:SteamName( ),
+					_steamName = pl.SteamName( pl ),
 					_steamID = steamID,
 					_catData = { }
 				} )
@@ -88,14 +88,14 @@ if ( SERVER ) then
 	function catherine.player.HealthRecoverTick( pl )
 		if ( !pl.CAT_healthRecover ) then return end
 		
-		if ( math.Round( pl:Health( ) ) >= pl:GetMaxHealth( ) ) then
+		if ( math.Round( pl.Health( pl ) ) >= pl.GetMaxHealth( pl ) ) then
 			pl.CAT_healthRecover = false
 			hook.Run( "HealthFullRecovered", pl )
 			return
 		end
 		
 		if ( ( pl.CAT_healthRecoverTick or CurTime( ) + 3 ) <= CurTime( ) ) then
-			pl:SetHealth( math.Clamp( pl:Health( ) + 1, 0, pl:GetMaxHealth( ) ) )
+			pl:SetHealth( math.Clamp( pl.Health( pl ) + 1, 0, pl.GetMaxHealth( pl ) ) )
 			pl.CAT_healthRecoverTick = CurTime( ) + 3
 			hook.Run( "HealthRecovering", pl )
 		end
@@ -120,16 +120,16 @@ if ( SERVER ) then
 			
 			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message01_ZT" ), 2, function( )
 				local tr = { }
-				tr.start = pl:GetShootPos( )
-				tr.endpos = tr.start + pl:GetAimVector( ) * 60
+				tr.start = pl.GetShootPos( pl )
+				tr.endpos = tr.start + pl.GetAimVector( pl ) * 60
 				tr.filter = pl
 				
 				target = util.TraceLine( tr ).Entity
 				
 				if ( !IsValid( target ) ) then return end
 				
-				if ( target:GetClass( ) == "prop_ragdoll" ) then
-					target = target:GetNetVar( "player" )
+				if ( target.GetClass( target ) == "prop_ragdoll" ) then
+					target = target.GetNetVar( target, "player" )
 				end
 				
 				if ( IsValid( target ) ) then
@@ -155,16 +155,16 @@ if ( SERVER ) then
 			
 			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message02_ZT" ), 2, function( )
 				local tr = { }
-				tr.start = pl:GetShootPos( )
-				tr.endpos = tr.start + pl:GetAimVector( ) * 60
+				tr.start = pl.GetShootPos( pl )
+				tr.endpos = tr.start + pl.GetAimVector( pl ) * 60
 				tr.filter = pl
 				
 				target = util.TraceLine( tr ).Entity
 				
 				if ( !IsValid( target ) ) then return end
 				
-				if ( target:GetClass( ) == "prop_ragdoll" ) then
-					target = target:GetNetVar( "player" )
+				if ( target.GetClass( target ) == "prop_ragdoll" ) then
+					target = target.GetNetVar( target, "player" )
 				end
 		
 				if ( IsValid( target ) ) then
@@ -177,7 +177,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.player.BunnyHopProtection( pl )
-		if ( pl:KeyPressed( IN_JUMP ) and ( pl.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
+		if ( pl.KeyPressed( pl, IN_JUMP ) and ( pl.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
 			if ( !pl.CAT_nextBunnyCheck ) then
 				pl.CAT_nextBunnyCheck = CurTime( ) + 0.05
 			end
@@ -212,7 +212,7 @@ if ( SERVER ) then
 			pl:SetNoDraw( false )
 			pl:SetNotSolid( false )
 			pl:Freeze( false )
-			pl:SetPos( IsValid( pl.ragdoll ) and pl.ragdoll:GetPos( ) or pl:GetPos( ) )
+			pl:SetPos( IsValid( pl.ragdoll ) and pl.ragdoll.GetPos( pl.ragdoll ) or pl.GetPos( pl ) )
 			pl:SetMoveType( MOVETYPE_WALK )
 			pl:SetLocalVelocity( vector_origin )
 			pl:DropToFloor( )
@@ -221,7 +221,7 @@ if ( SERVER ) then
 				pl.ragdoll:SetNetVar( "player", nil )
 			end
 			
-			for k, v in pairs( pl:GetNetVar( "weps", { } ) ) do
+			for k, v in pairs( pl.GetNetVar( pl, "weps", { } ) ) do
 				pl:Give( v )
 			end
 			
@@ -247,9 +247,9 @@ if ( SERVER ) then
 		end
 		
 		pl.ragdoll = ents.Create( "prop_ragdoll" )
-		pl.ragdoll:SetAngles( pl:GetAngles( ) )
-		pl.ragdoll:SetModel( pl:GetModel( ) )
-		pl.ragdoll:SetPos( pl:GetPos( ) )
+		pl.ragdoll:SetAngles( pl.GetAngles( pl ) )
+		pl.ragdoll:SetModel( pl.GetModel( pl ) )
+		pl.ragdoll:SetPos( pl.GetPos( pl ) )
 		pl.ragdoll:Spawn( )
 		pl.ragdoll:Activate( )
 		pl.ragdoll:SetCollisionGroup( COLLISION_GROUP_WEAPON )
@@ -270,8 +270,8 @@ if ( SERVER ) then
 		
 		local wepsBuffer = { }
 		
-		for k, v in pairs( pl:GetWeapons( ) or { } ) do
-			wepsBuffer[ #wepsBuffer + 1 ] = v:GetClass( )
+		for k, v in pairs( pl.GetWeapons( pl ) or { } ) do
+			wepsBuffer[ #wepsBuffer + 1 ] = v.GetClass( v )
 		end
 		
 		pl:SetNetVar( "weps", wepsBuffer )
@@ -280,7 +280,7 @@ if ( SERVER ) then
 		pl:Freeze( true )
 		pl:SetNoDraw( true )
 		
-		pl:SetNetVar( "ragdollEnt", pl.ragdoll:EntIndex( ) )
+		pl:SetNetVar( "ragdollEnt", pl.ragdoll.EntIndex( pl.ragdoll ) )
 		pl:SetNetVar( "isRagdolled", true )
 		
 		if ( time ) then
@@ -291,8 +291,8 @@ if ( SERVER ) then
 	end
 
 	function META:SetWeaponRaised( bool, wep )
-		if ( !IsValid( self ) or !self:IsCharacterLoaded( ) ) then return end
-		wep = wep or self:GetActiveWeapon( )
+		if ( !IsValid( self ) or !self.IsCharacterLoaded( self ) ) then return end
+		wep = wep or self.GetActiveWeapon( self )
 		
 		if ( wep.AlwaysLowered ) then
 			self:SetNetVar( "weaponRaised", false )
@@ -314,22 +314,22 @@ if ( SERVER ) then
 	end
 
 	function META:ToggleWeaponRaised( )
-		if ( self:GetWeaponRaised( ) ) then
+		if ( self.GetWeaponRaised( self ) ) then
 			self:SetWeaponRaised( false )
 		else
 			self:SetWeaponRaised( true )
 		end
 	end
 	
-	local velo = FindMetaTable("Entity").GetVelocity
-	local v = FindMetaTable("Vector").Length2D
+	local velo = FindMetaTable( "Entity" ).GetVelocity
+	local twoD = FindMetaTable( "Vector" ).Length2D
 	
 	function META:IsRunning( )
-		return v( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
+		return twoD( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
 	end
 
 	function catherine.player.PlayerSwitchWeapon( pl, oldWep, newWep )
-		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then
+		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep.GetClass( newWep ) ] ) then
 			pl:SetWeaponRaised( false, newWep )
 		else
 			pl:SetWeaponRaised( true, newWep )
@@ -356,11 +356,11 @@ else
 end
 
 function META:GetWeaponRaised( )
-	return self:GetNetVar( "weaponRaised", false )
+	return self.GetNetVar( self, "weaponRaised", false )
 end
 
 function META:GetGender( )
-	local model = self:GetModel( ):lower( )
+	local model = self.GetModel( self ):lower( )
 	local gender = "male"
 	
 	if ( model:find( "female" ) or model:find( "alyx" ) or model:find( "mossman" ) ) then
@@ -371,7 +371,7 @@ function META:GetGender( )
 end
 
 function META:IsFemale( )
-	local model = self:GetModel( ):lower( )
+	local model = self.GetModel( self ):lower( )
 
 	if ( model:find( "female" ) or model:find( "alyx" ) or model:find( "mossman" ) ) then
 		return true
@@ -379,22 +379,23 @@ function META:IsFemale( )
 end
 
 function META:IsChatTyping( )
-	return self:GetNetVar( "isTyping", false )
+	return self.GetNetVar( self, "isTyping", false )
 end
 
 function catherine.player.IsRagdolled( pl )
-	return pl:GetNetVar( "isRagdolled", nil )
+	return pl.GetNetVar( pl, "isRagdolled", nil )
 end
 
 function catherine.player.IsTied( pl )
-	return pl:GetNetVar( "isTied", false )
+	return pl.GetNetVar( pl, "isTied", false )
 end
 
 function player.GetAllByLoaded( )
 	local players = { }
 	
 	for k, v in pairs( player.GetAll( ) ) do
-		if ( !v:IsCharacterLoaded( ) ) then continue end
+		if ( !v.IsCharacterLoaded( v ) ) then continue end
+		
 		players[ #players + 1 ] = v
 	end
 	

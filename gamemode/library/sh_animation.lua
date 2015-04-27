@@ -327,7 +327,7 @@ if ( SERVER ) then
 		end
 
 		if ( time > 0 ) then
-			timer.Create( "Catherine.timer.SeqAnimation_" .. pl:SteamID( ), time, 1, function( )
+			timer.Create( "Catherine.timer.SeqAnimation_" .. pl.SteamID( pl ), time, 1, function( )
 				if ( !IsValid( pl ) ) then return end
 				
 				catherine.animation.ResetSeqAnimation( pl )
@@ -347,5 +347,5 @@ if ( SERVER ) then
 end
 
 function catherine.animation.GetSeqAnimation( pl )
-	return pl:GetNetVar( "seqAni", false )
+	return pl.GetNetVar( pl, "seqAni", false )
 end

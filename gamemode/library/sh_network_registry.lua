@@ -89,7 +89,7 @@ if ( SERVER ) then
 	
 	function catherine.net.PlayerDisconnectedInCharacter( pl )
 		catherine.net.entityRegistry[ pl ] = nil
-		netstream.Start( nil, "catherine.net.ClearNetVar", pl:SteamID( ) )
+		netstream.Start( nil, "catherine.net.ClearNetVar", pl.SteamID( pl ) )
 	end
 
 	hook.Add( "Think", "catherine.net.Think", catherine.net.Think )

@@ -268,13 +268,13 @@ else
 	end )
 	
 	function catherine.storage.GetInv( ent )
-		return ent:GetNetVar( "inv", { } )
+		return ent.GetNetVar( ent, "inv", { } )
 	end
 	
 	function catherine.storage.GetWeights( ent, customAdd )
 		local inventory = catherine.storage.GetInv( ent )
 		local weight = 0
-		local maxWeight = ent:GetNetVar( "maxWeight" ) or 0
+		local maxWeight = ent.GetNetVar( ent, "maxWeight" ) or 0
 		
 		for k, v in pairs( inventory ) do
 			local itemTable = catherine.item.FindByID( k )
@@ -292,15 +292,15 @@ else
 		return inventory[ uniqueID ] and inventory[ uniqueID ].itemCount or 0
 	end
 
-	local toscreen = FindMetaTable("Vector").ToScreen
+	local toscreen = FindMetaTable( "Vector" ).ToScreen
 
 	function catherine.storage.DrawEntityTargetID( pl, ent, a )
-		if ( !ent:GetNetVar( "isStorage", false ) ) then return end
-		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
+		if ( !ent.GetNetVar( ent, "isStorage", false ) ) then return end
+		local pos = toscreen( ent.LocalToWorld( ent, ent.OBBCenter( ent ) ) )
 		local x, y = pos.x, pos.y
 		
-		draw.SimpleText( ent:GetNetVar( "name", "" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( ent:GetNetVar( "desc", "" ), "catherine_outline20", x, y + 30, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent.GetNetVar( ent, "name", "" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent.GetNetVar( ent, "desc", "" ), "catherine_outline20", x, y + 30, Color( 255, 255, 255, a ), 1, 1 )
 	end
 	
 	hook.Add( "DrawEntityTargetID", "catherine.storage.DrawEntityTargetID", catherine.storage.DrawEntityTargetID )
