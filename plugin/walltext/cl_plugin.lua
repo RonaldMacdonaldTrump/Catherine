@@ -33,7 +33,7 @@ netstream.Hook( "catherine.plugin.walltext.RemoveText", function( data )
 end )
 
 function PLUGIN:DrawText( data )
-	local object = catherine.markup.Parse( "<font=catherine_goodtext>" .. data.text .. "</font>" )
+	local object = catherine.markup.Parse( "<font=catherine_walltext>" .. data.text .. "</font>" )
 	
 	function object:DrawText( text, font, x, y, col, hA, vA, a )
 		col.a = a
@@ -63,4 +63,4 @@ function PLUGIN:PostDrawTranslucentRenderables( )
 	end
 end
 
-catherine.font.Register( "catherine_goodtext", catherine.configs.Font, 150, 1000, { outline = true } )
+catherine.font.Register( "catherine_walltext", catherine.configs.Font, 150, 1000, { outline = true } )

@@ -27,7 +27,9 @@ catherine.language.Merge( "english", {
 	[ "Vendor_Notify_Add" ] = "You are added vendor.",
 	[ "Vendor_Notify_Remove" ] = "You are removed this vendor.",
 	[ "Vendor_Message_CantUse" ] = "You don't have permission using this vendor!",
-	[ "Vendor_NameQ" ] = "What are you want vendor name ?"
+	[ "Vendor_NameQ" ] = "What are you want vendor name?",
+	[ "VED_Plugin_Name" ] = "Vendor",
+	[ "VED_Plugin_Desc" ] = "Good stuff."
 } )
 
 catherine.language.Merge( "korean", {
@@ -39,5 +41,7 @@ catherine.language.Merge( "korean", {
 	[ "Vendor_Notify_Add" ] = "상인을 추가했습니다.",
 	[ "Vendor_Notify_Remove" ] = "상인을 제거했습니다.",
 	[ "Vendor_Message_CantUse" ] = "이 상인을 사용할 권한이 없습니다!",
-	[ "Vendor_NameQ" ] = "상인의 이름을 무엇으로 하시겠습니까?"
+	[ "Vendor_NameQ" ] = "상인의 이름을 무엇으로 하시겠습니까?",
+	[ "VED_Plugin_Name" ] = "상인",
+	[ "VED_Plugin_Desc" ] = "맵에 NPC 상인을 추가합니다."
 } )

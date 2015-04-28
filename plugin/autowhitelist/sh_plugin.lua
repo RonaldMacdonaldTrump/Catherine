@@ -17,9 +17,19 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "Auto Whitelist"
+PLUGIN.name = "^AW_Plugin_Name"
 PLUGIN.author = "L7D"
-PLUGIN.desc = "Good stuff."
+PLUGIN.desc = "^AW_Plugin_Desc"
+
+catherine.language.Merge( "english", {
+	[ "AW_Plugin_Name" ] = "Auto Whitelist",
+	[ "AW_Plugin_Desc" ] = "Good stuff."
+} )
+
+catherine.language.Merge( "korean", {
+	[ "AW_Plugin_Name" ] = "자동 팩션 추가",
+	[ "AW_Plugin_Desc" ] = "시간이 많이 지나면 자동으로 팩션을 줍니다."
+} )
 
 if ( SERVER ) then
 	PLUGIN.enable = false
@@ -31,11 +41,13 @@ if ( SERVER ) then
 	
 	function PLUGIN:PlayerFirstSpawned( pl )
 		if ( !self.enable ) then return end
+		
 		catherine.character.SetCharVar( pl, "aw_playTime", 0 )
 	end
 	
 	function PLUGIN:PlayerSpawnedInCharacter( pl )
 		if ( !self.enable ) then return end
+		
 		pl.CAT_aw_nextRefresh = pl.CAT_aw_nextRefresh or CurTime( ) + self.refreshTime
 	end
 	
@@ -45,16 +57,19 @@ if ( SERVER ) then
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			if ( ( v.CAT_aw_nextRefresh or CurTime( ) ) <= CurTime( ) ) then
 				local prevTime = catherine.character.GetCharVar( v, "aw_playTime", 0 )
+				
 				catherine.character.SetCharVar( v, "aw_playTime", prevTime + self.refreshTime )
 				
 				for k1, v1 in pairs( self.lists ) do
 					local factionTable = catherine.faction.FindByID( k1 )
+					
 					if ( !factionTable or !factionTable.isWhitelist or catherine.faction.HasWhiteList( v, k1 ) ) then continue end
 					
 					if ( prevTime + self.refreshTime >= v1 ) then
 						catherine.faction.AddWhiteList( v, k1 )
 					end
 				end
+				
 				v.CAT_aw_nextRefresh = CurTime( ) + self.refreshTime
 			end
 		end

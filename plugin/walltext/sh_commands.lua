@@ -37,8 +37,7 @@ catherine.command.Register( {
 	syntax = "[Distance]",
 	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
-		if ( !args[ 1 ] ) then args[ 1 ] = 256 end
-		local i = PLUGIN:RemoveText( pl.GetShootPos( pl ), args[ 1 ] )
+		local i = PLUGIN:RemoveText( pl.GetShootPos( pl ), args[ 1 ] or 256 )
 		
 		if ( i == 0 ) then
 			catherine.util.NotifyLang( pl, "WallText_Notify_NoText" )

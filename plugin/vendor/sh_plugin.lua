@@ -17,12 +17,11 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "Vendor"
+PLUGIN.name = "^VED_Plugin_Name"
 PLUGIN.author = "L7D"
-PLUGIN.desc = "Good stuff."
-PLUGIN.randModels = {
-
-}
+PLUGIN.desc = "^VED_Plugin_Desc"
+PLUGIN.randModels = { }
+PLUGIN.VENDOR_SOLD_DISCOUNTPER = 2
 local varsID = {
 	"name",
 	"desc",
@@ -39,8 +38,6 @@ CAT_VENDOR_ACTION_SETTING_CHANGE = 3 // Setting change
 CAT_VENDOR_ACTION_ITEM_CHANGE = 4
 CAT_VENDOR_ACTION_ITEM_UNCHANGE = 5
 
-PLUGIN.VENDOR_SOLD_DISCOUNTPER = 2
-
 function PLUGIN:GetVendorDatas( ent )
 	if ( !IsValid( ent ) or !ent.isVendor ) then return end
 	local datas = { }
@@ -56,7 +53,8 @@ function PLUGIN:GetVendorWorkingPlayers( )
 	local players = { }
 
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		if ( !v:GetNetVar( "vendor_work" ) ) then continue end
+		if ( !v.GetNetVar( v, "vendor_work" ) ) then continue end
+		
 		players[ #players + 1 ] = v
 	end
 	
