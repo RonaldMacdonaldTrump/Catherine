@@ -23,6 +23,7 @@ function catherine.notify.Add( message, time, sound )
 	local index = #catherine.notify.lists + 1
 	
 	surface.PlaySound( sound or "buttons/button24.wav" )
+	
 	catherine.notify.lists[ index ] = {
 		message = message or "Error",
 		endTime = CurTime( ) + ( time or 5 ),
@@ -35,7 +36,7 @@ function catherine.notify.Add( message, time, sound )
 end
 
 function catherine.notify.Draw( )
-	for k, v in pairs( #catherine.notify.lists != 0 and catherine.notify.lists or { } ) do
+	for k, v in pairs( catherine.notify.lists ) do
 		if ( v.endTime <= CurTime( ) ) then
 			v.a = Lerp( 0.05, v.a, 0 )
 			
@@ -48,6 +49,7 @@ function catherine.notify.Draw( )
 		end
 		
 		v.y = Lerp( 0.05, v.y, ( ScrH( ) - 10 ) - ( ( k ) * 25 ) )
+		
 		draw.RoundedBox( 0, v.x, v.y, v.w, v.h, Color( 235, 235, 235, v.a ) )
 		draw.SimpleText( v.message, "catherine_normal15", v.x + v.w / 2, v.y + v.h / 2, Color( 50, 50, 50, v.a ), 1, 1 )
 	end
