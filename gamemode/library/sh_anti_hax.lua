@@ -22,27 +22,54 @@ if ( SERVER ) then
 	catherine.antiHaX.checkingList = catherine.antiHaX.checkingList or { }
 	catherine.antiHaX.NextCheckTick = catherine.antiHaX.NextCheckTick or CurTime( ) + 300
 	
-	
 	function catherine.antiHaX.Check( )
-		
 		local serverConVars = {
 			cheat = GetConVarString( "sv_cheats" ),
 			csLua = GetConVarString( "sv_allowcslua" )
 		}
 		local checkingPlayers = player.GetAll( )
 		
-		catherine.antiHaX.checkingList.data = {
-			svConVars = serverConVars,
-			players = checkingPlayers,
-			startTime = 0
+		catherine.antiHaX.checkingList = {
+			receive = { },
+			data = {
+				svConVars = serverConVars,
+				players = checkingPlayers,
+				startTime = 0
+			}
 		}
 		
 		for k, v in pairs( checkingPlayers ) do
-			catherine.antiHaX.checkingList[ v.SteamID( v ) ] = { }
+			catherine.antiHaX.checkingList.receive[ v.SteamID( v ) ] = { }
 		end
 		
 		catherine.antiHaX.checkingList.data.startTime = CurTime( )
 		netstream.Start( nil, "catherine.antiHaX.CheckProgress" )
+		
+		timer.Simple( 7, function( )
+			for k, v in pairs( catherine.antiHaX.checkingList.receive ) do
+				local pl = catherine.util.FindPlayerByStuff( "SteamID", k )
+				if ( !IsValid( pl ) or pl:IsBot( ) ) then continue end
+				local hax = false
+				
+				if ( serverConVars.cheat != v.cheat ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_cheats mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl ) .. "]\n" )
+					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_cheats mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl ) .. "]", true )
+				end
+				
+				if ( serverConVars.csLua != v.csLua ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_allowcslua mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl ) .. "]\n" )
+					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_allowcslua mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl ) .. "]", true )
+				end
+
+				if ( hax ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Kicked hack player.[" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl )	.. "]\n" )
+					pl:Kick( "[Catherine AntiHaX] Hack program used." )
+					continue
+				end
+			end
+			
+			catherine.antiHaX.checkingList = { }
+		end )
 	end
 	
 	function catherine.antiHaX.Think( )
@@ -55,13 +82,15 @@ if ( SERVER ) then
 	hook.Add( "Think", "catherine.antiHaX.Think", catherine.antiHaX.Think )
 	
 	netstream.Hook( "catherine.antiHaX.CheckProgress_Receive", function( pl, data )
-		local checkingList = catherine.antiHaX.checkingList
-		local svData = checkingList.data
-		
-		
+		catherine.antiHaX.checkingList.receive[ pl.SteamID( pl ) ] = data
 	end )
 else
 	netstream.Hook( "catherine.antiHaX.CheckProgress", function( )
-	
+		local data = {
+			cheat = GetConVarString( "sv_cheats" ),
+			csLua = GetConVarString( "sv_allowcslua" )
+		}
+		
+		netstream.Start( "catherine.antiHaX.CheckProgress_Receive", data )
 	end )
 end
