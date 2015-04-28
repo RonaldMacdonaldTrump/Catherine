@@ -191,7 +191,7 @@ catherine.chat.Register( "connect", {
 			icon = Material( "icon16/star.png" )
 		end
 		
-		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Connect", pl.SteamName( pl ) ) )
+		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Connect", pl.Name( pl ) ) )
 	end,
 	isGlobal = true
 } )
@@ -322,6 +322,7 @@ else
 	catherine.chat.msg = catherine.chat.msg or { }
 	catherine.chat.history = catherine.chat.history or { }
 
+	local typingText = ""
 	local CHATBox_w, CHATBox_h = ScrW( ) * 0.5, ScrH( ) * 0.3
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
 	
@@ -391,8 +392,41 @@ else
 		
 		catherine.chat.backpanel = vgui.Create( "DPanel" )
 		catherine.chat.backpanel:SetPos( CHATBox_x, CHATBox_y )
-		catherine.chat.backpanel:SetSize( CHATBox_w, CHATBox_h - 30 )
-		catherine.chat.backpanel.Paint = function( ) end
+		catherine.chat.backpanel:SetSize( CHATBox_w, CHATBox_h - 25 )
+		catherine.chat.backpanel.Paint = function( pnl, w, h )
+			if ( typingText.sub( typingText, 1, 1 ) == "/" ) then
+				surface.SetDrawColor( 50, 50, 50, 200 )
+				surface.SetMaterial( Material( "gui/gradient_up" ) )
+				surface.DrawTexturedRect( 0, 0, w, h )
+				
+				local commands, sub = catherine.command.GetMatchCommands( typingText )
+				local chatY = CHATBox_h - 25
+
+				if ( #commands == 1 ) then
+					local commandText = "/" .. commands[ 1 ].command
+					surface.SetFont( "catherine_normal25" )
+					local tw, th = surface.GetTextSize( commandText )
+						
+					draw.SimpleText( commandText, "catherine_normal25", 15, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+					draw.SimpleText( commands[ 1 ].syntax, "catherine_normal15", 30 + tw, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+					draw.SimpleText( catherine.util.StuffLanguage( commands[ 1 ].desc ), "catherine_normal20", 15, chatY - 20, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+				else
+					for k, v in pairs( commands ) do
+						local yPos = chatY - ( 20 * k )
+						if ( yPos <= 10 ) then continue end
+						
+						local commandText = "/" .. v.command
+						local currText = commandText.sub( commandText, 1, sub + 1 )
+						
+						surface.SetFont( "catherine_normal20" )
+						local tw, th = surface.GetTextSize( currText )
+
+						draw.SimpleText( currText, "catherine_normal20", 15, yPos, Color( 150, 235, 150, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( commandText.gsub( commandText, currText, "" ), "catherine_normal20", 15 + tw, yPos, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+					end
+				end
+			end
+		end
 
 		catherine.chat.backpanel.history = vgui.Create( "DScrollPanel", catherine.chat.backpanel )
 		catherine.chat.backpanel.history:Dock( FILL )
@@ -424,13 +458,14 @@ else
 			
 			self:Remove( )
 			self = nil
+			typingText = ""
 			hook.Run( "FinishChat" )
 		end
 		
 		self = vgui.Create( "EditablePanel", self )
 		self:SetPos( CHATBox_x, CHATBox_y + CHATBox_h - 25 )
 		self:SetSize( CHATBox_w, 25 )
-		self.Paint = function( ) end
+		self.Paint = function( pnl, w, h ) end
 		
 		self.textEnt = vgui.Create( "DTextEntry", self )
 		self.textEnt:Dock( FILL )
@@ -446,6 +481,7 @@ else
 			pnl:DrawTextEntryText( color_black, color_black, color_black )
 		end
 		self.textEnt.OnTextChanged = function( pnl )
+			typingText = pnl:GetText( )
 			hook.Run( "ChatTextChanged", pnl:GetText( ) )
 		end
 		self.textEnt.OnKeyCodeTyped = function( pnl, code )

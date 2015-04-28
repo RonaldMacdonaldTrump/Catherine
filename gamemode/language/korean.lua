@@ -28,6 +28,7 @@ LANGUAGE.data = {
 	
 	// Cash
 	[ "Cash_UI_HasStr" ] = "당신은 %s " .. catherine.configs.cashName .. " 를 가지고 있습니다.",
+	[ "Cash_UI_TargetHasStr" ] = "이 사람은 %s " .. catherine.configs.cashName .. " 를 가지고 있습니다.",
 	[ "Cash_Notify_Set" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 설정하셨습니다.",
 	[ "Cash_Notify_Give" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 주셨습니다.",
 	[ "Cash_Notify_Take" ] = "%s 님이 %s 만큼의 돈을 %s 님에게서 빼았었습니다.",
@@ -122,6 +123,7 @@ LANGUAGE.data = {
 	// Inventory
 	[ "Inventory_UI_Title" ] = "인벤토리",
 	[ "Inventory_Notify_HasNotSpace" ] = "당신의 인벤토리에 공간이 없습니다!",
+	[ "Inventory_Notify_HasNotSpaceTarget" ] = "해당 사람의 인벤토리에 공간이 없습니다!",
 	[ "Inventory_Notify_CantDrop01" ] = "그렇게 멀리 떨어트릴 수 없습니다!",
 	[ "Inventory_Notify_DontHave" ] = "당신은 이 물건을 가지고 있지 않습니다!",
 	[ "Inventory_Notify_IsPersistent" ] = "이 물건은 영구적으로 가지고 있어야 합니다!",
@@ -184,6 +186,7 @@ LANGUAGE.data = {
 	
 	// Command
 	[ "Command_Notify_NotFound" ] = "해당 명령어는 존재하지 않습니다!",
+	[ "Command_DefDesc" ] = "명령어 입니다.",
 	
 	// Player
 	[ "Player_Message_Ragdolled_01" ] = "정신을 차리고 있습니다 ...",

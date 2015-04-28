@@ -173,6 +173,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.door.SetDoorStatus( pl, ent )
+		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
+			return false, "Entity_Notify_NotDoor"
+		end
+		
 		local curStatus = ent.GetNetVar( ent, "cantBuy", false )
 		local curOwner = ent.GetNetVar( ent, "permissions" )
 		
@@ -196,6 +200,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.door.SetDoorActive( pl, ent )
+		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
+			return false, "Entity_Notify_NotDoor"
+		end
+		
 		local curStatus = ent.GetNetVar( ent, "disabled" )
 		local curOwner = ent.GetNetVar( ent, "permissions" )
 		

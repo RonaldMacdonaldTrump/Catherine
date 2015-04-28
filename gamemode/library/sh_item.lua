@@ -158,7 +158,6 @@ if ( SERVER ) then
 			local itemTable = catherine.item.FindByID( uniqueID )
 			
 			if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
-				catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 				return false
 			end
 		end

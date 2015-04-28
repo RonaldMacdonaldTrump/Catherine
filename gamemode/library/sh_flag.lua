@@ -142,10 +142,13 @@ if ( SERVER ) then
 	end
 	
 	function catherine.flag.PlayerSpawnedInCharacter( pl )
-		for k, v in pairs( catherine.flag.GetAll( ) ) do
-			if ( !catherine.flag.Has( pl, v.id ) or !v.onSpawn ) then continue end
-			v.onSpawn( pl )
-		end
+		timer.Simple( 0.5, function( )
+			for k, v in pairs( catherine.flag.GetAll( ) ) do
+				if ( !catherine.flag.Has( pl, v.id ) or !v.onSpawn ) then continue end
+				
+				v.onSpawn( pl )
+			end
+		end )
 
 		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl.GetCharacterID( pl ) ) then
 			netstream.Start( pl, "catherine.flag.BuildHelp" )
