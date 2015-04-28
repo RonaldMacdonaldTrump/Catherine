@@ -48,7 +48,7 @@ function catherine.flag.GetAllToString( )
 	return flags
 end
 
-catherine.flag.Register( "p", "Access to physgun.", {
+catherine.flag.Register( "p", "^Flag_p_Desc", {
 	onSpawn = function( pl )
 		pl:Give( "weapon_physgun" )
 	end,
@@ -59,7 +59,7 @@ catherine.flag.Register( "p", "Access to physgun.", {
 		pl:StripWeapon( "weapon_physgun" )
 	end
 } )
-catherine.flag.Register( "t", "Access to toolgun.", {
+catherine.flag.Register( "t", "^Flag_t_Desc", {
 	onSpawn = function( pl )
 		pl:Give( "gmod_tool" )
 	end,
@@ -70,11 +70,11 @@ catherine.flag.Register( "t", "Access to toolgun.", {
 		pl:StripWeapon( "gmod_tool" )
 	end
 } )
-catherine.flag.Register( "e", "Access to prop spawn." )
-catherine.flag.Register( "x", "Access to entity spawn." )
-catherine.flag.Register( "V", "Access to vehicle spawn." )
-catherine.flag.Register( "n", "Access to NPC spawn." )
-catherine.flag.Register( "R", "Access to ragdoll spawn." )
+catherine.flag.Register( "e", "^Flag_e_Desc" )
+catherine.flag.Register( "x", "^Flag_x_Desc" )
+catherine.flag.Register( "V", "^Flag_V_Desc" )
+catherine.flag.Register( "n", "^Flag_n_Desc" )
+catherine.flag.Register( "R", "^Flag_R_Desc" )
 
 if ( SERVER ) then
 	function catherine.flag.Give( pl, flagID )
@@ -185,4 +185,8 @@ else
 	end
 
 	hook.Add( "LanguageChanged", "catherine.flag.LanguageChanged", catherine.flag.LanguageChanged )
+	
+	if ( IsValid( LocalPlayer( ) ) ) then
+		rebuildFlag( )
+	end
 end

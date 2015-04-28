@@ -116,7 +116,7 @@ function GM:PostDrawTranslucentRenderables( depth, skybox )
 	if ( depth or skybox ) then return end
 
 	for k, v in pairs( ents.FindInSphere( LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 ) ) do
-		if ( !IsValid( v ) or !catherine.entity.IsDoor( v ) ) then continue end
+		if ( !IsValid( v ) or !catherine.entity.IsDoor( v ) or catherine.door.IsDoorDisabled( v ) ) then continue end
 		
 		hook.Run( "DrawDoorText", v, v.GetPos( v ), v.GetAngles( v ) )
 	end
@@ -131,6 +131,7 @@ function GM:PlayerBindPress( pl, code, pressed )
 end
 
 function GM:DrawDoorText( ent, pos, ang )
+	if ( catherine.door.IsDoorDisabled( ent ) ) then return end
 	local a = catherine.util.GetAlphaFromDistance( ent.GetPos( ent ), LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 )
 
 	if ( math.Round( a ) <= 0 ) then

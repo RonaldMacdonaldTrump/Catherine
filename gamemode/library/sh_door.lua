@@ -174,15 +174,47 @@ if ( SERVER ) then
 	
 	function catherine.door.SetDoorStatus( pl, ent )
 		local curStatus = ent.GetNetVar( ent, "cantBuy", false )
+		local curOwner = ent.GetNetVar( ent, "permissions" )
 		
 		if ( curStatus ) then
 			ent:SetNetVar( "cantBuy", false )
+			
+			if ( curOwner ) then
+				ent:SetNetVar( "permissions", nil )
+			end
 			
 			return true, "Door_Notify_SetStatus_False"
 		else
 			ent:SetNetVar( "cantBuy", true )
 			
+			if ( curOwner ) then
+				ent:SetNetVar( "permissions", nil )
+			end
+			
 			return true, "Door_Notify_SetStatus_True"
+		end
+	end
+	
+	function catherine.door.SetDoorActive( pl, ent )
+		local curStatus = ent.GetNetVar( ent, "disabled" )
+		local curOwner = ent.GetNetVar( ent, "permissions" )
+		
+		if ( curStatus ) then
+			ent:SetNetVar( "disabled", nil )
+			
+			if ( curOwner ) then
+				ent:SetNetVar( "permissions", nil )
+			end
+			
+			return true, "Door_Notify_Disabled_False"
+		else
+			ent:SetNetVar( "disabled", true )
+			
+			if ( curOwner ) then
+				ent:SetNetVar( "permissions", nil )
+			end
+			
+			return true, "Door_Notify_Disabled_True"
 		end
 	end
 	
@@ -235,14 +267,16 @@ if ( SERVER ) then
 		
 		for k, v in pairs( ents.GetAll( ) ) do
 			if ( !catherine.entity.IsDoor( v ) ) then continue end
-			local title = v:GetNetVar( "title", "Door" )
-			local cantBuy = v:GetNetVar( "cantBuy", false )
-			if ( title == "Door" or !cantBuy ) then continue end
+			local title = v.GetNetVar( v, "title", "Door" )
+			local cantBuy = v.GetNetVar( v, "cantBuy", false )
+			local doorDisabled = v.GetNetVar( v, "disabled" )
+			if ( !doorDisabled and ( title == "Door" or !cantBuy ) ) then continue end
 			
 			data[ #data + 1 ] = {
 				title = title,
 				cantBuy = cantBuy,
-				index = v:EntIndex( )
+				index = v.EntIndex( v ),
+				doorDisabled = doorDisabled
 			}
 		end
 		
@@ -253,8 +287,12 @@ if ( SERVER ) then
 		for k, v in pairs( ents.GetAll( ) ) do
 			for k1, v1 in pairs( catherine.data.Get( "doors", { } ) ) do
 				if ( IsValid( v ) and catherine.entity.IsDoor( v ) and v.EntIndex( v ) == v1.index ) then
-					v:SetNetVar( "title", v1.title )
-					v:SetNetVar( "cantBuy", v1.cantBuy )
+					if ( v1.doorDisabled ) then
+						v:SetNetVar( "disabled", true )
+					else
+						v:SetNetVar( "title", v1.title )
+						v:SetNetVar( "cantBuy", v1.cantBuy )
+					end
 				end
 			end
 		end
@@ -402,4 +440,8 @@ end
 
 function catherine.door.IsBuyableDoor( ent )
 	return !ent.GetNetVar( ent, "cantBuy", false )
+end
+
+function catherine.door.IsDoorDisabled( ent )
+	return ent.GetNetVar( ent, "disabled", false )
 end

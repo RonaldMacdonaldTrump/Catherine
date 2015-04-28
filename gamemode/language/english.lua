@@ -81,6 +81,13 @@ LANGUAGE.data = {
 	[ "Flag_Notify_AlreadyHas" ] = "%s already has %s flag!",
 	[ "Flag_Notify_HasNot" ] = "%s hasen't %s flag!",
 	[ "Flag_Notify_NotValid" ] = "%s is not valid flag!",
+	[ "Flag_p_Desc" ] = "Access to physgun.",
+	[ "Flag_t_Desc" ] = "Access to toolgun.",
+	[ "Flag_e_Desc" ] = "Access to prop spawn.",
+	[ "Flag_x_Desc" ] = "Access to entity spawn.",
+	[ "Flag_V_Desc" ] = "Access to vehicle spawn.",
+	[ "Flag_n_Desc" ] = "Access to NPC spawn.",
+	[ "Flag_R_Desc" ] = "Access to ragdoll spawn.",
 	
 	[ "UnknownError" ] = "Unknown Error!",
 	[ "Basic_Notify_UnknownPlayer" ] = "You are not giving a valid character name!",
@@ -127,6 +134,8 @@ LANGUAGE.data = {
 	
 	// Help
 	[ "Help_UI_Title" ] = "Help",
+	[ "Help_UI_DefPageTitle" ] = "Welcome.",
+	[ "Help_UI_DefPageDesc" ] = "Press and look at page if you want.",
 	[ "Help_Category_Flag" ] = "Flag",
 	[ "Help_Category_Credit" ] = "Credit",
 	[ "Help_Category_Changelog" ] = "Change log",
@@ -206,6 +215,8 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetTitle" ] = "You are set title this door.",
 	[ "Door_Notify_SetStatus_True" ] = "You are set status to unbuyable this door.",
 	[ "Door_Notify_SetStatus_False" ] = "You are set status to buyable this door.",
+	[ "Door_Notify_Disabled_True" ] = "You are disable for this door.",
+	[ "Door_Notify_Disabled_False" ] = "You are enable for this door.",
 	[ "Door_Notify_DoorSpam" ] = "Do not door-spam!",
 	
 	[ "Door_Notify_ChangePer" ] = "You are changed permission for this guy.",

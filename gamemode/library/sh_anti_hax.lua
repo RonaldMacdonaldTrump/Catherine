@@ -45,7 +45,7 @@ if ( SERVER ) then
 		catherine.antiHaX.checkingList.data.startTime = CurTime( )
 		netstream.Start( nil, "catherine.antiHaX.CheckProgress" )
 		
-		timer.Simple( 7, function( )
+		timer.Simple( 3, function( )
 			for k, v in pairs( catherine.antiHaX.checkingList.receive ) do
 				local pl = catherine.util.FindPlayerByStuff( "SteamID", k )
 				if ( !IsValid( pl ) or pl:IsBot( ) ) then continue end
@@ -54,15 +54,18 @@ if ( SERVER ) then
 				if ( serverConVars.cheat != v.cheat ) then
 					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_cheats mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl ) .. "]\n" )
 					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_cheats mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl ) .. "]", true )
+					hax = true
 				end
 				
 				if ( serverConVars.csLua != v.csLua ) then
 					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_allowcslua mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl ) .. "]\n" )
 					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_allowcslua mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl ) .. "]", true )
+					hax = true
 				end
 
 				if ( hax ) then
 					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Kicked hack player.[" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl )	.. "]\n" )
+					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked hack player.[" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl )	.. "]", true )
 					pl:Kick( "[Catherine AntiHaX] Hack program used." )
 					continue
 				end
@@ -75,6 +78,8 @@ if ( SERVER ) then
 	function catherine.antiHaX.Think( )
 		if ( catherine.antiHaX.NextCheckTick <= CurTime( ) ) then
 			catherine.antiHaX.Check( )
+			MsgC( Color( 0, 255, 0 ), "[CAT AntiHaX] Hack checked.\n" )
+			
 			catherine.antiHaX.NextCheckTick = CurTime( ) + 300
 		end
 	end
@@ -86,11 +91,9 @@ if ( SERVER ) then
 	end )
 else
 	netstream.Hook( "catherine.antiHaX.CheckProgress", function( )
-		local data = {
+		netstream.Start( "catherine.antiHaX.CheckProgress_Receive", {
 			cheat = GetConVarString( "sv_cheats" ),
 			csLua = GetConVarString( "sv_allowcslua" )
-		}
-		
-		netstream.Start( "catherine.antiHaX.CheckProgress_Receive", data )
+		} )
 	end )
 end

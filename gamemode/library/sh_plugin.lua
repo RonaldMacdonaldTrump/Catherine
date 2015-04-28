@@ -65,7 +65,7 @@ function catherine.plugin.Include( dir )
 			
 			catherine.plugin.lists[ v ] = PLUGIN
 		else
-			MsgC( Color( 255, 255, 0 ), "[CAT ERROR] SORRY, The plugin <test> are do not have files named sh_plugin.lua, failed to loading it ...\n" )
+			MsgC( Color( 255, 255, 0 ), "[CAT ERROR] SORRY, The plugin <" .. v .. "> are do not have files named sh_plugin.lua, failed to loading it ...\n" )
 		end
 		
 		PLUGIN = nil

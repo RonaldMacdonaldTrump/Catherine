@@ -81,6 +81,13 @@ LANGUAGE.data = {
 	[ "Flag_Notify_AlreadyHas" ] = "%s 님은 이미 %s 플래그를 가지고 있습니다!",
 	[ "Flag_Notify_HasNot" ] = "%s 님은 %s 플래그를 가지고 있지 않습니다!",
 	[ "Flag_Notify_NotValid" ] = "%s 는 올바르지 않은 플래그 입니다!",
+	[ "Flag_p_Desc" ] = "게리건 대한 권한.",
+	[ "Flag_t_Desc" ] = "툴건에 대한 권한.",
+	[ "Flag_e_Desc" ] = "프롭 소환에 대한 권한.",
+	[ "Flag_x_Desc" ] = "엔티티 소환에 대한 권한.",
+	[ "Flag_V_Desc" ] = "차 소환에 대한 권한.",
+	[ "Flag_n_Desc" ] = "NPC 소환에 대한 권한.",
+	[ "Flag_R_Desc" ] = "레그돌 소환에 대한 권한.",
 	
 	[ "UnknownError" ] = "알 수 없는 오류가 발생하였습니다, 죄송합니다!",
 	[ "Basic_Notify_UnknownPlayer" ] = "올바른 캐릭터의 이름을 입력하세요!",
@@ -127,6 +134,8 @@ LANGUAGE.data = {
 	
 	// Help
 	[ "Help_UI_Title" ] = "도움 자료",
+	[ "Help_UI_DefPageTitle" ] = "도움 자료에 오신 것을 환영합니다.",
+	[ "Help_UI_DefPageDesc" ] = "왼쪽의 메뉴에서 자료를 선택하세요.",
 	[ "Help_Category_Flag" ] = "플래그",
 	[ "Help_Category_Credit" ] = "제작자",
 	[ "Help_Category_Changelog" ] = "업데이트 로그",
@@ -206,6 +215,8 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetTitle" ] = "이 문의 글씨를 설정했습니다.",
 	[ "Door_Notify_SetStatus_True" ] = "이 문을 구매할 수 없게 하셨습니다.",
 	[ "Door_Notify_SetStatus_False" ] = "이 문을 구매할 수 있게 하셨습니다.",
+	[ "Door_Notify_Disabled_True" ] = "이 문을 비 활성화 하셨습니다.",
+	[ "Door_Notify_Disabled_False" ] = "이 문을 활성화 하셨습니다.",
 	[ "Door_Notify_DoorSpam" ] = "문장난을 하지 마세요!",
 	
 	[ "Door_Notify_ChangePer" ] = "이 사람의 권한을 바꾸셨습니다.",

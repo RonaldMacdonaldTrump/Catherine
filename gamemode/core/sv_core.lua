@@ -31,7 +31,7 @@ function GM:ShowTeam( pl )
 	
 	local ent = pl.GetEyeTrace( pl, 70 ).Entity
 	
-	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
+	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) and !catherine.door.IsDoorDisabled( ent ) ) then
 		local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
 		
 		if ( has ) then
@@ -42,6 +42,9 @@ function GM:ShowTeam( pl )
 				flag
 			} )
 		else
+			local isBuyable = catherine.door.IsBuyableDoor( ent )
+			if ( !isBuyable ) then return end
+			
 			catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )
 				if ( bool ) then
 					catherine.command.Run( pl, "doorbuy" )

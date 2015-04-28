@@ -114,7 +114,7 @@ if ( SERVER ) then
 	end )
 else
 	local function rebuildCommand( )
-		local title_command = LANG( "Help_Category_Flag" )
+		local title_command = LANG( "Help_Category_Command" )
 		local html = [[<b>]] .. title_command .. [[</b><br>]]
 		local pl = LocalPlayer( )
 		
@@ -140,4 +140,6 @@ else
 	end
 
 	hook.Add( "LanguageChanged", "catherine.command.LanguageChanged", catherine.command.LanguageChanged )
+	
+	rebuildCommand( )
 end
