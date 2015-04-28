@@ -17,34 +17,38 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "Head Chat"
+PLUGIN.name = "^DC_Plugin_Name"
 PLUGIN.author = "L7D"
-PLUGIN.desc = "Good stuff"
+PLUGIN.desc = "^DC_Plugin_Desc"
 
 catherine.language.Merge( "english", {
-	[ "HeadChat_Talking" ] = "Talking ..."
+	[ "DisplayChating_Talking" ] = "Talking ...",
+	[ "DC_Plugin_Name" ] = "Display Chating",
+	[ "DC_Plugin_Desc" ] = "Good stuff."
 } )
 
 catherine.language.Merge( "korean", {
-	[ "HeadChat_Talking" ] = "말 하는 중 ..."
+	[ "DisplayChating_Talking" ] = "말 하는 중 ...",
+	[ "DC_Plugin_Name" ] = "채팅 표시",
+	[ "DC_Plugin_Desc" ] = "해당 사람이 채팅을 치고 있는 경우 머리 위에 메세지를 출력합니다."
 } )
 
 if ( CLIENT ) then
 	function PLUGIN:PostPlayerDraw( pl )
-		if ( !pl:IsChatTyping( ) ) then return end
-		local text = LANG( "HeadChat_Talking" )
-		local a = catherine.util.GetAlphaFromDistance( LocalPlayer( ).GetPos( LocalPlayer( ) ), pl.GetPos( pl ), 312 )
+		if ( !pl.IsChatTyping( pl ) ) then return end
+		local lp = LocalPlayer( )
+		local a = catherine.util.GetAlphaFromDistance( lp.GetPos( lp ), pl.GetPos( pl ), 312 )
 		
-		if ( math.Round( a ) <= 0 or !pl.Alive( pl ) or pl:GetMoveType( ) == MOVETYPE_NOCLIP ) then
-			return
-		end
+		if ( math.Round( a ) <= 0 or !pl.Alive( pl ) or pl.GetMoveType( pl ) == MOVETYPE_NOCLIP ) then return end
 		
-		local ang = LocalPlayer( ):EyeAngles( )
-		local pos = pl:GetBonePosition( pl:LookupBone( "ValveBiped.Bip01_Head1" ) ) + Vector( 0, 0, 15 )
+		local ang = lp.EyeAngles( lp )
+		local pos = pl.GetBonePosition( pl, pl.LookupBone( pl, "ValveBiped.Bip01_Head1" ) ) + Vector( 0, 0, 15 )
 		
-		pos = pos + ang:Up( )
-		ang:RotateAroundAxis( ang:Forward( ), 90 )
-		ang:RotateAroundAxis( ang:Right( ), 90 )
+		pos = pos + ang.Up( ang )
+		ang:RotateAroundAxis( ang.Forward( ang ), 90 )
+		ang:RotateAroundAxis( ang.Right( ang ), 90 )
+		
+		local text = LANG( "DisplayChating_Talking" )
 		
 		surface.SetFont( "catherine_normal50" )
 		local tw, th = surface.GetTextSize( text )

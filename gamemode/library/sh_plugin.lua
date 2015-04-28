@@ -23,7 +23,7 @@ local function rebuildPlugin( )
 	local html = [[<b>]] .. title_plugin .. [[</b><br>]]
 			
 	for k, v in pairs( catherine.plugin.GetAll( ) ) do
-		html = html .. "<p><b>&#10022; " .. v.name .. "</b><br>" .. v.desc .. "<br>By " .. v.author .. "<br>"
+		html = html .. "<p><b>&#10022; " .. catherine.util.StuffLanguage( v.name ) .. "</b><br>" .. catherine.util.StuffLanguage( v.desc ) .. "<br>" .. LANG( "Plugin_Value_Author", v.author ) .. "<br>"
 	end
 		
 	catherine.help.Register( CAT_HELP_HTML, title_plugin, html )

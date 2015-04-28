@@ -21,13 +21,13 @@ local PLUGIN = PLUGIN
 catherine.command.Register( {
 	command = "textadd",
 	syntax = "[Text] [Size]",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			PLUGIN:AddText( pl, args[ 1 ], tonumber( args[ 2 ] ) )
-			catherine.util.Notify( pl, "You have added text to your desired location!" )
+			catherine.util.NotifyLang( pl, "WallText_Notify_Add" )
 		else
-			catherine.util.Notify( pl, "args[ 1 ] is missing!" )
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )
@@ -35,15 +35,15 @@ catherine.command.Register( {
 catherine.command.Register( {
 	command = "textremove",
 	syntax = "[Distance]",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		if ( !args[ 1 ] ) then args[ 1 ] = 256 end
-		local count = PLUGIN:RemoveText( pl:GetShootPos( ), args[ 1 ] )
+		local i = PLUGIN:RemoveText( pl.GetShootPos( pl ), args[ 1 ] )
 		
-		if ( count == 0 ) then
-			catherine.util.Notify( pl, "There are no texts at that location." )
+		if ( i == 0 ) then
+			catherine.util.NotifyLang( pl, "WallText_Notify_NoText" )
 		else
-			catherine.util.Notify( pl, "You have removed " .. count .. "'s texts!" )
+			catherine.util.NotifyLang( pl, "WallText_Notify_Remove", i )
 		end
 	end
 } )

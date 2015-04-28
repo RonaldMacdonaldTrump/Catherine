@@ -21,5 +21,15 @@ local PLUGIN = PLUGIN
 catherine.language.Merge( "english", {
 	[ "Staticprop_Notify_Add" ] = "You are added this entity in static props.",
 	[ "Staticprop_Notify_Remove" ] = "You are removed this entity in static props.",
-	[ "Staticprop_Notify_IsNotProp" ] = "This entity is not prop!"
+	[ "Staticprop_Notify_IsNotProp" ] = "This entity is not prop!",
+	[ "SP_Plugin_Name" ] = "Static Prop",
+	[ "SP_Plugin_Desc" ] = "Good stuff."
+} )
+
+catherine.language.Merge( "korean", {
+	[ "Staticprop_Notify_Add" ] = "당신은 이 물체를 고정식 프롭에 추가했습니다.",
+	[ "Staticprop_Notify_Remove" ] = "당신은 이 물체의 고정식 프롭 설정을 해제했습니다.",
+	[ "Staticprop_Notify_IsNotProp" ] = "이 물체는 프롭이 아닙니다!",
+	[ "SP_Plugin_Name" ] = "고정식 프롭",
+	[ "SP_Plugin_Desc" ] = "프롭이 영구적으로 저장되게 할 수 있습니다."
 } )

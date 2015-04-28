@@ -133,6 +133,9 @@ LANGUAGE.data = {
 	[ "Help_Category_Command" ] = "명령어",
 	[ "Help_Category_Plugin" ] = "플러그인",
 	
+	// Plugin
+	[ "Plugin_Value_Author" ] = "%s 에 의해 개발",
+	
 	// Storage
 	[ "Storage_Notify_HasNotSpace" ] = "이 저장소에는 공간이 없습니다!",
 	

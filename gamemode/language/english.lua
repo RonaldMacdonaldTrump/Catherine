@@ -133,6 +133,9 @@ LANGUAGE.data = {
 	[ "Help_Category_Command" ] = "Command",
 	[ "Help_Category_Plugin" ] = "Plugin",
 	
+	// Plugin
+	[ "Plugin_Value_Author" ] = "Development by %s",
+	
 	// Storage
 	[ "Storage_Notify_HasNotSpace" ] = "This storage don't have inventory space!",
 	

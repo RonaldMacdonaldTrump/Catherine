@@ -17,9 +17,19 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "Save Ammo"
+PLUGIN.name = "^SA_Plugin_Name"
 PLUGIN.author = "L7D"
-PLUGIN.desc = "Good stuff."
+PLUGIN.desc = "^SA_Plugin_Desc"
+
+catherine.language.Merge( "english", {
+	[ "SA_Plugin_Name" ] = "Save Ammo",
+	[ "SA_Plugin_Desc" ] = "Good stuff."
+} )
+
+catherine.language.Merge( "korean", {
+	[ "SA_Plugin_Name" ] = "탄약 저장",
+	[ "SA_Plugin_Desc" ] = "플레이어의 탄약을 저장합니다."
+} )
 
 if ( CLIENT ) then return end
 
@@ -53,7 +63,7 @@ function PLUGIN:PostCharacterSave( pl )
 	local tab = { }
 	
 	for k, v in pairs( Ammo_Types ) do
-		local ammoCount = pl:GetAmmoCount( v )
+		local ammoCount = pl.GetAmmoCount( pl, v )
 		
 		if ( ammoCount > 0 ) then
 			tab[ v ] = ammoCount
@@ -64,10 +74,10 @@ function PLUGIN:PostCharacterSave( pl )
 end
 
 function PLUGIN:PlayerSpawnedInCharacter( pl )
-	pl:RemoveAllAmmo( )
+	pl.RemoveAllAmmo( pl )
 
 	for k, v in pairs( catherine.character.GetCharVar( pl, "ammos", { } ) ) do
-		pl:SetAmmo( tonumber( v ) or 0, k )
+		pl.SetAmmo( pl, tonumber( v ) or 0, k )
 	end
 	
 	catherine.character.SetCharVar( pl, "ammos", nil )

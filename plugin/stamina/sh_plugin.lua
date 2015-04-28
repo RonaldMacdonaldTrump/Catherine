@@ -17,18 +17,22 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "Stamina"
+PLUGIN.name = "^ST_Plugin_Name"
 PLUGIN.author = "L7D"
-PLUGIN.desc = "Good stuff."
+PLUGIN.desc = "^ST_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "Stamina_Title" ] = "Stamina",
-	[ "Stamina_Desc" ] = "How long you can run for."
+	[ "Stamina_Desc" ] = "How long you can run for.",
+	[ "ST_Plugin_Name" ] = "Stamina",
+	[ "ST_Plugin_Desc" ] = "Good stuff."
 } )
 
 catherine.language.Merge( "korean", {
 	[ "Stamina_Title" ] = "기력",
-	[ "Stamina_Desc" ] = "높을 수록 장시간을 달릴 수 있습니다."
+	[ "Stamina_Desc" ] = "높을 수록 장시간을 달릴 수 있습니다.",
+	[ "ST_Plugin_Name" ] = "기력",
+	[ "ST_Plugin_Desc" ] = "RP 를 위한 기력 플러그인 입니다."
 } )
 
 if ( SERVER ) then
@@ -44,7 +48,7 @@ if ( SERVER ) then
 
 	function PLUGIN:Think( )
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			if ( v:GetMoveType( ) == MOVETYPE_NOCLIP ) then continue end
+			if ( v.GetMoveType( v ) == MOVETYPE_NOCLIP ) then continue end
 			
 			if ( !v.nextStaminaDown or !v.nextStaminaUp ) then
 				v.nextStaminaDown = CurTime( ) + 1
@@ -55,8 +59,8 @@ if ( SERVER ) then
 				local staminaDown = math.Clamp( catherine.character.GetCharVar( v, "stamina", 100 ) + ( -10 + math.min( ( catherine.attribute.GetProgress( v, CAT_ATT_STAMINA ) ) * 0.25, 7.5 ) ), 0, 100 )
 				
 				if ( math.Round( staminaDown ) < 5 ) then
-					v.runSpeed = v:GetRunSpeed( )
-					v:SetRunSpeed( v:GetWalkSpeed( ) )
+					v.runSpeed = v.GetRunSpeed( v )
+					v.SetRunSpeed( v, v.GetWalkSpeed( v ) )
 					catherine.attribute.AddProgress( v, CAT_ATT_STAMINA, 0.05 )
 				else
 					catherine.character.SetCharVar( v, "stamina", staminaDown )
@@ -68,7 +72,7 @@ if ( SERVER ) then
 					local staminaUp = math.Clamp( catherine.character.GetCharVar( v, "stamina", 100 ) + 5, 0, 100 )
 					
 					if ( staminaUp >= 100 ) then
-						v:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
+						v.SetRunSpeed( v, catherine.configs.playerDefaultRunSpeed )
 					end
 					
 					if ( staminaUp != catherine.character.GetCharVar( v, "stamina", 100 ) ) then

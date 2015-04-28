@@ -17,11 +17,19 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "Good Text"
-PLUGIN.author = "L7D"
-PLUGIN.desc = "Write text to wall."
-PLUGIN.textLists = PLUGIN.textLists or { }
 
-catherine.util.Include( "sh_commands.lua" )
-catherine.util.Include( "sv_plugin.lua" )
-catherine.util.Include( "cl_plugin.lua" )
+catherine.language.Merge( "english", {
+	[ "WallText_Notify_Add" ] = "You have added text to your desired location.",
+	[ "WallText_Notify_Remove" ] = "You have removed %s's texts.",
+	[ "WallText_Notify_NoText" ] = "There are no texts at that location!",
+	[ "WT_Plugin_Name" ] = "Wall Text",
+	[ "WT_Plugin_Desc" ] = "Write text to wall."
+} )
+
+catherine.language.Merge( "korean", {
+	[ "WallText_Notify_Add" ] = "해당 위치에 글씨를 추가했습니다.",
+	[ "WallText_Notify_Remove" ] = "당신은 %s개의 글씨를 지웠습니다.",
+	[ "WallText_Notify_NoText" ] = "해당 위치에는 글씨가 없습니다!",
+	[ "WT_Plugin_Name" ] = "벽 글씨",
+	[ "WT_Plugin_Desc" ] = "벽에 글씨를 쓸 수 있습니다."
+} )

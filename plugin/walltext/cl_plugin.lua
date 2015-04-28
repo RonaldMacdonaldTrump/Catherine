@@ -18,7 +18,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 local PLUGIN = PLUGIN
 
-netstream.Hook( "catherine.plugin.goodtext.SyncText", function( data )
+netstream.Hook( "catherine.plugin.walltext.SyncText", function( data )
 	local index = data.index
 	
 	if ( !PLUGIN.textLists[ index ] or ( PLUGIN.textLists[ index ] and PLUGIN.textLists[ index ].text != data.text ) ) then
@@ -26,7 +26,7 @@ netstream.Hook( "catherine.plugin.goodtext.SyncText", function( data )
 	end
 end )
 
-netstream.Hook( "catherine.plugin.goodtext.RemoveText", function( data )
+netstream.Hook( "catherine.plugin.walltext.RemoveText", function( data )
 	if ( !PLUGIN.textLists[ data ] ) then return end
 	
 	PLUGIN.textLists[ data ] = nil
@@ -54,6 +54,7 @@ function PLUGIN:PostDrawTranslucentRenderables( )
 	
 	for k, v in pairs( self.textLists ) do
 		local a = catherine.util.GetAlphaFromDistance( pos, v.pos, 1000 )
+		
 		if ( a > 0 ) then
 			cam.Start3D2D( v.pos, v.ang, v.size or 0.25 )
 				v.object:Draw( 0, 0, 1, 1, a )
