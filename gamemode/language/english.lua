@@ -127,6 +127,11 @@ LANGUAGE.data = {
 	
 	// Help
 	[ "Help_UI_Title" ] = "Help",
+	[ "Help_Category_Flag" ] = "Flag",
+	[ "Help_Category_Credit" ] = "Credit",
+	[ "Help_Category_Changelog" ] = "Change log",
+	[ "Help_Category_Command" ] = "Command",
+	[ "Help_Category_Plugin" ] = "Plugin",
 	
 	// Storage
 	[ "Storage_Notify_HasNotSpace" ] = "This storage don't have inventory space!",

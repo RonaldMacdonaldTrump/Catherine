@@ -20,9 +20,7 @@ catherine.flag = catherine.flag or { lists = { } }
 local META = FindMetaTable( "Player" )
 
 function catherine.flag.Register( id, desc, flagTable )
-	if ( !flagTable ) then
-		flagTable = { }
-	end
+	flagTable = flagTable or { }
 	
 	table.Merge( flagTable, {
 		id = id,
@@ -157,16 +155,21 @@ if ( SERVER ) then
 	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.flag.PlayerSpawnedInCharacter", catherine.flag.PlayerSpawnedInCharacter )
 else
-	netstream.Hook( "catherine.flag.BuildHelp", function( data )
-		local html = [[<b>Flags</b><br>]]
+	local function rebuildFlag( )
+		local title_flag = LANG( "Help_Category_Flag" )
+		local html = [[<b>]] .. title_flag .. [[</b><br>]]
 		
 		for k, v in pairs( catherine.flag.GetAll( ) ) do
-			local col = catherine.flag.Has( v.id ) and ( "<font color=\"green\">&#10004;</font>" ) or ( "<font color=\"red\">&#10005;</font>" )
+			local col = catherine.flag.Has( k ) and ( "<font color=\"green\">&#10004;</font>" ) or ( "<font color=\"red\">&#10005;</font>" )
 
-			html = html .. "<p>" .. col .. "<b> " .. v.id .. "</b><br>" .. v.desc .. "<br>"
+			html = html .. "<p>" .. col .. "<b> " .. k .. "</b><br>" .. catherine.util.StuffLanguage( v.desc ) .. "<br>"
 		end
 
-		catherine.help.Register( CAT_HELP_HTML, "Flags", html )
+		catherine.help.Register( CAT_HELP_HTML, title_flag, html )
+	end
+	
+	netstream.Hook( "catherine.flag.BuildHelp", function( data )
+		rebuildFlag( )
 	end )
 	
 	function catherine.flag.Has( id )
@@ -176,4 +179,10 @@ else
 	function META:HasFlag( id )
 		return catherine.flag.Has( id )
 	end
+	
+	function catherine.flag.LanguageChanged( )
+		rebuildFlag( )
+	end
+
+	hook.Add( "LanguageChanged", "catherine.flag.LanguageChanged", catherine.flag.LanguageChanged )
 end

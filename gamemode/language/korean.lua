@@ -127,6 +127,11 @@ LANGUAGE.data = {
 	
 	// Help
 	[ "Help_UI_Title" ] = "도움 자료",
+	[ "Help_Category_Flag" ] = "플래그",
+	[ "Help_Category_Credit" ] = "제작자",
+	[ "Help_Category_Changelog" ] = "업데이트 로그",
+	[ "Help_Category_Command" ] = "명령어",
+	[ "Help_Category_Plugin" ] = "플러그인",
 	
 	// Storage
 	[ "Storage_Notify_HasNotSpace" ] = "이 저장소에는 공간이 없습니다!",
