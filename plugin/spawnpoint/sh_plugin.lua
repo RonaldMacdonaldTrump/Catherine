@@ -17,9 +17,9 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "Spawnpoint"
+PLUGIN.name = "^SPP_Plugin_Name"
 PLUGIN.author = "L7D"
-PLUGIN.desc = "Good stuff."
+PLUGIN.desc = "^SPP_Plugin_Desc"
 
 catherine.util.Include( "sh_language.lua" )
 catherine.util.Include( "sv_plugin.lua" )
@@ -27,7 +27,7 @@ catherine.util.Include( "sv_plugin.lua" )
 catherine.command.Register( {
 	command = "spawnpointadd",
 	syntax = "[Faction Name]",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			local factionTable = catherine.faction.FindByName( args[ 1 ] )
@@ -55,7 +55,7 @@ catherine.command.Register( {
 catherine.command.Register( {
 	command = "spawnpointremove",
 	syntax = "[Range]",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		local rad = math.max( tonumber( args[ 1 ] or "" ) or 140, 8 )
 		local pos = pl.GetPos( pl )
@@ -63,7 +63,7 @@ catherine.command.Register( {
 		local i = 0
 
 		for k, v in pairs( PLUGIN.lists[ map ] ) do
-			if ( v:Distance( pos ) <= rad ) then
+			if ( catherine.util.CalcDistanceByPos( v, pos ) <= rad ) then
 				i = i + 1
 				table.remove( PLUGIN.lists[ map ], k )
 			end

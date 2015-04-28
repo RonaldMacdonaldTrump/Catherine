@@ -53,7 +53,7 @@ end
 hook.CallBackup = hook.CallBackup or hook.Call
 
 function hook.Call( name, gm, ... )
-	for k, v in pairs( catherine.plugin and catherine.plugin.GetAll( ) or { } ) do
+	for k, v in pairs( catherine.plugin.GetAll( ) ) do
 		if ( !v[ name ] ) then continue end
 		local success, result = pcall( v[ name ], v, ... )
 		
@@ -62,7 +62,10 @@ function hook.Call( name, gm, ... )
 			
 			return result
 		else
-			// catherine.sphynX.Do( )
+			catherine.bugX.Work( CAT_BUG_X_FLAG_PLUGIN, {
+				pluginID = k,
+				hookID = name
+			} )
 			ErrorNoHalt( "[CAT ERROR] SORRY, On the plugin <" .. k .. ">'s hooks <" .. name .. "> has a critical error ...\n" .. result .. "\n" )
 		end
 	end
@@ -75,7 +78,6 @@ function hook.Call( name, gm, ... )
 				return result
 			end
 		else
-			// catherine.sphynX.Do( )
 			ErrorNoHalt( "[CAT ERROR] SORRY, Schema hooks <" .. name .. "> has a critical error ...\n" .. result .. "\n" )
 		end
 	end

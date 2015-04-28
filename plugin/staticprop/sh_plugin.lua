@@ -17,17 +17,17 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "Static Prop"
+PLUGIN.name = "^SP_Plugin_Name"
 PLUGIN.author = "L7D"
-PLUGIN.desc = "Good stuff."
+PLUGIN.desc = "^SP_Plugin_Desc"
 
 catherine.util.Include( "sh_language.lua" )
 
 catherine.command.Register( {
 	command = "staticprop",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
-		local ent = pl:GetEyeTraceNoCursor( ).Entity
+		local ent = pl.GetEyeTraceNoCursor( pl ).Entity
 
 		if ( IsValid( ent ) ) then
 			if ( catherine.entity.IsProp( ent ) and !catherine.entity.IsDoor( ent ) ) then
@@ -55,7 +55,8 @@ function PLUGIN:DataSave( )
 	local data = { }
 	
 	for k, v in pairs( ents.GetAll( ) ) do
-		if ( !v:GetNetVar( "isStatic" ) ) then continue end
+		if ( !v.GetNetVar( v, "isStatic" ) ) then continue end
+		
 		data[ #data + 1 ] = v
 	end
 	

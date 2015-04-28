@@ -28,6 +28,7 @@ LANGUAGE.data = {
 	
 	// Cash
 	[ "Cash_UI_HasStr" ] = "You have a %s " .. catherine.configs.cashName ..".",
+	[ "Cash_UI_TargetHasStr" ] = "This guy have a %s " .. catherine.configs.cashName ..".",
 	[ "Cash_Notify_Set" ] = "%s have set %s to %s",
 	[ "Cash_Notify_Give" ] = "%s have given %s to %s",
 	[ "Cash_Notify_Take" ] = "%s have taken %s from %s",
@@ -81,6 +82,13 @@ LANGUAGE.data = {
 	[ "Flag_Notify_AlreadyHas" ] = "%s already has %s flag!",
 	[ "Flag_Notify_HasNot" ] = "%s hasen't %s flag!",
 	[ "Flag_Notify_NotValid" ] = "%s is not valid flag!",
+	[ "Flag_p_Desc" ] = "Access to physgun.",
+	[ "Flag_t_Desc" ] = "Access to toolgun.",
+	[ "Flag_e_Desc" ] = "Access to prop spawn.",
+	[ "Flag_x_Desc" ] = "Access to entity spawn.",
+	[ "Flag_V_Desc" ] = "Access to vehicle spawn.",
+	[ "Flag_n_Desc" ] = "Access to NPC spawn.",
+	[ "Flag_R_Desc" ] = "Access to ragdoll spawn.",
 	
 	[ "UnknownError" ] = "Unknown Error!",
 	[ "Basic_Notify_UnknownPlayer" ] = "You are not giving a valid character name!",
@@ -115,6 +123,7 @@ LANGUAGE.data = {
 	// Inventory
 	[ "Inventory_UI_Title" ] = "Inventory",
 	[ "Inventory_Notify_HasNotSpace" ] = "You don't have inventory space!",
+	[ "Inventory_Notify_HasNotSpaceTarget" ] = "Target don't have inventory space!",
 	[ "Inventory_Notify_CantDrop01" ] = "Is too far away for drop the item!",
 	[ "Inventory_Notify_DontHave" ] = "You don't have this item!",
 	[ "Inventory_Notify_IsPersistent" ] = "This item is persistent!",
@@ -127,6 +136,16 @@ LANGUAGE.data = {
 	
 	// Help
 	[ "Help_UI_Title" ] = "Help",
+	[ "Help_UI_DefPageTitle" ] = "Welcome.",
+	[ "Help_UI_DefPageDesc" ] = "Press and look at page if you want.",
+	[ "Help_Category_Flag" ] = "Flag",
+	[ "Help_Category_Credit" ] = "Credit",
+	[ "Help_Category_Changelog" ] = "Change log",
+	[ "Help_Category_Command" ] = "Command",
+	[ "Help_Category_Plugin" ] = "Plugin",
+	
+	// Plugin
+	[ "Plugin_Value_Author" ] = "Development by %s",
 	
 	// Storage
 	[ "Storage_Notify_HasNotSpace" ] = "This storage don't have inventory space!",
@@ -167,6 +186,7 @@ LANGUAGE.data = {
 	
 	// Command
 	[ "Command_Notify_NotFound" ] = "Command not found!",
+	[ "Command_DefDesc" ] = "A Command.",
 	
 	// Player
 	[ "Player_Message_Ragdolled_01" ] = "You are regaining consciousness ...",
@@ -198,6 +218,8 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetTitle" ] = "You are set title this door.",
 	[ "Door_Notify_SetStatus_True" ] = "You are set status to unbuyable this door.",
 	[ "Door_Notify_SetStatus_False" ] = "You are set status to buyable this door.",
+	[ "Door_Notify_Disabled_True" ] = "You are disable for this door.",
+	[ "Door_Notify_Disabled_False" ] = "You are enable for this door.",
 	[ "Door_Notify_DoorSpam" ] = "Do not door-spam!",
 	
 	[ "Door_Notify_ChangePer" ] = "You are changed permission for this guy.",

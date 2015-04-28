@@ -24,6 +24,7 @@ function PANEL:Init( )
 	self.helps = { }
 	self.loadingAni = 0
 	self.loadingAlpha = 0
+	self.isDef = true
 	
 	self:SetMenuSize( ScrW( ) * 0.95, ScrH( ) * 0.8 )
 	self:SetMenuName( LANG( "Help_UI_Title" ) )
@@ -43,6 +44,11 @@ function PANEL:Init( )
 	self.html:SetSize( self.w * 0.8 - 60, self.h - 45 )
 	self.html.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		
+		if ( self.isDef ) then
+			draw.SimpleText( LANG( "Help_UI_DefPageTitle" ), "catherine_normal25", w / 2, h / 2 - 25, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Help_UI_DefPageDesc" ), "catherine_normal20", w / 2, h / 2 + 10, Color( 50, 50, 50, 255 ), 1, 1 )
+		end
 	end
 
 	for k, v in pairs( catherine.help.GetAll( ) ) do
@@ -98,6 +104,7 @@ function PANEL:BuildHelps( )
 		panel:SetStrColor( Color( 50, 50, 50, 255 ) )
 		panel:SetGradientColor( Color( 255, 255, 255, 150 ) )
 		panel.Click = function( )
+			self.isDef = false
 			self:DoWork( v )
 		end
 		panel.PaintBackground = function( pnl, w, h )

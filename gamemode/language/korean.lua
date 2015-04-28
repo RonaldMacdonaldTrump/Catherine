@@ -28,6 +28,7 @@ LANGUAGE.data = {
 	
 	// Cash
 	[ "Cash_UI_HasStr" ] = "당신은 %s " .. catherine.configs.cashName .. " 를 가지고 있습니다.",
+	[ "Cash_UI_TargetHasStr" ] = "이 사람은 %s " .. catherine.configs.cashName .. " 를 가지고 있습니다.",
 	[ "Cash_Notify_Set" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 설정하셨습니다.",
 	[ "Cash_Notify_Give" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 주셨습니다.",
 	[ "Cash_Notify_Take" ] = "%s 님이 %s 만큼의 돈을 %s 님에게서 빼았었습니다.",
@@ -81,6 +82,13 @@ LANGUAGE.data = {
 	[ "Flag_Notify_AlreadyHas" ] = "%s 님은 이미 %s 플래그를 가지고 있습니다!",
 	[ "Flag_Notify_HasNot" ] = "%s 님은 %s 플래그를 가지고 있지 않습니다!",
 	[ "Flag_Notify_NotValid" ] = "%s 는 올바르지 않은 플래그 입니다!",
+	[ "Flag_p_Desc" ] = "게리건 대한 권한.",
+	[ "Flag_t_Desc" ] = "툴건에 대한 권한.",
+	[ "Flag_e_Desc" ] = "프롭 소환에 대한 권한.",
+	[ "Flag_x_Desc" ] = "엔티티 소환에 대한 권한.",
+	[ "Flag_V_Desc" ] = "차 소환에 대한 권한.",
+	[ "Flag_n_Desc" ] = "NPC 소환에 대한 권한.",
+	[ "Flag_R_Desc" ] = "레그돌 소환에 대한 권한.",
 	
 	[ "UnknownError" ] = "알 수 없는 오류가 발생하였습니다, 죄송합니다!",
 	[ "Basic_Notify_UnknownPlayer" ] = "올바른 캐릭터의 이름을 입력하세요!",
@@ -115,6 +123,7 @@ LANGUAGE.data = {
 	// Inventory
 	[ "Inventory_UI_Title" ] = "인벤토리",
 	[ "Inventory_Notify_HasNotSpace" ] = "당신의 인벤토리에 공간이 없습니다!",
+	[ "Inventory_Notify_HasNotSpaceTarget" ] = "해당 사람의 인벤토리에 공간이 없습니다!",
 	[ "Inventory_Notify_CantDrop01" ] = "그렇게 멀리 떨어트릴 수 없습니다!",
 	[ "Inventory_Notify_DontHave" ] = "당신은 이 물건을 가지고 있지 않습니다!",
 	[ "Inventory_Notify_IsPersistent" ] = "이 물건은 영구적으로 가지고 있어야 합니다!",
@@ -127,6 +136,16 @@ LANGUAGE.data = {
 	
 	// Help
 	[ "Help_UI_Title" ] = "도움 자료",
+	[ "Help_UI_DefPageTitle" ] = "도움 자료에 오신 것을 환영합니다.",
+	[ "Help_UI_DefPageDesc" ] = "왼쪽의 메뉴에서 자료를 선택하세요.",
+	[ "Help_Category_Flag" ] = "플래그",
+	[ "Help_Category_Credit" ] = "제작자",
+	[ "Help_Category_Changelog" ] = "업데이트 로그",
+	[ "Help_Category_Command" ] = "명령어",
+	[ "Help_Category_Plugin" ] = "플러그인",
+	
+	// Plugin
+	[ "Plugin_Value_Author" ] = "%s 에 의해 개발",
 	
 	// Storage
 	[ "Storage_Notify_HasNotSpace" ] = "이 저장소에는 공간이 없습니다!",
@@ -167,6 +186,7 @@ LANGUAGE.data = {
 	
 	// Command
 	[ "Command_Notify_NotFound" ] = "해당 명령어는 존재하지 않습니다!",
+	[ "Command_DefDesc" ] = "명령어 입니다.",
 	
 	// Player
 	[ "Player_Message_Ragdolled_01" ] = "정신을 차리고 있습니다 ...",
@@ -198,6 +218,8 @@ LANGUAGE.data = {
 	[ "Door_Notify_SetTitle" ] = "이 문의 글씨를 설정했습니다.",
 	[ "Door_Notify_SetStatus_True" ] = "이 문을 구매할 수 없게 하셨습니다.",
 	[ "Door_Notify_SetStatus_False" ] = "이 문을 구매할 수 있게 하셨습니다.",
+	[ "Door_Notify_Disabled_True" ] = "이 문을 비 활성화 하셨습니다.",
+	[ "Door_Notify_Disabled_False" ] = "이 문을 활성화 하셨습니다.",
 	[ "Door_Notify_DoorSpam" ] = "문장난을 하지 마세요!",
 	
 	[ "Door_Notify_ChangePer" ] = "이 사람의 권한을 바꾸셨습니다.",

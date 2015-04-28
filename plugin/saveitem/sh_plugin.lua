@@ -17,9 +17,19 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "Save Item"
+PLUGIN.name = "^SI_Plugin_Name"
 PLUGIN.author = "L7D"
-PLUGIN.desc = "Good stuff."
+PLUGIN.desc = "^SI_Plugin_Desc"
+
+catherine.language.Merge( "english", {
+	[ "SI_Plugin_Name" ] = "Save Item",
+	[ "SI_Plugin_Desc" ] = "Good stuff."
+} )
+
+catherine.language.Merge( "korean", {
+	[ "SI_Plugin_Name" ] = "아이템 저장",
+	[ "SI_Plugin_Desc" ] = "맵에 떨어져 있는 아이템을 저장합니다."
+} )
 
 if ( CLIENT ) then return end
 

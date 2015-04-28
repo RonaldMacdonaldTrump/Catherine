@@ -16,11 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.command = catherine.command or { lists = { } }
+catherine.command = catherine.command or { }
+catherine.command.lists = { }
 
-function catherine.command.Register( tab )
-	tab.syntax = tab.syntax or "[None]"
-	catherine.command.lists[ tab.command ] = tab
+function catherine.command.Register( commandTable )
+	commandTable.syntax = commandTable.syntax or "[None]"
+	commandTable.desc = commandTable.desc or "^Command_DefDesc"
+	catherine.command.lists[ commandTable.command ] = commandTable
 end
 
 function catherine.command.GetAll( )
@@ -101,9 +103,9 @@ if ( SERVER ) then
 	end
 	
 	function catherine.command.PlayerSpawnedInCharacter( pl )
-		if ( !pl.CAT_command_buildHelp or pl.CAT_command_buildHelp != pl:GetCharacterID( ) ) then
+		if ( !pl.CAT_command_buildHelp or pl.CAT_command_buildHelp != pl.GetCharacterID( pl ) ) then
 			netstream.Start( pl, "catherine.command.BuildHelp" )
-			pl.CAT_command_buildHelp = pl:GetCharacterID( )
+			pl.CAT_command_buildHelp = pl.GetCharacterID( pl )
 		end
 	end
 	
@@ -113,18 +115,48 @@ if ( SERVER ) then
 		catherine.command.Run( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
-	netstream.Hook( "catherine.command.BuildHelp", function( data )
-		local html = [[<b>Commands</b><br>]]
-	
+	local function rebuildCommand( )
+		local title_command = LANG( "Help_Category_Command" )
+		local html = [[<b>]] .. title_command .. [[</b><br>]]
+		local pl = LocalPlayer( )
+		
 		for k, v in pairs( catherine.command.GetAll( ) ) do
-			if ( v.canRun and v.canRun( LocalPlayer( ), v.command ) == false ) then continue end
-			html = html .. "<p><b>&#10022; " .. v.command .. "</b><br>" .. v.syntax .. "<br>"
+			if ( v.canRun and v.canRun( pl, k ) == false ) then continue end
+			
+			html = html .. "<p><b>&#10022; " .. k .. "</b><br>" .. v.syntax .. "<br>" .. catherine.util.StuffLanguage( v.desc ) .. "<br>"
 		end
 		
-		catherine.help.Register( CAT_HELP_HTML, "Commands", html )
+		catherine.help.Register( CAT_HELP_HTML, title_command, html )
+	end
+	
+	netstream.Hook( "catherine.command.BuildHelp", function( data )
+		rebuildCommand( )
 	end )
 	
 	function catherine.command.Run( id, args )
 		netstream.Start( "catherine.command.Run", { id, args } )
 	end
+	
+	function catherine.command.GetMatchCommands( text )
+		local commands = { }
+		local sub = 0
+		text = text.sub( text, 2 )
+		
+		for k, v in pairs( catherine.command.GetAll( ) ) do
+			if ( catherine.util.CheckStringMatch( k, text ) ) then
+				commands[ #commands + 1 ] = v
+				sub = #text
+			end
+		end
+		
+		return commands, sub
+	end
+	
+	function catherine.command.LanguageChanged( )
+		rebuildCommand( )
+	end
+
+	hook.Add( "LanguageChanged", "catherine.command.LanguageChanged", catherine.command.LanguageChanged )
+	
+	rebuildCommand( )
 end

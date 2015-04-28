@@ -116,7 +116,7 @@ function GM:PostDrawTranslucentRenderables( depth, skybox )
 	if ( depth or skybox ) then return end
 
 	for k, v in pairs( ents.FindInSphere( LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 ) ) do
-		if ( !IsValid( v ) or !catherine.entity.IsDoor( v ) ) then continue end
+		if ( !IsValid( v ) or !catherine.entity.IsDoor( v ) or catherine.door.IsDoorDisabled( v ) ) then continue end
 		
 		hook.Run( "DrawDoorText", v, v.GetPos( v ), v.GetAngles( v ) )
 	end
@@ -131,6 +131,7 @@ function GM:PlayerBindPress( pl, code, pressed )
 end
 
 function GM:DrawDoorText( ent, pos, ang )
+	if ( catherine.door.IsDoorDisabled( ent ) ) then return end
 	local a = catherine.util.GetAlphaFromDistance( ent.GetPos( ent ), LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 )
 
 	if ( math.Round( a ) <= 0 ) then
@@ -158,10 +159,6 @@ function GM:DrawDoorText( ent, pos, ang )
 	local longH = titleH + descScale + 8
 	
 	cam.Start3D2D( data.pos, data.ang, titleScale )
-		surface.SetDrawColor( 0, 0, 0, a * 1.5 )
-		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0 - longW / 2, 0 - 40, longW, longH + 70 )
-		
 		surface.SetDrawColor( 255, 255, 255, a )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
 		surface.DrawTexturedRect( 0 - longW / 2, 0 - 40, longW, 1 )
@@ -174,10 +171,6 @@ function GM:DrawDoorText( ent, pos, ang )
 	cam.End3D2D( )
 	
 	cam.Start3D2D( data.posBack, data.angBack, titleScale )
-		surface.SetDrawColor( 0, 0, 0, a * 1.5 )
-		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0 - longW / 2, 0 - 40, longW, longH + 70 )
-		
 		surface.SetDrawColor( 255, 255, 255, a )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
 		surface.DrawTexturedRect( 0 - longW / 2, 0 - 40, longW, 1 )
@@ -207,7 +200,11 @@ function GM:FinishChat( )
 end
 
 function GM:DrawEntityTargetID( pl, ent, a )
-	if ( !ent.IsPlayer( ent ) ) then return end
+	if ( !ent.IsPlayer( ent ) and ent.GetClass( ent ) == "prop_ragdoll" ) then
+		ent = ent.GetNetVar( ent, "player" )
+	end
+	if ( !IsValid( ent ) or !ent.IsPlayer( ent ) ) then return end
+	
 	local pos = toscreen( ent.LocalToWorld( ent, ent.OBBCenter( ent ) ) + OFFSET_PLAYER )
 	local x, y = pos.x, pos.y - 100
 	local name, desc = hook.Run( "GetPlayerInformation", pl, ent, true )

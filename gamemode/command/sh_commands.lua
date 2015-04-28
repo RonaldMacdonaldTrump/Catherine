@@ -381,15 +381,19 @@ catherine.command.Register( {
 	command = "doorsetstatus",
 	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
-		if ( args[ 1 ] ) then
-			local success, langKey, par = catherine.door.SetDoorStatus( pl, pl:GetEyeTrace( 70 ).Entity )
-			
-			if ( success ) then
-				catherine.util.NotifyLang( pl, langKey )
-			end
-		else
-			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
-		end
+		local success, langKey, par = catherine.door.SetDoorStatus( pl, pl.GetEyeTrace( pl, 70 ).Entity )
+		
+		catherine.util.NotifyLang( pl, langKey )
+	end
+} )
+
+catherine.command.Register( {
+	command = "doorsetactive",
+	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	runFunc = function( pl, args )
+		local success, langKey, par = catherine.door.SetDoorActive( pl, pl.GetEyeTrace( pl, 70 ).Entity )
+		
+		catherine.util.NotifyLang( pl, langKey )
 	end
 } )
 

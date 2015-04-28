@@ -16,18 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.sphynX = catherine.sphynX or { }
-CAT_SPHYN_X_FLAG_PLUGIN = 1
-CAT_SPHYN_X_FLAG_SCHEMA = 2
-CAT_SPHYN_X_FLAG_FRAMEWORK = 3
+local PLUGIN = PLUGIN
+PLUGIN.name = "^WT_Plugin_Name"
+PLUGIN.author = "L7D"
+PLUGIN.desc = "^WT_Plugin_Desc"
+PLUGIN.textLists = PLUGIN.textLists or { }
 
-if ( SERVER ) then
-	catherine.sphynX.buffer = catherine.sphynX.buffer or { }
-	
-	function catherine.sphynX.Do( flag, workTable, func )
-	
-	
-	end
-else
-
-end
+catherine.util.Include( "sh_language.lua" )
+catherine.util.Include( "sh_commands.lua" )
+catherine.util.Include( "sv_plugin.lua" )
+catherine.util.Include( "cl_plugin.lua" )

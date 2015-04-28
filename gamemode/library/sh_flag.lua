@@ -20,9 +20,7 @@ catherine.flag = catherine.flag or { lists = { } }
 local META = FindMetaTable( "Player" )
 
 function catherine.flag.Register( id, desc, flagTable )
-	if ( !flagTable ) then
-		flagTable = { }
-	end
+	flagTable = flagTable or { }
 	
 	table.Merge( flagTable, {
 		id = id,
@@ -50,7 +48,7 @@ function catherine.flag.GetAllToString( )
 	return flags
 end
 
-catherine.flag.Register( "p", "Access to physgun.", {
+catherine.flag.Register( "p", "^Flag_p_Desc", {
 	onSpawn = function( pl )
 		pl:Give( "weapon_physgun" )
 	end,
@@ -61,7 +59,7 @@ catherine.flag.Register( "p", "Access to physgun.", {
 		pl:StripWeapon( "weapon_physgun" )
 	end
 } )
-catherine.flag.Register( "t", "Access to toolgun.", {
+catherine.flag.Register( "t", "^Flag_t_Desc", {
 	onSpawn = function( pl )
 		pl:Give( "gmod_tool" )
 	end,
@@ -72,11 +70,11 @@ catherine.flag.Register( "t", "Access to toolgun.", {
 		pl:StripWeapon( "gmod_tool" )
 	end
 } )
-catherine.flag.Register( "e", "Access to prop spawn." )
-catherine.flag.Register( "x", "Access to entity spawn." )
-catherine.flag.Register( "V", "Access to vehicle spawn." )
-catherine.flag.Register( "n", "Access to NPC spawn." )
-catherine.flag.Register( "R", "Access to ragdoll spawn." )
+catherine.flag.Register( "e", "^Flag_e_Desc" )
+catherine.flag.Register( "x", "^Flag_x_Desc" )
+catherine.flag.Register( "V", "^Flag_V_Desc" )
+catherine.flag.Register( "n", "^Flag_n_Desc" )
+catherine.flag.Register( "R", "^Flag_R_Desc" )
 
 if ( SERVER ) then
 	function catherine.flag.Give( pl, flagID )
@@ -144,10 +142,13 @@ if ( SERVER ) then
 	end
 	
 	function catherine.flag.PlayerSpawnedInCharacter( pl )
-		for k, v in pairs( catherine.flag.GetAll( ) ) do
-			if ( !catherine.flag.Has( pl, v.id ) or !v.onSpawn ) then continue end
-			v.onSpawn( pl )
-		end
+		timer.Simple( 0.5, function( )
+			for k, v in pairs( catherine.flag.GetAll( ) ) do
+				if ( !catherine.flag.Has( pl, v.id ) or !v.onSpawn ) then continue end
+				
+				v.onSpawn( pl )
+			end
+		end )
 
 		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl.GetCharacterID( pl ) ) then
 			netstream.Start( pl, "catherine.flag.BuildHelp" )
@@ -157,16 +158,21 @@ if ( SERVER ) then
 	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.flag.PlayerSpawnedInCharacter", catherine.flag.PlayerSpawnedInCharacter )
 else
-	netstream.Hook( "catherine.flag.BuildHelp", function( data )
-		local html = [[<b>Flags</b><br>]]
+	local function rebuildFlag( )
+		local title_flag = LANG( "Help_Category_Flag" )
+		local html = [[<b>]] .. title_flag .. [[</b><br>]]
 		
 		for k, v in pairs( catherine.flag.GetAll( ) ) do
-			local col = catherine.flag.Has( v.id ) and ( "<font color=\"green\">&#10004;</font>" ) or ( "<font color=\"red\">&#10005;</font>" )
+			local col = catherine.flag.Has( k ) and ( "<font color=\"green\">&#10004;</font>" ) or ( "<font color=\"red\">&#10005;</font>" )
 
-			html = html .. "<p>" .. col .. "<b> " .. v.id .. "</b><br>" .. v.desc .. "<br>"
+			html = html .. "<p>" .. col .. "<b> " .. k .. "</b><br>" .. catherine.util.StuffLanguage( v.desc ) .. "<br>"
 		end
 
-		catherine.help.Register( CAT_HELP_HTML, "Flags", html )
+		catherine.help.Register( CAT_HELP_HTML, title_flag, html )
+	end
+	
+	netstream.Hook( "catherine.flag.BuildHelp", function( data )
+		rebuildFlag( )
 	end )
 	
 	function catherine.flag.Has( id )
@@ -175,5 +181,15 @@ else
 	
 	function META:HasFlag( id )
 		return catherine.flag.Has( id )
+	end
+	
+	function catherine.flag.LanguageChanged( )
+		rebuildFlag( )
+	end
+
+	hook.Add( "LanguageChanged", "catherine.flag.LanguageChanged", catherine.flag.LanguageChanged )
+	
+	if ( IsValid( LocalPlayer( ) ) ) then
+		rebuildFlag( )
 	end
 end

@@ -18,6 +18,17 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.plugin = catherine.plugin or { lists = { } }
 
+local function rebuildPlugin( )
+	local title_plugin = LANG( "Help_Category_Plugin" )
+	local html = [[<b>]] .. title_plugin .. [[</b><br>]]
+			
+	for k, v in pairs( catherine.plugin.GetAll( ) ) do
+		html = html .. "<p><b>&#10022; " .. catherine.util.StuffLanguage( v.name ) .. "</b><br>" .. catherine.util.StuffLanguage( v.desc ) .. "<br>" .. LANG( "Plugin_Value_Author", v.author ) .. "<br>"
+	end
+		
+	catherine.help.Register( CAT_HELP_HTML, title_plugin, html )
+end
+
 function catherine.plugin.Include( dir )
 	local _, folders = file.Find( dir .. "/plugin/*", "LUA" )
 	
@@ -54,20 +65,14 @@ function catherine.plugin.Include( dir )
 			
 			catherine.plugin.lists[ v ] = PLUGIN
 		else
-			MsgC( Color( 255, 255, 0 ), "[CAT ERROR] SORRY, The plugin <test> are do not have files named sh_plugin.lua, failed to loading it ...\n" )
+			MsgC( Color( 255, 255, 0 ), "[CAT ERROR] SORRY, The plugin <" .. v .. "> are do not have files named sh_plugin.lua, failed to loading it ...\n" )
 		end
 		
 		PLUGIN = nil
 	end
 	
 	if ( CLIENT ) then
-		local html = [[<b>Plugins</b><br>]]
-			
-		for k, v in pairs( catherine.plugin.GetAll( ) ) do
-			html = html .. "<p><b>&#10022; " .. v.name .. "</b><br>" .. v.desc .. "<br>By " .. v.author .. "<br>"
-		end
-			
-		catherine.help.Register( CAT_HELP_HTML, "Plugins", html )
+		rebuildPlugin( )
 	end
 end
 
@@ -89,3 +94,11 @@ end
 function catherine.plugin.Get( id )
 	return catherine.plugin.lists[ id ]
 end
+
+if ( SERVER ) then return end
+
+function catherine.plugin.LanguageChanged( )
+	rebuildPlugin( )
+end
+
+hook.Add( "LanguageChanged", "catherine.plugin.LanguageChanged", catherine.plugin.LanguageChanged )

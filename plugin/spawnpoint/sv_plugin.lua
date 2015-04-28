@@ -47,5 +47,5 @@ function PLUGIN:PlayerSpawnedInCharacter( pl )
 	if ( !pos ) then return end
 	
 	pos.z = pos.z + 10
-	pl:SetPos( pos )
+	pl.SetPos( pl, pos )
 end
