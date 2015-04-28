@@ -40,24 +40,25 @@ function GM:HUDShouldDraw( name )
 	return true
 end
 
+function GM:ContextMenuOpen( )
+	return false
+end
+
 function GM:HUDPaintBackground( )
 	local lp = LocalPlayer( )
-	if ( !lp.IsNoclipping( lp ) or !lp.IsAdmin( lp ) ) then return end
+	if ( !lp.IsAdmin( lp ) or !lp.IsNoclipping( lp ) ) then return end
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( lp == v ) then continue end
-		
 		local pos = toscreen( v.LocalToWorld( v, v.OBBCenter( v ) + OFFSET_AD_ESP ) )
 
-		draw.SimpleText( v.Name( v ), "catherine_normal20", pos.x, pos.y, Color( 255, 255, 255, 255 ), 1, 1 )
-		draw.SimpleText( v.SteamID( v ), "catherine_normal15", pos.x, pos.y + 20, Color( 255, 255, 255, 255 ), 1, 1 )
-		draw.SimpleText( "Health : " .. v.Health( v ) .. "%", "catherine_normal15", pos.x, pos.y + 40, Color( 255, 255, 255, 255 ), 1, 1 )
-		
+		draw.SimpleText( v.Name( v ), "catherine_normal15", pos.x, pos.y, team.GetColor( v.Team( v ) ), 1, 1 )
+
 		hook.Run( "AdminESPDrawed", lp, v, pos.x, pos.y )
 	end
 end
 
-function GM:SpawnMenuEnabled( )
+function GM:SpawnMenuOpen( )
 	return LocalPlayer( ).IsAdmin( LocalPlayer( ) )
 end
 
@@ -72,6 +73,7 @@ function GM:CalcView( pl, pos, ang, fov )
 	end
 
 	local ent = Entity( pl.GetNetVar( pl, "ragdollEnt", 0 ) )
+	
 	if ( IsValid( ent ) and catherine.player.IsRagdolled( pl ) ) then
 		local index = ent.LookupAttachment( ent, "eyes" )
 		local view = { }
@@ -123,7 +125,7 @@ function GM:PostDrawTranslucentRenderables( depth, skybox )
 end
 
 function GM:PlayerBindPress( pl, code, pressed )
-	if ( code:find( "messagemode" ) and pressed ) then
+	if ( code.find( code, "messagemode" ) and pressed ) then
 		catherine.chat.SetStatus( true )
 		
 		return true
