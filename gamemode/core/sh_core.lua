@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 --[[
-	This code has brought in nutscript.
+	This code has brought in NutScript.
 	https://github.com/Chessnut/NutScript
 --]]
 
