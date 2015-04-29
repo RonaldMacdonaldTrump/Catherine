@@ -189,7 +189,11 @@ LANGUAGE.data = {
 	[ "Command_DefDesc" ] = "A Command.",
 	
 	// Player
-	[ "Player_Message_Ragdolled_01" ] = "You are regaining consciousness ...",
+	[ "Player_Message_Dead_HUD" ] = "This guy was dead.",
+	[ "Player_Message_Ragdolled_HUD" ] = "This guy was stunned.",
+	[ "Player_Message_Ragdolled_01" ] = "You was stunned ...",
+	[ "Player_Message_Dead_01" ] = "You are dead ...",
+	[ "Player_Message_GettingUp" ] = "You are regaining consciousness ...",
 	[ "Player_Message_HasNotPermission" ] = "You don't have permission!",
 	[ "Player_Message_UnTie" ] = "Press 'Use' to untie.",
 	[ "Player_Message_TiedBlock" ] = "You can not do this when tied.",
@@ -246,6 +250,7 @@ LANGUAGE.data = {
 	// Option
 	[ "Option_UI_Title" ] = "Option",
 	[ "Option_Category_01" ] = "Framework Settings",
+	[ "Option_Category_02" ] = "Development",
 
 	[ "Option_Str_BAR_Name" ] = "Show Bar",
 	[ "Option_Str_BAR_Desc" ] = "Displays the Bar.",

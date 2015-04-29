@@ -52,14 +52,6 @@ function catherine.faction.GetPlayerUsableFaction( pl )
 	return factions
 end
 
-function catherine.faction.FindByName( name )
-	for k, v in pairs( catherine.faction.GetAll( ) ) do
-		if ( v.name == name ) then
-			return v
-		end
-	end
-end
-
 function catherine.faction.FindByID( id )
 	for k, v in pairs( catherine.faction.GetAll( ) ) do
 		if ( v.uniqueID == id ) then

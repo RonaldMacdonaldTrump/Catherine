@@ -72,19 +72,20 @@ function GM:CalcView( pl, pos, ang, fov )
 		return data
 	end
 
-	local ent = Entity( pl.GetNetVar( pl, "ragdollEnt", 0 ) )
-	
-	if ( IsValid( ent ) and catherine.player.IsRagdolled( pl ) ) then
+	local ent = Entity( pl.GetNetVar( pl, "ragdollIndex", 0 ) )
+
+	if ( IsValid( ent ) and ent.GetClass( ent ) == "prop_ragdoll" and catherine.player.IsRagdolled( pl ) ) then
 		local index = ent.LookupAttachment( ent, "eyes" )
 		local view = { }
 		
-		if ( !index ) then return end
-		local data = ent.GetAttachment( ent, index )
-		
-		view.origin = data and data.Pos
-		view.angles = data and data.Ang
-		
-		return view
+		if ( index ) then
+			local data = ent.GetAttachment( ent, index )
+			
+			view.origin = data and data.Pos
+			view.angles = data and data.Ang
+			
+			return view
+		end
 	end
 end
 
@@ -202,33 +203,50 @@ function GM:FinishChat( )
 end
 
 function GM:DrawEntityTargetID( pl, ent, a )
-	if ( !ent.IsPlayer( ent ) and ent.GetClass( ent ) == "prop_ragdoll" ) then
-		ent = ent.GetNetVar( ent, "player" )
+	if ( ent.GetNetVar( ent, "noDrawOriginal" ) == true or ( ent.IsPlayer( ent ) and catherine.player.IsRagdolled( ent ) ) ) then
+		return
 	end
-	if ( !IsValid( ent ) or !ent.IsPlayer( ent ) ) then return end
 	
-	local pos = toscreen( ent.LocalToWorld( ent, ent.OBBCenter( ent ) ) + OFFSET_PLAYER )
-	local x, y = pos.x, pos.y - 100
-	local name, desc = hook.Run( "GetPlayerInformation", pl, ent, true )
+	local entPlayer = ent
 	
-	draw.SimpleText( name, "catherine_normal25", x, y, Color( 255, 255, 255, a ), 1, 1 )
-	y = y + 20
+	if ( ent.GetClass( ent ) == "prop_ragdoll" ) then
+		entPlayer = ent.GetNetVar( ent, "player" )
+	end
 	
-	draw.SimpleText( desc, "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
-	y = y + 20
+	if ( !IsValid( entPlayer ) or !entPlayer.IsPlayer( entPlayer ) ) then return end
 
-	if ( catherine.player.IsTied( ent ) ) then
+	local index = ent.LookupBone( ent, "ValveBiped.Bip01_Head1" )
+
+	if ( index ) then
+		local pos = toscreen( ent.GetBonePosition( ent, index ) )
+		local x, y = pos.x, pos.y - 100
+		local name, desc = hook.Run( "GetPlayerInformation", pl, entPlayer, true )
+		local col = team.GetColor( entPlayer.Team( entPlayer ) )
+		
+		draw.SimpleText( name, "catherine_normal20", x, y, Color( col.r, col.g, col.b, a ), 1, 1 )
+		y = y + 20
+		
+		draw.SimpleText( desc, "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		y = y + 20
+
+		hook.Run( "PlayerInformationDraw", pl, entPlayer, x, y, a )
+	end
+end
+
+function GM:PlayerInformationDraw( pl, target, x, y, a )
+	if ( catherine.player.IsRagdolled( target ) ) then
+		draw.SimpleText( LANG( "Player_Message_Ragdolled_HUD" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		y = y + 20
+	end
+	
+	if ( catherine.player.IsTied( target ) ) then
 		draw.SimpleText( LANG( "Player_Message_UnTie" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		y = y + 20
 	end
 	
-	hook.Run( "PlayerInformationDraw", pl, ent, x, y, a )
-end
-
-function GM:PlayerInformationDraw( pl, target, x, y, a )
-	if ( target.Alive( target ) ) then return end
-	
-	draw.SimpleText( ( target.GetGender( target ) == "male" and "He" or "She" ) .. " was going to hell.", "catherine_normal15", x, y, Color( 255, 150, 150, a ), 1, 1 )
+	if ( !target.Alive( target ) ) then
+		draw.SimpleText( LANG( "Player_Message_Dead_HUD" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+	end
 end
 
 function GM:GetUnknownTargetName( pl, target )
@@ -255,7 +273,7 @@ function GM:ProgressEntityCache( pl )
 		
 		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k.GetPos( k ), pl.GetPos( pl ), 256 ) )
 		k.alpha = a
-		
+
 		if ( math.Round( a ) <= 0 ) then
 			catherine.entityCaches[ k ] = nil
 			continue
@@ -263,9 +281,9 @@ function GM:ProgressEntityCache( pl )
 		
 		if ( k.DrawEntityTargetID ) then
 			k:DrawEntityTargetID( pl, k, a )
+		else
+			hook.Run( "DrawEntityTargetID", pl, k, a )
 		end
-		
-		hook.Run( "DrawEntityTargetID", pl, k, a )
 	end
 end
 
@@ -343,45 +361,6 @@ function GM:RenderScreenspaceEffects( )
 
 	DrawColorModify( tab )
 end
---[[
-function GM:PostPlayerDraw( pl )
-	if ( !IsValid( pl ) or !pl.IsCharacterLoaded( pl ) ) then return end
-	local wep = pl.GetActiveWeapon( pl )
-	local curClass = ( IsValid( wep ) and wep:GetClass( ):lower( ) or "" )
-	
-	for k, v in pairs( pl:GetWeapons( ) ) do
-		if ( !IsValid( v ) ) then continue end
-		local wepClass = v:GetClass( ):lower( )
-		local info = WEAPON_PLAYERDRAW_INFO[ wepClass ]
-		if ( !info ) then continue end
-		
-		pl.CAT_weapon_Nyandraw = pl.CAT_weapon_Nyandraw or { }
-
-		if ( !pl.CAT_weapon_Nyandraw[ wepClass ] or !IsValid( pl.CAT_weapon_Nyandraw[ wepClass ] ) ) then
-			pl.CAT_weapon_Nyandraw[ wepClass ] = ClientsideModel( info.model, RENDERGROUP_TRANSLUCENT )
-			pl.CAT_weapon_Nyandraw[ wepClass ]:SetNoDraw( true )
-		else
-			local drawEnt = pl.CAT_weapon_Nyandraw[ wepClass ]
-			if ( !IsValid( drawEnt ) ) then continue end
-			local index = pl:LookupBone( info.bone )
-
-			if ( index and index > 0 ) then
-				if ( curClass == wepClass ) then continue end
-				local bonePos, boneAng = pl:GetBonePosition( index )
-				drawEnt:SetRenderOrigin( bonePos )
-				drawEnt:SetRenderAngles( boneAng )
-				drawEnt:DrawModel( )
-			end
-		end
-	end
-	
-	for k, v in pairs( pl.CAT_weapon_Nyandraw or { } ) do
-		local wep = pl:GetWeapon( k )
-		if ( wep or IsValid( wep ) ) then continue end
-		v:Remove( )
-	end
-end
---]]
 
 netstream.Hook( "catherine.LoadingStatus", function( data )
 	catherine.loading.status = data[ 1 ]

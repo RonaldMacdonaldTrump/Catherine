@@ -20,6 +20,11 @@ catherine.command.Register( {
 	command = "fallover",
 	canRun = function( pl ) return pl.Alive( pl ) end,
 	runFunc = function( pl, args )
+		if ( catherine.player.IsRagdolled( pl ) ) then
+			catherine.util.Notify( pl, "You are already fallovered!" )
+			return
+		end
+		
 		if ( args[ 1 ] ) then
 			args[ 1 ] = tonumber( args[ 1 ] )
 		end

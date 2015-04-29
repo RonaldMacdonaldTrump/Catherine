@@ -87,16 +87,16 @@ if ( SERVER ) then
 	
 	function catherine.player.HealthRecoverTick( pl )
 		if ( !pl.CAT_healthRecover ) then return end
-		
+
 		if ( math.Round( pl.Health( pl ) ) >= pl.GetMaxHealth( pl ) ) then
 			pl.CAT_healthRecover = false
 			hook.Run( "HealthFullRecovered", pl )
 			return
 		end
 		
-		if ( ( pl.CAT_healthRecoverTick or CurTime( ) + 3 ) <= CurTime( ) ) then
+		if ( ( pl.CAT_healthRecoverTick or CurTime( ) ) <= CurTime( ) ) then
 			pl:SetHealth( math.Clamp( pl.Health( pl ) + 1, 0, pl.GetMaxHealth( pl ) ) )
-			pl.CAT_healthRecoverTick = CurTime( ) + 3
+			pl.CAT_healthRecoverTick = CurTime( ) + 5
 			hook.Run( "HealthRecovering", pl )
 		end
 	end
@@ -208,85 +208,64 @@ if ( SERVER ) then
 	end
 
 	function catherine.player.RagdollWork( pl, status, time )
-		if ( !status ) then
-			pl:SetNoDraw( false )
-			pl:SetNotSolid( false )
-			pl:Freeze( false )
-			pl:SetPos( IsValid( pl.ragdoll ) and pl.ragdoll.GetPos( pl.ragdoll ) or pl.GetPos( pl ) )
-			pl:SetMoveType( MOVETYPE_WALK )
-			pl:SetLocalVelocity( vector_origin )
-			pl:DropToFloor( )
-			
-			if ( IsValid( pl.ragdoll ) ) then
-				pl.ragdoll:SetNetVar( "player", nil )
+		if ( status ) then
+			if ( IsValid( pl.CAT_ragdoll ) ) then
+				pl.CAT_ragdoll:Remove( )
 			end
-			
-			for k, v in pairs( pl.GetNetVar( pl, "weps", { } ) ) do
-				pl:Give( v )
-			end
-			
-			pl:SetNetVar( "weps", nil )
-			pl:SetNetVar( "isRagdolled", nil )
-			pl:SetNetVar( "ragdollEnt", nil )
-			
-			if ( IsValid( pl.ragdoll ) ) then
-				pl.ragdoll:Remove( )
-				pl.ragdoll = nil
-			end
-			
-			return
-		end
-		
-		if ( IsValid( pl.ragdoll ) ) then
-			pl.ragdoll:Remove( )
-			pl.ragdoll = nil
-		end
-		
-		if ( !time ) then
-			catherine.util.TopNotify( pl, LANG( pl, "Player_Message_Ragdolled_01" ) )
-		end
-		
-		pl.ragdoll = ents.Create( "prop_ragdoll" )
-		pl.ragdoll:SetAngles( pl.GetAngles( pl ) )
-		pl.ragdoll:SetModel( pl.GetModel( pl ) )
-		pl.ragdoll:SetPos( pl.GetPos( pl ) )
-		pl.ragdoll:Spawn( )
-		pl.ragdoll:Activate( )
-		pl.ragdoll:SetCollisionGroup( COLLISION_GROUP_WEAPON )
-		pl.ragdoll.player = self
-		pl.ragdoll:SetNetVar( "player", pl )
-		pl.ragdoll:CallOnRemove( "RecoverPlayer", function( )
-			if ( !IsValid( pl ) ) then return end
-			
-			pl:SetNoDraw( false )
-			pl:SetNotSolid( false )
-			pl:Freeze( false )
-			pl:SetMoveType( MOVETYPE_WALK )
-			pl:SetLocalVelocity( vector_origin )
-			catherine.util.TopNotify( pl, false )
-			pl:SetNetVar( "isRagdolled", nil )
-			pl:SetNetVar( "ragdollEnt", nil )
-		end )
-		
-		local wepsBuffer = { }
-		
-		for k, v in pairs( pl.GetWeapons( pl ) or { } ) do
-			wepsBuffer[ #wepsBuffer + 1 ] = v.GetClass( v )
-		end
-		
-		pl:SetNetVar( "weps", wepsBuffer )
-		pl:StripWeapons( )
-		pl:GodDisable( )
-		pl:Freeze( true )
-		pl:SetNoDraw( true )
-		
-		pl:SetNetVar( "ragdollEnt", pl.ragdoll.EntIndex( pl.ragdoll ) )
-		pl:SetNetVar( "isRagdolled", true )
-		
-		if ( time ) then
-			catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
-				catherine.player.RagdollWork( pl, false )
+
+			local ent = ents.Create( "prop_ragdoll" )
+			ent:SetAngles( pl.GetAngles( pl ) )
+			ent:SetModel( pl.GetModel( pl ) )
+			ent:SetPos( pl.GetPos( pl ) )
+			ent:SetSkin( pl.GetSkin( pl ) )
+			ent:Spawn( )
+			ent:SetNetVar( "player", pl )
+			ent:SetCollisionGroup( COLLISION_GROUP_WEAPON )
+			ent:Activate( )
+			ent:CallOnRemove( "RecoverPlayer", function( )
+				if ( !IsValid( pl ) ) then return end
+				
+				pl:SetNetVar( "ragdollIndex", nil )
+				pl:SetNetVar( "isRagdolled", nil )
+				
+				pl:SetNotSolid( false )
+				pl:SetNoDraw( false )
+				pl:Freeze( false )
+				pl:SetMoveType( MOVETYPE_WALK )
+				pl:SetLocalVelocity( vector_origin )
+				
+				for k, v in ipairs( ent.CAT_weaponsBuffer ) do
+					pl.Give( pl, v )
+				end
 			end )
+
+			pl.CAT_ragdoll = ent
+
+			ent.CAT_weaponsBuffer = { }
+			ent.CAT_player = pl
+
+			for k, v in ipairs( pl.GetWeapons( pl ) ) do
+				ent.CAT_weaponsBuffer[ #ent.CAT_weaponsBuffer + 1 ] = v.GetClass( v )
+			end
+
+			pl:StripWeapons( )
+			pl:GodDisable( )
+			pl:Freeze( true )
+			pl:SetNotSolid( true )
+			pl:SetNoDraw( true )
+
+			pl:SetNetVar( "ragdollIndex", ent.EntIndex( ent ) )
+			pl:SetNetVar( "isRagdolled", true )
+			
+			if ( time ) then
+				catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
+					catherine.player.RagdollWork( pl )
+				end )
+			else
+				catherine.util.TopNotify( pl, LANG( pl, "Player_Message_Ragdolled_01" ) )
+			end
+		elseif ( IsValid( pl.CAT_ragdoll ) ) then
+			pl.CAT_ragdoll:Remove( )
 		end
 	end
 

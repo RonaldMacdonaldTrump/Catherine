@@ -64,6 +64,10 @@ function GM:CanLookF2( pl )
 	return true
 end
 
+function GM:CanPlayerSuicide( pl )
+	return hook.Run( "PlayerCanSuicide", pl ) or false
+end
+
 function GM:GetGameDescription( )
 	return "CAT - " .. ( Schema and Schema.Name or "Unknown" )
 end
@@ -73,6 +77,22 @@ function GM:PlayerSpray( pl )
 end
 
 function GM:PlayerSpawn( pl )
+	if ( IsValid( pl.deathBody ) ) then
+		pl.deathBody:Remove( )
+		pl.deathBody = nil
+	end
+	
+	if ( IsValid( pl.CAT_ragdoll ) ) then
+		pl.CAT_ragdoll:Remove( )
+		pl.CAT_ragdoll = nil
+	end
+	
+	if ( pl.CAT_deathSoundPlayed ) then
+		pl.CAT_deathSoundPlayed = nil
+	end
+	
+	pl:SetNetVar( "noDrawOriginal", nil )
+	
 	pl.SetNoDraw( pl, false )
 	pl.Freeze( pl, false )
 	pl.ConCommand( pl, "-duck" )
@@ -129,6 +149,10 @@ function GM:PlayerAuthed( pl )
 end
 
 function GM:PlayerDisconnected( pl )
+	if ( IsValid( pl.deathBody ) ) then
+		pl.deathBody:Remove( )
+	end
+	
 	catherine.chat.Send( pl, "disconnect" )
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has disconnected a server." )
 	
@@ -141,16 +165,42 @@ function GM:PlayerCanHearPlayersVoice( pl, target )
 	return catherine.configs.voiceAllow, catherine.configs.voice3D
 end
 
-function GM:EntityTakeDamage( pl, dmginfo )
-	if ( !pl.IsPlayer( pl ) or !dmginfo.IsBulletDamage( dmginfo ) ) then return end
+function GM:EntityTakeDamage( ent, dmginfo )
+	local entPlayer = ent
 	
-	pl.SetRunSpeed( pl, pl.GetWalkSpeed( pl ) )
+	if ( ent.GetClass( ent ) == "prop_ragdoll" ) then
+		local pl = ent.GetNetVar( ent, "player" )
+		
+		if ( IsValid( pl ) and pl.IsPlayer( pl ) ) then
+			local inflictor = dmginfo:GetInflictor( )
+			local attacker = dmginfo:GetAttacker( )
+			local amount = dmginfo:GetDamage( )
+			
+			pl.CAT_ignore_hurtSound = true
+			
+			pl:TakeDamage( amount, attacker, inflictor )
+			
+			pl.CAT_ignore_hurtSound = nil
+			
+			if ( pl.Health( pl ) <= 0 ) then
+				if ( !pl.CAT_deathSoundPlayed ) then
+					hook.Run( "PlayerDeathSound", pl, ent )
+				end
+			else
+				hook.Run( "PlayerTakeDamage", pl, attacker, ent )
+			end
+		end
+	end
 	
-	local steamID = pl.SteamID( pl )
-	timer.Remove( "Catherine.timer.RunSpamProtection_" .. steamID )
-	timer.Create( "Catherine.timer.RunSpamProtection_" .. steamID, 2, 1, function( )
-		pl.SetRunSpeed( pl, catherine.configs.playerDefaultRunSpeed )
-	end )
+	if ( ent.IsPlayer( ent ) and dmginfo.IsBulletDamage( dmginfo ) ) then
+		ent.SetRunSpeed( ent, ent.GetWalkSpeed( ent ) )
+		
+		local steamID = ent.SteamID( ent )
+		timer.Remove( "Catherine.timer.RunSpamProtection_" .. steamID )
+		timer.Create( "Catherine.timer.RunSpamProtection_" .. steamID, 2, 1, function( )
+			ent.SetRunSpeed( ent, catherine.configs.playerDefaultRunSpeed )
+		end )
+	end
 end
 
 function GM:PlayerCanFlashlight( pl )
@@ -256,7 +306,7 @@ function GM:PlayerSpawnProp( pl )
 	return pl.HasFlag( pl, "e" )
 end
 
-function GM:PlayerHurt( pl )
+function GM:PlayerTakeDamage( pl, attacker, ragdollEntity )
 	if ( pl.Health( pl ) <= 0 ) then
 		return true
 	end
@@ -282,14 +332,33 @@ function GM:PlayerHurt( pl )
 	end
 	
 	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+
+	if ( IsValid( ragdollEntity ) ) then
+		ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+		
+		return true
+	end
+
 	pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
-	hook.Run( "PlayerTakeDamage", pl )
 	
 	return true
 end
 
-function GM:PlayerDeathSound( pl )
-	pl.EmitSound( pl, hook.Run( "GetPlayerDeathSound", pl ) or "vo/npc/" .. pl.GetGender( pl ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+function GM:PlayerHurt( pl, attacker )
+	return !pl.CAT_ignore_hurtSound and hook.Run( "PlayerTakeDamage", pl, attacker ) or true
+end
+
+function GM:PlayerDeathSound( pl, ragdollEntity )
+	if ( IsValid( ragdollEntity ) ) then
+		ragdollEntity:EmitSound( hook.Run( "GetPlayerDeathSound", pl ) or "vo/npc/" .. pl.GetGender( pl ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+		pl.CAT_deathSoundPlayed = true
+		
+		return true
+	end
+	
+	pl:EmitSound( hook.Run( "GetPlayerDeathSound", pl ) or "vo/npc/" .. pl.GetGender( pl ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+	
+	pl.CAT_deathSoundPlayed = true
 	
 	return true
 end
@@ -298,14 +367,32 @@ function GM:PlayerDeathThink( pl )
 
 end
 
-function GM:PlayerDeath( pl )
-	if ( IsValid( pl.ragdoll ) ) then
-		pl.ragdoll.Remove( pl.ragdoll )
-		pl.ragdoll = nil
-	end
+function GM:DoPlayerDeath( pl )
+	pl:SetNoDraw( true )
 
-	pl.CAT_healthRecoverBool = false
-	catherine.util.ProgressBar( pl, "You are now respawning.", catherine.configs.spawnTime, function( )
+	if ( !pl.CAT_ragdoll ) then
+		pl.deathBody = ents.Create( "prop_ragdoll" )
+		pl.deathBody:SetAngles( pl.GetAngles( pl ) )
+		pl.deathBody:SetModel( pl.GetModel( pl ) )
+		pl.deathBody:SetPos( pl.GetPos( pl ) )
+		pl.deathBody:Spawn( )
+		pl.deathBody:Activate( )
+		pl.deathBody:SetCollisionGroup( COLLISION_GROUP_WEAPON )
+		pl.deathBody.player = self
+		pl.deathBody:SetNetVar( "player", pl )
+		pl.deathBody:SetNetVar( "isDeathBody", true )
+		
+		pl:SetNetVar( "ragdollIndex", pl.deathBody.EntIndex( pl.deathBody ) )
+	end
+	
+	pl:SetNetVar( "noDrawOriginal", true )
+	pl:SetNetVar( "isRagdolled", nil )
+end
+
+function GM:PlayerDeath( pl )
+	pl.CAT_healthRecover = nil
+	
+	catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Dead_01" ), catherine.configs.spawnTime, function( )
 		pl.Spawn( pl )
 	end )
 

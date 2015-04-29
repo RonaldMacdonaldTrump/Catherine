@@ -193,7 +193,7 @@ if ( SERVER ) then
 	function catherine.util.NotifyLang( pl, key, ... )
 		netstream.Start( pl, "catherine.util.Notify", { LANG( pl, key, ... ) } )
 	end
-	
+
 	function catherine.util.StuffLanguage( pl, key, ... )
 		local lang = key.Left( key, 1 ) == "^" and LANG( pl, key.sub( key, 2 ), ... ) or "-Error"
 		

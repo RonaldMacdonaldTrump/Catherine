@@ -30,7 +30,7 @@ catherine.command.Register( {
 	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
-			local factionTable = catherine.faction.FindByName( args[ 1 ] )
+			local factionTable = catherine.faction.FindByID( args[ 1 ] )
 			
 			if ( factionTable ) then
 				local map = game.GetMap( )
@@ -42,9 +42,9 @@ catherine.command.Register( {
 				
 				PLUGIN:SavePoints( )
 				
-				catherine.util.NotifyLang( pl, "Spawnpoint_Notify_Add", factionTable.name )
+				catherine.util.NotifyLang( pl, "Spawnpoint_Notify_Add", catherine.util.StuffLanguage( pl, factionTable.name ) )
 			else
-				catherine.util.NotifyLang( pl, "Faction_Notify_NotValid" )
+				catherine.util.NotifyLang( pl, "Faction_Notify_NotValid", args[ 1 ] )
 			end
 		else
 			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
@@ -63,9 +63,11 @@ catherine.command.Register( {
 		local i = 0
 
 		for k, v in pairs( PLUGIN.lists[ map ] ) do
-			if ( catherine.util.CalcDistanceByPos( v, pos ) <= rad ) then
-				i = i + 1
-				table.remove( PLUGIN.lists[ map ], k )
+			for k1, v1 in pairs( PLUGIN.lists[ map ][ k ] ) do
+				if ( catherine.util.CalcDistanceByPos( v1, pos ) <= rad ) then
+					i = i + 1
+					table.remove( PLUGIN.lists[ map ][ k ], k1 )
+				end
 			end
 		end
 		

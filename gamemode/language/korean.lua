@@ -189,7 +189,11 @@ LANGUAGE.data = {
 	[ "Command_DefDesc" ] = "명령어 입니다.",
 	
 	// Player
-	[ "Player_Message_Ragdolled_01" ] = "정신을 차리고 있습니다 ...",
+	[ "Player_Message_Dead_HUD" ] = "이 사람은 사망했습니다.",
+	[ "Player_Message_Ragdolled_HUD" ] = "이 사람은 기절했습니다.",
+	[ "Player_Message_Ragdolled_01" ] = "당신은 기절했습니다 ...",
+	[ "Player_Message_Dead_01" ] = "당신은 죽었습니다 ...",
+	[ "Player_Message_GettingUp" ] = "정신을 차리고 있습니다 ...", // You are now getting up ...
 	[ "Player_Message_HasNotPermission" ] = "당신은 권한이 없습니다!",
 	[ "Player_Message_UnTie" ] = "'사용' 키를 눌러 수갑을 풀어주세요.",
 	[ "Player_Message_TiedBlock" ] = "수갑에 묶인 상태에서는 할 수 없습니다.",
@@ -246,7 +250,8 @@ LANGUAGE.data = {
 	// Option
 	[ "Option_UI_Title" ] = "설정",
 	[ "Option_Category_01" ] = "프레임워크 설정",
-
+	[ "Option_Category_02" ] = "개발자",
+	
 	[ "Option_Str_BAR_Name" ] = "상단바 표시",
 	[ "Option_Str_BAR_Desc" ] = "상단에 있는 바를 표시합니다.",
 	
