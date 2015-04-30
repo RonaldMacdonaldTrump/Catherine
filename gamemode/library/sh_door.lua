@@ -347,7 +347,7 @@ else
 	end
 
 	--[[
-		This function has brought in Clockwork.
+		This function has brought from Clockwork.
 		https://github.com/CloudSixteen/Clockwork
 	--]]
 	function catherine.door.CalcDoorTextPos( ent, rev )
