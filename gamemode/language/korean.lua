@@ -209,6 +209,7 @@ LANGUAGE.data = {
 	[ "Door_Notify_CMD_Locked" ] = "이 문을 잠갔습니다.",
 	[ "Door_Notify_CMD_UnLocked" ] = "이 문을 잠금 해제 하였습니다.",
 	[ "Door_Notify_BuyQ" ] = "이 문을 정말로 구매하시겠습니까?",
+	[ "Door_Notify_SellQ" ] = "이 문을 정말로 판매하시겠습니까?",
 	[ "Door_Message_Locking" ] = "잠그는 중 ...",
 	[ "Door_Message_UnLocking" ] = "잠금 해제 중 ...",
 	[ "Door_Message_Buyable" ] = "이 문은 구매하실 수 있습니다.",
@@ -220,6 +221,8 @@ LANGUAGE.data = {
 	[ "Door_Notify_Buy" ] = "이 문을 구매했습니다.",
 	[ "Door_Notify_Sell" ] = "이 문을 판매했습니다.",
 	[ "Door_Notify_SetTitle" ] = "이 문의 글씨를 설정했습니다.",
+	[ "Door_Notify_SetDesc" ] = "이 문의 설명을 설정했습니다.",
+	[ "Door_Notify_SetDescHitLimit" ] = "문 설명 제한이 초과했습니다!",
 	[ "Door_Notify_SetStatus_True" ] = "이 문을 구매할 수 없게 하셨습니다.",
 	[ "Door_Notify_SetStatus_False" ] = "이 문을 구매할 수 있게 하셨습니다.",
 	[ "Door_Notify_Disabled_True" ] = "이 문을 비 활성화 하셨습니다.",
@@ -281,6 +284,9 @@ LANGUAGE.data = {
 	[ "Basic_UI_YES" ] = "네",
 	[ "Basic_UI_NO" ] = "아니오",
 	[ "Basic_Framework_Author" ] = "%s 에 의해 개발 및 디자인.",
+	
+	[ "Command_ClearDecals_Fin" ] = "맵에 있는 데칼을 모두 지웠습니다.",
+	[ "Command_SetTimeHour_Fin" ] = "당신은 RP 시간을 %s시로 설정하셨습니다."
 }
 
 catherine.language.Register( LANGUAGE )

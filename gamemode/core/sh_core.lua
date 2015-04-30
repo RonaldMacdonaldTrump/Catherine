@@ -175,30 +175,6 @@ function GM:CalcMainActivity( pl, velo )
 	end
 end
 
-function GM:PlayerNoClip( pl, bool )
-	if ( pl:IsAdmin( ) ) then
-		if ( pl:GetMoveType( ) == MOVETYPE_WALK ) then
-			pl:SetNoDraw( true )
-			pl:DrawShadow( false )
-			pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
-			
-			if ( SERVER ) then
-				pl:SetNetVar( "nocliping", true )
-			end
-		else
-			pl:SetNoDraw( false )
-			pl:DrawShadow( true )
-			pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
-			
-			if ( SERVER ) then
-				pl:SetNetVar( "nocliping", false )
-			end
-		end
-	end
-	
-	return pl:IsAdmin( )
-end
-
 function GM:DoAnimationEvent( pl, event, data )
 	local mdl = pl.GetModel( pl ):lower( )
 	local class = catherine.animation.Get( mdl )
@@ -245,18 +221,6 @@ function GM:DoAnimationEvent( pl, event, data )
 	return nil
 end
 
-function GM:GetPlayerInformation( pl, target, isFull )
-	if ( pl == target ) then
-		return pl.Name( pl ), pl:Desc( )
-	end
-	
-	if ( pl.IsKnow( pl, target ) ) then
-		return target.Name( target ), target.Desc( target )
-	end
-	
-	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target.Desc( target ) or ( string.utf8sub( target.Desc( target ), 1, 37 ) .. "..." )
-end
-
 function GM:PlayerNoClip( pl, bool )
 	local isAdmin = pl.IsAdmin( pl )
 	
@@ -272,6 +236,8 @@ function GM:PlayerNoClip( pl, bool )
 		if ( SERVER ) then
 			pl:SetNetVar( "nocliping", true )
 		end
+		
+		hook.Run( "PlayerNoclipJoined", pl )
 	else
 		pl:SetNoDraw( false )
 		pl:DrawShadow( true )
@@ -280,6 +246,8 @@ function GM:PlayerNoClip( pl, bool )
 		if ( SERVER ) then
 			pl:SetNetVar( "nocliping", false )
 		end
+		
+		hook.Run( "PlayerNoclipExited", pl )
 	end
 	
 	return isAdmin
@@ -333,12 +301,12 @@ end
 
 function GM:GetPlayerInformation( pl, target, isFull )
 	if ( pl == target ) then
-		return pl.Name( pl ), pl:Desc( )
+		return pl.Name( pl ), pl.Desc( pl )
 	end
 	
-	if ( pl:IsKnow( target ) ) then
-		return target:Name( ), target:Desc( )
+	if ( pl.IsKnow( pl, target ) ) then
+		return target.Name( target ), target.Desc( target )
 	end
 	
-	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target:Desc( ) or ( string.utf8sub( target:Desc( ), 1, 37 ) .. "..." )
+	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target.Desc( target ) or ( string.utf8sub( target.Desc( target ), 1, 37 ) .. "..." )
 end

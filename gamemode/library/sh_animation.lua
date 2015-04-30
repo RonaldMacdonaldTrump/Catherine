@@ -20,16 +20,17 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 	This code has brought from NutScript.
 	https://github.com/Chessnut/NutScript
 --]]
+
 catherine.animation = catherine.animation or { lists = { } }
 
 function catherine.animation.Register( class, mdl )
-	catherine.animation.lists[ mdl:lower( ) ] = class
+	catherine.animation.lists[ mdl.lower( mdl ) ] = class
 end
 
 function catherine.animation.Get( mdl )
-	mdl = mdl:lower( )
+	mdl = mdl.lower( mdl )
 	
-	return catherine.animation.lists[ mdl ] or ( mdl:find( "female" ) and "citizen_female" or "citizen_male" )
+	return catherine.animation.lists[ mdl ] or ( mdl.find( mdl, "female" ) and "citizen_female" or "citizen_male" )
 end
 
 local function RegisterCitizen( gender )

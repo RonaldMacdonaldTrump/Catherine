@@ -34,6 +34,9 @@ catherine.configs.characterNameMinLen = 10
 catherine.configs.characterNameMaxLen = 30
 catherine.configs.characterDescMinLen = 10
 catherine.configs.characterDescMaxLen = 54
+
+catherine.configs.doorDescMaxLen = 30
+
 catherine.configs.spaceString = "kg"
 catherine.configs.Font = "Segoe UI"
 catherine.configs.schematicViewPos = { // for rp_c18_v1!

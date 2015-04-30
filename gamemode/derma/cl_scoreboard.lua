@@ -87,8 +87,7 @@ function PANEL:RefreshPlayerLists( )
 		form:AddItem( lists )
 		
 		for k1, v1 in pairs( v ) do
-			local know = self.player:IsKnow( v1 )
-			if ( self.player == v1 ) then know = true end
+			local know = self.player == v1 and true or self.player.IsKnow( self.player, v1 )
 			
 			local panel = vgui.Create( "DPanel" )
 			panel:SetSize( lists:GetWide( ), 50 )

@@ -16,8 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.command = catherine.command or { }
-catherine.command.lists = { }
+catherine.command = catherine.command or { lists = { } }
 
 function catherine.command.Register( commandTable )
 	commandTable.syntax = commandTable.syntax or "[None]"

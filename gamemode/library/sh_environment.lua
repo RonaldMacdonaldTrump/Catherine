@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
-// 버그가 많음;
+
 catherine.environment = catherine.environment or { buffer = catherine.configs.defaultRPInformation }
 catherine.environment.TimeTick = CurTime( ) + 0.2
 local monthLen = {

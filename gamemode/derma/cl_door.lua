@@ -20,27 +20,26 @@ local PANEL = { }
 
 function PANEL:Init( )
 	catherine.vgui.door = self
-	
-	self.ent = nil
-	self.entCheck = CurTime( ) + 1
-	self.closeing = false
+
 	self.mode = 0
+	self.doorDesc = ""
+	self.doorCurLen = 0
 	
 	self.player = LocalPlayer( )
-	self.w, self.h = ScrW( ) * 0.7, ScrH( ) * 0.6
-
+	self.w, self.h = ScrW( ) * 0.5, ScrH( ) * 0.6
+	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
+	
 	self:SetSize( self.w, self.h )
-	self:Center( )
+	self:SetPos( ScrW( ), self.y )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	self:ShowCloseButton( false )
-	self:SetAlpha( 0 )
-	self:AlphaTo( 255, 0.2, 0 )
+	self:MoveTo( ScrW( ) / 2 - self.w / 2, self.y, 0.2, 0 )
 	
 	self.playerLists = vgui.Create( "DPanelList", self )
-	self.playerLists:SetPos( self.w / 2, 35 )
-	self.playerLists:SetSize( self.w / 2 - 10, self.h - 45 )
-	self.playerLists:SetSpacing( 5 )
+	self.playerLists:SetPos( 10, 35 )
+	self.playerLists:SetSize( self.w - 20, self.h - 100 )
+	self.playerLists:SetSpacing( 0 )
 	self.playerLists:EnableHorizontal( false )
 	self.playerLists:EnableVerticalScrollbar( true )	
 	self.playerLists.Paint = function( pnl, w, h )
@@ -52,16 +51,26 @@ function PANEL:Init( )
 		end
 	end
 	
+	self.doorDescLabel = vgui.Create( "DLabel", self )
+	self.doorDescLabel:SetPos( 10, self.h - 60 )
+	self.doorDescLabel:SetColor( Color( 50, 50, 50, 255 ) )
+	self.doorDescLabel:SetFont( "catherine_normal20" )
+	self.doorDescLabel:SetText( LANG( "Door_UI_DoorDescStr" ) )
+	self.doorDescLabel:SizeToContents( )
+
 	self.doorDescEnt = vgui.Create( "DTextEntry", self )
-	self.doorDescEnt:SetPos( 10, 55 )
-	self.doorDescEnt:SetSize( self.w / 2 - 20, 30 )
+	self.doorDescEnt:SetPos( 10, self.h - 35 )
+	self.doorDescEnt:SetSize( self.w * 0.8, 25 )
 	self.doorDescEnt:SetFont( "catherine_normal15" )
 	self.doorDescEnt:SetText( "" )
 	self.doorDescEnt:SetAllowNonAsciiCharacters( true )
 	self.doorDescEnt.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, 1, Color( 50, 50, 50, 255 ) )
-		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
+		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
 		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+	end
+	self.doorDescEnt.OnTextChanged = function( pnl )
+		self.doorDesc = pnl:GetText( )
+		self.doorCurLen = self.doorDesc.utf8len( self.doorDesc )
 	end
 	self.doorDescEnt.OnEnter = function( pnl )
 		if ( self.mode == CAT_DOOR_FLAG_BASIC ) then
@@ -69,16 +78,25 @@ function PANEL:Init( )
 			return
 		end
 		
+		if ( catherine.configs.doorDescMaxLen <= self.doorCurLen ) then
+			catherine.notify.Add( LANG( "Door_Notify_SetDescHitLimit" ) )
+			return
+		end
+
+		if ( self.doorDesc == "" ) then
+			pnl:SetText( catherine.door.GetDetailString( self.door ) )
+		end
+		
 		netstream.Start( "catherine.door.Work", {
-			self.ent,
+			self.door,
 			CAT_DOOR_CHANGE_DESC,
-			pnl:GetText( )
+			self.doorDesc
 		} )
 	end
-	
+
 	self.sellDoor = vgui.Create( "catherine.vgui.button", self )
-	self.sellDoor:SetPos( 10, self.h - 40 )
-	self.sellDoor:SetSize( self.w / 2 - 20, 30 )
+	self.sellDoor:SetPos( self.w * 0.8 + 20, self.h - 55 )
+	self.sellDoor:SetSize( self.w - self.w * 0.8 - 30, 45 )
 	self.sellDoor:SetStr( LANG( "Door_UI_DoorSellStr" ) )
 	self.sellDoor:SetStrFont( "catherine_normal20" )
 	self.sellDoor:SetStrColor( Color( 50, 50, 50, 255 ) )
@@ -89,23 +107,24 @@ function PANEL:Init( )
 			return
 		end
 		
-		catherine.command.Run( "doorsell" )
-		self:Close( )
+		Derma_Query( LANG( "Door_Notify_SellQ" ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_OK" ), function( )
+				catherine.command.Run( "doorsell" )
+				self:Close( )
+			end, LANG( "Basic_UI_NO" ), function( ) end
+		)
 	end
 	self.sellDoor.PaintBackground = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 225, 225, 225, 255 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 	end
 	
 	self.close = vgui.Create( "catherine.vgui.button", self )
 	self.close:SetPos( self.w - 30, 0 )
 	self.close:SetSize( 30, 25 )
 	self.close:SetStr( "X" )
-	self.close:SetStrFont( "catherine_normal30" )
-	self.close:SetStrColor( Color( 255, 150, 150, 255 ) )
-	self.close:SetGradientColor( Color( 255, 150, 150, 255 ) )
+	self.close:SetStrFont( "catherine_normal35" )
+	self.close:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.close.Click = function( )
-		if ( self.closeing ) then return end
-		
 		self:Close( )
 	end
 end
@@ -115,22 +134,32 @@ function PANEL:BuildPlayerList( )
 	if ( self.mode != CAT_DOOR_FLAG_OWNER ) then return end
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		local has, flag = catherine.door.IsHasDoorPermission( v, self.ent )
+		local know = self.player == v and true or self.player.IsKnow( self.player, v )
+		local has, flag = catherine.door.IsHasDoorPermission( v, self.door )
 
-		
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.playerLists:GetWide( ), 60 )
 		panel.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
-			draw.SimpleText( v:Name( ), "catherine_normal20", 70, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-
-			if ( flag == CAT_DOOR_FLAG_OWNER ) then
-				draw.SimpleText( LANG( "Door_UI_OwnerStr" ), "catherine_normal25", w - 20, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
-			elseif ( flag == CAT_DOOR_FLAG_ALL ) then
-				draw.SimpleText( LANG( "Door_UI_AllStr" ), "catherine_normal25", w - 20, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
-			elseif ( flag == CAT_DOOR_FLAG_BASIC ) then
-				draw.SimpleText( LANG( "Door_UI_BasicStr" ), "catherine_normal25", w - 20, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			
+			if ( !know ) then
+				surface.SetDrawColor( 255, 255, 255, 255 )
+				surface.SetMaterial( Material( "CAT/ui/icon_idk.png", "smooth" ) )
+				surface.DrawTexturedRect( 5, 5, 50, 50 )
 			end
+			
+			draw.SimpleText( v.Name( v ), "catherine_normal20", 70, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( v.FactionName( v ), "catherine_normal20", 70, 45, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			
+			local text = LANG( "Door_UI_OwnerStr" )
+			
+			if ( flag == CAT_DOOR_FLAG_ALL ) then
+				text = LANG( "Door_UI_AllStr" )
+			elseif ( flag == CAT_DOOR_FLAG_BASIC ) then
+				text = LANG( "Door_UI_BasicStr" )
+			end
+			
+			draw.SimpleText( text, "catherine_normal20", w - 20, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		end
 		
 		local spawnIcon = vgui.Create( "SpawnIcon", panel )
@@ -146,11 +175,12 @@ function PANEL:BuildPlayerList( )
 		button:SetDrawBackground( false )
 		button:SetText( "" )
 		button.DoClick = function( )
+			if ( flag == CAT_DOOR_FLAG_OWNER ) then return end
 			local menu = DermaMenu( )
 			
 			menu:AddOption( LANG( "Door_UI_AllPerStr" ), function( )
 				netstream.Start( "catherine.door.Work", {
-					self.ent,
+					self.door,
 					CAT_DOOR_CHANGE_PERMISSION,
 					{
 						v.SteamID( v ),
@@ -161,7 +191,7 @@ function PANEL:BuildPlayerList( )
 			
 			menu:AddOption( LANG( "Door_UI_BasicPerStr" ), function( )
 				netstream.Start( "catherine.door.Work", {
-					self.ent,
+					self.door,
 					CAT_DOOR_CHANGE_PERMISSION,
 					{
 						v.SteamID( v ),
@@ -172,7 +202,7 @@ function PANEL:BuildPlayerList( )
 			
 			menu:AddOption( LANG( "Door_UI_RemPerStr" ), function( )
 				netstream.Start( "catherine.door.Work", {
-					self.ent,
+					self.door,
 					CAT_DOOR_CHANGE_PERMISSION,
 					{
 						v.SteamID( v ),
@@ -184,13 +214,27 @@ function PANEL:BuildPlayerList( )
 			menu:Open( )
 		end
 		
+		if ( !know ) then
+			spawnIcon:SetVisible( false )
+		end
+		
 		self.playerLists:AddItem( panel )
 	end
 end
 
-function PANEL:InitializeDoor( ent, flag )
-	self.ent = ent
-	self.doorDescEnt:SetText( self.ent.GetNetVar( self.ent, "customDesc", "" ) )
+function PANEL:InitializeDoor( door, flag )
+	self.door = door
+	
+	local doorDesc = self.door.GetNetVar( self.door, "customDesc", "" )
+	
+	if ( doorDesc == "" ) then
+		doorDesc = catherine.door.GetDetailString( door )
+	else
+		self.doorCurLen = doorDesc.utf8len( doorDesc )
+	end
+
+	self.doorDesc = doorDesc
+	self.doorDescEnt:SetText( doorDesc )
 	
 	self.mode = flag
 
@@ -206,35 +250,55 @@ function PANEL:InitializeDoor( ent, flag )
 end
 
 function PANEL:Refresh( )
-	self.doorDescEnt:SetText( self.ent.GetNetVar( self.ent, "customDesc", "" ) )
+	local doorDesc = self.door.GetNetVar( self.door, "customDesc", "" )
+	
+	if ( doorDesc == "" ) then
+		doorDesc = catherine.door.GetDetailString( door )
+	else
+		self.doorCurLen = doorDesc.utf8len( doorDesc )
+	end
+
+	self.doorDesc = doorDesc
+	self.doorDescEnt:SetText( doorDesc )
 	self:BuildPlayerList( )
 end
 
 function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	
-	if ( !IsValid( self.ent ) ) then return end
+	if ( IsValid( self.door ) ) then
+		draw.SimpleText( self.door.GetNetVar( self.door, "title", LANG( "Door_UI_Default" ) ), "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		
+		local descLimit = catherine.configs.doorDescMaxLen
+		local col = descLimit <= self.doorCurLen and Color( 255, 0, 0 ) or Color( 50, 50, 50 )
 
-	draw.SimpleText( self.ent.GetNetVar( self.ent, "title", LANG( "Door_UI_Default" ) ), "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-	
-	if ( self.mode == CAT_DOOR_FLAG_BASIC ) then return end
-	
-	draw.SimpleText( LANG( "Door_UI_DoorDescStr" ), "catherine_normal15", 10, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( self.doorCurLen .. " / " .. descLimit, "catherine_normal20", w * 0.8 + 10, h - 50, col, TEXT_ALIGN_RIGHT, 1 )
+	end
 end
 
 function PANEL:Think( )
-	if ( self.entCheck <= CurTime( ) ) then
-		if ( !IsValid( self.ent ) and !self.closeing ) then
+	if ( ( self.nextPerCheck or CurTime( ) ) <= CurTime( ) ) then
+		if ( IsValid( self.door ) ) then
+			local has, flag = catherine.door.IsHasDoorPermission( self.player, self.door )
+			
+			if ( !has ) then
+				self:Close( )
+				return
+			end
+		else
 			self:Close( )
 			return
 		end
-		self.entCheck = CurTime( ) + 0.01
+		
+		self.nextPerCheck = CurTime( ) + 1
 	end
 end
 
 function PANEL:Close( )
+	if ( self.closeing ) then return end
+	
 	self.closeing = true
-	self:AlphaTo( 0, 0.2, 0, function( )
+	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
 		self:Remove( )
 		self = nil
 	end )

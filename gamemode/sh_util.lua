@@ -202,10 +202,13 @@ if ( SERVER ) then
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
 		if ( func ) then
-			timer.Simple( time, function( )
-				if ( !IsValid( pl ) ) then return end
-				
-				func( pl )
+			local timerID = message .. pl.SteamID( pl )
+			
+			timer.Remove( timerID )
+			timer.Create( timerID, time, 1, function( )
+				if ( IsValid( pl ) ) then
+					func( pl )
+				end
 			end )
 		end
 		
@@ -352,14 +355,12 @@ else
 		elseif ( typ == CAT_UTIL_BUTTOMSOUND_3 ) then
 
 		end
-		
-		// ^-^
 	end
 	
 	function catherine.util.StuffLanguage( key, ... )
 		local lang = key.Left( key, 1 ) == "^" and LANG( key.sub( key, 2 ), ... ) or "-Error"
 		
-		return lang:find( "-Error" ) and key or lang
+		return lang.find( lang, "-Error" ) and key or lang
 	end
 	
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )
