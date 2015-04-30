@@ -23,7 +23,7 @@ CAT_ACT_EXITANI = 2
 
 local actionTable = {
 	[ "sit" ] = {
-		catText = "Sit!",
+		text = "Sit!",
 		actions = {
 			citizen_male = {
 				seq = "sit_ground",

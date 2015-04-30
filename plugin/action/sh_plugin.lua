@@ -18,39 +18,34 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 local PLUGIN = PLUGIN
 PLUGIN.name = "^ACT_Plugin_Name"
-PLUGIN.author = "L7D & Chessnut"
+PLUGIN.author = "L7D, Chessnut"
 PLUGIN.desc = "^ACT_Plugin_Desc"
 PLUGIN.actions = { }
 
 catherine.language.Merge( "english", {
 	[ "ACT_Plugin_Name" ] = "Action",
 	[ "ACT_Plugin_Desc" ] = "Good stuff.",
+	[ "ACT_Plugin_Notify_Cant01" ] = "You can't do this now!",
+	[ "ACT_Plugin_Notify_Cant02" ] = "You can't do this action!"
 } )
 
 catherine.language.Merge( "korean", {
 	[ "ACT_Plugin_Name" ] = "액션",
 	[ "ACT_Plugin_Desc" ] = "RP 에 맞는 액션을 취할 수 있습니다.",
+	[ "ACT_Plugin_Notify_Cant01" ] = "당신은 지금 액션을 취할 수 없습니다!",
+	[ "ACT_Plugin_Notify_Cant02" ] = "당신은 이 액션을 취할 수 없습니다!"
 } )
 
 catherine.util.Include( "sh_actions.lua" )
-catherine.util.Include( "sh_commands.lua" )
 
 if ( SERVER ) then
 	function PLUGIN:StartAction( pl, seq )
-		if ( pl.GetNetVar( pl, "isActioning" ) ) then
-			return false
+		if ( pl.GetNetVar( pl, "isActioning" ) or !pl.Alive( pl ) or catherine.player.IsRagdolled( pl ) ) then
+			return false, "ACT_Plugin_Notify_Cant01"
 		end
-		
-		if ( !pl.Alive( pl ) ) then
-			return false
-		end
-		
-		if ( catherine.player.IsRagdolled( pl ) ) then
-			return false
-		end
-		
+
 		if ( catherine.player.IsTied( pl ) ) then
-			return false
+			return false, "Item_Notify03_ZT"
 		end
 		
 		local class = catherine.animation.Get( pl.GetModel( pl ):lower( ) )
@@ -62,7 +57,7 @@ if ( SERVER ) then
 					if ( v[ class ] ) then
 						actionData = v[ class ]
 					else
-						return false
+						return false, "ACT_Plugin_Notify_Cant02"
 					end
 				end
 			end
@@ -99,7 +94,7 @@ if ( SERVER ) then
 	
 	function PLUGIN:ExitAction( pl )
 		if ( !pl.GetNetVar( pl, "isActioning" ) ) then
-			return
+			return false, "ACT_Plugin_Notify_Cant01"
 		end
 		
 		local class = catherine.animation.Get( pl.GetModel( pl ):lower( ) )
@@ -185,4 +180,17 @@ else
 			}
 		end
 	end
+end
+
+for k, v in pairs( PLUGIN.actions ) do
+	catherine.command.Register( {
+		command = "act" .. k,
+		runFunc = function( pl, args )
+			local success, langKey = PLUGIN:StartAction( pl, k )
+
+			if ( !success ) then
+				catherine.util.NotifyLang( pl, langKey )
+			end
+		end
+	} )
 end
