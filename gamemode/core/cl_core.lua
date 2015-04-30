@@ -62,29 +62,43 @@ function GM:SpawnMenuOpen( )
 	return LocalPlayer( ).IsAdmin( LocalPlayer( ) )
 end
 
+function GM:ShouldDrawLocalPlayer( pl )
+	if ( pl.GetNetVar( pl, "isActioning" ) ) then
+		return true
+	end
+end
+
 function GM:CalcView( pl, pos, ang, fov )
+	if ( pl.GetNetVar( pl, "isActioning" ) ) then
+		local data = util.TraceLine( {
+			start = pos, 
+			endpos = pos - ( ang.Forward( ang ) * 100 )
+		} )
+
+		return {
+			origin = data.Fraction < 1 and ( data.HitPos + data.HitNormal * 5 ) or data.HitPos
+		}
+	end
+	
 	if ( IsValid( catherine.vgui.character ) or !pl.IsCharacterLoaded( pl ) ) then
-		local data = {
+		return {
 			origin = catherine.configs.schematicViewPos.pos,
 			angles = catherine.configs.schematicViewPos.ang
 		}
-
-		return data
 	end
 
 	local ent = Entity( pl.GetNetVar( pl, "ragdollIndex", 0 ) )
 
 	if ( IsValid( ent ) and ent.GetClass( ent ) == "prop_ragdoll" and catherine.player.IsRagdolled( pl ) ) then
 		local index = ent.LookupAttachment( ent, "eyes" )
-		local view = { }
 		
 		if ( index ) then
 			local data = ent.GetAttachment( ent, index )
-			
-			view.origin = data and data.Pos
-			view.angles = data and data.Ang
-			
-			return view
+
+			return {
+				origin = data and data.Pos,
+				angles = data and data.Ang
+			}
 		end
 	end
 end
