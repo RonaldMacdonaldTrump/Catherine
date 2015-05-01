@@ -68,5 +68,6 @@ if ( SERVER ) then
 	catherine.configs.giveKey = true
 	catherine.configs.spawnTime = 10
 	
-	catherine.configs.enable_SphynX = true
+	catherine.configs.enable_AntiHaX = true
+	catherine.configs.enable_BugX = true
 end

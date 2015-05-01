@@ -21,7 +21,7 @@ catherine.antiHaX = catherine.antiHaX or { }
 if ( SERVER ) then
 	catherine.antiHaX.checkingList = catherine.antiHaX.checkingList or { }
 	catherine.antiHaX.NextCheckTick = catherine.antiHaX.NextCheckTick or CurTime( ) + 300
-	
+
 	function catherine.antiHaX.Check( )
 		local serverConVars = {
 			cheat = GetConVarString( "sv_cheats" ),
@@ -34,21 +34,19 @@ if ( SERVER ) then
 			data = {
 				svConVars = serverConVars,
 				players = checkingPlayers,
-				startTime = 0
 			}
 		}
 		
 		for k, v in pairs( checkingPlayers ) do
 			catherine.antiHaX.checkingList.receive[ v.SteamID( v ) ] = { }
 		end
-		
-		catherine.antiHaX.checkingList.data.startTime = CurTime( )
+
 		netstream.Start( nil, "catherine.antiHaX.CheckProgress" )
 		
 		timer.Simple( 3, function( )
 			for k, v in pairs( catherine.antiHaX.checkingList.receive ) do
 				local pl = catherine.util.FindPlayerByStuff( "SteamID", k )
-				if ( !IsValid( pl ) or pl:IsBot( ) ) then continue end
+				if ( !IsValid( pl ) or pl.IsBot( pl ) ) then continue end
 				local hax = false
 				
 				if ( serverConVars.cheat != v.cheat ) then
@@ -76,6 +74,8 @@ if ( SERVER ) then
 	end
 	
 	function catherine.antiHaX.Think( )
+		if ( !catherine.configs.enable_AntiHaX ) then return end
+		
 		if ( catherine.antiHaX.NextCheckTick <= CurTime( ) ) then
 			catherine.antiHaX.Check( )
 			MsgC( Color( 0, 255, 0 ), "[CAT AntiHaX] Hack checked.\n" )
@@ -83,7 +83,7 @@ if ( SERVER ) then
 			catherine.antiHaX.NextCheckTick = CurTime( ) + 300
 		end
 	end
-	
+
 	hook.Add( "Think", "catherine.antiHaX.Think", catherine.antiHaX.Think )
 	
 	netstream.Hook( "catherine.antiHaX.CheckProgress_Receive", function( pl, data )

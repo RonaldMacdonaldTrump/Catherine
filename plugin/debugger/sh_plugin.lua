@@ -46,7 +46,11 @@ function PLUGIN:HUDPaint( )
 	local curFPS = math.Round( 1 / FrameTime( ) )
 	local minFPS = self.minFPS or 60
 	local maxFPS = self.maxFPS or 100
-	local barW = ( curFPS / maxFPS ) * 90
+
+	if ( !self.barH ) then self.barH = 1 end
+	
+	self.barH = math.Approach( self.barH, ( curFPS / maxFPS ) * 100, 0.5 )
+	
 	if ( curFPS > maxFPS ) then
 		self.maxFPS = curFPS
 	end
@@ -55,10 +59,10 @@ function PLUGIN:HUDPaint( )
 		self.minFPS = curFPS
 	end
 	
-	draw.SimpleText( "Current : " .. curFPS, "catherine_fps", ScrW( ) - 10, ScrH( ) / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
-	draw.RoundedBox( 0, ScrW( ) - 100, ScrH( ) / 2 + 15, barW, 10, Color( 255, 255, 255, 255 ) )
-	draw.SimpleText( "MAX : " .. maxFPS, "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 40, Color( 150, 255, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
-	draw.SimpleText( "MIN : " .. minFPS, "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 55, Color( 255, 150, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( curFPS .. " FPS", "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.RoundedBox( 0, ScrW( ) - 30, ( ScrH( ) / 2 ) - self.barH, 20, self.barH, Color( 255, 255, 255, 255 ) )
+	draw.SimpleText( "Max : " .. maxFPS, "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 40, Color( 150, 255, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( "Min : " .. minFPS, "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 55, Color( 255, 150, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
-catherine.font.Register( "catherine_fps", "Consolas Bold", 15, 1000 )
+catherine.font.Register( "catherine_fps", "Consolas", 15, 1000 )
