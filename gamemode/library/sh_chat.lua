@@ -387,50 +387,20 @@ else
 		end
 	end
 
+
 	function catherine.chat.CreateBase( )
 		if ( IsValid( catherine.chat.backpanel ) ) then return end
 		
 		catherine.chat.backpanel = vgui.Create( "DPanel" )
 		catherine.chat.backpanel:SetPos( CHATBox_x, CHATBox_y )
 		catherine.chat.backpanel:SetSize( CHATBox_w, CHATBox_h - 25 )
-		catherine.chat.backpanel.Paint = function( pnl, w, h )
-			if ( typingText.sub( typingText, 1, 1 ) == "/" ) then
-				surface.SetDrawColor( 50, 50, 50, 200 )
-				surface.SetMaterial( Material( "gui/gradient_up" ) )
-				surface.DrawTexturedRect( 0, 0, w, h )
-				
-				local commands, sub = catherine.command.GetMatchCommands( typingText )
-				local chatY = CHATBox_h - 25
-
-				if ( #commands == 1 ) then
-					local commandText = "/" .. commands[ 1 ].command
-					surface.SetFont( "catherine_normal25" )
-					local tw, th = surface.GetTextSize( commandText )
-						
-					draw.SimpleText( commandText, "catherine_normal25", 15, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
-					draw.SimpleText( commands[ 1 ].syntax, "catherine_normal15", 30 + tw, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
-					draw.SimpleText( catherine.util.StuffLanguage( commands[ 1 ].desc ), "catherine_normal20", 15, chatY - 20, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
-				else
-					for k, v in pairs( commands ) do
-						local yPos = chatY - ( 20 * k )
-						if ( yPos <= 10 ) then continue end
-						
-						local commandText = "/" .. v.command
-						local currText = commandText.sub( commandText, 1, sub + 1 )
-						
-						surface.SetFont( "catherine_normal20" )
-						local tw, th = surface.GetTextSize( currText )
-
-						draw.SimpleText( currText, "catherine_normal20", 15, yPos, Color( 150, 235, 150, 255 ), TEXT_ALIGN_LEFT, 1 )
-						draw.SimpleText( commandText.gsub( commandText, currText, "" ), "catherine_normal20", 15 + tw, yPos, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
-					end
-				end
-			end
-		end
+		catherine.chat.backpanel:SetDrawBackground( false )
 
 		catherine.chat.backpanel.history = vgui.Create( "DScrollPanel", catherine.chat.backpanel )
 		catherine.chat.backpanel.history:Dock( FILL )
 		catherine.chat.backpanel.history.VBar:SetWide( 0 )
+		catherine.chat.backpanel.history.alpha = 255
+		//catherine.chat.backpanel.history
 	end
 	
 	function catherine.chat.SetStatus( bool )
@@ -462,10 +432,57 @@ else
 			hook.Run( "FinishChat" )
 		end
 		
+		catherine.chat.backpanel.PaintOver = function( pnl, w, h )
+			if ( typingText.sub( typingText, 1, 1 ) == "/" ) then
+				surface.SetDrawColor( 50, 50, 50, 255 )
+				surface.SetMaterial( Material( "gui/gradient_up" ) )
+				surface.DrawTexturedRect( 0, 0, w, h )
+				
+				local commands, sub = catherine.command.GetMatchCommands( typingText )
+				local chatY = CHATBox_h - 25
+
+				if ( #commands == 1 ) then
+					local commandText = "/" .. commands[ 1 ].command
+					surface.SetFont( "catherine_normal25" )
+					local tw, th = surface.GetTextSize( commandText )
+						
+					draw.SimpleText( commandText, "catherine_normal25", 15, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+					draw.SimpleText( commands[ 1 ].syntax, "catherine_normal15", 30 + tw, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+					draw.SimpleText( catherine.util.StuffLanguage( commands[ 1 ].desc ), "catherine_normal20", 15, chatY - 20, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+				else
+					for k, v in pairs( commands ) do
+						local yPos = chatY - ( 20 * k )
+						if ( yPos <= 10 ) then continue end
+						
+						local commandText = "/" .. v.command
+						local currText = commandText.sub( commandText, 1, sub + 1 )
+						
+						surface.SetFont( "catherine_normal20" )
+						local tw, th = surface.GetTextSize( currText )
+
+						draw.SimpleText( currText, "catherine_normal20", 15, yPos, Color( 150, 235, 150, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( commandText.gsub( commandText, currText, "" ), "catherine_normal20", 15 + tw, yPos, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+					end
+				end
+				
+				if ( catherine.chat.backpanel.history.alpha > 10 ) then
+					catherine.chat.backpanel.history.alpha = Lerp( 0.05, catherine.chat.backpanel.history.alpha, 10 )
+					catherine.chat.backpanel.history:SetAlpha( catherine.chat.backpanel.history.alpha )
+				end
+			else
+				if ( catherine.chat.backpanel.history.alpha < 255 ) then
+					catherine.chat.backpanel.history.alpha = Lerp( 0.05, catherine.chat.backpanel.history.alpha, 255 )
+					catherine.chat.backpanel.history:SetAlpha( catherine.chat.backpanel.history.alpha )
+				end
+			end
+		end
+		
 		self = vgui.Create( "EditablePanel", self )
 		self:SetPos( CHATBox_x, CHATBox_y + CHATBox_h - 25 )
 		self:SetSize( CHATBox_w, 25 )
-		self.Paint = function( pnl, w, h ) end
+		self.Paint = function( pnl, w, h )
+
+		end
 		
 		self.textEnt = vgui.Create( "DTextEntry", self )
 		self.textEnt:Dock( FILL )

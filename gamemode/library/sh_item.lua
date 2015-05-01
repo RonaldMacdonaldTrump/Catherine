@@ -63,9 +63,15 @@ function catherine.item.Register( itemTable )
 					return
 				end
 
+				local itemData = itemTable.itemData
+				
+				if ( IsValid( ent ) and itemTable.useDynamicItemData ) then
+					itemData = table.Count( ent.GetItemData( ent ) ) == table.Count( itemTable.itemData ) and ent.GetItemData( ent ) or itemTable.itemData
+				end
+
 				catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 					uniqueID = itemTable.uniqueID,
-					itemData = ( itemTable.useDynamicItemData and ent:GetItemData( ) ) or itemTable.itemData
+					itemData = itemData
 				} )
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )
 				ent:Remove( )

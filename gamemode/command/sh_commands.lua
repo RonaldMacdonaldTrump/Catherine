@@ -498,7 +498,27 @@ catherine.command.Register( {
 	canRun = function( pl ) return pl.IsAdmin( pl ) end,
 	runFunc = function( pl, args )
 		for k, v in pairs( player.GetAll( ) ) do
-			v:ConCommand( "cl_removedecals" )
+			v:ConCommand( "r_cleardecals" )
+		end
+		
+		catherine.util.NotifyLang( pl, "Command_ClearDecals_Fin" )
+	end
+} )
+
+catherine.command.Register( {
+	command = "settimehour",
+	canRun = function( pl ) return pl.IsSuperAdmin( pl ) end,
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			args[ 1 ] = tonumber( args[ 1 ] )
+			
+			catherine.environment.buffer.hour = args[ 1 ] and math.Clamp( args[ 1 ], 1, 24 ) or catherine.environment.buffer.hour
+			catherine.environment.SyncToAll( )
+			catherine.environment.AutomaticDayNight( )
+			
+			catherine.util.NotifyLang( pl, "Command_SetTimeHour_Fin", args[ 1 ] )
+		else
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
 	end
 } )

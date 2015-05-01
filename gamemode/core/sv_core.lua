@@ -76,14 +76,24 @@ function GM:PlayerSpray( pl )
 	return !hook.Run( "PlayerCanSpray", pl )
 end
 
+function GM:Move( pl, moveData )
+	if ( pl.IsCharacterLoaded( pl ) ) then
+		if ( pl.GetNetVar( pl, "isActioning" ) ) then
+			moveData:SetForwardSpeed( 0 )
+			moveData:SetSideSpeed( 0 )
+		else
+		end
+	end
+end
+
 function GM:PlayerSpawn( pl )
 	if ( IsValid( pl.deathBody ) ) then
-		pl.deathBody:Remove( )
+		pl.deathBody.Remove( pl.deathBody )
 		pl.deathBody = nil
 	end
 	
 	if ( IsValid( pl.CAT_ragdoll ) ) then
-		pl.CAT_ragdoll:Remove( )
+		pl.CAT_ragdoll.Remove( pl.CAT_ragdoll )
 		pl.CAT_ragdoll = nil
 	end
 	
@@ -98,7 +108,7 @@ function GM:PlayerSpawn( pl )
 	pl.ConCommand( pl, "-duck" )
 	pl.SetColor( pl, Color( 255, 255, 255, 255 ) )
 	pl.SetNetVar( pl, "isTied", false )
-	pl:SetupHands( )
+	pl.SetupHands( pl )
 
 	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
 	pl.AllowFlashlight( pl, status )
@@ -181,7 +191,7 @@ function GM:EntityTakeDamage( ent, dmginfo )
 			pl:TakeDamage( amount, attacker, inflictor )
 			
 			pl.CAT_ignore_hurtSound = nil
-			
+
 			if ( pl.Health( pl ) <= 0 ) then
 				if ( !pl.CAT_deathSoundPlayed ) then
 					hook.Run( "PlayerDeathSound", pl, ent )
@@ -351,6 +361,7 @@ end
 function GM:PlayerDeathSound( pl, ragdollEntity )
 	if ( IsValid( ragdollEntity ) ) then
 		ragdollEntity:EmitSound( hook.Run( "GetPlayerDeathSound", pl ) or "vo/npc/" .. pl.GetGender( pl ) .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+		
 		pl.CAT_deathSoundPlayed = true
 		
 		return true
@@ -380,7 +391,7 @@ function GM:DoPlayerDeath( pl )
 		pl.deathBody:SetCollisionGroup( COLLISION_GROUP_WEAPON )
 		pl.deathBody.player = self
 		pl.deathBody:SetNetVar( "player", pl )
-		pl.deathBody:SetNetVar( "isDeathBody", true )
+		pl.deathBody:SetNetVar( "isDeathBody", true ) // 제거 필요.
 		
 		pl:SetNetVar( "ragdollIndex", pl.deathBody.EntIndex( pl.deathBody ) )
 	end

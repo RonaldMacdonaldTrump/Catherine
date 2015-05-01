@@ -24,6 +24,7 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) ) then return end
 		
 		local function loadFramework( )
+			--[[ Kernel Loading. ^_^; ]]--
 			catherine.player.PlayerInformationInitialize( pl )
 			catherine.net.SyncAllVars( pl )
 			catherine.character.SyncAllNetworkRegistry( pl )
@@ -31,28 +32,20 @@ if ( SERVER ) then
 			catherine.character.SyncCharacterList( pl )
 			catherine.catData.SyncToPlayer( pl )
 
-			timer.Simple( 2, function( )
-				if ( !IsValid( pl ) ) then return end
+			timer.Simple( 1, function( )
 				netstream.Start( pl, "catherine.loadingFinished" )
+				pl:Freeze( false )
+				pl:UnLock( )
 				
-				timer.Simple( 1, function( )
-					if ( !IsValid( pl ) ) then return end
-					
-					netstream.Start( pl, "catherine.IntroStop" )
-					timer.Simple( 1, function( )
-						if ( !IsValid( pl ) ) then return end
-						
-						pl:Freeze( false )
-						pl:UnLock( )
-						catherine.character.OpenMenu( pl )
-					end )
-				end )
+				--[[ Welcome to Catherine. ^_^; ]]--
 			end )
 		end
 		
 		netstream.Hook( "catherine.player.CheckLocalPlayer_Receive", function( )
 			netstream.Start( pl, "catherine.IntroStart" )
-			loadFramework( )
+			timer.Simple( 1, function( )
+				loadFramework( )
+			end )
 		end )
 		
 		pl:Freeze( true )

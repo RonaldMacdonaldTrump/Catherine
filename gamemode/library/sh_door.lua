@@ -97,8 +97,13 @@ if ( SERVER ) then
 				return
 			end
 			
+			if ( catherine.configs.doorDescMaxLen <= data.utf8len( data ) ) then
+				catherine.util.NotifyLang( pl, "Door_Notify_SetDescHitLimit" )
+				return
+			end
+			
 			ent:SetNetVar( "customDesc", data != "" and data or nil )
-			catherine.util.NotifyLang( pl, "Door_Notify_SetTitle" )
+			catherine.util.NotifyLang( pl, "Door_Notify_SetDesc" )
 		end
 	end
 	
@@ -347,9 +352,10 @@ else
 	end
 
 	--[[
-		This function has brought in Clockwork.
+		This function has brought from Clockwork.
 		https://github.com/CloudSixteen/Clockwork
 	--]]
+	
 	function catherine.door.CalcDoorTextPos( ent, rev )
 		local max = ent.OBBMaxs( ent )
 		local min = ent.OBBMins( ent )

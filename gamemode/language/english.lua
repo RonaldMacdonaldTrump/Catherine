@@ -209,6 +209,7 @@ LANGUAGE.data = {
 	[ "Door_Notify_CMD_Locked" ] = "You are locked this door.",
 	[ "Door_Notify_CMD_UnLocked" ] = "You are unlocked this door.",
 	[ "Door_Notify_BuyQ" ] = "Are you sure you want to buy this door?",
+	[ "Door_Notify_SellQ" ] = "Are you sure you want to sell this door?",
 	[ "Door_Message_Locking" ] = "Locking ...",
 	[ "Door_Message_UnLocking" ] = "UnLocking ...",
 	[ "Door_Message_Buyable" ] = "This door can purchase.",
@@ -219,7 +220,9 @@ LANGUAGE.data = {
 	[ "Door_Notify_CantBuyable" ] = "This door can't buy!",
 	[ "Door_Notify_Buy" ] = "You are buy this door.",
 	[ "Door_Notify_Sell" ] = "You are sold this door.",
-	[ "Door_Notify_SetTitle" ] = "You are set title this door.",
+	[ "Door_Notify_SetTitle" ] = "You are set title for this door.",
+	[ "Door_Notify_SetDesc" ] = "You are set description for this door.",
+	[ "Door_Notify_SetDescHitLimit" ] = "Description limit over!",
 	[ "Door_Notify_SetStatus_True" ] = "You are set status to unbuyable this door.",
 	[ "Door_Notify_SetStatus_False" ] = "You are set status to buyable this door.",
 	[ "Door_Notify_Disabled_True" ] = "You are disable for this door.",
@@ -281,6 +284,9 @@ LANGUAGE.data = {
 	[ "Basic_UI_YES" ] = "YES",
 	[ "Basic_UI_NO" ] = "NO",
 	[ "Basic_Framework_Author" ] = "Development and design by %s.",
+	
+	[ "Command_ClearDecals_Fin" ] = "You are cleared decals on map.",
+	[ "Command_SetTimeHour_Fin" ] = "You are set RP time to %s(hour)."
 }
 
 catherine.language.Register( LANGUAGE )

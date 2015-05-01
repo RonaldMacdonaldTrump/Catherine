@@ -238,7 +238,7 @@ if ( SERVER ) then
 					local success, reason = v.checkValid( var )
 					
 					if ( success == false ) then
-						netstream.Start( pl, "catherine.character.CreateResult", reason ) // need language;
+						netstream.Start( pl, "catherine.character.CreateResult", reason )
 						return
 					end
 				end

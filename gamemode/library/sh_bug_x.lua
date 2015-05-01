@@ -23,9 +23,16 @@ if ( SERVER ) then
 	catherine.bugX.plugin = catherine.bugX.plugin or { }
 
 	function catherine.bugX.Work( flag, workTable, func )
+		if ( !catherine.configs.enable_BugX ) then return end
+		
 		if ( flag == CAT_BUG_X_FLAG_PLUGIN ) then
 			catherine.bugX.plugin[ workTable.pluginID ] = catherine.bugX.plugin[ workTable.pluginID ] or { }
-			catherine.bugX.plugin[ workTable.pluginID ][ workTable.hookID ] = catherine.bugX.plugin[ workTable.pluginID ][ workTable.hookID ] + 1 or 0
+			
+			if ( !catherine.bugX.plugin[ workTable.pluginID ][ workTable.hookID ] ) then
+				catherine.bugX.plugin[ workTable.pluginID ][ workTable.hookID ] = 0
+			end
+			
+			catherine.bugX.plugin[ workTable.pluginID ][ workTable.hookID ] = catherine.bugX.plugin[ workTable.pluginID ][ workTable.hookID ] + 1
 		
 			local count = catherine.bugX.plugin[ workTable.pluginID ][ workTable.hookID ]
 			

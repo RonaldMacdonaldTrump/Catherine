@@ -34,6 +34,9 @@ catherine.configs.characterNameMinLen = 10
 catherine.configs.characterNameMaxLen = 30
 catherine.configs.characterDescMinLen = 10
 catherine.configs.characterDescMaxLen = 54
+
+catherine.configs.doorDescMaxLen = 30
+
 catherine.configs.spaceString = "kg"
 catherine.configs.Font = "Segoe UI"
 catherine.configs.schematicViewPos = { // for rp_c18_v1!
@@ -65,5 +68,9 @@ if ( SERVER ) then
 	catherine.configs.giveKey = true
 	catherine.configs.spawnTime = 10
 	
-	catherine.configs.enable_SphynX = true
+	catherine.configs.enable_AntiHaX = true
+	catherine.configs.enable_BugX = true
+else
+	catherine.configs.frameworkLogo = "CAT/logos/main01.png"
+	catherine.configs.schemaLogo = catherine.configs.frameworkLogo
 end
