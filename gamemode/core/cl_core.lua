@@ -17,11 +17,27 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.intro = catherine.intro or {
-	alpha = 0,
-	loading = false,
-	intro = false,
-	rotate = 90,
-	rotateAlpha = 0
+	status = true,
+	backAlpha = 255,
+	loading = true,
+	rotate = 0,
+	loadingAlpha = 0,
+	startTime = 0,
+	
+	firstStageShowingTime = nil,
+	firstStage = false,
+	firstStageEnding = false,
+	firstStageX = ScrW( ),
+	firstStageEffect = false,
+	
+	secondStageShowingTime = nil,
+	secondStage = false,
+	secondStageEnding = false,
+	secondStageX = ScrW( ),
+	secondStageFade = 255,
+	secondStageEffect = false,
+	
+	introDone = false
 }
 catherine.entityCaches = { }
 catherine.weaponModels = catherine.weaponModels or { }
@@ -69,6 +85,12 @@ function GM:ShouldDrawLocalPlayer( pl )
 end
 
 function GM:CalcView( pl, pos, ang, fov )
+	if ( catherine.intro.status ) then
+		return {
+			origin = Vector( 0, 0, 200000 )
+		}
+	end
+	
 	if ( pl.GetNetVar( pl, "isActioning" ) ) then
 		local data = util.TraceLine( {
 			start = pos, 
@@ -104,29 +126,110 @@ function GM:CalcView( pl, pos, ang, fov )
 end
 
 function GM:HUDDrawScoreBoard( )
-	if ( LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then return end
+	if ( LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 
-	catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 6, 6 )
+	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, catherine.intro.backAlpha ) )
+		
+	surface.SetDrawColor( 200, 200, 200, catherine.intro.backAlpha )
+	surface.SetMaterial( Material( "gui/gradient_up" ) )
+	surface.DrawTexturedRect( 0, 0, scrW, scrH )
 
-	draw.NoTexture( )
-	surface.SetDrawColor( 255, 255, 255, catherine.intro.rotateAlpha )
-	catherine.geometry.DrawCircle( scrW / 2 - 50 / 2, scrH - 50, 20, 5, catherine.intro.rotate, 250, 100 )
-
-	if ( catherine.intro.intro ) then
-		catherine.intro.alpha = Lerp( 0.05, catherine.intro.alpha, 255 )
+	if ( catherine.intro.status ) then
+		catherine.intro.backAlpha = Lerp( 0.03, catherine.intro.backAlpha, 255 )
 	else
-		catherine.intro.alpha = Lerp( 0.05, catherine.intro.alpha, 0 )
+		catherine.intro.backAlpha = Lerp( 0.03, catherine.intro.backAlpha, 0 )
 	end
 
 	if ( catherine.intro.loading ) then
-		catherine.intro.rotateAlpha = Lerp( 0.05, catherine.intro.rotateAlpha, 255 )
+		catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 255 )
 	else
-		catherine.intro.rotateAlpha = Lerp( 0.05, catherine.intro.rotateAlpha, 0 )
+		catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 0 )
 	end
 	
-	draw.SimpleText( "CATHERINE", "catherine_introTitle", scrW / 2, scrH / 2, Color( 235, 235, 235, catherine.intro.alpha ), 1, 1 )
-	draw.SimpleText( Schema and catherine.util.StuffLanguage( "^Basic_Schema_Title" ) or "Unknown", "catherine_introSchema", scrW / 2, scrH * 0.6, Color( 235, 235, 235, catherine.intro.alpha ), 1, 1 )
+	if ( catherine.intro.status and catherine.intro.startTime != 0 ) then
+		if ( catherine.intro.startTime + 5 <= CurTime( ) ) then
+			catherine.intro.firstStage = true
+
+			if ( catherine.intro.firstStageX >= scrW / 2 - 512 / 2 ) then
+				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, scrW / 2 - 512 / 2, 20 )
+			end
+			
+			if ( !catherine.intro.firstStageEffect ) then
+				surface.PlaySound( "CAT/intro_slide.wav" )
+				catherine.intro.firstStageEffect = true
+			end
+			
+			if ( !catherine.intro.firstStageShowingTime ) then
+				catherine.intro.firstStageShowingTime = CurTime( )
+			end
+			
+			if ( catherine.intro.firstStageShowingTime + 3 <= CurTime( ) ) then
+				if ( !catherine.intro.secondStageShowingTime ) then
+					catherine.intro.secondStageShowingTime = CurTime( )
+				end
+			
+				catherine.intro.secondStage = true
+				
+				if ( !catherine.intro.secondStageEffect ) then
+					surface.PlaySound( "CAT/intro_slide.wav" )
+					catherine.intro.secondStageEffect = true
+				end
+				
+				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, 0 - 512, 20 )
+				
+				if ( !catherine.intro.secondStageEnding ) then
+					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, scrW / 2 - 512 / 2, 20 )
+				end
+				
+				if ( catherine.intro.firstStageEnding ) then
+					catherine.intro.firstStage = false
+				else
+					if ( catherine.intro.firstStageX <= 0 - 512 ) then
+						catherine.intro.firstStageEnding = true
+					end
+				end
+				
+				if ( catherine.intro.secondStageShowingTime + 3 <= CurTime( ) ) then
+					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, 0 - 512, 20 )
+
+					if ( !catherine.intro.secondStageEnding ) then
+						surface.PlaySound( "CAT/UI/intro_done.wav" )
+						catherine.intro.secondStageEnding = true
+					end
+
+					if ( catherine.intro.secondStageX <= 0 - 512 and !catherine.intro.introDone ) then
+						catherine.intro.introDone = true
+						catherine.intro.status = false
+						
+						if ( !catherine.intro.loading and catherine.intro.introDone and !IsValid( catherine.vgui.character ) ) then
+							catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+						end
+					end
+				end
+			end
+		end
+	end
+
+	if ( catherine.intro.loadingAlpha > 0 ) then
+		catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 5, 5 )
+		
+		draw.NoTexture( )
+		surface.SetDrawColor( 90, 90, 90, catherine.intro.loadingAlpha )
+		catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 250, 100 )
+	end
+	
+	if ( catherine.intro.firstStage ) then
+		surface.SetDrawColor( 50, 50, 50, 255 )
+		surface.SetMaterial( Material( catherine.configs.frameworkLogo ) )
+		surface.DrawTexturedRect( catherine.intro.firstStageX, scrH / 2 - 256 / 2, 512, 256 )
+	end
+	
+	surface.SetDrawColor( 255, 255, 255, catherine.intro.secondStageFade )
+	surface.SetMaterial( Material( catherine.configs.schemaLogo ) )
+	surface.DrawTexturedRect( catherine.intro.secondStageX, scrH / 2 - 256 / 2, 512, 256 )
+
+	draw.SimpleText( LANG( "Version_UI_YourVer_AV", catherine.version.Ver ), "catherine_normal15", scrW - 20, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 function GM:PostDrawTranslucentRenderables( depth, skybox )
@@ -396,14 +499,13 @@ netstream.Hook( "catherine.ShowHelp", function( )
 end )
 
 netstream.Hook( "catherine.IntroStart", function( )
-	timer.Simple( 1, function( )
-		catherine.intro.loading = true
-		catherine.intro.intro = true
-	end )
+	catherine.intro.loading = true
+	catherine.intro.status = true
+	catherine.intro.startTime = CurTime( )
 end )
 
 netstream.Hook( "catherine.IntroStop", function( )
-	catherine.intro.intro = false
+	catherine.intro.status = false
 end )
 
 netstream.Hook( "catherine.loadingFinished", function( )

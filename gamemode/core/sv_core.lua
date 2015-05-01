@@ -88,12 +88,12 @@ end
 
 function GM:PlayerSpawn( pl )
 	if ( IsValid( pl.deathBody ) ) then
-		pl.deathBody:Remove( )
+		pl.deathBody.Remove( pl.deathBody )
 		pl.deathBody = nil
 	end
 	
 	if ( IsValid( pl.CAT_ragdoll ) ) then
-		pl.CAT_ragdoll:Remove( )
+		pl.CAT_ragdoll.Remove( pl.CAT_ragdoll )
 		pl.CAT_ragdoll = nil
 	end
 	
@@ -108,7 +108,7 @@ function GM:PlayerSpawn( pl )
 	pl.ConCommand( pl, "-duck" )
 	pl.SetColor( pl, Color( 255, 255, 255, 255 ) )
 	pl.SetNetVar( pl, "isTied", false )
-	pl:SetupHands( )
+	pl.SetupHands( pl )
 
 	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
 	pl.AllowFlashlight( pl, status )

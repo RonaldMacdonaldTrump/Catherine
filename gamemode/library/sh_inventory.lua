@@ -41,7 +41,7 @@ if ( SERVER ) then
 				}
 			else
 				local itemTable = catherine.item.FindByID( uniqueID )
-				
+
 				inventory[ uniqueID ] = {
 					uniqueID = uniqueID,
 					itemCount = itemCount,
