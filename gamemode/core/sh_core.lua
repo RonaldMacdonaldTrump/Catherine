@@ -147,8 +147,28 @@ function GM:CalcMainActivity( pl, velo )
 		if ( !pl.OnGround( pl ) ) then
 			pl.CalcIdle = aniClass.glide or ACT_GLIDE
 		elseif ( pl.InVehicle( pl ) ) then
-			pl.CalcIdle = aniClass.normal.idle_crouch[ 1 ]
+			local vehicleTable = aniClass.vehicle
+			local class = "chair" // need fix. :)
+			
+			if ( vehicleTable and vehicleTable[ class ] ) then
+				local act = vehicleTable[ class ][ 1 ]
+				local vecFix = vehicleTable[ class ][ 2 ]
+				
+				if ( vecFix ) then
+					pl:ManipulateBonePosition( 0, vecFix )
+				end
+				
+				if ( act ) then
+					if ( type( act ) == "string" ) then
+						pl.CalcOver = pl:LookupSequence( vehicleTable[ class ][ 1 ] )
+					else
+						pl.CalcIdle = act
+					end
+				end
+			end
 		elseif ( ani ) then
+			pl:ManipulateBonePosition( 0, vector_origin )
+			
 			val = ani[ status ]
 
 			if ( type( val ) == "string" ) then
@@ -173,52 +193,6 @@ function GM:CalcMainActivity( pl, velo )
 
 		return pl.CalcIdle or ACT_IDLE, pl.CalcOver or -1
 	end
-end
-
-function GM:DoAnimationEvent( pl, event, data )
-	local mdl = pl.GetModel( pl ):lower( )
-	local class = catherine.animation.Get( mdl )
-
-	if ( mdl:find( "/player/" ) or mdl:find( "/playermodel" ) or class == "player" ) then
-		return self.BaseClass:DoAnimationEvent( pl, event, data )
-	end
-
-	local wep = pl.GetActiveWeapon( pl )
-	local holdType = "normal"
-
-	if ( !catherine.animation[ class ] ) then
-		class = "citizen_male"
-	end
-
-	if ( IsValid( wep ) ) then
-		holdType = catherine.util.GetHoldType( wep )
-	end
-
-	if ( !catherine.animation[ class ][ holdType ] ) then
-		holdType = "normal"
-	end
-
-	local ani = catherine.animation[ class ][ holdType ]
-
-	if ( event == PLAYERANIMEVENT_ATTACK_PRIMARY ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
-
-		return ACT_VM_PRIMARYATTACK
-	elseif ( event == PLAYERANIMEVENT_ATTACK_SECONDARY ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
-
-		return ACT_VM_SECONDARYATTACK
-	elseif ( event == PLAYERANIMEVENT_RELOAD ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.reload or ACT_GESTURE_RELOAD_SMG1, true )
-
-		return ACT_INVALID
-	elseif ( event == PLAYERANIMEVENT_CANCEL_RELOAD ) then
-		pl:AnimResetGestureSlot( GESTURE_SLOT_ATTACK_AND_RELOAD )
-
-		return ACT_INVALID
-	end
-
-	return nil
 end
 
 function GM:PlayerNoClip( pl, bool )

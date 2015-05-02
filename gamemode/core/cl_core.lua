@@ -48,9 +48,9 @@ local OFFSET_AD_ESP = Vector( 0, 0, 50 )
 
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hud.blockedModules ) do
-		if ( v == name ) then
-			return false
-		end
+		if ( v != name ) then continue end
+		
+		return false
 	end
 	
 	return true
@@ -85,10 +85,14 @@ function GM:ShouldDrawLocalPlayer( pl )
 end
 
 function GM:CalcView( pl, pos, ang, fov )
+	local viewData = self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov ) or { }
+
 	if ( catherine.intro.status ) then
-		return {
+		viewData = {
 			origin = Vector( 0, 0, 200000 )
 		}
+		
+		return viewData
 	end
 	
 	if ( pl.GetNetVar( pl, "isActioning" ) ) then
@@ -97,16 +101,20 @@ function GM:CalcView( pl, pos, ang, fov )
 			endpos = pos - ( ang.Forward( ang ) * 100 )
 		} )
 
-		return {
+		viewData = {
 			origin = data.Fraction < 1 and ( data.HitPos + data.HitNormal * 5 ) or data.HitPos
 		}
+		
+		return viewData
 	end
 	
 	if ( IsValid( catherine.vgui.character ) or !pl.IsCharacterLoaded( pl ) ) then
-		return {
+		viewData = {
 			origin = catherine.configs.schematicViewPos.pos,
 			angles = catherine.configs.schematicViewPos.ang
 		}
+		
+		return viewData
 	end
 
 	local ent = Entity( pl.GetNetVar( pl, "ragdollIndex", 0 ) )
@@ -117,23 +125,26 @@ function GM:CalcView( pl, pos, ang, fov )
 		if ( index ) then
 			local data = ent.GetAttachment( ent, index )
 
-			return {
+			viewData = {
 				origin = data and data.Pos,
 				angles = data and data.Ang
 			}
+			
+			return viewData
 		end
 	end
+	
+	return self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
 end
 
-
-local introBombA = 0
+local introBooA = 0
 
 function GM:HUDDrawScoreBoard( )
 	if ( LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 
+	// Backgrounds
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, catherine.intro.backAlpha ) )
-		
 	surface.SetDrawColor( 200, 200, 200, catherine.intro.backAlpha )
 	surface.SetMaterial( Material( "gui/gradient_up" ) )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )
@@ -150,6 +161,7 @@ function GM:HUDDrawScoreBoard( )
 		catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 0 )
 	end
 	
+	// Intro codes
 	if ( catherine.intro.status and catherine.intro.startTime != 0 ) then
 		if ( catherine.intro.startTime + 5 <= CurTime( ) ) then
 			catherine.intro.firstStage = true
@@ -159,8 +171,8 @@ function GM:HUDDrawScoreBoard( )
 			end
 			
 			if ( !catherine.intro.firstStageEffect ) then
-				introBombA = 255
-				surface.PlaySound( "CAT/intro_slide.wav" )
+				introBooA = 255
+				surface.PlaySound( "CAT/intro_slide.wav" ) // Tooong!
 				catherine.intro.firstStageEffect = true
 			end
 			
@@ -176,8 +188,8 @@ function GM:HUDDrawScoreBoard( )
 				catherine.intro.secondStage = true
 				
 				if ( !catherine.intro.secondStageEffect ) then
-					introBombA = 255
-					surface.PlaySound( "CAT/intro_slide.wav" )
+					introBooA = 255
+					surface.PlaySound( "CAT/intro_slide.wav" ) // Tooong!
 					catherine.intro.secondStageEffect = true
 				end
 				
@@ -199,7 +211,7 @@ function GM:HUDDrawScoreBoard( )
 					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, 0 - 512, 33 )
 
 					if ( !catherine.intro.secondStageEnding ) then
-						surface.PlaySound( "CAT/UI/intro_done.wav" )
+						surface.PlaySound( "CAT/UI/intro_done.wav" ) // Sike!
 						catherine.intro.secondStageEnding = true
 					end
 
@@ -209,16 +221,18 @@ function GM:HUDDrawScoreBoard( )
 						
 						if ( !catherine.intro.loading and catherine.intro.introDone and !IsValid( catherine.vgui.character ) ) then
 							catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+							// Call character panel
 						end
 					end
 				end
 			end
 		end
 		
-		introBombA = Lerp( 0.02, introBombA, 0 )
+		introBooA = Lerp( 0.02, introBooA, 0 )
 	end
 
 	if ( catherine.intro.loadingAlpha > 0 ) then
+		// Loading circle
 		catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 5, 5 )
 		
 		draw.NoTexture( )
@@ -226,19 +240,22 @@ function GM:HUDDrawScoreBoard( )
 		catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 250, 100 )
 	end
 	
-	if ( catherine.intro.firstStage ) then
-		surface.SetDrawColor( 50, 50, 50, 255 )
-		surface.SetMaterial( Material( catherine.configs.frameworkLogo ) )
-		surface.DrawTexturedRect( catherine.intro.firstStageX, scrH / 2 - 256 / 2, 512, 256 )
-	end
-	
+
+	// Framework logo
+	surface.SetDrawColor( 50, 50, 50, 255 )
+	surface.SetMaterial( Material( catherine.configs.frameworkLogo ) )
+	surface.DrawTexturedRect( catherine.intro.firstStageX, scrH / 2 - 256 / 2, 512, 256 )
+
+	// Schema logo
 	surface.SetDrawColor( 255, 255, 255, catherine.intro.secondStageFade )
 	surface.SetMaterial( Material( catherine.configs.schemaLogo ) )
 	surface.DrawTexturedRect( catherine.intro.secondStageX, scrH / 2 - 256 / 2, 512, 256 )
 
+	// Catherine version
 	draw.SimpleText( LANG( "Version_UI_YourVer_AV", catherine.version.Ver ), "catherine_normal15", scrW - 20, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_RIGHT, 1 )
-
-	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, introBombA ) )
+	
+	// Whitescreen
+	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, introBooA ) )
 end
 
 function GM:PostDrawTranslucentRenderables( depth, skybox )
@@ -263,7 +280,7 @@ function GM:DrawDoorText( ent, pos, ang )
 	if ( catherine.door.IsDoorDisabled( ent ) ) then return end
 	local a = catherine.util.GetAlphaFromDistance( ent.GetPos( ent ), LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 )
 
-	if ( math.Round( a ) <= 0 ) then
+	if ( a <= 0 ) then
 		return
 	end
 	
@@ -362,16 +379,14 @@ end
 function GM:PlayerInformationDraw( pl, target, x, y, a )
 	if ( catherine.player.IsRagdolled( target ) ) then
 		draw.SimpleText( LANG( "Player_Message_Ragdolled_HUD" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		y = y + 20
 	end
 	
 	if ( catherine.player.IsTied( target ) ) then
-		draw.SimpleText( LANG( "Player_Message_UnTie" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		y = y + 20
+		draw.SimpleText( LANG( "Player_Message_UnTie" ), "catherine_normal15", x, y + 20, Color( 255, 255, 255, a ), 1, 1 )
 	end
 	
 	if ( !target.Alive( target ) ) then
-		draw.SimpleText( LANG( "Player_Message_Dead_HUD" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( LANG( "Player_Message_Dead_HUD" ), "catherine_normal15", x, y + 40, Color( 255, 255, 255, a ), 1, 1 )
 	end
 end
 

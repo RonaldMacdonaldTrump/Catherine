@@ -77,12 +77,9 @@ function GM:PlayerSpray( pl )
 end
 
 function GM:Move( pl, moveData )
-	if ( pl.IsCharacterLoaded( pl ) ) then
-		if ( pl.GetNetVar( pl, "isActioning" ) ) then
-			moveData:SetForwardSpeed( 0 )
-			moveData:SetSideSpeed( 0 )
-		else
-		end
+	if ( pl.IsCharacterLoaded( pl ) and pl.GetNetVar( pl, "isActioning" ) ) then
+		moveData.SetForwardSpeed( moveData, 0 )
+		moveData.SetSideSpeed( moveData, 0 )
 	end
 end
 
@@ -97,11 +94,9 @@ function GM:PlayerSpawn( pl )
 		pl.CAT_ragdoll = nil
 	end
 	
-	if ( pl.CAT_deathSoundPlayed ) then
-		pl.CAT_deathSoundPlayed = nil
-	end
-	
-	pl:SetNetVar( "noDrawOriginal", nil )
+	pl.CAT_deathSoundPlayed = nil
+
+	pl.SetNetVar( pl, "noDrawOriginal", nil )
 	
 	pl.SetNoDraw( pl, false )
 	pl.Freeze( pl, false )
@@ -152,15 +147,17 @@ function GM:PlayerSetHandsModel( pl, ent )
 end
 
 function GM:PlayerAuthed( pl )
-	catherine.chat.Send( pl, "connect" )
-	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has connected a server." )
-	
-	hook.Run( "PlayerInitSpawned", pl )
+	timer.Simple( 2, function( )
+		catherine.chat.Send( pl, "connect" )
+		catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has connected a server." )
+		
+		hook.Run( "PlayerInitSpawned", pl )
+	end )
 end
 
 function GM:PlayerDisconnected( pl )
 	if ( IsValid( pl.deathBody ) ) then
-		pl.deathBody:Remove( )
+		pl.deathBody.Remove( pl.deathBody )
 	end
 	
 	catherine.chat.Send( pl, "disconnect" )
@@ -187,9 +184,7 @@ function GM:EntityTakeDamage( ent, dmginfo )
 			local amount = dmginfo:GetDamage( )
 			
 			pl.CAT_ignore_hurtSound = true
-			
 			pl:TakeDamage( amount, attacker, inflictor )
-			
 			pl.CAT_ignore_hurtSound = nil
 
 			if ( pl.Health( pl ) <= 0 ) then
@@ -328,7 +323,7 @@ function GM:PlayerTakeDamage( pl, attacker, ragdollEntity )
 	local gender = pl.GetGender( pl )
 	
 	if ( !sound ) then
-		if ( hitGroup == HITGROUP_HEAD) then
+		if ( hitGroup == HITGROUP_HEAD ) then
 			sound = "vo/npc/" .. gender .. "01/ow0" .. math.random( 1, 2 ) .. ".wav"
 		elseif ( hitGroup == HITGROUP_CHEST or hitGroup == HITGROUP_GENERIC ) then
 			sound = "vo/npc/" .. gender .. "01/hitingut0" .. math.random( 1, 2 ) .. ".wav"
@@ -391,8 +386,7 @@ function GM:DoPlayerDeath( pl )
 		pl.deathBody:SetCollisionGroup( COLLISION_GROUP_WEAPON )
 		pl.deathBody.player = self
 		pl.deathBody:SetNetVar( "player", pl )
-		pl.deathBody:SetNetVar( "isDeathBody", true ) // 제거 필요.
-		
+
 		pl:SetNetVar( "ragdollIndex", pl.deathBody.EntIndex( pl.deathBody ) )
 	end
 	

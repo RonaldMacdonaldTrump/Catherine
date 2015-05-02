@@ -113,7 +113,13 @@ catherine.animation.citizen_male = {
 		run = {ACT_RUN, ACT_RUN},
 		attack = ACT_MELEE_ATTACK_SWING
 	},
-	glide = ACT_GLIDE
+	glide = ACT_GLIDE,
+	vehicle = {
+		chair = {
+			"sitchair1",
+			Vector( 1, 0, -23 )
+		}
+	}
 }
 
 catherine.animation.citizen_female = {
@@ -166,7 +172,13 @@ catherine.animation.citizen_female = {
 		run = {ACT_RUN, ACT_RUN},
 		attack = ACT_MELEE_ATTACK_SWING
 	},
-	glide = ACT_GLIDE
+	glide = ACT_GLIDE,
+	vehicle = {
+		chair = {
+			"sitchair1",
+			Vector( 1, 0, -23 )
+		}
+	}
 }
 
 catherine.animation.metrocop = {
@@ -216,7 +228,13 @@ catherine.animation.metrocop = {
 		run = {ACT_RUN, ACT_RUN},
 		attack = ACT_MELEE_ATTACK_SWING_GESTURE
 	},
-	glide = ACT_GLIDE
+	glide = ACT_GLIDE,
+	vehicle = {
+		chair = {
+			ACT_COVER_PISTOL_LOW,
+			Vector( 5, 0, -5 )
+		}
+	}
 }
 
 catherine.animation.overwatch = {
