@@ -215,7 +215,7 @@ if ( SERVER ) then
 	function catherine.chat.Run( pl, text )
 		local classTable = catherine.chat.FindByID( catherine.chat.FindIDByText( text ) )
 		if ( !classTable ) then return end
-		
+
 		if ( !catherine.chat.CanChat( pl, classTable ) ) then
 			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 			return
@@ -294,7 +294,11 @@ if ( SERVER ) then
 	end
 	
 	function catherine.chat.CanChat( pl, classTable )
-		return classTable.canRun and classTable.canRun( pl ) or true
+		if ( classTable.canRun ) then
+			return classTable.canRun( pl )
+		end
+		
+		return true
 	end
 	
 	function catherine.chat.RunByID( pl, uniqueID, text, target, ... )

@@ -125,6 +125,9 @@ function GM:CalcView( pl, pos, ang, fov )
 	end
 end
 
+
+local introBombA = 0
+
 function GM:HUDDrawScoreBoard( )
 	if ( LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
@@ -152,10 +155,11 @@ function GM:HUDDrawScoreBoard( )
 			catherine.intro.firstStage = true
 
 			if ( catherine.intro.firstStageX >= scrW / 2 - 512 / 2 ) then
-				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, scrW / 2 - 512 / 2, 20 )
+				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, scrW / 2 - 512 / 2, 33 )
 			end
 			
 			if ( !catherine.intro.firstStageEffect ) then
+				introBombA = 255
 				surface.PlaySound( "CAT/intro_slide.wav" )
 				catherine.intro.firstStageEffect = true
 			end
@@ -164,7 +168,7 @@ function GM:HUDDrawScoreBoard( )
 				catherine.intro.firstStageShowingTime = CurTime( )
 			end
 			
-			if ( catherine.intro.firstStageShowingTime + 3 <= CurTime( ) ) then
+			if ( catherine.intro.firstStageShowingTime + 4 <= CurTime( ) ) then
 				if ( !catherine.intro.secondStageShowingTime ) then
 					catherine.intro.secondStageShowingTime = CurTime( )
 				end
@@ -172,14 +176,15 @@ function GM:HUDDrawScoreBoard( )
 				catherine.intro.secondStage = true
 				
 				if ( !catherine.intro.secondStageEffect ) then
+					introBombA = 255
 					surface.PlaySound( "CAT/intro_slide.wav" )
 					catherine.intro.secondStageEffect = true
 				end
 				
-				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, 0 - 512, 20 )
+				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, 0 - 512, 33 )
 				
 				if ( !catherine.intro.secondStageEnding ) then
-					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, scrW / 2 - 512 / 2, 20 )
+					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, scrW / 2 - 512 / 2, 33 )
 				end
 				
 				if ( catherine.intro.firstStageEnding ) then
@@ -190,8 +195,8 @@ function GM:HUDDrawScoreBoard( )
 					end
 				end
 				
-				if ( catherine.intro.secondStageShowingTime + 3 <= CurTime( ) ) then
-					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, 0 - 512, 20 )
+				if ( catherine.intro.secondStageShowingTime + 4 <= CurTime( ) ) then
+					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, 0 - 512, 33 )
 
 					if ( !catherine.intro.secondStageEnding ) then
 						surface.PlaySound( "CAT/UI/intro_done.wav" )
@@ -209,6 +214,8 @@ function GM:HUDDrawScoreBoard( )
 				end
 			end
 		end
+		
+		introBombA = Lerp( 0.02, introBombA, 0 )
 	end
 
 	if ( catherine.intro.loadingAlpha > 0 ) then
@@ -230,6 +237,8 @@ function GM:HUDDrawScoreBoard( )
 	surface.DrawTexturedRect( catherine.intro.secondStageX, scrH / 2 - 256 / 2, 512, 256 )
 
 	draw.SimpleText( LANG( "Version_UI_YourVer_AV", catherine.version.Ver ), "catherine_normal15", scrW - 20, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_RIGHT, 1 )
+
+	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, introBombA ) )
 end
 
 function GM:PostDrawTranslucentRenderables( depth, skybox )
