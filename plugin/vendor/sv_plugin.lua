@@ -51,6 +51,10 @@ local vars = {
 		default = false
 	},
 	{
+		id = "model",
+		default = "models/alyx.mdl"
+	},
+	{
 		id = "items",
 		default = { }
 	}
@@ -61,17 +65,18 @@ function PLUGIN:SaveVendors( )
 	
 	for k, v in pairs( ents.FindByClass( "cat_vendor" ) ) do
 		if ( !v.vendorData ) then continue end
+
 		data[ #data + 1 ] = {
 			name = v.vendorData.name,
 			desc = v.vendorData.desc,
-			factionData = v.vendorData.factions,
-			classData = v.vendorData.classes,
+			factions = v.vendorData.factions,
+			classes = v.vendorData.classes,
 			inv = v.vendorData.inv,
 			cash = v.vendorData.cash,
 			setting = v.vendorData.setting,
 			status = v.vendorData.status,
 			items = v.vendorData.items,
-			model = v:GetModel( ),
+			model = v.vendorData.model,
 			pos = v.GetPos( v ),
 			ang = v.GetAngles( v )
 		}
@@ -87,11 +92,13 @@ function PLUGIN:LoadVendors( )
 		local ent = ents.Create( "cat_vendor" )
 		ent:SetPos( v.pos )
 		ent:SetAngles( v.ang )
-		ent:SetModel( v.model )
 		ent:Spawn( )
 		ent:Activate( )
-		
+
 		self:MakeVendor( ent, v )
+		
+		ent:SetModel( v.model )
+		ent:SetAni( )
 	end
 end
 
@@ -99,6 +106,7 @@ function PLUGIN:MakeVendor( ent, data )
 	if ( !IsValid( ent ) or !data ) then return end
 
 	ent.vendorData = { }
+	
 	for k, v in pairs( vars ) do
 		local val = data[ v.id ] and data[ v.id ] or v.default
 		ent:SetNetVar( v.id, val )
@@ -113,7 +121,12 @@ function PLUGIN:SetVendorData( ent, id, data, noSync )
 
 	ent.vendorData[ id ] = data
 	ent:SetNetVar( id, data )
-
+	
+	if ( id == "model" ) then
+		ent:SetModel( data )
+		ent:SetAni( )
+	end
+	
 	if ( !noSync ) then
 		local target = self:GetVendorWorkingPlayers( )
 		if ( #target != 0 ) then
@@ -129,6 +142,7 @@ end
 
 function PLUGIN:VendorWork( pl, ent, workID, data )
 	if ( !IsValid( pl ) or !IsValid( ent ) or !workID or !data ) then return end
+
 	if ( workID == CAT_VENDOR_ACTION_BUY ) then
 		local uniqueID = data.uniqueID
 		local count = math.max( data.count or 1, 1 )
@@ -242,6 +256,17 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 			return
 		end
 		
+		local varsID = {
+			"name",
+			"desc",
+			"factions",
+			"classes"
+		}
+		
+		for k, v in pairs( data ) do
+			self:SetVendorData( ent, k, v )
+		end
+
 	elseif ( workID == CAT_VENDOR_ACTION_ITEM_CHANGE ) then
 		if ( !pl:IsAdmin( ) ) then
 			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
@@ -294,14 +319,12 @@ function PLUGIN:CanUseVendor( pl, ent )
 	end
 	
 	local factionData = ent.vendorData.factions
-	if ( #factionData != 0 and !table.HasValue( factionData, pl:Team( ) ) ) then
-		//return false, "faction"
+	if ( !pl.IsAdmin( pl ) and #factionData != 0 and !table.HasValue( factionData, pl:Faction( ) ) ) then
 		return false
 	end
 	
 	local classData = ent.vendorData.classes
-	if ( #classData != 0 and !table.HasValue( classData, pl:Class( ) ) ) then
-		//return false, "class"
+	if ( !pl.IsAdmin( pl ) and #classData != 0 and !table.HasValue( classData, pl:Class( ) ) ) then
 		return false
 	end
 

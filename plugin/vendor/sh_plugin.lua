@@ -30,7 +30,8 @@ local varsID = {
 	"inv",
 	"cash",
 	"setting",
-	"status"
+	"status",
+	"model"
 }
 CAT_VENDOR_ACTION_BUY = 1 // Buy from player
 CAT_VENDOR_ACTION_SELL = 2 // Sell to player
@@ -39,7 +40,6 @@ CAT_VENDOR_ACTION_ITEM_CHANGE = 4
 CAT_VENDOR_ACTION_ITEM_UNCHANGE = 5
 
 function PLUGIN:GetVendorDatas( ent )
-	if ( !IsValid( ent ) or !ent.isVendor ) then return end
 	local datas = { }
 
 	for k, v in pairs( varsID ) do

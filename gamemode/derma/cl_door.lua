@@ -150,16 +150,18 @@ function PANEL:BuildPlayerList( )
 			
 			draw.SimpleText( v.Name( v ), "catherine_normal20", 70, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( v.FactionName( v ), "catherine_normal20", 70, 45, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			
-			local text = LANG( "Door_UI_OwnerStr" )
-			
-			if ( flag == CAT_DOOR_FLAG_ALL ) then
-				text = LANG( "Door_UI_AllStr" )
-			elseif ( flag == CAT_DOOR_FLAG_BASIC ) then
-				text = LANG( "Door_UI_BasicStr" )
+
+			if ( has ) then
+				local text = LANG( "Door_UI_OwnerStr" )
+				
+				if ( flag == CAT_DOOR_FLAG_ALL ) then
+					text = LANG( "Door_UI_AllStr" )
+				elseif ( flag == CAT_DOOR_FLAG_BASIC ) then
+					text = LANG( "Door_UI_BasicStr" )
+				end
+				
+				draw.SimpleText( text, "catherine_normal20", w - 20, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			end
-			
-			draw.SimpleText( text, "catherine_normal20", w - 20, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		end
 		
 		local spawnIcon = vgui.Create( "SpawnIcon", panel )

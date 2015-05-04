@@ -34,6 +34,9 @@ function PANEL:Init( )
 	self.idFunc = {
 		function( )
 			self.currMenu = 1
+			
+			self:Remove_Setting( )
+			
 			self.sellPanel:SetVisible( false )
 			self.settingPanel:SetVisible( false )
 			self.manageItemPanel:SetVisible( false )
@@ -42,6 +45,9 @@ function PANEL:Init( )
 		end,
 		function( )
 			self.currMenu = 2
+			
+			self:Remove_Setting( )
+			
 			self.sellPanel:SetVisible( true )
 			self.buyPanel:SetVisible( false )
 			self.manageItemPanel:SetVisible( false )
@@ -51,6 +57,9 @@ function PANEL:Init( )
 		end,
 		function( )
 			self.currMenu = 3
+			
+			self:Build_Setting( )
+			
 			self.sellPanel:SetVisible( false )
 			self.buyPanel:SetVisible( false )
 			self.manageItemPanel:SetVisible( false )
@@ -58,6 +67,9 @@ function PANEL:Init( )
 		end,
 		function( )
 			self.currMenu = 4
+			
+			self:Remove_Setting( )
+			
 			self.sellPanel:SetVisible( false )
 			self.buyPanel:SetVisible( false )
 			self.manageItemPanel:SetVisible( true )
@@ -191,6 +203,244 @@ function PANEL:Init( )
 		if ( self.closeing ) then return end
 		self:Close( )
 		netstream.Start( "catherine.plugin.vendor.VendorClose" )
+	end
+end
+
+function PANEL:Remove_Setting( )
+	if ( IsValid( self.settingPanel.panel ) ) then
+		self.settingPanel.panel:Remove( )
+		self.settingPanel.panel = nil
+	end
+end
+
+function PANEL:Build_Setting( )
+	if ( self.currMenu != 3 ) then return end
+
+	self.settingPanel.panel = vgui.Create( "DPanel", self.settingPanel )
+	self.settingPanel.panel:SetPos( 0, 0 )
+	self.settingPanel.panel:SetSize( self.settingPanel:GetWide( ), self.settingPanel:GetTall( ) )
+	
+	local parentPanel = self.settingPanel.panel
+	local w, h = self.settingPanel.panel:GetWide( ), self.settingPanel.panel:GetTall( )
+	
+	self.vendorNewData = { }
+	
+	parentPanel.vendorName = ""
+	parentPanel.vendorNameLen = 0
+	
+	parentPanel.vendorDesc = ""
+	parentPanel.vendorDescLen = 0
+	
+	parentPanel.vendorNameLabel = vgui.Create( "DLabel", parentPanel )
+	parentPanel.vendorNameLabel:SetPos( 10, 10 )
+	parentPanel.vendorNameLabel:SetColor( Color( 50, 50, 50, 255 ) )
+	parentPanel.vendorNameLabel:SetFont( "catherine_normal15" )
+	parentPanel.vendorNameLabel:SetText( "Vendor Name" )
+	parentPanel.vendorNameLabel:SizeToContents( )
+	
+	parentPanel.vendorNameEnt = vgui.Create( "DTextEntry", parentPanel )
+	parentPanel.vendorNameEnt:SetPos( 10, 30 )
+	parentPanel.vendorNameEnt:SetSize( w - 20, 25 )
+	parentPanel.vendorNameEnt:SetFont( "catherine_normal15" )
+	parentPanel.vendorNameEnt:SetText( self.vendorData.name )
+	parentPanel.vendorNameEnt:SetAllowNonAsciiCharacters( true )
+	parentPanel.vendorNameEnt.Paint = function( pnl, w, h )
+		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
+		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+	end
+	parentPanel.vendorNameEnt.OnTextChanged = function( pnl )
+		parentPanel.vendorName = pnl:GetText( )
+		parentPanel.vendorNameLen = parentPanel.vendorName.utf8len( parentPanel.vendorName )
+		
+		self.vendorNewData.name = parentPanel.vendorName
+	end
+	parentPanel.vendorNameEnt.OnEnter = function( pnl )
+		netstream.Start( "catherine.plugin.vendor.VendorWork", {
+			self.ent,
+			CAT_VENDOR_ACTION_SETTING_CHANGE,
+			self.vendorNewData
+		} )
+	end
+	
+	parentPanel.vendorDescLabel = vgui.Create( "DLabel", parentPanel )
+	parentPanel.vendorDescLabel:SetPos( 10, 60 )
+	parentPanel.vendorDescLabel:SetColor( Color( 50, 50, 50, 255 ) )
+	parentPanel.vendorDescLabel:SetFont( "catherine_normal15" )
+	parentPanel.vendorDescLabel:SetText( "Vendor Description" )
+	parentPanel.vendorDescLabel:SizeToContents( )
+	
+	parentPanel.vendorDescEnt = vgui.Create( "DTextEntry", parentPanel )
+	parentPanel.vendorDescEnt:SetPos( 10, 80 )
+	parentPanel.vendorDescEnt:SetSize( w - 20, 25 )
+	parentPanel.vendorDescEnt:SetFont( "catherine_normal15" )
+	parentPanel.vendorDescEnt:SetText( self.vendorData.desc )
+	parentPanel.vendorDescEnt:SetAllowNonAsciiCharacters( true )
+	parentPanel.vendorDescEnt.Paint = function( pnl, w, h )
+		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
+		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+	end
+	parentPanel.vendorDescEnt.OnTextChanged = function( pnl )
+		parentPanel.vendorDesc = pnl:GetText( )
+		parentPanel.vendorDescLen = parentPanel.vendorDesc.utf8len( parentPanel.vendorDesc )
+		
+		self.vendorNewData.desc = parentPanel.vendorDesc
+	end
+	parentPanel.vendorDescEnt.OnEnter = function( pnl )
+		netstream.Start( "catherine.plugin.vendor.VendorWork", {
+			self.ent,
+			CAT_VENDOR_ACTION_SETTING_CHANGE,
+			self.vendorNewData
+		} )
+	end
+	
+	parentPanel.vendorModelLabel = vgui.Create( "DLabel", parentPanel )
+	parentPanel.vendorModelLabel:SetPos( 10, 110 )
+	parentPanel.vendorModelLabel:SetColor( Color( 50, 50, 50, 255 ) )
+	parentPanel.vendorModelLabel:SetFont( "catherine_normal15" )
+	parentPanel.vendorModelLabel:SetText( "Vendor Model" )
+	parentPanel.vendorModelLabel:SizeToContents( )
+	
+	parentPanel.vendorModelEnt = vgui.Create( "DTextEntry", parentPanel )
+	parentPanel.vendorModelEnt:SetPos( 10, 130 )
+	parentPanel.vendorModelEnt:SetSize( w - 20, 25 )
+	parentPanel.vendorModelEnt:SetFont( "catherine_normal15" )
+	parentPanel.vendorModelEnt:SetText( self.vendorData.model )
+	parentPanel.vendorModelEnt:SetAllowNonAsciiCharacters( true )
+	parentPanel.vendorModelEnt.Paint = function( pnl, w, h )
+		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
+		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+	end
+	parentPanel.vendorModelEnt.OnTextChanged = function( pnl )
+		self.vendorNewData.model = pnl:GetText( )
+	end
+	parentPanel.vendorModelEnt.OnEnter = function( pnl )
+		netstream.Start( "catherine.plugin.vendor.VendorWork", {
+			self.ent,
+			CAT_VENDOR_ACTION_SETTING_CHANGE,
+			self.vendorNewData
+		} )
+	end
+	
+	parentPanel.vendorAccFacLabel = vgui.Create( "DLabel", parentPanel )
+	parentPanel.vendorAccFacLabel:SetPos( 10, 170 )
+	parentPanel.vendorAccFacLabel:SetColor( Color( 50, 50, 50, 255 ) )
+	parentPanel.vendorAccFacLabel:SetFont( "catherine_normal15" )
+	parentPanel.vendorAccFacLabel:SetText( "Factions" )
+	parentPanel.vendorAccFacLabel:SizeToContents( )
+	
+	parentPanel.factionLists = vgui.Create( "DPanelList", parentPanel )
+	parentPanel.factionLists:SetPos( 10, 190 )
+	parentPanel.factionLists:SetSize( w - 30, 120 )
+	parentPanel.factionLists:SetSpacing( 0 )
+	parentPanel.factionLists:EnableHorizontal( false )
+	parentPanel.factionLists:EnableVerticalScrollbar( true )	
+	parentPanel.factionLists.Paint = function( pnl, w, h )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
+	end
+
+	self:Refresh_SettingList( 1 )
+	self:Refresh_SettingList( 2 )
+	
+	self.settingPanel.panel.Paint = function( pnl, w, h )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
+		
+		--[[
+		local col = 80 <= pnl.vendorNameLen and Color( 255, 0, 0 ) or Color( 50, 50, 50 )
+
+		draw.SimpleText( pnl.vendorNameLen .. " / " .. 80, "catherine_normal15", w - 10, 15, col, TEXT_ALIGN_RIGHT, 1 )
+		
+		local col = 80 <= pnl.vendorDescLen and Color( 255, 0, 0 ) or Color( 50, 50, 50 )
+
+		draw.SimpleText( pnl.vendorDescLen .. " / " .. 80, "catherine_normal15", w - 10, 70, col, TEXT_ALIGN_RIGHT, 1 )--]]
+	end
+end
+
+function PANEL:Refresh_SettingList( id )
+	local parentPanel = self.settingPanel.panel
+	local w, h = self.settingPanel.panel:GetWide( ), self.settingPanel.panel:GetTall( )
+	
+	if ( id == 1 ) then
+		parentPanel.factionLists:Clear( )
+		local factionData = self.vendorData.factions
+		local notyetPermission = false
+
+		if ( table.Count( factionData ) == 0 ) then
+			notyetPermission = true
+		end
+		
+		PrintTable(self.vendorData)
+
+		local function checkHas( id )
+			return table.HasValue( factionData, id )
+		end
+		
+		for k, v in pairs( catherine.faction.GetAll( ) ) do
+			local has = checkHas( v.uniqueID )
+			
+			local panel = vgui.Create( "DPanel" )
+			panel:SetSize( parentPanel.factionLists:GetWide( ), 25 )
+			panel.Paint = function( pnl, w, h )
+				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
+				draw.SimpleText( catherine.util.StuffLanguage( v.name ), "catherine_normal20", 5, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+				
+				if ( notyetPermission or has ) then
+					draw.SimpleText( "Has", "catherine_normal20", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+				end
+			end
+			
+			local button = vgui.Create( "DButton", panel )
+			button:SetSize( panel:GetWide( ), panel:GetTall( ) )
+			button:SetDrawBackground( false )
+			button:SetText( "" )
+			button.DoClick = function( )
+				local menu = DermaMenu( )
+
+				menu:AddOption( "Give", function( )
+					for v2, v2 in pairs( factionData ) do
+						if ( v.uniqueID == v2 ) then
+							return
+						end
+					end
+					
+					factionData[ #factionData + 1 ] = v.uniqueID
+					
+					netstream.Start( "catherine.plugin.vendor.VendorWork", {
+						self.ent,
+						CAT_VENDOR_ACTION_SETTING_CHANGE,
+						{ factions = factionData }
+					} )
+					
+					self:Refresh_SettingList( 1 )
+				end )
+				
+				menu:AddOption( "Take", function( )
+					local changed = false
+					
+					for k2, v2 in pairs( factionData ) do
+						if ( v.uniqueID == v2 ) then
+							table.remove( factionData, k2 )
+							changed = true
+						end
+					end
+					
+					if ( changed ) then
+						netstream.Start( "catherine.plugin.vendor.VendorWork", {
+							self.ent,
+							CAT_VENDOR_ACTION_SETTING_CHANGE,
+							{ factions = factionData }
+						} )
+						
+						self:Refresh_SettingList( 1 )
+					end
+				end )
+				
+				menu:Open( )
+			end
+			
+			parentPanel.factionLists:AddItem( panel )
+		end
+	elseif ( id == 2 ) then
+	
 	end
 end
 
@@ -650,6 +900,7 @@ end
 
 function PANEL:InitializeVendor( ent )
 	self.ent = ent
+	self.vendorData = PLUGIN:GetVendorDatas( ent )
 	self.vendorData.inv = ent.GetNetVar( ent, "inv", { } )
 end
 

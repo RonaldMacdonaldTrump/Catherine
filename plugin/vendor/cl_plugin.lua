@@ -22,6 +22,7 @@ PLUGIN.VENDOR_NOANI = PLUGIN.VENDOR_NOANI or false
 netstream.Hook( "catherine.plugin.vendor.RefreshRequest", function( data )
 	PLUGIN.VENDOR_NOANI = true
 	local menuID = nil
+	
 	if ( IsValid( catherine.vgui.vendor ) ) then
 		menuID = catherine.vgui.vendor.currMenu
 		catherine.vgui.vendor:Remove( )
@@ -30,9 +31,11 @@ netstream.Hook( "catherine.plugin.vendor.RefreshRequest", function( data )
 	
 	catherine.vgui.vendor = vgui.Create( "catherine.vgui.vendor" )
 	catherine.vgui.vendor:InitializeVendor( Entity( data ) )
+	
 	if ( menuID ) then
 		catherine.vgui.vendor:ChangeMode( menuID )
 	end
+	
 	PLUGIN.VENDOR_NOANI = false
 end )
 
