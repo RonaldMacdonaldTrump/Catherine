@@ -107,6 +107,7 @@ catherine.database.modules[ "mysqloo" ] = {
 			catherine.database.Connected = false
 			catherine.database.ErrorMsg = err
 		end
+		
 		catherine.database.object:connect( )
 	end,
 	query = function( query, func )
@@ -123,33 +124,22 @@ catherine.database.modules[ "mysqloo" ] = {
 		function result:onError( err )
 			catherine.util.Print( Color( 255, 0, 0 ), "MySQLoo Query Error : " .. query .. " -> " .. err .. " !!!" )
 		end
+		
 		result:start( )
 	end,
 	escape = function( val )
 		local typ = type( val )
 		
 		if ( typ == "string" ) then
-			if ( catherine.database.object ) then
-				return catherine.database.object:escape( val )
-			else
-				return sql.SQLStr( val, true )
-			end
+			return catherine.database.object and catherine.database.object:escape( val ) or sql.SQLStr( val, true )
 		elseif ( typ == "number" ) then
 			val = tostring( val )
 			
-			if ( catherine.database.object ) then
-				return catherine.database.object:escape( val )
-			else
-				return sql.SQLStr( val, true )
-			end
+			return catherine.database.object and catherine.database.object:escape( val ) or sql.SQLStr( val, true )
 		elseif ( typ == "table" ) then
 			val = util.TableToJSON( val )
 			
-			if ( catherine.database.object ) then
-				return catherine.database.object:escape( val )
-			else
-				return sql.SQLStr( val, true )
-			end
+			return catherine.database.object and catherine.database.object:escape( val ) or sql.SQLStr( val, true )
 		end
 	end
 }
@@ -257,7 +247,7 @@ if ( !catherine.database.Connected ) then
 end
 
 concommand.Add( "cat_db_init", function( pl )
-	if ( IsValid( pl ) and !pl.IsSuperAdmin( pl ) ) then
+	if ( IsValid( pl ) and !pl:IsSuperAdmin( ) ) then
 		catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 		return
 	end
