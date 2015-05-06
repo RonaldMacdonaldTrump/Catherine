@@ -79,7 +79,7 @@ function GM:SpawnMenuOpen( )
 end
 
 function GM:ShouldDrawLocalPlayer( pl )
-	if ( pl.GetNetVar( pl, "isActioning" ) ) then
+	if ( pl:GetNetVar( "isActioning" ) ) then
 		return true
 	end
 end
@@ -95,7 +95,7 @@ function GM:CalcView( pl, pos, ang, fov )
 		return viewData
 	end
 	
-	if ( pl.GetNetVar( pl, "isActioning" ) ) then
+	if ( pl:GetNetVar( "isActioning" ) ) then
 		local data = util.TraceLine( {
 			start = pos, 
 			endpos = pos - ( ang.Forward( ang ) * 100 )
@@ -117,7 +117,7 @@ function GM:CalcView( pl, pos, ang, fov )
 		return viewData
 	end
 
-	local ent = Entity( pl.GetNetVar( pl, "ragdollIndex", 0 ) )
+	local ent = Entity( pl:GetNetVar( "ragdollIndex", 0 ) )
 
 	if ( IsValid( ent ) and ent.GetClass( ent ) == "prop_ragdoll" and catherine.player.IsRagdolled( pl ) ) then
 		local index = ent.LookupAttachment( ent, "eyes" )
@@ -438,7 +438,7 @@ function GM:HUDPaint( )
 	catherine.hint.Draw( pl )
 	hook.Run( "HUDDraw" )
 	
-	if ( pl.Alive( pl ) ) then
+	if ( pl:Alive( ) ) then
 		hook.Run( "ProgressEntityCache", pl )
 	end
 end

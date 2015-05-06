@@ -55,7 +55,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.player.PlayerInformationInitialize( pl )
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data or #data == 0 ) then
@@ -81,14 +81,14 @@ if ( SERVER ) then
 	function catherine.player.HealthRecoverTick( pl )
 		if ( !pl.CAT_healthRecover ) then return end
 
-		if ( math.Round( pl.Health( pl ) ) >= pl.GetMaxHealth( pl ) ) then
+		if ( math.Round( pl:Health( ) ) >= pl:GetMaxHealth( ) ) then
 			pl.CAT_healthRecover = false
 			hook.Run( "HealthFullRecovered", pl )
 			return
 		end
 		
 		if ( ( pl.CAT_healthRecoverTick or CurTime( ) ) <= CurTime( ) ) then
-			pl:SetHealth( math.Clamp( pl.Health( pl ) + 1, 0, pl.GetMaxHealth( pl ) ) )
+			pl:SetHealth( math.Clamp( pl:Health( ) + 1, 0, pl:GetMaxHealth( ) ) )
 			pl.CAT_healthRecoverTick = CurTime( ) + 5
 			hook.Run( "HealthRecovering", pl )
 		end
@@ -208,7 +208,7 @@ if ( SERVER ) then
 
 			local ent = ents.Create( "prop_ragdoll" )
 			ent:SetAngles( pl.GetAngles( pl ) )
-			ent:SetModel( pl.GetModel( pl ) )
+			ent:SetModel( pl:GetModel( ) )
 			ent:SetPos( pl.GetPos( pl ) )
 			ent:SetSkin( pl.GetSkin( pl ) )
 			ent:Spawn( )
@@ -359,11 +359,11 @@ function META:IsChatTyping( )
 end
 
 function catherine.player.IsRagdolled( pl )
-	return pl.GetNetVar( pl, "isRagdolled", nil )
+	return pl:GetNetVar( "isRagdolled", nil )
 end
 
 function catherine.player.IsTied( pl )
-	return pl.GetNetVar( pl, "isTied", false )
+	return pl:GetNetVar( "isTied", false )
 end
 
 function player.GetAllByLoaded( )

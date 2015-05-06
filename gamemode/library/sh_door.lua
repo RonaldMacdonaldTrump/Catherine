@@ -232,7 +232,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.door.DoorSpamProtection( pl, ent )
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		
 		if ( !pl.CAT_lastDoor ) then
 			pl.CAT_lastDoor = ent

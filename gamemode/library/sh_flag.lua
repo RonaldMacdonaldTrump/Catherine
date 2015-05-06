@@ -89,7 +89,7 @@ if ( SERVER ) then
 			end
 			
 			if ( catherine.flag.Has( pl, v ) ) then
-				return false, "Flag_Notify_AlreadyHas", { pl.Name( pl ), v }
+				return false, "Flag_Notify_AlreadyHas", { pl:Name( ), v }
 			end
 			
 			flags = flags .. v
@@ -117,7 +117,7 @@ if ( SERVER ) then
 			end
 			
 			if ( !catherine.flag.Has( pl, v ) ) then
-				return false, "Flag_Notify_HasNot", { pl.Name( pl ), v }
+				return false, "Flag_Notify_HasNot", { pl:Name( ), v }
 			end
 			
 			flags = flags:gsub( v, "" )

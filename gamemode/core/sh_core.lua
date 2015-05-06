@@ -66,7 +66,7 @@ WEAPON_LOWERED = 1
 WEAPON_RAISED = 2
 
 function GM:CalcMainActivity( pl, velo )
-	local mdl = pl.GetModel( pl ):lower( )
+	local mdl = pl:GetModel( ):lower( )
 	local class = catherine.animation.Get( mdl )
 	local wep = pl.GetActiveWeapon( pl )
 	local holdType = "normal"
@@ -120,7 +120,7 @@ function GM:CalcMainActivity( pl, velo )
 		return pl.CalcIdle, pl.CalcOver
 	end
 	
-	if ( pl.IsCharacterLoaded( pl ) and pl.Alive( pl ) ) then
+	if ( pl.IsCharacterLoaded( pl ) and pl:Alive( ) ) then
 		pl.CalcOver = -1
 
 		if ( pl.Crouching( pl ) ) then
@@ -178,7 +178,7 @@ function GM:CalcMainActivity( pl, velo )
 			end
 		end
 		
-		local seqAni = pl.GetNetVar( pl, "seqAni" )
+		local seqAni = pl:GetNetVar( "seqAni" )
 
 		if ( seqAni ) then
 			pl.CalcOver = pl:LookupSequence( seqAni )
@@ -228,7 +228,7 @@ function GM:PlayerNoClip( pl, bool )
 end
 
 function GM:DoAnimationEvent( pl, event, data )
-	local mdl = pl.GetModel( pl ):lower( )
+	local mdl = pl:GetModel( ):lower( )
 	local class = catherine.animation.Get( mdl )
 
 	if ( mdl:find( "/player/" ) or mdl:find( "/playermodel" ) or class == "player" ) then
@@ -275,7 +275,7 @@ end
 
 function GM:GetPlayerInformation( pl, target, isFull )
 	if ( pl == target ) then
-		return pl.Name( pl ), pl.Desc( pl )
+		return pl:Name( ), pl.Desc( pl )
 	end
 	
 	if ( pl.IsKnow( pl, target ) ) then

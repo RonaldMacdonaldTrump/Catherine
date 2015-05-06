@@ -83,7 +83,7 @@ if ( SERVER ) then
 		end
 		
 		if ( catherine.faction.HasWhiteList( pl, id ) ) then
-			return false, "Faction_Notify_AlreadyHas", { pl.Name( pl ), id }
+			return false, "Faction_Notify_AlreadyHas", { pl:Name( ), id }
 		end
 		
 		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
@@ -105,7 +105,7 @@ if ( SERVER ) then
 		end
 		
 		if ( !catherine.faction.HasWhiteList( pl, id ) ) then
-			return false, "Faction_Notify_HasNot", { pl.Name( pl ), id }
+			return false, "Faction_Notify_HasNot", { pl:Name( ), id }
 		end
 		
 		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )

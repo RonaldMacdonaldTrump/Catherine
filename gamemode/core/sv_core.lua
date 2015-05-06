@@ -77,7 +77,7 @@ function GM:PlayerSpray( pl )
 end
 
 function GM:Move( pl, moveData )
-	if ( pl.IsCharacterLoaded( pl ) and pl.GetNetVar( pl, "isActioning" ) ) then
+	if ( pl.IsCharacterLoaded( pl ) and pl:GetNetVar( "isActioning" ) ) then
 		moveData.SetForwardSpeed( moveData, 0 )
 		moveData.SetSideSpeed( moveData, 0 )
 	end
@@ -137,7 +137,7 @@ function GM:PlayerSpawnedInCharacter( pl )
 end
 
 function GM:PlayerSetHandsModel( pl, ent )
-	local info = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl.GetModel( pl ) ) )
+	local info = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl:GetModel( ) ) )
 	
 	if ( info ) then
 		ent.SetModel( ent, info.model )
@@ -149,7 +149,7 @@ end
 function GM:PlayerAuthed( pl )
 	timer.Simple( 2, function( )
 		catherine.chat.Send( pl, "connect" )
-		catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has connected a server." )
+		catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl:SteamID( ) .. " has connected a server." )
 		
 		hook.Run( "PlayerInitSpawned", pl )
 	end )
@@ -161,7 +161,7 @@ function GM:PlayerDisconnected( pl )
 	end
 	
 	catherine.chat.Send( pl, "disconnect" )
-	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has disconnected a server." )
+	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl:SteamID( ) .. " has disconnected a server." )
 	
 	if ( pl.IsCharacterLoaded( pl ) ) then
 		hook.Run( "PlayerDisconnectedInCharacter", pl )
@@ -187,7 +187,7 @@ function GM:EntityTakeDamage( ent, dmginfo )
 			pl:TakeDamage( amount, attacker, inflictor )
 			pl.CAT_ignore_hurtSound = nil
 
-			if ( pl.Health( pl ) <= 0 ) then
+			if ( pl:Health( ) <= 0 ) then
 				if ( !pl.CAT_deathSoundPlayed ) then
 					hook.Run( "PlayerDeathSound", pl, ent )
 				end
@@ -214,7 +214,7 @@ end
 
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Create( "Catherine.timer.WeaponToggle." .. pl.SteamID( pl ), 1, 1, function( )
+		timer.Create( "Catherine.timer.WeaponToggle." .. pl:SteamID( ), 1, 1, function( )
 			pl.ToggleWeaponRaised( pl )
 		end )
 	elseif ( key == IN_USE ) then
@@ -269,7 +269,7 @@ end
 
 function GM:KeyRelease( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Remove( "Catherine.timer.WeaponToggle." .. pl.SteamID( pl ) )
+		timer.Remove( "Catherine.timer.WeaponToggle." .. pl:SteamID( ) )
 	end
 end
 
@@ -312,7 +312,7 @@ function GM:PlayerSpawnProp( pl )
 end
 
 function GM:PlayerTakeDamage( pl, attacker, ragdollEntity )
-	if ( pl.Health( pl ) <= 0 ) then
+	if ( pl:Health( ) <= 0 ) then
 		return true
 	end
 	
@@ -379,7 +379,7 @@ function GM:DoPlayerDeath( pl )
 	if ( !pl.CAT_ragdoll ) then
 		pl.deathBody = ents.Create( "prop_ragdoll" )
 		pl.deathBody:SetAngles( pl.GetAngles( pl ) )
-		pl.deathBody:SetModel( pl.GetModel( pl ) )
+		pl.deathBody:SetModel( pl:GetModel( ) )
 		pl.deathBody:SetPos( pl.GetPos( pl ) )
 		pl.deathBody:Spawn( )
 		pl.deathBody:Activate( )
@@ -404,7 +404,7 @@ function GM:PlayerDeath( pl )
 	pl.SetNetVar( pl, "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
 	pl.SetNetVar( pl, "deathTime", CurTime( ) )
 	
-	catherine.log.Add( nil, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has a died [Character Name : " .. pl.Name( pl ) .. "]", true )
+	catherine.log.Add( nil, pl.SteamName( pl ) .. ", " .. pl:SteamID( ) .. " has a died [Character Name : " .. pl:Name( ) .. "]", true )
 	
 	hook.Run( "PlayerGone", pl )
 end

@@ -202,7 +202,7 @@ if ( SERVER ) then
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
 		if ( func ) then
-			local timerID = message .. pl.SteamID( pl )
+			local timerID = message .. pl:SteamID( )
 			
 			timer.Remove( timerID )
 			timer.Create( timerID, time, 1, function( )
@@ -238,7 +238,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.util.StringReceiver( pl, id, msg, defV, func )
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		
 		catherine.util.receiver.str[ steamID ] = catherine.util.receiver.str[ steamID ] or { }
 		catherine.util.receiver.str[ steamID ][ id ] = func
@@ -247,7 +247,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.QueryReceiver( pl, id, msg, func )
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		
 		catherine.util.receiver.qry[ steamID ] = catherine.util.receiver.qry[ steamID ] or { }
 		catherine.util.receiver.qry[ steamID ][ id ] = func
@@ -261,7 +261,7 @@ if ( SERVER ) then
 
 	netstream.Hook( "catherine.util.StringReceiver_Receive", function( pl, data )
 		local id = data[ 1 ]
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		local rec = catherine.util.receiver.str
 		
 		if ( !rec[ steamID ] or !rec[ steamID ][ id ] ) then return end
@@ -272,7 +272,7 @@ if ( SERVER ) then
 	
 	netstream.Hook( "catherine.util.QueryReceiver_Receive", function( pl, data )
 		local id = data[ 1 ]
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		local rec = catherine.util.receiver.qry
 		
 		if ( !rec[ steamID ] or !rec[ steamID ][ id ] ) then return end

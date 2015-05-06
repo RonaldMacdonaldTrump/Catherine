@@ -120,7 +120,7 @@ if ( SERVER ) then
 		
 		if ( classTable.model ) then
 			if ( !catherine.character.GetCharVar( pl, "originalModel" ) ) then
-				catherine.character.SetCharVar( pl, "originalModel", pl.GetModel( pl ) )
+				catherine.character.SetCharVar( pl, "originalModel", pl:GetModel( ) )
 			end
 			
 			pl:SetModel( ( type( classTable.model ) == "table" and table.Random( classTable.model ) or classTable.model ) )
