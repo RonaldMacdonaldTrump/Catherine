@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-if ( CLIENT ) then return end // for security ^ㅡ^;
+if ( CLIENT ) then return end
 
 catherine.database.information = {
-	db_module = "sqlite", -- Set 'Module' for connect to Database ( sqlite or mysqloo )
-	db_hostname = "127.0.0.1", -- Set 'Hostname' for connect to Database ( 127.0.0.1 )
-	db_account_id = "", -- Set 'Account ID' for connect to Database ( root )
-	db_account_password = "", -- Set 'Account Password' for connect to Database ( 12345 )
-	db_name = "", -- Set 'Database Name' for connect to Database ( catherine )
-	db_port = 3306 -- Set 'Port' for connect to Database ( 3306 )
+	db_module = "sqlite",
+	db_hostname = "127.0.0.1",
+	db_account_id = "",
+	db_account_password = "",
+	db_name = "",
+	db_port = 3306
 }

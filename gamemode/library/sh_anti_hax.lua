@@ -20,7 +20,7 @@ catherine.antiHaX = catherine.antiHaX or { }
 
 if ( SERVER ) then
 	catherine.antiHaX.checkingList = catherine.antiHaX.checkingList or { }
-	catherine.antiHaX.NextCheckTick = catherine.antiHaX.NextCheckTick or CurTime( ) + 300
+	catherine.antiHaX.NextCheckTick = catherine.antiHaX.NextCheckTick or CurTime( ) + catherine.configs.HaXCheckInterval
 
 	function catherine.antiHaX.Check( )
 		local serverConVars = {
@@ -80,7 +80,7 @@ if ( SERVER ) then
 			catherine.antiHaX.Check( )
 			MsgC( Color( 0, 255, 0 ), "[CAT AntiHaX] Hack checked.\n" )
 			
-			catherine.antiHaX.NextCheckTick = CurTime( ) + 300
+			catherine.antiHaX.NextCheckTick = CurTime( ) + catherine.configs.HaXCheckInterval
 		end
 	end
 

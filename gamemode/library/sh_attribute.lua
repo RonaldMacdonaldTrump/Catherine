@@ -37,7 +37,7 @@ function catherine.attribute.Register( attributeTable )
 end
 
 function catherine.attribute.New( uniqueID )
-	return { uniqueID = uniqueID, index = table.Count( catherine.attribute.lists ) + 1 }
+	return { uniqueID = uniqueID, index = #catherine.attribute.lists + 1 }
 end
 
 function catherine.attribute.GetAll( )

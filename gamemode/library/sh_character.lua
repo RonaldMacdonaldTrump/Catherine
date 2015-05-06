@@ -21,7 +21,7 @@ catherine.character.vars = { }
 local META = FindMetaTable( "Player" )
 
 function catherine.character.NewVar( id, varTable )
-	if ( !varTable ) then varTable = { } end
+	varTable = varTable or { }
 	
 	table.Merge( varTable, { id = id } )
 	catherine.character.vars[ id ] = varTable
@@ -607,7 +607,7 @@ do
 	META.SteamName = META.RealName
 
 	function META:Name( )
-		return catherine.character.GetVar( self, "_name", self.SteamName( self ) )
+		return catherine.character.GetVar( self, "_name", self:SteamName( ) )
 	end
 	
 	function META:Desc( )
@@ -619,7 +619,7 @@ do
 	end
 	
 	function META:FactionName( )
-		return catherine.util.StuffLanguage( team.GetName( self.Team( self ) ) )
+		return catherine.util.StuffLanguage( team.GetName( self:Team( ) ) )
 	end
 	
 	META.Nick = META.Name

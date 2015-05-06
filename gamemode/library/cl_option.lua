@@ -22,9 +22,7 @@ CAT_OPTION_SWITCH = 0
 CAT_OPTION_LIST = 1
 
 function catherine.option.Register( uniqueID, conVar, name, desc, category, typ, data )
-	local optionTable = { }
-	
-	table.Merge( optionTable, {
+	catherine.option.lists[ uniqueID ] = {
 		uniqueID = uniqueID,
 		name = name,
 		desc = desc,
@@ -32,8 +30,7 @@ function catherine.option.Register( uniqueID, conVar, name, desc, category, typ,
 		typ = typ,
 		category = category,
 		data = data
-	} )
-	catherine.option.lists[ uniqueID ] = optionTable
+	}
 end
 
 function catherine.option.GetAll( )
@@ -66,11 +63,7 @@ function catherine.option.Get( uniqueID )
 	local optionTable = catherine.option.FindByID( uniqueID )
 	if ( !optionTable ) then return nil end
 	
-	if ( optionTable.onGet ) then
-		return optionTable.onGet( optionTable )
-	else
-		return GetConVarString( optionTable.conVar )
-	end
+	return optionTable.onGet and optionTable.onGet( optionTable ) or GetConVarString( optionTable.conVar )
 end
 
 local cat = "^Option_Category_01"

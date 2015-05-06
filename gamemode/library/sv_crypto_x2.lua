@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.encrypt = catherine.encrypt or { }
+catherine.cryptoX2 = catherine.cryptoX2 or { }
 local se = string.Explode
 local sc = string.char
 local mr = math.random
 local tc = table.concat
 
-function catherine.encrypt.Encode( text )
+function catherine.cryptoX2.Encode( text )
 	local toTable = se( "", text )
 	local k = 0
 	
@@ -49,7 +49,7 @@ function catherine.encrypt.Encode( text )
 	return tc( toTable, "" )
 end
 
-function catherine.encrypt.Decode( text )
+function catherine.cryptoX2.Decode( text )
 	local tab = { }
 	local a = 1
 	local b = 1
@@ -76,7 +76,7 @@ function catherine.encrypt.Decode( text )
 end
 
 --[[ 이게 더 좋은가;?
-function catherine.encrypt.Decode( text )
+function catherine.cryptoX2.Decode( text )
 	local tab = { }
 	local a = 1
 	local b = 1
