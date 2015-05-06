@@ -26,7 +26,6 @@ function catherine.flag.Register( id, desc, flagTable )
 		id = id,
 		desc = desc
 	} )
-	
 	catherine.flag.lists[ id ] = flagTable
 end
 
@@ -144,15 +143,13 @@ if ( SERVER ) then
 	function catherine.flag.PlayerSpawnedInCharacter( pl )
 		timer.Simple( 0.5, function( )
 			for k, v in pairs( catherine.flag.GetAll( ) ) do
-				if ( !catherine.flag.Has( pl, v.id ) or !v.onSpawn ) then continue end
-				
-				v.onSpawn( pl )
+				( catherine.flag.Has( pl, v.id ) and v.onSpawn ) and v.onSpawn( pl )
 			end
 		end )
 
-		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl.GetCharacterID( pl ) ) then
+		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl:GetCharacterID( ) ) then
 			netstream.Start( pl, "catherine.flag.BuildHelp" )
-			pl.CAT_flag_buildHelp = pl.GetCharacterID( pl )
+			pl.CAT_flag_buildHelp = pl:GetCharacterID( )
 		end
 	end
 	
@@ -163,9 +160,7 @@ else
 		local html = [[<b>]] .. title_flag .. [[</b><br>]]
 		
 		for k, v in pairs( catherine.flag.GetAll( ) ) do
-			local col = catherine.flag.Has( k ) and ( "<font color=\"green\">&#10004;</font>" ) or ( "<font color=\"red\">&#10005;</font>" )
-
-			html = html .. "<p>" .. col .. "<b> " .. k .. "</b><br>" .. catherine.util.StuffLanguage( v.desc ) .. "<br>"
+			html = html .. "<p>" .. ( catherine.flag.Has( k ) and "<font color=\"green\">&#10004;</font>" or "<font color=\"red\">&#10005;</font>" ) .. "<b> " .. k .. "</b><br>" .. catherine.util.StuffLanguage( v.desc ) .. "<br>"
 		end
 
 		catherine.help.Register( CAT_HELP_HTML, title_flag, html )

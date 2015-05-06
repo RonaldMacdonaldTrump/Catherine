@@ -25,8 +25,6 @@ if ( SERVER ) then
 	CAT_INV_ACTION_UPDATE = 3
 	
 	function catherine.inventory.Work( pl, workID, data )
-		if ( !IsValid( pl ) or !workID or !data ) then return end
-
 		if ( workID == CAT_INV_ACTION_ADD ) then
 			local inventory = catherine.inventory.Get( pl )
 			local uniqueID = data.uniqueID
@@ -188,6 +186,7 @@ if ( SERVER ) then
 		
 		for k, v in pairs( inventory ) do
 			if ( catherine.item.FindByID( k ) ) then continue end
+			
 			inventory[ k ] = nil
 			changed = true
 		end

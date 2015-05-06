@@ -34,7 +34,7 @@ if ( SERVER ) then
 		local hintTable = catherine.hint.lists[ rand ]
 
 		for k, v in pairs( hintTable and player.GetAllByLoaded( ) or { } ) do
-			if ( v.GetInfo( v, "cat_convar_hint" ) == "0" or hintTable.canLook and hintTable.canLook( v ) == false ) then continue end
+			if ( v:GetInfo( "cat_convar_hint" ) == "0" or ( hintTable.canLook and hintTable.canLook( v ) == false ) ) then continue end
 			
 			netstream.Start( v, "catherine.hint.Receive", rand )
 		end

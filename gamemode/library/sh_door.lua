@@ -64,7 +64,7 @@ if ( SERVER ) then
 					catherine.util.NotifyLang( pl, "Door_Notify_AlreadyHasPer" )
 					return
 				elseif ( has and data[ 2 ] == 0 ) then
-					permissions[ target.GetCharacterID( target ) ] = nil
+					permissions[ target:GetCharacterID( ) ] = nil
 					ent:SetNetVar( "permissions", permissions )
 					netstream.Start( pl, "catherine.door.DoorMenuRefresh" )
 					catherine.util.NotifyLang( pl, "Door_Notify_RemPer" )
@@ -72,7 +72,7 @@ if ( SERVER ) then
 				end
 			end
 
-			local targetID = target.GetCharacterID( target )
+			local targetID = target:GetCharacterID( )
 			
 			permissions[ targetID ] = {
 				id = targetID,
@@ -126,7 +126,7 @@ if ( SERVER ) then
 			return false, "Cash_Notify_HasNot"
 		end
 		
-		local id = pl.GetCharacterID( pl )
+		local id = pl:GetCharacterID( )
 
 		catherine.cash.Take( pl, cost )
 		ent:SetNetVar( "permissions", {
@@ -436,7 +436,7 @@ end
 
 function catherine.door.IsDoorOwner( pl, ent, flag )
 	local permissions = ent.GetNetVar( ent, "permissions", { } )
-	local targetID = pl.GetCharacterID( pl )
+	local targetID = pl:GetCharacterID( )
 
 	if ( permissions[ targetID ] ) then
 		return permissions[ targetID ].permission == flag
@@ -447,7 +447,7 @@ end
 
 function catherine.door.IsHasDoorPermission( pl, ent )
 	local permissions = ent.GetNetVar( ent, "permissions", { } )
-	local targetID = pl.GetCharacterID( pl )
+	local targetID = pl:GetCharacterID( )
 	
 	if ( permissions[ targetID ] ) then
 		return true, permissions[ targetID ].permission or 0
