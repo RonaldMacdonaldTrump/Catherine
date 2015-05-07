@@ -42,8 +42,9 @@ end
 
 function catherine.language.Merge( uniqueID, data )
 	local languageTable = catherine.language.FindByID( uniqueID )
+	if ( !languageTable ) then return end
 	
-	languageTable and ( languageTable.data = table.Merge( languageTable.data, data ) )
+	languageTable.data = table.Merge( languageTable.data, data )
 end
 
 catherine.language.Include( catherine.FolderName .. "/gamemode" )

@@ -68,7 +68,6 @@ BASE.func.unequip = {
 		end
 		
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
-		
 		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", false )
 	end,
 	canLook = function( pl, itemTable )

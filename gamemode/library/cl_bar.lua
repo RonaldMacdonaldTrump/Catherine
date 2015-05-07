@@ -63,7 +63,7 @@ function catherine.bar.Draw( )
 		v.y = Lerp( 0.03, v.y, -5 + count * 10 )
 		
 		if ( v.alpha > 0 ) then
-			surface.SetDrawColor( 255,255,255, v.alpha - 30 )
+			surface.SetDrawColor( 255, 255, 255, v.alpha - 30 )
 			surface.SetMaterial( barMaterial )
 			surface.DrawTexturedRect( 5, v.y + 4, ScrW( ) * 0.3, 1 )
 			
