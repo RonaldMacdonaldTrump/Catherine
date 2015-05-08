@@ -56,7 +56,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charsetname",
-	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
@@ -81,7 +81,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charsetdesc",
-	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
@@ -104,7 +104,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charsetmodel",
-	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
@@ -145,7 +145,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorlock",
-	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
 		
@@ -161,7 +161,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorunlock",
-	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
 		
@@ -366,7 +366,7 @@ catherine.command.Register( {
 catherine.command.Register( {
 	command = "doorsettitle",
 	syntax = "[Text]",
-	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			local success, langKey, par = catherine.door.SetDoorTitle( pl, pl:GetEyeTrace( 70 ).Entity, args[ 1 ], true )
@@ -384,7 +384,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorsetstatus",
-	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local success, langKey, par = catherine.door.SetDoorStatus( pl, pl.GetEyeTrace( pl, 70 ).Entity )
 		
@@ -394,7 +394,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorsetactive",
-	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local success, langKey, par = catherine.door.SetDoorActive( pl, pl.GetEyeTrace( pl, 70 ).Entity )
 		
@@ -495,7 +495,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "cleardecals",
-	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		for k, v in pairs( player.GetAll( ) ) do
 			v:ConCommand( "r_cleardecals" )

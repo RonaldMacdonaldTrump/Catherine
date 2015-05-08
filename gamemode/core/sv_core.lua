@@ -64,6 +64,19 @@ function GM:CanLookF2( pl )
 	return true
 end
 
+function GM:PlayerFirstSpawned( pl, id )
+	catherine.character.SetCharVar( pl, "originalModel", pl:GetModel( ) )
+end
+
+function GM:CharacterVarChanged( pl, key, value )
+	if ( key == "_name" ) then
+		hook.Run( "CharacterNameChanged", pl, value )
+	elseif ( key == "_model" ) then
+		pl:SetModel( value )
+		catherine.character.SetCharVar( pl, "originalModel", value )
+	end
+end
+
 function GM:CanPlayerSuicide( pl )
 	return hook.Run( "PlayerCanSuicide", pl ) or false
 end

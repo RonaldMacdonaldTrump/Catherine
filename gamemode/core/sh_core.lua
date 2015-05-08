@@ -196,7 +196,7 @@ function GM:CalcMainActivity( pl, velo )
 end
 
 function GM:PlayerNoClip( pl, bool )
-	local isAdmin = pl.IsAdmin( pl )
+	local isAdmin = pl:IsAdmin( )
 	
 	if ( !isAdmin ) then
 		return isAdmin

@@ -37,7 +37,7 @@ function catherine.class.Register( classTable )
 end
 
 function catherine.class.New( uniqueID )
-	return { uniqueID = uniqueID, index = table.Count( catherine.class.lists ) + 1 }
+	return { uniqueID = uniqueID, index = #catherine.class.lists + 1 }
 end
 
 function catherine.class.GetAll( )
@@ -63,7 +63,7 @@ function catherine.class.CanJoin( pl, index )
 		return false, "Class error"
 	end
 
-	if ( pl.Team( pl ) != classTable.faction ) then
+	if ( pl:Team( ) != classTable.faction ) then
 		return false, "Team error"
 	end
 
@@ -99,13 +99,14 @@ end
 if ( SERVER ) then
 	function catherine.class.Set( pl, index )
 		if ( !index ) then
-			local defaultClass = catherine.class.GetDefaultClass( pl.Team( pl ) )
+			local defaultClass = catherine.class.GetDefaultClass( pl:Team( ) )
 			if ( !defaultClass ) then return end
 			local defaultModel = catherine.character.GetCharVar( pl, "originalModel" )
 			if ( !defaultModel ) then return end
 			
 			catherine.character.SetCharVar( pl, "class", defaultClass.index )
 			pl:SetModel( defaultModel )
+			
 			return
 		end
 		
@@ -119,11 +120,7 @@ if ( SERVER ) then
 		local classTable = catherine.class.FindByIndex( index )
 		
 		if ( classTable.model ) then
-			if ( !catherine.character.GetCharVar( pl, "originalModel" ) ) then
-				catherine.character.SetCharVar( pl, "originalModel", pl:GetModel( ) )
-			end
-			
-			pl:SetModel( ( type( classTable.model ) == "table" and table.Random( classTable.model ) or classTable.model ) )
+			pl:SetModel( type( classTable.model ) == "table" and table.Random( classTable.model ) or classTable.model )
 		end
 		
 		catherine.character.SetCharVar( pl, "class", index )
@@ -146,7 +143,7 @@ else
 		local classes = { }
 		
 		for k, v in pairs( catherine.class.GetAll( ) ) do
-			if ( v.faction == pl.Team( pl ) and pl.Class( pl ) != v.index and !v.cantJoinUsingMenu ) then
+			if ( v.faction == pl:Team( ) and pl:Class( ) != v.index and !v.cantJoinUsingMenu ) then
 				classes[ #classes + 1 ] = v
 			end
 		end

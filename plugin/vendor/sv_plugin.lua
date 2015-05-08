@@ -319,12 +319,12 @@ function PLUGIN:CanUseVendor( pl, ent )
 	end
 	
 	local factionData = ent.vendorData.factions
-	if ( !pl.IsAdmin( pl ) and #factionData != 0 and !table.HasValue( factionData, pl:Faction( ) ) ) then
+	if ( !pl:IsAdmin( ) and #factionData != 0 and !table.HasValue( factionData, pl:Faction( ) ) ) then
 		return false
 	end
 	
 	local classData = ent.vendorData.classes
-	if ( !pl.IsAdmin( pl ) and #classData != 0 and !table.HasValue( classData, pl:Class( ) ) ) then
+	if ( !pl:IsAdmin( ) and #classData != 0 and !table.HasValue( classData, pl:Class( ) ) ) then
 		return false
 	end
 

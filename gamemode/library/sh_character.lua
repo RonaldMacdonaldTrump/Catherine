@@ -464,16 +464,7 @@ if ( SERVER ) then
 		catherine.character.Save( pl )
 		catherine.character.DeleteNetworkRegistry( pl )
 	end
-	
-	function catherine.character.CharacterVarChanged( pl, key, value )
-		if ( key == "_model" ) then
-			pl:SetModel( value )
-		elseif ( key == "_name" ) then
-			hook.Run( "CharacterNameChanged", pl, value )
-		end
-	end
-	
-	hook.Add( "CharacterVarChanged", "catherine.character.CharacterVarChanged", catherine.character.CharacterVarChanged )
+
 	hook.Add( "Think", "catherine.character.Think", catherine.character.Think )
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected", catherine.character.PlayerDisconnected )
 	hook.Add( "DataSave", "catherine.character.DataSave", catherine.character.DataSave )
