@@ -19,18 +19,16 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local BASE = catherine.item.New( "CLOTHING", nil, true )
 BASE.name = "Clothing Base"
 BASE.desc = "A Cloth."
-BASE.category = "Clothing"
+BASE.category = "^Item_Category_Clothing"
 BASE.cost = 0
 BASE.weight = 0
 BASE.itemData = {
 	wearing = false
 }
 BASE.isCloth = true
-//BASE.replacement
-//BASE.femaleModel
 BASE.func = { }
 BASE.func.wear = {
-	text = "Wear",
+	text = "^Item_FuncStr01_Clothing",
 	canShowIsWorld = true,
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
@@ -69,7 +67,7 @@ BASE.func.wear = {
 	end
 }
 BASE.func.takeoff = {
-	text = "Take off",
+	text = "^Item_FuncStr02_Clothing",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
 		local originalModel = catherine.character.GetCharVar( pl, "originalModel" )
@@ -97,6 +95,10 @@ BASE.func.takeoff = {
 		return itemData.wearing
 	end
 }
+
+function BASE:GetDropModel( )
+	return "models/props_c17/suitCase_passenger_physics.mdl"
+end
 
 if ( SERVER ) then
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.hooks.clothing_base.PlayerSpawnedInCharacter", function( pl )

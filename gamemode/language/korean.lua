@@ -158,6 +158,9 @@ LANGUAGE.data = {
 	[ "Item_Category_Other" ] = "기타",
 	[ "Item_Category_Weapon" ] = "무기",
 	[ "Item_Category_Storage" ] = "공간",
+	[ "Item_Category_Clothing" ] = "옷",
+	[ "Item_FuncStr01_Clothing" ] = "입기",
+	[ "Item_FuncStr01_Clothing" ] = "벗기",
 	[ "Item_Category_Ammo" ] = "탄약",
 	[ "Item_FuncStr01_Ammo" ] = "사용",
 	

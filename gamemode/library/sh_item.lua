@@ -189,12 +189,19 @@ if ( SERVER ) then
 		if ( !uniqueID or !pos ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )
 		if ( !itemTable ) then return end
+		local model = "models/props_junk/watermelon01.mdl"
+		
+		if ( itemTable.GetDropModel ) then
+			model = itemTable:GetDropModel( )
+		else
+			model = itemTable.model
+		end
 		
 		local ent = ents.Create( "cat_item" )
 		ent:SetPos( Vector( pos.x, pos.y, pos.z + 10 ) )
 		ent:SetAngles( ang or Angle( ) )
 		ent:Spawn( )
-		ent:SetModel( itemTable.model or "models/props_junk/watermelon01.mdl" )
+		ent:SetModel( model )
 		ent:SetSkin( itemTable.skin or 0 )
 		ent:PhysicsInit( SOLID_VPHYSICS )
 		ent:InitializeItem( uniqueID, itemData or { } )
