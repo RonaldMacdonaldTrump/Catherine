@@ -27,6 +27,7 @@ function catherine.font.Register( uniqueID, font, size, weight, fontTable )
 		size = size,
 		weight = weight
 	} )
+	
 	catherine.font.lists[ uniqueID ] = fontTable
 	surface.CreateFont( uniqueID, fontTable )
 end

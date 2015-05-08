@@ -20,19 +20,22 @@ catherine.character = catherine.character or { networkRegistry = { } }
 catherine.character.vars = { }
 local META = FindMetaTable( "Player" )
 
-function catherine.character.NewVar( id, varTable )
+function catherine.character.NewVar( uniqueID, varTable )
 	varTable = varTable or { }
 	
-	table.Merge( varTable, { id = id } )
-	catherine.character.vars[ id ] = varTable
+	table.Merge( varTable, {
+		uniqueID = uniqueID
+	} )
+	
+	catherine.character.vars[ uniqueID ] = varTable
 end
 
 function catherine.character.GetVarAll( )
 	return catherine.character.vars
 end
 
-function catherine.character.FindVarByID( id )
-	return catherine.character.vars[ id ]
+function catherine.character.FindVarByID( uniqueID )
+	return catherine.character.vars[ uniqueID ]
 end
 
 function catherine.character.FindVarByField( field )

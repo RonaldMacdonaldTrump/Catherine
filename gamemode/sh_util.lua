@@ -18,12 +18,12 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.util = catherine.util or { }
 
-function catherine.util.Print( col, message )
-	MsgC( col or Color( 255, 255, 255 ), "[CAT] " .. message .. "\n" )
+function catherine.util.Print( col, val )
+	MsgC( col or Color( 255, 255, 255 ), "[CAT] " .. val .. "\n" )
 end
 
-function catherine.util.ErrorPrint( message )
-	MsgC( Color( 0, 255, 255 ), "[CAT LUA ERROR] " .. message .. "\n" )
+function catherine.util.ErrorPrint( val )
+	MsgC( Color( 0, 255, 255 ), "[CAT LUA ERROR] " .. val .. "\n" )
 end
 
 function catherine.util.Include( dir, typ )
@@ -44,7 +44,7 @@ function catherine.util.Include( dir, typ )
 end
 
 function catherine.util.IncludeInDir( dir, prefix )
-	local dir2 = ( prefix and prefix or "catherine/gamemode/" ) .. dir .. "/*.lua"
+	local dir2 = ( prefix or "catherine/gamemode/" ) .. dir .. "/*.lua"
 
 	for k, v in pairs( file.Find( dir2, "LUA" ) ) do
 		catherine.util.Include( dir .. "/" .. v )
@@ -54,12 +54,12 @@ end
 function catherine.util.CalcDistanceByPos( loc, target )
 	if ( !IsValid( loc ) or !IsValid( target ) ) then return 0 end
 	
-	return loc.GetPos( loc ):Distance( target.GetPos( target ) )
+	return loc:GetPos( ):Distance( target:GetPos( ) )
 end
 
 function catherine.util.FindPlayerByName( name )
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		if ( catherine.util.CheckStringMatch( v.Name( v ), name ) ) then
+		if ( catherine.util.CheckStringMatch( v:Name( ), name ) ) then
 			return v
 		end
 	end
@@ -74,11 +74,11 @@ function catherine.util.FindPlayerByStuff( use, str )
 end
 
 function catherine.util.CheckStringMatch( one, two )
-	return one.lower( one ):match( two.lower( two ) )
+	return one:lower( ):match( two:lower( ) )
 end
 
 function catherine.util.GetUniqueName( name )
-	return name.sub( name, 4, -5 )
+	return name:sub( 4, -5 )
 end
 
 function catherine.util.GetRealTime( )
@@ -168,7 +168,7 @@ local translateHoldType = {
 }
 
 function catherine.util.GetHoldType( wep )
-	local holdType = holdTypes[ wep.GetClass( wep ) ]
+	local holdType = holdTypes[ wep:GetClass( ) ]
 	
 	if ( holdType ) then
 		return holdType
@@ -185,25 +185,33 @@ if ( SERVER ) then
 	catherine.util.receiver = catherine.util.receiver or { str = { }, qry = { } }
 	
 	function catherine.util.Notify( pl, message, time )
-		netstream.Start( pl, "catherine.util.Notify", { message, time } )
+		netstream.Start( pl, "catherine.util.Notify", {
+			message, time
+		} )
 	end
 	
 	function catherine.util.NotifyAll( message, time )
-		netstream.Start( player.GetAllByLoaded( ), "catherine.util.Notify", { message, time } )
+		netstream.Start( player.GetAllByLoaded( ), "catherine.util.Notify", {
+			message, time
+		} )
 	end
 	
 	function catherine.util.NotifyAllLang( key, ... )
-		netstream.Start( player.GetAllByLoaded( ), "catherine.util.NotifyAllLang", { key, { ... } } )
+		netstream.Start( player.GetAllByLoaded( ), "catherine.util.NotifyAllLang", {
+			key, { ... }
+		} )
 	end
 	
 	function catherine.util.NotifyLang( pl, key, ... )
-		netstream.Start( pl, "catherine.util.Notify", { LANG( pl, key, ... ) } )
+		netstream.Start( pl, "catherine.util.Notify", {
+			LANG( pl, key, ... )
+		} )
 	end
 
 	function catherine.util.StuffLanguage( pl, key, ... )
-		local lang = key.Left( key, 1 ) == "^" and LANG( pl, key.sub( key, 2 ), ... ) or "-Error"
+		local val = key:Left( 1 ) == "^" and LANG( pl, key:sub( 2 ), ... ) or "-Error"
 		
-		return lang.find( lang, "-Error" ) and key or lang
+		return val:find( "-Error" ) and key or val
 	end
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
@@ -218,7 +226,9 @@ if ( SERVER ) then
 			end )
 		end
 		
-		netstream.Start( pl, "catherine.util.ProgressBar", { message, time } )
+		netstream.Start( pl, "catherine.util.ProgressBar", {
+			message, time
+		} )
 	end
 	
 	function catherine.util.TopNotify( pl, message )
@@ -234,7 +244,7 @@ if ( SERVER ) then
 		
 		table.RemoveByValue( dirs, ".svn" )
 		
-		for _, v in pairs( dirs ) do
+		for k, v in pairs( dirs ) do
 			catherine.util.AddResourceInFolder( dir .. "/" .. v )
 		end
 		
@@ -262,7 +272,11 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.ScreenColorEffect( pl, col, time, fadeTime )
-		netstream.Start( pl, "catherine.util.ScreenColorEffect", { col or Color( 255, 255, 255 ), time, fadeTime } )
+		netstream.Start( pl, "catherine.util.ScreenColorEffect", {
+			col or Color( 255, 255, 255 ),
+			time,
+			fadeTime
+		} )
 	end
 
 	netstream.Hook( "catherine.util.StringReceiver_Receive", function( pl, data )
@@ -287,23 +301,33 @@ if ( SERVER ) then
 		catherine.util.receiver.qry[ steamID ][ id ] = nil
 	end )
 else
-	catherine.util.blurTexture = Material( "pp/blurscreen" )
+	catherine.util.materials = catherine.util.materials or { }
+	local blurMat = Material( "pp/blurscreen" )
 	CAT_UTIL_BUTTOMSOUND_1 = 1
 	CAT_UTIL_BUTTOMSOUND_2 = 2
 	CAT_UTIL_BUTTOMSOUND_3 = 3
 	
 	netstream.Hook( "catherine.util.StringReceiver", function( data )
 		Derma_StringRequest( catherine.util.StuffLanguage( data[ 2 ] ), LANG( "Basic_UI_StringRequest" ), data[ 3 ] or "", function( val )
-				netstream.Start( "catherine.util.StringReceiver_Receive", { data[ 1 ], val } )
+				netstream.Start( "catherine.util.StringReceiver_Receive", {
+					data[ 1 ],
+					val
+				} )
 			end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
 		)
 	end )
 	
 	netstream.Hook( "catherine.util.QueryReceiver", function( data )
 		Derma_Query( catherine.util.StuffLanguage( data[ 2 ] ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_OK" ), function( )
-				netstream.Start( "catherine.util.QueryReceiver_Receive", { data[ 1 ], true } )
+				netstream.Start( "catherine.util.QueryReceiver_Receive", {
+					data[ 1 ],
+					true
+				} )
 			end, LANG( "Basic_UI_NO" ), function( ) 
-				netstream.Start( "catherine.util.QueryReceiver_Receive", { data[ 1 ], false } )
+				netstream.Start( "catherine.util.QueryReceiver_Receive", {
+					data[ 1 ],
+					false
+				} )
 			end
 		)
 	end )
@@ -319,8 +343,9 @@ else
 			if ( time <= CurTime( ) ) then
 				a = Lerp( fadeTime, a, 0 )
 				
-				if ( math.Round( a ) <= 0 ) then
+				if ( a <= 0 ) then
 					hook.Remove( "HUDPaint", "catherine.util.ScreenColorEffect" )
+					return
 				end
 			end
 			
@@ -364,17 +389,14 @@ else
 	end
 	
 	function catherine.util.StuffLanguage( key, ... )
-		local lang = key.Left( key, 1 ) == "^" and LANG( key.sub( key, 2 ), ... ) or "-Error"
+		local lang = key:Left( 1 ) == "^" and LANG( key:sub( 2 ), ... ) or "-Error"
 		
-		return lang.find( lang, "-Error" ) and key or lang
+		return lang:find( "-Error" ) and key or lang
 	end
 	
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )
 		if ( !message or !font or !x or !y ) then return end
-		
-		if ( !backgroundBor ) then
-			backgroundBor = 5
-		end
+		backgroundBor = backgroundBor or 5
 
 		surface.SetFont( font )
 		local tw, th = surface.GetTextSize( message )
@@ -384,23 +406,24 @@ else
 	end
 	
 	function catherine.util.GetAlphaFromDistance( base, x, max )
-		if ( !base or !x or !max ) then return 255 end
+		return ( 1 - ( ( x:Distance( base ) ) / max ) ) * 255
+	end
+	
+	function catherine.util.RegisterMaterial( key, matDir, correction )
+		catherine.util.materials[ key ] = catherine.util.materials[ key ] or Material( matDir, correction )
 		
-		return ( 1 - ( ( x.Distance( x, base ) ) / max ) ) * 255
+		return catherine.util.materials[ key ]
 	end
 	
 	function catherine.util.BlurDraw( x, y, w, h, amount )
-		surface.SetMaterial( catherine.util.blurTexture )
+		surface.SetMaterial( blurMat )
 		surface.SetDrawColor( 255, 255, 255 )
-		
-		local x2, y2 = x / ScrW( ), y / ScrH( )
-		local w2, h2 = ( x + w ) / ScrW( ), ( y + h ) / ScrH( )
 
 		for i = -0.2, 1, 0.2 do
-			catherine.util.blurTexture:SetFloat( "$blur", i * ( amount or 5 ) )
-			catherine.util.blurTexture:Recompute( )
+			blurMat:SetFloat( "$blur", i * ( amount or 5 ) )
+			blurMat:Recompute( )
 			render.UpdateScreenEffectTexture( )
-			surface.DrawTexturedRectUV( x, y, w, h, x2, y2, w2, h2 )
+			surface.DrawTexturedRectUV( x, y, w, h, x / ScrW( ), y / ScrH( ), ( x + w ) / ScrW( ), ( y + h ) / ScrH( ) )
 		end
 	end
 end

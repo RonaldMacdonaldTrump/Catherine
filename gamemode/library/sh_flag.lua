@@ -19,22 +19,23 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.flag = catherine.flag or { lists = { } }
 local META = FindMetaTable( "Player" )
 
-function catherine.flag.Register( id, desc, flagTable )
+function catherine.flag.Register( uniqueID, desc, flagTable )
 	flagTable = flagTable or { }
 	
 	table.Merge( flagTable, {
-		id = id,
+		uniqueID = uniqueID,
 		desc = desc
 	} )
-	catherine.flag.lists[ id ] = flagTable
+	
+	catherine.flag.lists[ uniqueID ] = flagTable
 end
 
 function catherine.flag.GetAll( )
 	return catherine.flag.lists
 end
 
-function catherine.flag.FindByID( id )
-	return catherine.flag.lists[ id ]
+function catherine.flag.FindByID( uniqueID )
+	return catherine.flag.lists[ uniqueID ]
 end
 
 function catherine.flag.GetAllToString( )
@@ -133,18 +134,18 @@ if ( SERVER ) then
 		return true
 	end
 	
-	function catherine.flag.Has( pl, id )
-		return catherine.character.GetCharVar( pl, "flags", "" ):find( id )
+	function catherine.flag.Has( pl, uniqueID )
+		return catherine.character.GetCharVar( pl, "flags", "" ):find( uniqueID )
 	end
 	
-	function META:HasFlag( id )
-		return catherine.flag.Has( self, id )
+	function META:HasFlag( uniqueID )
+		return catherine.flag.Has( self, uniqueID )
 	end
 	
 	function catherine.flag.PlayerSpawnedInCharacter( pl )
 		timer.Simple( 0.5, function( )
 			for k, v in pairs( catherine.flag.GetAll( ) ) do
-				if ( !catherine.flag.Has( pl, v.id ) or !v.onSpawn ) then continue end
+				if ( !catherine.flag.Has( pl, v.uniqueID ) or !v.onSpawn ) then continue end
 				
 				v.onSpawn( pl )
 			end
@@ -173,12 +174,12 @@ else
 		rebuildFlag( )
 	end )
 	
-	function catherine.flag.Has( id )
-		return catherine.character.GetCharVar( LocalPlayer( ), "flags", "" ):find( id )
+	function catherine.flag.Has( uniqueID )
+		return catherine.character.GetCharVar( LocalPlayer( ), "flags", "" ):find( uniqueID )
 	end
 	
-	function META:HasFlag( id )
-		return catherine.flag.Has( id )
+	function META:HasFlag( uniqueID )
+		return catherine.flag.Has( uniqueID )
 	end
 	
 	function catherine.flag.LanguageChanged( )
