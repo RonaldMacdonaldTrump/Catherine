@@ -120,7 +120,7 @@ function GM:CalcMainActivity( pl, velo )
 		return pl.CalcIdle, pl.CalcOver
 	end
 	
-	if ( pl.IsCharacterLoaded( pl ) and pl:Alive( ) ) then
+	if ( pl:IsCharacterLoaded( ) and pl:Alive( ) ) then
 		pl.CalcOver = -1
 
 		if ( pl.Crouching( pl ) ) then

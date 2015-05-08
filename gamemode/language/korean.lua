@@ -89,6 +89,7 @@ LANGUAGE.data = {
 	[ "Flag_V_Desc" ] = "차 소환에 대한 권한.",
 	[ "Flag_n_Desc" ] = "NPC 소환에 대한 권한.",
 	[ "Flag_R_Desc" ] = "레그돌 소환에 대한 권한.",
+	[ "Flag_s_Desc" ] = "이펙트 소환에 대한 권한.",
 	
 	[ "UnknownError" ] = "알 수 없는 오류가 발생하였습니다, 죄송합니다!",
 	[ "Basic_Notify_UnknownPlayer" ] = "올바른 캐릭터의 이름을 입력하세요!",

@@ -121,8 +121,8 @@ end
 
 function catherine.util.GetItemDropPos( pl )
 	local data = { }
-	data.start = pl.GetShootPos( pl ) - pl.GetAimVector( pl ) * 64
-	data.endpos = pl.GetShootPos( pl ) + pl.GetAimVector( pl ) * 86
+	data.start = pl:GetShootPos( ) - pl:GetAimVector( ) * 64
+	data.endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * 86
 	data.filter = pl
 	local tr = util.TraceLine( data )
 

@@ -89,6 +89,7 @@ LANGUAGE.data = {
 	[ "Flag_V_Desc" ] = "Access to vehicle spawn.",
 	[ "Flag_n_Desc" ] = "Access to NPC spawn.",
 	[ "Flag_R_Desc" ] = "Access to ragdoll spawn.",
+	[ "Flag_s_Desc" ] = "Access to effect spawn.",
 	
 	[ "UnknownError" ] = "Unknown Error!",
 	[ "Basic_Notify_UnknownPlayer" ] = "You are not giving a valid character name!",

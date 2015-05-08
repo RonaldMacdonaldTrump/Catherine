@@ -206,7 +206,7 @@ catherine.chat.Register( "disconnect", {
 			icon = Material( "icon16/star.png" )
 		end
 		
-		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Disconnect", pl.SteamName( pl ) ) )
+		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
 	end,
 	isGlobal = true
 } )

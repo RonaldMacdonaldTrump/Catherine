@@ -64,7 +64,7 @@ else
 		menu:AddOption( LANG( "Recognize_UI_Option_LookingPlayer" ), function( )
 			local ent = LocalPlayer( ).GetEyeTrace( LocalPlayer( ), 70 ).Entity
 
-			if ( IsValid( ent ) and ent.IsPlayer( ent ) ) then
+			if ( IsValid( ent ) and ent:IsPlayer( ) ) then
 				netstream.Start( "catherine.recognize.DoKnow", { 0, ent } )
 			else
 				catherine.notify.Add( LANG( "Entity_Notify_NotPlayer" ), 5 )

@@ -108,7 +108,7 @@ function GM:CalcView( pl, pos, ang, fov )
 		return viewData
 	end
 	
-	if ( IsValid( catherine.vgui.character ) or !pl.IsCharacterLoaded( pl ) ) then
+	if ( IsValid( catherine.vgui.character ) or !pl:IsCharacterLoaded( ) ) then
 		viewData = {
 			origin = catherine.configs.schematicViewPos.pos,
 			angles = catherine.configs.schematicViewPos.ang
@@ -119,7 +119,7 @@ function GM:CalcView( pl, pos, ang, fov )
 
 	local ent = Entity( pl:GetNetVar( "ragdollIndex", 0 ) )
 
-	if ( IsValid( ent ) and ent.GetClass( ent ) == "prop_ragdoll" and catherine.player.IsRagdolled( pl ) ) then
+	if ( IsValid( ent ) and ent:GetClass( ) == "prop_ragdoll" and catherine.player.IsRagdolled( pl ) ) then
 		local index = ent.LookupAttachment( ent, "eyes" )
 		
 		if ( index ) then
@@ -346,13 +346,13 @@ function GM:FinishChat( )
 end
 
 function GM:DrawEntityTargetID( pl, ent, a )
-	if ( ent.GetNetVar( ent, "noDrawOriginal" ) == true or ( ent.IsPlayer( ent ) and catherine.player.IsRagdolled( ent ) ) ) then
+	if ( ent.GetNetVar( ent, "noDrawOriginal" ) == true or ( ent:IsPlayer( ) and catherine.player.IsRagdolled( ent ) ) ) then
 		return
 	end
 	
 	local entPlayer = ent
 	
-	if ( ent.GetClass( ent ) == "prop_ragdoll" ) then
+	if ( ent:GetClass( ) == "prop_ragdoll" ) then
 		entPlayer = ent.GetNetVar( ent, "player" )
 	end
 	
@@ -395,10 +395,10 @@ function GM:GetUnknownTargetName( pl, target )
 end
 
 function GM:ProgressEntityCache( pl )
-	if ( pl.IsCharacterLoaded( pl ) and catherine.nextCacheDo <= CurTime( ) ) then
+	if ( pl:IsCharacterLoaded( ) and catherine.nextCacheDo <= CurTime( ) ) then
 		local data = { }
-		data.start = pl.GetShootPos( pl )
-		data.endpos = data.start + pl.GetAimVector( pl ) * 160
+		data.start = pl:GetShootPos( )
+		data.endpos = data.start + pl:GetAimVector( ) * 160
 		data.filter = pl
 		local ent = util.TraceLine( data ).Entity
 

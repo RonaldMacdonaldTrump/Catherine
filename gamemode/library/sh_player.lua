@@ -62,15 +62,15 @@ if ( SERVER ) then
 				if ( steamID == catherine.configs.OWNER and pl.GetNWString( pl, "usergroup" ):lower( ) == "user" ) then
 					if ( ulx ) then
 						RunConsoleCommand( "ulx", "adduserid", steamID, "superadmin" )
-						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl.SteamName( pl ) )
+						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl:SteamName( ) )
 					else
 						pl:SetUserGroup( "superadmin" )
-						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set : " .. pl.SteamName( pl ) )
+						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set : " .. pl:SteamName( ) )
 					end
 				end
 				
 				catherine.database.InsertDatas( "catherine_players", {
-					_steamName = pl.SteamName( pl ),
+					_steamName = pl:SteamName( ),
 					_steamID = steamID,
 					_catData = { }
 				} )
@@ -113,8 +113,8 @@ if ( SERVER ) then
 			
 			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message01_ZT" ), 2, function( )
 				local tr = { }
-				tr.start = pl.GetShootPos( pl )
-				tr.endpos = tr.start + pl.GetAimVector( pl ) * 60
+				tr.start = pl:GetShootPos( )
+				tr.endpos = tr.start + pl:GetAimVector( ) * 60
 				tr.filter = pl
 				
 				target = util.TraceLine( tr ).Entity
@@ -148,8 +148,8 @@ if ( SERVER ) then
 			
 			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message02_ZT" ), 2, function( )
 				local tr = { }
-				tr.start = pl.GetShootPos( pl )
-				tr.endpos = tr.start + pl.GetAimVector( pl ) * 60
+				tr.start = pl:GetShootPos( )
+				tr.endpos = tr.start + pl:GetAimVector( ) * 60
 				tr.filter = pl
 				
 				target = util.TraceLine( tr ).Entity
@@ -247,7 +247,7 @@ if ( SERVER ) then
 			pl:SetNotSolid( true )
 			pl:SetNoDraw( true )
 
-			pl:SetNetVar( "ragdollIndex", ent.EntIndex( ent ) )
+			pl:SetNetVar( "ragdollIndex", ent:EntIndex( ) )
 			pl:SetNetVar( "isRagdolled", true )
 			
 			if ( time ) then

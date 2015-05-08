@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
-/*
+
 local BASE = catherine.item.New( "CLOTHING", nil, true )
 BASE.name = "Clothing Base"
 BASE.desc = "A Cloth."
@@ -31,14 +31,12 @@ BASE.func.wear = {
 	canShowIsWorld = true,
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
-
+		
 	end,
 	canLook = function( pl, itemTable )
 		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
-		if ( itemData.wearing ) then
-			return itemData.wearing
-		end
-		return true
+		
+		return !itemData.wearing
 	end
 }
 BASE.func.takeoff = {
@@ -49,12 +47,9 @@ BASE.func.takeoff = {
 	end,
 	canLook = function( pl, itemTable )
 		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
-		if ( itemData.wearing ) then
-			return itemData.wearing
-		end
-		return true
+
+		return itemData.wearing
 	end
 }
 
 catherine.item.Register( BASE )
-*/

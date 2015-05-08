@@ -50,20 +50,20 @@ if ( SERVER ) then
 				local hax = false
 				
 				if ( serverConVars.cheat != v.cheat ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_cheats mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl:SteamID( ) .. "]\n" )
-					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_cheats mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl:SteamID( ) .. "]", true )
+					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_cheats mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]\n" )
+					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_cheats mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]", true )
 					hax = true
 				end
 				
 				if ( serverConVars.csLua != v.csLua ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_allowcslua mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl:SteamID( ) .. "]\n" )
-					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_allowcslua mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl:SteamID( ) .. "]", true )
+					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_allowcslua mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]\n" )
+					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_allowcslua mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]", true )
 					hax = true
 				end
 
 				if ( hax ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Kicked hack player.[" .. pl.SteamName( pl ) .. "/" .. pl:SteamID( )	.. "]\n" )
-					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked hack player.[" .. pl.SteamName( pl ) .. "/" .. pl:SteamID( )	.. "]", true )
+					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Kicked hack player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]\n" )
+					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked hack player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]", true )
 					pl:Kick( "[Catherine AntiHaX] Hack program used." )
 					continue
 				end
