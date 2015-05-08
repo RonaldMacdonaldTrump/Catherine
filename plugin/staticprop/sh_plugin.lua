@@ -25,7 +25,7 @@ catherine.util.Include( "sh_language.lua" )
 
 catherine.command.Register( {
 	command = "staticprop",
-	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local ent = pl.GetEyeTraceNoCursor( pl ).Entity
 

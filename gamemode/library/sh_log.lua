@@ -23,6 +23,8 @@ local printColor = Color( 50, 200, 50 )
 
 if ( SERVER ) then
 	function catherine.log.Add( flag, str, isStream )
+		if ( !catherine.configs.enable_Log ) then return end
+		
 		flag = flag or CAT_LOG_FLAG_BASIC
 		
 		local time = os.date( "*t" )
@@ -37,6 +39,8 @@ if ( SERVER ) then
 	end
 	
 	function catherine.log.Initialize( )
+		if ( !catherine.configs.enable_Log ) then return end
+		
 		file.CreateDir( "catherine" )
 		file.CreateDir( "catherine/log" )
 	end

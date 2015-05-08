@@ -119,7 +119,7 @@ function PLUGIN:Think( )
 	local pl = LocalPlayer( )
 
 	if ( IsValid( pl ) and CAT_CONVAR_LEGS:GetBool( CAT_CONVAR_LEGS ) ) then
-		if ( !IsValid( self.legEntity ) or ( IsValid( self.legEntity ) and self.legEntity.GetModel( self.legEntity ) != pl.GetModel( pl ) ) ) then
+		if ( !IsValid( self.legEntity ) or ( IsValid( self.legEntity ) and self.legEntity.GetModel( self.legEntity ) != pl:GetModel( ) ) ) then
 			self:CreateLeg( )
 		end
 	end

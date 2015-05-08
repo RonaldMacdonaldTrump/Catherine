@@ -18,6 +18,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.player = catherine.player or { }
 local META = FindMetaTable( "Player" )
+local velo = FindMetaTable( "Entity" ).GetVelocity
+local twoD = FindMetaTable( "Vector" ).Length2D
 
 if ( SERVER ) then
 	function catherine.player.Initialize( pl, func )
@@ -55,22 +57,22 @@ if ( SERVER ) then
 	end
 
 	function catherine.player.PlayerInformationInitialize( pl )
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data or #data == 0 ) then
 				if ( steamID == catherine.configs.OWNER and pl.GetNWString( pl, "usergroup" ):lower( ) == "user" ) then
 					if ( ulx ) then
 						RunConsoleCommand( "ulx", "adduserid", steamID, "superadmin" )
-						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl.SteamName( pl ) )
+						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl:SteamName( ) )
 					else
 						pl:SetUserGroup( "superadmin" )
-						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set : " .. pl.SteamName( pl ) )
+						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set : " .. pl:SteamName( ) )
 					end
 				end
 				
 				catherine.database.InsertDatas( "catherine_players", {
-					_steamName = pl.SteamName( pl ),
+					_steamName = pl:SteamName( ),
 					_steamID = steamID,
 					_catData = { }
 				} )
@@ -81,14 +83,14 @@ if ( SERVER ) then
 	function catherine.player.HealthRecoverTick( pl )
 		if ( !pl.CAT_healthRecover ) then return end
 
-		if ( math.Round( pl.Health( pl ) ) >= pl.GetMaxHealth( pl ) ) then
+		if ( math.Round( pl:Health( ) ) >= pl:GetMaxHealth( ) ) then
 			pl.CAT_healthRecover = false
 			hook.Run( "HealthFullRecovered", pl )
 			return
 		end
 		
 		if ( ( pl.CAT_healthRecoverTick or CurTime( ) ) <= CurTime( ) ) then
-			pl:SetHealth( math.Clamp( pl.Health( pl ) + 1, 0, pl.GetMaxHealth( pl ) ) )
+			pl:SetHealth( math.Clamp( pl:Health( ) + 1, 0, pl:GetMaxHealth( ) ) )
 			pl.CAT_healthRecoverTick = CurTime( ) + 5
 			hook.Run( "HealthRecovering", pl )
 		end
@@ -113,8 +115,8 @@ if ( SERVER ) then
 			
 			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message01_ZT" ), 2, function( )
 				local tr = { }
-				tr.start = pl.GetShootPos( pl )
-				tr.endpos = tr.start + pl.GetAimVector( pl ) * 60
+				tr.start = pl:GetShootPos( )
+				tr.endpos = tr.start + pl:GetAimVector( ) * 60
 				tr.filter = pl
 				
 				target = util.TraceLine( tr ).Entity
@@ -148,8 +150,8 @@ if ( SERVER ) then
 			
 			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message02_ZT" ), 2, function( )
 				local tr = { }
-				tr.start = pl.GetShootPos( pl )
-				tr.endpos = tr.start + pl.GetAimVector( pl ) * 60
+				tr.start = pl:GetShootPos( )
+				tr.endpos = tr.start + pl:GetAimVector( ) * 60
 				tr.filter = pl
 				
 				target = util.TraceLine( tr ).Entity
@@ -208,7 +210,7 @@ if ( SERVER ) then
 
 			local ent = ents.Create( "prop_ragdoll" )
 			ent:SetAngles( pl.GetAngles( pl ) )
-			ent:SetModel( pl.GetModel( pl ) )
+			ent:SetModel( pl:GetModel( ) )
 			ent:SetPos( pl.GetPos( pl ) )
 			ent:SetSkin( pl.GetSkin( pl ) )
 			ent:Spawn( )
@@ -247,7 +249,7 @@ if ( SERVER ) then
 			pl:SetNotSolid( true )
 			pl:SetNoDraw( true )
 
-			pl:SetNetVar( "ragdollIndex", ent.EntIndex( ent ) )
+			pl:SetNetVar( "ragdollIndex", ent:EntIndex( ) )
 			pl:SetNetVar( "isRagdolled", true )
 			
 			if ( time ) then
@@ -291,13 +293,6 @@ if ( SERVER ) then
 		else
 			self:SetWeaponRaised( true )
 		end
-	end
-	
-	local velo = FindMetaTable( "Entity" ).GetVelocity
-	local twoD = FindMetaTable( "Vector" ).Length2D
-	
-	function META:IsRunning( )
-		return twoD( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
 	end
 
 	function catherine.player.PlayerSwitchWeapon( pl, oldWep, newWep )
@@ -358,12 +353,16 @@ function META:IsChatTyping( )
 	return self.GetNetVar( self, "isTyping", false )
 end
 
+function META:IsRunning( )
+	return twoD( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
+end
+
 function catherine.player.IsRagdolled( pl )
-	return pl.GetNetVar( pl, "isRagdolled", nil )
+	return pl:GetNetVar( "isRagdolled", nil )
 end
 
 function catherine.player.IsTied( pl )
-	return pl.GetNetVar( pl, "isTied", false )
+	return pl:GetNetVar( "isTied", false )
 end
 
 function player.GetAllByLoaded( )

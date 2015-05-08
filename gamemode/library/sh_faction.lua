@@ -33,7 +33,7 @@ function catherine.faction.Register( factionTable )
 end
 
 function catherine.faction.New( uniqueID )
-	return { uniqueID = uniqueID, index = table.Count( catherine.faction.lists ) + 1 }
+	return { uniqueID = uniqueID, index = #catherine.faction.lists + 1 }
 end
 
 function catherine.faction.GetAll( )
@@ -83,13 +83,15 @@ if ( SERVER ) then
 		end
 		
 		if ( catherine.faction.HasWhiteList( pl, id ) ) then
-			return false, "Faction_Notify_AlreadyHas", { pl.Name( pl ), id }
+			return false, "Faction_Notify_AlreadyHas", { pl:Name( ), id }
 		end
 		
 		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
+		
 		whiteLists[ #whiteLists + 1 ] = id
 		
 		catherine.catData.SetVar( pl, "whitelists", whiteLists, false, true )
+		
 		return true
 	end
 	
@@ -105,20 +107,20 @@ if ( SERVER ) then
 		end
 		
 		if ( !catherine.faction.HasWhiteList( pl, id ) ) then
-			return false, "Faction_Notify_HasNot", { pl.Name( pl ), id }
+			return false, "Faction_Notify_HasNot", { pl:Name( ), id }
 		end
 		
 		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
+		
 		table.RemoveByValue( whiteLists, id )
 		
 		catherine.catData.SetVar( pl, "whitelists", whiteLists, false, true )
+		
 		return true
 	end
 
 	function catherine.faction.HasWhiteList( pl, id )
-		local whiteLists = catherine.catData.GetVar( pl, "whitelists", { } )
-		
-		return table.HasValue( whiteLists, id )
+		return table.HasValue( catherine.catData.GetVar( pl, "whitelists", { } ), id )
 	end
 	
 	function META:HasWhiteList( id )
@@ -126,7 +128,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.faction.PlayerFirstSpawned( pl )
-		local factionTable = catherine.faction.FindByIndex( pl.Team( pl ) )
+		local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
 		if ( !factionTable or !factionTable.PlayerFirstSpawned ) then return end
 		
 		factionTable:PlayerFirstSpawned( pl )
@@ -135,9 +137,7 @@ if ( SERVER ) then
 	hook.Add( "PlayerFirstSpawned", "catherine.faction.PlayerFirstSpawned", catherine.faction.PlayerFirstSpawned )
 else
 	function catherine.faction.HasWhiteList( id )
-		local whiteLists = catherine.catData.GetVar( "whitelists", { } )
-		
-		return table.HasValue( whiteLists, id )
+		return table.HasValue( catherine.catData.GetVar( "whitelists", { } ), id )
 	end
 	
 	function META:HasWhiteList( id )

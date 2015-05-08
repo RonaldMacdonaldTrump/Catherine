@@ -27,7 +27,7 @@ catherine.util.Include( "sv_plugin.lua" )
 catherine.command.Register( {
 	command = "spawnpointadd",
 	syntax = "[Faction Name]",
-	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			local factionTable = catherine.faction.FindByID( args[ 1 ] )
@@ -55,7 +55,7 @@ catherine.command.Register( {
 catherine.command.Register( {
 	command = "spawnpointremove",
 	syntax = "[Range]",
-	canRun = function( pl ) return pl.IsAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local rad = math.max( tonumber( args[ 1 ] or "" ) or 140, 8 )
 		local pos = pl.GetPos( pl )

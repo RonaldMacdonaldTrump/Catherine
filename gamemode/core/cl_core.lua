@@ -18,10 +18,10 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.intro = catherine.intro or {
 	status = true,
-	backAlpha = 255,
 	loading = true,
-	rotate = 0,
+	backAlpha = 255,
 	loadingAlpha = 0,
+	rotate = 0,
 	startTime = 0,
 	
 	firstStageShowingTime = nil,
@@ -34,17 +34,20 @@ catherine.intro = catherine.intro or {
 	secondStage = false,
 	secondStageEnding = false,
 	secondStageX = ScrW( ),
-	secondStageFade = 255,
+	secondStageAlpha = 255,
 	secondStageEffect = false,
 	
 	introDone = false
 }
-catherine.entityCaches = { }
-catherine.weaponModels = catherine.weaponModels or { }
-catherine.nextCacheDo = CurTime( )
+local entityCaches = { }
+local nextEntityCacheWork = CurTime( )
 local toscreen = FindMetaTable( "Vector" ).ToScreen
 local OFFSET_PLAYER = Vector( 0, 0, 30 )
 local OFFSET_AD_ESP = Vector( 0, 0, 50 )
+local frameworkLogoMat = Material( catherine.configs.frameworkLogo )
+local gradientUpMat = Material( "gui/gradient_up" )
+local gradientCenterMat = Material( "gui/center_gradient" )
+local introBooA = 0
 
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hud.blockedModules ) do
@@ -62,24 +65,24 @@ end
 
 function GM:HUDPaintBackground( )
 	local lp = LocalPlayer( )
-	if ( !lp.IsAdmin( lp ) or !lp.IsNoclipping( lp ) ) then return end
+	if ( !lp:IsAdmin( ) or !lp:IsNoclipping( ) ) then return end
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( lp == v ) then continue end
-		local pos = toscreen( v.LocalToWorld( v, v.OBBCenter( v ) + OFFSET_AD_ESP ) )
+		local pos = toscreen( v:LocalToWorld( v:OBBCenter( ) + OFFSET_AD_ESP ) )
 
-		draw.SimpleText( v.Name( v ), "catherine_normal15", pos.x, pos.y, team.GetColor( v.Team( v ) ), 1, 1 )
+		draw.SimpleText( v:Name( ), "catherine_normal15", pos.x, pos.y, team.GetColor( v:Team( ) ), 1, 1 )
 
 		hook.Run( "AdminESPDrawed", lp, v, pos.x, pos.y )
 	end
 end
 
 function GM:SpawnMenuOpen( )
-	return LocalPlayer( ).IsAdmin( LocalPlayer( ) )
+	return LocalPlayer( ):IsAdmin( )
 end
 
 function GM:ShouldDrawLocalPlayer( pl )
-	if ( pl.GetNetVar( pl, "isActioning" ) ) then
+	if ( pl:GetNetVar( "isActioning" ) ) then
 		return true
 	end
 end
@@ -95,10 +98,10 @@ function GM:CalcView( pl, pos, ang, fov )
 		return viewData
 	end
 	
-	if ( pl.GetNetVar( pl, "isActioning" ) ) then
+	if ( pl:GetNetVar( "isActioning" ) ) then
 		local data = util.TraceLine( {
 			start = pos, 
-			endpos = pos - ( ang.Forward( ang ) * 100 )
+			endpos = pos - ( ang:Forward( ) * 100 )
 		} )
 
 		viewData = {
@@ -108,7 +111,7 @@ function GM:CalcView( pl, pos, ang, fov )
 		return viewData
 	end
 	
-	if ( IsValid( catherine.vgui.character ) or !pl.IsCharacterLoaded( pl ) ) then
+	if ( IsValid( catherine.vgui.character ) or !pl:IsCharacterLoaded( ) ) then
 		viewData = {
 			origin = catherine.configs.schematicViewPos.pos,
 			angles = catherine.configs.schematicViewPos.ang
@@ -117,13 +120,13 @@ function GM:CalcView( pl, pos, ang, fov )
 		return viewData
 	end
 
-	local ent = Entity( pl.GetNetVar( pl, "ragdollIndex", 0 ) )
+	local ent = Entity( pl:GetNetVar( "ragdollIndex", 0 ) )
 
-	if ( IsValid( ent ) and ent.GetClass( ent ) == "prop_ragdoll" and catherine.player.IsRagdolled( pl ) ) then
-		local index = ent.LookupAttachment( ent, "eyes" )
+	if ( IsValid( ent ) and ent:GetClass( ) == "prop_ragdoll" and catherine.player.IsRagdolled( pl ) ) then
+		local index = ent:LookupAttachment( "eyes" )
 		
 		if ( index ) then
-			local data = ent.GetAttachment( ent, index )
+			local data = ent:GetAttachment( index )
 
 			viewData = {
 				origin = data and data.Pos,
@@ -137,16 +140,14 @@ function GM:CalcView( pl, pos, ang, fov )
 	return self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
 end
 
-local introBooA = 0
-
 function GM:HUDDrawScoreBoard( )
-	if ( LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
+	if ( LocalPlayer( ):IsCharacterLoaded( ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 
 	// Backgrounds
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, catherine.intro.backAlpha ) )
 	surface.SetDrawColor( 200, 200, 200, catherine.intro.backAlpha )
-	surface.SetMaterial( Material( "gui/gradient_up" ) )
+	surface.SetMaterial( gradientUpMat )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )
 
 	if ( catherine.intro.status ) then
@@ -239,15 +240,14 @@ function GM:HUDDrawScoreBoard( )
 		surface.SetDrawColor( 90, 90, 90, catherine.intro.loadingAlpha )
 		catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 250, 100 )
 	end
-	
 
 	// Framework logo
 	surface.SetDrawColor( 50, 50, 50, 255 )
-	surface.SetMaterial( Material( catherine.configs.frameworkLogo ) )
+	surface.SetMaterial( frameworkLogoMat )
 	surface.DrawTexturedRect( catherine.intro.firstStageX, scrH / 2 - 256 / 2, 512, 256 )
 
 	// Schema logo
-	surface.SetDrawColor( 255, 255, 255, catherine.intro.secondStageFade )
+	surface.SetDrawColor( 255, 255, 255, catherine.intro.secondStageAlpha )
 	surface.SetMaterial( Material( catherine.configs.schemaLogo ) )
 	surface.DrawTexturedRect( catherine.intro.secondStageX, scrH / 2 - 256 / 2, 512, 256 )
 
@@ -261,10 +261,10 @@ end
 function GM:PostDrawTranslucentRenderables( depth, skybox )
 	if ( depth or skybox ) then return end
 
-	for k, v in pairs( ents.FindInSphere( LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 ) ) do
+	for k, v in pairs( ents.FindInSphere( LocalPlayer( ):GetPos( ), 256 ) ) do
 		if ( !IsValid( v ) or !catherine.entity.IsDoor( v ) or catherine.door.IsDoorDisabled( v ) ) then continue end
 		
-		hook.Run( "DrawDoorText", v, v.GetPos( v ), v.GetAngles( v ) )
+		hook.Run( "DrawDoorText", v )
 	end
 end
 
@@ -276,9 +276,9 @@ function GM:PlayerBindPress( pl, code, pressed )
 	end
 end
 
-function GM:DrawDoorText( ent, pos, ang )
+function GM:DrawDoorText( ent )
 	if ( catherine.door.IsDoorDisabled( ent ) ) then return end
-	local a = catherine.util.GetAlphaFromDistance( ent.GetPos( ent ), LocalPlayer( ).GetPos( LocalPlayer( ) ), 256 )
+	local a = catherine.util.GetAlphaFromDistance( ent:GetPos( ), LocalPlayer( ):GetPos( ), 256 )
 
 	if ( a <= 0 ) then
 		return
@@ -292,47 +292,43 @@ function GM:DrawDoorText( ent, pos, ang )
 	surface.SetFont( "catherine_normal50" )
 	local titleW, titleH = surface.GetTextSize( title )
 	local descW, descH = surface.GetTextSize( desc )
-	
-	local longW = titleW
-
-	if ( descW > longW ) then
-		longW = descW
-	end
-
+	local longW = descW > titleW and descW or titleW
+	//local longH = titleH + descScale + 8 // We don't need this :)
 	local scale = math.abs( ( data.w * 0.8 ) / longW )
 	local titleScale = math.min( scale, 0.1 )
 	local descScale = math.min( scale, 0.03 )
-	local longH = titleH + descScale + 8
+	local pos, posBack = data.pos, data.posBack
+	local ang, angBack = data.ang, data.angBack
 	
-	cam.Start3D2D( data.pos, data.ang, titleScale )
+	cam.Start3D2D( pos, ang, titleScale )
 		surface.SetDrawColor( 255, 255, 255, a )
-		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.SetMaterial( gradientCenterMat )
 		surface.DrawTexturedRect( 0 - longW / 2, 0 - 40, longW, 1 )
 		
 		surface.SetDrawColor( 255, 255, 255, a )
-		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.SetMaterial( gradientCenterMat )
 		surface.DrawTexturedRect( 0 - longW / 2, 80, longW, 1 )
 		
 		draw.SimpleText( title, "catherine_normal40", 0, 0, Color( 235, 235, 235, a ), 1, 1 )
 	cam.End3D2D( )
 	
-	cam.Start3D2D( data.posBack, data.angBack, titleScale )
+	cam.Start3D2D( posBack, angBack, titleScale )
 		surface.SetDrawColor( 255, 255, 255, a )
-		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.SetMaterial( gradientCenterMat )
 		surface.DrawTexturedRect( 0 - longW / 2, 0 - 40, longW, 1 )
 		
 		surface.SetDrawColor( 255, 255, 255, a )
-		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.SetMaterial( gradientCenterMat )
 		surface.DrawTexturedRect( 0 - longW / 2, 80, longW, 1 )
 		
 		draw.SimpleText( title, "catherine_normal40", 0, 0, Color( 235, 235, 235, a ), 1, 1 )
 	cam.End3D2D( )
 	
-	cam.Start3D2D( data.pos, data.ang, descScale )
+	cam.Start3D2D( pos, ang, descScale )
 		draw.SimpleText( desc, "catherine_normal50", 0, 90, Color( 235, 235, 235, a ), 1, 1 )
 	cam.End3D2D( )
 	
-	cam.Start3D2D( data.posBack, data.angBack, descScale )
+	cam.Start3D2D( posBack, angBack, descScale )
 		draw.SimpleText( desc, "catherine_normal50", 0, 90, Color( 235, 235, 235, a ), 1, 1 )
 	cam.End3D2D( )
 end
@@ -346,25 +342,25 @@ function GM:FinishChat( )
 end
 
 function GM:DrawEntityTargetID( pl, ent, a )
-	if ( ent.GetNetVar( ent, "noDrawOriginal" ) == true or ( ent.IsPlayer( ent ) and catherine.player.IsRagdolled( ent ) ) ) then
+	if ( ent:GetNetVar( "noDrawOriginal" ) == true or ( ent:IsPlayer( ) and catherine.player.IsRagdolled( ent ) ) ) then
 		return
 	end
 	
 	local entPlayer = ent
 	
-	if ( ent.GetClass( ent ) == "prop_ragdoll" ) then
+	if ( ent:GetClass( ) == "prop_ragdoll" ) then
 		entPlayer = ent.GetNetVar( ent, "player" )
 	end
 	
-	if ( !IsValid( entPlayer ) or !entPlayer.IsPlayer( entPlayer ) ) then return end
+	if ( !IsValid( entPlayer ) or !entPlayer:IsPlayer( ) ) then return end
 
-	local index = ent.LookupBone( ent, "ValveBiped.Bip01_Head1" )
+	local index = ent:LookupBone( "ValveBiped.Bip01_Head1" )
 
 	if ( index ) then
-		local pos = toscreen( ent.GetBonePosition( ent, index ) )
+		local pos = toscreen( ent:GetBonePosition( index ) )
 		local x, y = pos.x, pos.y - 100
 		local name, desc = hook.Run( "GetPlayerInformation", pl, entPlayer, true )
-		local col = team.GetColor( entPlayer.Team( entPlayer ) )
+		local col = team.GetColor( entPlayer:Team( ) )
 		
 		draw.SimpleText( name, "catherine_normal20", x, y, Color( col.r, col.g, col.b, a ), 1, 1 )
 		y = y + 20
@@ -379,14 +375,17 @@ end
 function GM:PlayerInformationDraw( pl, target, x, y, a )
 	if ( catherine.player.IsRagdolled( target ) ) then
 		draw.SimpleText( LANG( "Player_Message_Ragdolled_HUD" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		y = y + 20
 	end
 	
 	if ( catherine.player.IsTied( target ) ) then
-		draw.SimpleText( LANG( "Player_Message_UnTie" ), "catherine_normal15", x, y + 20, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( LANG( "Player_Message_UnTie" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		y = y + 20
 	end
 	
-	if ( !target.Alive( target ) ) then
-		draw.SimpleText( LANG( "Player_Message_Dead_HUD" ), "catherine_normal15", x, y + 40, Color( 255, 255, 255, a ), 1, 1 )
+	if ( !target:Alive( ) ) then
+		draw.SimpleText( LANG( "Player_Message_Dead_HUD" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		y = y + 20
 	end
 end
 
@@ -394,29 +393,30 @@ function GM:GetUnknownTargetName( pl, target )
 	return LANG( "Recognize_UI_Unknown" )
 end
 
-function GM:ProgressEntityCache( pl )
-	if ( pl.IsCharacterLoaded( pl ) and catherine.nextCacheDo <= CurTime( ) ) then
+function GM:EntityCacheWork( pl )
+	if ( !pl:IsCharacterLoaded( ) ) then return end
+	if ( nextEntityCacheWork <= CurTime( ) ) then
 		local data = { }
-		data.start = pl.GetShootPos( pl )
-		data.endpos = data.start + pl.GetAimVector( pl ) * 160
+		data.start = pl:GetShootPos( )
+		data.endpos = data.start + pl:GetAimVector( ) * 160
 		data.filter = pl
 		local ent = util.TraceLine( data ).Entity
 
-		catherine.entityCaches[ ent ] = IsValid( ent ) and true or nil
-		catherine.nextCacheDo = CurTime( ) + 0.5
+		entityCaches[ ent ] = IsValid( ent ) and true or nil
+		nextEntityCacheWork = CurTime( ) + 0.5
 	end
 	
-	for k, v in pairs( catherine.entityCaches ) do
+	for k, v in pairs( entityCaches ) do
 		if ( !IsValid( k ) ) then
-			catherine.entityCaches[ k ] = nil
+			entityCaches[ k ] = nil
 			continue
 		end
 		
-		local a = Lerp( 0.03, k.alpha or 0, catherine.util.GetAlphaFromDistance( k.GetPos( k ), pl.GetPos( pl ), 256 ) )
-		k.alpha = a
+		local a = Lerp( 0.02, k.CAT_entityCacheAlpha or 0, catherine.util.GetAlphaFromDistance( k:GetPos( ), pl:GetPos( ), 256 ) )
+		k.CAT_entityCacheAlpha = a
 
-		if ( math.Round( a ) <= 0 ) then
-			catherine.entityCaches[ k ] = nil
+		if ( a <= 0 ) then
+			entityCaches[ k ] = nil
 			continue
 		end
 		
@@ -438,8 +438,8 @@ function GM:HUDPaint( )
 	catherine.hint.Draw( pl )
 	hook.Run( "HUDDraw" )
 	
-	if ( pl.Alive( pl ) ) then
-		hook.Run( "ProgressEntityCache", pl )
+	if ( pl:Alive( ) ) then
+		hook.Run( "EntityCacheWork", pl )
 	end
 end
 
@@ -449,21 +449,26 @@ function GM:PostRenderVGUI( )
 	catherine.notify.Draw( )
 end
 
-function GM:CalcViewModelView( weapon, viewModel, oldEyePos, oldEyeAngles, eyePos, eyeAng )
-	if ( !IsValid( weapon ) ) then return end
+function GM:CalcViewModelView( wep, viewMdl, oldEyePos, oldEyeAngles, eyePos, eyeAng )
+	if ( !IsValid( wep ) ) then return end
 	local pl = LocalPlayer( )
-	local value = 0
-	if ( !pl.GetWeaponRaised( pl ) ) then value = 100 end
+	local val = pl:GetWeaponRaised( ) and 0 or 100
 	local fraction = ( pl.wepRaisedFraction or 0 ) / 100
-	local lowerAngle = weapon.LowerAngles or Angle( 30, -30, -25 )
+	local lowerAng = wep.LowerAngles or Angle( 30, -30, -25 )
 	
-	eyeAng:RotateAroundAxis( eyeAng.Up( eyeAng ), lowerAngle.p * fraction )
-	eyeAng:RotateAroundAxis( eyeAng.Forward( eyeAng ), lowerAngle.y * fraction )
-	eyeAng:RotateAroundAxis( eyeAng.Right( eyeAng ), lowerAngle.r * fraction )
-	pl.wepRaisedFraction = Lerp( FrameTime( ) * 2, pl.wepRaisedFraction or 0, value )
-	viewModel:SetAngles( eyeAng )
+	eyeAng:RotateAroundAxis( eyeAng:Up( ), lowerAng.p * fraction )
+	eyeAng:RotateAroundAxis( eyeAng:Forward( ), lowerAng.y * fraction )
+	eyeAng:RotateAroundAxis( eyeAng:Right( ), lowerAng.r * fraction )
+	
+	pl.wepRaisedFraction = Lerp( FrameTime( ) * 2, pl.wepRaisedFraction or 0, val )
+	
+	viewMdl:SetAngles( eyeAng )
 	
 	return oldEyePos, eyeAng
+end
+
+function GM:ScoreboardPlayerOption( )
+
 end
 
 function GM:GetSchemaInformation( )
@@ -475,7 +480,7 @@ function GM:GetSchemaInformation( )
 end
 
 function GM:ScoreboardShow( )
-	if ( !LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then return end
+	if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 	
 	if ( IsValid( catherine.vgui.menu ) ) then
 		catherine.vgui.menu:Close( )
@@ -503,23 +508,12 @@ function GM:RenderScreenspaceEffects( )
 	DrawColorModify( tab )
 end
 
-netstream.Hook( "catherine.LoadingStatus", function( data )
-	catherine.loading.status = data[ 1 ]
-	catherine.loading.msg = data[ 2 ]
-	
-	if ( data[ 3 ] == true ) then
-		catherine.loading.errorMsg = data[ 2 ]
-		catherine.loading.msg = ""
-	end
-end )
-
 netstream.Hook( "catherine.ShowHelp", function( )
 	if ( IsValid( catherine.vgui.information ) ) then
 		catherine.vgui.information:Close( )
-		return
+	else
+		catherine.vgui.information = vgui.Create( "catherine.vgui.information" )
 	end
-	
-	catherine.vgui.information = vgui.Create( "catherine.vgui.information" )
 end )
 
 netstream.Hook( "catherine.IntroStart", function( )

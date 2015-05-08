@@ -39,7 +39,7 @@ if ( CLIENT ) then
 		local lp = LocalPlayer( )
 		local a = catherine.util.GetAlphaFromDistance( lp.GetPos( lp ), pl.GetPos( pl ), 312 )
 		
-		if ( math.Round( a ) <= 0 or !pl.Alive( pl ) or pl.GetMoveType( pl ) == MOVETYPE_NOCLIP ) then return end
+		if ( math.Round( a ) <= 0 or !pl:Alive( ) or pl.GetMoveType( pl ) == MOVETYPE_NOCLIP ) then return end
 		
 		local ang = lp.EyeAngles( lp )
 		local pos = pl.GetBonePosition( pl, pl.LookupBone( pl, "ValveBiped.Bip01_Head1" ) ) + Vector( 0, 0, 15 )

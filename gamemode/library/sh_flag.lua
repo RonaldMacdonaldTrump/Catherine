@@ -19,23 +19,23 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.flag = catherine.flag or { lists = { } }
 local META = FindMetaTable( "Player" )
 
-function catherine.flag.Register( id, desc, flagTable )
+function catherine.flag.Register( uniqueID, desc, flagTable )
 	flagTable = flagTable or { }
 	
 	table.Merge( flagTable, {
-		id = id,
+		uniqueID = uniqueID,
 		desc = desc
 	} )
 	
-	catherine.flag.lists[ id ] = flagTable
+	catherine.flag.lists[ uniqueID ] = flagTable
 end
 
 function catherine.flag.GetAll( )
 	return catherine.flag.lists
 end
 
-function catherine.flag.FindByID( id )
-	return catherine.flag.lists[ id ]
+function catherine.flag.FindByID( uniqueID )
+	return catherine.flag.lists[ uniqueID ]
 end
 
 function catherine.flag.GetAllToString( )
@@ -75,6 +75,7 @@ catherine.flag.Register( "x", "^Flag_x_Desc" )
 catherine.flag.Register( "V", "^Flag_V_Desc" )
 catherine.flag.Register( "n", "^Flag_n_Desc" )
 catherine.flag.Register( "R", "^Flag_R_Desc" )
+catherine.flag.Register( "s", "^Flag_s_Desc" )
 
 if ( SERVER ) then
 	function catherine.flag.Give( pl, flagID )
@@ -89,7 +90,7 @@ if ( SERVER ) then
 			end
 			
 			if ( catherine.flag.Has( pl, v ) ) then
-				return false, "Flag_Notify_AlreadyHas", { pl.Name( pl ), v }
+				return false, "Flag_Notify_AlreadyHas", { pl:Name( ), v }
 			end
 			
 			flags = flags .. v
@@ -117,7 +118,7 @@ if ( SERVER ) then
 			end
 			
 			if ( !catherine.flag.Has( pl, v ) ) then
-				return false, "Flag_Notify_HasNot", { pl.Name( pl ), v }
+				return false, "Flag_Notify_HasNot", { pl:Name( ), v }
 			end
 			
 			flags = flags:gsub( v, "" )
@@ -133,26 +134,26 @@ if ( SERVER ) then
 		return true
 	end
 	
-	function catherine.flag.Has( pl, id )
-		return catherine.character.GetCharVar( pl, "flags", "" ):find( id )
+	function catherine.flag.Has( pl, uniqueID )
+		return catherine.character.GetCharVar( pl, "flags", "" ):find( uniqueID )
 	end
 	
-	function META:HasFlag( id )
-		return catherine.flag.Has( self, id )
+	function META:HasFlag( uniqueID )
+		return catherine.flag.Has( self, uniqueID )
 	end
 	
 	function catherine.flag.PlayerSpawnedInCharacter( pl )
 		timer.Simple( 0.5, function( )
 			for k, v in pairs( catherine.flag.GetAll( ) ) do
-				if ( !catherine.flag.Has( pl, v.id ) or !v.onSpawn ) then continue end
+				if ( !catherine.flag.Has( pl, v.uniqueID ) or !v.onSpawn ) then continue end
 				
 				v.onSpawn( pl )
 			end
 		end )
 
-		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl.GetCharacterID( pl ) ) then
+		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl:GetCharacterID( ) ) then
 			netstream.Start( pl, "catherine.flag.BuildHelp" )
-			pl.CAT_flag_buildHelp = pl.GetCharacterID( pl )
+			pl.CAT_flag_buildHelp = pl:GetCharacterID( )
 		end
 	end
 	
@@ -163,9 +164,7 @@ else
 		local html = [[<b>]] .. title_flag .. [[</b><br>]]
 		
 		for k, v in pairs( catherine.flag.GetAll( ) ) do
-			local col = catherine.flag.Has( k ) and ( "<font color=\"green\">&#10004;</font>" ) or ( "<font color=\"red\">&#10005;</font>" )
-
-			html = html .. "<p>" .. col .. "<b> " .. k .. "</b><br>" .. catherine.util.StuffLanguage( v.desc ) .. "<br>"
+			html = html .. "<p>" .. ( catherine.flag.Has( k ) and "<font color=\"green\">&#10004;</font>" or "<font color=\"red\">&#10005;</font>" ) .. "<b> " .. k .. "</b><br>" .. catherine.util.StuffLanguage( v.desc ) .. "<br>"
 		end
 
 		catherine.help.Register( CAT_HELP_HTML, title_flag, html )
@@ -175,12 +174,12 @@ else
 		rebuildFlag( )
 	end )
 	
-	function catherine.flag.Has( id )
-		return catherine.character.GetCharVar( LocalPlayer( ), "flags", "" ):find( id )
+	function catherine.flag.Has( uniqueID )
+		return catherine.character.GetCharVar( LocalPlayer( ), "flags", "" ):find( uniqueID )
 	end
 	
-	function META:HasFlag( id )
-		return catherine.flag.Has( id )
+	function META:HasFlag( uniqueID )
+		return catherine.flag.Has( uniqueID )
 	end
 	
 	function catherine.flag.LanguageChanged( )

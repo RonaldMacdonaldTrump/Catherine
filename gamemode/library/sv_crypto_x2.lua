@@ -16,10 +16,14 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.encrypt = catherine.encrypt or { }
+catherine.cryptoX2 = catherine.cryptoX2 or { }
+local se = string.Explode
+local sc = string.char
+local mr = math.random
+local tc = table.concat
 
-function catherine.encrypt.Encode( text )
-	local toTable = string.Explode( "", text )
+function catherine.cryptoX2.Encode( text )
+	local toTable = se( "", text )
 	local k = 0
 	
 	for i = 1, #toTable do
@@ -27,8 +31,8 @@ function catherine.encrypt.Encode( text )
 		
 		if ( k != 0 ) then
 			for i2 = 1, k do
-				local charRand = string.char( math.random( 65, 90 ) )
-				local sizeRand = math.random( 0, 1 )
+				local charRand = sc( mr( 65, 90 ) )
+				local sizeRand = mr( 0, 1 )
 				
 				if ( sizeRand == 1 ) then
 					charRand = charRand:lower( )
@@ -42,10 +46,10 @@ function catherine.encrypt.Encode( text )
 		toTable[ i ] = toTable[ i ] .. randStr
 	end
 
-	return table.concat( toTable, "" )
+	return tc( toTable, "" )
 end
 
-function catherine.encrypt.Decode( text )
+function catherine.cryptoX2.Decode( text )
 	local tab = { }
 	local a = 1
 	local b = 1
@@ -68,5 +72,36 @@ function catherine.encrypt.Decode( text )
 		tab[ i ] = tab[ i ]:sub( 1, 1 )
 	end
 
-	return table.concat( tab, "" )
+	return tc( tab, "" )
 end
+
+--[[ 이게 더 좋은가;?
+function catherine.cryptoX2.Decode( text )
+	local tab = { }
+	local a = 1
+	local b = 1
+	local ap = 0
+	local bp = 1
+	
+	for i = 1, #text do
+		local find = text:sub( a, b )
+		if ( find == "" ) then break end
+		
+		ap = ap + 1
+		bp = bp + 1
+		a = a + ap
+		b = b + bp
+		
+		tab[ #tab + 1 ] = find
+	end
+	
+	local result = ""
+	for i = 1, #tab do
+		result = result .. tab[ i ]:sub( 1, 1 )
+		
+		if ( i == #tab ) then
+			return result
+		end
+	end
+end
+--]]

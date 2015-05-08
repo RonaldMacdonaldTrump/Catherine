@@ -15,46 +15,116 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
-/*
+
 local BASE = catherine.item.New( "CLOTHING", nil, true )
 BASE.name = "Clothing Base"
 BASE.desc = "A Cloth."
-BASE.category = "Clothing"
+BASE.category = "^Item_Category_Clothing"
 BASE.cost = 0
 BASE.weight = 0
 BASE.itemData = {
 	wearing = false
 }
+BASE.isCloth = true
 BASE.func = { }
 BASE.func.wear = {
-	text = "Wear",
+	text = "^Item_FuncStr01_Clothing",
 	canShowIsWorld = true,
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
+		if ( catherine.character.GetCharVar( pl, "clothWearing" ) ) then
+			return
+		end
+		
+		local originalModel = catherine.character.GetCharVar( pl, "originalModel" )
+		
+		if ( !originalModel ) then
+			return
+		end
+		
+		local replacement = itemTable.replacement
+		local newModel = itemTable.model
+		local playerModel = pl:GetModel( ):lower( )
+		
+		if ( newModel:find( "female" ) or catherine.animation.Get( newModel ) == "citizen_female" and itemTable.femaleModel ) then
+			newModel = itemTable.femaleModel
+		end
 
+		if ( replacement and #replacement == 2 ) then
+			newModel = playerModel:gsub( replacement[ 1 ], replacement[ 2 ] )
+		end
+		
+		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
+		pl:SetModel( newModel )
+		pl:SetupHands( )
+		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "wearing", true )
+		catherine.character.SetCharVar( pl, "clothWearing", true )
 	end,
 	canLook = function( pl, itemTable )
-		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
-		if ( itemData.wearing ) then
-			return itemData.wearing
-		end
-		return true
+		return !catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" )
 	end
 }
 BASE.func.takeoff = {
-	text = "Take off",
+	text = "^Item_FuncStr02_Clothing",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
-
+		local originalModel = catherine.character.GetCharVar( pl, "originalModel" )
+		
+		if ( !originalModel ) then
+			return
+		end
+		
+		local replacement = itemTable.replacement
+		
+		if ( replacement and #replacement == 2 ) then
+			originalModel = pl:GetModel( ):lower( ):gsub( replacement[ 2 ], replacement[ 1 ] )
+		end
+		
+		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
+		pl:SetModel( originalModel )
+		pl:SetupHands( )
+		
+		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "wearing", false )
+		catherine.character.SetCharVar( pl, "clothWearing", nil )
 	end,
 	canLook = function( pl, itemTable )
-		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
-		if ( itemData.wearing ) then
-			return itemData.wearing
-		end
-		return true
+		return catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" )
 	end
 }
 
+function BASE:GetDropModel( )
+	return "models/props_c17/suitCase_passenger_physics.mdl"
+end
+
+if ( SERVER ) then
+	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.hooks.clothing_base.PlayerSpawnedInCharacter", function( pl )
+		timer.Simple( 1, function( )
+			for k, v in pairs( catherine.inventory.Get( pl ) ) do
+				local itemTable = catherine.item.FindByID( k )
+				if ( !itemTable.isCloth or !catherine.inventory.GetItemData( pl, k, "wearing" ) ) then continue end
+				
+				catherine.item.Work( pl, k, "wear" )
+			end
+		end )
+	end )
+
+	hook.Add( "ItemDroped", "catherine.item.hooks.clothing_base.ItemDroped", function( pl, itemTable )
+		if ( itemTable.isCloth ) then
+			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
+		end
+	end )
+	
+	hook.Add( "ItemStorageMove", "catherine.item.hooks.clothing_base.ItemStorageMoved", function( pl, itemTable )
+		if ( itemTable.isCloth ) then
+			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
+		end
+	end )
+	
+	hook.Add( "ItemVendorSolded", "catherine.item.hooks.weapon_base.ItemVendorSolded", function( pl, itemTable )
+		if ( itemTable.isCloth ) then
+			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
+		end
+	end )
+end
+
 catherine.item.Register( BASE )
-*/

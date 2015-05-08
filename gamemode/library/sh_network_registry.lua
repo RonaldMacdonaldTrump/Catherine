@@ -23,14 +23,18 @@ local META2 = FindMetaTable( "Player" )
 // 새로운 네트워킹 시스템; ^-^; 2015-04-09 집에서..
 
 if ( SERVER ) then
-	catherine.net.NextOptimizeTick = catherine.net.NextOptimizeTick or CurTime( ) + catherine.configs.netRegistryOptimizeInterval
-
 	function catherine.net.SetNetVar( ent, key, value, noSync )
 		catherine.net.entityRegistry[ ent ] = catherine.net.entityRegistry[ ent ] or { }
 		catherine.net.entityRegistry[ ent ][ key ] = value
 		
 		if ( !noSync ) then
-			netstream.Start( nil, "catherine.net.SetNetVar", { ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( ), key, value } )
+			local id = ent:EntIndex( )
+			
+			if ( ent:IsPlayer( ) ) then
+				id = ent:SteamID( )
+			end
+			
+			netstream.Start( nil, "catherine.net.SetNetVar", { id, key, value } )
 		end
 	end
 	
@@ -51,8 +55,13 @@ if ( SERVER ) then
 		
 		for k, v in pairs( catherine.net.entityRegistry ) do
 			if ( !IsValid( k ) ) then continue end
+			local id = k:EntIndex( )
 			
-			convert[ k:IsPlayer( ) and k:SteamID( ) or k:EntIndex( ) ] = v
+			if ( k:IsPlayer( ) ) then
+				id = k:SteamID( )
+			end
+			
+			convert[ id ] = v
 		end
 
 		netstream.Start( pl, "catherine.net.SyncAllVars", { convert, catherine.net.globalRegistry } )
@@ -75,7 +84,7 @@ if ( SERVER ) then
 	META2.SetNetVar = META.SetNetVar
 	
 	function catherine.net.Think( )
-		if ( catherine.net.NextOptimizeTick <= CurTime( ) ) then
+		if ( ( catherine.net.NextOptimizeTick or 0 ) <= CurTime( ) ) then
 			catherine.net.NetworkRegistryOptimize( )
 			
 			catherine.net.NextOptimizeTick = CurTime( ) + catherine.configs.netRegistryOptimizeInterval
@@ -89,7 +98,7 @@ if ( SERVER ) then
 	
 	function catherine.net.PlayerDisconnectedInCharacter( pl )
 		catherine.net.entityRegistry[ pl ] = nil
-		netstream.Start( nil, "catherine.net.ClearNetVar", pl.SteamID( pl ) )
+		netstream.Start( nil, "catherine.net.ClearNetVar", pl:SteamID( ) )
 	end
 
 	hook.Add( "Think", "catherine.net.Think", catherine.net.Think )
@@ -121,9 +130,13 @@ else
 	end )
 	
 	function catherine.net.GetNetVar( ent, key, default )
-		local data = ent.IsPlayer( ent ) and ent.SteamID( ent ) or ent.EntIndex( ent )
-		
-		return catherine.net.entityRegistry[ data ] and catherine.net.entityRegistry[ data ][ key ] or default
+		local id = ent:EntIndex( )
+			
+		if ( ent:IsPlayer( ) ) then
+			id = ent:SteamID( )
+		end
+			
+		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
 	end
 end
 

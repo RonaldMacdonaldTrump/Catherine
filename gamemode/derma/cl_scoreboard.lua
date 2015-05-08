@@ -20,8 +20,7 @@ local PANEL = { }
 
 function PANEL:Init( )
 	catherine.vgui.scoreboard = self
-	
-	self.playerLists = nil
+
 	self.playerCount = #player.GetAll( )
 	
 	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
@@ -54,9 +53,10 @@ function PANEL:SortPlayerLists( )
 	self.playerLists = { }
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		local factionTab = catherine.faction.FindByIndex( v:Team( ) )
-		if ( !factionTab ) then continue end
-		local name = factionTab.name or "LOADING"
+		local factionTable = catherine.faction.FindByIndex( v:Team( ) )
+		if ( !factionTable ) then continue end
+		local name = factionTable.name or "LOADING"
+		
 		self.playerLists[ name ] = self.playerLists[ name ] or { }
 		self.playerLists[ name ][ #self.playerLists[ name ] + 1 ] = v
 	end
@@ -65,9 +65,9 @@ function PANEL:SortPlayerLists( )
 end
 
 function PANEL:RefreshPlayerLists( )
-	if ( !self.playerLists ) then return end
 	self.Lists:Clear( )
-	for k, v in pairs( self.playerLists ) do
+	
+	for k, v in pairs( self.playerLists or { } ) do
 		local hF = 0
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
@@ -87,7 +87,7 @@ function PANEL:RefreshPlayerLists( )
 		form:AddItem( lists )
 		
 		for k1, v1 in pairs( v ) do
-			local know = self.player == v1 and true or self.player.IsKnow( self.player, v1 )
+			local know = self.player == v1 and true or self.player:IsKnow( v1 )
 			
 			local panel = vgui.Create( "DPanel" )
 			panel:SetSize( lists:GetWide( ), 50 )
@@ -108,7 +108,7 @@ function PANEL:RefreshPlayerLists( )
 				end
 				
 				draw.SimpleText( v1:Name( ), "catherine_normal20", 100, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-				draw.SimpleText( ( know == true and v1:Desc( ) or LANG( "Scoreboard_UI_UnknownDesc" ) ), "catherine_normal15", 100, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.SimpleText( ( know and v1:Desc( ) or LANG( "Scoreboard_UI_UnknownDesc" ) ), "catherine_normal15", 100, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 			end
 			
 			local avatar = vgui.Create( "AvatarImage", panel )
@@ -123,6 +123,9 @@ function PANEL:RefreshPlayerLists( )
 			spawnIcon:SetModel( v1:GetModel( ) )
 			spawnIcon:SetToolTip( false )
 			spawnIcon.PaintOver = function( pnl, w, h ) end
+			spawnIcon.DoClick = function( )
+				hook.Run( "ScoreboardPlayerOption" )
+			end
 			
 			lists:AddItem( panel )
 			hF = hF + 51
@@ -131,6 +134,7 @@ function PANEL:RefreshPlayerLists( )
 		hF = hF + 10
 		form:SetSize( self.Lists:GetWide( ), hF )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
+		
 		self.Lists:AddItem( form )
 	end
 end

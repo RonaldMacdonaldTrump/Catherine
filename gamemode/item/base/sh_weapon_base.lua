@@ -68,7 +68,6 @@ BASE.func.unequip = {
 		end
 		
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
-		
 		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", false )
 	end,
 	canLook = function( pl, itemTable )
@@ -122,12 +121,6 @@ if ( SERVER ) then
 		
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
-end
-
-WEAPON_PLAYERDRAW_INFO = { }
-function BASE:OnRegistered( )
-	if ( !self.weaponClass or !self.attachment ) then return end
-	WEAPON_PLAYERDRAW_INFO[ self.weaponClass ] = self.attachment
 end
 
 catherine.item.Register( BASE )

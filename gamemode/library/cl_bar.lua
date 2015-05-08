@@ -18,10 +18,11 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.bar = catherine.bar or { }
 catherine.bar.lists = { }
+local barMaterial = Material( "CAT/bar_background.png", "smooth" )
 
-function catherine.bar.Register( target, targetMax, color, uniqueID )
+function catherine.bar.Register( getFunc, max, color, uniqueID )
 	for k, v in pairs( catherine.bar.lists ) do
-		if ( v.uniqueID and v.uniqueID == uniqueID ) then
+		if ( ( v.uniqueID and uniqueID ) and v.uniqueID == uniqueID ) then
 			return
 		end
 	end
@@ -29,11 +30,11 @@ function catherine.bar.Register( target, targetMax, color, uniqueID )
 	local index = #catherine.bar.lists + 1
 	
 	catherine.bar.lists[ index ] = {
-		target = target,
-		targetMax = targetMax,
+		getFunc = getFunc,
+		max = max,
 		color = color,
 		uniqueID = uniqueID,
-		ani = 0,
+		w = 0,
 		y = -10 + ( index * 14 ),
 		alpha = 0
 	}
@@ -41,7 +42,7 @@ end
 
 function catherine.bar.Draw( )
 	if ( catherine.option.Get( "CONVAR_BAR" ) == "0" ) then return end
-	if ( !LocalPlayer( ):Alive( ) or !LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then
+	if ( !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) or #catherine.bar.lists == 0 ) then
 		hook.Run( "HUDDrawBarBottom", 5, 5 )
 		return
 	end
@@ -49,8 +50,7 @@ function catherine.bar.Draw( )
 	local count = 0
 	
 	for k, v in pairs( catherine.bar.lists ) do
-		if ( !v.target or !v.targetMax ) then continue end
-		local percent = ( math.min( v.target( ) / v.targetMax( ), 1 ) )
+		local percent = math.min( v.getFunc( ) / v.max( ), 1 )
 		
 		if ( percent == 0 ) then
 			v.alpha = Lerp( 0.03, v.alpha, 0 )
@@ -59,14 +59,16 @@ function catherine.bar.Draw( )
 			v.alpha = Lerp( 0.03, v.alpha, 255 )
 		end
 		
-		v.ani = math.Approach( v.ani, ( ScrW( ) * 0.3 ) * percent, 1 )
+		v.w = math.Approach( v.w, ( ScrW( ) * 0.3 ) * percent, 1 )
 		v.y = Lerp( 0.03, v.y, -5 + count * 10 )
 		
-		surface.SetDrawColor( 255,255,255, v.alpha - 30 )
-		surface.SetMaterial( Material( "CAT/bar_background.png", "smooth" ) )
-		surface.DrawTexturedRect( 5, v.y + 4, ScrW( ) * 0.3, 1 )
-		
-		draw.RoundedBox( 0, 5, v.y, v.ani, 5, Color( v.color.r, v.color.g, v.color.b, v.alpha ) )
+		if ( v.alpha > 0 ) then
+			surface.SetDrawColor( 255, 255, 255, v.alpha - 30 )
+			surface.SetMaterial( barMaterial )
+			surface.DrawTexturedRect( 5, v.y + 4, ScrW( ) * 0.3, 1 )
+			
+			draw.RoundedBox( 0, 5, v.y, v.w, 5, Color( v.color.r, v.color.g, v.color.b, v.alpha ) )
+		end
 	end
 	
 	hook.Run( "HUDDrawBarBottom", 5, catherine.bar.lists[ #catherine.bar.lists ].y )

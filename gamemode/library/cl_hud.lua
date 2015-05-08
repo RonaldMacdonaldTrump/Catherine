@@ -64,7 +64,7 @@ function catherine.hud.ZipTie( pl )
 end
 
 function catherine.hud.DeathScreen( pl )
-	catherine.hud.deathAlpha = Lerp( 0.03, catherine.hud.deathAlpha, pl.Alive( pl ) and 0 or 255 )
+	catherine.hud.deathAlpha = Lerp( 0.03, catherine.hud.deathAlpha, pl:Alive( ) and 0 or 255 )
 	draw.RoundedBox( 0, 0, 0, ScrW( ), ScrH( ), Color( 0, 0, 0, catherine.hud.deathAlpha ) )
 end
 

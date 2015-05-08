@@ -102,9 +102,9 @@ if ( SERVER ) then
 	end
 	
 	function catherine.command.PlayerSpawnedInCharacter( pl )
-		if ( !pl.CAT_command_buildHelp or pl.CAT_command_buildHelp != pl.GetCharacterID( pl ) ) then
+		if ( !pl.CAT_command_buildHelp or pl.CAT_command_buildHelp != pl:GetCharacterID( ) ) then
 			netstream.Start( pl, "catherine.command.BuildHelp" )
-			pl.CAT_command_buildHelp = pl.GetCharacterID( pl )
+			pl.CAT_command_buildHelp = pl:GetCharacterID( )
 		end
 	end
 	

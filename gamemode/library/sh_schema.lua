@@ -17,6 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.schema = catherine.schema or { }
+catherine.schema.loaded = catherine.schema.loaded or false
 
 function catherine.schema.Initialization( )
 	Schema = Schema or {
@@ -43,7 +44,10 @@ function catherine.schema.Initialization( )
 	catherine.plugin.Include( schemaFolderName )
 	catherine.plugin.Include( catherine.FolderName )
 
-	hook.Run( "SchemaInitialized" )
+	if ( !catherine.schema.loaded ) then
+		hook.Run( "SchemaInitialized" )
+		catherine.schema.loaded = true
+	end
 end
 
 function catherine.schema.GetUniqueID( )

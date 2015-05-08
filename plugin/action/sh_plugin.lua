@@ -40,7 +40,7 @@ catherine.util.Include( "sh_actions.lua" )
 
 if ( SERVER ) then
 	function PLUGIN:StartAction( pl, seq )
-		if ( pl.GetNetVar( pl, "isActioning" ) or !pl.Alive( pl ) or catherine.player.IsRagdolled( pl ) ) then
+		if ( pl:GetNetVar( "isActioning" ) or !pl:Alive( ) or catherine.player.IsRagdolled( pl ) ) then
 			return false, "ACT_Plugin_Notify_Cant01"
 		end
 
@@ -48,7 +48,7 @@ if ( SERVER ) then
 			return false, "Item_Notify03_ZT"
 		end
 		
-		local class = catherine.animation.Get( pl.GetModel( pl ):lower( ) )
+		local class = catherine.animation.Get( pl:GetModel( ):lower( ) )
 		local actionData = { }
 		
 		if ( self.actions[ seq ] ) then
@@ -93,11 +93,11 @@ if ( SERVER ) then
 	end
 	
 	function PLUGIN:ExitAction( pl )
-		if ( !pl.GetNetVar( pl, "isActioning" ) ) then
+		if ( !pl:GetNetVar( "isActioning" ) ) then
 			return false, "ACT_Plugin_Notify_Cant01"
 		end
 		
-		local class = catherine.animation.Get( pl.GetModel( pl ):lower( ) )
+		local class = catherine.animation.Get( pl:GetModel( ):lower( ) )
 		
 		for k, v in pairs( self.actions ) do
 			if ( v.actions ) then
@@ -135,8 +135,8 @@ else
 	PLUGIN.MouseSensitive = 20
 	
 	function PLUGIN:PlayerBindPress( pl, bind, pressed )
-		if ( pl.GetNetVar( pl, "isActioning" ) and bind == "+jump" ) then
-			if ( pl.GetNetVar( pl, "doingAction" ) and pl.CAT_leavingAction ) then
+		if ( pl:GetNetVar( "isActioning" ) and bind == "+jump" ) then
+			if ( pl:GetNetVar( "doingAction" ) and pl.CAT_leavingAction ) then
 				pl.CAT_leavingAction = nil
 				timer.Remove( "Catherine.plugin.action.timer.WaitAction" )
 			else
@@ -160,7 +160,7 @@ else
 	end
 	
 	function PLUGIN:CalcView( pl, pos, ang, fov )
-		if ( pl.GetViewEntity( pl ) == pl and pl.GetNetVar( pl, "isActioning" ) ) then
+		if ( pl.GetViewEntity( pl ) == pl and pl:GetNetVar( "isActioning" ) ) then
 			local la = pl.LookupAttachment( pl, "eyes" )
 			
 			if ( la == 0 ) then

@@ -22,15 +22,15 @@ function PANEL:Init( )
 	self.invWeight = 0
 	self.invMaxWeight = 0
 	self.invWeightAni = 0
+	self.invWeightTextAni = 0
 	self.size = 10
 	self.showText = true
-	self.invWeightTextAni = 0
-	self.weightStr = catherine.configs.spaceString
 end
 
 function PANEL:Paint( w, h )
-	self.invWeightAni = Lerp( 0.08, self.invWeightAni, ( self.invWeight / self.invMaxWeight ) * 360 )
-	self.invWeightTextAni = Lerp( 0.08, self.invWeightTextAni, ( self.invWeight / self.invMaxWeight ) )
+	local per = ( self.invWeight / self.invMaxWeight )
+	self.invWeightAni = Lerp( 0.08, self.invWeightAni, per * 360 )
+	self.invWeightTextAni = Lerp( 0.08, self.invWeightTextAni, per )
 	
 	draw.NoTexture( )
 	surface.SetDrawColor( 235, 235, 235, 255 )
@@ -40,8 +40,9 @@ function PANEL:Paint( w, h )
 	surface.SetDrawColor( 90, 90, 90, 255 )
 	catherine.geometry.DrawCircle( w / 2, h / 2, self.size, 5, 90, self.invWeightAni, 100 )
 
-	if ( !self.showText ) then return end
-	draw.SimpleText( math.Round( self.invWeightTextAni * 100 ) .. " %", "catherine_normal25", w / 2, h / 2, Color( 90, 90, 90, 255 ), 1, 1 )
+	if ( self.showText ) then
+		draw.SimpleText( math.Round( self.invWeightTextAni * 100 ) .. " %", "catherine_normal25", w / 2, h / 2, Color( 90, 90, 90, 255 ), 1, 1 )
+	end
 end
 
 function PANEL:SetCircleSize( size )

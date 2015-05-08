@@ -89,6 +89,7 @@ LANGUAGE.data = {
 	[ "Flag_V_Desc" ] = "Access to vehicle spawn.",
 	[ "Flag_n_Desc" ] = "Access to NPC spawn.",
 	[ "Flag_R_Desc" ] = "Access to ragdoll spawn.",
+	[ "Flag_s_Desc" ] = "Access to effect spawn.",
 	
 	[ "UnknownError" ] = "Unknown Error!",
 	[ "Basic_Notify_UnknownPlayer" ] = "You are not giving a valid character name!",
@@ -148,6 +149,9 @@ LANGUAGE.data = {
 	[ "Plugin_Value_Author" ] = "Development by %s",
 	
 	// Storage
+	[ "Storage_UI_YourInv" ] = "Your Inventory",
+	[ "Storage_UI_StorageNoHaveItem" ] = "This storage is empty.",
+	[ "Storage_UI_PlayerNoHaveItem" ] = "You don't have any items.",
 	[ "Storage_Notify_HasNotSpace" ] = "This storage don't have inventory space!",
 	
 	// Item SYSTEM
@@ -157,6 +161,11 @@ LANGUAGE.data = {
 	[ "Item_Category_Other" ] = "Other",
 	[ "Item_Category_Weapon" ] = "Weapon",
 	[ "Item_Category_Storage" ] = "Storage",
+	[ "Item_Category_Clothing" ] = "Clothing",
+	[ "Item_FuncStr01_Clothing" ] = "Wear",
+	[ "Item_FuncStr01_Clothing" ] = "Take off",
+	[ "Item_Category_Ammo" ] = "Ammunition",
+	[ "Item_FuncStr01_Ammo" ] = "Use",
 	
 	[ "Item_Category_Wallet" ] = "Wallet",
 	[ "Item_Name_Wallet" ] = "Wallet",

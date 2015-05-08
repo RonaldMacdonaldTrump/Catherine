@@ -20,7 +20,7 @@ catherine.antiHaX = catherine.antiHaX or { }
 
 if ( SERVER ) then
 	catherine.antiHaX.checkingList = catherine.antiHaX.checkingList or { }
-	catherine.antiHaX.NextCheckTick = catherine.antiHaX.NextCheckTick or CurTime( ) + 300
+	catherine.antiHaX.NextCheckTick = catherine.antiHaX.NextCheckTick or CurTime( ) + catherine.configs.HaXCheckInterval
 
 	function catherine.antiHaX.Check( )
 		local serverConVars = {
@@ -50,20 +50,20 @@ if ( SERVER ) then
 				local hax = false
 				
 				if ( serverConVars.cheat != v.cheat ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_cheats mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl ) .. "]\n" )
-					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_cheats mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl ) .. "]", true )
+					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_cheats mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]\n" )
+					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_cheats mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]", true )
 					hax = true
 				end
 				
 				if ( serverConVars.csLua != v.csLua ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_allowcslua mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl ) .. "]\n" )
-					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_allowcslua mismatch found !!![" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl ) .. "]", true )
+					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_allowcslua mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]\n" )
+					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_allowcslua mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]", true )
 					hax = true
 				end
 
 				if ( hax ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Kicked hack player.[" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl )	.. "]\n" )
-					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked hack player.[" .. pl.SteamName( pl ) .. "/" .. pl.SteamID( pl )	.. "]", true )
+					MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Kicked hack player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]\n" )
+					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked hack player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]", true )
 					pl:Kick( "[Catherine AntiHaX] Hack program used." )
 					continue
 				end
@@ -80,14 +80,14 @@ if ( SERVER ) then
 			catherine.antiHaX.Check( )
 			MsgC( Color( 0, 255, 0 ), "[CAT AntiHaX] Hack checked.\n" )
 			
-			catherine.antiHaX.NextCheckTick = CurTime( ) + 300
+			catherine.antiHaX.NextCheckTick = CurTime( ) + catherine.configs.HaXCheckInterval
 		end
 	end
 
 	hook.Add( "Think", "catherine.antiHaX.Think", catherine.antiHaX.Think )
 	
 	netstream.Hook( "catherine.antiHaX.CheckProgress_Receive", function( pl, data )
-		catherine.antiHaX.checkingList.receive[ pl.SteamID( pl ) ] = data
+		catherine.antiHaX.checkingList.receive[ pl:SteamID( ) ] = data
 	end )
 else
 	netstream.Hook( "catherine.antiHaX.CheckProgress", function( )

@@ -52,7 +52,7 @@ PlayerHoldType[ "duel" ] = "normal"
 PlayerHoldType[ "bugbait" ] = "normal"
 
 local twoD = FindMetaTable( "Vector" ).Length2D
-local NormalHoldTypes = {
+local normalHoldTypes = {
 	normal = true,
 	fist = true,
 	melee = true,
@@ -66,9 +66,9 @@ WEAPON_LOWERED = 1
 WEAPON_RAISED = 2
 
 function GM:CalcMainActivity( pl, velo )
-	local mdl = pl.GetModel( pl ):lower( )
+	local mdl = pl:GetModel( ):lower( )
 	local class = catherine.animation.Get( mdl )
-	local wep = pl.GetActiveWeapon( pl )
+	local wep = pl:GetActiveWeapon( )
 	local holdType = "normal"
 	local status = WEAPON_LOWERED
 	local act = "idle"
@@ -82,12 +82,12 @@ function GM:CalcMainActivity( pl, velo )
 	if ( IsValid( wep ) ) then
 		holdType = catherine.util.GetHoldType( wep )
 
-		if ( wep.AlwaysRaised or catherine.configs.alwaysRaised[ wep.GetClass( wep ) ] ) then
+		if ( wep.AlwaysRaised or catherine.configs.alwaysRaised[ wep:GetClass( ) ] ) then
 			status = WEAPON_RAISED
 		end
 	end
 
-	if ( pl.GetWeaponRaised( pl ) ) then
+	if ( pl:GetWeaponRaised( ) ) then
 		status = WEAPON_RAISED
 	end
 
@@ -95,22 +95,18 @@ function GM:CalcMainActivity( pl, velo )
 		local calcIdle, calcOver = self.BaseClass:CalcMainActivity( pl, velo )
 
 		if ( status == WEAPON_LOWERED ) then
-			if ( pl.Crouching( pl ) ) then
+			if ( pl:Crouching( ) ) then
 				act = act.."_crouch"
 			end
 
-			if ( !pl.OnGround( pl ) ) then
+			if ( !pl:OnGround( ) ) then
 				act = "jump"
 			end
 
-			if ( !NormalHoldTypes[ holdType ] ) then
+			if ( !normalHoldTypes[ holdType ] ) then
 				calcIdle = _G[ "ACT_HL2MP_" .. act:upper( ) .. "_PASSIVE" ]
 			else
-				if ( act == "jump" ) then
-					calcIdle = ACT_HL2MP_JUMP_PASSIVE
-				else
-					calcIdle = _G[ "ACT_HL2MP_" .. act:upper( ) ]
-				end
+				calcIdle = act == "jump" and ACT_HL2MP_JUMP_PASSIVE or _G[ "ACT_HL2MP_" .. act:upper( ) ]
 			end
 		end
 
@@ -120,10 +116,10 @@ function GM:CalcMainActivity( pl, velo )
 		return pl.CalcIdle, pl.CalcOver
 	end
 	
-	if ( pl.IsCharacterLoaded( pl ) and pl.Alive( pl ) ) then
+	if ( pl:IsCharacterLoaded( ) and pl:Alive( ) ) then
 		pl.CalcOver = -1
 
-		if ( pl.Crouching( pl ) ) then
+		if ( pl:Crouching( ) ) then
 			act = act .. "_crouch"
 		end
 
@@ -144,9 +140,9 @@ function GM:CalcMainActivity( pl, velo )
 		local ani = aniClass[ holdType ][ act ]
 		local val = ACT_IDLE
 
-		if ( !pl.OnGround( pl ) ) then
+		if ( !pl:OnGround( ) ) then
 			pl.CalcIdle = aniClass.glide or ACT_GLIDE
-		elseif ( pl.InVehicle( pl ) ) then
+		elseif ( pl:InVehicle( ) ) then
 			local vehicleTable = aniClass.vehicle
 			local class = "chair" // need fix. :)
 			
@@ -167,7 +163,7 @@ function GM:CalcMainActivity( pl, velo )
 				end
 			end
 		elseif ( ani ) then
-			pl:ManipulateBonePosition( 0, vector_origin )
+			//pl:ManipulateBonePosition( 0, vector_origin )
 			
 			val = ani[ status ]
 
@@ -178,7 +174,7 @@ function GM:CalcMainActivity( pl, velo )
 			end
 		end
 		
-		local seqAni = pl.GetNetVar( pl, "seqAni" )
+		local seqAni = pl:GetNetVar( "seqAni" )
 
 		if ( seqAni ) then
 			pl.CalcOver = pl:LookupSequence( seqAni )
@@ -188,21 +184,20 @@ function GM:CalcMainActivity( pl, velo )
 			pl:SetIK( false )
 		end
 
-		local norm = math.NormalizeAngle( velo.Angle( velo ).yaw - pl.EyeAngles( pl ).y )
-		pl:SetPoseParameter( "move_yaw", norm )
+		pl:SetPoseParameter( "move_yaw", math.NormalizeAngle( velo:Angle( ).yaw - pl:EyeAngles( ).y ) )
 
 		return pl.CalcIdle or ACT_IDLE, pl.CalcOver or -1
 	end
 end
 
 function GM:PlayerNoClip( pl, bool )
-	local isAdmin = pl.IsAdmin( pl )
+	local isAdmin = pl:IsAdmin( )
 	
 	if ( !isAdmin ) then
 		return isAdmin
 	end
 	
-	if ( pl.GetMoveType( pl ) == MOVETYPE_WALK ) then
+	if ( pl:GetMoveType( ) == MOVETYPE_WALK ) then
 		pl:SetNoDraw( true )
 		pl:DrawShadow( false )
 		pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
@@ -224,18 +219,18 @@ function GM:PlayerNoClip( pl, bool )
 		hook.Run( "PlayerNoclipExited", pl )
 	end
 	
-	return isAdmin
+	return true
 end
 
-function GM:DoAnimationEvent( pl, event, data )
-	local mdl = pl.GetModel( pl ):lower( )
+function GM:DoAnimationEvent( pl, eve, data )
+	local mdl = pl:GetModel( ):lower( )
 	local class = catherine.animation.Get( mdl )
 
 	if ( mdl:find( "/player/" ) or mdl:find( "/playermodel" ) or class == "player" ) then
-		return self.BaseClass:DoAnimationEvent( pl, event, data )
+		return self.BaseClass:DoAnimationEvent( pl, eve, data )
 	end
 
-	local wep = pl.GetActiveWeapon( pl )
+	local wep = pl:GetActiveWeapon( )
 	local holdType = "normal"
 	
 	if ( !catherine.animation[ class ] ) then
@@ -250,21 +245,21 @@ function GM:DoAnimationEvent( pl, event, data )
 		holdType = "normal"
 	end
 
-	local ani = catherine.animation[ class ][ holdType ]
+	local SAO = catherine.animation[ class ][ holdType ]
 
-	if ( event == PLAYERANIMEVENT_ATTACK_PRIMARY ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
+	if ( eve == PLAYERANIMEVENT_ATTACK_PRIMARY ) then
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, SAO.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
 
 		return ACT_VM_PRIMARYATTACK
-	elseif ( event == PLAYERANIMEVENT_ATTACK_SECONDARY ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
+	elseif ( eve == PLAYERANIMEVENT_ATTACK_SECONDARY ) then
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, SAO.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
 
 		return ACT_VM_SECONDARYATTACK
-	elseif ( event == PLAYERANIMEVENT_RELOAD ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.reload or ACT_GESTURE_RELOAD_SMG1, true )
+	elseif ( eve == PLAYERANIMEVENT_RELOAD ) then
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, SAO.reload or ACT_GESTURE_RELOAD_SMG1, true )
 
 		return ACT_INVALID
-	elseif ( event == PLAYERANIMEVENT_CANCEL_RELOAD ) then
+	elseif ( eve == PLAYERANIMEVENT_CANCEL_RELOAD ) then
 		pl:AnimResetGestureSlot( GESTURE_SLOT_ATTACK_AND_RELOAD )
 
 		return ACT_INVALID
@@ -275,12 +270,12 @@ end
 
 function GM:GetPlayerInformation( pl, target, isFull )
 	if ( pl == target ) then
-		return pl.Name( pl ), pl.Desc( pl )
+		return pl:Name( ), pl:Desc( )
 	end
 	
-	if ( pl.IsKnow( pl, target ) ) then
-		return target.Name( target ), target.Desc( target )
+	if ( pl:IsKnow( target ) ) then
+		return target:Name( ), target:Desc( )
 	end
 	
-	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target.Desc( target ) or ( string.utf8sub( target.Desc( target ), 1, 37 ) .. "..." )
+	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target:Desc( ) or string.utf8sub( target:Desc( ), 1, 37 ) .. "..."
 end

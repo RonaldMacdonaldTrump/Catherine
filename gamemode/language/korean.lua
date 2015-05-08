@@ -89,6 +89,7 @@ LANGUAGE.data = {
 	[ "Flag_V_Desc" ] = "차 소환에 대한 권한.",
 	[ "Flag_n_Desc" ] = "NPC 소환에 대한 권한.",
 	[ "Flag_R_Desc" ] = "레그돌 소환에 대한 권한.",
+	[ "Flag_s_Desc" ] = "이펙트 소환에 대한 권한.",
 	
 	[ "UnknownError" ] = "알 수 없는 오류가 발생하였습니다, 죄송합니다!",
 	[ "Basic_Notify_UnknownPlayer" ] = "올바른 캐릭터의 이름을 입력하세요!",
@@ -148,6 +149,9 @@ LANGUAGE.data = {
 	[ "Plugin_Value_Author" ] = "%s 에 의해 개발",
 	
 	// Storage
+	[ "Storage_UI_YourInv" ] = "당신의 인벤토리",
+	[ "Storage_UI_StorageNoHaveItem" ] = "이 저장소는 비어있습니다.",
+	[ "Storage_UI_PlayerNoHaveItem" ] = "당신은 아무것도 가지고 있지 않습니다.",
 	[ "Storage_Notify_HasNotSpace" ] = "이 저장소에는 공간이 없습니다!",
 	
 	// Item SYSTEM
@@ -157,6 +161,11 @@ LANGUAGE.data = {
 	[ "Item_Category_Other" ] = "기타",
 	[ "Item_Category_Weapon" ] = "무기",
 	[ "Item_Category_Storage" ] = "공간",
+	[ "Item_Category_Clothing" ] = "옷",
+	[ "Item_FuncStr01_Clothing" ] = "입기",
+	[ "Item_FuncStr01_Clothing" ] = "벗기",
+	[ "Item_Category_Ammo" ] = "탄약",
+	[ "Item_FuncStr01_Ammo" ] = "사용",
 	
 	[ "Item_Category_Wallet" ] = "지갑",
 	[ "Item_Name_Wallet" ] = "지갑",

@@ -34,12 +34,9 @@ catherine.configs.characterNameMinLen = 10
 catherine.configs.characterNameMaxLen = 30
 catherine.configs.characterDescMinLen = 10
 catherine.configs.characterDescMaxLen = 54
-
 catherine.configs.doorDescMaxLen = 30
-
-catherine.configs.spaceString = "kg"
 catherine.configs.Font = "Segoe UI"
-catherine.configs.schematicViewPos = { // for rp_c18_v1!
+catherine.configs.schematicViewPos = {
 	pos = Vector( -18.818655, 898.651184, 354.860474 ),
 	ang = Angle( 12.549129, -54.947598, 0.000000 )
 }
@@ -47,7 +44,6 @@ catherine.configs.alwaysRaised = {
 	weapon_physgun = true,
 	gmod_tool = true
 }
-catherine.configs.frameworkLogo = "CAT/logos/2.png"
 catherine.configs.defaultRPInformation = {
 	year = 2015,
 	minute = 1,
@@ -59,6 +55,7 @@ catherine.configs.defaultRPInformation = {
 }
 
 if ( SERVER ) then
+	catherine.configs.HaXCheckInterval = 300
 	catherine.configs.hintInterval = 30
 	catherine.configs.netRegistryOptimizeInterval = 350
 	catherine.configs.saveInterval = 300
@@ -66,8 +63,10 @@ if ( SERVER ) then
 	catherine.configs.voice3D = true
 	catherine.configs.giveHand = true
 	catherine.configs.giveKey = true
-	catherine.configs.spawnTime = 10
+	catherine.configs.spawnTime = 30
+	catherine.configs.clearMap = true
 	
+	catherine.configs.enable_Log = true
 	catherine.configs.enable_AntiHaX = true
 	catherine.configs.enable_BugX = true
 else

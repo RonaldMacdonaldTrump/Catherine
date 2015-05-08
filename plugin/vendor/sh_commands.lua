@@ -47,7 +47,7 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
 		
-		if ( IsValid( ent ) and ent.GetClass( ent ) == "cat_vendor" ) then
+		if ( IsValid( ent ) and ent:GetClass( ) == "cat_vendor" ) then
 			ent:Remove( )
 			catherine.util.NotifyLang( pl, "Vendor_Notify_Remove" )
 		else

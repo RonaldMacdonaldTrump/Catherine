@@ -20,19 +20,22 @@ catherine.character = catherine.character or { networkRegistry = { } }
 catherine.character.vars = { }
 local META = FindMetaTable( "Player" )
 
-function catherine.character.NewVar( id, varTable )
-	if ( !varTable ) then varTable = { } end
+function catherine.character.NewVar( uniqueID, varTable )
+	varTable = varTable or { }
 	
-	table.Merge( varTable, { id = id } )
-	catherine.character.vars[ id ] = varTable
+	table.Merge( varTable, {
+		uniqueID = uniqueID
+	} )
+	
+	catherine.character.vars[ uniqueID ] = varTable
 end
 
 function catherine.character.GetVarAll( )
 	return catherine.character.vars
 end
 
-function catherine.character.FindVarByID( id )
-	return catherine.character.vars[ id ]
+function catherine.character.FindVarByID( uniqueID )
+	return catherine.character.vars[ uniqueID ]
 end
 
 function catherine.character.FindVarByField( field )
@@ -115,7 +118,7 @@ catherine.character.NewVar( "steamID", {
 	field = "_steamID",
 	static = true,
 	default = function( pl )
-		return pl.SteamID( pl )
+		return pl:SteamID( )
 	end
 } )
 
@@ -156,7 +159,7 @@ if ( SERVER ) then
 			return false, "^Character_Notify_CantSwitchTied"
 		end
 		
-		if ( !pl.Alive( pl ) ) then
+		if ( !pl:Alive( ) ) then
 			return false, "^Character_Notify_CantSwitchDeath"
 		end
 		
@@ -248,22 +251,22 @@ if ( SERVER ) then
 		end
 
 		catherine.database.InsertDatas( "catherine_characters", charVars, function( )
-			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has created a '" .. charVars._name .. "' character.", true )
+			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. pl:SteamID( ) .. " has created a '" .. charVars._name .. "' character.", true )
 			netstream.Start( pl, "catherine.character.CreateResult", true )
 			catherine.character.SyncCharacterList( pl )
 		end )
 	end
 	
 	function catherine.character.Use( pl, id )
-		local steamName = pl.SteamName( pl )
-		local charName = pl.Name( pl )
+		local steamName = pl:SteamName( )
+		local charName = pl:Name( )
 		local prevName = steamName == charName and "NO Character" or charName
 		local success, reason = catherine.character.New( pl, id )
 		
 		if ( success ) then
 			netstream.Start( pl, "catherine.character.UseResult", true )
 			
-			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, steamName .. ", " .. pl.SteamID( pl ) .. " has loaded a '" .. charName .. "' character. [Previous Character Name : " .. prevName .. "]", true )
+			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, steamName .. ", " .. pl:SteamID( ) .. " has loaded a '" .. charName .. "' character. [Previous Character Name : " .. prevName .. "]", true )
 		else
 			netstream.Start( pl, "catherine.character.UseResult", reason )
 		end
@@ -275,16 +278,16 @@ if ( SERVER ) then
 			return
 		end
 		
-		catherine.database.Query( "DELETE FROM `catherine_characters` WHERE _steamID = '" .. pl.SteamID( pl ) .. "' AND _id = '" .. id .. "'", function( data )
+		catherine.database.Query( "DELETE FROM `catherine_characters` WHERE _steamID = '" .. pl:SteamID( ) .. "' AND _id = '" .. id .. "'", function( data )
 			catherine.character.SyncCharacterList( pl, function( )
-				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl.SteamName( pl ) .. ", " .. pl.SteamID( pl ) .. " has deleted a '" .. id .. "' character.", true )
+				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. pl:SteamID( ) .. " has deleted a '" .. id .. "' character.", true )
 				netstream.Start( pl, "catherine.character.DeleteResult", true )
 			end )
 		end )
 	end
 	
 	function catherine.character.SetVar( pl, key, value, noSync )
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		local varTable = catherine.character.FindVarByField( key )
 		if ( ( varTable and varTable.static ) or !catherine.character.networkRegistry[ steamID ] ) then return end
 		
@@ -301,7 +304,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.SetCharVar( pl, key, value, noSync )
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		if ( !catherine.character.networkRegistry[ steamID ] or !catherine.character.networkRegistry[ steamID ][ "_charVar" ] ) then return end
 		
 		catherine.character.networkRegistry[ steamID ][ "_charVar" ][ key ] = value
@@ -326,7 +329,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.character.SyncCharacterList( pl, func )
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		
 		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data ) then
@@ -357,7 +360,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.character.RefreshCharacterBuffer( pl )
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		
 		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data ) then return end
@@ -366,7 +369,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.GetTargetCharacterByID( pl, id )
-		for k, v in pairs( catherine.character.buffers[ pl.SteamID( pl ) ] or { } ) do
+		for k, v in pairs( catherine.character.buffers[ pl:SteamID( ) ] or { } ) do
 			for k1, v1 in pairs( v ) do
 				if ( k1 == "_id" and v1 == id ) then
 					return catherine.character.ConvertDataTable( v )
@@ -387,7 +390,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.CreateNetworkRegistry( pl, id, data )
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		
 		catherine.character.networkRegistry[ steamID ] = { }
 		for k, v in pairs( data ) do
@@ -406,11 +409,11 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.GetNetworkRegistry( pl )
-		return catherine.character.networkRegistry[ pl.SteamID( pl ) ]
+		return catherine.character.networkRegistry[ pl:SteamID( ) ]
 	end
 
 	function catherine.character.DeleteNetworkRegistry( pl )
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		
 		catherine.character.networkRegistry[ steamID ] = nil
 		netstream.Start( nil, "catherine.character.DeleteNetworkRegistry", steamID )
@@ -425,7 +428,7 @@ if ( SERVER ) then
 		
 		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
 		if ( !networkRegistry ) then return end
-		local steamID = pl.SteamID( pl )
+		local steamID = pl:SteamID( )
 		
 		for k, v in pairs( networkRegistry ) do
 			if ( type( v ) == "Entity" and IsValid( v ) ) then
@@ -437,7 +440,7 @@ if ( SERVER ) then
 
 		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. steamID .. "'", networkRegistry, function( )
 			catherine.character.RefreshCharacterBuffer( pl )
-			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl.SteamName( pl ) .. "'s [" .. id .. "] character." )
+			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl:SteamName( ) .. "'s [" .. id .. "] character." )
 		end )
 	end
 
@@ -464,16 +467,7 @@ if ( SERVER ) then
 		catherine.character.Save( pl )
 		catherine.character.DeleteNetworkRegistry( pl )
 	end
-	
-	function catherine.character.CharacterVarChanged( pl, key, value )
-		if ( key == "_model" ) then
-			pl:SetModel( value )
-		elseif ( key == "_name" ) then
-			hook.Run( "CharacterNameChanged", pl, value )
-		end
-	end
-	
-	hook.Add( "CharacterVarChanged", "catherine.character.CharacterVarChanged", catherine.character.CharacterVarChanged )
+
 	hook.Add( "Think", "catherine.character.Think", catherine.character.Think )
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected", catherine.character.PlayerDisconnected )
 	hook.Add( "DataSave", "catherine.character.DataSave", catherine.character.DataSave )
@@ -573,14 +567,14 @@ else
 end
 
 function catherine.character.GetVar( pl, key, default )
-	local steamID = pl.SteamID( pl )
+	local steamID = pl:SteamID( )
 	if ( !catherine.character.networkRegistry[ steamID ] ) then return default end
 	
 	return catherine.character.networkRegistry[ steamID ][ key ] or default
 end
 
 function catherine.character.GetCharVar( pl, key, default )
-	local steamID = pl.SteamID( pl )
+	local steamID = pl:SteamID( )
 	if ( !catherine.character.networkRegistry[ steamID ] or !catherine.character.networkRegistry[ steamID ][ "_charVar" ] ) then return default end
 	
 	return catherine.character.networkRegistry[ steamID ][ "_charVar" ][ key ] or default
@@ -607,7 +601,7 @@ do
 	META.SteamName = META.RealName
 
 	function META:Name( )
-		return catherine.character.GetVar( self, "_name", self.SteamName( self ) )
+		return catherine.character.GetVar( self, "_name", self:SteamName( ) )
 	end
 	
 	function META:Desc( )
@@ -619,7 +613,7 @@ do
 	end
 	
 	function META:FactionName( )
-		return catherine.util.StuffLanguage( team.GetName( self.Team( self ) ) )
+		return catherine.util.StuffLanguage( team.GetName( self:Team( ) ) )
 	end
 	
 	META.Nick = META.Name
