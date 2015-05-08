@@ -158,6 +158,8 @@ LANGUAGE.data = {
 	[ "Item_Category_Other" ] = "Other",
 	[ "Item_Category_Weapon" ] = "Weapon",
 	[ "Item_Category_Storage" ] = "Storage",
+	[ "Item_Category_Ammo" ] = "Ammunition",
+	[ "Item_FuncStr01_Ammo" ] = "Use",
 	
 	[ "Item_Category_Wallet" ] = "Wallet",
 	[ "Item_Name_Wallet" ] = "Wallet",
