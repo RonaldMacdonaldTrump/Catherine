@@ -478,10 +478,6 @@ function GM:Initialize( )
 	MsgC( Color( 0, 255, 0 ), "[CAT] You are using Catherine '" .. catherine.version.Ver .. "' date Version, Thanks.\n" )
 end
 
-function GM:SchemaInitialized( )
-	MsgC( Color( 0, 255, 0 ), "[CAT] Catherine was loaded '" .. Schema.Name .. "' schema.\n" )
-end
-
 netstream.Hook( "catherine.IsTyping", function( pl, data )
 	pl:SetNetVar( "isTyping", data )
 	

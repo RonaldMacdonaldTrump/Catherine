@@ -71,39 +71,47 @@ function GM:CalcMainActivity( pl, velo )
 	local wep = pl:GetActiveWeapon( )
 	local holdType = "normal"
 	local status = WEAPON_LOWERED
-	local action = "idle"
+	local act = "idle"
 
 	if ( twoD( velo ) >= catherine.configs.playerDefaultRunSpeed - 10 ) then
-		action = "run"
+		act = "run"
 	elseif ( twoD( velo ) >= 5 ) then
-		action = "walk"
+		act = "walk"
 	end
 
 	if ( IsValid( wep ) ) then
 		holdType = catherine.util.GetHoldType( wep )
-		status = ( wep.AlwaysRaised or catherine.configs.alwaysRaised[ wep:GetClass( ) ] ) and WEAPON_RAISED
+
+		if ( wep.AlwaysRaised or catherine.configs.alwaysRaised[ wep:GetClass( ) ] ) then
+			status = WEAPON_RAISED
+		end
 	end
 
-	if ( pl:GetWeaponRaised( pl ) ) then
+	if ( pl:GetWeaponRaised( ) ) then
 		status = WEAPON_RAISED
 	end
 
 	if ( mdl:find( "/player" ) or mdl:find( "/playermodel" ) or class == "player" ) then
-		local idle, override = self.BaseClass:CalcMainActivity( pl, velo )
+		local calcIdle, calcOver = self.BaseClass:CalcMainActivity( pl, velo )
 
 		if ( status == WEAPON_LOWERED ) then
-			action = pl:Crouching( ) and ( action .. "_crouch" ) or action
-			action = pl:OnGround( ) and action or "jump"
+			if ( pl:Crouching( ) ) then
+				act = act.."_crouch"
+			end
+
+			if ( !pl:OnGround( ) ) then
+				act = "jump"
+			end
 
 			if ( !normalHoldTypes[ holdType ] ) then
-				calcIdle = _G[ "ACT_HL2MP_" .. action:upper( ) .. "_PASSIVE" ]
+				calcIdle = _G[ "ACT_HL2MP_" .. act:upper( ) .. "_PASSIVE" ]
 			else
-				calcIdle = action == "jump" and ACT_HL2MP_JUMP_PASSIVE or _G[ "ACT_HL2MP_" .. action:upper( ) ]
+				calcIdle = act == "jump" and ACT_HL2MP_JUMP_PASSIVE or _G[ "ACT_HL2MP_" .. act:upper( ) ]
 			end
 		end
 
-		pl.CalcIdle = idle
-		pl.CalcOver = override
+		pl.CalcIdle = calcIdle
+		pl.CalcOver = calcOver
 
 		return pl.CalcIdle, pl.CalcOver
 	end
@@ -111,42 +119,54 @@ function GM:CalcMainActivity( pl, velo )
 	if ( pl:IsCharacterLoaded( ) and pl:Alive( ) ) then
 		pl.CalcOver = -1
 
-		action = pl:Crouching( ) and ( action .. "_crouch" ) or action
+		if ( pl:Crouching( ) ) then
+			act = act .. "_crouch"
+		end
 
-		local SAO = catherine.animation[ class ]
+		local aniClass = catherine.animation[ class ]
 
-		class = SAO and class or "citizen_male"
-		holdType = SAO[ holdType ] and holdType or "normal"
-		action = SAO[ holdType ][ action ] and action or "idle"
-		
-		local ani = SAO[ holdType ][ action ]
+		if ( !aniClass ) then
+			class = "citizen_male"
+		end
+
+		if ( !aniClass[ holdType ] ) then
+			holdType = "normal"
+		end
+
+		if ( !aniClass[ holdType ][ act ] ) then
+			act = "idle"
+		end
+
+		local ani = aniClass[ holdType ][ act ]
+		local val = ACT_IDLE
 
 		if ( !pl:OnGround( ) ) then
-			pl.CalcIdle = SAO.glide or ACT_GLIDE
+			pl.CalcIdle = aniClass.glide or ACT_GLIDE
 		elseif ( pl:InVehicle( ) ) then
-			local vehicleTable = SAO.vehicle
-			local class = "chair" // :!?
+			local vehicleTable = aniClass.vehicle
+			local class = "chair" // need fix. :)
 			
 			if ( vehicleTable and vehicleTable[ class ] ) then
-				local action = vehicleTable[ class ][ 1 ]
+				local act = vehicleTable[ class ][ 1 ]
 				local vecFix = vehicleTable[ class ][ 2 ]
 				
 				if ( vecFix ) then
 					pl:ManipulateBonePosition( 0, vecFix )
 				end
 				
-				if ( action ) then
-					if ( type( action ) == "string" ) then
+				if ( act ) then
+					if ( type( act ) == "string" ) then
 						pl.CalcOver = pl:LookupSequence( vehicleTable[ class ][ 1 ] )
 					else
-						pl.CalcIdle = action
+						pl.CalcIdle = act
 					end
 				end
 			end
 		elseif ( ani ) then
-			local val = ani[ status ]
-			pl:ManipulateBonePosition( 0, vector_origin )
+			//pl:ManipulateBonePosition( 0, vector_origin )
 			
+			val = ani[ status ]
+
 			if ( type( val ) == "string" ) then
 				pl.CalcOver = pl:LookupSequence( val )
 			else
@@ -213,10 +233,18 @@ function GM:DoAnimationEvent( pl, eve, data )
 	local wep = pl:GetActiveWeapon( )
 	local holdType = "normal"
 	
-	class = catherine.animation[ class ] and class or "citizen_male"
-	holdType = IsValid( wep ) and catherine.util.GetHoldType( wep ) or holdType
-	holdType = catherine.animation[ class ][ holdType ] and holdType or "normal"
-	
+	if ( !catherine.animation[ class ] ) then
+		class = "citizen_male"
+	end
+
+	if ( IsValid( wep ) ) then
+		holdType = catherine.util.GetHoldType( wep )
+	end
+
+	if ( !catherine.animation[ class ][ holdType ] ) then
+		holdType = "normal"
+	end
+
 	local SAO = catherine.animation[ class ][ holdType ]
 
 	if ( eve == PLAYERANIMEVENT_ATTACK_PRIMARY ) then

@@ -17,37 +17,38 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "^DB_Plugin_Name"
+PLUGIN.name = "^FPS_Plugin_Name"
 PLUGIN.author = "L7D"
-PLUGIN.desc = "^DB_Plugin_Desc"
+PLUGIN.desc = "^FPS_Plugin_Desc"
 
 catherine.language.Merge( "english", {
-	[ "DB_Plugin_Name" ] = "FPS",
-	[ "DB_Plugin_Desc" ] = "Good stuff.",
-	[ "Option_Str_DB_Name" ] = "Show FPS",
-	[ "Option_Str_DB_Desc" ] = "Displays the FPS."
+	[ "FPS_Plugin_Name" ] = "FPS",
+	[ "FPS_Plugin_Desc" ] = "Good stuff.",
+	[ "Option_Str_FPS_Name" ] = "Show FPS",
+	[ "Option_Str_FPS_Desc" ] = "Displays the FPS."
 } )
 
 catherine.language.Merge( "korean", {
-	[ "DB_Plugin_Name" ] = "FPS",
-	[ "DB_Plugin_Desc" ] = "FPS 를 표시합니다.",
-	[ "Option_Str_DB_Name" ] = "FPS 표시",
-	[ "Option_Str_DB_Desc" ] = "FPS 를 표시합니다."
+	[ "FPS_Plugin_Name" ] = "FPS",
+	[ "FPS_Plugin_Desc" ] = "FPS 를 표시합니다.",
+	[ "Option_Str_FPS_Name" ] = "FPS 표시",
+	[ "Option_Str_FPS_Desc" ] = "FPS 를 표시합니다."
 } )
 
 if ( SERVER ) then return end
 
 CAT_CONVAR_FPS = CreateClientConVar( "cat_convar_showfps", "0", true, true )
-catherine.option.Register( "CONVAR_FPS", "cat_convar_showfps", "^Option_Str_DB_Name", "^Option_Str_DB_Desc", "^Option_Category_02", CAT_OPTION_SWITCH )
+catherine.option.Register( "CONVAR_FPS", "cat_convar_showfps", "^Option_Str_FPS_Name", "^Option_Str_FPS_Desc", "^Option_Category_02", CAT_OPTION_SWITCH )
 
 function PLUGIN:HUDPaint( )
 	if ( CAT_CONVAR_FPS:GetInt( ) == 0 ) then return end
-	
 	local curFPS = math.Round( 1 / FrameTime( ) )
 	local minFPS = self.minFPS or 60
 	local maxFPS = self.maxFPS or 100
 
-	if ( !self.barH ) then self.barH = 1 end
+	if ( !self.barH ) then
+		self.barH = 1
+	end
 	
 	self.barH = math.Approach( self.barH, ( curFPS / maxFPS ) * 100, 0.5 )
 	

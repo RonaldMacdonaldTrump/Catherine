@@ -24,13 +24,13 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.animation = catherine.animation or { lists = { } }
 
 function catherine.animation.Register( class, mdl )
-	catherine.animation.lists[ mdl.lower( mdl ) ] = class
+	catherine.animation.lists[ mdl:lower( ) ] = class
 end
 
 function catherine.animation.Get( mdl )
-	mdl = mdl.lower( mdl )
+	mdl = mdl:lower( )
 	
-	return catherine.animation.lists[ mdl ] or ( mdl.find( mdl, "female" ) and "citizen_female" or "citizen_male" )
+	return catherine.animation.lists[ mdl ] or ( mdl:find( "female" ) and "citizen_female" or "citizen_male" )
 end
 
 local function RegisterCitizen( gender )
@@ -62,6 +62,7 @@ catherine.animation.Register( "overwatch", "models/combine_soldier.mdl" )
 catherine.animation.Register( "vort", "models/vortigaunt.mdl" )
 catherine.animation.Register( "vort", "models/vortigaunt_slave.mdl" )
 catherine.animation.Register( "metrocop", "models/dpfilms/metropolice/playermodels/pm_skull_police.mdl" )
+catherine.animation.Register( "metrocop", "models/dpfilms/metropolice/hl2concept.mdl" )
 
 catherine.animation.citizen_male = {
 	normal = {

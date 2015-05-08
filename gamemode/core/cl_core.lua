@@ -45,7 +45,6 @@ local toscreen = FindMetaTable( "Vector" ).ToScreen
 local OFFSET_PLAYER = Vector( 0, 0, 30 )
 local OFFSET_AD_ESP = Vector( 0, 0, 50 )
 local frameworkLogoMat = Material( catherine.configs.frameworkLogo )
-local schemaLogoMat = Material( catherine.configs.schemaLogo )
 local gradientUpMat = Material( "gui/gradient_up" )
 local gradientCenterMat = Material( "gui/center_gradient" )
 local introBooA = 0
@@ -249,7 +248,7 @@ function GM:HUDDrawScoreBoard( )
 
 	// Schema logo
 	surface.SetDrawColor( 255, 255, 255, catherine.intro.secondStageAlpha )
-	surface.SetMaterial( schemaLogoMat )
+	surface.SetMaterial( Material( catherine.configs.schemaLogo ) )
 	surface.DrawTexturedRect( catherine.intro.secondStageX, scrH / 2 - 256 / 2, 512, 256 )
 
 	// Catherine version
