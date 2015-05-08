@@ -308,7 +308,7 @@ else
 	CAT_UTIL_BUTTOMSOUND_3 = 3
 	
 	netstream.Hook( "catherine.util.StringReceiver", function( data )
-		Derma_StringRequest( catherine.util.StuffLanguage( data[ 2 ] ), LANG( "Basic_UI_StringRequest" ), data[ 3 ] or "", function( val )
+		Derma_StringRequest( "", catherine.util.StuffLanguage( data[ 2 ] ), data[ 3 ] or "", function( val )
 				netstream.Start( "catherine.util.StringReceiver_Receive", {
 					data[ 1 ],
 					val
@@ -318,7 +318,7 @@ else
 	end )
 	
 	netstream.Hook( "catherine.util.QueryReceiver", function( data )
-		Derma_Query( catherine.util.StuffLanguage( data[ 2 ] ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_OK" ), function( )
+		Derma_Query( catherine.util.StuffLanguage( data[ 2 ] ), "", LANG( "Basic_UI_OK" ), function( )
 				netstream.Start( "catherine.util.QueryReceiver_Receive", {
 					data[ 1 ],
 					true

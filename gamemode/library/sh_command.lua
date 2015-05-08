@@ -89,7 +89,7 @@ if ( SERVER ) then
 		if ( !commandTable.runFunc ) then
 			return
 		end
-		
+
 		commandTable.runFunc( pl, args )
 	end
 	
@@ -98,6 +98,7 @@ if ( SERVER ) then
 		local id = args[ 1 ]:sub( 2, #args[ 1 ] )
 		
 		table.remove( args, 1 )
+
 		catherine.command.Run( pl, id, args )
 	end
 	
@@ -132,8 +133,8 @@ else
 		rebuildCommand( )
 	end )
 	
-	function catherine.command.Run( id, args )
-		netstream.Start( "catherine.command.Run", { id, args } )
+	function catherine.command.Run( id, ... )
+		netstream.Start( "catherine.command.Run", { id, { ... } } )
 	end
 	
 	function catherine.command.GetMatchCommands( text )

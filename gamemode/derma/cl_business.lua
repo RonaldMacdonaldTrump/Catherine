@@ -64,7 +64,7 @@ function PANEL:Init( )
 		if ( self:GetShipmentCount( ) > 0 ) then
 			if ( catherine.cash.Get( self.player ) >= self.shoppingcartInfo ) then
 				if ( self.player:GetPos( ):Distance( self.player:GetEyeTraceNoCursor( ).HitPos ) <= 150 ) then
-					Derma_Query( LANG( "Business_Notify_BuyQ" ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_YES" ), function( )
+					Derma_Query( LANG( "Business_Notify_BuyQ" ), "", LANG( "Basic_UI_YES" ), function( )
 						netstream.Start( "catherine.business.BuyItems", self.shoppingcart )
 					end, LANG( "Basic_UI_NO" ), function( ) end )
 				else

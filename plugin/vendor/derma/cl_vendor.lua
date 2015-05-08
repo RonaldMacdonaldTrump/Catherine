@@ -250,7 +250,7 @@ function PANEL:Build_Setting( )
 	end
 	parentPanel.vendorNameEnt.OnTextChanged = function( pnl )
 		parentPanel.vendorName = pnl:GetText( )
-		parentPanel.vendorNameLen = parentPanel.vendorName.utf8len( parentPanel.vendorName )
+		parentPanel.vendorNameLen = parentPanel.vendorName:utf8len( )
 		
 		self.vendorNewData.name = parentPanel.vendorName
 	end
@@ -281,7 +281,7 @@ function PANEL:Build_Setting( )
 	end
 	parentPanel.vendorDescEnt.OnTextChanged = function( pnl )
 		parentPanel.vendorDesc = pnl:GetText( )
-		parentPanel.vendorDescLen = parentPanel.vendorDesc.utf8len( parentPanel.vendorDesc )
+		parentPanel.vendorDescLen = parentPanel.vendorDesc:utf8len( )
 		
 		self.vendorNewData.desc = parentPanel.vendorDesc
 	end
@@ -367,8 +367,6 @@ function PANEL:Refresh_SettingList( id )
 		if ( table.Count( factionData ) == 0 ) then
 			notyetPermission = true
 		end
-		
-		PrintTable(self.vendorData)
 
 		local function checkHas( id )
 			return table.HasValue( factionData, id )

@@ -65,6 +65,10 @@ if ( SERVER ) then
 	catherine.configs.giveKey = true
 	catherine.configs.spawnTime = 30
 	catherine.configs.clearMap = true
+	catherine.configs.enable_oocDelay = true
+	catherine.configs.enable_loocDelay = false
+	catherine.configs.oocDelay = 100
+	catherine.configs.loocDelay = 2
 	
 	catherine.configs.enable_Log = true
 	catherine.configs.enable_AntiHaX = true

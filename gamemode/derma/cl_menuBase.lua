@@ -39,8 +39,8 @@ function PANEL:PanelCalled( ) end
 function PANEL:SetMenuSize( w, h )
 	self.w, self.h = w, h
 	self:SetSize( w, h )
-	self:SetPos( 0 - w, 80 )
-	self:MoveTo( ScrW( ) / 2 - w / 2, 80, 0.2, 0 )
+	self:SetPos( 0 - w, ScrH( ) / 2 - h / 2 )
+	self:MoveTo( ScrW( ) / 2 - w / 2, ScrH( ) / 2 - h / 2, 0.2, 0 )
 	self:OnMenuSizeChanged( w, h )
 end
 

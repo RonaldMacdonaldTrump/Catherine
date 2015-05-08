@@ -92,8 +92,8 @@ end
 
 function GM:Move( pl, moveData )
 	if ( pl:IsCharacterLoaded( ) and pl:GetNetVar( "isActioning" ) ) then
-		moveData.SetForwardSpeed( moveData, 0 )
-		moveData.SetSideSpeed( moveData, 0 )
+		moveData:SetForwardSpeed( 0 )
+		moveData:SetSideSpeed( 0 )
 	end
 end
 

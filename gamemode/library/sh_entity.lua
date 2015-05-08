@@ -22,7 +22,7 @@ local META = FindMetaTable( "Entity" )
 function catherine.entity.IsDoor( ent )
 	local class = ent:GetClass( )
 	
-	return class == "func_door" or class == "func_door_rotating" or class == "prop_door_rotating" or class == "prop_dynamic"
+	return class == "func_door" or class == "func_door_rotating" or class == "prop_door_rotating"
 end
 
 function catherine.entity.IsProp( ent )
@@ -70,7 +70,10 @@ else
 		
 		for k, v in pairs( IsValid( ent ) and ent:GetNetVar( "customUseClient" ) or { } ) do
 			menu:AddOption( catherine.util.StuffLanguage( v.text ), function( )
-				netstream.Start( "catherine.entity.customUseMenu_Receive", { index, v.uniqueID } )
+				netstream.Start( "catherine.entity.customUseMenu_Receive", {
+					index,
+					v.uniqueID
+				} )
 			end )
 		end
 		

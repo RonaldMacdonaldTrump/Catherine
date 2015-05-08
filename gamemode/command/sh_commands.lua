@@ -166,7 +166,7 @@ catherine.command.Register( {
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
 		
 		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
-			ent:Fire( "Unlock" )
+			ent:Fire( "UnLock" )
 			ent:EmitSound( "doors/door_latch3.wav" )
 			catherine.util.NotifyLang( pl, "Door_Notify_CMD_UnLocked" )
 		else
@@ -386,7 +386,7 @@ catherine.command.Register( {
 	command = "doorsetstatus",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
-		local success, langKey, par = catherine.door.SetDoorStatus( pl, pl.GetEyeTrace( pl, 70 ).Entity )
+		local success, langKey, par = catherine.door.SetDoorStatus( pl, pl:GetEyeTrace( 70 ).Entity )
 		
 		catherine.util.NotifyLang( pl, langKey )
 	end
@@ -396,7 +396,7 @@ catherine.command.Register( {
 	command = "doorsetactive",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
-		local success, langKey, par = catherine.door.SetDoorActive( pl, pl.GetEyeTrace( pl, 70 ).Entity )
+		local success, langKey, par = catherine.door.SetDoorActive( pl, pl:GetEyeTrace( 70 ).Entity )
 		
 		catherine.util.NotifyLang( pl, langKey )
 	end
@@ -411,7 +411,7 @@ catherine.command.Register( {
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
-				if ( IsValid( target ) and target.IsPlayer( target ) ) then
+				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					local success, langKey, par = catherine.faction.AddWhiteList( target, args[ 2 ] )
 					
 					if ( success ) then
@@ -440,7 +440,7 @@ catherine.command.Register( {
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
-				if ( IsValid( target ) and target.IsPlayer( target ) ) then
+				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					local success, langKey, par = catherine.faction.RemoveWhiteList( target, args[ 2 ] )
 					
 					if ( success ) then
@@ -468,7 +468,7 @@ catherine.command.Register( {
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
-				if ( IsValid( target ) and target.IsPlayer( target ) ) then
+				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.chat.Send( pl, "pm", args[ 2 ], { pl, target }, target )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
@@ -507,7 +507,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "settimehour",
-	canRun = function( pl ) return pl.IsSuperAdmin( pl ) end,
+	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			args[ 1 ] = tonumber( args[ 1 ] )

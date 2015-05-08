@@ -21,31 +21,36 @@ local PANEL = { }
 function PANEL:Init( )
 	catherine.vgui.scoreboard = self
 
-	self.playerCount = #player.GetAll( )
+	self.playerCount = 0
+	self.cantLook = hook.Run( "PlayerCantLookScoreboard", self.player )
 	
-	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
+	self:SetMenuSize( ScrW( ) * 0.65, ScrH( ) * 0.85 )
 	self:SetMenuName( LANG( "Scoreboard_UI_Title" ) )
 	
 	self.Lists = vgui.Create( "DPanelList", self )
-	self.Lists:SetPos( 10, 60 )
-	self.Lists:SetSize( self.w - 20, self.h - 70 )
+	self.Lists:SetPos( 10, 35 )
+	self.Lists:SetSize( self.w - 20, self.h - 45 )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
 	self.Lists.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
+		
+		if ( self.cantLook ) then
+			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Scoreboard_UI_CanNotLook_Str" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+		end
 	end
 
 	self:SortPlayerLists( )
 end
 
 function PANEL:MenuPaint( w, h )
-	draw.SimpleText( GetHostName( ), "catherine_normal25", 10, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_normal25", w - 10, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( GetHostName( ) .. " : " .. #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_normal25", w, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
 end
 
-function PANEL:RefreshPanel( )
-	self.playerCount = #player.GetAll( )
+function PANEL:Refresh( )
+	self.playerCount = #player.GetAllByLoaded( )
 	self:SortPlayerLists( )
 end
 
@@ -65,46 +70,49 @@ function PANEL:SortPlayerLists( )
 end
 
 function PANEL:RefreshPlayerLists( )
+	if ( self.cantLook or !self.playerLists ) then return end
 	self.Lists:Clear( )
-	
-	for k, v in pairs( self.playerLists or { } ) do
-		local hF = 0
+
+	for k, v in pairs( self.playerLists ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
+		form:SetAnimTime( 0.5 )
 		form.Paint = function( pnl, w, h )
 			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
 
-		local lists = vgui.Create( "DPanelList", form )
-		lists:SetSize( form:GetWide( ), form:GetTall( ) )
-		lists:SetSpacing( 3 )
-		lists:EnableHorizontal( true )
-		lists:EnableVerticalScrollbar( false )	
-		
-		form:AddItem( lists )
-		
 		for k1, v1 in pairs( v ) do
 			local know = self.player == v1 and true or self.player:IsKnow( v1 )
 			
 			local panel = vgui.Create( "DPanel" )
-			panel:SetSize( lists:GetWide( ), 50 )
+			panel:SetSize( form:GetWide( ), 50 )
 			panel.Paint = function( pnl, w, h )
 				if ( !IsValid( v1 ) ) then
-					self:RefreshPanel( )
+					self:Refresh( )
 					return
 				end
 				
-				draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+				//draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
 				
 				if ( v1:SteamID( ) == "STEAM_0:1:25704824" ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
 					surface.SetMaterial( Material( "icon16/award_star_gold_1.png" ) )
-					surface.DrawTexturedRect( w - 60, h / 2 - 16 / 2, 16, 16 )
+					surface.DrawTexturedRect( w - 40, h / 2 - 16 / 2, 16, 16 )
 					
-					draw.SimpleText( LANG( "Scoreboard_UI_Author" ), "catherine_normal15", w - 70, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					draw.SimpleText( LANG( "Scoreboard_UI_Author" ), "catherine_normal15", w - 50, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+				end
+				
+				if ( !know ) then
+					surface.SetDrawColor( 255, 255, 255, 255 )
+					surface.SetMaterial( Material( "CAT/ui/icon_idk.png", "smooth" ) )
+					surface.DrawTexturedRect( 55, 10, 30, 30 )
+					
+					surface.SetDrawColor( 50, 50, 50, 150 )
+					surface.DrawOutlinedRect( 50, 5, 40, 40 )
 				end
 				
 				draw.SimpleText( v1:Name( ), "catherine_normal20", 100, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
@@ -115,25 +123,37 @@ function PANEL:RefreshPlayerLists( )
 			avatar:SetPos( 5, 5 )
 			avatar:SetSize( 40, 40 )
 			avatar:SetPlayer( v1, 64 )
-			avatar:SetToolTip( LANG( "Scoreboard_UI_PlayerDetailStr", v1:SteamName( ), v1:SteamID( ), v1:Ping( ) ) )
+			avatar.PaintOver = function( pnl, w, h )
+				surface.SetDrawColor( 50, 50, 50, 150 )
+				surface.DrawOutlinedRect( 0, 0, w, h )
+			end
+			
+			local avatarButton = vgui.Create( "DButton", panel )
+			avatarButton:SetPos( 5, 5 )
+			avatarButton:SetSize( 40, 40 )
+			avatarButton:SetText( "" )
+			avatarButton:SetDrawBackground( false )
+			avatarButton:SetToolTip( LANG( "Scoreboard_UI_PlayerDetailStr", v1:SteamName( ), v1:SteamID( ), v1:Ping( ) ) )
+			avatarButton.DoClick = function( )
+				hook.Run( "ScoreboardPlayerOption", self.player, v1 )
+			end
 			
 			local spawnIcon = vgui.Create( "SpawnIcon", panel )
 			spawnIcon:SetPos( 50, 5 )
 			spawnIcon:SetSize( 40, 40 )
 			spawnIcon:SetModel( v1:GetModel( ) )
 			spawnIcon:SetToolTip( false )
-			spawnIcon.PaintOver = function( pnl, w, h ) end
-			spawnIcon.DoClick = function( )
-				hook.Run( "ScoreboardPlayerOption" )
+			spawnIcon.PaintOver = function( pnl, w, h )
+				surface.SetDrawColor( 50, 50, 50, 150 )
+				surface.DrawOutlinedRect( 0, 0, w, h )
 			end
 			
-			lists:AddItem( panel )
-			hF = hF + 51
+			if ( !know ) then
+				spawnIcon:SetVisible( false )
+			end
+			
+			form:AddItem( panel )
 		end
-		
-		hF = hF + 10
-		form:SetSize( self.Lists:GetWide( ), hF )
-		lists:SetSize( form:GetWide( ), form:GetTall( ) )
 		
 		self.Lists:AddItem( form )
 	end

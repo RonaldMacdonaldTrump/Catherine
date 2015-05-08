@@ -467,8 +467,41 @@ function GM:CalcViewModelView( wep, viewMdl, oldEyePos, oldEyeAngles, eyePos, ey
 	return oldEyePos, eyeAng
 end
 
-function GM:ScoreboardPlayerOption( )
+function GM:PlayerCantLookScoreboard( pl )
 
+end
+
+function GM:ScoreboardPlayerOption( pl, target )
+	local menu = DermaMenu( )
+	
+	menu:AddOption( LANG( "Scoreboard_PlayerOption01_Str" ), function( )
+		gui.OpenURL( "http://steamcommunity.com/profiles/" .. target:SteamID64( ) )
+	end )
+
+	if ( pl:IsSuperAdmin( ) ) then
+		local whitelistGive = menu:AddSubMenu( LANG( "Scoreboard_PlayerOption03_Str" ) )
+		
+		for k, v in pairs( catherine.faction.GetAll( ) ) do
+			if ( !v.isWhitelist ) then continue end
+			
+			whitelistGive:AddOption( catherine.util.StuffLanguage( v.name ), function( )
+				catherine.command.Run( "plygivewhitelist", target:Name( ), v.uniqueID )
+			end ):SetToolTip( catherine.util.StuffLanguage( v.desc ) )
+		end
+	end
+	
+	if ( pl:IsAdmin( ) ) then
+		menu:AddOption( LANG( "Scoreboard_PlayerOption02_Str" ), function( )
+			Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption02_Q" ), target:Name( ), function( val )
+					if ( val != target:Name( ) ) then
+						catherine.command.Run( "charsetname", target:Name( ), val )
+					end
+				end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
+			)
+		end )
+	end
+	
+	menu:Open( )
 end
 
 function GM:GetSchemaInformation( )

@@ -73,8 +73,8 @@ end
 if ( SERVER ) then
 	function catherine.faction.AddWhiteList( pl, id )
 		local factionTable = catherine.faction.FindByID( id )
-		
-		if ( !factionTable or !factionTable.isWhitelist or catherine.faction.HasWhiteList( pl, id ) ) then
+
+		if ( !factionTable or !factionTable.isWhitelist ) then
 			return false, "Faction_Notify_NotValid", { id }
 		end
 		

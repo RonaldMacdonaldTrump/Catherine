@@ -131,9 +131,14 @@ LANGUAGE.data = {
 	
 	// Scoreboard
 	[ "Scoreboard_UI_Title" ] = "Player List",
-	[ "Scoreboard_UI_Author" ] = "Framework Author",
+	[ "Scoreboard_UI_Author" ] = "Framework Author :)",
 	[ "Scoreboard_UI_UnknownDesc" ] = "You don't know this guy.",
-	[ "Scoreboard_UI_PlayerDetailStr" ] = "This player Steam Name is %s\nThis player Steam ID is %s\nThis player Ping is %s",
+	[ "Scoreboard_UI_PlayerDetailStr" ] = "Steam Name : %s\nSteam ID : %s\nPing : %s",
+	[ "Scoreboard_UI_CanNotLook_Str" ] = "You can't look this.",
+	[ "Scoreboard_PlayerOption01_Str" ] = "Open Steam Profile",
+	[ "Scoreboard_PlayerOption02_Str" ] = "Change Name",
+	[ "Scoreboard_PlayerOption02_Q" ] = "What are you want for this player name?",
+	[ "Scoreboard_PlayerOption03_Str" ] = "Give Whitelist",
 	
 	// Help
 	[ "Help_UI_Title" ] = "Help",
@@ -196,6 +201,8 @@ LANGUAGE.data = {
 	// Command
 	[ "Command_Notify_NotFound" ] = "Command not found!",
 	[ "Command_DefDesc" ] = "A Command.",
+	[ "Command_OOC_Error" ] = "You must wait %s more second(s) before using OOC.",
+	[ "Command_LOOC_Error" ] = "You must wait %s more second(s) before using LOOC.",
 	
 	// Player
 	[ "Player_Message_Dead_HUD" ] = "This guy was dead.",

@@ -40,7 +40,7 @@ function catherine.notify.Draw( )
 		if ( v.endTime <= CurTime( ) ) then
 			v.a = Lerp( 0.05, v.a, 0 )
 			
-			if ( v.a <= 0 ) then
+			if ( math.Round( v.a ) <= 0 ) then
 				table.remove( catherine.notify.lists, k )
 				continue
 			end

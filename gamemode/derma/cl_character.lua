@@ -110,7 +110,7 @@ function PANEL:Init( )
 		if ( self.player:IsCharacterLoaded( ) ) then
 			self:Close( )
 		else
-			Derma_Query( LANG( "Character_Notify_ExitQ" ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_YES" ), function( )
+			Derma_Query( LANG( "Character_Notify_ExitQ" ), "", LANG( "Basic_UI_YES" ), function( )
 				self:JoinMenu( function( )
 					RunConsoleCommand( "disconnect" )
 				end )
@@ -233,7 +233,7 @@ function PANEL:UseCharacterPanel( )
 			surface.DrawTexturedRect( 0, 0, w, h )
 		end
 		v.panel.deleteCharacter.DoClick = function( )
-			Derma_Query( LANG( "Character_Notify_DeleteQ" ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_YES" ), function( )
+			Derma_Query( LANG( "Character_Notify_DeleteQ" ), "", LANG( "Basic_UI_YES" ), function( )
 				netstream.Start( "catherine.character.Delete", v.characterDatas._id )
 			end, LANG( "Basic_UI_NO" ), function( ) end )
 		end

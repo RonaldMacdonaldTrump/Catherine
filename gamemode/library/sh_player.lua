@@ -282,6 +282,12 @@ if ( SERVER ) then
 				time = 0.9
 			end
 			
+			if ( bool and wep.OnRaised ) then
+				wep:OnRaised( )
+			elseif ( !bool and wep.OnLowered ) then
+				wep:OnLowered( )
+			end
+			
 			wep:SetNextPrimaryFire( CurTime( ) + time )
 			wep:SetNextSecondaryFire( CurTime( ) + time )
 		end

@@ -76,7 +76,7 @@ catherine.chat.Register( "ic", {
 
 catherine.chat.Register( "me", {
 	func = function( pl, text )
-		chat.AddText( Color( 255, 150, 255 ), "** " .. pl:Name( ) .. " " .. text )
+		chat.AddText( Color( 224, 255, 255 ), "** " .. pl:Name( ) .. " " .. text )
 	end,
 	command = { "/me" },
 	canHearRange = 1500,
@@ -85,7 +85,7 @@ catherine.chat.Register( "me", {
 
 catherine.chat.Register( "it", {
 	func = function( pl, text )
-		chat.AddText( Color( 255, 150, 0 ), "*** " .. pl:Name( ) .. " " .. text )
+		chat.AddText( Color( 224, 255, 255 ), "*** " .. pl:Name( ) .. " " .. text )
 	end,
 	command = { "/it" },
 	canHearRange = 1000,
@@ -155,7 +155,9 @@ catherine.chat.Register( "ooc", {
 	func = function( pl, text )
 		local icon = Material( "icon16/user.png" )
 		
-		if ( pl:IsSuperAdmin( ) ) then
+		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
+			icon = Material( "icon16/emoticon_smile.png" )
+		elseif ( pl:IsSuperAdmin( ) ) then
 			icon = Material( "icon16/shield.png" )
 		elseif ( pl:IsAdmin( ) ) then
 			icon = Material( "icon16/star.png" )
@@ -167,31 +169,59 @@ catherine.chat.Register( "ooc", {
 	command = {
 		"/ooc", "//"
 	},
-	noSpace = true
+	noSpace = true,
+	canRun = function( pl )
+		if ( !catherine.configs.enable_oocDelay ) then return true end
+		
+		if ( ( pl.CAT_nextOOC or 0 ) <= CurTime( ) ) then
+			pl.CAT_nextOOC = CurTime( ) + catherine.configs.oocDelay
+			
+			return true
+		else
+			catherine.util.NotifyLang( pl, "Command_OOC_Error", math.ceil( pl.CAT_nextOOC - CurTime( ) ) )
+			
+			return false
+		end
+	end
 } )
 
 catherine.chat.Register( "looc", {
 	func = function( pl, text )
-		chat.AddText( Color( 250, 255, 40 ), "[LOOC] ", pl, color_white, " : ".. text )
+		chat.AddText( Color( 250, 40, 40 ), "[LOOC] ", pl, color_white, " : ".. text )
 	end,
 	canHearRange = 600,
 	command = {
 		"/looc", ".//", "[["
 	},
-	noSpace = true
+	noSpace = true,
+	canRun = function( pl )
+		if ( !catherine.configs.enable_loocDelay ) then return true end
+		
+		if ( ( pl.CAT_nextLOOC or 0 ) <= CurTime( ) ) then
+			pl.CAT_nextLOOC = CurTime( ) + catherine.configs.loocDelay
+			
+			return true
+		else
+			catherine.util.NotifyLang( pl, "Command_LOOC_Error", math.ceil( pl.CAT_nextLOOC - CurTime( ) ) )
+			
+			return false
+		end
+	end
 } )
 
 catherine.chat.Register( "connect", {
 	func = function( pl, text )
 		local icon = Material( "icon16/user.png" )
 		
-		if ( pl:IsSuperAdmin( ) ) then
+		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
+			icon = Material( "icon16/emoticon_smile.png" )
+		elseif ( pl:IsSuperAdmin( ) ) then
 			icon = Material( "icon16/shield.png" )
 		elseif ( pl:IsAdmin( ) ) then
 			icon = Material( "icon16/star.png" )
 		end
 		
-		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Connect", pl:Name( ) ) )
+		chat.AddText( icon, Color( 0, 206, 209 ), LANG( "Chat_Str_Connect", pl:Name( ) ) )
 	end,
 	isGlobal = true
 } )
@@ -200,13 +230,15 @@ catherine.chat.Register( "disconnect", {
 	func = function( pl, text )
 		local icon = Material( "icon16/user.png" )
 		
-		if ( pl:IsSuperAdmin( ) ) then
+		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
+			icon = Material( "icon16/emoticon_smile.png" )
+		elseif ( pl:IsSuperAdmin( ) ) then
 			icon = Material( "icon16/shield.png" )
 		elseif ( pl:IsAdmin( ) ) then
 			icon = Material( "icon16/star.png" )
 		end
 		
-		chat.AddText( icon, Color( 50, 255, 50 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
+		chat.AddText( icon, Color( 0, 206, 209 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
 	end,
 	isGlobal = true
 } )
@@ -285,7 +317,7 @@ if ( SERVER ) then
 		local range = classTable.canHearRange
 		
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			if ( pl != v and catherine.util.CalcDistanceByPos( pl, v ) <= range ) then
+			if ( pl != v and catherine.util.CalcDistanceByPos( pl, v ) <= range and ( classTable.canHear and classTable.canHear( pl ) == true ) ) then
 				target[ #target + 1 ] = v
 			end
 		end
@@ -470,7 +502,7 @@ else
 				end
 				
 				if ( catherine.chat.backpanel.history.alpha > 10 ) then
-					catherine.chat.backpanel.history.alpha = Lerp( 0.05, catherine.chat.backpanel.history.alpha, 10 )
+					catherine.chat.backpanel.history.alpha = Lerp( 0.05, catherine.chat.backpanel.history.alpha, 100 )
 					catherine.chat.backpanel.history:SetAlpha( catherine.chat.backpanel.history.alpha )
 				end
 			else

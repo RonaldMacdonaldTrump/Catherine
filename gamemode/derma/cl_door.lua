@@ -107,7 +107,7 @@ function PANEL:Init( )
 			return
 		end
 		
-		Derma_Query( LANG( "Door_Notify_SellQ" ), LANG( "Basic_UI_Question" ), LANG( "Basic_UI_OK" ), function( )
+		Derma_Query( LANG( "Door_Notify_SellQ" ), "", LANG( "Basic_UI_OK" ), function( )
 				catherine.command.Run( "doorsell" )
 				self:Close( )
 			end, LANG( "Basic_UI_NO" ), function( ) end

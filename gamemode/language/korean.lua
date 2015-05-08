@@ -131,9 +131,14 @@ LANGUAGE.data = {
 	
 	// Scoreboard
 	[ "Scoreboard_UI_Title" ] = "플레이어 목록",
-	[ "Scoreboard_UI_Author" ] = "캐서린 개발자 ^-^",
+	[ "Scoreboard_UI_Author" ] = "프레임워크 개발자 :)",
 	[ "Scoreboard_UI_UnknownDesc" ] = "당신은 이 사람을 모릅니다.",
-	[ "Scoreboard_UI_PlayerDetailStr" ] = "이 사람의 스팀 이름은 %s\n이 사람의 스팀 고유 번호는 %s\n이 사람의 핑은 %s",
+	[ "Scoreboard_UI_PlayerDetailStr" ] = "스팀 이름 : %s\n스팀 고유 번호 : %s\n핑 : %s\n플레이어 옵션을 보시려면 클릭하세요.",
+	[ "Scoreboard_UI_CanNotLook_Str" ] = "당신은 볼 수 없습니다.",
+	[ "Scoreboard_PlayerOption01_Str" ] = "스팀 프로필 열기",
+	[ "Scoreboard_PlayerOption02_Str" ] = "이름 바꾸기",
+	[ "Scoreboard_PlayerOption02_Q" ] = "이름을 무엇으로 바꾸시겠습니까?",
+	[ "Scoreboard_PlayerOption03_Str" ] = "화이트리스트 지급",
 	
 	// Help
 	[ "Help_UI_Title" ] = "도움 자료",
@@ -196,6 +201,8 @@ LANGUAGE.data = {
 	// Command
 	[ "Command_Notify_NotFound" ] = "해당 명령어는 존재하지 않습니다!",
 	[ "Command_DefDesc" ] = "명령어 입니다.",
+	[ "Command_OOC_Error" ] = "당신이 OOC 를 하기 위해서는 %s초를 기다려야 합니다!",
+	[ "Command_LOOC_Error" ] = "당신이 LOOC 를 하기 위해서는 %s초를 기다려야 합니다!",
 	
 	// Player
 	[ "Player_Message_Dead_HUD" ] = "이 사람은 사망했습니다.",
