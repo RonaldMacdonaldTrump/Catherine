@@ -123,10 +123,4 @@ if ( SERVER ) then
 	end )
 end
 
-WEAPON_PLAYERDRAW_INFO = { }
-function BASE:OnRegistered( )
-	if ( !self.weaponClass or !self.attachment ) then return end
-	WEAPON_PLAYERDRAW_INFO[ self.weaponClass ] = self.attachment
-end
-
 catherine.item.Register( BASE )

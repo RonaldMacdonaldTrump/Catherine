@@ -92,11 +92,11 @@ function catherine.util.GetAdmins( isSuperAdmin )
 	
 	if ( isSuperAdmin ) then
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			players[ #players + 1 ] = v.IsSuperAdmin( v ) and v
+			players[ #players + 1 ] = v:IsSuperAdmin( ) and v
 		end
 	else
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			players[ #players + 1 ] = v.IsAdmin( v ) and v
+			players[ #players + 1 ] = v:IsAdmin( ) and v
 		end
 	end
 	
@@ -127,6 +127,12 @@ function catherine.util.GetItemDropPos( pl )
 	local tr = util.TraceLine( data )
 
 	return tr.HitPos + tr.HitNormal * 36
+end
+
+function catherine.util.RemoveEntityByClass( class )
+	for k, v in pairs( ents.FindByClass( class ) ) do
+		SafeRemoveEntity( v )
+	end
 end
 
 local holdTypes = {

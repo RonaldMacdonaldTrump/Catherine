@@ -64,6 +64,7 @@ if ( SERVER ) then
 	catherine.configs.giveHand = true
 	catherine.configs.giveKey = true
 	catherine.configs.spawnTime = 30
+	catherine.configs.clearMap = true
 	
 	catherine.configs.enable_Log = true
 	catherine.configs.enable_AntiHaX = true

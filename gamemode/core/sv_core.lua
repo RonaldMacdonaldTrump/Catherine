@@ -29,7 +29,7 @@ function GM:ShowTeam( pl )
 	local status = hook.Run( "CanLookF2", pl )
 	if ( !status ) then return end
 	
-	local ent = pl.GetEyeTrace( pl, 70 ).Entity
+	local ent = pl:GetEyeTrace( 70 ).Entity
 	
 	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) and !catherine.door.IsDoorDisabled( ent ) ) then
 		local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
@@ -73,6 +73,7 @@ function GM:CharacterVarChanged( pl, key, value )
 		hook.Run( "CharacterNameChanged", pl, value )
 	elseif ( key == "_model" ) then
 		pl:SetModel( value )
+		pl:SetupHands( )
 		catherine.character.SetCharVar( pl, "originalModel", value )
 	end
 end
@@ -418,16 +419,18 @@ end
 function GM:PlayerDeath( pl )
 	pl.CAT_healthRecover = nil
 	
-	catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Dead_01" ), catherine.configs.spawnTime, function( )
+	local respawnTime = hook.Run( "GetRespawnTime", pl ) or catherine.configs.spawnTime
+	
+	catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Dead_01" ), respawnTime, function( )
 		pl:Spawn( )
 	end )
 
-	pl:SetNetVar( "nextSpawnTime", CurTime( ) + catherine.configs.spawnTime )
+	pl:SetNetVar( "nextSpawnTime", CurTime( ) + respawnTime )
 	pl:SetNetVar( "deathTime", CurTime( ) )
 	
 	catherine.log.Add( nil, pl:SteamName( ) .. ", " .. pl:SteamID( ) .. " has a died [Character Name : " .. pl:Name( ) .. "]", true )
 	
-	hook.Run( "PlayerGone", pl )
+	//hook.Run( "PlayerGone", pl ) :?
 end
 
 function GM:Tick( )
@@ -452,6 +455,13 @@ end
 function GM:InitPostEntity( )
 	hook.Run( "DataLoad" )
 	hook.Run( "SchemaDataLoad" )
+	
+	if ( catherine.configs.clearMap ) then
+		catherine.util.RemoveEntityByClass( "item_healthcharger" )
+		catherine.util.RemoveEntityByClass( "item_suitcharger" )
+		catherine.util.RemoveEntityByClass( "prop_vehicle*" )
+		catherine.util.RemoveEntityByClass( "weapon_*" )
+	end
 	
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has loaded." )
 end
