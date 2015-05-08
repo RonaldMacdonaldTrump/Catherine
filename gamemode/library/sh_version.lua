@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.version = catherine.version or {
-	Ver = "2015-05-07"
+	Ver = "2015-05-08"
 }
 
 if ( SERVER ) then
@@ -47,28 +47,32 @@ if ( SERVER ) then
 				end
 				
 				if ( IsValid( pl ) ) then
-					netstream.Start( pl, "catherine.version.CheckResult", { false, foundNew and LANG( pl, "Version_Notify_FoundNew" ) or LANG( pl, "Version_Notify_AlreadyNew" ) } )
+					netstream.Start( pl, "catherine.version.CheckResult", {
+						false,
+						foundNew and LANG( pl, "Version_Notify_FoundNew" ) or LANG( pl, "Version_Notify_AlreadyNew" )
+					} )
 				end
 			end, function( err )
 				catherine.util.Print( Color( 255, 0, 0 ), "Update check error! - " .. err )
 				
 				if ( IsValid( pl ) ) then
-					netstream.Start( pl, "catherine.version.CheckResult", { false, LANG( pl, "Version_Notify_CheckError", err ) } )
+					netstream.Start( pl, "catherine.version.CheckResult", {
+						false,
+						LANG( pl, "Version_Notify_CheckError", err )
+					} )
 				end
 			end
 		)
 	end
 	
-	function catherine.version.PlayerAuthed( )
+	function catherine.version.PlayerLoadFinished( )
 		if ( catherine.version.checked ) then return end
-		
-		timer.Simple( 2, function( )
-			catherine.version.Check( )
-			catherine.version.checked = true
-		end )
+
+		catherine.version.Check( )
+		catherine.version.checked = true
 	end
 	
-	hook.Add( "PlayerAuthed", "catherine.version.PlayerAuthed", catherine.version.PlayerAuthed )
+	hook.Add( "PlayerLoadFinished", "catherine.version.PlayerLoadFinished", catherine.version.PlayerLoadFinished )
 	
 	netstream.Hook( "catherine.version.Check", function( pl )
 		if ( !pl:IsSuperAdmin( ) ) then return end
