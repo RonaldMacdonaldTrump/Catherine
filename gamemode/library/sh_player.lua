@@ -18,6 +18,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.player = catherine.player or { }
 local META = FindMetaTable( "Player" )
+local velo = FindMetaTable( "Entity" ).GetVelocity
+local twoD = FindMetaTable( "Vector" ).Length2D
 
 if ( SERVER ) then
 	function catherine.player.Initialize( pl, func )
@@ -292,13 +294,6 @@ if ( SERVER ) then
 			self:SetWeaponRaised( true )
 		end
 	end
-	
-	local velo = FindMetaTable( "Entity" ).GetVelocity
-	local twoD = FindMetaTable( "Vector" ).Length2D
-	
-	function META:IsRunning( )
-		return twoD( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
-	end
 
 	function catherine.player.PlayerSwitchWeapon( pl, oldWep, newWep )
 		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep.GetClass( newWep ) ] ) then
@@ -356,6 +351,10 @@ end
 
 function META:IsChatTyping( )
 	return self.GetNetVar( self, "isTyping", false )
+end
+
+function META:IsRunning( )
+	return twoD( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
 end
 
 function catherine.player.IsRagdolled( pl )

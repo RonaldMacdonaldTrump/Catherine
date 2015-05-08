@@ -20,23 +20,19 @@ local PANEL = { }
 
 function PANEL:Init( )
 	catherine.vgui.storage = self
-	
-	self.storageInventory = nil
-	self.playerInventory = nil
-	self.ent = nil
+
 	self.entCheck = CurTime( ) + 1
-	self.closeing = false
-	
+
 	self.player = LocalPlayer( )
 	self.w, self.h = ScrW( ) * 0.7, ScrH( ) * 0.6
+	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
 
 	self:SetSize( self.w, self.h )
-	self:Center( )
+	self:SetPos( ScrW( ), self.y )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	self:ShowCloseButton( false )
-	self:SetAlpha( 0 )
-	self:AlphaTo( 255, 0.2, 0 )
+	self:MoveTo( ScrW( ) / 2 - self.w / 2, self.y, 0.2, 0 )
 	
 	self.storageLists = vgui.Create( "DPanelList", self )
 	self.storageLists:SetPos( 10, 35 )
@@ -48,7 +44,7 @@ function PANEL:Init( )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 		
 		if ( self.storageInventory and table.Count( self.storageInventory ) == 0 ) then
-			draw.SimpleText( "This storage box has no items!", "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Storage_UI_StorageNoHaveItem" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
 	end
 	
@@ -62,7 +58,7 @@ function PANEL:Init( )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 		
 		if ( self.playerInventory and table.Count( self.playerInventory ) == 0 ) then
-			draw.SimpleText( "You don't have any items!", "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Storage_UI_PlayerNoHaveItem" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
 	end
 	
@@ -86,7 +82,6 @@ function PANEL:Init( )
 	self.close:SetStrColor( Color( 255, 150, 150, 255 ) )
 	self.close:SetGradientColor( Color( 255, 150, 150, 255 ) )
 	self.close.Click = function( )
-		if ( self.closeing ) then return end
 		self:Close( )
 	end
 end
@@ -94,70 +89,67 @@ end
 function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	
-	if ( !IsValid( self.ent ) ) then return end
-	local name = self.ent.GetNetVar( self.ent, "name" )
-	
-	if ( name ) then
-		draw.SimpleText( name, "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	if ( IsValid( self.ent ) ) then
+		local name = self.ent:GetNetVar( "name" )
+		
+		if ( name ) then
+			draw.SimpleText( name, "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		end
+		
+		draw.SimpleText( LANG( "Storage_UI_YourInv" ), "catherine_normal25", w / 2, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 	end
-	
-	draw.SimpleText( "Your Inventory", "catherine_normal25", w / 2, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 end
 
 function PANEL:InitializeStorage( ent )
 	self.ent = ent
 	
-	local storageInventory = catherine.storage.GetInv( ent )
-	local tab = { }
+	local storageInventory = { }
+	local playerInventory = { }
 	
-	for k, v in pairs( storageInventory ) do
+	for k, v in pairs( catherine.storage.GetInv( ent ) ) do
 		local itemTable = catherine.item.FindByID( k )
 		if ( !itemTable ) then continue end
 		local category = itemTable.category
 		
-		tab[ category ] = tab[ category ] or { }
-		tab[ category ][ v.uniqueID ] = v
+		storageInventory[ category ] = storageInventory[ category ] or { }
+		storageInventory[ category ][ v.uniqueID ] = v
 	end
-	
-	self.storageInventory = tab
-	self.storageWeight:SetWeight( catherine.storage.GetWeights( self.ent ) )
 
-	local playerInventory = catherine.inventory.Get( )
-	local tab = { }
-	
-	for k, v in pairs( playerInventory ) do
+	for k, v in pairs( catherine.inventory.Get( ) ) do
 		local itemTable = catherine.item.FindByID( k )
 		if ( !itemTable ) then continue end
 		local category = itemTable.category
 		
-		tab[ category ] = tab[ category ] or { }
-		tab[ category ][ v.uniqueID ] = v
+		playerInventory[ category ] = playerInventory[ category ] or { }
+		playerInventory[ category ][ v.uniqueID ] = v
 	end
 	
-	self.playerInventory = tab
+	self.playerInventory = playerInventory
+	self.storageInventory = storageInventory
+	
+	self.storageWeight:SetWeight( catherine.storage.GetWeights( self.ent ) )
 	self.playerWeight:SetWeight( catherine.inventory.GetWeights( ) )
 
 	self:BuildStorage( )
 end
 
 function PANEL:Think( )
-	if ( self.entCheck <= CurTime( ) ) then
+	if ( ( self.entCheck or 0 ) <= CurTime( ) ) then
 		if ( !IsValid( self.ent ) and !self.closeing ) then
 			self:Close( )
 			return
 		end
-		self.entCheck = CurTime( ) + 0.01
+		
+		self.entCheck = CurTime( ) + 1
 	end
 end
 
 function PANEL:BuildStorage( )
-	if ( !self.storageInventory or !self.playerInventory ) then return end
 	self.storageLists:Clear( )
 	self.playerLists:Clear( )
-	
 	local delta = 0
 	
-	for k, v in pairs( self.storageInventory ) do
+	for k, v in pairs( self.storageInventory or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.storageLists:GetWide( ), 54 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
@@ -211,14 +203,16 @@ function PANEL:BuildStorage( )
 					draw.SimpleText( v1.itemCount, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
+			
 			lists:AddItem( spawnIcon )
 		end
+		
 		self.storageLists:AddItem( form )
 	end
 	
 	delta = 0
 	
-	for k, v in pairs( self.playerInventory ) do
+	for k, v in pairs( self.playerInventory or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.playerLists:GetWide( ), 54 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
@@ -266,22 +260,28 @@ function PANEL:BuildStorage( )
 					surface.SetMaterial( Material( "icon16/accept.png" ) )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
+				
 				if ( itemTable.DrawInformation ) then
 					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemDatas( itemTable.uniqueID ) )
 				end
+				
 				if ( v1.itemCount > 1 ) then
 					draw.SimpleText( v1.itemCount, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
+			
 			lists:AddItem( spawnIcon )
 		end
+		
 		self.playerLists:AddItem( form )
 	end
 end
 
 function PANEL:Close( )
+	if ( self.closeing ) then return end
+	
 	self.closeing = true
-	self:AlphaTo( 0, 0.2, 0, function( )
+	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
 		self:Remove( )
 		self = nil
 	end )

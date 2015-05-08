@@ -52,7 +52,7 @@ PlayerHoldType[ "duel" ] = "normal"
 PlayerHoldType[ "bugbait" ] = "normal"
 
 local twoD = FindMetaTable( "Vector" ).Length2D
-local NormalHoldTypes = {
+local normalHoldTypes = {
 	normal = true,
 	fist = true,
 	melee = true,
@@ -68,54 +68,42 @@ WEAPON_RAISED = 2
 function GM:CalcMainActivity( pl, velo )
 	local mdl = pl:GetModel( ):lower( )
 	local class = catherine.animation.Get( mdl )
-	local wep = pl.GetActiveWeapon( pl )
+	local wep = pl:GetActiveWeapon( )
 	local holdType = "normal"
 	local status = WEAPON_LOWERED
-	local act = "idle"
+	local action = "idle"
 
 	if ( twoD( velo ) >= catherine.configs.playerDefaultRunSpeed - 10 ) then
-		act = "run"
+		action = "run"
 	elseif ( twoD( velo ) >= 5 ) then
-		act = "walk"
+		action = "walk"
 	end
 
 	if ( IsValid( wep ) ) then
 		holdType = catherine.util.GetHoldType( wep )
-
-		if ( wep.AlwaysRaised or catherine.configs.alwaysRaised[ wep.GetClass( wep ) ] ) then
-			status = WEAPON_RAISED
-		end
+		status = ( wep.AlwaysRaised or catherine.configs.alwaysRaised[ wep:GetClass( ) ] ) and WEAPON_RAISED
 	end
 
-	if ( pl.GetWeaponRaised( pl ) ) then
+	if ( pl:GetWeaponRaised( pl ) ) then
 		status = WEAPON_RAISED
 	end
 
 	if ( mdl:find( "/player" ) or mdl:find( "/playermodel" ) or class == "player" ) then
-		local calcIdle, calcOver = self.BaseClass:CalcMainActivity( pl, velo )
+		local idle, override = self.BaseClass:CalcMainActivity( pl, velo )
 
 		if ( status == WEAPON_LOWERED ) then
-			if ( pl.Crouching( pl ) ) then
-				act = act.."_crouch"
-			end
+			action = pl:Crouching( ) and ( action .. "_crouch" ) or action
+			action = pl:OnGround( ) and action or "jump"
 
-			if ( !pl.OnGround( pl ) ) then
-				act = "jump"
-			end
-
-			if ( !NormalHoldTypes[ holdType ] ) then
-				calcIdle = _G[ "ACT_HL2MP_" .. act:upper( ) .. "_PASSIVE" ]
+			if ( !normalHoldTypes[ holdType ] ) then
+				calcIdle = _G[ "ACT_HL2MP_" .. action:upper( ) .. "_PASSIVE" ]
 			else
-				if ( act == "jump" ) then
-					calcIdle = ACT_HL2MP_JUMP_PASSIVE
-				else
-					calcIdle = _G[ "ACT_HL2MP_" .. act:upper( ) ]
-				end
+				calcIdle = action == "jump" and ACT_HL2MP_JUMP_PASSIVE or _G[ "ACT_HL2MP_" .. action:upper( ) ]
 			end
 		end
 
-		pl.CalcIdle = calcIdle
-		pl.CalcOver = calcOver
+		pl.CalcIdle = idle
+		pl.CalcOver = override
 
 		return pl.CalcIdle, pl.CalcOver
 	end
@@ -123,54 +111,42 @@ function GM:CalcMainActivity( pl, velo )
 	if ( pl:IsCharacterLoaded( ) and pl:Alive( ) ) then
 		pl.CalcOver = -1
 
-		if ( pl.Crouching( pl ) ) then
-			act = act .. "_crouch"
-		end
+		action = pl:Crouching( ) and ( action .. "_crouch" ) or action
 
-		local aniClass = catherine.animation[ class ]
+		local SAO = catherine.animation[ class ]
 
-		if ( !aniClass ) then
-			class = "citizen_male"
-		end
+		class = SAO and class or "citizen_male"
+		holdType = SAO[ holdType ] and holdType or "normal"
+		action = SAO[ holdType ][ action ] and action or "idle"
+		
+		local ani = SAO[ holdType ][ action ]
 
-		if ( !aniClass[ holdType ] ) then
-			holdType = "normal"
-		end
-
-		if ( !aniClass[ holdType ][ act ] ) then
-			act = "idle"
-		end
-
-		local ani = aniClass[ holdType ][ act ]
-		local val = ACT_IDLE
-
-		if ( !pl.OnGround( pl ) ) then
-			pl.CalcIdle = aniClass.glide or ACT_GLIDE
-		elseif ( pl.InVehicle( pl ) ) then
-			local vehicleTable = aniClass.vehicle
-			local class = "chair" // need fix. :)
+		if ( !pl:OnGround( ) ) then
+			pl.CalcIdle = SAO.glide or ACT_GLIDE
+		elseif ( pl:InVehicle( ) ) then
+			local vehicleTable = SAO.vehicle
+			local class = "chair" // :!?
 			
 			if ( vehicleTable and vehicleTable[ class ] ) then
-				local act = vehicleTable[ class ][ 1 ]
+				local action = vehicleTable[ class ][ 1 ]
 				local vecFix = vehicleTable[ class ][ 2 ]
 				
 				if ( vecFix ) then
 					pl:ManipulateBonePosition( 0, vecFix )
 				end
 				
-				if ( act ) then
-					if ( type( act ) == "string" ) then
+				if ( action ) then
+					if ( type( action ) == "string" ) then
 						pl.CalcOver = pl:LookupSequence( vehicleTable[ class ][ 1 ] )
 					else
-						pl.CalcIdle = act
+						pl.CalcIdle = action
 					end
 				end
 			end
 		elseif ( ani ) then
+			local val = ani[ status ]
 			pl:ManipulateBonePosition( 0, vector_origin )
 			
-			val = ani[ status ]
-
 			if ( type( val ) == "string" ) then
 				pl.CalcOver = pl:LookupSequence( val )
 			else
@@ -188,8 +164,7 @@ function GM:CalcMainActivity( pl, velo )
 			pl:SetIK( false )
 		end
 
-		local norm = math.NormalizeAngle( velo.Angle( velo ).yaw - pl.EyeAngles( pl ).y )
-		pl:SetPoseParameter( "move_yaw", norm )
+		pl:SetPoseParameter( "move_yaw", math.NormalizeAngle( velo:Angle( ).yaw - pl:EyeAngles( ).y ) )
 
 		return pl.CalcIdle or ACT_IDLE, pl.CalcOver or -1
 	end
@@ -202,7 +177,7 @@ function GM:PlayerNoClip( pl, bool )
 		return isAdmin
 	end
 	
-	if ( pl.GetMoveType( pl ) == MOVETYPE_WALK ) then
+	if ( pl:GetMoveType( ) == MOVETYPE_WALK ) then
 		pl:SetNoDraw( true )
 		pl:DrawShadow( false )
 		pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
@@ -224,47 +199,39 @@ function GM:PlayerNoClip( pl, bool )
 		hook.Run( "PlayerNoclipExited", pl )
 	end
 	
-	return isAdmin
+	return true
 end
 
-function GM:DoAnimationEvent( pl, event, data )
+function GM:DoAnimationEvent( pl, eve, data )
 	local mdl = pl:GetModel( ):lower( )
 	local class = catherine.animation.Get( mdl )
 
 	if ( mdl:find( "/player/" ) or mdl:find( "/playermodel" ) or class == "player" ) then
-		return self.BaseClass:DoAnimationEvent( pl, event, data )
+		return self.BaseClass:DoAnimationEvent( pl, eve, data )
 	end
 
-	local wep = pl.GetActiveWeapon( pl )
+	local wep = pl:GetActiveWeapon( )
 	local holdType = "normal"
 	
-	if ( !catherine.animation[ class ] ) then
-		class = "citizen_male"
-	end
+	class = catherine.animation[ class ] and class or "citizen_male"
+	holdType = IsValid( wep ) and catherine.util.GetHoldType( wep ) or holdType
+	holdType = catherine.animation[ class ][ holdType ] and holdType or "normal"
+	
+	local SAO = catherine.animation[ class ][ holdType ]
 
-	if ( IsValid( wep ) ) then
-		holdType = catherine.util.GetHoldType( wep )
-	end
-
-	if ( !catherine.animation[ class ][ holdType ] ) then
-		holdType = "normal"
-	end
-
-	local ani = catherine.animation[ class ][ holdType ]
-
-	if ( event == PLAYERANIMEVENT_ATTACK_PRIMARY ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
+	if ( eve == PLAYERANIMEVENT_ATTACK_PRIMARY ) then
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, SAO.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
 
 		return ACT_VM_PRIMARYATTACK
-	elseif ( event == PLAYERANIMEVENT_ATTACK_SECONDARY ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
+	elseif ( eve == PLAYERANIMEVENT_ATTACK_SECONDARY ) then
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, SAO.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
 
 		return ACT_VM_SECONDARYATTACK
-	elseif ( event == PLAYERANIMEVENT_RELOAD ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.reload or ACT_GESTURE_RELOAD_SMG1, true )
+	elseif ( eve == PLAYERANIMEVENT_RELOAD ) then
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, SAO.reload or ACT_GESTURE_RELOAD_SMG1, true )
 
 		return ACT_INVALID
-	elseif ( event == PLAYERANIMEVENT_CANCEL_RELOAD ) then
+	elseif ( eve == PLAYERANIMEVENT_CANCEL_RELOAD ) then
 		pl:AnimResetGestureSlot( GESTURE_SLOT_ATTACK_AND_RELOAD )
 
 		return ACT_INVALID
@@ -275,12 +242,12 @@ end
 
 function GM:GetPlayerInformation( pl, target, isFull )
 	if ( pl == target ) then
-		return pl:Name( ), pl.Desc( pl )
+		return pl:Name( ), pl:Desc( )
 	end
 	
-	if ( pl.IsKnow( pl, target ) ) then
-		return target.Name( target ), target.Desc( target )
+	if ( pl:IsKnow( target ) ) then
+		return target:Name( ), target:Desc( )
 	end
 	
-	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target.Desc( target ) or ( string.utf8sub( target.Desc( target ), 1, 37 ) .. "..." )
+	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target:Desc( ) or string.utf8sub( target:Desc( ), 1, 37 ) .. "..."
 end

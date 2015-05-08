@@ -241,7 +241,11 @@ else
 			if ( !v.canShowIsMenu or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
 			
 			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
-				netstream.Start( "catherine.item.Work", { uniqueID, k, true } )
+				netstream.Start( "catherine.item.Work", {
+					uniqueID,
+					k,
+					true
+				} )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
 		
@@ -260,7 +264,11 @@ else
 			if ( !v.canShowIsWorld or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
 
 			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
-				netstream.Start( "catherine.item.Work", { uniqueID, k, ent } )
+				netstream.Start( "catherine.item.Work", {
+					uniqueID,
+					k,
+					ent
+				} )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
 		

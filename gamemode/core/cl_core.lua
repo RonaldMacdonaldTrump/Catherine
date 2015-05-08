@@ -48,6 +48,7 @@ local frameworkLogoMat = Material( catherine.configs.frameworkLogo )
 local schemaLogoMat = Material( catherine.configs.schemaLogo )
 local gradientUpMat = Material( "gui/gradient_up" )
 local gradientCenterMat = Material( "gui/center_gradient" )
+local introBooA = 0
 
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hud.blockedModules ) do
@@ -139,8 +140,6 @@ function GM:CalcView( pl, pos, ang, fov )
 	
 	return self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
 end
-
-local introBooA = 0
 
 function GM:HUDDrawScoreBoard( )
 	if ( LocalPlayer( ):IsCharacterLoaded( ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
@@ -344,7 +343,7 @@ function GM:FinishChat( )
 end
 
 function GM:DrawEntityTargetID( pl, ent, a )
-	if ( ent.GetNetVar( ent, "noDrawOriginal" ) == true or ( ent:IsPlayer( ) and catherine.player.IsRagdolled( ent ) ) ) then
+	if ( ent:GetNetVar( "noDrawOriginal" ) == true or ( ent:IsPlayer( ) and catherine.player.IsRagdolled( ent ) ) ) then
 		return
 	end
 	
@@ -467,6 +466,10 @@ function GM:CalcViewModelView( wep, viewMdl, oldEyePos, oldEyeAngles, eyePos, ey
 	viewMdl:SetAngles( eyeAng )
 	
 	return oldEyePos, eyeAng
+end
+
+function GM:ScoreboardPlayerOption( )
+
 end
 
 function GM:GetSchemaInformation( )

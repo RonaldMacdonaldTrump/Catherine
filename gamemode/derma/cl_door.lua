@@ -134,7 +134,7 @@ function PANEL:BuildPlayerList( )
 	if ( self.mode != CAT_DOOR_FLAG_OWNER ) then return end
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		local know = self.player == v and true or self.player.IsKnow( self.player, v )
+		local know = self.player == v and true or self.player:IsKnow( v )
 		local has, flag = catherine.door.IsHasDoorPermission( v, self.door )
 
 		local panel = vgui.Create( "DPanel" )
@@ -148,8 +148,8 @@ function PANEL:BuildPlayerList( )
 				surface.DrawTexturedRect( 5, 5, 50, 50 )
 			end
 			
-			draw.SimpleText( v.Name( v ), "catherine_normal20", 70, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( v.FactionName( v ), "catherine_normal20", 70, 45, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( v:Name( ), "catherine_normal20", 70, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( v:FactionName( ), "catherine_normal20", 70, 45, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 
 			if ( has ) then
 				local text = LANG( "Door_UI_OwnerStr" )
@@ -185,7 +185,7 @@ function PANEL:BuildPlayerList( )
 					self.door,
 					CAT_DOOR_CHANGE_PERMISSION,
 					{
-						v.SteamID( v ),
+						v:SteamID( ),
 						CAT_DOOR_FLAG_ALL
 					}
 				} )
@@ -196,7 +196,7 @@ function PANEL:BuildPlayerList( )
 					self.door,
 					CAT_DOOR_CHANGE_PERMISSION,
 					{
-						v.SteamID( v ),
+						v:SteamID( ),
 						CAT_DOOR_FLAG_BASIC
 					}
 				} )
@@ -207,7 +207,7 @@ function PANEL:BuildPlayerList( )
 					self.door,
 					CAT_DOOR_CHANGE_PERMISSION,
 					{
-						v.SteamID( v ),
+						v:SteamID( ),
 						0
 					}
 				} )
@@ -227,17 +227,16 @@ end
 function PANEL:InitializeDoor( door, flag )
 	self.door = door
 	
-	local doorDesc = self.door.GetNetVar( self.door, "customDesc", "" )
+	local doorDesc = door:GetNetVar( "customDesc", "" )
 	
 	if ( doorDesc == "" ) then
 		doorDesc = catherine.door.GetDetailString( door )
 	else
-		self.doorCurLen = doorDesc.utf8len( doorDesc )
+		self.doorCurLen = doorDesc:utf8len( )
 	end
 
 	self.doorDesc = doorDesc
 	self.doorDescEnt:SetText( doorDesc )
-	
 	self.mode = flag
 
 	if ( flag == CAT_DOOR_FLAG_ALL or flag == CAT_DOOR_FLAG_BASIC ) then
@@ -252,12 +251,12 @@ function PANEL:InitializeDoor( door, flag )
 end
 
 function PANEL:Refresh( )
-	local doorDesc = self.door.GetNetVar( self.door, "customDesc", "" )
+	local doorDesc = self.door:GetNetVar( "customDesc", "" )
 	
 	if ( doorDesc == "" ) then
 		doorDesc = catherine.door.GetDetailString( door )
 	else
-		self.doorCurLen = doorDesc.utf8len( doorDesc )
+		self.doorCurLen = doorDesc:utf8len( )
 	end
 
 	self.doorDesc = doorDesc
@@ -269,7 +268,7 @@ function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	
 	if ( IsValid( self.door ) ) then
-		draw.SimpleText( self.door.GetNetVar( self.door, "title", LANG( "Door_UI_Default" ) ), "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		draw.SimpleText( self.door:GetNetVar( "title", LANG( "Door_UI_Default" ) ), "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 		
 		local descLimit = catherine.configs.doorDescMaxLen
 		local col = descLimit <= self.doorCurLen and Color( 255, 0, 0 ) or Color( 50, 50, 50 )
@@ -279,7 +278,7 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:Think( )
-	if ( ( self.nextPerCheck or CurTime( ) ) <= CurTime( ) ) then
+	if ( ( self.nextPerCheck or 0 ) <= CurTime( ) ) then
 		if ( IsValid( self.door ) ) then
 			local has, flag = catherine.door.IsHasDoorPermission( self.player, self.door )
 			

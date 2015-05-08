@@ -61,9 +61,7 @@ BASE.func.wear = {
 		catherine.character.SetCharVar( pl, "clothWearing", true )
 	end,
 	canLook = function( pl, itemTable )
-		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
-		
-		return !itemData.wearing
+		return !catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" )
 	end
 }
 BASE.func.takeoff = {
@@ -90,9 +88,7 @@ BASE.func.takeoff = {
 		catherine.character.SetCharVar( pl, "clothWearing", nil )
 	end,
 	canLook = function( pl, itemTable )
-		local itemData = catherine.inventory.GetItemData( pl, itemTable.uniqueID )
-
-		return itemData.wearing
+		return catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" )
 	end
 }
 
@@ -105,7 +101,7 @@ if ( SERVER ) then
 		timer.Simple( 1, function( )
 			for k, v in pairs( catherine.inventory.Get( pl ) ) do
 				local itemTable = catherine.item.FindByID( k )
-				if ( !itemTable.isCloth or !catherine.inventory.GetItemData( pl, k ).wearing ) then continue end
+				if ( !itemTable.isCloth or !catherine.inventory.GetItemData( pl, k, "wearing" ) ) then continue end
 				
 				catherine.item.Work( pl, k, "wear" )
 			end

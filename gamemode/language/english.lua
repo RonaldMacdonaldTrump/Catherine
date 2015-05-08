@@ -149,6 +149,9 @@ LANGUAGE.data = {
 	[ "Plugin_Value_Author" ] = "Development by %s",
 	
 	// Storage
+	[ "Storage_UI_YourInv" ] = "Your Inventory",
+	[ "Storage_UI_StorageNoHaveItem" ] = "This storage is empty.",
+	[ "Storage_UI_PlayerNoHaveItem" ] = "You don't have any items.",
 	[ "Storage_Notify_HasNotSpace" ] = "This storage don't have inventory space!",
 	
 	// Item SYSTEM
