@@ -25,7 +25,7 @@ if ( SERVER ) then
 	function catherine.player.Initialize( pl, func )
 		if ( !IsValid( pl ) ) then return end
 		
-		local function loadFramework( )
+		local function loadCatPower( )
 			--[[ Kernel Loading. ^_^; ]]--
 			catherine.player.PlayerInformationInitialize( pl )
 			catherine.net.SyncAllVars( pl )
@@ -46,7 +46,7 @@ if ( SERVER ) then
 		netstream.Hook( "catherine.player.CheckLocalPlayer_Receive", function( )
 			netstream.Start( pl, "catherine.IntroStart" )
 			timer.Simple( 1, function( )
-				loadFramework( )
+				loadCatPower( )
 			end )
 		end )
 		
@@ -61,7 +61,7 @@ if ( SERVER ) then
 		
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data or #data == 0 ) then
-				if ( steamID == catherine.configs.OWNER and pl.GetNWString( pl, "usergroup" ):lower( ) == "user" ) then
+				if ( steamID == catherine.configs.OWNER and pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
 					if ( ulx ) then
 						RunConsoleCommand( "ulx", "adduserid", steamID, "superadmin" )
 						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl:SteamName( ) )
@@ -181,10 +181,12 @@ if ( SERVER ) then
 			
 			if ( pl.CAT_bunnyCount >= 10 ) then
 				pl:SetJumpPower( 150 )
-				catherine.util.Notify( pl, "Don't Bunny-hop!" )
+				catherine.util.NotifyLang( pl, "Basic_Notify_BunnyHop" )
 				pl:Freeze( true )
 				pl.CAT_bunnyFreezed = true
 				pl.CAT_nextbunnyFreezeDis = CurTime( ) + 5
+				
+				hook.Run( "PlayerBunnyHopped", pl )
 			end
 			
 			pl.CAT_nextBunnyCheck = CurTime( ) + 0.05
@@ -230,8 +232,11 @@ if ( SERVER ) then
 				pl:SetLocalVelocity( vector_origin )
 				
 				for k, v in ipairs( ent.CAT_weaponsBuffer ) do
-					pl.Give( pl, v )
+					pl:Give( v )
 				end
+				
+				catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
+				hook.Run( "PlayerRagdollExited", pl )
 			end )
 
 			pl.CAT_ragdoll = ent
@@ -239,8 +244,8 @@ if ( SERVER ) then
 			ent.CAT_weaponsBuffer = { }
 			ent.CAT_player = pl
 
-			for k, v in ipairs( pl.GetWeapons( pl ) ) do
-				ent.CAT_weaponsBuffer[ #ent.CAT_weaponsBuffer + 1 ] = v.GetClass( v )
+			for k, v in ipairs( pl:GetWeapons( ) ) do
+				ent.CAT_weaponsBuffer[ #ent.CAT_weaponsBuffer + 1 ] = v:GetClass( )
 			end
 
 			pl:StripWeapons( )
@@ -254,19 +259,22 @@ if ( SERVER ) then
 			
 			if ( time ) then
 				catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
+					catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 					catherine.player.RagdollWork( pl )
 				end )
 			else
 				catherine.util.TopNotify( pl, LANG( pl, "Player_Message_Ragdolled_01" ) )
 			end
+			
+			hook.Run( "PlayerRagdollJoined", pl )
 		elseif ( IsValid( pl.CAT_ragdoll ) ) then
 			pl.CAT_ragdoll:Remove( )
 		end
 	end
 
 	function META:SetWeaponRaised( bool, wep )
-		if ( !IsValid( self ) or !self.IsCharacterLoaded( self ) ) then return end
-		wep = wep or self.GetActiveWeapon( self )
+		if ( !IsValid( self ) or !self:IsCharacterLoaded( ) ) then return end
+		wep = wep or self:GetActiveWeapon( )
 		
 		if ( wep.AlwaysLowered ) then
 			self:SetNetVar( "weaponRaised", false )
@@ -294,7 +302,7 @@ if ( SERVER ) then
 	end
 
 	function META:ToggleWeaponRaised( )
-		if ( self.GetWeaponRaised( self ) ) then
+		if ( self:GetWeaponRaised( ) ) then
 			self:SetWeaponRaised( false )
 		else
 			self:SetWeaponRaised( true )
@@ -302,7 +310,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.player.PlayerSwitchWeapon( pl, oldWep, newWep )
-		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep.GetClass( newWep ) ] ) then
+		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then
 			pl:SetWeaponRaised( false, newWep )
 		else
 			pl:SetWeaponRaised( true, newWep )
@@ -329,11 +337,11 @@ else
 end
 
 function META:GetWeaponRaised( )
-	return self.GetNetVar( self, "weaponRaised", false )
+	return self:GetNetVar( "weaponRaised", false )
 end
 
 function META:GetGender( )
-	local model = self.GetModel( self ):lower( )
+	local model = self:GetModel( ):lower( )
 	local gender = "male"
 	
 	if ( model:find( "female" ) or model:find( "alyx" ) or model:find( "mossman" ) ) then
@@ -344,7 +352,7 @@ function META:GetGender( )
 end
 
 function META:IsFemale( )
-	local model = self.GetModel( self ):lower( )
+	local model = self:GetModel( ):lower( )
 
 	if ( model:find( "female" ) or model:find( "alyx" ) or model:find( "mossman" ) ) then
 		return true
@@ -352,11 +360,11 @@ function META:IsFemale( )
 end
 
 function META:IsNoclipping( )
-	return self.GetNetVar( self, "nocliping", false )
+	return self:GetNetVar( "nocliping", false )
 end
 
 function META:IsChatTyping( )
-	return self.GetNetVar( self, "isTyping", false )
+	return self:GetNetVar( "isTyping", false )
 end
 
 function META:IsRunning( )
@@ -375,7 +383,7 @@ function player.GetAllByLoaded( )
 	local players = { }
 	
 	for k, v in pairs( player.GetAll( ) ) do
-		if ( !v.IsCharacterLoaded( v ) ) then continue end
+		if ( !v:IsCharacterLoaded( ) ) then continue end
 		
 		players[ #players + 1 ] = v
 	end

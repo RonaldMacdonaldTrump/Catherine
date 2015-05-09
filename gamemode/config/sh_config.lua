@@ -55,7 +55,7 @@ catherine.configs.defaultRPInformation = {
 }
 
 if ( SERVER ) then
-	catherine.configs.HaXCheckInterval = 300
+	catherine.configs.HaXCheckInterval = 400
 	catherine.configs.hintInterval = 30
 	catherine.configs.netRegistryOptimizeInterval = 350
 	catherine.configs.saveInterval = 300
@@ -67,7 +67,7 @@ if ( SERVER ) then
 	catherine.configs.clearMap = true
 	catherine.configs.enable_oocDelay = true
 	catherine.configs.enable_loocDelay = false
-	catherine.configs.oocDelay = 100
+	catherine.configs.oocDelay = 60
 	catherine.configs.loocDelay = 2
 	
 	catherine.configs.enable_Log = true

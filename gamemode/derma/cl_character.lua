@@ -603,18 +603,19 @@ function PANEL:Init( )
 	self.nextStage:SetStrColor( Color( 50, 50, 50, 255 ) )
 	self.nextStage:SetGradientColor( Color( 50, 50, 50, 150 ) )
 	self.nextStage.Click = function( )
-		local count = 0
+		local i = 0
+
 		for k, v in pairs( self.data ) do
 			local vars = catherine.character.FindVarByID( k )
 			if ( vars and vars.checkValid ) then
-				count = count + 1
-				local success, reason = vars.checkValid( self.data[ vars.id ] )
+				i = i + 1
+				local success, reason = vars.checkValid( self.data[ k ] )
 				
 				if ( success == false ) then
 					self:PrintErrorMessage( catherine.util.StuffLanguage( reason ) )
 					return
 				else
-					if ( count == 3 ) then
+					if ( i == 3 ) then
 						self:AlphaTo( 0, 0.3, 0 )
 						self:MoveTo( 0 - self.w, self.parent.h / 2 - self.h / 2, 0.3, 0 )
 						table.Merge( self.parent.createData.datas, self.data )

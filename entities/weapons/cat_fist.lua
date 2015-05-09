@@ -19,6 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 AddCSLuaFile( )
 
 SWEP.PrintName = "Fists"
+SWEP.Author = "1F24DCA, L7D, Chessnut"
 SWEP.HoldType = "normal"
 SWEP.Slot = 1
 SWEP.SlotPos = 1
@@ -42,7 +43,7 @@ SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = ""
 SWEP.Secondary.Delay = 0.5
 
-SWEP.HitDistance = 48
+SWEP.HitDistance = 76
 SWEP.LowerAngles = Angle( 0, 5, -15 )
 SWEP.UseHands = false
 
@@ -66,7 +67,7 @@ function SWEP:PrimaryAttack( )
 	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
 	local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
-	if ( !pl.GetWeaponRaised( pl ) or stamina < 10 ) then
+	if ( !pl:GetWeaponRaised( ) or stamina < 10 ) then
 		return
 	end
 	
@@ -100,11 +101,56 @@ function SWEP:PrimaryAttack( )
 			dmgInfo:SetInflictor( self )
 			dmgInfo:SetDamage( math.random( 8, 12 ) )
 			ent:TakeDamageInfo( dmgInfo )
+		elseif ( ent:GetClass( ) == "prop_ragdoll" ) then
+			local target = ent:GetNetVar( "player" )
+			
+			if ( IsValid( target ) and target:IsPlayer( ) ) then
+				local dmgInfo = DamageInfo( )
+				dmgInfo:SetAttacker( pl )
+				dmgInfo:SetInflictor( self )
+				dmgInfo:SetDamage( math.random( 8, 12 ) )
+				target:TakeDamageInfo( dmgInfo )
+			end
 		end
+		
+		hook.Run( "PlayerThrowPunch", pl, tr.Hit )
 	end
 	
 	pl:LagCompensation( false )
 	self:SetNextPrimaryFire( CurTime( ) + self.Primary.Delay )
+end
+
+function SWEP:CanMoveable( ent )
+	local physObject = ent:GetPhysicsObject()
+
+	if ( !IsValid( physObject ) ) then
+		return false
+	end
+
+	if ( physObject:GetMass( ) > 90 or !physObject:IsMoveable( ) ) then
+		return false
+	end
+
+	return true
+end
+
+function SWEP:DoPickup( ent )
+	if ( ent:IsPlayerHolding( ) ) then
+		return
+	end
+
+	timer.Simple( FrameTime( ) * 10, function( )
+		if ( !IsValid( ent ) or ent:IsPlayerHolding( ) ) then
+			return
+		end
+		
+		local pl = self.Owner
+
+		pl:PickupObject( ent )
+		pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 3 ) .. ".wav", 75 )
+	end )
+
+	self:SetNextSecondaryFire( CurTime( ) + 1 )
 end
 
 function SWEP:SecondaryAttack( )
@@ -116,8 +162,15 @@ function SWEP:SecondaryAttack( )
 		filter = pl
 	} ).Entity
 	
-	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
-		self:EmitSound( "physics/wood/wood_crate_impact_hard2.wav", math.random( 50, 100 ) )
+	if ( IsValid( ent ) ) then
+		if ( catherine.entity.IsDoor( ent ) ) then
+			self:EmitSound( "physics/wood/wood_crate_impact_hard2.wav", math.random( 50, 100 ) )
+		elseif ( !ent:IsPlayer( ) and !ent:IsNPC( ) and self:CanMoveable( ent ) ) then
+			local physObject = ent:GetPhysicsObject( )
+			physObject:Wake( )
+
+			self:DoPickup( ent )
+		end
 	end
 	
 	self:SetNextSecondaryFire( CurTime( ) + self.Secondary.Delay )
@@ -126,7 +179,7 @@ end
 function SWEP:Deploy( )
 	if ( !IsValid( self.Owner ) ) then return end
 
-	local viewMdl = self.Owner:GetViewModel()
+	local viewMdl = self.Owner:GetViewModel( )
 	viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( "fists_draw" ) )
 	
 	timer.Simple( viewMdl:SequenceDuration( ), function( ) 

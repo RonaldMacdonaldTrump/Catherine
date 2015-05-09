@@ -17,11 +17,11 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.command.Register( {
-	command = "fallover",
+	command = "charfallover",
 	canRun = function( pl ) return pl:Alive( ) end,
 	runFunc = function( pl, args )
 		if ( catherine.player.IsRagdolled( pl ) ) then
-			catherine.util.Notify( pl, "You are already fallovered!" )
+			catherine.util.NotifyLang( pl, "Player_Message_AlreadyFallovered" )
 			return
 		end
 		
@@ -37,19 +37,19 @@ catherine.command.Register( {
 	command = "chargetup",
 	canRun = function( pl ) return pl:Alive( ) end,
 	runFunc = function( pl, args )
-		if ( !pl.CAT_gettingup ) then
+		if ( !pl:GetNetVar( "gettingup" ) ) then
 			if ( catherine.player.IsRagdolled( pl ) ) then
-				pl.CAT_gettingup = true
+				pl:SetNetVar( "gettingup", true )
 				catherine.util.TopNotify( pl, false )
-				catherine.util.ProgressBar( pl, "You are now getting up ...", 3, function( )
+				catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_GettingUp" ), 3, function( )
 					catherine.player.RagdollWork( pl, false )
-					pl.CAT_gettingup = nil
+					pl:SetNetVar( "gettingup", nil )
 				end )
 			else
-				catherine.util.Notify( pl, "You are not fallovered!" )
+				catherine.util.NotifyLang( pl, "Player_Message_NotFallovered" )
 			end
 		else
-			catherine.util.Notify( pl, "You are already getting uping!" )
+			catherine.util.NotifyLang( pl, "Player_Message_AlreayGettingUp" )
 		end
 	end
 } )
@@ -89,7 +89,7 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					catherine.character.SetVar( target, "_desc", args[ 2 ] )
-					catherine.util.NotifyAllLang( "Character_Notify_SetDesc", pl:Name( ), args[ 2 ], target:Name( ) )
+					catherine.util.NotifyLang( "Character_Notify_SetDesc", pl:Name( ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end

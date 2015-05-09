@@ -128,7 +128,7 @@ function GM:PlayerSpawn( pl )
 end
 
 function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
-	if ( !pl:IsPlayer( ) ) then return end
+	if ( !pl:IsPlayer( ) or pl.CAT_ignoreScreenColor ) then return end
 
 	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 	
@@ -274,6 +274,11 @@ function GM:PlayerUse( pl, ent )
 
 	local isDoor = catherine.entity.IsDoor( ent )
 	
+	if ( catherine.entity.IsProp( ent ) ) then
+		//pl:DropObject( ) // :?
+		return false
+	end
+	
 	return ( isDoor and !pl.CAT_cantUseDoor == true ) and true or !isDoor and true
 end
 
@@ -355,8 +360,6 @@ function GM:PlayerTakeDamage( pl, attacker, ragdollEntity )
 			sound = "vo/npc/" .. gender .. "01/startle0" .. math.random( 1, 2 ) .. ".wav"
 		end
 	end
-	
-	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 
 	if ( IsValid( ragdollEntity ) ) then
 		ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )

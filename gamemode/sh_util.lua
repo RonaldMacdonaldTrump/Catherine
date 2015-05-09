@@ -337,7 +337,7 @@ else
 		local time = CurTime( ) + ( data[ 2 ] or 0.1 )
 		local fadeTime = data[ 3 ] or 0.03
 		local a = 255
-		
+
 		hook.Remove( "HUDPaint", "catherine.util.ScreenColorEffect" )
 		hook.Add( "HUDPaint", "catherine.util.ScreenColorEffect", function( )
 			if ( time <= CurTime( ) ) then

@@ -235,8 +235,8 @@ if ( SERVER ) then
 				var = v.default( pl )
 			end
 
-			if ( data[ v.id ] ) then
-				var = data[ v.id ]
+			if ( data[ k ] ) then
+				var = data[ k ]
 				if ( v.checkValid ) then
 					local success, reason = v.checkValid( var )
 					

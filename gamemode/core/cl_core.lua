@@ -269,8 +269,14 @@ function GM:PostDrawTranslucentRenderables( depth, skybox )
 end
 
 function GM:PlayerBindPress( pl, code, pressed )
-	if ( code.find( code, "messagemode" ) and pressed ) then
+	if ( code:find( "messagemode" ) and pressed ) then
 		catherine.chat.SetStatus( true )
+		
+		return true
+	end
+	
+	if ( !pl:GetNetVar( "gettingup" ) and catherine.player.IsRagdolled( pl ) and code:find( "+jump" ) and pressed ) then
+		catherine.command.Run( "chargetup" )
 		
 		return true
 	end

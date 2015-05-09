@@ -71,7 +71,8 @@ catherine.chat.Register( "ic", {
 		chat.AddText( Color( 255, 255, 150 ), LANG( "Chat_Str_IC", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 300,
-	canRun = function( pl ) return pl:Alive( ) end
+	canRun = function( pl ) return !catherine.player.IsRagdolled( pl ) and pl:Alive( ) end,
+	canHear = function( pl ) return pl:Alive( ) end
 } )
 
 catherine.chat.Register( "me", {
@@ -103,7 +104,7 @@ catherine.chat.Register( "roll", {
 		chat.AddText( Color( 158, 122, 19 ), LANG( "Chat_Str_Roll", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 600,
-	canRun = function( pl ) return pl:Alive( ) end
+	canRun = function( pl ) return !catherine.player.IsRagdolled( pl ) and pl:Alive( ) end,
 } )
 
 catherine.chat.Register( "pm", {
@@ -133,7 +134,7 @@ catherine.chat.Register( "yell", {
 	end,
 	canHearRange = 600,
 	command = { "/y", "/yell" },
-	canRun = function( pl ) return pl:Alive( ) end
+	canRun = function( pl ) return !catherine.player.IsRagdolled( pl ) and pl:Alive( ) end,
 } )
 
 catherine.chat.Register( "whisper", {
@@ -148,7 +149,7 @@ catherine.chat.Register( "whisper", {
 	end,
 	canHearRange = 150,
 	command = { "/w", "/whisper" },
-	canRun = function( pl ) return pl:Alive( ) end
+	canRun = function( pl ) return !catherine.player.IsRagdolled( pl ) and pl:Alive( ) end,
 } )
 
 catherine.chat.Register( "ooc", {
@@ -156,14 +157,14 @@ catherine.chat.Register( "ooc", {
 		local icon = Material( "icon16/user.png" )
 		
 		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
-			icon = Material( "icon16/emoticon_smile.png" )
+			icon = Material( "icon16/bug.png" )
 		elseif ( pl:IsSuperAdmin( ) ) then
 			icon = Material( "icon16/shield.png" )
 		elseif ( pl:IsAdmin( ) ) then
 			icon = Material( "icon16/star.png" )
 		end
 		
-		chat.AddText( icon, Color( 250, 40, 40 ), "[OOC] ", pl, color_white, " : ".. text )
+		chat.AddText( icon, Color( 40, 250, 250 ), "[OOC] ", pl, color_white, " : ".. text )
 	end,
 	isGlobal = true,
 	command = {
@@ -187,7 +188,7 @@ catherine.chat.Register( "ooc", {
 
 catherine.chat.Register( "looc", {
 	func = function( pl, text )
-		chat.AddText( Color( 250, 40, 40 ), "[LOOC] ", pl, color_white, " : ".. text )
+		chat.AddText( Color( 40, 250, 250 ), "[LOOC] ", pl, color_white, " : ".. text )
 	end,
 	canHearRange = 600,
 	command = {
@@ -214,7 +215,7 @@ catherine.chat.Register( "connect", {
 		local icon = Material( "icon16/user.png" )
 		
 		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
-			icon = Material( "icon16/emoticon_smile.png" )
+			icon = Material( "icon16/bug.png" )
 		elseif ( pl:IsSuperAdmin( ) ) then
 			icon = Material( "icon16/shield.png" )
 		elseif ( pl:IsAdmin( ) ) then
@@ -231,7 +232,7 @@ catherine.chat.Register( "disconnect", {
 		local icon = Material( "icon16/user.png" )
 		
 		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
-			icon = Material( "icon16/emoticon_smile.png" )
+			icon = Material( "icon16/bug.png" )
 		elseif ( pl:IsSuperAdmin( ) ) then
 			icon = Material( "icon16/shield.png" )
 		elseif ( pl:IsAdmin( ) ) then
@@ -317,7 +318,8 @@ if ( SERVER ) then
 		local range = classTable.canHearRange
 		
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			if ( pl != v and catherine.util.CalcDistanceByPos( pl, v ) <= range and ( classTable.canHear and classTable.canHear( pl ) == true ) ) then
+			if ( classTable.canHear and classTable.canHear( pl ) == false ) then continue end
+			if ( pl != v and catherine.util.CalcDistanceByPos( pl, v ) <= range ) then
 				target[ #target + 1 ] = v
 			end
 		end

@@ -210,6 +210,9 @@ LANGUAGE.data = {
 	[ "Player_Message_Ragdolled_01" ] = "You was stunned ...",
 	[ "Player_Message_Dead_01" ] = "You are dead ...",
 	[ "Player_Message_GettingUp" ] = "You are regaining consciousness ...",
+	[ "Player_Message_AlreayGettingUp" ] = "You are already getting up!",
+	[ "Player_Message_AlreadyFallovered" ] = "You are already fallovered!",
+	[ "Player_Message_NotFallovered" ] = "You are not fallovered!",
 	[ "Player_Message_HasNotPermission" ] = "You don't have permission!",
 	[ "Player_Message_UnTie" ] = "Press 'Use' to untie.",
 	[ "Player_Message_TiedBlock" ] = "You can not do this when tied.",
@@ -300,6 +303,7 @@ LANGUAGE.data = {
 	[ "Basic_UI_YES" ] = "YES",
 	[ "Basic_UI_NO" ] = "NO",
 	[ "Basic_Framework_Author" ] = "Development and design by %s.",
+	[ "Basic_Notify_BunnyHop" ] = "Do not Bunny-hop!",
 	
 	[ "Command_ClearDecals_Fin" ] = "You are cleared decals on map.",
 	[ "Command_SetTimeHour_Fin" ] = "You are set RP time to %s(hour)."
