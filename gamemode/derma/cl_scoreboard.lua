@@ -94,8 +94,7 @@ function PANEL:RefreshPlayerLists( )
 					self:Refresh( )
 					return
 				end
-				
-				//draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+
 				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
 				
 				if ( v1:SteamID( ) == "STEAM_0:1:25704824" ) then

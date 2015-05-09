@@ -52,7 +52,7 @@ function PANEL:Init( )
 		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
 	end
 	self.descEnt.OnEnter = function( pnl )
-		catherine.command.Run( "charphysdesc", { self.descEnt:GetText( ) } )
+		catherine.command.Run( "charphysdesc", self.descEnt:GetText( ) )
 	end
 
 	self.playerModel = vgui.Create( "SpawnIcon", self )
