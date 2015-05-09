@@ -273,12 +273,7 @@ function GM:PlayerUse( pl, ent )
 	end
 
 	local isDoor = catherine.entity.IsDoor( ent )
-	
-	if ( catherine.entity.IsProp( ent ) ) then
-		//pl:DropObject( ) // :?
-		return false
-	end
-	
+
 	return ( isDoor and !pl.CAT_cantUseDoor == true ) and true or !isDoor and true
 end
 
