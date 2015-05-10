@@ -163,7 +163,7 @@ function GM:CalcMainActivity( pl, velo )
 				end
 			end
 		elseif ( ani ) then
-			//pl:ManipulateBonePosition( 0, vector_origin )
+			pl:ManipulateBonePosition( 0, vector_origin )
 			
 			val = ani[ status ]
 
