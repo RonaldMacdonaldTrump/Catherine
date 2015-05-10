@@ -435,6 +435,11 @@ function GM:Tick( )
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		catherine.player.BunnyHopProtection( v )
 		catherine.player.HealthRecoverTick( v )
+		
+		if ( ( v.CAT_nextJumpUpdate or 0 ) <= CurTime( ) and v:Alive( ) and !catherine.player.IsRagdolled( v ) and !v:InVehicle( ) and v:GetMoveType( ) == MOVETYPE_WALK and v:IsInWorld( ) and !v:IsOnGround( ) ) then
+			hook.Run( "PlayerJump", v )
+			v.CAT_nextJumpUpdate = CurTime( ) + 1
+		end
 	end
 end
 
