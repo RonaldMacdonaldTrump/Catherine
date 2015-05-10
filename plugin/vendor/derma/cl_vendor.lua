@@ -462,6 +462,7 @@ function PANEL:Refresh_List( id )
 				local itemTable = catherine.item.FindByID( v1.uniqueID )
 				if ( !itemTable ) then continue end
 				local newData = self.vendorData.inv[ v1.uniqueID ] or { }
+				local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 				
 				local panel = vgui.Create( "DPanel" )
 				panel:SetSize( form:GetWide( ), 50 )
@@ -505,7 +506,7 @@ function PANEL:Refresh_List( id )
 				local spawnIcon = vgui.Create( "SpawnIcon", panel )
 				spawnIcon:SetSize( 40, 40 )
 				spawnIcon:SetPos( 5, 5 )
-				spawnIcon:SetModel( itemTable.model )
+				spawnIcon:SetModel( model )
 				spawnIcon:SetToolTip( false )
 				spawnIcon:SetDisabled( true )
 				spawnIcon.PaintOver = function( ) end
@@ -534,6 +535,7 @@ function PANEL:Refresh_List( id )
 				local itemTable = catherine.item.FindByID( v1.uniqueID )
 				if ( !itemTable ) then continue end
 				local newData = self.vendorData.inv[ v1.uniqueID ] or { }
+				local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 				
 				local panel = vgui.Create( "DPanel" )
 				panel:SetSize( form:GetWide( ), 50 )
@@ -578,7 +580,7 @@ function PANEL:Refresh_List( id )
 				local spawnIcon = vgui.Create( "SpawnIcon", panel )
 				spawnIcon:SetSize( 40, 40 )
 				spawnIcon:SetPos( 5, 5 )
-				spawnIcon:SetModel( itemTable.model )
+				spawnIcon:SetModel( model )
 				spawnIcon:SetToolTip( false )
 				spawnIcon:SetDisabled( true )
 				spawnIcon.PaintOver = function( ) end
@@ -604,8 +606,8 @@ function PANEL:Refresh_List( id )
 			for k1, v1 in pairs( v ) do
 				local itemTable = catherine.item.FindByID( v1.uniqueID )
 				if ( !itemTable ) then continue end
-				
 				local newData = self.vendorData.inv[ v1.uniqueID ] or { }
+				local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 				
 				local panel = vgui.Create( "DPanel" )
 				panel:SetSize( form:GetWide( ), 50 )
@@ -652,7 +654,7 @@ function PANEL:Refresh_List( id )
 				local spawnIcon = vgui.Create( "SpawnIcon", panel )
 				spawnIcon:SetSize( 40, 40 )
 				spawnIcon:SetPos( 5, 5 )
-				spawnIcon:SetModel( itemTable.model )
+				spawnIcon:SetModel( model )
 				spawnIcon:SetToolTip( false )
 				spawnIcon:SetDisabled( true )
 				spawnIcon.PaintOver = function( ) end

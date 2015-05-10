@@ -35,7 +35,7 @@ if ( SERVER ) then
 		self:SetUseType( SIMPLE_USE )
 		self:SetHealth( 40 )
 		
-		local physObject = self.GetPhysicsObject( self )
+		local physObject = self:GetPhysicsObject( )
 		
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( true )
@@ -51,7 +51,10 @@ if ( SERVER ) then
 	end
 
 	function ENT:Use( pl )
-		netstream.Start( pl, "catherine.item.EntityUseMenu", { self:EntIndex( ), self:GetItemUniqueID( ) } )
+		netstream.Start( pl, "catherine.item.EntityUseMenu", {
+			self:EntIndex( ),
+			self:GetItemUniqueID( )
+		} )
 	end
 	
 	function ENT:Bomb( )
@@ -75,7 +78,7 @@ else
 	local toscreen = FindMetaTable( "Vector" ).ToScreen
 	
 	function ENT:DrawEntityTargetID( pl, ent, a )
-		local pos = toscreen( self.LocalToWorld( self, self.OBBCenter( self ) ) )
+		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		local itemTable = self:GetItemTable( )
 

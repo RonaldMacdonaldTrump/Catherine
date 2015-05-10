@@ -43,7 +43,7 @@ BASE.func.wear = {
 		end
 		
 		local replacement = itemTable.replacement
-		local newModel = itemTable.model
+		local newModel = itemTable.model or ""
 		local playerModel = pl:GetModel( ):lower( )
 		
 		if ( newModel:find( "female" ) or catherine.animation.Get( newModel ) == "citizen_female" and itemTable.femaleModel ) then
@@ -53,15 +53,15 @@ BASE.func.wear = {
 		if ( replacement and #replacement == 2 ) then
 			newModel = playerModel:gsub( replacement[ 1 ], replacement[ 2 ] )
 		end
-		
-		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
+
+		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 100 )
 		pl:SetModel( newModel )
 		pl:SetupHands( )
 		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "wearing", true )
 		catherine.character.SetCharVar( pl, "clothWearing", true )
 	end,
 	canLook = function( pl, itemTable )
-		return !catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" )
+		return !catherine.inventory.GetItemData( itemTable.uniqueID, "wearing" )
 	end
 }
 BASE.func.takeoff = {
@@ -79,8 +79,8 @@ BASE.func.takeoff = {
 		if ( replacement and #replacement == 2 ) then
 			originalModel = pl:GetModel( ):lower( ):gsub( replacement[ 2 ], replacement[ 1 ] )
 		end
-		
-		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
+
+		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 100 )
 		pl:SetModel( originalModel )
 		pl:SetupHands( )
 		
@@ -88,7 +88,7 @@ BASE.func.takeoff = {
 		catherine.character.SetCharVar( pl, "clothWearing", nil )
 	end,
 	canLook = function( pl, itemTable )
-		return catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" )
+		return catherine.inventory.GetItemData( itemTable.uniqueID, "wearing" ) == true and true or false
 	end
 }
 

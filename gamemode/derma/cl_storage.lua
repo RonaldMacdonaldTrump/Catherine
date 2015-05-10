@@ -175,10 +175,11 @@ function PANEL:BuildStorage( )
 			local itemTable = catherine.item.FindByID( v1.uniqueID )
 			if ( !itemTable ) then continue end
 			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( self.player, itemTable, self.player:GetInvItemDatas( itemTable.uniqueID ), false ) or nil
-
+			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
+			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
-			spawnIcon:SetModel( itemTable.model )
+			spawnIcon:SetModel( model )
 			spawnIcon:SetSkin( itemTable.skin or 0 )
 			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
 			spawnIcon.DoClick = function( )
@@ -238,10 +239,11 @@ function PANEL:BuildStorage( )
 			local itemTable = catherine.item.FindByID( v1.uniqueID )
 			if ( !itemTable ) then continue end
 			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( self.player, itemTable, self.player:GetInvItemDatas( itemTable.uniqueID ), true ) or nil
-
+			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
+			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
-			spawnIcon:SetModel( itemTable.model )
+			spawnIcon:SetModel( model )
 			spawnIcon:SetSkin( itemTable.skin or 0 )
 			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
 			spawnIcon.DoClick = function( )
