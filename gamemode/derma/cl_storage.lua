@@ -179,8 +179,7 @@ function PANEL:BuildStorage( )
 			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
-			spawnIcon:SetModel( model )
-			spawnIcon:SetSkin( itemTable.skin or 0 )
+			spawnIcon:SetModel( model, itemTable.skin or 0 )
 			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
 			spawnIcon.DoClick = function( )
 				netstream.Start( "catherine.storage.Work", {
@@ -243,8 +242,7 @@ function PANEL:BuildStorage( )
 			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
-			spawnIcon:SetModel( model )
-			spawnIcon:SetSkin( itemTable.skin or 0 )
+			spawnIcon:SetModel( model, itemTable.skin or 0 )
 			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
 			spawnIcon.DoClick = function( )
 				netstream.Start( "catherine.storage.Work", {

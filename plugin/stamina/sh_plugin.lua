@@ -46,7 +46,7 @@ if ( SERVER ) then
 
 	function PLUGIN:Think( )
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			if ( v:IsNoclipping ) then continue end
+			if ( v:IsNoclipping( ) ) then continue end
 			
 			if ( !v.CAT_nextStaminaDown or !v.CAT_nextStaminaUp ) then
 				v.CAT_nextStaminaDown = CurTime( ) + 1

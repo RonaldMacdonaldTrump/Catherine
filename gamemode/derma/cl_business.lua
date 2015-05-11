@@ -200,11 +200,11 @@ function PANEL:BuildBusiness( )
 			local w, h = 64, 64
 			local itemTable = catherine.item.FindByID( v1.uniqueID )
 			if ( !itemTable ) then continue end
+			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
-			spawnIcon:SetModel( itemTable.model )
-			spawnIcon:SetSkin( itemTable.model or 0 )
+			spawnIcon:SetModel( model, itemTable.skin or 0 )
 			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. "\n" .. ( itemTable.cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetName( itemTable.cost ) ) )
 			spawnIcon.DoClick = function( )
 				if ( self.shoppingcart[ itemTable.uniqueID ] ) then

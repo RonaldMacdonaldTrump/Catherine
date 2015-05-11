@@ -167,7 +167,7 @@ function PANEL:BuildPlayerList( )
 		local spawnIcon = vgui.Create( "SpawnIcon", panel )
 		spawnIcon:SetPos( 5, 5 )
 		spawnIcon:SetSize( 50, 50 )
-		spawnIcon:SetModel( v.GetModel( v ) )
+		spawnIcon:SetModel( v:GetModel( ) )
 		spawnIcon:SetToolTip( false )
 		spawnIcon:SetDisabled( true )
 		spawnIcon.PaintOver = function( ) end
