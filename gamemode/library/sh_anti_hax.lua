@@ -128,6 +128,8 @@ if ( SERVER ) then
 	end
 	
 	function catherine.antiHaX.Think( )
+		if ( !catherine.configs.enable_AntiHaX ) then return end
+		
 		if ( !catherine.antiHaX.doing and catherine.antiHaX.NextCheckTick <= CurTime( ) ) then
 			catherine.antiHaX.Work( )
 			
