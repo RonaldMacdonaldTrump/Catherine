@@ -25,7 +25,6 @@ if ( SERVER ) then
 	
 	function catherine.antiHaX.Work( )
 		if ( catherine.antiHaX.doing ) then return end
-		
 		local masterData = {
 			serverConfig = {
 				cheat = GetConVarString( "sv_cheats" ),
@@ -41,6 +40,7 @@ if ( SERVER ) then
 		local playerAll = player.GetAllByLoaded( )
 		local playerAllCount = #playerAll
 		local i = 0
+		local nextCheck = CurTime( ) + 0.05
 		
 		for k, v in pairs( playerAll ) do
 			if ( !IsValid( v ) or !v:IsPlayer( ) ) then
@@ -73,44 +73,48 @@ if ( SERVER ) then
 		hook.Add( "Think", "catherine.antiHaX.Work.TimeOutChecker", function( )
 			if ( !startTimeOutChecker or !catherine.antiHaX.doing ) then return end
 			
-			for k, v in pairs( playerAll ) do
-				if ( receiveData[ v ] and receiveData[ v ].fin == true ) then
-					local isHack = false
-					
-					if ( receiveData[ v ].sendTime - SysTime( ) >= 15 ) then
-						local kickMessage = LANG( v, "AntiHaX_KickMessage_TimeOut" )
+			if ( nextCheck <= CurTime( ) ) then
+				for k, v in pairs( playerAll ) do
+					if ( receiveData[ v ] and receiveData[ v ].fin == true ) then
+						local isHack = false
 						
-						MsgC( Color( 255, 255, 0 ), "[CAT AntiHaX] Kicked time out player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]\n" )
-						catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked time out player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]", true )
-						pl:Kick( kickMessage )
-						receiveData[ v ] = nil
-						continue
-					end
-					
-					if ( serverCheat != receiveData[ v ].serverFetch.cheat or serverCheat != receiveData[ v ].clientFetch.cheat ) then
-						MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_cheats mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]\n" )
-						catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_cheats mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]", true )
-						isHack = true
-					end
-					
-					if ( serverCSLua != receiveData[ v ].serverFetch.csLua or serverCSLua != receiveData[ v ].clientFetch.csLua ) then
-						MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_allowcslua mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]\n" )
-						catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_allowcslua mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]", true )
-						isHack = true
-					end
-					
-					if ( isHack ) then
-						local kickMessage = LANG( v, "AntiHaX_KickMessage" )
+						if ( receiveData[ v ].sendTime - SysTime( ) >= 15 ) then
+							local kickMessage = LANG( v, "AntiHaX_KickMessage_TimeOut" )
+							
+							MsgC( Color( 255, 255, 0 ), "[CAT AntiHaX] Kicked time out player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]\n" )
+							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked time out player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]", true )
+							pl:Kick( kickMessage )
+							receiveData[ v ] = nil
+							continue
+						end
 						
-						MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Kicked hack player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]\n" )
-						catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked hack player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]", true )
-						pl:Kick( kickMessage )
-						receiveData[ v ] = nil
-						continue
-					else
-						receiveData[ v ] = nil
+						if ( serverCheat != receiveData[ v ].serverFetch.cheat or serverCheat != receiveData[ v ].clientFetch.cheat ) then
+							MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_cheats mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]\n" )
+							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_cheats mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]", true )
+							isHack = true
+						end
+						
+						if ( serverCSLua != receiveData[ v ].serverFetch.csLua or serverCSLua != receiveData[ v ].clientFetch.csLua ) then
+							MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_allowcslua mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]\n" )
+							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_allowcslua mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]", true )
+							isHack = true
+						end
+						
+						if ( isHack ) then
+							local kickMessage = LANG( v, "AntiHaX_KickMessage" )
+							
+							MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Kicked hack player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]\n" )
+							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked hack player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]", true )
+							pl:Kick( kickMessage )
+							receiveData[ v ] = nil
+							continue
+						else
+							receiveData[ v ] = nil
+						end
 					end
 				end
+				
+				nextCheck = CurTime( ) + 0.05
 			end
 			
 			if ( table.Count( receiveData ) == 0 ) then
