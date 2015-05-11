@@ -306,7 +306,10 @@ LANGUAGE.data = {
 	[ "Basic_Notify_BunnyHop" ] = "버니합을 하지 마십시오!",
 	
 	[ "Command_ClearDecals_Fin" ] = "맵에 있는 데칼을 모두 지웠습니다.",
-	[ "Command_SetTimeHour_Fin" ] = "당신은 RP 시간을 %s시로 설정하셨습니다."
+	[ "Command_SetTimeHour_Fin" ] = "당신은 RP 시간을 %s시로 설정하셨습니다.",
+	
+	[ "AntiHaX_KickMessage" ] = "죄송합니다, 당신은 치트 프로그램 사용으로 감지되어 킥 당하셨습니다 :(",
+	[ "AntiHaX_KickMessage_TimeOut" ] = "죄송합니다, 당신은 치트 프로그램 확인 작업의 제한 시간을 초과했습니다 :("
 }
 
 catherine.language.Register( LANGUAGE )

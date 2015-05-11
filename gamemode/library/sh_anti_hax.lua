@@ -20,16 +20,22 @@ catherine.antiHaX = catherine.antiHaX or { }
 
 if ( SERVER ) then
 	catherine.antiHaX.masterData = catherine.antiHaX.masterData or { }
+	catherine.antiHaX.doing = catherine.antiHaX.doing or false
 	catherine.antiHaX.NextCheckTick = catherine.antiHaX.NextCheckTick or CurTime( ) + catherine.configs.HaXCheckInterval
 	
 	function catherine.antiHaX.Work( )
+		if ( catherine.antiHaX.doing ) then return end
+		
 		local masterData = {
 			serverConfig = {
 				cheat = GetConVarString( "sv_cheats" ),
 				csLua = GetConVarString( "sv_allowcslua" )
 			},
-			receiveData = { }
+			receiveData = { },
+			startTime = SysTime( )
 		}
+		local serverCheat = masterData.serverConfig.cheat
+		local serverCSLua = masterData.serverConfig.csLua
 		local receiveData = masterData.receiveData
 		local startTimeOutChecker = false
 		local playerAll = player.GetAllByLoaded( )
@@ -48,7 +54,8 @@ if ( SERVER ) then
 					csLua = v:GetInfo( "sv_allowcslua" )
 				},
 				clientFetch = { },
-				sendTime = SysTime( )
+				sendTime = SysTime( ),
+				fin = false
 			}
 
 			i = i + 1
@@ -59,32 +66,99 @@ if ( SERVER ) then
 		end
 		
 		catherine.antiHaX.masterData = masterData
+		catherine.antiHaX.doing = true
 		netstream.Start( playerAll, "catherine.antiHaX.CheckRequest" )
 		
 		hook.Remove( "Think", "catherine.antiHaX.Work.TimeOutChecker" )
 		hook.Add( "Think", "catherine.antiHaX.Work.TimeOutChecker", function( )
-			if ( !startTimeOutChecker ) then return end
+			if ( !startTimeOutChecker or !catherine.antiHaX.doing ) then return end
 			
+			for k, v in pairs( playerAll ) do
+				if ( receiveData[ v ] and receiveData[ v ].fin == true ) then
+					local isHack = false
+					
+					if ( receiveData[ v ].sendTime - SysTime( ) >= 15 ) then
+						local kickMessage = LANG( v, "AntiHaX_KickMessage_TimeOut" )
+						
+						MsgC( Color( 255, 255, 0 ), "[CAT AntiHaX] Kicked time out player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]\n" )
+						catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked time out player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]", true )
+						pl:Kick( kickMessage )
+						receiveData[ v ] = nil
+						continue
+					end
+					
+					if ( serverCheat != receiveData[ v ].serverFetch.cheat or serverCheat != receiveData[ v ].clientFetch.cheat ) then
+						MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_cheats mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]\n" )
+						catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_cheats mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]", true )
+						isHack = true
+					end
+					
+					if ( serverCSLua != receiveData[ v ].serverFetch.csLua or serverCSLua != receiveData[ v ].clientFetch.csLua ) then
+						MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_allowcslua mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]\n" )
+						catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_allowcslua mismatch found !!![" .. pl:SteamName( ) .. "/" .. pl:SteamID( ) .. "]", true )
+						isHack = true
+					end
+					
+					if ( isHack ) then
+						local kickMessage = LANG( v, "AntiHaX_KickMessage" )
+						
+						MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Kicked hack player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]\n" )
+						catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked hack player.[" .. pl:SteamName( ) .. "/" .. pl:SteamID( )	.. "]", true )
+						pl:Kick( kickMessage )
+						receiveData[ v ] = nil
+						continue
+					else
+						receiveData[ v ] = nil
+					end
+				end
+			end
 			
+			if ( table.Count( receiveData ) == 0 ) then
+				MsgC( Color( 0, 255, 0 ), "[CAT AntiHaX] Finished progress.\n" )
+				hook.Remove( "Think", "catherine.antiHaX.Work.TimeOutChecker" )
+				catherine.antiHaX.masterData = { }
+				catherine.antiHaX.doing = false
+			elseif ( masterData.startTime - SysTime( ) >= 50 ) then
+				MsgC( Color( 255, 255, 0 ), "[CAT AntiHaX] Checking progress has timed out.\n" )
+				hook.Remove( "Think", "catherine.antiHaX.Work.TimeOutChecker" )
+				catherine.antiHaX.masterData = { }
+				catherine.antiHaX.doing = false
+			end
 		end )
 	end
 	
 	function catherine.antiHaX.Think( )
-		
+		if ( !catherine.antiHaX.doing and catherine.antiHaX.NextCheckTick <= CurTime( ) ) then
+			catherine.antiHaX.Work( )
+			
+			catherine.antiHaX.NextCheckTick = CurTime( ) + catherine.configs.HaXCheckInterval
+		end
 	end
 	
 	hook.Add( "Think", "catherine.antiHaX.Think", catherine.antiHaX.Think )
 	
 	netstream.Hook( "catherine.antiHaX.CheckRequest_Receive", function( pl, data )
+		if ( !catherine.antiHaX.doing ) then return end
+		local masterData = catherine.antiHaX.masterData
 		
+		masterData.receiveData[ pl ].clientFetch = {
+			cheat = data[ 1 ],
+			csLua = data[ 2 ]
+		}
+		masterData.receiveData[ pl ].fin = true
+		
+		catherine.antiHaX.masterData = masterData
 	end )
 else
 	netstream.Hook( "catherine.antiHaX.CheckRequest", function( )
-		
+		netstream.Start( "catherine.antiHaX.CheckRequest_Receive", {
+			GetConVarString( "sv_cheats" ),
+			GetConVarString( "sv_allowcslua" )
+		} )
 	end )
 end
 
-/*
+/* // Old Version :)
 catherine.antiHaX = catherine.antiHaX or { }
 
 if ( SERVER ) then

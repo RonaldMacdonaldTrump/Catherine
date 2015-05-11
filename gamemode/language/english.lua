@@ -306,7 +306,10 @@ LANGUAGE.data = {
 	[ "Basic_Notify_BunnyHop" ] = "Do not Bunny-hop!",
 	
 	[ "Command_ClearDecals_Fin" ] = "You are cleared decals on map.",
-	[ "Command_SetTimeHour_Fin" ] = "You are set RP time to %s(hour)."
+	[ "Command_SetTimeHour_Fin" ] = "You are set RP time to %s(hour).",
+	
+	[ "AntiHaX_KickMessage" ] = "Sorry, You have been kicked by using cheat program :(",
+	[ "AntiHaX_KickMessage_TimeOut" ] = "Sorry, Your spend too much time for checking cheat programs :("
 }
 
 catherine.language.Register( LANGUAGE )
