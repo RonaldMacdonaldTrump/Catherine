@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
+--[[ Catherine Anti HaX Version 2.0 : Last Update 2015-05-11 ]]--
 
 catherine.antiHaX = catherine.antiHaX or { }
 

@@ -75,6 +75,8 @@ if ( SERVER ) then
 		attribute[ uniqueID ].progress = math.Clamp( progress, 0, attributeTable.max )
 		
 		catherine.character.SetVar( pl, "_att", attribute )
+		
+		hook.Run( "AttributeChanged", pl, uniqueID )
 	end
 	
 	function catherine.attribute.AddProgress( pl, uniqueID, progress )
@@ -89,6 +91,8 @@ if ( SERVER ) then
 		attribute[ uniqueID ].progress = math.Clamp( attribute[ uniqueID ].progress + progress, 0, attributeTable.max )
 		
 		catherine.character.SetVar( pl, "_att", attribute )
+		
+		hook.Run( "AttributeChanged", pl, uniqueID )
 	end
 	
 	function catherine.attribute.RemoveProgress( pl, uniqueID, progress )
@@ -103,6 +107,8 @@ if ( SERVER ) then
 		attribute[ uniqueID ].progress = math.Clamp( attribute[ uniqueID ].progress - progress, 0, attributeTable.max )
 		
 		catherine.character.SetVar( pl, "_att", attribute )
+		
+		hook.Run( "AttributeChanged", pl, uniqueID )
 	end
 
 	function catherine.attribute.GetProgress( pl, uniqueID )

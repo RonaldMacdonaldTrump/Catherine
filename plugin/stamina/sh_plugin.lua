@@ -37,9 +37,7 @@ catherine.language.Merge( "korean", {
 
 if ( SERVER ) then
 	function PLUGIN:PlayerSpawnedInCharacter( pl )
-		local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
-		
-		catherine.character.SetCharVar( pl, "stamina", stamina )
+		catherine.character.SetCharVar( pl, "stamina", catherine.character.GetCharVar( pl, "stamina", 100 ) )
 	end
 	
 	function PLUGIN:PlayerDeath( pl )
@@ -48,38 +46,37 @@ if ( SERVER ) then
 
 	function PLUGIN:Think( )
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			if ( v.GetMoveType( v ) == MOVETYPE_NOCLIP ) then continue end
+			if ( v:IsNoclipping ) then continue end
 			
-			if ( !v.nextStaminaDown or !v.nextStaminaUp ) then
-				v.nextStaminaDown = CurTime( ) + 1
-				v.nextStaminaUp = CurTime( ) + 3
+			if ( !v.CAT_nextStaminaDown or !v.CAT_nextStaminaUp ) then
+				v.CAT_nextStaminaDown = CurTime( ) + 1
+				v.CAT_nextStaminaUp = CurTime( ) + 3
 			end
 			
-			if ( v:IsRunning( ) and v.nextStaminaDown <= CurTime( ) ) then
-				local staminaDown = math.Clamp( catherine.character.GetCharVar( v, "stamina", 100 ) + ( -10 + math.min( ( catherine.attribute.GetProgress( v, CAT_ATT_STAMINA ) ) * 0.25, 7.5 ) ), 0, 100 )
+			if ( v:IsRunning( ) and v.CAT_nextStaminaDown <= CurTime( ) ) then
+				local staminaDown = math.Clamp( catherine.character.GetCharVar( v, "stamina", 100 ) + ( -10 + math.min( catherine.attribute.GetProgress( v, CAT_ATT_STAMINA ) * 0.25, 7.5 ) ), 0, 100 )
 				
 				if ( math.Round( staminaDown ) < 5 ) then
-					v.runSpeed = v.GetRunSpeed( v )
-					v.SetRunSpeed( v, v.GetWalkSpeed( v ) )
+					v:SetRunSpeed( v:GetWalkSpeed( ) )
 					catherine.attribute.AddProgress( v, CAT_ATT_STAMINA, 0.05 )
 				else
 					catherine.character.SetCharVar( v, "stamina", staminaDown )
 				end
 				
-				v.nextStaminaDown = CurTime( ) + 1
+				v.CAT_nextStaminaDown = CurTime( ) + 1
 			else
-				if ( v.nextStaminaUp <= CurTime( ) ) then
+				if ( v.CAT_nextStaminaUp <= CurTime( ) ) then
 					local staminaUp = math.Clamp( catherine.character.GetCharVar( v, "stamina", 100 ) + 5, 0, 100 )
 					
 					if ( staminaUp >= 100 ) then
-						v.SetRunSpeed( v, catherine.configs.playerDefaultRunSpeed )
+						v:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( v ) )
 					end
 					
 					if ( staminaUp != catherine.character.GetCharVar( v, "stamina", 100 ) ) then
 						catherine.character.SetCharVar( v, "stamina", staminaUp )
 					end
 					
-					v.nextStaminaUp = CurTime( ) + 3
+					v.CAT_nextStaminaUp = CurTime( ) + 3
 				end
 			end
 		end
