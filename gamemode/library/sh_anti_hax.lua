@@ -19,6 +19,75 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.antiHaX = catherine.antiHaX or { }
 
 if ( SERVER ) then
+	catherine.antiHaX.masterData = catherine.antiHaX.masterData or { }
+	catherine.antiHaX.NextCheckTick = catherine.antiHaX.NextCheckTick or CurTime( ) + catherine.configs.HaXCheckInterval
+	
+	function catherine.antiHaX.Work( )
+		local masterData = {
+			serverConfig = {
+				cheat = GetConVarString( "sv_cheats" ),
+				csLua = GetConVarString( "sv_allowcslua" )
+			},
+			receiveData = { }
+		}
+		local receiveData = masterData.receiveData
+		local startTimeOutChecker = false
+		local playerAll = player.GetAllByLoaded( )
+		local playerAllCount = #playerAll
+		local i = 0
+		
+		for k, v in pairs( playerAll ) do
+			if ( !IsValid( v ) or !v:IsPlayer( ) ) then
+				playerAllCount = playerAllCount - 1
+				continue
+			end
+			
+			receiveData[ v ] = {
+				serverFetch = {
+					cheat = v:GetInfo( "sv_cheats" ),
+					csLua = v:GetInfo( "sv_allowcslua" )
+				},
+				clientFetch = { },
+				sendTime = SysTime( )
+			}
+
+			i = i + 1
+			
+			if ( i >= playerAllCount ) then
+				startTimeOutChecker = true
+			end
+		end
+		
+		catherine.antiHaX.masterData = masterData
+		netstream.Start( playerAll, "catherine.antiHaX.CheckRequest" )
+		
+		hook.Remove( "Think", "catherine.antiHaX.Work.TimeOutChecker" )
+		hook.Add( "Think", "catherine.antiHaX.Work.TimeOutChecker", function( )
+			if ( !startTimeOutChecker ) then return end
+			
+			
+		end )
+	end
+	
+	function catherine.antiHaX.Think( )
+		
+	end
+	
+	hook.Add( "Think", "catherine.antiHaX.Think", catherine.antiHaX.Think )
+	
+	netstream.Hook( "catherine.antiHaX.CheckRequest_Receive", function( pl, data )
+		
+	end )
+else
+	netstream.Hook( "catherine.antiHaX.CheckRequest", function( )
+		
+	end )
+end
+
+/*
+catherine.antiHaX = catherine.antiHaX or { }
+
+if ( SERVER ) then
 	catherine.antiHaX.checkingList = catherine.antiHaX.checkingList or { }
 	catherine.antiHaX.NextCheckTick = catherine.antiHaX.NextCheckTick or CurTime( ) + catherine.configs.HaXCheckInterval
 
@@ -97,3 +166,4 @@ else
 		} )
 	end )
 end
+*/
