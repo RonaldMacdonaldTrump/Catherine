@@ -195,12 +195,12 @@ if ( SERVER ) then
 		// Go!
 		pl.CAT_loadingChar = true
 		
-		pl.KillSilent( pl )
-		pl.Spawn( pl )
-		pl.SetTeam( pl, factionTable.index )
-		pl.SetModel( pl, character._model )
-		pl.SetWalkSpeed( pl, catherine.configs.playerDefaultWalkSpeed )
-		pl.SetRunSpeed( pl, catherine.configs.playerDefaultRunSpeed )
+		pl:KillSilent( )
+		pl:Spawn( )
+		pl:SetTeam( factionTable.index )
+		pl:SetModel( character._model )
+		pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
+		pl:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( pl ) )
 
 		catherine.character.CreateNetworkRegistry( pl, id, character )
 		catherine.character.SetCharVar( pl, "class", nil )

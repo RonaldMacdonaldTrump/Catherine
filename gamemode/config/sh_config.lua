@@ -55,7 +55,7 @@ catherine.configs.defaultRPInformation = {
 }
 
 if ( SERVER ) then
-	catherine.configs.HaXCheckInterval = 400
+	catherine.configs.HaXCheckInterval = 600
 	catherine.configs.hintInterval = 30
 	catherine.configs.netRegistryOptimizeInterval = 350
 	catherine.configs.saveInterval = 300

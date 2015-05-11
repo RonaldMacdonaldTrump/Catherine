@@ -217,13 +217,17 @@ function GM:EntityTakeDamage( ent, dmginfo )
 		local steamID = ent:SteamID( )
 		timer.Remove( "Catherine.timer.RunSpamProtection_" .. steamID )
 		timer.Create( "Catherine.timer.RunSpamProtection_" .. steamID, 2, 1, function( )
-			ent:SetRunSpeed( catherine.configs.playerDefaultRunSpeed )
+			ent:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( ent ) )
 		end )
 	end
 end
 
 function GM:PlayerCanFlashlight( pl )
 	return true
+end
+
+function GM:AttributeChanged( pl, uniqueID )
+	
 end
 
 function GM:KeyPress( pl, key )
@@ -435,6 +439,14 @@ function GM:Tick( )
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		catherine.player.BunnyHopProtection( v )
 		catherine.player.HealthRecoverTick( v )
+		
+		if ( ( v.CAT_nextRunSpeedUpdate or 0 ) <= CurTime( ) ) then
+			if ( v:GetNetVar( "defaultrunSpeed", 0 ) != v:GetRunSpeed( ) ) then
+
+			end
+			
+			v.CAT_nextRunSpeedUpdate = CurTime( ) + 1
+		end
 		
 		if ( ( v.CAT_nextJumpUpdate or 0 ) <= CurTime( ) and v:Alive( ) and !catherine.player.IsRagdolled( v ) and !v:InVehicle( ) and v:GetMoveType( ) == MOVETYPE_WALK and v:IsInWorld( ) and !v:IsOnGround( ) ) then
 			hook.Run( "PlayerJump", v )

@@ -37,7 +37,7 @@ if ( SERVER ) then
 		self:SetMoveType( MOVETYPE_NONE )
 		self:SetUseType( SIMPLE_USE )
 		
-		local physObject = self.GetPhysicsObject( self )
+		local physObject = self:GetPhysicsObject( )
 		
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( false )
@@ -49,7 +49,7 @@ if ( SERVER ) then
 	
 	function ENT:SetAni( )
 		for k, v in pairs( self.GetSequenceList( self ) ) do
-			if ( !v.lower( v ):find( "idle" ) or v == "idlenoise" ) then continue end
+			if ( !v:lower( ):find( "idle" ) or v == "idlenoise" ) then continue end
 			
 			self:ResetSequence( k )
 			
@@ -68,20 +68,20 @@ if ( SERVER ) then
 		end
 		
 		pl:SetNetVar( "vendor_work", true )
-		netstream.Start( pl, "catherine.plugin.vendor.VendorUse", self.EntIndex( self ) )
+		netstream.Start( pl, "catherine.plugin.vendor.VendorUse", self:EntIndex( ) )
 	end
 else
 	local toscreen = FindMetaTable( "Vector" ).ToScreen
 	
 	function ENT:Think( )
-		self:SetEyeTarget( LocalPlayer( ).GetPos( LocalPlayer( ) ) )
+		self:SetEyeTarget( LocalPlayer( ):GetPos( ) )
 	end
 	
 	function ENT:DrawEntityTargetID( pl, ent, a )
-		local pos = toscreen( self.LocalToWorld( self, self.OBBCenter( self ) ) )
+		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		
-		draw.SimpleText( self.GetNetVar( self, "name" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( self.GetNetVar( self, "desc" ), "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( self:GetNetVar( "name", "" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( self:GetNetVar( "desc", "" ), "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
 	end
 end

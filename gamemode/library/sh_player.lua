@@ -203,6 +203,10 @@ if ( SERVER ) then
 			pl.CAT_bunnyFreezed = false
 		end
 	end
+	
+	function catherine.player.GetPlayerDefaultRunSpeed( pl )
+		return hook.Run( "GetCustomPlayerDefaultRunSpeed", pl ) or catherine.configs.playerDefaultRunSpeed
+	end
 
 	function catherine.player.RagdollWork( pl, status, time )
 		if ( status ) then
@@ -361,6 +365,10 @@ end
 
 function META:IsNoclipping( )
 	return self:GetNetVar( "nocliping", false )
+end
+
+function META:GetDefaultRunSpeed( )
+	return self:GetNetVar( "defaultrunSpeed", catherine.configs.playerDefaultRunSpeed )
 end
 
 function META:IsChatTyping( )

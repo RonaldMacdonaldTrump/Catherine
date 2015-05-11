@@ -506,7 +506,7 @@ function PANEL:Refresh_List( id )
 				local spawnIcon = vgui.Create( "SpawnIcon", panel )
 				spawnIcon:SetSize( 40, 40 )
 				spawnIcon:SetPos( 5, 5 )
-				spawnIcon:SetModel( model )
+				spawnIcon:SetModel( model, itemTable.skin or 0 )
 				spawnIcon:SetToolTip( false )
 				spawnIcon:SetDisabled( true )
 				spawnIcon.PaintOver = function( ) end
@@ -580,11 +580,11 @@ function PANEL:Refresh_List( id )
 				local spawnIcon = vgui.Create( "SpawnIcon", panel )
 				spawnIcon:SetSize( 40, 40 )
 				spawnIcon:SetPos( 5, 5 )
-				spawnIcon:SetModel( model )
+				spawnIcon:SetModel( model, itemTable.skin or 0 )
 				spawnIcon:SetToolTip( false )
 				spawnIcon:SetDisabled( true )
 				spawnIcon.PaintOver = function( ) end
-				
+
 				form:AddItem( panel )
 			end
 			
@@ -654,7 +654,7 @@ function PANEL:Refresh_List( id )
 				local spawnIcon = vgui.Create( "SpawnIcon", panel )
 				spawnIcon:SetSize( 40, 40 )
 				spawnIcon:SetPos( 5, 5 )
-				spawnIcon:SetModel( model )
+				spawnIcon:SetModel( model, itemTable.skin or 0 )
 				spawnIcon:SetToolTip( false )
 				spawnIcon:SetDisabled( true )
 				spawnIcon.PaintOver = function( ) end
