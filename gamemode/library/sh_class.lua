@@ -74,7 +74,7 @@ function catherine.class.CanJoin( pl, index )
 	if ( classTable.limit and ( #catherine.class.GetPlayers( index ) >= classTable.limit ) ) then
 		return false, "Hit limit"
 	end
-	
+
 	return classTable:onCanJoin( pl )
 end
 

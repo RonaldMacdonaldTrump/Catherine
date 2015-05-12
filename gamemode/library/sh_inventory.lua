@@ -30,7 +30,7 @@ if ( SERVER ) then
 			local uniqueID = data.uniqueID
 			local itemCount = math.max( data.itemCount or 1, 1 ) or 1
 			local invData = inventory[ uniqueID ]
-
+			
 			if ( invData ) then
 				inventory[ uniqueID ] = {
 					uniqueID = uniqueID,
@@ -39,7 +39,7 @@ if ( SERVER ) then
 				}
 			else
 				local itemTable = catherine.item.FindByID( uniqueID )
-
+				
 				inventory[ uniqueID ] = {
 					uniqueID = uniqueID,
 					itemCount = itemCount,

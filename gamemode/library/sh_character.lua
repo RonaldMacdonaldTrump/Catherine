@@ -174,7 +174,7 @@ if ( SERVER ) then
 		end
 		
 		local factionTable = catherine.faction.FindByID( character._faction )
-		
+
 		if ( !factionTable ) then
 			return false, "^Character_Notify_IsNotValidFaction"
 		end

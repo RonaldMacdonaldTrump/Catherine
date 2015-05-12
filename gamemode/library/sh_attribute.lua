@@ -78,7 +78,7 @@ if ( SERVER ) then
 		
 		hook.Run( "AttributeChanged", pl, uniqueID )
 	end
-	
+
 	function catherine.attribute.AddProgress( pl, uniqueID, progress )
 		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		local attributeTable = catherine.attribute.FindByID( uniqueID )
@@ -131,7 +131,7 @@ if ( SERVER ) then
 			changed = true
 		end
 
-		if ( count != #attributeAll ) then
+		if ( count != table.Count( attributeAll ) ) then
 			for k, v in pairs( attributeAll ) do
 				if ( attribute[ k ] ) then continue end
 				
@@ -142,7 +142,7 @@ if ( SERVER ) then
 				changed = true
 			end
 		end
-		
+
 		if ( changed ) then
 			catherine.character.SetVar( pl, "_att", attribute )
 		end

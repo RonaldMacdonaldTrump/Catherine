@@ -162,8 +162,8 @@ if ( SERVER ) then
 	function catherine.item.Give( pl, uniqueID, itemCount, force )
 		if ( !force ) then
 			local itemTable = catherine.item.FindByID( uniqueID )
-			
-			if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
+
+			if ( itemTable and !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
 				return false
 			end
 		end
@@ -172,7 +172,7 @@ if ( SERVER ) then
 			uniqueID = uniqueID,
 			itemCount = itemCount
 		} )
-		
+
 		return true
 	end
 	
