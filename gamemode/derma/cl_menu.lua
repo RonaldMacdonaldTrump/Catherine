@@ -51,8 +51,9 @@ function PANEL:Init( )
 	self.ListsBase:MoveTo( 0, self.h - self.ListsBase:GetTall( ), 0.2, 0.1, nil, function( )
 		local delta = 0
 		local pl = self.player
+		local menuTable = catherine.menu.GetAll( )
 		
-		for k, v in pairs( catherine.menu.GetAll( ) ) do
+		for k, v in pairs( menuTable ) do
 			if ( v.canLook and v.canLook( pl ) == false ) then continue end
 			
 			local menuItem = self:AddMenuItem( type( v.name ) == "function" and v.name( pl ) or v.name, v.func )
@@ -60,6 +61,10 @@ function PANEL:Init( )
 			menuItem:AlphaTo( 255, 0.2, delta )
 			
 			delta = delta + 0.05
+			
+			if ( k == #menuTable ) then
+				catherine.menu.RecoverActivePanel( self )
+			end
 		end
 	end )
 	self.ListsBase.Paint = function( pnl, w, h )
@@ -73,10 +78,8 @@ function PANEL:Init( )
 	
 	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
 	self.ListsBase.Lists:SetSize( 0, self.ListsBase:GetTall( ) )
+
 	
-	local x, y = self.ListsBase.Lists:GetPos( )
-	
-	self.activePanelShowX = x
 end
 
 function PANEL:AddMenuItem( name, func )
@@ -161,15 +164,10 @@ function PANEL:AddMenuItem( name, func )
 	end
 	
 	local w = self.ListsBase.Lists:GetWide( )
-	local x, y = self.ListsBase.Lists:GetPos( )
 	
 	self.ListsBase.Lists:AddPanel( menuItem )
 	self.ListsBase.Lists:SetWide( math.min( w + menuItem:GetWide( ), self.w ) )
 	self.ListsBase.Lists:SetPos( self.w / 2 - w / 2, 0 )
-	
-	self.activePanelShowX = x - w / 2
-	self.activePanelShowW = 0
-	self.activePanelShowTarget = 0
 	
 	return menuItem
 end
@@ -192,6 +190,13 @@ function PANEL:Close( )
 	CloseDermaMenus( )
 	gui.EnableScreenClicker( false )
 	self.closeing = true
+	
+	local activePanel = catherine.menu.GetActivePanel( )
+	
+	if ( IsValid( activePanel ) and type( activePanel ) == "Panel" ) then
+		catherine.menu.SetActivePanelData( self.activePanelShowTargetW, self.activePanelShowTargetX )
+		activePanel:FakeHide( )
+	end
 
 	self.ListsBase:MoveTo( self.w / 2 - self.ListsBase:GetWide( ) / 2, self.h, 0.2, 0, nil, function( anim, pnl )
 		if ( IsValid( self ) ) then

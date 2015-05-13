@@ -41,11 +41,33 @@ function PANEL:SetMenuSize( w, h )
 	self:SetSize( w, h )
 	self:SetPos( 0 - w, ScrH( ) / 2 - h / 2 )
 	self:MoveTo( ScrW( ) / 2 - w / 2, ScrH( ) / 2 - h / 2, 0.2, 0 )
+	
 	self:OnMenuSizeChanged( w, h )
 end
 
 function PANEL:SetMenuName( name )
 	self.name = name
+end
+
+function PANEL:IsHiding( )
+	return self.isHiding
+end
+
+function PANEL:FakeHide( )
+	self.isHiding = true
+	
+	self:AlphaTo( 0, 0.2, 0, nil, function( )
+		self:SetVisible( false )
+	end )
+end
+
+function PANEL:Show( )
+	self.isHiding = false
+	
+	self:SetPos( 0 - w, ScrH( ) / 2 - h / 2 )
+	self:MoveTo( ScrW( ) / 2 - w / 2, ScrH( ) / 2 - h / 2, 0.2, 0, nil, function( )
+		// nothing.
+	end )
 end
 
 function PANEL:MenuPaint( w, h ) end
@@ -58,7 +80,6 @@ end
 
 function PANEL:Close( )
 	self:AlphaTo( 0, 0.2, 0, nil, function( )
-		if ( !IsValid( self ) ) then return end
 		self:Remove( )
 		self = nil
 	end )

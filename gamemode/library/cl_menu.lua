@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.menu = catherine.menu or { activePanel = nil, activePanelName = nil }
+catherine.menu = catherine.menu or { activeButtonData = { }, activePanel = nil, activePanelName = nil }
 catherine.menu.lists = { }
 CAT_MENU_STATUS_SAMEMENU = 1
 CAT_MENU_STATUS_SAMEMENU_NO = 2
@@ -43,6 +43,10 @@ function catherine.menu.GetActivePanel( )
 	return catherine.menu.activePanel
 end
 
+function catherine.menu.GetActiveButtonData( )
+	return catherine.menu.activeButtonData.w or 0, catherine.menu.activeButtonData.x or 0
+end
+
 function catherine.menu.GetActivePanelName( )
 	return catherine.menu.activePanelName
 end
@@ -51,8 +55,31 @@ function catherine.menu.SetActivePanel( pnl )
 	catherine.menu.activePanel = pnl
 end
 
+function catherine.menu.SetActiveButton( pnl )
+	catherine.menu.activeButton = pnl
+end
+
 function catherine.menu.SetActivePanelName( name )
 	catherine.menu.activePanelName = name
+end
+
+function catherine.menu.SetActivePanelData( w, x )
+	catherine.menu.activeButtonData = {
+		w = w,
+		y = y
+	}
+end
+
+function catherine.menu.RecoverActivePanel( menuPnl )
+	local activePanel = catherine.menu.GetActivePanel( )
+	
+	if ( IsValid( activePanel ) and type( activePanel ) == "Panel" and activePanel:IsHiding( ) ) then
+		local w, x = catherine.menu.GetActiveButtonData( )
+		
+		activePanel:Show( )
+		menuPnl.activePanelShowTargetW = w
+		menuPnl.activePanelShowTargetX = x
+	end
 end
 
 function catherine.menu.VGUIMousePressed( pnl, code )
@@ -63,6 +90,7 @@ function catherine.menu.VGUIMousePressed( pnl, code )
 		activePanel:Close( )
 		catherine.menu.SetActivePanel( nil )
 		catherine.menu.SetActivePanelName( nil )
+		catherine.menu.SetActivePanelData( 0, 0 )
 	end
 end
 
