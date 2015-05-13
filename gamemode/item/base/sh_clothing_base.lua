@@ -26,6 +26,7 @@ BASE.itemData = {
 	wearing = false
 }
 BASE.isCloth = true
+BASE.useDynamicItemData = false
 BASE.func = { }
 BASE.func.wear = {
 	text = "^Item_FuncStr01_Clothing",
@@ -39,7 +40,7 @@ BASE.func.wear = {
 		local originalModel = catherine.character.GetCharVar( pl, "originalModel" )
 		
 		if ( !originalModel ) then
-			return
+			catherine.character.SetCharVar( pl, "originalModel", pl:GetModel( ) )
 		end
 		
 		local replacement = itemTable.replacement
@@ -52,6 +53,11 @@ BASE.func.wear = {
 
 		if ( replacement and #replacement == 2 ) then
 			newModel = playerModel:gsub( replacement[ 1 ], replacement[ 2 ] )
+		end
+		
+		if ( type( ent ) == "Entity" ) then
+			catherine.item.Give( pl, itemTable.uniqueID )
+			ent:Remove( )
 		end
 
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 100 )
@@ -108,19 +114,19 @@ if ( SERVER ) then
 		end )
 	end )
 
-	hook.Add( "ItemDroped", "catherine.item.hooks.clothing_base.ItemDroped", function( pl, itemTable )
+	hook.Add( "OnItemDrop", "catherine.item.hooks.clothing_base.OnItemDrop", function( pl, itemTable )
 		if ( itemTable.isCloth ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "ItemStorageMove", "catherine.item.hooks.clothing_base.ItemStorageMoved", function( pl, itemTable )
+	hook.Add( "OnItemStorageMove", "catherine.item.hooks.clothing_base.OnItemStorageMove", function( pl, itemTable )
 		if ( itemTable.isCloth ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "ItemVendorSolded", "catherine.item.hooks.weapon_base.ItemVendorSolded", function( pl, itemTable )
+	hook.Add( "OnItemVendorSold", "catherine.item.hooks.weapon_base.OnItemVendorSold", function( pl, itemTable )
 		if ( itemTable.isCloth ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end

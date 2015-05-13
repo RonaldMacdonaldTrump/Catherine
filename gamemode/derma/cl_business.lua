@@ -84,6 +84,10 @@ function PANEL:Init( )
 	self:InitializeBusiness( )
 end
 
+function PANEL:OnMenuRecovered( )
+	self:InitializeBusiness( )
+end
+
 function PANEL:RefreshShoppingCartInfo( )
 	local costs = 0
 	
@@ -225,8 +229,10 @@ function PANEL:BuildBusiness( )
 					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemDatas( itemTable.uniqueID ) )
 				end
 			end
+			
 			lists:AddItem( spawnIcon )
 		end
+		
 		self.Lists:AddItem( form )
 	end
 end
@@ -237,11 +243,8 @@ local PANEL = { }
 
 function PANEL:Init( )
 	catherine.vgui.shipment = self
-	self.shipments = nil
-	self.ent = nil
+
 	self.entCheck = CurTime( ) + 1
-	self.closeing = false
-	
 	self.w, self.h = ScrW( ) * 0.4, ScrH( ) * 0.6
 
 	self:SetSize( self.w, self.h )
@@ -266,11 +269,10 @@ function PANEL:Init( )
 	self.close:SetPos( self.w - 30, 0 )
 	self.close:SetSize( 30, 25 )
 	self.close:SetStr( "X" )
-	self.close:SetStrFont( "catherine_normal30" )
-	self.close:SetStrColor( Color( 255, 150, 150, 255 ) )
-	self.close:SetGradientColor( Color( 255, 150, 150, 255 ) )
+	self.close:SetStrFont( "catherine_normal35" )
+	self.close:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.close.Click = function( )
-		if ( self.closeing ) then return end
 		self:Close( )
 	end
 end
@@ -279,15 +281,26 @@ function PANEL:BuildShipment( )
 	self.Lists:Clear( )
 	
 	for k, v in pairs( self.shipments or { } ) do
+		local itemTable = catherine.item.FindByID( v.uniqueID )
 		local name = catherine.util.StuffLanguage( v.name )
+		local count = LANG( "Basic_UI_Count", v.count )
+		local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 		
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Lists:GetWide( ), 40 )
 		panel.Paint = function( pnl, w, h )
-			draw.SimpleText( name, "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( v.count .. "'s", "catherine_normal15", w - 80, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			draw.SimpleText( name, "catherine_normal15", 50, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( count, "catherine_normal15", w - 80, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 		end
+
+		local spawnIcon = vgui.Create( "SpawnIcon", panel )
+		spawnIcon:SetPos( 5, 5 )
+		spawnIcon:SetSize( 30, 30 )
+		spawnIcon:SetModel( model, itemTable.skin or 0 )
+		spawnIcon:SetToolTip( false )
+		spawnIcon:SetDisabled( true )
+		spawnIcon.PaintOver = function( ) end
 		
 		local takeItem = vgui.Create( "catherine.vgui.button", panel )
 		takeItem:SetPos( panel:GetWide( ) - 70, 10 )
@@ -298,20 +311,27 @@ function PANEL:BuildShipment( )
 		takeItem:SetGradientColor( Color( 50, 50, 50, 150 ) )
 		takeItem.Click = function( )
 			local itemTable = catherine.item.FindByID( v.uniqueID )
+			
 			if ( !itemTable ) then
 				self.Lists:RemoveItem( panel )
 				return
 			end
+			
 			if ( !catherine.inventory.HasSpace( itemTable.weight ) ) then
 				catherine.notify.Add( LANG( "Inventory_Notify_HasNotSpace" ), 5 )
 				return
 			end
+			
 			self.shipments[ k ].count = math.max( self.shipments[ k ].count - 1, 0 )
+			
 			if ( self.shipments[ k ].count == 0 ) then
 				self.shipments[ k ] = nil
 				self.Lists:RemoveItem( panel )
 			end
+			
 			netstream.Start( "catherine.item.Give", v.uniqueID )
+			
+			count = LANG( "Basic_UI_Count", v.count )
 			
 			if ( table.Count( self.shipments ) == 0 and IsValid( self.ent ) ) then
 				netstream.Start( "catherine.business.RemoveShipment", self.ent:EntIndex( ) )
@@ -327,7 +347,8 @@ end
 
 function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
-	draw.SimpleText( LANG( "Business_UI_Shipment_Title" ), "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	
+	draw.SimpleText( LANG( "Business_UI_Shipment_Title" ), "catherine_normal20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 end
 
 function PANEL:InitializeShipment( ent, shipments )
@@ -342,12 +363,16 @@ function PANEL:Think( )
 			self:Close( )
 			return
 		end
+		
 		self.entCheck = CurTime( ) + 0.01
 	end
 end
 
 function PANEL:Close( )
+	if ( self.closeing ) then return end
+	
 	self.closeing = true
+	
 	self:AlphaTo( 0, 0.2, 0, function( )
 		self:Remove( )
 		self = nil
@@ -359,5 +384,5 @@ vgui.Register( "catherine.vgui.shipment", PANEL, "DFrame" )
 catherine.menu.Register( function( )
 	return LANG( "Business_UI_Title" )
 end, function( menuPnl, itemPnl )
-	return vgui.Create( "catherine.vgui.business", menuPnl )
+	return IsValid( catherine.vgui.business ) and catherine.vgui.business or vgui.Create( "catherine.vgui.business", menuPnl )
 end )

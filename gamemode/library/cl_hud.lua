@@ -20,10 +20,11 @@ if ( !catherine.option ) then
 	catherine.util.Include( "cl_option.lua" )
 end
 catherine.hud = catherine.hud or {
-	ProgressBar = nil,
-	TopNotify = nil,
+	welcomeIntroWorkingData = nil,
+	welcomeIntroAnimations = { },
+	progressBar = nil,
+	topNotify = nil,
 	welcomeIntro = nil,
-	blockedModules = { },
 	clip1 = 0,
 	pre = 0,
 	vAlpha = 0,
@@ -31,13 +32,19 @@ catherine.hud = catherine.hud or {
 	checkV = CurTime( ),
 	deathAlpha = 0
 }
+local vignetteMat = Material( "CAT/vignette.png" ) or "__material__error"
+local blockedModules = { }
 
 netstream.Hook( "catherine.hud.WelcomeIntroStart", function( )
 	catherine.hud.WelcomeIntroInitialize( )
 end )
 
 function catherine.hud.RegisterBlockModule( name )
-	catherine.hud.blockedModules[ #catherine.hud.blockedModules + 1 ] = name
+	blockedModules[ #blockedModules + 1 ] = name
+end
+
+function catherine.hud.GetBlockModules( )
+	return blockedModules
 end
 
 function catherine.hud.Draw( pl )
@@ -69,9 +76,10 @@ function catherine.hud.DeathScreen( pl )
 end
 
 function catherine.hud.Vignette( pl )
+	if ( vignetteMat == "__material__error" ) then return end
 	if ( catherine.hud.checkV <= CurTime( ) ) then
 		local data = { }
-		data.start = pl.GetPos( pl )
+		data.start = pl:GetPos( )
 		data.endpos = data.start + Vector( 0, 0, 2000 )
 		local tr = util.TraceLine( data )
 		
@@ -87,18 +95,22 @@ function catherine.hud.Vignette( pl )
 	catherine.hud.vAlpha = math.Approach( catherine.hud.vAlpha, catherine.hud.vAlphaTarget, FrameTime( ) * 90 )
 	
 	surface.SetDrawColor( 0, 0, 0, catherine.hud.vAlpha )
-	surface.SetMaterial( Material( "CAT/vignette.png" ) )
+	surface.SetMaterial( vignetteMat )
 	surface.DrawTexturedRect( 0, 0, ScrW( ), ScrH( ) )
 end
 
-function catherine.hud.ScreenDamageDraw( pl ) end
+function catherine.hud.ScreenDamageDraw( pl )
+
+end
 
 function catherine.hud.AmmoDraw( pl )
-	local wep = pl.GetActiveWeapon( pl )
+	local wep = pl:GetActiveWeapon( )
 	if ( !IsValid( wep ) or ( wep.DrawHUD == false ) ) then return end
-	local clip1 = wep.Clip1( wep )
-	local pre = pl.GetAmmoCount( pl, wep.GetPrimaryAmmoType( wep ) )
+	
+	local clip1 = wep:Clip1( )
+	local pre = pl:GetAmmoCount( wep:GetPrimaryAmmoType( ) )
 	//local sec = LocalPlayer( ):GetAmmoCount( wep:GetSecondaryAmmoType( ) ) -- ^_^;
+	
 	catherine.hud.clip1 = Lerp( 0.03, catherine.hud.clip1, clip1 )
 	catherine.hud.pre = Lerp( 0.03, catherine.hud.pre, pre )
 	
@@ -108,77 +120,72 @@ function catherine.hud.AmmoDraw( pl )
 end
 
 function catherine.hud.WelcomeIntroInitialize( )
-	local t = { }
-	t.firstalpha = 0
-	t.secondalpha = 0
-	t.thirdalpha = 0
-	t.backalpha = 200
-	t.endIng = false
-	t.endTime = CurTime( ) + 10
-	t.first = false
-	t.second = false
-	t.start = CurTime( ) + 15
-	t.firstTextTime = CurTime( )
-	t.secondTextTime = CurTime( ) + 3
-	t.thirdTextTime = CurTime( ) + 6
-	
-	local information = hook.Run( "GetSchemaInformation" )
-	
-	t.info_title = information.title
-	t.info_desc = information.desc
-	t.info_author = information.author
+	catherine.hud.welcomeIntroWorkingData = {
+		initStartTime = CurTime( )
+	}
+end
 
-	catherine.hud.welcomeIntro = t
+function catherine.hud.RegisterWelcomeIntroAnimation( key, text, font, startTime, showingTime, col, startX, startY, xAlign, yAlign )
+	catherine.hud.welcomeIntroAnimations[ key ] = {
+		text = "",
+		font = font,
+		targetText = text,
+		startX = startX,
+		startY = startY,
+		startTime = startTime,
+		showingTime = showingTime,
+		a = 0,
+		xAlign = xAlign,
+		yAlign = yAlign,
+		textSubCount = 1,
+		textTime = CurTime( ),
+		textTimeDelay = 0.09,
+	}
 end
 
 function catherine.hud.WelcomeIntroDraw( )
-	if ( !catherine.hud.welcomeIntro ) then return end
-	local t = catherine.hud.welcomeIntro
+	if ( !catherine.hud.welcomeIntroWorkingData ) then return end
+	local data = catherine.hud.welcomeIntroWorkingData
 	
-	if ( t.start <= CurTime( ) ) then
-		catherine.hud.welcomeIntro = nil
-		return
-	end
-	local scrW, scrH = ScrW( ), ScrH( )
+	for k, v in pairs( catherine.hud.welcomeIntroAnimations ) do
+		if ( data.initStartTime + v.startTime <= CurTime( ) ) then
+			if ( !v.initStartTime ) then
+				v.initStartTime = CurTime( )
+			end
 
-	if ( t.first and t.second ) then
-		t.firstalpha = Lerp( 0.03, t.firstalpha, 0 )
-		t.secondalpha = Lerp( 0.03, t.secondalpha, 0 )
-		t.thirdalpha = Lerp( 0.03, t.thirdalpha, 0 )
+			if ( v.initStartTime + v.showingTime - 1 <= CurTime( ) ) then
+				if ( v.a <= 0 ) then
+					continue
+				else
+					v.a = Lerp( 0.03, v.a, 0 )
+				end
+			else
+				v.a = Lerp( 0.03, v.a, 255 )
+			end
+			
+			local targetText = type( v.targetText ) == "function" and v.targetText( ) or v.targetText
+			
+			if ( v.textTime <= CurTime( ) and string.utf8len( v.text ) < string.utf8len( targetText ) ) then
+				local text = string.utf8sub( targetText, v.textSubCount, v.textSubCount )
+				
+				v.text = v.text .. text
+				v.textSubCount = v.textSubCount + 1
+				v.textTime = CurTime( ) + v.textTimeDelay
+			end
+			
+			local col = v.col or Color( 255, 255, 255 )
+			
+			draw.SimpleText( v.text, v.font, v.startX, v.startY, Color( col.r, col.g, col.b, v.a ), v.xAlign or 1, v.yAlign or 1 )
+		end
+		
+		if ( data.initStartTime + 60 <= CurTime( ) ) then
+			catherine.hud.welcomeIntroWorkingData = nil
+		end
 	end
-	
-	if ( t.firstTextTime + 3 <= CurTime( ) and t.secondTextTime + 3 <= CurTime( ) and !t.endIng ) then
-		t.first = true
-		t.firstalpha = Lerp( 0.03, t.firstalpha, 0 )
-		t.secondalpha = Lerp( 0.03, t.secondalpha, 0 )
-		t.thirdalpha = Lerp( 0.03, t.thirdalpha, 255 )
-		t.backalpha = Lerp( 0.01, t.backalpha, 0 )
-	end
-	
-	if ( t.thirdTextTime + 6 <= CurTime( ) ) then
-		t.second = true
-		t.endIng = true
-	end
-	
-	if ( t.firstTextTime <= CurTime( ) and !t.first ) then
-		t.firstalpha = Lerp( 0.03, t.firstalpha, 255 )
-	end
-	
-	if ( t.secondTextTime <= CurTime( ) and !t.first ) then
-		t.secondalpha = Lerp( 0.03, t.secondalpha, 255 )
-	end
-
-	surface.SetDrawColor( 70, 70, 70, t.backalpha )
-	surface.SetMaterial( Material( "gui/center_gradient" ) )
-	surface.DrawTexturedRect( scrW / 2 - scrW / 2 / 2, scrH * 0.3 - ( scrH * 0.2 ) / 2, scrW / 2, scrH * 0.2 )
-
-	draw.SimpleText( t.info_title, "catherine_schema_title", scrW / 2, scrH * 0.3 - 20, Color( 255, 255, 255, t.firstalpha ), 1, 1 )
-	draw.SimpleText( t.info_desc, "catherine_normal30", scrW / 2, scrH * 0.35, Color( 255, 255, 255, t.secondalpha ), 1, 1 )
-	draw.SimpleText( t.info_author, "catherine_normal20", scrW * 0.2, scrH * 0.8, Color( 255, 255, 255, t.thirdalpha ), 1, 1 )
 end
 
 function catherine.hud.ProgressBarAdd( message, endTime )
-	catherine.hud.ProgressBar = {
+	catherine.hud.progressBar = {
 		message = message,
 		startTime = CurTime( ),
 		endTime = CurTime( ) + endTime
@@ -186,30 +193,30 @@ function catherine.hud.ProgressBarAdd( message, endTime )
 end
 
 function catherine.hud.TopNotifyAdd( message )
-	catherine.hud.TopNotify = {
+	catherine.hud.topNotify = {
 		message = message
 	}
 end
 
 function catherine.hud.TopNotifyDraw( )
-	if ( !catherine.hud.TopNotify ) then return end
+	if ( !catherine.hud.topNotify ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 	
 	surface.SetDrawColor( 50, 50, 50, 150 )
 	surface.SetMaterial( Material( "gui/center_gradient" ) )
 	surface.DrawTexturedRect( 0, scrH / 2 - 80, scrW, 110 )
-	draw.SimpleText( catherine.hud.TopNotify.message or "", "catherine_normal25", scrW / 2, scrH / 2 - 30, Color( 255, 255, 255, 255 ), 1, 1 )
+	draw.SimpleText( catherine.hud.topNotify.message or "", "catherine_normal25", scrW / 2, scrH / 2 - 30, Color( 255, 255, 255, 255 ), 1, 1 )
 end
 
 function catherine.hud.ProgressBarDraw( )
-	if ( !catherine.hud.ProgressBar ) then return end
-	if ( catherine.hud.ProgressBar.endTime <= CurTime( ) ) then
-		catherine.hud.ProgressBar = nil
+	if ( !catherine.hud.progressBar ) then return end
+	if ( catherine.hud.progressBar.endTime <= CurTime( ) ) then
+		catherine.hud.progressBar = nil
 		return
 	end
 	
 	local scrW, scrH = ScrW( ), ScrH( )
-	local fraction = 1 - math.TimeFraction( catherine.hud.ProgressBar.startTime, catherine.hud.ProgressBar.endTime, CurTime( ) )
+	local fraction = 1 - math.TimeFraction( catherine.hud.progressBar.startTime, catherine.hud.progressBar.endTime, CurTime( ) )
 	
 	surface.SetDrawColor( 50, 50, 50, 150 )
 	surface.SetMaterial( Material( "gui/center_gradient" ) )
@@ -223,7 +230,7 @@ function catherine.hud.ProgressBarDraw( )
 	surface.SetDrawColor( 255, 255, 255, 255 )
 	catherine.geometry.DrawCircle( scrW / 2, scrH / 2 - 40, 15, 5, 90, 360 * fraction, 100 )
 	
-	draw.SimpleText( catherine.hud.ProgressBar.message or "", "catherine_normal25", scrW / 2, scrH / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+	draw.SimpleText( catherine.hud.progressBar.message or "", "catherine_normal25", scrW / 2, scrH / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 end
 
 CAT_CONVAR_HUD = CreateClientConVar( "cat_convar_hud", 1, true, true )
@@ -237,6 +244,25 @@ local modules = {
 	"CHudCrosshair",
 	"CHudDamageIndicator"
 }
+
 for i = 1, #modules do
 	catherine.hud.RegisterBlockModule( modules[ i ] )
 end
+
+local information = hook.Run( "GetSchemaInformation" )
+
+catherine.hud.RegisterWelcomeIntroAnimation( 1, function( )
+	return information.title
+end, "catherine_normal25", 2, 9, nil, ScrW( ) * 0.8, ScrH( ) * 0.55, TEXT_ALIGN_RIGHT )
+
+catherine.hud.RegisterWelcomeIntroAnimation( 2, function( )
+	return information.desc
+end, "catherine_normal15", 6, 8, nil, ScrW( ) * 0.8, ScrH( ) * 0.55 + 35, TEXT_ALIGN_RIGHT )
+
+catherine.hud.RegisterWelcomeIntroAnimation( 3, function( )
+	return catherine.environment.GetDateString( ) .. " : " .. catherine.environment.GetTimeString( )
+end, "catherine_normal15", 8, 10, nil, ScrW( ) * 0.8, ScrH( ) * 0.55 + 55, TEXT_ALIGN_RIGHT )
+
+catherine.hud.RegisterWelcomeIntroAnimation( 4, function( )
+	return information.author
+end, "catherine_normal20", 7, 9, nil, ScrW( ) * 0.15, ScrH( ) * 0.8, TEXT_ALIGN_LEFT )

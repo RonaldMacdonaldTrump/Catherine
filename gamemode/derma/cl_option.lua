@@ -39,6 +39,10 @@ function PANEL:Init( )
 	self:InitializeOption( )
 end
 
+function PANEL:OnMenuRecovered( )
+	self:InitializeOption( )
+end
+
 function PANEL:InitializeOption( )
 	local opt = { }
 	
@@ -169,5 +173,5 @@ vgui.Register( "catherine.vgui.optionItem", PANEL, "DPanel" )
 catherine.menu.Register( function( )
 	return LANG( "Option_UI_Title" )
 end, function( menuPnl, itemPnl )
-	return vgui.Create( "catherine.vgui.option", menuPnl )
+	return IsValid( catherine.vgui.option ) and catherine.vgui.option or vgui.Create( "catherine.vgui.option", menuPnl )
 end )

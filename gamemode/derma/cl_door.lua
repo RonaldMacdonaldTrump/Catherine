@@ -268,7 +268,7 @@ function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	
 	if ( IsValid( self.door ) ) then
-		draw.SimpleText( self.door:GetNetVar( "title", LANG( "Door_UI_Default" ) ), "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		draw.SimpleText( self.door:GetNetVar( "title", LANG( "Door_UI_Default" ) ), "catherine_normal20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 		
 		local descLimit = catherine.configs.doorDescMaxLen
 		local col = descLimit <= self.doorCurLen and Color( 255, 0, 0 ) or Color( 50, 50, 50 )

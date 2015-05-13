@@ -42,7 +42,11 @@ function PANEL:Init( )
 		end
 	end
 
-	self:SortPlayerLists( )
+	self:Refresh( )
+end
+
+function PANEL:OnMenuRecovered( )
+	self:Refresh( )
 end
 
 function PANEL:MenuPaint( w, h )
@@ -163,5 +167,5 @@ vgui.Register( "catherine.vgui.scoreboard", PANEL, "catherine.vgui.menuBase" )
 catherine.menu.Register( function( )
 	return LANG( "Scoreboard_UI_Title" )
 end, function( menuPnl, itemPnl )
-	return vgui.Create( "catherine.vgui.scoreboard", menuPnl )
+	return IsValid( catherine.vgui.scoreboard ) and catherine.vgui.scoreboard or vgui.Create( "catherine.vgui.scoreboard", menuPnl )
 end )

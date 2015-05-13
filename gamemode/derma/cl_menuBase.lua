@@ -35,12 +35,14 @@ end
 
 function PANEL:OnMenuSizeChanged( w, h ) end
 function PANEL:PanelCalled( ) end
+function PANEL:OnMenuRecovered( ) end
 
 function PANEL:SetMenuSize( w, h )
 	self.w, self.h = w, h
 	self:SetSize( w, h )
 	self:SetPos( 0 - w, ScrH( ) / 2 - h / 2 )
 	self:MoveTo( ScrW( ) / 2 - w / 2, ScrH( ) / 2 - h / 2, 0.2, 0 )
+	
 	self:OnMenuSizeChanged( w, h )
 end
 
@@ -48,17 +50,44 @@ function PANEL:SetMenuName( name )
 	self.name = name
 end
 
+function PANEL:IsHiding( )
+	return self.isHiding
+end
+
+function PANEL:FakeHide( )
+	if ( self.isHiding ) then return end
+	
+	self.isHiding = true
+	
+	self:MoveTo( ScrW( ), ScrH( ) / 2 - self.h / 2, 0.2, 0, nil, function( )
+		self:SetVisible( false )
+	end )
+end
+
+function PANEL:Show( )
+	if ( !self.isHiding ) then return end
+	local w, h = self:GetWide( ), self:GetTall( )
+	
+	self.isHiding = false
+	
+	self:SetVisible( true )
+	self:SetAlpha( 255 )
+	self:SetPos( 0 - w, ScrH( ) / 2 - self.h / 2 )
+	self:MoveTo( ScrW( ) / 2 - w / 2, ScrH( ) / 2 - self.h / 2, 0.2 )
+end
+
 function PANEL:MenuPaint( w, h ) end
 
 function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
-	draw.SimpleText( self.name, "catherine_normal25", 0, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	
+	draw.SimpleText( self.name, "catherine_normal20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	
 	self:MenuPaint( w, h )
 end
 
 function PANEL:Close( )
-	self:AlphaTo( 0, 0.2, 0, nil, function( )
-		if ( !IsValid( self ) ) then return end
+	self:MoveTo( ScrW( ), ScrH( ) / 2 - self.h / 2, 0.2, 0, nil, function( )
 		self:Remove( )
 		self = nil
 	end )

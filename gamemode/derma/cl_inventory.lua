@@ -42,6 +42,10 @@ function PANEL:Init( )
 	self:BuildInventory( )
 end
 
+function PANEL:OnMenuRecovered( )
+	self:BuildInventory( )
+end
+
 function PANEL:GetInventory( )
 	local tab = { }
 	
@@ -122,5 +126,5 @@ vgui.Register( "catherine.vgui.inventory", PANEL, "catherine.vgui.menuBase" )
 catherine.menu.Register( function( )
 	return LANG( "Inventory_UI_Title" )
 end, function( menuPnl, itemPnl )
-	return vgui.Create( "catherine.vgui.inventory", menuPnl )
+	return IsValid( catherine.vgui.inventory ) and catherine.vgui.inventory or vgui.Create( "catherine.vgui.inventory", menuPnl )
 end )

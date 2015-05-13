@@ -62,6 +62,8 @@ function catherine.item.Register( itemTable )
 					catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 					return
 				end
+				
+				hook.Run( "OnItemTake", pl, itemTable )
 
 				local itemData = itemTable.itemData
 				
@@ -88,6 +90,8 @@ function catherine.item.Register( itemTable )
 					catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 					return
 				end
+				
+				hook.Run( "OnItemDrop", pl, itemTable )
 				
 				local uniqueID = itemTable.uniqueID
 				local ent = catherine.item.Spawn( uniqueID, catherine.util.GetItemDropPos( pl ), nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )

@@ -44,6 +44,10 @@ function PANEL:Init( )
 	self:InitializeClasses( )
 end
 
+function PANEL:OnMenuRecovered( )
+	self:InitializeClasses( )
+end
+
 function PANEL:InitializeClasses( )
 	self.classes = catherine.class.GetJoinable( )
 	
@@ -102,5 +106,5 @@ vgui.Register( "catherine.vgui.class", PANEL, "catherine.vgui.menuBase" )
 catherine.menu.Register( function( )
 	return LANG( "Class_UI_Title" )
 end, function( menuPnl, itemPnl )
-	return vgui.Create( "catherine.vgui.class", menuPnl )
+	return IsValid( catherine.vgui.class ) and catherine.vgui.class or vgui.Create( "catherine.vgui.class", menuPnl )
 end )

@@ -50,7 +50,7 @@ local gradientCenterMat = Material( "gui/center_gradient" )
 local introBooA = 0
 
 function GM:HUDShouldDraw( name )
-	for k, v in pairs( catherine.hud.blockedModules ) do
+	for k, v in pairs( catherine.hud.GetBlockModules( ) ) do
 		if ( v != name ) then continue end
 		
 		return false
@@ -521,8 +521,8 @@ end
 function GM:ScoreboardShow( )
 	if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 	
-	if ( IsValid( catherine.vgui.menu ) ) then
-		catherine.vgui.menu:Close( )
+	if ( IsValid( catherine.vgui.menu ) and !catherine.vgui.menu:IsVisible( ) ) then
+		catherine.vgui.menu:Show( )
 		gui.EnableScreenClicker( false )
 	else
 		catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )

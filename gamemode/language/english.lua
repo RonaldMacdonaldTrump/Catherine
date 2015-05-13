@@ -302,6 +302,7 @@ LANGUAGE.data = {
 	[ "Basic_UI_OK" ] = "OK",
 	[ "Basic_UI_YES" ] = "YES",
 	[ "Basic_UI_NO" ] = "NO",
+	[ "Basic_UI_Count" ] = "%'s",
 	[ "Basic_Framework_Author" ] = "Development and design by %s.",
 	[ "Basic_Notify_BunnyHop" ] = "Do not Bunny-hop!",
 	

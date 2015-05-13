@@ -70,13 +70,15 @@ if ( SERVER ) then
 			local uniqueID = data.uniqueID
 			local invData = inventory[ uniqueID ]
 			
-			inventory[ uniqueID ] = {
-				uniqueID = uniqueID,
-				itemCount = invData.itemCount,
-				itemData = data.newData
-			}
-			
-			catherine.character.SetVar( pl, "_inv", inventory )
+			if ( invData ) then
+				inventory[ uniqueID ] = {
+					uniqueID = uniqueID,
+					itemCount = invData.itemCount,
+					itemData = data.newData
+				}
+				
+				catherine.character.SetVar( pl, "_inv", inventory )
+			end
 		end
 	end
 
@@ -270,7 +272,7 @@ else
 	end
 	
 	function catherine.inventory.CharacterVarChanged( )
-		if ( IsValid( catherine.vgui.inventory ) ) then
+		if ( IsValid( catherine.vgui.inventory ) and !catherine.vgui.inventory:IsHiding( ) ) then
 			catherine.vgui.inventory:BuildInventory( )
 		end
 	end

@@ -58,6 +58,14 @@ function PANEL:Init( )
 	self:BuildHelps( )
 end
 
+function PANEL:OnMenuRecovered( )
+	for k, v in pairs( catherine.help.GetAll( ) ) do
+		self.helps[ v.category ] = v
+	end
+	
+	self:BuildHelps( )
+end
+
 function PANEL:MenuPaint( w, h )
 	if ( self.html:IsLoading( ) ) then
 		self.loadingAlpha = Lerp( 0.05, self.loadingAlpha, 255 )
@@ -120,5 +128,5 @@ vgui.Register( "catherine.vgui.help", PANEL, "catherine.vgui.menuBase" )
 catherine.menu.Register( function( )
 	return LANG( "Help_UI_Title" )
 end, function( menuPnl, itemPnl )
-	return vgui.Create( "catherine.vgui.help", menuPnl )
+	return IsValid( catherine.vgui.help ) and catherine.vgui.help or vgui.Create( "catherine.vgui.help", menuPnl )
 end )

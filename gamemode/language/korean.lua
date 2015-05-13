@@ -302,6 +302,7 @@ LANGUAGE.data = {
 	[ "Basic_UI_OK" ] = "확인",
 	[ "Basic_UI_YES" ] = "네",
 	[ "Basic_UI_NO" ] = "아니오",
+	[ "Basic_UI_Count" ] = "%s개",
 	[ "Basic_Framework_Author" ] = "%s 에 의해 개발 및 디자인.",
 	[ "Basic_Notify_BunnyHop" ] = "버니합을 하지 마십시오!",
 	
