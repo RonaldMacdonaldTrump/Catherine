@@ -16,8 +16,12 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.menu = catherine.menu or { activePanel = nil }
+catherine.menu = catherine.menu or { activePanel = nil, activePanelName = nil }
 catherine.menu.lists = { }
+CAT_MENU_STATUS_SAMEMENU = 1
+CAT_MENU_STATUS_SAMEMENU_NO = 2
+CAT_MENU_STATUS_NOTSAMEMENU = 3
+CAT_MENU_STATUS_NOTSAMEMENU_NO = 4
 
 function catherine.menu.Register( name, func, canLook )
 	catherine.menu.lists[ #catherine.menu.lists + 1 ] = {
@@ -38,3 +42,28 @@ end
 function catherine.menu.GetActivePanel( )
 	return catherine.menu.activePanel
 end
+
+function catherine.menu.GetActivePanelName( )
+	return catherine.menu.activePanelName
+end
+
+function catherine.menu.SetActivePanel( pnl )
+	catherine.menu.activePanel = pnl
+end
+
+function catherine.menu.SetActivePanelName( name )
+	catherine.menu.activePanelName = name
+end
+
+function catherine.menu.VGUIMousePressed( pnl, code )
+	local menuPanel = catherine.menu.GetPanel( )
+	local activePanel = catherine.menu.GetActivePanel( )
+	
+	if ( IsValid( menuPanel ) and IsValid( activePanel ) and menuPanel == pnl ) then
+		activePanel:Close( )
+		catherine.menu.SetActivePanel( nil )
+		catherine.menu.SetActivePanelName( nil )
+	end
+end
+
+hook.Add( "VGUIMousePressed", "catherine.menu.VGUIMousePressed", catherine.menu.VGUIMousePressed )

@@ -43,13 +43,15 @@ function PANEL:Init( )
 	self.ListsBase:SetPos( 0, self.h )
 	self.ListsBase:MoveTo( 0, self.h - self.ListsBase:GetTall( ), 0.2, 0.1, nil, function( )
 		local delta = 0
+		local pl = self.player
 		
 		for k, v in pairs( catherine.menu.GetAll( ) ) do
-			if ( v.canLook and v.canLook( self.player ) == false ) then continue end
+			if ( v.canLook and v.canLook( pl ) == false ) then continue end
 			
-			local menuButton = self:AddMenuItem( type( v.name ) == "function" and v.name( self.player ) or v.name, v.func )
+			local menuButton = self:AddMenuItem( type( v.name ) == "function" and v.name( pl ) or v.name, v.func )
 			menuButton:SetAlpha( 0 )
 			menuButton:AlphaTo( 255, 0.2, delta )
+			
 			delta = delta + 0.05
 		end
 	end )
@@ -64,20 +66,47 @@ end
 function PANEL:AddMenuItem( name, func )
 	surface.SetFont( "catherine_normal20" )
 	local tw = surface.GetTextSize( name )
+	local mainCol = catherine.configs.mainColor
 	
-	local item = vgui.Create( "DButton" )
-	item:SetText( name )
-	item:SetFont( "catherine_normal20" )
-	item:SetTextColor( Color( 50, 50, 50 ) )
-	item:SetSize( tw + 30, self.ListsBase:GetTall( ) )
-	item.Paint = function( pnl, w, h )
-		local col = catherine.configs.mainColor
+	local menuItem = vgui.Create( "DButton" )
+	menuItem:SetText( name )
+	menuItem:SetFont( "catherine_normal20" )
+	menuItem:SetTextColor( Color( 50, 50, 50 ) )
+	menuItem:SetSize( tw + 30, self.ListsBase:GetTall( ) )
+	menuItem:SetDrawBackground( false )
+	menuItem.DoClick = function( pnl )
+		local activePanel = catherine.menu.GetActivePanel( )
+		local activePanelName = catherine.menu.GetActivePanelName( )
 		
-		if ( self.lastmenuName == name ) then
-			draw.RoundedBox( 0, 0, 0, w, 10, Color( col.r, col.g, col.b, 255 ) )
+		if ( activePanelName and activePanelName == name ) then
+			if ( IsValid( activePanel ) ) then
+				activePanel:Close( )
+				catherine.menu.SetActivePanel( nil )
+				catherine.menu.SetActivePanelName( nil )
+				
+				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_SAMEMENU )
+			else
+				catherine.menu.SetActivePanel( func( self, pnl ) )
+				catherine.menu.SetActivePanelName( name )
+				
+				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_SAMEMENU_NO )
+			end
+		else
+			if ( IsValid( activePanel ) ) then
+				activePanel:Close( )
+				catherine.menu.SetActivePanel( func( self, pnl ) )
+				catherine.menu.SetActivePanelName( name )
+				
+				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_NOTSAMEMENU )
+			else
+				catherine.menu.SetActivePanel( func( self, pnl ) )
+				catherine.menu.SetActivePanelName( name )
+				
+				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_NOTSAMEMENU_NO )
+			end
 		end
-	end
-	item.DoClick = function( pnl )
+		
+		--[[ // Old version :>
 		if ( self.lastmenuName == name ) then
 			if ( IsValid( self.lastmenuPnl ) ) then
 				catherine.util.PlayButtonSound( CAT_UTIL_BUTTOMSOUND_1 )
@@ -101,13 +130,14 @@ function PANEL:AddMenuItem( name, func )
 				self.lastmenuName = name
 			end
 		end
+		]]--
 	end
 	
-	self.ListsBase.Lists:AddPanel( item )
-	self.ListsBase.Lists:SetWide( math.min( self.ListsBase.Lists:GetWide( ) + item:GetWide( ), self.w ) )
+	self.ListsBase.Lists:AddPanel( menuItem )
+	self.ListsBase.Lists:SetWide( math.min( self.ListsBase.Lists:GetWide( ) + menuItem:GetWide( ), self.w ) )
 	self.ListsBase.Lists:SetPos( self.w / 2 - self.ListsBase.Lists:GetWide( ) / 2, 0 )
 	
-	return item
+	return menuItem
 end
 
 function PANEL:OnKeyCodePressed( key )
@@ -138,12 +168,3 @@ function PANEL:Close( )
 end
 
 vgui.Register( "catherine.vgui.menu", PANEL, "DFrame" )
-
-hook.Add( "VGUIMousePressed", "Clockwork.menu:VGUIMousePressed", function(panel, code)
-	local activePanel = Clockwork.menu:GetActivePanel();
-	local menuPanel = Clockwork.menu:GetPanel();
-	
-	if (Clockwork.menu:GetOpen() and activePanel and menuPanel == panel) then
-		menuPanel:ReturnToMainMenu();
-	end;
-end);
