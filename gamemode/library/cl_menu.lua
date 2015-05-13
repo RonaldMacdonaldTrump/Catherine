@@ -70,15 +70,17 @@ function catherine.menu.SetActivePanelData( w, x )
 	}
 end
 
-function catherine.menu.RecoverActivePanel( menuPnl )
+function catherine.menu.RecoverLastActivePanel( menuPanel )
 	local activePanel = catherine.menu.GetActivePanel( )
 
 	if ( IsValid( activePanel ) and type( activePanel ) == "Panel" and activePanel:IsHiding( ) ) then
 		local w, x = catherine.menu.GetActiveButtonData( )
 		
 		activePanel:Show( )
-		menuPnl.activePanelShowTargetX = x
-		menuPnl.activePanelShowTargetW = w
+		activePanel:OnMenuRecovered( )
+		
+		menuPanel.activePanelShowTargetX = x
+		menuPanel.activePanelShowTargetW = w
 	end
 end
 
@@ -91,7 +93,16 @@ function catherine.menu.VGUIMousePressed( pnl, code )
 		catherine.menu.SetActivePanel( nil )
 		catherine.menu.SetActivePanelName( nil )
 		catherine.menu.SetActivePanelData( 0, 0 )
+		
+		menuPanel.activePanelShowTargetX = 0
+		menuPanel.activePanelShowTargetW = 0
 	end
 end
 
 hook.Add( "VGUIMousePressed", "catherine.menu.VGUIMousePressed", catherine.menu.VGUIMousePressed )
+
+concommand.Add( "cat_menu_rebuild", function( )
+	if ( IsValid( catherine.vgui.menu ) ) then
+		catherine.vgui.menu:Remove( )
+	end
+end )

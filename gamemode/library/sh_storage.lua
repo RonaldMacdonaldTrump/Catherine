@@ -77,7 +77,7 @@ if ( SERVER ) then
 				return
 			end
 			
-			hook.Run( "ItemStorageMove", pl, itemTable )
+			hook.Run( "OnItemStorageMove", pl, itemTable )
 			
 			local inventory = catherine.storage.GetInv( ent )
 			local invData = inventory[ uniqueID ]
@@ -98,6 +98,8 @@ if ( SERVER ) then
 
 			catherine.item.Take( pl, uniqueID )
 			catherine.storage.SetInv( ent, inventory )
+			
+			hook.Run( "ItemStorageMoved", pl, itemTable )
 		elseif ( workID == CAT_STORAGE_ACTION_REMOVE ) then
 			local itemTable = catherine.item.FindByID( data )
 			
@@ -118,7 +120,7 @@ if ( SERVER ) then
 				return
 			end
 			
-			hook.Run( "ItemStorageTake", pl, itemTable )
+			hook.Run( "OnItemStorageTake", pl, itemTable )
 			
 			local invData = inventory[ data ]
 			local itemDataBuffer = invData.itemData
@@ -138,6 +140,8 @@ if ( SERVER ) then
 				itemData = ( itemTable.useDynamicItemData and itemDataBuffer ) or itemTable.itemData
 			} )
 			catherine.storage.SetInv( ent, inventory )
+			
+			hook.Run( "ItemStorageTaked", pl, itemTable )
 		end
 		
 		netstream.Start( pl, "catherine.storage.RefreshPanel", ent:EntIndex( ) )

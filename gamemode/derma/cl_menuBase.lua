@@ -59,7 +59,7 @@ function PANEL:FakeHide( )
 	
 	self.isHiding = true
 	
-	self:AlphaTo( 0, 0.2, 0, nil, function( )
+	self:MoveTo( ScrW( ), ScrH( ) / 2 - self.h / 2, 0.2, 0, nil, function( )
 		self:SetVisible( false )
 	end )
 end
@@ -72,22 +72,22 @@ function PANEL:Show( )
 	
 	self:SetVisible( true )
 	self:SetAlpha( 255 )
-	self:SetPos( 0 - w, ScrH( ) / 2 - h / 2 )
-	self:MoveTo( ScrW( ) / 2 - w / 2, ScrH( ) / 2 - h / 2, 0.2, 0, nil, function( )
-		// nothing.
-	end )
+	self:SetPos( 0 - w, ScrH( ) / 2 - self.h / 2 )
+	self:MoveTo( ScrW( ) / 2 - w / 2, ScrH( ) / 2 - self.h / 2, 0.2 )
 end
 
 function PANEL:MenuPaint( w, h ) end
 
 function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
-	draw.SimpleText( self.name, "catherine_normal25", 0, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	
+	draw.SimpleText( self.name, "catherine_normal15", 0, 10, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	
 	self:MenuPaint( w, h )
 end
 
 function PANEL:Close( )
-	self:AlphaTo( 0, 0.2, 0, nil, function( )
+	self:MoveTo( ScrW( ), ScrH( ) / 2 - self.h / 2, 0.2, 0, nil, function( )
 		self:Remove( )
 		self = nil
 	end )

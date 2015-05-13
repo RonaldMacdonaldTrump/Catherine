@@ -188,6 +188,8 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 			catherine.util.NotifyLang( pl, "Vendor_Notify_VendorNoHasCash", catherine.cash.GetOnlyName( ) )
 			return
 		end
+		
+		hook.Run( "OnItemVendorSold", pl, itemTable )
 
 		vendorInv[ uniqueID ] = {
 			uniqueID = uniqueID,
@@ -232,6 +234,8 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 			catherine.util.NotifyLang( pl, "Cash_Notify_HasNot" )
 			return 
 		end
+		
+		hook.Run( "OnItemVendorBuy", pl, itemTable )
 
 		vendorInv[ uniqueID ] = {
 			uniqueID = uniqueID,
@@ -251,6 +255,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		self:SetVendorData( ent, "inv", vendorInv )
 		self:SetVendorData( ent, "cash", vendorCash + itemCost )
 		
+		hook.Run( "ItemVendorBought", pl, itemTable )
 		catherine.util.NotifyLang( pl, "Vendor_Notify_Buy", catherine.util.StuffLanguage( pl, itemTable.name ), catherine.cash.GetName( itemCost ) )
 	elseif ( workID == CAT_VENDOR_ACTION_SETTING_CHANGE ) then
 		if ( !pl:IsAdmin( ) ) then

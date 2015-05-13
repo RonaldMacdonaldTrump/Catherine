@@ -31,7 +31,9 @@ function PANEL:Init( )
 	self.activePanelButton = nil
 	self.activePanelShowW = 0
 	self.activePanelShowX = 0
+	
 	local Ww, Xx = catherine.menu.GetActiveButtonData( )
+	
 	self.activePanelShowTargetW = Ww or 0
 	self.activePanelShowTargetX = Xx or 0
 	
@@ -66,17 +68,19 @@ function PANEL:Init( )
 			xPos = xPos + itemW
 			
 			delta = delta + 0.05
+			
+			if ( k == #menuTable ) then
+				catherine.menu.RecoverLastActivePanel( self )
+			end
 		end
-		
-		catherine.menu.RecoverActivePanel( self )
 	end )
 	self.ListsBase.Paint = function( pnl, w, h )
 		local x, y = self.ListsBase.Lists:GetPos( )
 		
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 235 ) )
 		
-		self.activePanelShowX = Lerp( 0.05, self.activePanelShowX, x + self.activePanelShowTargetX )
-		self.activePanelShowW = Lerp( 0.05, self.activePanelShowW, self.activePanelShowTargetW )
+		self.activePanelShowX = Lerp( 0.09, self.activePanelShowX, x + self.activePanelShowTargetX )
+		self.activePanelShowW = Lerp( 0.09, self.activePanelShowW, self.activePanelShowTargetW )
 
 		draw.RoundedBox( 0, self.activePanelShowX, 0, self.activePanelShowW, 10, Color( mainCol.r, mainCol.g, mainCol.b, 235 ) )
 	end
@@ -105,7 +109,7 @@ function PANEL:AddMenuItem( name, func )
 		
 		if ( activePanelName and activePanelName == name ) then
 			if ( IsValid( activePanel ) ) then
-				activePanel:Close( )
+				activePanel:FakeHide( )
 				catherine.menu.SetActivePanel( nil )
 				catherine.menu.SetActivePanelName( nil )
 				self.activePanelShowTargetW = 0
@@ -113,8 +117,14 @@ function PANEL:AddMenuItem( name, func )
 				
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_SAMEMENU )
 			else
+				local newActivePanel = func( self, pnl )
+				
+				if ( newActivePanel and type( newActivePanel ) == "Panel" and IsValid( newActivePanel ) ) then
+					newActivePanel:Show( )
+				end
+				
 				self.activePanelButton = pnl
-				catherine.menu.SetActivePanel( func( self, pnl ) )
+				catherine.menu.SetActivePanel( newActivePanel )
 				catherine.menu.SetActivePanelName( name )
 				self.activePanelShowTargetW = pnl:GetWide( )
 				self.activePanelShowTargetX = pnl.itemXPos
@@ -123,17 +133,30 @@ function PANEL:AddMenuItem( name, func )
 			end
 		else
 			if ( IsValid( activePanel ) ) then
-				activePanel:Close( )
+				local newActivePanel = func( self, pnl )
+				
+				activePanel:FakeHide( )
+				
+				if ( newActivePanel and type( newActivePanel ) == "Panel" and IsValid( newActivePanel ) ) then
+					newActivePanel:Show( )
+				end
+				
 				self.activePanelButton = pnl
-				catherine.menu.SetActivePanel( func( self, pnl ) )
+				catherine.menu.SetActivePanel( newActivePanel )
 				catherine.menu.SetActivePanelName( name )
 				self.activePanelShowTargetW = pnl:GetWide( )
 				self.activePanelShowTargetX = pnl.itemXPos
 				
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_NOTSAMEMENU )
 			else
+				local newActivePanel = func( self, pnl )
+				
+				if ( newActivePanel and type( newActivePanel ) == "Panel" and IsValid( newActivePanel ) ) then
+					newActivePanel:Show( )
+				end
+				
 				self.activePanelButton = pnl
-				catherine.menu.SetActivePanel( func( self, pnl ) )
+				catherine.menu.SetActivePanel( newActivePanel )
 				catherine.menu.SetActivePanelName( name )
 				self.activePanelShowTargetW = pnl:GetWide( )
 				self.activePanelShowTargetX = pnl.itemXPos
@@ -159,9 +182,9 @@ function PANEL:OnKeyCodePressed( key )
 end
 
 function PANEL:Paint( w, h )
-	self.blurAmount = Lerp( 0.05, self.blurAmount, self.closeing and 0 or 3 )
+	self.blurAmount = Lerp( 0.05, self.blurAmount, self.closeing and 0 or 0 )
 	
-	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
+	//catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 end
 
 function PANEL:Show( )
@@ -202,6 +225,10 @@ function PANEL:Show( )
 			xPos = xPos + itemW
 			
 			delta = delta + 0.05
+			
+			if ( k == #menuTable ) then
+				catherine.menu.RecoverLastActivePanel( self )
+			end
 		end
 	end )
 	self.ListsBase.Paint = function( pnl, w, h )
@@ -209,18 +236,16 @@ function PANEL:Show( )
 		
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 235 ) )
 		
-		self.activePanelShowX = Lerp( 0.05, self.activePanelShowX, x + self.activePanelShowTargetX )
-		self.activePanelShowW = Lerp( 0.05, self.activePanelShowW, self.activePanelShowTargetW )
+		self.activePanelShowX = Lerp( 0.09, self.activePanelShowX, x + self.activePanelShowTargetX )
+		self.activePanelShowW = Lerp( 0.09, self.activePanelShowW, self.activePanelShowTargetW )
 
-		draw.RoundedBox( 0, self.activePanelShowX, 0, self.activePanelShowW, 10, Color( mainCol.r, mainCol.g, mainCol.b, 235 ) )
+		draw.RoundedBox( 0, self.activePanelShowX, 0, self.activePanelShowW, 5, Color( mainCol.r, mainCol.g, mainCol.b, 235 ) )
 	end
 	
 	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
 	self.ListsBase.Lists:SetSize( 0, self.ListsBase:GetTall( ) )
 	
 	self.closeing = false
-	
-	catherine.menu.RecoverActivePanel( self )
 end
 
 function PANEL:OnRemove( )

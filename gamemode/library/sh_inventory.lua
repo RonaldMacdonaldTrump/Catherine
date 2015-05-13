@@ -70,13 +70,15 @@ if ( SERVER ) then
 			local uniqueID = data.uniqueID
 			local invData = inventory[ uniqueID ]
 			
-			inventory[ uniqueID ] = {
-				uniqueID = uniqueID,
-				itemCount = invData.itemCount,
-				itemData = data.newData
-			}
-			
-			catherine.character.SetVar( pl, "_inv", inventory )
+			if ( invData ) then
+				inventory[ uniqueID ] = {
+					uniqueID = uniqueID,
+					itemCount = invData.itemCount,
+					itemData = data.newData
+				}
+				
+				catherine.character.SetVar( pl, "_inv", inventory )
+			end
 		end
 	end
 

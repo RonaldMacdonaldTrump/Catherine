@@ -79,6 +79,7 @@ if ( SERVER ) then
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.hooks.weapon_base.PlayerSpawnedInCharacter", function( pl )
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
 			if ( !catherine.inventory.IsEquipped( pl, k ) ) then continue end
+			
 			catherine.item.Work( pl, k, "equip" )
 		end
 	end )
@@ -86,13 +87,14 @@ if ( SERVER ) then
 	hook.Add( "PlayerDeath", "catherine.item.hooks.weapon_base.PlayerDeath", function( pl )
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
 			if ( !catherine.inventory.IsEquipped( pl, k ) ) then continue end
+			
 			catherine.item.Work( pl, k, "unequip" )
 			catherine.item.Spawn( k, pl.GetPos( pl ) )
 			catherine.item.Take( pl, k )
 		end
 	end )
 
-	hook.Add( "ItemDroped", "catherine.item.hooks.weapon_base.ItemDroped", function( pl, itemTable )
+	hook.Add( "OnItemDrop", "catherine.item.hooks.weapon_base.OnItemDrop", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
 		
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
@@ -102,7 +104,7 @@ if ( SERVER ) then
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 	
-	hook.Add( "ItemStorageMove", "catherine.item.hooks.weapon_base.ItemStorageMoved", function( pl, itemTable )
+	hook.Add( "OnItemStorageMove", "catherine.item.hooks.weapon_base.OnItemStorageMove", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
 		
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
@@ -112,7 +114,7 @@ if ( SERVER ) then
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 	
-	hook.Add( "ItemVendorSolded", "catherine.item.hooks.weapon_base.ItemVendorSolded", function( pl, itemTable )
+	hook.Add( "OnItemVendorSold", "catherine.item.hooks.weapon_base.OnItemVendorSold", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
 		
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
