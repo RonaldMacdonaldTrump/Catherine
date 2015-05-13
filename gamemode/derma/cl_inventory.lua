@@ -42,6 +42,10 @@ function PANEL:Init( )
 	self:BuildInventory( )
 end
 
+function PANEL:OnMenuRecovered( )
+	self:BuildInventory( )
+end
+
 function PANEL:GetInventory( )
 	local tab = { }
 	

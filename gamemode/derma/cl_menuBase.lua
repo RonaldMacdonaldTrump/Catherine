@@ -35,6 +35,7 @@ end
 
 function PANEL:OnMenuSizeChanged( w, h ) end
 function PANEL:PanelCalled( ) end
+function PANEL:OnMenuRecovered( ) end
 
 function PANEL:SetMenuSize( w, h )
 	self.w, self.h = w, h

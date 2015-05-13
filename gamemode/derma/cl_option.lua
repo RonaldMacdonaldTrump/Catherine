@@ -39,6 +39,10 @@ function PANEL:Init( )
 	self:InitializeOption( )
 end
 
+function PANEL:OnMenuRecovered( )
+	self:InitializeOption( )
+end
+
 function PANEL:InitializeOption( )
 	local opt = { }
 	

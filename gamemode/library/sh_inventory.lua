@@ -270,7 +270,7 @@ else
 	end
 	
 	function catherine.inventory.CharacterVarChanged( )
-		if ( IsValid( catherine.vgui.inventory ) ) then
+		if ( IsValid( catherine.vgui.inventory ) and !catherine.vgui.inventory:IsHiding( ) ) then
 			catherine.vgui.inventory:BuildInventory( )
 		end
 	end

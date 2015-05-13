@@ -84,6 +84,10 @@ function PANEL:Init( )
 	self:InitializeBusiness( )
 end
 
+function PANEL:OnMenuRecovered( )
+	self:InitializeBusiness( )
+end
+
 function PANEL:RefreshShoppingCartInfo( )
 	local costs = 0
 	

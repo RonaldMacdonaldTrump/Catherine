@@ -42,7 +42,11 @@ function PANEL:Init( )
 		end
 	end
 
-	self:SortPlayerLists( )
+	self:Refresh( )
+end
+
+function PANEL:OnMenuRecovered( )
+	self:Refresh( )
 end
 
 function PANEL:MenuPaint( w, h )

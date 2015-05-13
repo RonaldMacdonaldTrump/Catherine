@@ -37,6 +37,10 @@ function PANEL:Init( )
 	self:BuildAttribute( )
 end
 
+function PANEL:OnMenuRecovered( )
+	self:BuildAttribute( )
+end
+
 function PANEL:BuildAttribute( )
 	self.Lists:Clear( )
 	local delta = 0

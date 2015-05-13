@@ -58,6 +58,14 @@ function PANEL:Init( )
 	self:BuildHelps( )
 end
 
+function PANEL:OnMenuRecovered( )
+	for k, v in pairs( catherine.help.GetAll( ) ) do
+		self.helps[ v.category ] = v
+	end
+	
+	self:BuildHelps( )
+end
+
 function PANEL:MenuPaint( w, h )
 	if ( self.html:IsLoading( ) ) then
 		self.loadingAlpha = Lerp( 0.05, self.loadingAlpha, 255 )

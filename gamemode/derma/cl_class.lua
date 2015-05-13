@@ -44,6 +44,10 @@ function PANEL:Init( )
 	self:InitializeClasses( )
 end
 
+function PANEL:OnMenuRecovered( )
+	self:InitializeClasses( )
+end
+
 function PANEL:InitializeClasses( )
 	self.classes = catherine.class.GetJoinable( )
 	
