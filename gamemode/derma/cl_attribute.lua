@@ -86,7 +86,7 @@ function PANEL:Paint( w, h )
 		draw.RoundedBox( 0, 10, 10, 70, 70, Color( 50, 50, 50, 100 ) )
 	end
 	
-	draw.SimpleText( self.attribute_name, "catherine_normal35", 100, 30, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.attribute_name, "catherine_normal25", 100, 30, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
 	draw.SimpleText( self.attribute_desc, "catherine_normal15", 100, 60, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
 	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 	

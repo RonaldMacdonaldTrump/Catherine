@@ -221,6 +221,7 @@ if ( SERVER ) then
 		
 		for k, v in pairs( ents.FindByClass( "prop_physics" ) ) do
 			if ( !v.isStorage ) then continue end
+			
 			data[ #data + 1 ] = {
 				index = v:EntIndex( ),
 				inv = v.inv
@@ -234,16 +235,15 @@ if ( SERVER ) then
 		local data = catherine.data.Get( "storage", { } )
 
 		for k, v in pairs( ents.FindByClass( "prop_physics" ) ) do
-			local storage = catherine.storage.GetDataByIndex( v:EntIndex( ), data )
-			
-			catherine.storage.Make( v, storage )
+			catherine.storage.Make( v, catherine.storage.GetDataByIndex( v:EntIndex( ), data ) )
 		end
 	end
 
 	function catherine.storage.PlayerSpawnedProp( pl, _, ent )
 		timer.Simple( 1, function( )
-			if ( !IsValid( ent ) ) then return end
-			catherine.storage.Make( ent )
+			if ( IsValid( ent ) ) then
+				catherine.storage.Make( ent )
+			end
 		end )
 	end
 
@@ -278,7 +278,7 @@ else
 	function catherine.storage.GetWeights( ent, customAdd )
 		local inventory = catherine.storage.GetInv( ent )
 		local weight = 0
-		local maxWeight = ent.GetNetVar( ent, "maxWeight" ) or 0
+		local maxWeight = ent:GetNetVar( "maxWeight" ) or 0
 		
 		for k, v in pairs( inventory ) do
 			local itemTable = catherine.item.FindByID( k )
@@ -299,12 +299,12 @@ else
 	local toscreen = FindMetaTable( "Vector" ).ToScreen
 
 	function catherine.storage.DrawEntityTargetID( pl, ent, a )
-		if ( !ent.GetNetVar( ent, "isStorage", false ) ) then return end
-		local pos = toscreen( ent.LocalToWorld( ent, ent.OBBCenter( ent ) ) )
+		if ( !ent:GetNetVar( "isStorage", false ) ) then return end
+		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		
-		draw.SimpleText( ent.GetNetVar( ent, "name", "" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( ent.GetNetVar( ent, "desc", "" ), "catherine_outline20", x, y + 30, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent:GetNetVar( "name", "" ), "catherine_outline20", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent:GetNetVar( "desc", "" ), "catherine_outline15", x, y + 20, Color( 255, 255, 255, a ), 1, 1 )
 	end
 	
 	hook.Add( "DrawEntityTargetID", "catherine.storage.DrawEntityTargetID", catherine.storage.DrawEntityTargetID )

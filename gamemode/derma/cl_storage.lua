@@ -78,9 +78,9 @@ function PANEL:Init( )
 	self.close:SetPos( self.w - 30, 0 )
 	self.close:SetSize( 30, 25 )
 	self.close:SetStr( "X" )
-	self.close:SetStrFont( "catherine_normal30" )
-	self.close:SetStrColor( Color( 255, 150, 150, 255 ) )
-	self.close:SetGradientColor( Color( 255, 150, 150, 255 ) )
+	self.close:SetStrFont( "catherine_normal35" )
+	self.close:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.close.Click = function( )
 		self:Close( )
 	end
@@ -93,10 +93,10 @@ function PANEL:Paint( w, h )
 		local name = self.ent:GetNetVar( "name" )
 		
 		if ( name ) then
-			draw.SimpleText( name, "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+			draw.SimpleText( name, "catherine_normal20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 		end
 		
-		draw.SimpleText( LANG( "Storage_UI_YourInv" ), "catherine_normal25", w / 2, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		draw.SimpleText( LANG( "Storage_UI_YourInv" ), "catherine_normal20", w / 2, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 	end
 end
 

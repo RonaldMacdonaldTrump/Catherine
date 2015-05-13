@@ -90,7 +90,7 @@ else
 				ent.itemTable_desc = catherine.util.StuffLanguage( itemTable.desc )
 			end
 
-			draw.SimpleText( ent.itemTable_name, "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+			draw.SimpleText( ent.itemTable_name, "catherine_outline20", x, y, Color( 255, 255, 255, a ), 1, 1 )
 			draw.SimpleText( ent.itemTable_desc, "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
 			
 			if ( customDesc ) then
