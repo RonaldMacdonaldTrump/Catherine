@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.menu = catherine.menu or { }
+catherine.menu = catherine.menu or { activePanel = nil }
 catherine.menu.lists = { }
 
 function catherine.menu.Register( name, func, canLook )
@@ -29,4 +29,12 @@ end
 
 function catherine.menu.GetAll( )
 	return catherine.menu.lists
+end
+
+function catherine.menu.GetPanel( )
+	return catherine.vgui.menu
+end
+
+function catherine.menu.GetActivePanel( )
+	return catherine.menu.activePanel
 end

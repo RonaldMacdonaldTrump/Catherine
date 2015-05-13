@@ -76,4 +76,5 @@ if ( SERVER ) then
 else
 	catherine.configs.frameworkLogo = "CAT/logos/main01.png"
 	catherine.configs.schemaLogo = catherine.configs.frameworkLogo
+	catherine.configs.mainColor = Color( 50, 50, 50 )
 end

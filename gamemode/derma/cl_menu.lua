@@ -22,14 +22,11 @@ function PANEL:Init( )
 	if ( IsValid( catherine.vgui.menu ) ) then
 		catherine.vgui.menu:Remove( )
 	end
+	
 	catherine.vgui.menu = self
 	
 	self.player = LocalPlayer( )
 	self.w, self.h = ScrW( ), ScrH( )
-	self.menuItems = { }
-	self.lastmenuPnl = nil
-	self.lastmenuName = ""
-	self.closeing = false
 	self.blurAmount = 0
 
 	self:SetSize( self.w, self.h )
@@ -74,8 +71,10 @@ function PANEL:AddMenuItem( name, func )
 	item:SetTextColor( Color( 50, 50, 50 ) )
 	item:SetSize( tw + 30, self.ListsBase:GetTall( ) )
 	item.Paint = function( pnl, w, h )
+		local col = catherine.configs.mainColor
+		
 		if ( self.lastmenuName == name ) then
-			draw.RoundedBox( 0, 0, 0, w, 10, Color( 50, 50, 50, 255 ) )
+			draw.RoundedBox( 0, 0, 0, w, 10, Color( col.r, col.g, col.b, 255 ) )
 		end
 	end
 	item.DoClick = function( pnl )
@@ -118,29 +117,33 @@ function PANEL:OnKeyCodePressed( key )
 end
 
 function PANEL:Paint( w, h )
-	if ( self.closeing ) then
-		self.blurAmount = Lerp( 0.05, self.blurAmount, 0 )
-	else
-		self.blurAmount = Lerp( 0.05, self.blurAmount, 3 )
-	end
+	self.blurAmount = Lerp( 0.05, self.blurAmount, self.closeing and 0 or 3 )
 	
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 end
 
 function PANEL:Close( )
+	if ( self.closeing ) then return end
+	
 	CloseDermaMenus( )
 	gui.EnableScreenClicker( false )
 	self.closeing = true
-	
-	if ( IsValid( self.lastmenuPnl ) ) then
-		self.lastmenuPnl:Close( )
-	end
-	
+
 	self.ListsBase:MoveTo( self.w / 2 - self.ListsBase:GetWide( ) / 2, self.h, 0.2, 0, nil, function( anim, pnl )
-		if ( !IsValid( self ) ) then return end
-		self:Remove( )
-		self = nil
+		if ( IsValid( self ) ) then
+			self:Remove( )
+			self = nil
+		end
 	end )
 end
 
 vgui.Register( "catherine.vgui.menu", PANEL, "DFrame" )
+
+hook.Add( "VGUIMousePressed", "Clockwork.menu:VGUIMousePressed", function(panel, code)
+	local activePanel = Clockwork.menu:GetActivePanel();
+	local menuPanel = Clockwork.menu:GetPanel();
+	
+	if (Clockwork.menu:GetOpen() and activePanel and menuPanel == panel) then
+		menuPanel:ReturnToMainMenu();
+	end;
+end);
