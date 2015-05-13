@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.version = catherine.version or {
-	Ver = "2015-05-12"
+	Ver = "2015-05-13"
 }
 
 if ( SERVER ) then

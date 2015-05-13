@@ -521,8 +521,8 @@ end
 function GM:ScoreboardShow( )
 	if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 	
-	if ( IsValid( catherine.vgui.menu ) ) then
-		catherine.vgui.menu:Close( )
+	if ( IsValid( catherine.vgui.menu ) and !catherine.vgui.menu:IsVisible( ) ) then
+		catherine.vgui.menu:Show( )
 		gui.EnableScreenClicker( false )
 	else
 		catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )

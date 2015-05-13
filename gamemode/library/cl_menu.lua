@@ -44,7 +44,7 @@ function catherine.menu.GetActivePanel( )
 end
 
 function catherine.menu.GetActiveButtonData( )
-	return catherine.menu.activeButtonData.w or 0, catherine.menu.activeButtonData.x or 0
+	return catherine.menu.activeButtonData.w, catherine.menu.activeButtonData.x
 end
 
 function catherine.menu.GetActivePanelName( )
@@ -66,19 +66,19 @@ end
 function catherine.menu.SetActivePanelData( w, x )
 	catherine.menu.activeButtonData = {
 		w = w,
-		y = y
+		x = x
 	}
 end
 
 function catherine.menu.RecoverActivePanel( menuPnl )
 	local activePanel = catherine.menu.GetActivePanel( )
-	
+
 	if ( IsValid( activePanel ) and type( activePanel ) == "Panel" and activePanel:IsHiding( ) ) then
 		local w, x = catherine.menu.GetActiveButtonData( )
 		
 		activePanel:Show( )
-		menuPnl.activePanelShowTargetW = w
 		menuPnl.activePanelShowTargetX = x
+		menuPnl.activePanelShowTargetW = w
 	end
 end
 

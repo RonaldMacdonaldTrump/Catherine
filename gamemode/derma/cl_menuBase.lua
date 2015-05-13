@@ -66,9 +66,12 @@ end
 
 function PANEL:Show( )
 	if ( !self.isHiding ) then return end
+	local w, h = self:GetWide( ), self:GetTall( )
 	
 	self.isHiding = false
 	
+	self:SetVisible( true )
+	self:SetAlpha( 255 )
 	self:SetPos( 0 - w, ScrH( ) / 2 - h / 2 )
 	self:MoveTo( ScrW( ) / 2 - w / 2, ScrH( ) / 2 - h / 2, 0.2, 0, nil, function( )
 		// nothing.

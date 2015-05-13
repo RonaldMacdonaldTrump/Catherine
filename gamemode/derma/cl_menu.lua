@@ -31,8 +31,9 @@ function PANEL:Init( )
 	self.activePanelButton = nil
 	self.activePanelShowW = 0
 	self.activePanelShowX = 0
-	self.activePanelShowTargetW = 0
-	self.activePanelShowTargetX = 0
+	local Ww, Xx = catherine.menu.GetActiveButtonData( )
+	self.activePanelShowTargetW = Ww or 0
+	self.activePanelShowTargetX = Xx or 0
 	
 	self:SetSize( self.w, self.h )
 	self:Center( )
@@ -52,39 +53,41 @@ function PANEL:Init( )
 		local delta = 0
 		local pl = self.player
 		local menuTable = catherine.menu.GetAll( )
+		local xPos = 0
 		
 		for k, v in pairs( menuTable ) do
 			if ( v.canLook and v.canLook( pl ) == false ) then continue end
 			
-			local menuItem = self:AddMenuItem( type( v.name ) == "function" and v.name( pl ) or v.name, v.func )
+			local menuItem, itemW = self:AddMenuItem( type( v.name ) == "function" and v.name( pl ) or v.name, v.func )
 			menuItem:SetAlpha( 0 )
 			menuItem:AlphaTo( 255, 0.2, delta )
+			menuItem:SetItemXPos( xPos )
+			
+			xPos = xPos + itemW
 			
 			delta = delta + 0.05
-			
-			if ( k == #menuTable ) then
-				catherine.menu.RecoverActivePanel( self )
-			end
 		end
+		
+		catherine.menu.RecoverActivePanel( self )
 	end )
 	self.ListsBase.Paint = function( pnl, w, h )
+		local x, y = self.ListsBase.Lists:GetPos( )
+		
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 235 ) )
 		
-		self.activePanelShowX = Lerp( 0.05, self.activePanelShowX, self.activePanelShowTargetX )
+		self.activePanelShowX = Lerp( 0.05, self.activePanelShowX, x + self.activePanelShowTargetX )
 		self.activePanelShowW = Lerp( 0.05, self.activePanelShowW, self.activePanelShowTargetW )
-		
-		draw.RoundedBox( 0, self.activePanelShowX + self.activePanelShowW / 2, 0, self.activePanelShowW / 2, 10, Color( mainCol.r, mainCol.g, mainCol.b, 235 ) )
+
+		draw.RoundedBox( 0, self.activePanelShowX, 0, self.activePanelShowW, 10, Color( mainCol.r, mainCol.g, mainCol.b, 235 ) )
 	end
 	
 	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
 	self.ListsBase.Lists:SetSize( 0, self.ListsBase:GetTall( ) )
-
-	
 end
 
 function PANEL:AddMenuItem( name, func )
 	surface.SetFont( "catherine_normal20" )
-	local tw = surface.GetTextSize( name )
+	local tw, th = surface.GetTextSize( name )
 	
 	local menuItem = vgui.Create( "DButton" )
 	menuItem:SetText( name )
@@ -92,6 +95,9 @@ function PANEL:AddMenuItem( name, func )
 	menuItem:SetTextColor( Color( 50, 50, 50 ) )
 	menuItem:SetSize( tw + 30, self.ListsBase:GetTall( ) )
 	menuItem:SetDrawBackground( false )
+	menuItem.SetItemXPos = function( pnl, val )
+		pnl.itemXPos = val
+	end
 	menuItem.DoClick = function( pnl )
 		local activePanel = catherine.menu.GetActivePanel( )
 		local activePanelName = catherine.menu.GetActivePanelName( )
@@ -103,15 +109,15 @@ function PANEL:AddMenuItem( name, func )
 				catherine.menu.SetActivePanel( nil )
 				catherine.menu.SetActivePanelName( nil )
 				self.activePanelShowTargetW = 0
-				self.activePanelShowTargetX = x
+				self.activePanelShowTargetX = pnl.itemXPos
 				
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_SAMEMENU )
 			else
 				self.activePanelButton = pnl
 				catherine.menu.SetActivePanel( func( self, pnl ) )
 				catherine.menu.SetActivePanelName( name )
-				self.activePanelShowTargetW = tw
-				self.activePanelShowTargetX = x
+				self.activePanelShowTargetW = pnl:GetWide( )
+				self.activePanelShowTargetX = pnl.itemXPos
 				
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_SAMEMENU_NO )
 			end
@@ -121,46 +127,20 @@ function PANEL:AddMenuItem( name, func )
 				self.activePanelButton = pnl
 				catherine.menu.SetActivePanel( func( self, pnl ) )
 				catherine.menu.SetActivePanelName( name )
-				self.activePanelShowTargetW = tw
-				self.activePanelShowTargetX = x
+				self.activePanelShowTargetW = pnl:GetWide( )
+				self.activePanelShowTargetX = pnl.itemXPos
 				
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_NOTSAMEMENU )
 			else
 				self.activePanelButton = pnl
 				catherine.menu.SetActivePanel( func( self, pnl ) )
 				catherine.menu.SetActivePanelName( name )
-				self.activePanelShowTargetW = tw
-				self.activePanelShowTargetX = x
+				self.activePanelShowTargetW = pnl:GetWide( )
+				self.activePanelShowTargetX = pnl.itemXPos
 				
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_NOTSAMEMENU_NO )
 			end
 		end
-		
-		--[[ // Old version :>
-		if ( self.lastmenuName == name ) then
-			if ( IsValid( self.lastmenuPnl ) ) then
-				catherine.util.PlayButtonSound( CAT_UTIL_BUTTOMSOUND_1 )
-				self.lastmenuPnl:Close( )
-				self.lastmenuPnl = nil
-				self.lastmenuName = ""
-			else
-				catherine.util.PlayButtonSound( CAT_UTIL_BUTTOMSOUND_2 )
-				self.lastmenuPnl = func( self, pnl )
-				self.lastmenuName = name
-			end
-		else
-			if ( IsValid( self.lastmenuPnl ) ) then
-				catherine.util.PlayButtonSound( CAT_UTIL_BUTTOMSOUND_2 )
-				self.lastmenuPnl:Close( )
-				self.lastmenuPnl = func( self, pnl )
-				self.lastmenuName = name
-			else
-				catherine.util.PlayButtonSound( CAT_UTIL_BUTTOMSOUND_3 )
-				self.lastmenuPnl = func( self, pnl )
-				self.lastmenuName = name
-			end
-		end
-		]]--
 	end
 	
 	local w = self.ListsBase.Lists:GetWide( )
@@ -169,7 +149,7 @@ function PANEL:AddMenuItem( name, func )
 	self.ListsBase.Lists:SetWide( math.min( w + menuItem:GetWide( ), self.w ) )
 	self.ListsBase.Lists:SetPos( self.w / 2 - w / 2, 0 )
 	
-	return menuItem
+	return menuItem, menuItem:GetWide( )
 end
 
 function PANEL:OnKeyCodePressed( key )
@@ -182,6 +162,77 @@ function PANEL:Paint( w, h )
 	self.blurAmount = Lerp( 0.05, self.blurAmount, self.closeing and 0 or 3 )
 	
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
+end
+
+function PANEL:Show( )
+	self:SetVisible( true )
+	
+	self.blurAmount = 0
+	self.activePanelButton = nil
+	self.activePanelShowW = 0
+	self.activePanelShowX = 0
+	local Ww, Xx = catherine.menu.GetActiveButtonData( )
+	self.activePanelShowTargetW = Ww or 0
+	self.activePanelShowTargetX = Xx or 0
+	
+	local mainCol = catherine.configs.mainColor
+	
+	if ( IsValid( self.ListsBase ) ) then
+		self.ListsBase:Remove( )
+		self.ListsBase.Lists:Remove( )
+	end
+	
+	self.ListsBase = vgui.Create( "DPanel", self )
+	self.ListsBase:SetSize( self.w, 50 )
+	self.ListsBase:SetPos( 0, self.h )
+	self.ListsBase:MoveTo( 0, self.h - self.ListsBase:GetTall( ), 0.2, 0.1, nil, function( )
+		local delta = 0
+		local pl = self.player
+		local menuTable = catherine.menu.GetAll( )
+		local xPos = 0
+		
+		for k, v in pairs( menuTable ) do
+			if ( v.canLook and v.canLook( pl ) == false ) then continue end
+			
+			local menuItem, itemW = self:AddMenuItem( type( v.name ) == "function" and v.name( pl ) or v.name, v.func )
+			menuItem:SetAlpha( 0 )
+			menuItem:AlphaTo( 255, 0.2, delta )
+			menuItem:SetItemXPos( xPos )
+			
+			xPos = xPos + itemW
+			
+			delta = delta + 0.05
+		end
+	end )
+	self.ListsBase.Paint = function( pnl, w, h )
+		local x, y = self.ListsBase.Lists:GetPos( )
+		
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 235 ) )
+		
+		self.activePanelShowX = Lerp( 0.05, self.activePanelShowX, x + self.activePanelShowTargetX )
+		self.activePanelShowW = Lerp( 0.05, self.activePanelShowW, self.activePanelShowTargetW )
+
+		draw.RoundedBox( 0, self.activePanelShowX, 0, self.activePanelShowW, 10, Color( mainCol.r, mainCol.g, mainCol.b, 235 ) )
+	end
+	
+	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
+	self.ListsBase.Lists:SetSize( 0, self.ListsBase:GetTall( ) )
+	
+	self.closeing = false
+	
+	catherine.menu.RecoverActivePanel( self )
+end
+
+function PANEL:OnRemove( )
+	local activePanel = catherine.menu.GetActivePanel( )
+	
+	if ( IsValid( self ) and IsValid( activePanel ) and self == pnl ) then
+		activePanel:Close( )
+	end
+	
+	catherine.menu.SetActivePanel( nil )
+	catherine.menu.SetActivePanelName( nil )
+	catherine.menu.SetActivePanelData( 0, 0 )
 end
 
 function PANEL:Close( )
@@ -199,10 +250,7 @@ function PANEL:Close( )
 	end
 
 	self.ListsBase:MoveTo( self.w / 2 - self.ListsBase:GetWide( ) / 2, self.h, 0.2, 0, nil, function( anim, pnl )
-		if ( IsValid( self ) ) then
-			self:Remove( )
-			self = nil
-		end
+		self:SetVisible( false )
 	end )
 end
 
