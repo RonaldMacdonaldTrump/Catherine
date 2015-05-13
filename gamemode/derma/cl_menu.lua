@@ -28,7 +28,12 @@ function PANEL:Init( )
 	self.player = LocalPlayer( )
 	self.w, self.h = ScrW( ), ScrH( )
 	self.blurAmount = 0
-
+	self.activePanelButton = nil
+	self.activePanelShowW = 0
+	self.activePanelShowX = 0
+	self.activePanelShowTargetW = 0
+	self.activePanelShowTargetX = 0
+	
 	self:SetSize( self.w, self.h )
 	self:Center( )
 	self:SetTitle( "" )
@@ -37,6 +42,8 @@ function PANEL:Init( )
 	self:SetAlpha( 0 )
 	self:AlphaTo( 255, 0.1, 0 )
 	self:MakePopup( )
+	
+	local mainCol = catherine.configs.mainColor
 	
 	self.ListsBase = vgui.Create( "DPanel", self )
 	self.ListsBase:SetSize( self.w, 50 )
@@ -48,25 +55,33 @@ function PANEL:Init( )
 		for k, v in pairs( catherine.menu.GetAll( ) ) do
 			if ( v.canLook and v.canLook( pl ) == false ) then continue end
 			
-			local menuButton = self:AddMenuItem( type( v.name ) == "function" and v.name( pl ) or v.name, v.func )
-			menuButton:SetAlpha( 0 )
-			menuButton:AlphaTo( 255, 0.2, delta )
+			local menuItem = self:AddMenuItem( type( v.name ) == "function" and v.name( pl ) or v.name, v.func )
+			menuItem:SetAlpha( 0 )
+			menuItem:AlphaTo( 255, 0.2, delta )
 			
 			delta = delta + 0.05
 		end
 	end )
 	self.ListsBase.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 235 ) )
+		
+		self.activePanelShowX = Lerp( 0.05, self.activePanelShowX, self.activePanelShowTargetX )
+		self.activePanelShowW = Lerp( 0.05, self.activePanelShowW, self.activePanelShowTargetW )
+		
+		draw.RoundedBox( 0, self.activePanelShowX + self.activePanelShowW / 2, 0, self.activePanelShowW / 2, 10, Color( mainCol.r, mainCol.g, mainCol.b, 235 ) )
 	end
 	
 	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
 	self.ListsBase.Lists:SetSize( 0, self.ListsBase:GetTall( ) )
+	
+	local x, y = self.ListsBase.Lists:GetPos( )
+	
+	self.activePanelShowX = x
 end
 
 function PANEL:AddMenuItem( name, func )
 	surface.SetFont( "catherine_normal20" )
 	local tw = surface.GetTextSize( name )
-	local mainCol = catherine.configs.mainColor
 	
 	local menuItem = vgui.Create( "DButton" )
 	menuItem:SetText( name )
@@ -77,30 +92,42 @@ function PANEL:AddMenuItem( name, func )
 	menuItem.DoClick = function( pnl )
 		local activePanel = catherine.menu.GetActivePanel( )
 		local activePanelName = catherine.menu.GetActivePanelName( )
+		local x, y = pnl:GetPos( )
 		
 		if ( activePanelName and activePanelName == name ) then
 			if ( IsValid( activePanel ) ) then
 				activePanel:Close( )
 				catherine.menu.SetActivePanel( nil )
 				catherine.menu.SetActivePanelName( nil )
+				self.activePanelShowTargetW = 0
+				self.activePanelShowTargetX = x
 				
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_SAMEMENU )
 			else
+				self.activePanelButton = pnl
 				catherine.menu.SetActivePanel( func( self, pnl ) )
 				catherine.menu.SetActivePanelName( name )
+				self.activePanelShowTargetW = tw
+				self.activePanelShowTargetX = x
 				
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_SAMEMENU_NO )
 			end
 		else
 			if ( IsValid( activePanel ) ) then
 				activePanel:Close( )
+				self.activePanelButton = pnl
 				catherine.menu.SetActivePanel( func( self, pnl ) )
 				catherine.menu.SetActivePanelName( name )
+				self.activePanelShowTargetW = tw
+				self.activePanelShowTargetX = x
 				
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_NOTSAMEMENU )
 			else
+				self.activePanelButton = pnl
 				catherine.menu.SetActivePanel( func( self, pnl ) )
 				catherine.menu.SetActivePanelName( name )
+				self.activePanelShowTargetW = tw
+				self.activePanelShowTargetX = x
 				
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_NOTSAMEMENU_NO )
 			end
@@ -133,9 +160,16 @@ function PANEL:AddMenuItem( name, func )
 		]]--
 	end
 	
+	local w = self.ListsBase.Lists:GetWide( )
+	local x, y = self.ListsBase.Lists:GetPos( )
+	
 	self.ListsBase.Lists:AddPanel( menuItem )
-	self.ListsBase.Lists:SetWide( math.min( self.ListsBase.Lists:GetWide( ) + menuItem:GetWide( ), self.w ) )
-	self.ListsBase.Lists:SetPos( self.w / 2 - self.ListsBase.Lists:GetWide( ) / 2, 0 )
+	self.ListsBase.Lists:SetWide( math.min( w + menuItem:GetWide( ), self.w ) )
+	self.ListsBase.Lists:SetPos( self.w / 2 - w / 2, 0 )
+	
+	self.activePanelShowX = x - w / 2
+	self.activePanelShowW = 0
+	self.activePanelShowTarget = 0
 	
 	return menuItem
 end
