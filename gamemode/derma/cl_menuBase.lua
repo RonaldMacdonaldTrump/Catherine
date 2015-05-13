@@ -54,6 +54,8 @@ function PANEL:IsHiding( )
 end
 
 function PANEL:FakeHide( )
+	if ( self.isHiding ) then return end
+	
 	self.isHiding = true
 	
 	self:AlphaTo( 0, 0.2, 0, nil, function( )
@@ -62,6 +64,8 @@ function PANEL:FakeHide( )
 end
 
 function PANEL:Show( )
+	if ( !self.isHiding ) then return end
+	
 	self.isHiding = false
 	
 	self:SetPos( 0 - w, ScrH( ) / 2 - h / 2 )
