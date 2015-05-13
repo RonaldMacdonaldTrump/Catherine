@@ -50,7 +50,7 @@ local gradientCenterMat = Material( "gui/center_gradient" )
 local introBooA = 0
 
 function GM:HUDShouldDraw( name )
-	for k, v in pairs( catherine.hud.blockedModules ) do
+	for k, v in pairs( catherine.hud.GetBlockModules( ) ) do
 		if ( v != name ) then continue end
 		
 		return false
