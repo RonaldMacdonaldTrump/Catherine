@@ -244,16 +244,16 @@ function catherine.hud.ProgressBar( pl, w, h )
 
 	local frac = 1 - timeFrac( data.startTime, data.endTime, CurTime( ) )
 	
-	setCol( 50, 50, 50, 150 )
+	setColor( 50, 50, 50, 150 )
 	setMat( gradient_center )
 	drawMat( 0, h / 2 - 80, w, 110 )
 	
 	noTex( )
-	setCol( 90, 90, 90, 255 )
+	setColor( 90, 90, 90, 255 )
 	drawCircle( w / 2, h / 2 - 40, 15, 5, 90, 360, 100 )
 	
 	noTex( )
-	setCol( 255, 255, 255, 255 )
+	setColor( 255, 255, 255, 255 )
 	drawCircle( w / 2, h / 2 - 40, 15, 5, 90, 360 * frac, 100 )
 	
 	drawText( data.message or "", "catherine_normal25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
