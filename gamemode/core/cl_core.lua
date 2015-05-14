@@ -82,7 +82,7 @@ function GM:SpawnMenuOpen( )
 end
 
 function GM:CalcView( pl, pos, ang, fov )
-	local viewData = self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov ) or { }
+	local viewData = self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
 
 	if ( catherine.intro.status ) then
 		viewData = {
@@ -92,19 +92,17 @@ function GM:CalcView( pl, pos, ang, fov )
 		return viewData
 	end
 	
-	--[[ // Why? :<
-	if ( pl:GetNetVar( "isActioning" ) ) then
-		local data = util.TraceLine( {
-			start = pos,
-			endpos = pos - ( ang:Forward( ) * 100 )
-		} )
+	--[[ // Thirdperson support :<
+	local data = util.TraceLine( {
+		start = pos,
+		endpos = pos - ( ang:Forward( ) * 100 )
+	} )
 
-		viewData = {
-			origin = data.Fraction < 1 and ( data.HitPos + data.HitNormal * 5 ) or data.HitPos
-		}
-		
-		return viewData
-	end
+	viewData = {
+		origin = data.Fraction < 1 and ( data.HitPos + data.HitNormal * 5 ) or data.HitPos
+	}
+	
+	return viewData
 	--]]
 	
 	if ( IsValid( catherine.vgui.character ) or !pl:IsCharacterLoaded( ) ) then
@@ -132,8 +130,8 @@ function GM:CalcView( pl, pos, ang, fov )
 			return viewData
 		end
 	end
-	
-	return self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
+
+	return viewData
 end
 
 function GM:HUDDrawScoreBoard( )

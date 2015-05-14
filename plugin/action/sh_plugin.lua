@@ -164,29 +164,41 @@ else
 			self.AngData = Angle( 0, 0, 0 )
 		end
 	end
-	
+
 	function PLUGIN:CalcView( pl, pos, ang, fov )
-		if ( pl:GetViewEntity( ) == pl and self:IsActioning( pl ) ) then
-			local la = pl:LookupAttachment( "eyes" )
+		if ( self:IsActioning( pl ) ) then
+			local data = { }
 			
-			if ( la == 0 ) then
-				la = pl:LookupAttachment( "eyes" )
-			end
-			
-			local ga = pl:GetAttachment( la ) 
-			local newAng = Angle( 0, pl:GetAngles( ).y, 0 ) + self.AngData
 			local tr = util.TraceLine( {
-				start = ga.Pos,
-				endpos = ga.Pos + newAng:Forward( ) * -80 + newAng:Up( ) * 20 + newAng:Right( ) * 0
+				start = pos,
+				endpos = pos - ( ang:Forward( ) * 100 )
 			} )
 
-			return {
-				origin = tr.HitPos + tr.HitNormal * 4,
-				angles = newAng
-			}
+			data.origin = tr.Fraction < 1 and ( tr.HitPos + tr.HitNormal * 5 ) or tr.HitPos
+			
+			if ( pl:GetViewEntity( ) == pl ) then
+				local la = pl:LookupAttachment( "eyes" )
+				
+				if ( la == 0 ) then
+					la = pl:LookupAttachment( "eyes" )
+				end
+				
+				local ga = pl:GetAttachment( la ) 
+				local newAng = Angle( 0, pl:GetAngles( ).y, 0 ) + self.AngData
+				local tr = util.TraceLine( {
+					start = ga.Pos,
+					endpos = ga.Pos + newAng:Forward( ) * -80 + newAng:Up( ) * 20 + newAng:Right( ) * 0
+				} )
+
+				data.origin = tr.HitPos + tr.HitNormal * 4
+				data.angles = newAng
+				data.fov = fov
+			end
+			
+			return GAMEMODE:CalcView( pl, data.origin, data.angles, data.fov )
 		end
 	end
-	
+
 	function PLUGIN:ShouldDrawLocalPlayer( pl )
 		if ( self:IsActioning( pl ) ) then
 			return true

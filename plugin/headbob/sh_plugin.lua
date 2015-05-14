@@ -48,16 +48,16 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 	local vel = math.floor( pl:GetVelocity( ):Length( ) - 1 )
 	
 	if ( pl:IsOnGround( ) ) then
-		local sin = math.sin( CurTime( ) / 2 )
-
-		targetAng.y = ( 2 / 1 ) * sin
+		targetAng.y = ( 2 / 1 ) * math.sin( CurTime( ) / 2 )
 	end
 	
 	curAng = Lerp( ft * 10, curAng, targetAng )
 
-	return {
+	local data = {
 		angles = ang + curAng,
 		origin = pos,
 		fov = fov
 	}
+
+	return GAMEMODE:CalcView( pl, data.origin, data.angles, data.fov )
 end
