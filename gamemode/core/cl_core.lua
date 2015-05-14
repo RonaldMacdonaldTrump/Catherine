@@ -547,6 +547,27 @@ function GM:RenderScreenspaceEffects( )
 	DrawColorModify( tab )
 end
 
+function GM:ScreenResolutionChanged( oldW, oldH )
+	local scrW, scrH = ScrW( ), ScrH( )
+	local information = hook.Run( "GetSchemaInformation" )
+
+	catherine.hud.RegisterWelcomeIntroAnimation( 1, function( )
+		return information.title
+	end, "catherine_normal25", 2, 9, nil, scrW * 0.8, scrH * 0.55, TEXT_ALIGN_RIGHT )
+
+	catherine.hud.RegisterWelcomeIntroAnimation( 2, function( )
+		return information.desc
+	end, "catherine_normal15", 6, 8, nil, scrW * 0.8, scrH * 0.55 + 35, TEXT_ALIGN_RIGHT )
+
+	catherine.hud.RegisterWelcomeIntroAnimation( 3, function( )
+		return catherine.environment.GetDateString( ) .. " : " .. catherine.environment.GetTimeString( )
+	end, "catherine_normal15", 8, 10, nil, scrW * 0.8, scrH * 0.55 + 55, TEXT_ALIGN_RIGHT )
+
+	catherine.hud.RegisterWelcomeIntroAnimation( 4, function( )
+		return information.author
+	end, "catherine_normal20", 7, 9, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
+end
+
 netstream.Hook( "catherine.ShowHelp", function( )
 	if ( IsValid( catherine.vgui.information ) ) then
 		catherine.vgui.information:Close( )
