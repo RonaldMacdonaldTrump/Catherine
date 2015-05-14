@@ -80,4 +80,5 @@ else
 	
 	catherine.configs.mainBarWideScale = 0.3
 	catherine.configs.mainBarTallSize = 5
+	catherine.configs.maxChatboxLine = 50
 end

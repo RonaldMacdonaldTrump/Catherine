@@ -90,13 +90,6 @@ function GM:PlayerSpray( pl )
 	return !hook.Run( "PlayerCanSpray", pl )
 end
 
-function GM:Move( pl, moveData )
-	if ( pl:IsCharacterLoaded( ) and pl:GetNetVar( "isActioning" ) ) then
-		moveData:SetForwardSpeed( 0 )
-		moveData:SetSideSpeed( 0 )
-	end
-end
-
 function GM:PlayerSpawn( pl )
 	if ( IsValid( pl.deathBody ) ) then
 		pl.deathBody:Remove( )

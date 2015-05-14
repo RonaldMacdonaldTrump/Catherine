@@ -47,7 +47,7 @@ if ( SERVER ) then
 
 	function ENT:InitializeItem( itemID, itemData )
 		self:SetNetVar( "uniqueID", itemID )
-		self:SetNetVar( "itemData", itemData )
+		self:SetNetVar( "itemData", itemData or { } )
 	end
 
 	function ENT:Use( pl )

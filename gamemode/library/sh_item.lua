@@ -31,8 +31,10 @@ function catherine.item.Register( itemTable )
 	
 	if ( itemTable.base ) then
 		local base = catherine.item.bases[ itemTable.base ]
-		if ( !base ) then return end
-		itemTable = table.Inherit( itemTable, base )
+		
+		if ( base ) then
+			itemTable = table.Inherit( itemTable, base )
+		end
 	end
 	
 	itemTable.name = itemTable.name or "A Name"
@@ -68,13 +70,14 @@ function catherine.item.Register( itemTable )
 				local itemData = itemTable.itemData
 				
 				if ( IsValid( ent ) and itemTable.useDynamicItemData ) then
-					itemData = table.Count( ent.GetItemData( ent ) ) == table.Count( itemTable.itemData ) and ent.GetItemData( ent ) or itemTable.itemData
+					itemData = table.Count( ent:GetItemData( ) ) == table.Count( itemTable.itemData ) and ent:GetItemData( ) or itemTable.itemData
 				end
 
 				catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 					uniqueID = itemTable.uniqueID,
 					itemData = itemData
 				} )
+				
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )
 				ent:Remove( )
 				
@@ -99,6 +102,7 @@ function catherine.item.Register( itemTable )
 				catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, {
 					uniqueID = uniqueID
 				} )
+				
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )
 				
 				hook.Run( "ItemDroped", pl, itemTable )
@@ -193,24 +197,17 @@ if ( SERVER ) then
 		if ( !uniqueID or !pos ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )
 		if ( !itemTable ) then return end
-		local model = "models/props_junk/watermelon01.mdl"
-		
-		if ( itemTable.GetDropModel ) then
-			model = itemTable:GetDropModel( )
-		else
-			model = itemTable.model
-		end
-		
+
 		local ent = ents.Create( "cat_item" )
 		ent:SetPos( Vector( pos.x, pos.y, pos.z + 10 ) )
 		ent:SetAngles( ang or Angle( ) )
 		ent:Spawn( )
-		ent:SetModel( model )
+		ent:SetModel( itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model )
 		ent:SetSkin( itemTable.skin or 0 )
 		ent:PhysicsInit( SOLID_VPHYSICS )
-		ent:InitializeItem( uniqueID, itemData or { } )
+		ent:InitializeItem( uniqueID, itemData )
 
-		local physObject = ent.GetPhysicsObject( ent )
+		local physObject = ent:GetPhysicsObject( )
 		
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( true )
@@ -260,7 +257,7 @@ else
 		local pl = LocalPlayer( )
 		local ent = Entity( data[ 1 ] )
 		local uniqueID = data[ 2 ]
-		if ( !IsValid( ent ) or !IsValid( pl.GetEyeTrace( pl ).Entity ) ) then return end
+		if ( !IsValid( ent ) or !IsValid( pl:GetEyeTrace( ).Entity ) ) then return end
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local menu = DermaMenu( )
 		

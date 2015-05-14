@@ -81,12 +81,6 @@ function GM:SpawnMenuOpen( )
 	return LocalPlayer( ):IsAdmin( )
 end
 
-function GM:ShouldDrawLocalPlayer( pl )
-	if ( pl:GetNetVar( "isActioning" ) ) then
-		return true
-	end
-end
-
 function GM:CalcView( pl, pos, ang, fov )
 	local viewData = self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov ) or { }
 
@@ -98,9 +92,10 @@ function GM:CalcView( pl, pos, ang, fov )
 		return viewData
 	end
 	
+	--[[ // Why? :<
 	if ( pl:GetNetVar( "isActioning" ) ) then
 		local data = util.TraceLine( {
-			start = pos, 
+			start = pos,
 			endpos = pos - ( ang:Forward( ) * 100 )
 		} )
 
@@ -110,6 +105,7 @@ function GM:CalcView( pl, pos, ang, fov )
 		
 		return viewData
 	end
+	--]]
 	
 	if ( IsValid( catherine.vgui.character ) or !pl:IsCharacterLoaded( ) ) then
 		viewData = {
