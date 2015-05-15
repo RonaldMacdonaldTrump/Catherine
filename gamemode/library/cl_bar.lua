@@ -18,11 +18,10 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.bar = catherine.bar or { }
 catherine.bar.lists = { }
-local barMaterial = Material( "CAT/bar_background.png", "smooth" )
 local barW = ScrW( ) * catherine.configs.mainBarWideScale
 local barH = catherine.configs.mainBarTallSize
 
-function catherine.bar.Register( getFunc, maxFunc, col, uniqueID )
+function catherine.bar.Register( getFunc, maxFunc, col, uniqueID, alwaysShowing )
 	for k, v in pairs( catherine.bar.lists ) do
 		if ( ( v.uniqueID and uniqueID ) and v.uniqueID == uniqueID ) then
 			return
@@ -37,8 +36,11 @@ function catherine.bar.Register( getFunc, maxFunc, col, uniqueID )
 		col = col,
 		uniqueID = uniqueID,
 		w = 0,
-		y = -( barH / 2 ) + ( index * barH ),
-		a = 0
+		y = -( barH / 2 ) + ( index * barH / 2 ),
+		a = 0,
+		alwaysShowing = alwaysShowing,
+		lifeTime = 0,
+		prevValue = 0
 	}
 end
 
@@ -62,23 +64,39 @@ function catherine.bar.Draw( )
 	for k, v in pairs( catherine.bar.lists ) do
 		local percent = math.min( v.getFunc( ) / v.maxFunc( ), 1 )
 		
-		if ( percent == 0 ) then
-			v.a = Lerp( 0.03, v.a, 0 )
-		else
-			i = i + 1
-			v.a = Lerp( 0.03, v.a, 255 )
+		if ( v.prevValue != percent ) then
+			v.lifeTime = CurTime( ) + 5
 		end
+
+		v.prevValue = percent
 		
+		if ( !v.alwaysShowing ) then
+			if ( v.lifeTime <= CurTime( ) ) then
+				v.a = Lerp( 0.03, v.a, 0 )
+			else
+				if ( percent != 0 ) then
+					i = i + 1
+					v.a = Lerp( 0.03, v.a, 255 )
+				else
+					v.a = Lerp( 0.03, v.a, 0 )
+				end
+			end
+		else
+			if ( percent != 0 ) then
+				i = i + 1
+				v.a = Lerp( 0.03, v.a, 255 )
+			else
+				v.a = Lerp( 0.03, v.a, 0 )
+			end
+		end
+
 		v.w = math.Approach( v.w, barW * percent, 1 )
-		v.y = Lerp( 0.03, v.y, -( barH / 2 ) + i * barH )
+		v.y = Lerp( 0.09, v.y, -barH + i * barH * 2 )
 		
 		if ( v.a > 0 ) then
-			surface.SetDrawColor( 255, 255, 255, v.a - 30 )
-			surface.SetMaterial( barMaterial )
-			surface.DrawTexturedRect( 5, v.y + ( barH - 1 ), barW, 1 )
-			
 			local col = v.col
 			
+			draw.RoundedBox( 0, 5, v.y, barW, barH, Color( 255, 255, 255, v.a / 2 ) )
 			draw.RoundedBox( 0, 5, v.y, v.w, barH, Color( col.r, col.g, col.b, v.a ) )
 		end
 	end
@@ -91,11 +109,11 @@ do
 		return LocalPlayer( ):Health( )
 	end, function( )
 		return LocalPlayer( ):GetMaxHealth( )
-	end, Color( 255, 0, 150 ), "health" )
+	end, Color( 255, 50, 50 ), "health", true )
 
 	catherine.bar.Register( function( )
 		return LocalPlayer( ):Armor( )
 	end, function( )
 		return 255
-	end, Color( 255, 255, 150 ), "armor" )
+	end, Color( 50, 50, 255 ), "armor", true )
 end
