@@ -45,8 +45,7 @@ local targetAng = Angle( 0, 0, 0 )
 
 function PLUGIN:CalcView( pl, pos, ang, fov )
 	local ft = FrameTime( )
-	local vel = math.floor( pl:GetVelocity( ):Length( ) - 1 )
-	
+
 	if ( pl:IsOnGround( ) ) then
 		targetAng.y = ( 2 / 1 ) * math.sin( CurTime( ) / 2 )
 	end

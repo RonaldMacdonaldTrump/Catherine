@@ -111,6 +111,10 @@ function GM:PlayerSpawn( pl )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	pl:SetNetVar( "isTied", false )
 	pl:SetupHands( )
+	
+	if ( catherine.player.IsRagdolled( pl ) ) then
+		catherine.util.TopNotify( pl, false )
+	end
 
 	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
 	pl:AllowFlashlight( status )
@@ -420,6 +424,10 @@ function GM:PlayerDeath( pl )
 		pl:Spawn( )
 	end )
 
+	if ( catherine.player.IsRagdolled( pl ) ) then
+		catherine.util.TopNotify( pl, false )
+	end
+	
 	pl:SetNetVar( "nextSpawnTime", CurTime( ) + respawnTime )
 	pl:SetNetVar( "deathTime", CurTime( ) )
 	
