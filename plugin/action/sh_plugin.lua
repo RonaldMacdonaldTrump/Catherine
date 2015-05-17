@@ -40,7 +40,7 @@ catherine.util.Include( "sh_actions.lua" )
 
 if ( SERVER ) then
 	function PLUGIN:StartAction( pl, seq )
-		if ( pl:GetNetVar( "isActioning" ) or !pl:Alive( ) or catherine.player.IsRagdolled( pl ) ) then
+		if ( self:IsActioning( pl ) or !pl:Alive( ) or catherine.player.IsRagdolled( pl ) ) then
 			return false, "ACT_Plugin_Notify_Cant01"
 		end
 
@@ -70,21 +70,19 @@ if ( SERVER ) then
 		if ( actionData.doStartSeq ) then
 			pl:SetNetVar( "doingAction", true )
 			
-			catherine.animation.SetSeqAnimation( pl, actionData.doStartSeq, pl.SequenceDuration( pl, actionData.doStartSeq ), nil, function( )
+			catherine.animation.SetSeqAnimation( pl, actionData.doStartSeq, pl:SequenceDuration( actionData.doStartSeq ), nil, function( )
 				catherine.animation.SetSeqAnimation( pl, actionData.seq, actionData.noAutoExit and 0 or nil, function( )
 					pl:SetNetVar( "doingAction", nil )
 				end, function( )
 					if ( actionData.doExitSeq ) then
-						catherine.animation.SetSeqAnimation( pl, actionData.doExitSeq, pl.SequenceDuration( pl, actionData.doExitSeq ), nil, function( )
+						catherine.animation.SetSeqAnimation( pl, actionData.doExitSeq, pl:SequenceDuration( actionData.doExitSeq ), nil, function( )
 							self:ExitAction( pl )
 						end )
 					end
 				end )
 			end )
 		else
-			catherine.animation.SetSeqAnimation( pl, actionData.seq, actionData.noAutoExit and 0 or nil, function( )
-					
-			end, function( )
+			catherine.animation.SetSeqAnimation( pl, actionData.seq, actionData.noAutoExit and 0 or nil, nil, function( )
 				self:ExitAction( pl )
 			end )
 		end
@@ -93,7 +91,7 @@ if ( SERVER ) then
 	end
 	
 	function PLUGIN:ExitAction( pl )
-		if ( !pl:GetNetVar( "isActioning" ) ) then
+		if ( !self:IsActioning( pl ) ) then
 			return false, "ACT_Plugin_Notify_Cant01"
 		end
 		
@@ -105,7 +103,7 @@ if ( SERVER ) then
 					local exitSeq = v.actions[ class ].doExitSeq
 
 					if ( exitSeq ) then
-						catherine.animation.SetSeqAnimation( pl, exitSeq, pl.SequenceDuration( pl, exitSeq ), nil, function( )
+						catherine.animation.SetSeqAnimation( pl, exitSeq, pl:SequenceDuration( exitSeq ), nil, function( )
 							catherine.animation.ResetSeqAnimation( pl )
 							pl:SetNetVar( "isActioning", nil )
 						end )
@@ -126,6 +124,13 @@ if ( SERVER ) then
 	function PLUGIN:PlayerSpawnedInCharacter( pl )
 		self:ExitAction( pl )
 	end
+	
+	function PLUGIN:Move( pl, moveData )
+		if ( pl:IsCharacterLoaded( ) and self:IsActioning( pl ) ) then
+			moveData:SetForwardSpeed( 0 )
+			moveData:SetSideSpeed( 0 )
+		end
+	end
 
 	concommand.Add( "cat_action_exit", function( pl )
 		PLUGIN:ExitAction( pl )
@@ -135,12 +140,13 @@ else
 	PLUGIN.MouseSensitive = 20
 	
 	function PLUGIN:PlayerBindPress( pl, bind, pressed )
-		if ( pl:GetNetVar( "isActioning" ) and bind == "+jump" ) then
+		if ( self:IsActioning( pl ) and bind == "+jump" ) then
 			if ( pl:GetNetVar( "doingAction" ) and pl.CAT_leavingAction ) then
 				pl.CAT_leavingAction = nil
 				timer.Remove( "Catherine.plugin.action.timer.WaitAction" )
 			else
 				pl.CAT_leavingAction = true
+				
 				timer.Create( "Catherine.plugin.action.timer.WaitAction", 1, 1, function( )
 					RunConsoleCommand( "cat_action_exit" )
 				end )
@@ -151,35 +157,57 @@ else
 	end
 	
 	function PLUGIN:InputMouseApply( command, x, y, ang )
-		if ( LocalPlayer( ):GetNetVar( "isActioning" ) ) then
+		if ( self:IsActioning( LocalPlayer( ) ) ) then
 			self.AngData = self.AngData - Angle( -y / self.MouseSensitive, x / self.MouseSensitive, 0 )
 			self.AngData.p = math.Clamp( self.AngData.p, -80, 80 )
 		else
 			self.AngData = Angle( 0, 0, 0 )
 		end
 	end
-	
+
 	function PLUGIN:CalcView( pl, pos, ang, fov )
-		if ( pl.GetViewEntity( pl ) == pl and pl:GetNetVar( "isActioning" ) ) then
-			local la = pl.LookupAttachment( pl, "eyes" )
+		if ( self:IsActioning( pl ) ) then
+			local data = { }
 			
-			if ( la == 0 ) then
-				la = pl.LookupAttachment( pl, "eyes" )
-			end
-			
-			local ga = pl.GetAttachment( pl, la ) 
-			local newAng = Angle( 0, pl.GetAngles( pl ).y, 0 ) + self.AngData
-			local data = util.TraceLine( {
-				start = ga.Pos,
-				endpos = ga.Pos + newAng.Forward( newAng ) * -80 + newAng.Up( newAng ) * 20 + newAng.Right( newAng ) * 0
+			local tr = util.TraceLine( {
+				start = pos,
+				endpos = pos - ( ang:Forward( ) * 100 )
 			} )
 
-			return {
-				origin = data.HitPos + data.HitNormal * 4,
-				angles = newAng
-			}
+			data.origin = tr.Fraction < 1 and ( tr.HitPos + tr.HitNormal * 5 ) or tr.HitPos
+			
+			if ( pl:GetViewEntity( ) == pl ) then
+				local la = pl:LookupAttachment( "eyes" )
+				
+				if ( la == 0 ) then
+					la = pl:LookupAttachment( "eyes" )
+				end
+				
+				local ga = pl:GetAttachment( la ) 
+				local newAng = Angle( 0, pl:GetAngles( ).y, 0 ) + self.AngData
+				local tr = util.TraceLine( {
+					start = ga.Pos,
+					endpos = ga.Pos + newAng:Forward( ) * -80 + newAng:Up( ) * 20 + newAng:Right( ) * 0
+				} )
+
+				data.origin = tr.HitPos + tr.HitNormal * 4
+				data.angles = newAng
+				data.fov = fov
+			end
+			
+			return GAMEMODE:CalcView( pl, data.origin, data.angles, data.fov )
 		end
 	end
+
+	function PLUGIN:ShouldDrawLocalPlayer( pl )
+		if ( self:IsActioning( pl ) ) then
+			return true
+		end
+	end
+end
+
+function PLUGIN:IsActioning( pl )
+	return pl:GetNetVar( "isActioning" )
 end
 
 for k, v in pairs( PLUGIN.actions ) do

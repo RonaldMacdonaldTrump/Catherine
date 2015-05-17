@@ -81,14 +81,8 @@ function GM:SpawnMenuOpen( )
 	return LocalPlayer( ):IsAdmin( )
 end
 
-function GM:ShouldDrawLocalPlayer( pl )
-	if ( pl:GetNetVar( "isActioning" ) ) then
-		return true
-	end
-end
-
 function GM:CalcView( pl, pos, ang, fov )
-	local viewData = self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov ) or { }
+	local viewData = self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
 
 	if ( catherine.intro.status ) then
 		viewData = {
@@ -98,18 +92,18 @@ function GM:CalcView( pl, pos, ang, fov )
 		return viewData
 	end
 	
-	if ( pl:GetNetVar( "isActioning" ) ) then
-		local data = util.TraceLine( {
-			start = pos, 
-			endpos = pos - ( ang:Forward( ) * 100 )
-		} )
+	--[[ // Thirdperson support :<
+	local data = util.TraceLine( {
+		start = pos,
+		endpos = pos - ( ang:Forward( ) * 100 )
+	} )
 
-		viewData = {
-			origin = data.Fraction < 1 and ( data.HitPos + data.HitNormal * 5 ) or data.HitPos
-		}
-		
-		return viewData
-	end
+	viewData = {
+		origin = data.Fraction < 1 and ( data.HitPos + data.HitNormal * 5 ) or data.HitPos
+	}
+	
+	return viewData
+	--]]
 	
 	if ( IsValid( catherine.vgui.character ) or !pl:IsCharacterLoaded( ) ) then
 		viewData = {
@@ -136,8 +130,8 @@ function GM:CalcView( pl, pos, ang, fov )
 			return viewData
 		end
 	end
-	
-	return self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
+
+	return viewData
 end
 
 function GM:HUDDrawScoreBoard( )
@@ -545,6 +539,27 @@ function GM:RenderScreenspaceEffects( )
 	tab[ "$pp_colour_mulb" ] = data.mulb or 0
 
 	DrawColorModify( tab )
+end
+
+function GM:ScreenResolutionChanged( oldW, oldH )
+	local scrW, scrH = ScrW( ), ScrH( )
+	local information = hook.Run( "GetSchemaInformation" )
+
+	catherine.hud.RegisterWelcomeIntroAnimation( 1, function( )
+		return information.title
+	end, "catherine_normal25", 2, 9, nil, scrW * 0.8, scrH * 0.55, TEXT_ALIGN_RIGHT )
+
+	catherine.hud.RegisterWelcomeIntroAnimation( 2, function( )
+		return information.desc
+	end, "catherine_normal15", 6, 8, nil, scrW * 0.8, scrH * 0.55 + 35, TEXT_ALIGN_RIGHT )
+
+	catherine.hud.RegisterWelcomeIntroAnimation( 3, function( )
+		return catherine.environment.GetDateString( ) .. " : " .. catherine.environment.GetTimeString( )
+	end, "catherine_normal15", 8, 10, nil, scrW * 0.8, scrH * 0.55 + 55, TEXT_ALIGN_RIGHT )
+
+	catherine.hud.RegisterWelcomeIntroAnimation( 4, function( )
+		return information.author
+	end, "catherine_normal20", 7, 9, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
 end
 
 netstream.Hook( "catherine.ShowHelp", function( )

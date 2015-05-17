@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.font = catherine.font or { lists = { } }
+catherine.font = catherine.font or { }
 
 function catherine.font.Register( uniqueID, font, size, weight, fontTable )
 	fontTable = fontTable or { }
@@ -27,17 +27,8 @@ function catherine.font.Register( uniqueID, font, size, weight, fontTable )
 		size = size,
 		weight = weight
 	} )
-	
-	catherine.font.lists[ uniqueID ] = fontTable
+
 	surface.CreateFont( uniqueID, fontTable )
-end
-
-function catherine.font.GetAll( )
-	return catherine.font.lists
-end
-
-function catherine.font.GetByID( uniqueID )
-	return catherine.font.lists[ uniqueID ]
 end
 
 local font = catherine.configs.Font
@@ -58,5 +49,3 @@ catherine.font.Register( "catherine_outline30", font, 30, 1000, { outline = true
 catherine.font.Register( "catherine_outline25", font, 25, 1000, { outline = true } )
 catherine.font.Register( "catherine_outline20", font, 20, 1000, { outline = true } )
 catherine.font.Register( "catherine_outline15", font, 15, 1000, { outline = true } )
-catherine.font.Register( "catherine_introTitle", "Garamond", ScreenScale( 50 ), 1000 )
-catherine.font.Register( "catherine_introSchema", "Garamond", 30, 1000 )

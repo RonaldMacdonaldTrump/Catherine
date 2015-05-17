@@ -143,6 +143,7 @@ if ( SERVER ) then
 	
 	function catherine.inventory.SetItemData( pl, uniqueID, key, newData )
 		local itemData = catherine.inventory.GetItemDatas( pl, uniqueID )
+		
 		itemData[ key ] = newData
 		
 		catherine.inventory.Work( pl, CAT_INV_ACTION_UPDATE, {
@@ -183,10 +184,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.inventory.CreateNetworkRegistry( pl, charVars )
-		local inventory = charVars._inv or { }
+		local inventory = charVars._inv
 		local changed = false
 		
-		for k, v in pairs( inventory ) do
+		for k, v in pairs( inventory or { } ) do
 			if ( catherine.item.FindByID( k ) ) then continue end
 			
 			inventory[ k ] = nil

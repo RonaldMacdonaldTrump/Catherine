@@ -63,6 +63,13 @@ function catherine.plugin.Include( dir )
 				catherine.util.Include( pluginDir .. "/faction/" .. v1 )
 			end
 			
+			for k, v in pairs( PLUGIN ) do
+				if ( type( v ) == "function" ) then
+					catherine.hook.caches[ k ] = catherine.hook.caches[ k ] or { }
+					catherine.hook.caches[ k ][ PLUGIN ] = v
+				end
+			end
+			
 			catherine.plugin.lists[ v ] = PLUGIN
 		else
 			MsgC( Color( 255, 255, 0 ), "[CAT ERROR] SORRY, The plugin <" .. v .. "> are do not have files named sh_plugin.lua, failed to loading it ...\n" )

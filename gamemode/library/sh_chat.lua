@@ -27,7 +27,7 @@ function catherine.chat.Register( uniqueID, classTable )
 	
 	if ( classTable.command and #classTable.command > 1 ) then
 		table.sort( classTable.command, function( a, b )
-			return string.utf8len( a ) > string.utf8len( b )
+			return a:utf8len( ) > b:utf8len( )
 		end )
 	end
 	
@@ -257,6 +257,7 @@ if ( SERVER ) then
 		local commandTable = classTable.command or { }
 		local noSpace = classTable.noSpace
 		
+		// What the hell is this code!? :< ...
 		for k, v in ipairs( type( commandTable ) == "table" and commandTable or { commandTable } ) do
 			if ( text:sub( 1, #v + ( noSpace and 0 or 1 ) ) == v .. ( noSpace and "" or " " ) ) then
 				text = text:sub( #( v .. ( noSpace and "" or " " ) ) + 1 )
@@ -285,16 +286,16 @@ if ( SERVER ) then
 		hook.Run( "ChatPosted", chatInformation )
 	end
 	
-	function catherine.chat.Send( pl, classTable, text, target, ... )
+	function catherine.chat.Send( pl, classTable, text, forceTarget, ... )
 		classTable = type( classTable ) == "string" and catherine.chat.FindByID( classTable ) or classTable
 		if ( !classTable or type( classTable ) != "table" ) then return end
 		local uniqueID = classTable.uniqueID
 
-		if ( classTable.isGlobal and !target ) then
+		if ( classTable.isGlobal and !forceTarget ) then
 			netstream.Start( nil, "catherine.chat.Post", { pl, uniqueID, text, { ... } } )
 		else
-			if ( type( target ) == "table" and #target > 0 ) then
-				netstream.Start( target, "catherine.chat.Post", {
+			if ( type( forceTarget ) == "table" and #forceTarget > 0 ) then
+				netstream.Start( forceTarget, "catherine.chat.Post", {
 					pl,
 					uniqueID,
 					text,
@@ -319,6 +320,7 @@ if ( SERVER ) then
 		
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			if ( classTable.canHear and classTable.canHear( pl ) == false ) then continue end
+			
 			if ( pl != v and catherine.util.CalcDistanceByPos( pl, v ) <= range ) then
 				target[ #target + 1 ] = v
 			end
@@ -359,13 +361,13 @@ else
 	catherine.chat.isOpened = catherine.chat.isOpened or false
 	catherine.chat.msg = catherine.chat.msg or { }
 	catherine.chat.history = catherine.chat.history or { }
-
 	local typingText = ""
 	local CHATBox_w, CHATBox_h = ScrW( ) * 0.5, ScrH( ) * 0.3
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
+	local maxchatLine = catherine.configs.maxChatboxLine
 	
 	netstream.Hook( "catherine.chat.Post", function( data )
-		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then return end
+		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		local speaker = data[ 1 ]
 		local classTable = catherine.chat.FindByID( data[ 2 ] )
 		local text = data[ 3 ]
@@ -381,7 +383,7 @@ else
 	chat.AddTextBuffer = chat.AddTextBuffer or chat.AddText
 	
 	function chat.AddText( ... )
-		if ( !LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then return end
+		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		local data = { }
 		local lastColor = Color( 255, 255, 255 )
 
@@ -390,11 +392,12 @@ else
 		end
 
 		catherine.chat.AddText( unpack( data ) )
-		chat.PlaySound( )
+		surface.PlaySound( "common/talk.wav" )
 
 		for k, v in ipairs( data ) do
 			if ( type( v ) != "Player" ) then continue end
-			local pl, index = v, k
+			local pl = v
+			local index = k
 			
 			table.remove( data, index )
 			table.insert( data, index, team.GetColor( pl:Team( ) ) )
@@ -410,16 +413,19 @@ else
 		msg:SetFont( "catherine_normal17" )
 		msg:SetMaxWidth( CHATBox_w - 16 )
 		msg:Run( ... )
+		
 		catherine.chat.msg[ #catherine.chat.msg + 1 ] = msg
 		
 		if ( catherine.chat.backpanel ) then
-			catherine.chat.backpanel.history:AddItem( msg )
 			local scrollBar = catherine.chat.backpanel.history.VBar
+			
+			catherine.chat.backpanel.history:AddItem( msg )
+
 			scrollBar.CanvasSize = scrollBar.CanvasSize + msg:GetTall( )
 			scrollBar:AnimateTo( scrollBar.CanvasSize, 0.25, 0, 0.25 )
 		end
 		
-		if ( #catherine.chat.msg > 50 ) then
+		if ( #catherine.chat.msg > maxchatLine ) then
 			catherine.chat.msg[ 1 ]:Remove( )
 			table.remove( catherine.chat.msg, 1 )
 		end
@@ -438,11 +444,10 @@ else
 		catherine.chat.backpanel.history:Dock( FILL )
 		catherine.chat.backpanel.history.VBar:SetWide( 0 )
 		catherine.chat.backpanel.history.alpha = 255
-		//catherine.chat.backpanel.history
 	end
 	
 	function catherine.chat.SetStatus( bool )
-		if ( !LocalPlayer( ).IsCharacterLoaded( LocalPlayer( ) ) ) then return end
+		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		
 		catherine.chat.CreateBase( )
 		catherine.chat.isOpened = bool
@@ -471,7 +476,7 @@ else
 		end
 		
 		catherine.chat.backpanel.PaintOver = function( pnl, w, h )
-			if ( typingText.sub( typingText, 1, 1 ) == "/" ) then
+			if ( typingText:sub( 1, 1 ) == "/" ) then
 				surface.SetDrawColor( 50, 50, 50, 255 )
 				surface.SetMaterial( Material( "gui/gradient_up" ) )
 				surface.DrawTexturedRect( 0, 0, w, h )
@@ -493,13 +498,13 @@ else
 						if ( yPos <= 10 ) then continue end
 						
 						local commandText = "/" .. v.command
-						local currText = commandText.sub( commandText, 1, sub + 1 )
+						local currText = commandText:sub( 1, sub + 1 )
 						
 						surface.SetFont( "catherine_normal20" )
 						local tw, th = surface.GetTextSize( currText )
 
 						draw.SimpleText( currText, "catherine_normal20", 15, yPos, Color( 150, 235, 150, 255 ), TEXT_ALIGN_LEFT, 1 )
-						draw.SimpleText( commandText.gsub( commandText, currText, "" ), "catherine_normal20", 15 + tw, yPos, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( commandText:gsub( currText, "" ), "catherine_normal20", 15 + tw, yPos, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
 					end
 				end
 				

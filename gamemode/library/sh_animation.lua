@@ -369,3 +369,7 @@ end
 function catherine.animation.GetSeqAnimation( pl )
 	return pl:GetNetVar( "seqAni", false )
 end
+
+function catherine.animation.GetSeqAnimation( pl )
+	return pl:GetNetVar( "seqAni", false )
+end

@@ -18,9 +18,10 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.bar = catherine.bar or { }
 catherine.bar.lists = { }
-local barMaterial = Material( "CAT/bar_background.png", "smooth" )
+local barW = ScrW( ) * catherine.configs.mainBarWideScale
+local barH = catherine.configs.mainBarTallSize
 
-function catherine.bar.Register( getFunc, max, color, uniqueID )
+function catherine.bar.Register( getFunc, maxFunc, col, uniqueID, alwaysShowing )
 	for k, v in pairs( catherine.bar.lists ) do
 		if ( ( v.uniqueID and uniqueID ) and v.uniqueID == uniqueID ) then
 			return
@@ -31,43 +32,72 @@ function catherine.bar.Register( getFunc, max, color, uniqueID )
 	
 	catherine.bar.lists[ index ] = {
 		getFunc = getFunc,
-		max = max,
-		color = color,
+		maxFunc = maxFunc,
+		col = col,
 		uniqueID = uniqueID,
 		w = 0,
-		y = -10 + ( index * 14 ),
-		alpha = 0
+		y = -( barH / 2 ) + ( index * barH / 2 ),
+		a = 0,
+		alwaysShowing = alwaysShowing,
+		lifeTime = 0,
+		prevValue = 0
 	}
 end
 
+function catherine.bar.Remove( uniqueID )
+	for k, v in pairs( catherine.bar.lists ) do
+		if ( v.uniqueID and v.uniqueID == uniqueID ) then
+			table.remove( catherine.bar.lists, k )
+		end
+	end
+end
+
 function catherine.bar.Draw( )
-	if ( catherine.option.Get( "CONVAR_BAR" ) == "0" ) then return end
+	if ( GetConVarString( "cat_convar_bar" ) == "0" ) then return end
 	if ( !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) or #catherine.bar.lists == 0 ) then
 		hook.Run( "HUDDrawBarBottom", 5, 5 )
 		return
 	end
 	
-	local count = 0
+	local i = 0
 	
 	for k, v in pairs( catherine.bar.lists ) do
-		local percent = math.min( v.getFunc( ) / v.max( ), 1 )
+		local percent = math.min( v.getFunc( ) / v.maxFunc( ), 1 )
 		
-		if ( percent == 0 ) then
-			v.alpha = Lerp( 0.03, v.alpha, 0 )
-		else
-			count = count + 1
-			v.alpha = Lerp( 0.03, v.alpha, 255 )
+		if ( v.prevValue != percent ) then
+			v.lifeTime = CurTime( ) + 5
 		end
+
+		v.prevValue = percent
 		
-		v.w = math.Approach( v.w, ( ScrW( ) * 0.3 ) * percent, 1 )
-		v.y = Lerp( 0.03, v.y, -5 + count * 10 )
+		if ( !v.alwaysShowing ) then
+			if ( v.lifeTime <= CurTime( ) ) then
+				v.a = Lerp( 0.03, v.a, 0 )
+			else
+				if ( percent != 0 ) then
+					i = i + 1
+					v.a = Lerp( 0.03, v.a, 255 )
+				else
+					v.a = Lerp( 0.03, v.a, 0 )
+				end
+			end
+		else
+			if ( percent != 0 ) then
+				i = i + 1
+				v.a = Lerp( 0.03, v.a, 255 )
+			else
+				v.a = Lerp( 0.03, v.a, 0 )
+			end
+		end
+
+		v.w = math.Approach( v.w, barW * percent, 1 )
+		v.y = Lerp( 0.09, v.y, -barH + i * barH * 2 )
 		
-		if ( v.alpha > 0 ) then
-			surface.SetDrawColor( 255, 255, 255, v.alpha - 30 )
-			surface.SetMaterial( barMaterial )
-			surface.DrawTexturedRect( 5, v.y + 4, ScrW( ) * 0.3, 1 )
+		if ( v.a > 0 ) then
+			local col = v.col
 			
-			draw.RoundedBox( 0, 5, v.y, v.w, 5, Color( v.color.r, v.color.g, v.color.b, v.alpha ) )
+			draw.RoundedBox( 0, 5, v.y, barW, barH, Color( 255, 255, 255, v.a / 2 ) )
+			draw.RoundedBox( 0, 5, v.y, v.w, barH, Color( col.r, col.g, col.b, v.a ) )
 		end
 	end
 	
@@ -79,11 +109,11 @@ do
 		return LocalPlayer( ):Health( )
 	end, function( )
 		return LocalPlayer( ):GetMaxHealth( )
-	end, Color( 255, 0, 150 ), "health" )
+	end, Color( 255, 50, 50 ), "health", true )
 
 	catherine.bar.Register( function( )
 		return LocalPlayer( ):Armor( )
 	end, function( )
 		return 255
-	end, Color( 255, 255, 150 ), "armor" )
+	end, Color( 50, 50, 255 ), "armor", true )
 end
