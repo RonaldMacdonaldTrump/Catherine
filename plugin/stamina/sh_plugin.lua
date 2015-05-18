@@ -83,10 +83,11 @@ if ( SERVER ) then
 	end
 else
 	do
-		catherine.bar.Register( function( )
-			return catherine.character.GetCharVar( LocalPlayer( ), "stamina", 100 )
-		end, function( )
-			return 100
-		end, Color( 0, 206, 209 ), "stamina" )
+		catherine.bar.Register( "stamina", false, function( )
+				return catherine.character.GetCharVar( LocalPlayer( ), "stamina", 100 )
+			end, function( )
+				return 100
+			end, Color( 0, 206, 209 )
+		)
 	end
 end
