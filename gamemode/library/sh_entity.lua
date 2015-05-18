@@ -80,4 +80,14 @@ else
 		menu:Open( )
 		menu:Center( )
 	end )
+	
+	function catherine.entity.LanguageChanged( )
+		for k, v in pairs( ents.GetAll( ) ) do
+			if ( !v.LanguageChanged ) then continue end
+			
+			v:LanguageChanged( )
+		end
+	end
+	
+	hook.Add( "LanguageChanged", "catherine.entity.LanguageChanged", catherine.entity.LanguageChanged )
 end

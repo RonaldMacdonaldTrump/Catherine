@@ -58,26 +58,33 @@ if ( SERVER ) then
 	
 	function ENT:OnRemove( )
 		local eff = EffectData( )
-		eff:SetStart( self.GetPos( self ) )
-		eff:SetOrigin( self.GetPos( self ) )
+		eff:SetStart( self:GetPos( ) )
+		eff:SetOrigin( self:GetPos( ) )
 		eff:SetScale( 8 )
+		
 		util.Effect( "GlassImpact", eff, true, true )
+		
 		self:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav" )
 	end
 else
 	local toscreen = FindMetaTable( "Vector" ).ToScreen
 	
 	function ENT:DrawEntityTargetID( pl, ent, a )
-		local pos = toscreen( self.LocalToWorld( self, self.OBBCenter( self ) ) )
+		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		
-		if ( !ent.shipment_title or !ent.shipment_desc ) then
-			ent.shipment_title = LANG( "Business_UI_Shipment_Title" )
-			ent.shipment_desc = LANG( "Business_UI_Shipment_Desc" )
+		if ( !self.shipment_title or !self.shipment_desc ) then
+			self.shipment_title = LANG( "Business_UI_Shipment_Title" )
+			self.shipment_desc = LANG( "Business_UI_Shipment_Desc" )
 		end
 		
-		draw.SimpleText( ent.shipment_title, "catherine_outline20", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( ent.shipment_desc, "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( self.shipment_title, "catherine_outline20", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( self.shipment_desc, "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
+	end
+	
+	function ENT:LanguageChanged( )
+		self.shipment_title = LANG( "Business_UI_Shipment_Title" )
+		self.shipment_desc = LANG( "Business_UI_Shipment_Desc" )
 	end
 end
 
