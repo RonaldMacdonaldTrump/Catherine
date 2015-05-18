@@ -19,60 +19,78 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.hook = catherine.hook or { }
 catherine.hook.caches = { }
 
-hook.CallBackup = hook.CallBackup or hook.Call
+hook.CallCatHooks = hook.CallCatHooks or hook.Call
 
-function hook.Call( name, gm, ... )
-	local cacheData = catherine.hook.caches[ name ]
+function hook.Call( hookID, gamemode, ... )
+	local cacheData = catherine.hook.caches[ hookID ]
 	
 	if ( cacheData ) then
 		for k, v in pairs( cacheData ) do
-			local result = { v( k, ... ) }
+			local success, result = pcall( v, k, ... )
 
+			if ( success ) then
+				result = { result }
+				
+				if ( #result > 0 ) then
+					return unpack( result )
+				end
+			else
+				catherine.bugX.Work( CAT_BUG_X_FLAG_PLUGIN, {
+					pluginID = k.uniqueID,
+					hookID = hookID
+				} )
+				
+				ErrorNoHalt( "[CAT ERROR] SORRY, On the plugin <" .. k.uniqueID .. ">'s hooks <" .. hookID .. "> has a critical error ...\n" .. result .. "\n" )
+			end
+		end
+	end
+
+	if ( Schema and Schema[ hookID ] ) then
+		local success, result = pcall( Schema[ hookID ], Schema, ... )
+		
+		if ( success ) then
+			result = { result }
+			
 			if ( #result > 0 ) then
 				return unpack( result )
 			end
-		end
-	end
-
-	if ( Schema and Schema[ name ] ) then
-		local result = { Schema[ name ]( Schema, ... ) }
-
-		if ( #result > 0 ) then
-			return unpack( result )
+		else
+			ErrorNoHalt( "[CAT ERROR] SORRY, Schema hooks <" .. hookID .. "> has a critical error ...\n" .. result .. "\n" )
 		end
 	end
 	
-	return hook.CallBackup( name, gm, ... )
+	return hook.CallCatHooks( hookID, gamemode, ... )
 end
 
 --[[ // Old :<
-	for k, v in pairs( catherine.plugin.GetAll( ) ) do
-		if ( !v[ name ] ) then continue end
-		local success, result = pcall( v[ name ], v, ... )
-		
-		if ( success ) then
-			if ( result == nil ) then continue end
+for k, v in pairs( catherine.plugin.GetAll( ) ) do
+	if ( !v[ name ] ) then continue end
+	local success, result = pcall( v[ name ], v, ... )
+	
+	if ( success ) then
+		if ( result == nil ) then continue end
 
+		return result
+	else
+		catherine.bugX.Work( CAT_BUG_X_FLAG_PLUGIN, {
+			pluginID = k,
+			hookID = name
+		} )
+		ErrorNoHalt( "[CAT ERROR] SORRY, On the plugin <" .. k .. ">'s hooks <" .. name .. "> has a critical error ...\n" .. result .. "\n" )
+	end
+end
+
+if ( Schema and Schema[ name ] ) then
+	local success, result = pcall( Schema[ name ], Schema, ... )
+
+	if ( success ) then
+		if ( result != nil ) then
 			return result
-		else
-			catherine.bugX.Work( CAT_BUG_X_FLAG_PLUGIN, {
-				pluginID = k,
-				hookID = name
-			} )
-			ErrorNoHalt( "[CAT ERROR] SORRY, On the plugin <" .. k .. ">'s hooks <" .. name .. "> has a critical error ...\n" .. result .. "\n" )
 		end
+	else
+		ErrorNoHalt( "[CAT ERROR] SORRY, Schema hooks <" .. name .. "> has a critical error ...\n" .. result .. "\n" )
 	end
-	
-	if ( Schema and Schema[ name ] ) then
-		local success, result = pcall( Schema[ name ], Schema, ... )
+end
 
-		if ( success ) then
-			if ( result != nil ) then
-				return result
-			end
-		else
-			ErrorNoHalt( "[CAT ERROR] SORRY, Schema hooks <" .. name .. "> has a critical error ...\n" .. result .. "\n" )
-		end
-	end
-	
-	return hook.CallBackup( name, gm, ... )--]]
+return hook.CallBackup( name, gm, ... )
+--]]
