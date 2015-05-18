@@ -58,7 +58,12 @@ function PANEL:GetInventory( )
 		tab[ category ][ v.uniqueID ] = v
 	end
 	
+	table.sort( tab, function( a, b )
+		return a.category < b.category
+	end )
+	
 	self.weight:SetWeight( catherine.inventory.GetWeights( ) )
+	
 	return tab
 end
 

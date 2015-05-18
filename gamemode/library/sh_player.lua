@@ -323,7 +323,7 @@ if ( SERVER ) then
 	
 	hook.Add( "PlayerSwitchWeapon", "catherine.player.PlayerSwitchWeapon", catherine.player.PlayerSwitchWeapon )
 else
-	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 1
+	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 0.05
 	
 	netstream.Hook( "catherine.player.CheckLocalPlayer", function( )
 		hook.Add( "Tick", "catherine.player.CheckLocalPlayer.Tick", function( )
@@ -334,7 +334,7 @@ else
 					catherine.player.nextLocalPlayerCheck = nil
 					return
 				end
-				catherine.player.nextLocalPlayerCheck = CurTime( ) + 1
+				catherine.player.nextLocalPlayerCheck = CurTime( ) + 0.05
 			end
 		end )
 	end )

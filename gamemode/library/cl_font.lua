@@ -24,9 +24,9 @@ end
 
 local font = catherine.configs.Font
 
-for i = 1, 6 do
+for i = 1, 8 do
 	local size = 10 + ( 5 * i )
-	
+
 	catherine.font.Register( "catherine_normal" .. size, {
 		font = font,
 		size = size,
@@ -34,7 +34,7 @@ for i = 1, 6 do
 	} )
 end
 
-for i = 1, 4 do
+for i = 1, 8 do
 	local size = 10 + ( 5 * i )
 	
 	catherine.font.Register( "catherine_outline" .. size, {
