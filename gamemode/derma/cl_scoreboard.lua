@@ -50,7 +50,7 @@ function PANEL:OnMenuRecovered( )
 end
 
 function PANEL:MenuPaint( w, h )
-	draw.SimpleText( GetHostName( ) .. " : " .. #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_normal25", w, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
+	draw.SimpleText( GetHostName( ) .. " : " .. #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_normal20", w, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
 end
 
 function PANEL:Refresh( )

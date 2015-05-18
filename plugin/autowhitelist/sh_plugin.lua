@@ -55,7 +55,7 @@ if ( SERVER ) then
 		if ( !self.enable ) then return end
 		
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			if ( ( v.CAT_aw_nextRefresh or CurTime( ) ) <= CurTime( ) ) then
+			if ( ( v.CAT_aw_nextRefresh or 0 ) <= CurTime( ) ) then
 				local prevTime = catherine.character.GetCharVar( v, "aw_playTime", 0 )
 				
 				catherine.character.SetCharVar( v, "aw_playTime", prevTime + self.refreshTime )

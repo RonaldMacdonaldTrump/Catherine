@@ -39,18 +39,19 @@ function PLUGIN:DataSave( )
 end
 
 function PLUGIN:AddText( pl, text, size )
-	local tr = pl.GetEyeTraceNoCursor( pl )
+	local tr = pl:GetEyeTraceNoCursor( )
 	local index = #self.textLists + 1
 	local data = {
 		index = index,
 		pos = tr.HitPos + tr.HitNormal,
-		ang = tr.HitNormal.Angle( tr.HitNormal ),
+		ang = tr.HitNormal:Angle( ),
 		text = text,
 		size = math.max( math.abs( size or 0.25 ), 0.005 )
 	}
+	local ang = data.ang
 	
-	data.ang:RotateAroundAxis( data.ang.Up( data.ang ), 90 )
-	data.ang:RotateAroundAxis( data.ang.Forward( data.ang ), 90 )
+	ang:RotateAroundAxis( ang:Up( ), 90 )
+	ang:RotateAroundAxis( ang:Forward( ), 90 )
 
 	self.textLists[ index ] = data
 	
@@ -60,6 +61,8 @@ end
 
 function PLUGIN:RemoveText( pos, rad )
 	rad = tonumber( rad )
+	
+	if ( !rad ) then return 0 end
 	local i = 0
 	
 	for k, v in pairs( self.textLists ) do

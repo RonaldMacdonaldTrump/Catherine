@@ -410,7 +410,7 @@ else
 	function catherine.chat.AddText( ... )
 		local msg = vgui.Create( "catherine.vgui.ChatMarkUp" )
 		msg:Dock( TOP )
-		msg:SetFont( "catherine_normal17" )
+		msg:SetFont( "catherine_chat" )
 		msg:SetMaxWidth( CHATBox_w - 16 )
 		msg:Run( ... )
 		
