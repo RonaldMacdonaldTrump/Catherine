@@ -215,10 +215,10 @@ if ( SERVER ) then
 			end
 
 			local ent = ents.Create( "prop_ragdoll" )
-			ent:SetAngles( pl.GetAngles( pl ) )
+			ent:SetAngles( pl:GetAngles( ) )
 			ent:SetModel( pl:GetModel( ) )
-			ent:SetPos( pl.GetPos( pl ) )
-			ent:SetSkin( pl.GetSkin( pl ) )
+			ent:SetPos( pl:GetPos( ) )
+			ent:SetSkin( pl:GetSkin( ) )
 			ent:Spawn( )
 			ent:SetNetVar( "player", pl )
 			ent:SetCollisionGroup( COLLISION_GROUP_WEAPON )
@@ -229,6 +229,7 @@ if ( SERVER ) then
 				pl:SetNetVar( "ragdollIndex", nil )
 				pl:SetNetVar( "isRagdolled", nil )
 				
+				pl:SetPos( ent:GetPos( ) )
 				pl:SetNotSolid( false )
 				pl:SetNoDraw( false )
 				pl:Freeze( false )
@@ -262,9 +263,39 @@ if ( SERVER ) then
 			pl:SetNetVar( "isRagdolled", true )
 			
 			if ( time ) then
+				local uniqueID = "Catherine.timer.RagdollWork_" .. ent:EntIndex( )
+				
 				catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
 					catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 					catherine.player.RagdollWork( pl )
+					timer.Remove( uniqueID )
+				end )
+
+				timer.Create( uniqueID, 1, 0, function( )
+					if ( !IsValid( pl ) ) then return end
+					local ragdoll = pl.CAT_ragdoll
+
+					if ( IsValid( ragdoll ) ) then
+						if ( ragdoll:GetVelocity( ):Length2D( ) >= 4 ) then
+							if ( !ragdoll.CAT_paused ) then
+								ragdoll.CAT_paused = true
+								catherine.util.ProgressBar( pl, false )
+							end
+
+							return
+						elseif ( ragdoll.CAT_paused ) then
+							catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
+								catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
+								catherine.player.RagdollWork( pl )
+								timer.Remove( uniqueID )
+							end )
+							
+							ragdoll.CAT_paused = nil
+						end
+					else
+						//catherine.player.RagdollWork( pl )
+						timer.Remove( uniqueID )
+					end
 				end )
 			else
 				catherine.util.TopNotify( pl, LANG( pl, "Player_Message_Ragdolled_01" ) )

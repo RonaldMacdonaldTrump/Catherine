@@ -219,15 +219,19 @@ if ( SERVER ) then
 			local timerID = message .. pl:SteamID( )
 			
 			timer.Remove( timerID )
-			timer.Create( timerID, time, 1, function( )
-				if ( IsValid( pl ) ) then
-					func( pl )
-				end
-			end )
+			
+			if ( message != false ) then
+				timer.Create( timerID, time, 1, function( )
+					if ( IsValid( pl ) ) then
+						func( pl )
+					end
+				end )
+			end
 		end
 		
 		netstream.Start( pl, "catherine.util.ProgressBar", {
-			message, time
+			message,
+			time
 		} )
 	end
 	
@@ -366,12 +370,17 @@ else
 	end )
 
 	netstream.Hook( "catherine.util.ProgressBar", function( data )
+		if ( data[ 1 ] == false ) then
+			catherine.hud.progressBar = nil
+			return
+		end
+		
 		catherine.hud.ProgressBarAdd( data[ 1 ], data[ 2 ] )
 	end )
 	
 	netstream.Hook( "catherine.util.TopNotify", function( data )
 		if ( data == false ) then
-			catherine.hud.TopNotify = nil
+			catherine.hud.topNotify = nil
 			return
 		end
 		

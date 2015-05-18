@@ -111,10 +111,8 @@ function GM:PlayerSpawn( pl )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	pl:SetNetVar( "isTied", false )
 	pl:SetupHands( )
-	
-	if ( catherine.player.IsRagdolled( pl ) ) then
-		catherine.util.TopNotify( pl, false )
-	end
+
+	catherine.util.TopNotify( pl, false )
 
 	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
 	pl:AllowFlashlight( status )
@@ -194,16 +192,18 @@ function GM:EntityTakeDamage( ent, dmginfo )
 			local attacker = dmginfo:GetAttacker( )
 			local amount = dmginfo:GetDamage( )
 			
-			pl.CAT_ignore_hurtSound = true
-			pl:TakeDamage( amount, attacker, inflictor )
-			pl.CAT_ignore_hurtSound = nil
+			if ( amount >= 20 or dmginfo:IsBulletDamage( ) ) then
+				pl.CAT_ignore_hurtSound = true
+				pl:TakeDamage( amount, attacker, inflictor )
+				pl.CAT_ignore_hurtSound = nil
 
-			if ( pl:Health( ) <= 0 ) then
-				if ( !pl.CAT_deathSoundPlayed ) then
-					hook.Run( "PlayerDeathSound", pl, ent )
+				if ( pl:Health( ) <= 0 ) then
+					if ( !pl.CAT_deathSoundPlayed ) then
+						hook.Run( "PlayerDeathSound", pl, ent )
+					end
+				else
+					hook.Run( "PlayerTakeDamage", pl, attacker, ent )
 				end
-			else
-				hook.Run( "PlayerTakeDamage", pl, attacker, ent )
 			end
 		end
 	end
@@ -242,7 +242,7 @@ function GM:KeyPress( pl, key )
 		if ( !IsValid( ent ) ) then return end
 		
 		if ( ent:GetClass( ) == "prop_ragdoll" ) then
-			ent = ent.GetNetVar( ent, "player" )
+			ent = ent:GetNetVar( "player" )
 		end
 		
 		if ( IsValid( ent ) and ent:IsPlayer( ) ) then
@@ -424,9 +424,7 @@ function GM:PlayerDeath( pl )
 		pl:Spawn( )
 	end )
 
-	if ( catherine.player.IsRagdolled( pl ) ) then
-		catherine.util.TopNotify( pl, false )
-	end
+	catherine.util.TopNotify( pl, false )
 	
 	pl:SetNetVar( "nextSpawnTime", CurTime( ) + respawnTime )
 	pl:SetNetVar( "deathTime", CurTime( ) )

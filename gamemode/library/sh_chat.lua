@@ -164,7 +164,7 @@ catherine.chat.Register( "ooc", {
 			icon = Material( "icon16/star.png" )
 		end
 		
-		chat.AddText( icon, Color( 40, 250, 250 ), "[OOC] ", pl, color_white, " : ".. text )
+		chat.AddText( icon, Color( 250, 40, 40 ), "[OOC] ", pl, color_white, " : ".. text )
 	end,
 	isGlobal = true,
 	command = {
@@ -188,7 +188,7 @@ catherine.chat.Register( "ooc", {
 
 catherine.chat.Register( "looc", {
 	func = function( pl, text )
-		chat.AddText( Color( 40, 250, 250 ), "[LOOC] ", pl, color_white, " : ".. text )
+		chat.AddText( Color( 250, 40, 40 ), "[LOOC] ", pl, color_white, " : ".. text )
 	end,
 	canHearRange = 600,
 	command = {
