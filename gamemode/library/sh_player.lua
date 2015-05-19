@@ -123,8 +123,8 @@ if ( SERVER ) then
 				
 				if ( !IsValid( target ) ) then return end
 				
-				if ( target.GetClass( target ) == "prop_ragdoll" ) then
-					target = target.GetNetVar( target, "player" )
+				if ( target:GetClass( ) == "prop_ragdoll" ) then
+					target = target:GetNetVar( "player" )
 				end
 				
 				if ( IsValid( target ) ) then
@@ -158,8 +158,8 @@ if ( SERVER ) then
 				
 				if ( !IsValid( target ) ) then return end
 				
-				if ( target.GetClass( target ) == "prop_ragdoll" ) then
-					target = target.GetNetVar( target, "player" )
+				if ( target:GetClass( ) == "prop_ragdoll" ) then
+					target = target:GetNetVar( "player" )
 				end
 		
 				if ( IsValid( target ) ) then
@@ -172,7 +172,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.player.BunnyHopProtection( pl )
-		if ( pl.KeyPressed( pl, IN_JUMP ) and ( pl.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
+		if ( pl:KeyPressed( IN_JUMP ) and ( pl.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
 			if ( !pl.CAT_nextBunnyCheck ) then
 				pl.CAT_nextBunnyCheck = CurTime( ) + 0.05
 			end
@@ -180,7 +180,6 @@ if ( SERVER ) then
 			pl.CAT_bunnyCount = ( pl.CAT_bunnyCount or 0 ) + 1
 			
 			if ( pl.CAT_bunnyCount >= 10 ) then
-				pl:SetJumpPower( 150 )
 				catherine.util.NotifyLang( pl, "Basic_Notify_BunnyHop" )
 				pl:Freeze( true )
 				pl.CAT_bunnyFreezed = true
@@ -308,9 +307,15 @@ if ( SERVER ) then
 	end
 
 	function META:SetWeaponRaised( bool, wep )
-		if ( !IsValid( self ) or !self:IsCharacterLoaded( ) ) then return end
 		wep = wep or self:GetActiveWeapon( )
 		
+		self:SetNetVar( "weaponRaised", bool )
+		
+		if ( IsValid( wep ) ) then
+			wep:SetNextPrimaryFire( CurTime( ) + 1 )
+			wep:SetNextSecondaryFire( CurTime( ) + 1 )
+		end
+		--[[
 		if ( wep.AlwaysLowered ) then
 			self:SetNetVar( "weaponRaised", false )
 			return
@@ -333,17 +338,26 @@ if ( SERVER ) then
 			
 			wep:SetNextPrimaryFire( CurTime( ) + time )
 			wep:SetNextSecondaryFire( CurTime( ) + time )
-		end
+		end--]]
 	end
 
 	function META:ToggleWeaponRaised( )
-		if ( self:GetWeaponRaised( ) ) then
-			self:SetWeaponRaised( false )
-		else
-			self:SetWeaponRaised( true )
+		local bool = self:GetWeaponRaised( )
+		
+		self:SetWeaponRaised( !bool )
+		
+		local wep = self:GetActiveWeapon( )
+		
+		if ( IsValid( wep ) ) then
+			if ( bool and wep.OnRaised ) then
+				wep:OnRaised( )
+			elseif ( !bool and wep.OnLowered ) then
+				wep:OnLowered( )
+			end
 		end
 	end
 
+	--[[
 	function catherine.player.PlayerSwitchWeapon( pl, oldWep, newWep )
 		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then
 			pl:SetWeaponRaised( false, newWep )
@@ -353,6 +367,7 @@ if ( SERVER ) then
 	end
 	
 	hook.Add( "PlayerSwitchWeapon", "catherine.player.PlayerSwitchWeapon", catherine.player.PlayerSwitchWeapon )
+	--]]
 else
 	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 0.05
 	
@@ -372,6 +387,20 @@ else
 end
 
 function META:GetWeaponRaised( )
+	local wep = self:GetActiveWeapon( )
+	
+	if ( IsValid( wep ) ) then
+		if ( wep.IsAlwaysRaised or catherine.configs.alwaysRaised[ wep:GetClass( ) ] ) then
+			return true
+		elseif ( wep.IsAlwaysLowered ) then
+			return false
+		end
+	end
+	
+	if ( catherine.player.IsTied( self ) ) then
+		return false
+	end
+	
 	return self:GetNetVar( "weaponRaised", false )
 end
 

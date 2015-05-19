@@ -66,8 +66,14 @@ end
 function SWEP:PrimaryAttack( )
 	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
+	
+	if ( hook.Run( "PlayerCanThrowPunch", pl ) == false ) then
+		return
+	end
+	
 	local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
-	if ( !pl:GetWeaponRaised( ) or stamina < 10 ) then
+	
+	if ( stamina < 10 ) then
 		return
 	end
 	
