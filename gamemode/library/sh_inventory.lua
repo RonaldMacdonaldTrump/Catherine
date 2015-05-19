@@ -117,10 +117,25 @@ if ( SERVER ) then
 				invMaxWeight = invMaxWeight + ( v.itemCount * ( itemTable.weightPlus or 0 ) )
 			end
 			
-			invWeight = invWeight + ( v.itemCount * ( itemTable.weight ) )
+			invWeight = invWeight + ( v.itemCount * itemTable.weight )
 		end
 		
 		return invWeight + ( customAdd or 0 ), invMaxWeight
+	end
+	
+	function catherine.inventory.GetOnlyMaxWeight( pl )
+		local inventory = catherine.inventory.Get( pl )
+		local invMaxWeight = catherine.configs.baseInventoryWeight
+		
+		for k, v in pairs( inventory ) do
+			local itemTable = catherine.item.FindByID( k )
+
+			if ( itemTable and itemTable.isBag ) then
+				invMaxWeight = invMaxWeight + ( v.itemCount * ( itemTable.weightPlus or 0 ) )
+			end
+		end
+		
+		return invMaxWeight
 	end
 	
 	function catherine.inventory.HasSpace( pl, customAdd )
@@ -184,10 +199,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.inventory.CreateNetworkRegistry( pl, charVars )
-		local inventory = charVars._inv
+		local inventory = charVars._inv or { }
 		local changed = false
 		
-		for k, v in pairs( inventory or { } ) do
+		for k, v in pairs( inventory ) do
 			if ( catherine.item.FindByID( k ) ) then continue end
 			
 			inventory[ k ] = nil
@@ -203,6 +218,10 @@ if ( SERVER ) then
 else
 	function catherine.inventory.Get( )
 		return table.Copy( catherine.character.GetVar( LocalPlayer( ), "_inv", { } ) )
+	end
+	
+	function catherine.inventory.GetInvItem( uniqueID )
+		return catherine.inventory.Get( )[ uniqueID ]
 	end
 
 	function catherine.inventory.GetItemInt( uniqueID )
@@ -232,10 +251,25 @@ else
 				invMaxWeight = invMaxWeight + ( v.itemCount * ( itemTable.weightPlus or 0 ) )
 			end
 			
-			invWeight = invWeight + ( v.itemCount * ( itemTable.weight ) )
+			invWeight = invWeight + ( v.itemCount * itemTable.weight )
 		end
 		
 		return invWeight + ( customAdd or 0 ), invMaxWeight
+	end
+	
+	function catherine.inventory.GetOnlyMaxWeight( )
+		local inventory = catherine.inventory.Get( )
+		local invMaxWeight = catherine.configs.baseInventoryWeight
+		
+		for k, v in pairs( inventory ) do
+			local itemTable = catherine.item.FindByID( k )
+
+			if ( itemTable and itemTable.isBag ) then
+				invMaxWeight = invMaxWeight + ( v.itemCount * ( itemTable.weightPlus or 0 ) )
+			end
+		end
+		
+		return invMaxWeight
 	end
 
 	function catherine.inventory.GetItemData( uniqueID, key, default )
