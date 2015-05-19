@@ -23,6 +23,8 @@ local META2 = FindMetaTable( "Player" )
 // 새로운 네트워킹 시스템; ^-^; 2015-04-09 집에서..
 
 if ( SERVER ) then
+	catherine.net.NextOptimizeTick = catherine.net.NextOptimizeTick or CurTime( ) + catherine.configs.netRegistryOptimizeInterval
+	
 	function catherine.net.SetNetVar( ent, key, value, noSync )
 		catherine.net.entityRegistry[ ent ] = catherine.net.entityRegistry[ ent ] or { }
 		catherine.net.entityRegistry[ ent ][ key ] = value
@@ -54,7 +56,7 @@ if ( SERVER ) then
 		local convert = { }
 		
 		for k, v in pairs( catherine.net.entityRegistry ) do
-			if ( !IsValid( k ) ) then continue end
+			if ( !IsValid( k ) or k == NULL ) then continue end
 			local id = k:EntIndex( )
 			
 			if ( k:IsPlayer( ) ) then
@@ -69,7 +71,7 @@ if ( SERVER ) then
 	
 	function catherine.net.NetworkRegistryOptimize( )
 		for k, v in pairs( catherine.net.entityRegistry ) do
-			if ( IsValid( k ) ) then continue end
+			if ( IsValid( k ) or k == NULL ) then continue end
 			
 			catherine.net.entityRegistry[ k ] = nil
 		end
@@ -84,7 +86,7 @@ if ( SERVER ) then
 	META2.SetNetVar = META.SetNetVar
 	
 	function catherine.net.Think( )
-		if ( ( catherine.net.NextOptimizeTick or 0 ) <= CurTime( ) ) then
+		if ( catherine.net.NextOptimizeTick <= CurTime( ) ) then
 			catherine.net.NetworkRegistryOptimize( )
 			
 			catherine.net.NextOptimizeTick = CurTime( ) + catherine.configs.netRegistryOptimizeInterval

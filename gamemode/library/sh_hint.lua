@@ -69,13 +69,13 @@ else
 	end )
 	
 	function catherine.hint.Draw( )
-		if ( !catherine.hint.curHint ) then return end
+		if ( GetConVarString( "cat_convar_hint" ) == "0" or !catherine.hint.curHint ) then return end
 		local t = catherine.hint.curHint
 
 		if ( t.time <= CurTime( ) ) then
 			t.x = Lerp( 0.003, t.x, ScrW( ) * 1.5 )
 			
-			if ( math.Round( t.x ) >= ScrW( ) * 1.3 ) then
+			if ( t.x >= ScrW( ) * 1.3 ) then
 				catherine.hint.curHint = nil
 				return
 			end

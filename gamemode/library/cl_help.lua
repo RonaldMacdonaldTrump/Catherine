@@ -15,10 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
+
 if ( !catherine.language ) then
 	catherine.util.Include( "sh_language.lua" )
 end
-
 catherine.help = catherine.help or { }
 catherine.help.lists = { }
 CAT_HELP_HTML = 1

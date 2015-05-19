@@ -65,7 +65,10 @@ else
 			local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
 
 			if ( IsValid( ent ) and ent:IsPlayer( ) ) then
-				netstream.Start( "catherine.recognize.DoKnow", { 0, ent } )
+				netstream.Start( "catherine.recognize.DoKnow", {
+					0,
+					ent
+				} )
 			else
 				catherine.notify.Add( LANG( "Entity_Notify_NotPlayer" ), 5 )
 			end
