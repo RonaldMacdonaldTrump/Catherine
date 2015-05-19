@@ -315,30 +315,6 @@ if ( SERVER ) then
 			wep:SetNextPrimaryFire( CurTime( ) + 1 )
 			wep:SetNextSecondaryFire( CurTime( ) + 1 )
 		end
-		--[[
-		if ( wep.AlwaysLowered ) then
-			self:SetNetVar( "weaponRaised", false )
-			return
-		end
-		
-		self:SetNetVar( "weaponRaised", bool )
-		
-		if ( IsValid( wep ) ) then
-			local time = 99999
-			
-			if ( bool or wep.CanFireLowered ) then
-				time = 0.9
-			end
-			
-			if ( bool and wep.OnRaised ) then
-				wep:OnRaised( )
-			elseif ( !bool and wep.OnLowered ) then
-				wep:OnLowered( )
-			end
-			
-			wep:SetNextPrimaryFire( CurTime( ) + time )
-			wep:SetNextSecondaryFire( CurTime( ) + time )
-		end--]]
 	end
 
 	function META:ToggleWeaponRaised( )
@@ -357,7 +333,7 @@ if ( SERVER ) then
 		end
 	end
 
-	--[[
+
 	function catherine.player.PlayerSwitchWeapon( pl, oldWep, newWep )
 		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then
 			pl:SetWeaponRaised( false, newWep )
@@ -367,7 +343,6 @@ if ( SERVER ) then
 	end
 	
 	hook.Add( "PlayerSwitchWeapon", "catherine.player.PlayerSwitchWeapon", catherine.player.PlayerSwitchWeapon )
-	--]]
 else
 	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 0.05
 	

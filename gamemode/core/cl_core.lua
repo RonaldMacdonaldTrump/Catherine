@@ -42,6 +42,8 @@ catherine.intro = catherine.intro or {
 local entityCaches = { }
 local nextEntityCacheWork = RealTime( )
 local lastEntity = nil
+local rpInformation_backgroundA = 0
+local rpInformation_backgroundblurA = 0
 local toscreen = FindMetaTable( "Vector" ).ToScreen
 local OFFSET_PLAYER = Vector( 0, 0, 30 )
 local OFFSET_AD_ESP = Vector( 0, 0, 50 )
@@ -459,6 +461,29 @@ function GM:HUDPaint( )
 	end
 end
 
+function GM:HUDBackgroundDraw( )
+	if ( IsValid( catherine.vgui.information ) ) then
+		rpInformation_backgroundA = Lerp( 0.03, rpInformation_backgroundA, 100 )
+		rpInformation_backgroundblurA = Lerp( 0.05, rpInformation_backgroundblurA, 3 )
+	else
+		if ( rpInformation_backgroundA > 0 ) then
+			rpInformation_backgroundA = Lerp( 0.03, rpInformation_backgroundA, 0 )
+		end
+		
+		if ( rpInformation_backgroundblurA > 0 ) then
+			rpInformation_backgroundblurA = Lerp( 0.05, rpInformation_backgroundblurA, 0 )
+		end
+	end
+
+	if ( rpInformation_backgroundblurA > 0 ) then
+		catherine.util.BlurDraw( 0, 0, ScrW( ), ScrH( ), rpInformation_backgroundblurA )
+	end
+	
+	if ( rpInformation_backgroundA > 0 ) then
+		draw.RoundedBox( 0, 0, 0, ScrW( ), ScrH( ), Color( 50, 50, 50, rpInformation_backgroundA ) )
+	end
+end
+
 function GM:PostRenderVGUI( )
 	if ( IsValid( catherine.vgui.character ) ) then return end
 	
@@ -555,6 +580,12 @@ function GM:RenderScreenspaceEffects( )
 	tab[ "$pp_colour_mulb" ] = data.mulb or 0
 
 	DrawColorModify( tab )
+end
+
+function GM:VGUIMousePressed( pnl, code )
+	if ( IsValid( catherine.vgui.information ) and IsValid( pnl ) and pnl:GetParent( ) != catherine.vgui.information ) then
+		catherine.vgui.information:Close( )
+	end
 end
 
 function GM:ScreenResolutionChanged( oldW, oldH )

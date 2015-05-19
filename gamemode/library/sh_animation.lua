@@ -195,9 +195,7 @@ catherine.animation.metrocop = {
 		idle_crouch = {ACT_COVER_PISTOL_LOW, ACT_COVER_PISTOL_LOW},
 		walk = {ACT_WALK_PISTOL, ACT_WALK_AIM_PISTOL},
 		walk_crouch = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
-		run = {ACT_RUN_PISTOL, ACT_RUN_AIM_PISTOL},
-		attack = ACT_RANGE_ATTACK_PISTOL,
-		reload = ACT_RELOAD_PISTOL
+		run = {ACT_RUN_PISTOL, ACT_RUN_AIM_PISTOL}
 	},
 	smg = {
 		idle = {ACT_IDLE_SMG1, ACT_IDLE_ANGRY_SMG1},
@@ -242,7 +240,7 @@ catherine.animation.overwatch = {
 	normal = {
 		idle = {"idle_unarmed", "man_gun"},
 		idle_crouch = {"crouchidle", "crouchidle"},
-		walk = {ACT_WALK_RIFLE, ACT_WALK_RIFLE},
+		walk = {"walkunarmed_all", ACT_WALK_RIFLE},
 		walk_crouch = {"crouch_walkall", "crouch_walkall"},
 		run = {"runall", ACT_RUN_AIM_RIFLE}
 	},

@@ -220,7 +220,7 @@ function GM:EntityTakeDamage( ent, dmginfo )
 	end
 end
 
-function GM:PlayerCanFlashlight( pl )
+function GM:PlayerSwitchFlashlight( pl, bool )
 	return true
 end
 

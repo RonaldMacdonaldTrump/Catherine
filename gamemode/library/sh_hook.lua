@@ -61,36 +61,3 @@ function hook.Call( hookID, gamemode, ... )
 	
 	return hook.CallCatHooks( hookID, gamemode, ... )
 end
-
---[[ // Old :<
-for k, v in pairs( catherine.plugin.GetAll( ) ) do
-	if ( !v[ name ] ) then continue end
-	local success, result = pcall( v[ name ], v, ... )
-	
-	if ( success ) then
-		if ( result == nil ) then continue end
-
-		return result
-	else
-		catherine.bugX.Work( CAT_BUG_X_FLAG_PLUGIN, {
-			pluginID = k,
-			hookID = name
-		} )
-		ErrorNoHalt( "[CAT ERROR] SORRY, On the plugin <" .. k .. ">'s hooks <" .. name .. "> has a critical error ...\n" .. result .. "\n" )
-	end
-end
-
-if ( Schema and Schema[ name ] ) then
-	local success, result = pcall( Schema[ name ], Schema, ... )
-
-	if ( success ) then
-		if ( result != nil ) then
-			return result
-		end
-	else
-		ErrorNoHalt( "[CAT ERROR] SORRY, Schema hooks <" .. name .. "> has a critical error ...\n" .. result .. "\n" )
-	end
-end
-
-return hook.CallBackup( name, gm, ... )
---]]
