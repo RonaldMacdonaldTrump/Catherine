@@ -29,6 +29,14 @@ function catherine.entity.IsProp( ent )
 	return ent:GetClass( ):find( "prop_" )
 end
 
+function META:IsDoor( )
+	return catherine.entity.IsDoor( self )
+end
+
+function META:IsProp( )
+	return catherine.entity.IsProp( self )
+end
+
 if ( SERVER ) then
 	catherine.entity.customUse = catherine.entity.customUse or { }
 

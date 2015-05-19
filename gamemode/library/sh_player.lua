@@ -427,10 +427,6 @@ function META:IsNoclipping( )
 	return self:GetNetVar( "nocliping", false )
 end
 
-function META:GetDefaultRunSpeed( )
-	return self:GetNetVar( "defaultrunSpeed", catherine.configs.playerDefaultRunSpeed )
-end
-
 function META:IsChatTyping( )
 	return self:GetNetVar( "isTyping", false )
 end

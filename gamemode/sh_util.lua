@@ -92,11 +92,15 @@ function catherine.util.GetAdmins( isSuperAdmin )
 	
 	if ( isSuperAdmin ) then
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			players[ #players + 1 ] = v:IsSuperAdmin( ) and v
+			if ( !v:IsSuperAdmin( ) ) then continue end
+			
+			players[ #players + 1 ] = v
 		end
 	else
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			players[ #players + 1 ] = v:IsAdmin( ) and v
+			if ( !v:IsAdmin( ) ) then continue end
+			
+			players[ #players + 1 ] = v
 		end
 	end
 	
@@ -104,7 +108,7 @@ function catherine.util.GetAdmins( isSuperAdmin )
 end
 
 function catherine.util.FolderDirectoryTranslate( dir )
-	if ( dir.sub( dir, 1, 1 ) != "/" ) then
+	if ( dir:sub( 1, 1 ) != "/" ) then
 		dir = "/" .. dir
 	end
 	
@@ -120,11 +124,11 @@ function catherine.util.FolderDirectoryTranslate( dir )
 end
 
 function catherine.util.GetItemDropPos( pl )
-	local data = { }
-	data.start = pl:GetShootPos( ) - pl:GetAimVector( ) * 64
-	data.endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * 86
-	data.filter = pl
-	local tr = util.TraceLine( data )
+	local tr = util.TraceLine( {
+		start = pl:GetShootPos( ) - pl:GetAimVector( ) * 64
+		endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * 86
+		filter = pl
+	} )
 
 	return tr.HitPos + tr.HitNormal * 36
 end
@@ -186,19 +190,22 @@ if ( SERVER ) then
 	
 	function catherine.util.Notify( pl, message, time )
 		netstream.Start( pl, "catherine.util.Notify", {
-			message, time
+			message,
+			time
 		} )
 	end
 	
 	function catherine.util.NotifyAll( message, time )
 		netstream.Start( player.GetAllByLoaded( ), "catherine.util.Notify", {
-			message, time
+			message,
+			time
 		} )
 	end
 	
 	function catherine.util.NotifyAllLang( key, ... )
 		netstream.Start( player.GetAllByLoaded( ), "catherine.util.NotifyAllLang", {
-			key, { ... }
+			key,
+			{ ... }
 		} )
 	end
 	
@@ -209,9 +216,11 @@ if ( SERVER ) then
 	end
 
 	function catherine.util.StuffLanguage( pl, key, ... )
-		local val = key:Left( 1 ) == "^" and LANG( pl, key:sub( 2 ), ... ) or "-Error"
-		
-		return val:find( "-Error" ) and key or val
+		if ( key:Left( 1 ) == "^" ) then
+			return LANG( pl, key:sub( 2 ), ... )
+		else
+			return key
+		end
 	end
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
@@ -263,7 +272,11 @@ if ( SERVER ) then
 		catherine.util.receiver.str[ steamID ] = catherine.util.receiver.str[ steamID ] or { }
 		catherine.util.receiver.str[ steamID ][ id ] = func
 		
-		netstream.Start( pl, "catherine.util.StringReceiver", { id, msg, defV or "" } )
+		netstream.Start( pl, "catherine.util.StringReceiver", {
+			id,
+			msg,
+			defV or ""
+		} )
 	end
 	
 	function catherine.util.QueryReceiver( pl, id, msg, func )
@@ -272,7 +285,10 @@ if ( SERVER ) then
 		catherine.util.receiver.qry[ steamID ] = catherine.util.receiver.qry[ steamID ] or { }
 		catherine.util.receiver.qry[ steamID ][ id ] = func
 		
-		netstream.Start( pl, "catherine.util.QueryReceiver", { id, msg } )
+		netstream.Start( pl, "catherine.util.QueryReceiver", {
+			id,
+			msg
+		} )
 	end
 	
 	function catherine.util.ScreenColorEffect( pl, col, time, fadeTime )
@@ -306,10 +322,10 @@ if ( SERVER ) then
 	end )
 else
 	catherine.util.materials = catherine.util.materials or { }
-	local blurMat = Material( "pp/blurscreen" )
 	CAT_UTIL_BUTTOMSOUND_1 = 1
 	CAT_UTIL_BUTTOMSOUND_2 = 2
 	CAT_UTIL_BUTTOMSOUND_3 = 3
+	local blurMat = Material( "pp/blurscreen" )
 	
 	netstream.Hook( "catherine.util.StringReceiver", function( data )
 		Derma_StringRequest( "", catherine.util.StuffLanguage( data[ 2 ] ), data[ 3 ] or "", function( val )
@@ -388,6 +404,7 @@ else
 	end )
 
 	function catherine.util.PlayButtonSound( typ )
+	--[[
 		if ( typ == CAT_UTIL_BUTTOMSOUND_1 ) then
 
 		elseif ( typ == CAT_UTIL_BUTTOMSOUND_2 ) then
@@ -395,12 +412,15 @@ else
 		elseif ( typ == CAT_UTIL_BUTTOMSOUND_3 ) then
 
 		end
+	--]]
 	end
 	
 	function catherine.util.StuffLanguage( key, ... )
-		local lang = key:Left( 1 ) == "^" and LANG( key:sub( 2 ), ... ) or "-Error"
-		
-		return lang:find( "-Error" ) and key or lang
+		if ( key:Left( 1 ) == "^" ) then
+			return LANG( key:sub( 2 ), ... )
+		else
+			return key
+		end
 	end
 	
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )
@@ -410,12 +430,12 @@ else
 		surface.SetFont( font )
 		local tw, th = surface.GetTextSize( message )
 		
-		draw.RoundedBox( 0, x - ( tw / 2 ) - ( backgroundBor ), y - ( th / 2 ) - ( backgroundBor ), tw + ( backgroundBor * 2 ), th + ( backgroundBor * 2 ), backgroundCol or Color( 50, 50, 50, 255 ) )
+		draw.RoundedBox( 0, x - ( tw / 2 ) - backgroundBor, y - ( th / 2 ) - backgroundBor, tw + ( backgroundBor * 2 ), th + ( backgroundBor * 2 ), backgroundCol or Color( 50, 50, 50, 255 ) )
 		draw.SimpleText( message, font, x, y, col or Color( 255, 255, 255, 255 ), xA or 1, yA or 1 )
 	end
 	
 	function catherine.util.GetAlphaFromDistance( base, x, max )
-		return ( 1 - ( ( x:Distance( base ) ) / max ) ) * 255
+		return ( 1 - ( x:Distance( base ) / max ) ) * 255
 	end
 	
 	function catherine.util.RegisterMaterial( key, matDir, correction )

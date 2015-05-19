@@ -426,7 +426,7 @@ function GM:EntityCacheWork( pl )
 		end
 		
 		local targetAlpha = v and 255 or 0
-		local a = math_app( k.CAT_entityCacheAlpha or 0, targetAlpha, FrameTime( ) * 120 )//Lerp( 0.02, k.CAT_entityCacheAlpha or 0, targetAlpha )
+		local a = math_app( k.CAT_entityCacheAlpha or 0, targetAlpha, FrameTime( ) * 120 )
 
 		if ( a > 0 ) then
 			if ( k.DrawEntityTargetID ) then
@@ -484,7 +484,7 @@ function GM:CalcViewModelView( wep, viewMdl, oldEyePos, oldEyeAngles, eyePos, ey
 end
 
 function GM:PlayerCantLookScoreboard( pl )
-
+	return false
 end
 
 function GM:ScoreboardPlayerOption( pl, target )

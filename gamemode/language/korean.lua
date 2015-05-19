@@ -158,6 +158,7 @@ LANGUAGE.data = {
 	[ "Storage_UI_StorageNoHaveItem" ] = "이 저장소는 비어있습니다.",
 	[ "Storage_UI_PlayerNoHaveItem" ] = "당신은 아무것도 가지고 있지 않습니다.",
 	[ "Storage_Notify_HasNotSpace" ] = "이 저장소에는 공간이 없습니다!",
+	[ "Storage_OpenStr" ] = "열기",
 	
 	// Item SYSTEM
 	[ "Item_Notify_NoItemData" ] = "올바르지 않은 물건 입니다!",

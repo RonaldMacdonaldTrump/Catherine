@@ -209,9 +209,10 @@ function GM:EntityTakeDamage( ent, dmginfo )
 	end
 	
 	if ( ent:IsPlayer( ) and dmginfo:IsBulletDamage( ) ) then
-		ent:SetRunSpeed( ent:GetWalkSpeed( ) )
-		
 		local steamID = ent:SteamID( )
+		
+		ent:SetRunSpeed( ent:GetWalkSpeed( ) )
+
 		timer.Remove( "Catherine.timer.RunSpamProtection_" .. steamID )
 		timer.Create( "Catherine.timer.RunSpamProtection_" .. steamID, 2, 1, function( )
 			ent:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( ent ) )
@@ -230,7 +231,7 @@ end
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
 		timer.Create( "Catherine.timer.WeaponToggle." .. pl:SteamID( ), 1, 1, function( )
-			pl.ToggleWeaponRaised( pl )
+			pl:ToggleWeaponRaised( )
 		end )
 	elseif ( key == IN_USE ) then
 		local data = { }
@@ -265,7 +266,7 @@ end
 
 function GM:PlayerUse( pl, ent )
 	if ( catherine.player.IsTied( pl ) ) then
-		if ( ( pl.CAT_tiedMSG or CurTime( ) ) <= CurTime( ) ) then
+		if ( ( pl.CAT_tiedMSG or 0 ) <= CurTime( ) ) then
 			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 			pl.CAT_tiedMSG = CurTime( ) + 5
 		end
@@ -438,14 +439,6 @@ function GM:Tick( )
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		catherine.player.BunnyHopProtection( v )
 		catherine.player.HealthRecoverTick( v )
-		
-		if ( ( v.CAT_nextRunSpeedUpdate or 0 ) <= CurTime( ) ) then
-			if ( v:GetNetVar( "defaultrunSpeed", 0 ) != v:GetRunSpeed( ) ) then
-
-			end
-			
-			v.CAT_nextRunSpeedUpdate = CurTime( ) + 1
-		end
 		
 		if ( ( v.CAT_nextJumpUpdate or 0 ) <= CurTime( ) and v:Alive( ) and !catherine.player.IsRagdolled( v ) and !v:InVehicle( ) and v:GetMoveType( ) == MOVETYPE_WALK and v:IsInWorld( ) and !v:IsOnGround( ) ) then
 			hook.Run( "PlayerJump", v )

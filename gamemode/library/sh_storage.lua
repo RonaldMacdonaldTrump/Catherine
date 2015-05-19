@@ -139,6 +139,7 @@ if ( SERVER ) then
 				uniqueID = data,
 				itemData = ( itemTable.useDynamicItemData and itemDataBuffer ) or itemTable.itemData
 			} )
+			
 			catherine.storage.SetInv( ent, inventory )
 			
 			hook.Run( "ItemStorageTaked", pl, itemTable )
@@ -152,6 +153,7 @@ if ( SERVER ) then
 		
 		if ( !data ) then
 			data = catherine.storage.FindByModel( ent:GetModel( ) )
+			
 			if ( !data ) then return end
 		end
 
@@ -170,7 +172,7 @@ if ( SERVER ) then
 		catherine.entity.RegisterUseMenu( ent, {
 			{
 				uniqueID = "ID_OPEN",
-				text = "Open",
+				text = "^Storage_OpenStr",
 				func = function( pl, ent )
 					netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
 				end
@@ -184,7 +186,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.storage.GetInv( ent )
-		return ent.inv or { }
+		return table.Copy( ent.inv or { } )
 	end
 	
 	function catherine.storage.GetWeights( ent, customAdd )
@@ -272,7 +274,7 @@ else
 	end )
 	
 	function catherine.storage.GetInv( ent )
-		return ent.GetNetVar( ent, "inv", { } )
+		return table.Copy( ent:GetNetVar( "inv", { } ) )
 	end
 	
 	function catherine.storage.GetWeights( ent, customAdd )
