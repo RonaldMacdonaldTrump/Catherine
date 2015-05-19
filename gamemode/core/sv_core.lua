@@ -111,10 +111,8 @@ function GM:PlayerSpawn( pl )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	pl:SetNetVar( "isTied", false )
 	pl:SetupHands( )
-	
-	if ( catherine.player.IsRagdolled( pl ) ) then
-		catherine.util.TopNotify( pl, false )
-	end
+
+	catherine.util.TopNotify( pl, false )
 
 	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
 	pl:AllowFlashlight( status )
@@ -194,24 +192,27 @@ function GM:EntityTakeDamage( ent, dmginfo )
 			local attacker = dmginfo:GetAttacker( )
 			local amount = dmginfo:GetDamage( )
 			
-			pl.CAT_ignore_hurtSound = true
-			pl:TakeDamage( amount, attacker, inflictor )
-			pl.CAT_ignore_hurtSound = nil
+			if ( amount >= 20 or dmginfo:IsBulletDamage( ) ) then
+				pl.CAT_ignore_hurtSound = true
+				pl:TakeDamage( amount, attacker, inflictor )
+				pl.CAT_ignore_hurtSound = nil
 
-			if ( pl:Health( ) <= 0 ) then
-				if ( !pl.CAT_deathSoundPlayed ) then
-					hook.Run( "PlayerDeathSound", pl, ent )
+				if ( pl:Health( ) <= 0 ) then
+					if ( !pl.CAT_deathSoundPlayed ) then
+						hook.Run( "PlayerDeathSound", pl, ent )
+					end
+				else
+					hook.Run( "PlayerTakeDamage", pl, attacker, ent )
 				end
-			else
-				hook.Run( "PlayerTakeDamage", pl, attacker, ent )
 			end
 		end
 	end
 	
 	if ( ent:IsPlayer( ) and dmginfo:IsBulletDamage( ) ) then
-		ent:SetRunSpeed( ent:GetWalkSpeed( ) )
-		
 		local steamID = ent:SteamID( )
+		
+		ent:SetRunSpeed( ent:GetWalkSpeed( ) )
+
 		timer.Remove( "Catherine.timer.RunSpamProtection_" .. steamID )
 		timer.Create( "Catherine.timer.RunSpamProtection_" .. steamID, 2, 1, function( )
 			ent:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( ent ) )
@@ -219,7 +220,7 @@ function GM:EntityTakeDamage( ent, dmginfo )
 	end
 end
 
-function GM:PlayerCanFlashlight( pl )
+function GM:PlayerSwitchFlashlight( pl, bool )
 	return true
 end
 
@@ -230,7 +231,7 @@ end
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
 		timer.Create( "Catherine.timer.WeaponToggle." .. pl:SteamID( ), 1, 1, function( )
-			pl.ToggleWeaponRaised( pl )
+			pl:ToggleWeaponRaised( )
 		end )
 	elseif ( key == IN_USE ) then
 		local data = { }
@@ -242,7 +243,7 @@ function GM:KeyPress( pl, key )
 		if ( !IsValid( ent ) ) then return end
 		
 		if ( ent:GetClass( ) == "prop_ragdoll" ) then
-			ent = ent.GetNetVar( ent, "player" )
+			ent = ent:GetNetVar( "player" )
 		end
 		
 		if ( IsValid( ent ) and ent:IsPlayer( ) ) then
@@ -265,7 +266,7 @@ end
 
 function GM:PlayerUse( pl, ent )
 	if ( catherine.player.IsTied( pl ) ) then
-		if ( ( pl.CAT_tiedMSG or CurTime( ) ) <= CurTime( ) ) then
+		if ( ( pl.CAT_tiedMSG or 0 ) <= CurTime( ) ) then
 			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 			pl.CAT_tiedMSG = CurTime( ) + 5
 		end
@@ -424,9 +425,7 @@ function GM:PlayerDeath( pl )
 		pl:Spawn( )
 	end )
 
-	if ( catherine.player.IsRagdolled( pl ) ) then
-		catherine.util.TopNotify( pl, false )
-	end
+	catherine.util.TopNotify( pl, false )
 	
 	pl:SetNetVar( "nextSpawnTime", CurTime( ) + respawnTime )
 	pl:SetNetVar( "deathTime", CurTime( ) )
@@ -440,14 +439,6 @@ function GM:Tick( )
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		catherine.player.BunnyHopProtection( v )
 		catherine.player.HealthRecoverTick( v )
-		
-		if ( ( v.CAT_nextRunSpeedUpdate or 0 ) <= CurTime( ) ) then
-			if ( v:GetNetVar( "defaultrunSpeed", 0 ) != v:GetRunSpeed( ) ) then
-
-			end
-			
-			v.CAT_nextRunSpeedUpdate = CurTime( ) + 1
-		end
 		
 		if ( ( v.CAT_nextJumpUpdate or 0 ) <= CurTime( ) and v:Alive( ) and !catherine.player.IsRagdolled( v ) and !v:InVehicle( ) and v:GetMoveType( ) == MOVETYPE_WALK and v:IsInWorld( ) and !v:IsOnGround( ) ) then
 			hook.Run( "PlayerJump", v )

@@ -158,6 +158,7 @@ LANGUAGE.data = {
 	[ "Storage_UI_StorageNoHaveItem" ] = "This storage is empty.",
 	[ "Storage_UI_PlayerNoHaveItem" ] = "You don't have any items.",
 	[ "Storage_Notify_HasNotSpace" ] = "This storage don't have inventory space!",
+	[ "Storage_OpenStr" ] = "Open",
 	
 	// Item SYSTEM
 	[ "Item_Notify_NoItemData" ] = "Is not an available item!",

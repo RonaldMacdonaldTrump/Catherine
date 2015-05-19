@@ -41,7 +41,7 @@ CAT_CONVAR_FPS = CreateClientConVar( "cat_convar_showfps", "0", true, true )
 catherine.option.Register( "CONVAR_FPS", "cat_convar_showfps", "^Option_Str_FPS_Name", "^Option_Str_FPS_Desc", "^Option_Category_02", CAT_OPTION_SWITCH )
 
 function PLUGIN:HUDPaint( )
-	if ( CAT_CONVAR_FPS:GetInt( ) == 0 ) then return end
+	if ( GetConVarString( "cat_convar_showfps" ) == "0" ) then return end
 	local curFPS = math.Round( 1 / FrameTime( ) )
 	local minFPS = self.minFPS or 60
 	local maxFPS = self.maxFPS or 100
@@ -52,6 +52,8 @@ function PLUGIN:HUDPaint( )
 	
 	self.barH = math.Approach( self.barH, ( curFPS / maxFPS ) * 100, 0.5 )
 	
+	local barH = self.barH
+	
 	if ( curFPS > maxFPS ) then
 		self.maxFPS = curFPS
 	end
@@ -61,9 +63,13 @@ function PLUGIN:HUDPaint( )
 	end
 	
 	draw.SimpleText( curFPS .. " FPS", "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
-	draw.RoundedBox( 0, ScrW( ) - 30, ( ScrH( ) / 2 ) - self.barH, 20, self.barH, Color( 255, 255, 255, 255 ) )
+	draw.RoundedBox( 0, ScrW( ) - 30, ( ScrH( ) / 2 ) - barH, 20, barH, Color( 255, 255, 255, 255 ) )
 	draw.SimpleText( "Max : " .. maxFPS, "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 40, Color( 150, 255, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	draw.SimpleText( "Min : " .. minFPS, "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 55, Color( 255, 150, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
-catherine.font.Register( "catherine_fps", "Consolas", 15, 1000 )
+catherine.font.Register( "catherine_fps", {
+	font = "Consolas",
+	size = 15,
+	weight = 1000
+} )

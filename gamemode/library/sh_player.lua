@@ -123,8 +123,8 @@ if ( SERVER ) then
 				
 				if ( !IsValid( target ) ) then return end
 				
-				if ( target.GetClass( target ) == "prop_ragdoll" ) then
-					target = target.GetNetVar( target, "player" )
+				if ( target:GetClass( ) == "prop_ragdoll" ) then
+					target = target:GetNetVar( "player" )
 				end
 				
 				if ( IsValid( target ) ) then
@@ -158,8 +158,8 @@ if ( SERVER ) then
 				
 				if ( !IsValid( target ) ) then return end
 				
-				if ( target.GetClass( target ) == "prop_ragdoll" ) then
-					target = target.GetNetVar( target, "player" )
+				if ( target:GetClass( ) == "prop_ragdoll" ) then
+					target = target:GetNetVar( "player" )
 				end
 		
 				if ( IsValid( target ) ) then
@@ -172,7 +172,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.player.BunnyHopProtection( pl )
-		if ( pl.KeyPressed( pl, IN_JUMP ) and ( pl.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
+		if ( pl:KeyPressed( IN_JUMP ) and ( pl.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
 			if ( !pl.CAT_nextBunnyCheck ) then
 				pl.CAT_nextBunnyCheck = CurTime( ) + 0.05
 			end
@@ -180,7 +180,6 @@ if ( SERVER ) then
 			pl.CAT_bunnyCount = ( pl.CAT_bunnyCount or 0 ) + 1
 			
 			if ( pl.CAT_bunnyCount >= 10 ) then
-				pl:SetJumpPower( 150 )
 				catherine.util.NotifyLang( pl, "Basic_Notify_BunnyHop" )
 				pl:Freeze( true )
 				pl.CAT_bunnyFreezed = true
@@ -215,10 +214,10 @@ if ( SERVER ) then
 			end
 
 			local ent = ents.Create( "prop_ragdoll" )
-			ent:SetAngles( pl.GetAngles( pl ) )
+			ent:SetAngles( pl:GetAngles( ) )
 			ent:SetModel( pl:GetModel( ) )
-			ent:SetPos( pl.GetPos( pl ) )
-			ent:SetSkin( pl.GetSkin( pl ) )
+			ent:SetPos( pl:GetPos( ) )
+			ent:SetSkin( pl:GetSkin( ) )
 			ent:Spawn( )
 			ent:SetNetVar( "player", pl )
 			ent:SetCollisionGroup( COLLISION_GROUP_WEAPON )
@@ -229,6 +228,7 @@ if ( SERVER ) then
 				pl:SetNetVar( "ragdollIndex", nil )
 				pl:SetNetVar( "isRagdolled", nil )
 				
+				pl:SetPos( ent:GetPos( ) )
 				pl:SetNotSolid( false )
 				pl:SetNoDraw( false )
 				pl:Freeze( false )
@@ -262,9 +262,39 @@ if ( SERVER ) then
 			pl:SetNetVar( "isRagdolled", true )
 			
 			if ( time ) then
+				local uniqueID = "Catherine.timer.RagdollWork_" .. ent:EntIndex( )
+				
 				catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
 					catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 					catherine.player.RagdollWork( pl )
+					timer.Remove( uniqueID )
+				end )
+
+				timer.Create( uniqueID, 1, 0, function( )
+					if ( !IsValid( pl ) ) then return end
+					local ragdoll = pl.CAT_ragdoll
+
+					if ( IsValid( ragdoll ) ) then
+						if ( ragdoll:GetVelocity( ):Length2D( ) >= 4 ) then
+							if ( !ragdoll.CAT_paused ) then
+								ragdoll.CAT_paused = true
+								catherine.util.ProgressBar( pl, false )
+							end
+
+							return
+						elseif ( ragdoll.CAT_paused ) then
+							catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
+								catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
+								catherine.player.RagdollWork( pl )
+								timer.Remove( uniqueID )
+							end )
+							
+							ragdoll.CAT_paused = nil
+						end
+					else
+						//catherine.player.RagdollWork( pl )
+						timer.Remove( uniqueID )
+					end
 				end )
 			else
 				catherine.util.TopNotify( pl, LANG( pl, "Player_Message_Ragdolled_01" ) )
@@ -277,41 +307,32 @@ if ( SERVER ) then
 	end
 
 	function META:SetWeaponRaised( bool, wep )
-		if ( !IsValid( self ) or !self:IsCharacterLoaded( ) ) then return end
 		wep = wep or self:GetActiveWeapon( )
-		
-		if ( wep.AlwaysLowered ) then
-			self:SetNetVar( "weaponRaised", false )
-			return
-		end
 		
 		self:SetNetVar( "weaponRaised", bool )
 		
 		if ( IsValid( wep ) ) then
-			local time = 99999
-			
-			if ( bool or wep.CanFireLowered ) then
-				time = 0.9
-			end
-			
+			wep:SetNextPrimaryFire( CurTime( ) + 1 )
+			wep:SetNextSecondaryFire( CurTime( ) + 1 )
+		end
+	end
+
+	function META:ToggleWeaponRaised( )
+		local bool = self:GetWeaponRaised( )
+		
+		self:SetWeaponRaised( !bool )
+		
+		local wep = self:GetActiveWeapon( )
+		
+		if ( IsValid( wep ) ) then
 			if ( bool and wep.OnRaised ) then
 				wep:OnRaised( )
 			elseif ( !bool and wep.OnLowered ) then
 				wep:OnLowered( )
 			end
-			
-			wep:SetNextPrimaryFire( CurTime( ) + time )
-			wep:SetNextSecondaryFire( CurTime( ) + time )
 		end
 	end
 
-	function META:ToggleWeaponRaised( )
-		if ( self:GetWeaponRaised( ) ) then
-			self:SetWeaponRaised( false )
-		else
-			self:SetWeaponRaised( true )
-		end
-	end
 
 	function catherine.player.PlayerSwitchWeapon( pl, oldWep, newWep )
 		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then
@@ -323,7 +344,7 @@ if ( SERVER ) then
 	
 	hook.Add( "PlayerSwitchWeapon", "catherine.player.PlayerSwitchWeapon", catherine.player.PlayerSwitchWeapon )
 else
-	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 1
+	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 0.05
 	
 	netstream.Hook( "catherine.player.CheckLocalPlayer", function( )
 		hook.Add( "Tick", "catherine.player.CheckLocalPlayer.Tick", function( )
@@ -334,13 +355,27 @@ else
 					catherine.player.nextLocalPlayerCheck = nil
 					return
 				end
-				catherine.player.nextLocalPlayerCheck = CurTime( ) + 1
+				catherine.player.nextLocalPlayerCheck = CurTime( ) + 0.05
 			end
 		end )
 	end )
 end
 
 function META:GetWeaponRaised( )
+	local wep = self:GetActiveWeapon( )
+	
+	if ( IsValid( wep ) ) then
+		if ( wep.IsAlwaysRaised or catherine.configs.alwaysRaised[ wep:GetClass( ) ] ) then
+			return true
+		elseif ( wep.IsAlwaysLowered ) then
+			return false
+		end
+	end
+	
+	if ( catherine.player.IsTied( self ) ) then
+		return false
+	end
+	
 	return self:GetNetVar( "weaponRaised", false )
 end
 
@@ -365,10 +400,6 @@ end
 
 function META:IsNoclipping( )
 	return self:GetNetVar( "nocliping", false )
-end
-
-function META:GetDefaultRunSpeed( )
-	return self:GetNetVar( "defaultrunSpeed", catherine.configs.playerDefaultRunSpeed )
 end
 
 function META:IsChatTyping( )

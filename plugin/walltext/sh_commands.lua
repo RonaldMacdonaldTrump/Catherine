@@ -25,6 +25,7 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			PLUGIN:AddText( pl, args[ 1 ], tonumber( args[ 2 ] ) )
+			
 			catherine.util.NotifyLang( pl, "WallText_Notify_Add" )
 		else
 			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )

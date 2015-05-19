@@ -21,7 +21,7 @@ catherine.bar.lists = { }
 local barW = ScrW( ) * catherine.configs.mainBarWideScale
 local barH = catherine.configs.mainBarTallSize
 
-function catherine.bar.Register( getFunc, maxFunc, col, uniqueID, alwaysShowing )
+function catherine.bar.Register( uniqueID, alwaysShowing, getFunc, maxFunc, col )
 	for k, v in pairs( catherine.bar.lists ) do
 		if ( ( v.uniqueID and uniqueID ) and v.uniqueID == uniqueID ) then
 			return
@@ -62,19 +62,19 @@ function catherine.bar.Draw( )
 	local i = 0
 	
 	for k, v in pairs( catherine.bar.lists ) do
-		local percent = math.min( v.getFunc( ) / v.maxFunc( ), 1 )
+		local per = math.min( v.getFunc( ) / v.maxFunc( ), 1 )
 		
-		if ( v.prevValue != percent ) then
+		if ( v.prevValue != per ) then
 			v.lifeTime = CurTime( ) + 5
 		end
 
-		v.prevValue = percent
+		v.prevValue = per
 		
 		if ( !v.alwaysShowing ) then
 			if ( v.lifeTime <= CurTime( ) ) then
 				v.a = Lerp( 0.03, v.a, 0 )
 			else
-				if ( percent != 0 ) then
+				if ( per != 0 ) then
 					i = i + 1
 					v.a = Lerp( 0.03, v.a, 255 )
 				else
@@ -82,7 +82,7 @@ function catherine.bar.Draw( )
 				end
 			end
 		else
-			if ( percent != 0 ) then
+			if ( per != 0 ) then
 				i = i + 1
 				v.a = Lerp( 0.03, v.a, 255 )
 			else
@@ -90,7 +90,7 @@ function catherine.bar.Draw( )
 			end
 		end
 
-		v.w = math.Approach( v.w, barW * percent, 1 )
+		v.w = math.Approach( v.w, barW * per, 1 )
 		v.y = Lerp( 0.09, v.y, -barH + i * barH * 2 )
 		
 		if ( v.a > 0 ) then
@@ -105,15 +105,17 @@ function catherine.bar.Draw( )
 end
 
 do
-	catherine.bar.Register( function( )
-		return LocalPlayer( ):Health( )
-	end, function( )
-		return LocalPlayer( ):GetMaxHealth( )
-	end, Color( 255, 50, 50 ), "health", true )
-
-	catherine.bar.Register( function( )
-		return LocalPlayer( ):Armor( )
-	end, function( )
-		return 255
-	end, Color( 50, 50, 255 ), "armor", true )
+	catherine.bar.Register( "health", true, function( )
+			return LocalPlayer( ):Health( )
+		end, function( )
+			return LocalPlayer( ):GetMaxHealth( )
+		end, Color( 255, 50, 50 )
+	)
+	
+	catherine.bar.Register( "armor", true, function( )
+			return LocalPlayer( ):Armor( )
+		end, function( )
+			return 255
+		end, Color( 50, 50, 255 )
+	)
 end

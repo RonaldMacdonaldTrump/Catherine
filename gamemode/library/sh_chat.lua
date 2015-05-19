@@ -164,7 +164,7 @@ catherine.chat.Register( "ooc", {
 			icon = Material( "icon16/star.png" )
 		end
 		
-		chat.AddText( icon, Color( 40, 250, 250 ), "[OOC] ", pl, color_white, " : ".. text )
+		chat.AddText( icon, Color( 250, 40, 40 ), "[OOC] ", pl, color_white, " : ".. text )
 	end,
 	isGlobal = true,
 	command = {
@@ -188,7 +188,7 @@ catherine.chat.Register( "ooc", {
 
 catherine.chat.Register( "looc", {
 	func = function( pl, text )
-		chat.AddText( Color( 40, 250, 250 ), "[LOOC] ", pl, color_white, " : ".. text )
+		chat.AddText( Color( 250, 40, 40 ), "[LOOC] ", pl, color_white, " : ".. text )
 	end,
 	canHearRange = 600,
 	command = {
@@ -410,7 +410,7 @@ else
 	function catherine.chat.AddText( ... )
 		local msg = vgui.Create( "catherine.vgui.ChatMarkUp" )
 		msg:Dock( TOP )
-		msg:SetFont( "catherine_normal17" )
+		msg:SetFont( "catherine_chat" )
 		msg:SetMaxWidth( CHATBox_w - 16 )
 		msg:Run( ... )
 		

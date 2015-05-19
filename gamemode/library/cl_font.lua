@@ -18,34 +18,35 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.font = catherine.font or { }
 
-function catherine.font.Register( uniqueID, font, size, weight, fontTable )
-	fontTable = fontTable or { }
-	
-	table.Merge( fontTable, {
-		uniqueID = uniqueID,
-		font = font,
-		size = size,
-		weight = weight
-	} )
-
+function catherine.font.Register( uniqueID, fontTable )
 	surface.CreateFont( uniqueID, fontTable )
 end
 
 local font = catherine.configs.Font
-catherine.font.Register( "catherine_menuTitle", font, 20, 1000 )
-catherine.font.Register( "catherine_button20", font, 20, 1000 )
-catherine.font.Register( "catherine_normal15", font, 15, 1000 )
-catherine.font.Register( "catherine_normal17", font, 17, 1000 )
-catherine.font.Register( "catherine_normal20", font, 20, 1000 )
-catherine.font.Register( "catherine_normal25", font, 25, 1000 )
-catherine.font.Register( "catherine_normal30", font, 30, 1000 )
-catherine.font.Register( "catherine_normal35", font, 35, 1000 )
-catherine.font.Register( "catherine_normal40", font, 40, 1000 )
-catherine.font.Register( "catherine_normal50", font, 50, 1000 )
-catherine.font.Register( "catherine_schema_title", font, 50, 1000 )
-catherine.font.Register( "catherine_good15", font, 15, 1000 )
-catherine.font.Register( "catherine_hostname", font, 25, 1000 )
-catherine.font.Register( "catherine_outline30", font, 30, 1000, { outline = true } )
-catherine.font.Register( "catherine_outline25", font, 25, 1000, { outline = true } )
-catherine.font.Register( "catherine_outline20", font, 20, 1000, { outline = true } )
-catherine.font.Register( "catherine_outline15", font, 15, 1000, { outline = true } )
+
+for i = 1, 8 do
+	local size = 10 + ( 5 * i )
+
+	catherine.font.Register( "catherine_normal" .. size, {
+		font = font,
+		size = size,
+		weight = 1000
+	} )
+end
+
+for i = 1, 8 do
+	local size = 10 + ( 5 * i )
+	
+	catherine.font.Register( "catherine_outline" .. size, {
+		font = font,
+		size = size,
+		weight = 1000,
+		outline = true
+	} )
+end
+
+catherine.font.Register( "catherine_chat", {
+	font = font,
+	size = 17,
+	weight = 1000
+} )

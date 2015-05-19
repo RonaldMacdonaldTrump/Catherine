@@ -121,6 +121,7 @@ function PANEL:AddMenuItem( name, func )
 				
 				if ( newActivePanel and type( newActivePanel ) == "Panel" and IsValid( newActivePanel ) ) then
 					newActivePanel:Show( )
+					newActivePanel:OnMenuRecovered( )
 				end
 				
 				self.activePanelButton = pnl
@@ -139,6 +140,7 @@ function PANEL:AddMenuItem( name, func )
 				
 				if ( newActivePanel and type( newActivePanel ) == "Panel" and IsValid( newActivePanel ) ) then
 					newActivePanel:Show( )
+					newActivePanel:OnMenuRecovered( )
 				end
 				
 				self.activePanelButton = pnl
@@ -153,6 +155,7 @@ function PANEL:AddMenuItem( name, func )
 				
 				if ( newActivePanel and type( newActivePanel ) == "Panel" and IsValid( newActivePanel ) ) then
 					newActivePanel:Show( )
+					newActivePanel:OnMenuRecovered( )
 				end
 				
 				self.activePanelButton = pnl
@@ -182,9 +185,11 @@ function PANEL:OnKeyCodePressed( key )
 end
 
 function PANEL:Paint( w, h )
-	self.blurAmount = Lerp( 0.05, self.blurAmount, self.closeing and 0 or 0 )
+	self.blurAmount = Lerp( 0.05, self.blurAmount, self.closeing and 0 or 3 )
 	
-	//catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
+	if ( self:IsVisible( ) ) then
+		catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
+	end
 end
 
 function PANEL:Show( )

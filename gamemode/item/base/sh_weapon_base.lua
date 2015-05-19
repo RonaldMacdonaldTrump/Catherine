@@ -34,7 +34,7 @@ BASE.func.equip = {
 	canShowIsWorld = true,
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
-		if ( !catherine.inventory.HasSpace( pl ) and type( ent ) == "Entity" ) then
+		if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) and type( ent ) == "Entity" ) then
 			catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 			return
 		end
@@ -50,6 +50,8 @@ BASE.func.equip = {
 			pl:SelectWeapon( itemTable.weaponClass )
 			wep:SetClip1( 0 )
 		end
+
+		catherine.attachment.Refresh( pl )
 		
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
 		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", true )
@@ -66,6 +68,8 @@ BASE.func.unequip = {
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
 			pl:StripWeapon( itemTable.weaponClass )
 		end
+		
+		catherine.attachment.Refresh( pl )
 		
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
 		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", false )

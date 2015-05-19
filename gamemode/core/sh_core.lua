@@ -268,6 +268,24 @@ function GM:DoAnimationEvent( pl, eve, data )
 	return nil
 end
 
+local KEY_BLACKLIST = IN_ATTACK + IN_ATTACK2
+
+function GM:StartCommand( pl, cmd )
+	if ( !pl:GetWeaponRaised( ) ) then
+		local wep = pl:GetActiveWeapon( )
+		
+		if ( IsValid( wep ) and wep.CanFireLowered ) then
+			return
+		end
+		
+		cmd:RemoveKey( KEY_BLACKLIST )
+	end
+end
+
+function GM:PlayerCanThrowPunch( pl )
+	return pl:GetWeaponRaised( )
+end
+
 function GM:GetPlayerInformation( pl, target, isFull )
 	if ( pl == target ) then
 		return pl:Name( ), pl:Desc( )

@@ -30,7 +30,6 @@ function PANEL:Init( )
 	self:SetTitle( "" )
 	self:SetDraggable( false )
 	self:ShowCloseButton( false )
-	self:MoveTo( ScrW( ) - self.w, self.y, 0.2, 0 )
 	self:MakePopup( )
 	
 	self.Lists = vgui.Create( "DPanelList", self )
@@ -85,8 +84,12 @@ function PANEL:AddRPInformation( text )
 end
 
 function PANEL:Paint( w, h )
+	self.x = Lerp( 0.07, self.x, ScrW( ) - w )
+	
+	self:SetPos( self.x, self.y )
+	
 	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 235 ) )
-		
+	
 	surface.SetDrawColor( 200, 200, 200, 235 )
 	surface.SetMaterial( Material( "gui/gradient_up" ) )
 	surface.DrawTexturedRect( 0, 0, w, h )

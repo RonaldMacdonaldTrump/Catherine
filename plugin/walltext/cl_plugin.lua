@@ -50,7 +50,7 @@ function PLUGIN:DrawText( data )
 end
 
 function PLUGIN:PostDrawTranslucentRenderables( )
-	local pos = LocalPlayer( ).GetPos( LocalPlayer( ) )
+	local pos = LocalPlayer( ):GetPos( )
 	
 	for k, v in pairs( self.textLists ) do
 		local a = catherine.util.GetAlphaFromDistance( pos, v.pos, 1000 )
@@ -63,4 +63,9 @@ function PLUGIN:PostDrawTranslucentRenderables( )
 	end
 end
 
-catherine.font.Register( "catherine_walltext", catherine.configs.Font, 150, 1000, { outline = true } )
+catherine.font.Register( "catherine_walltext", {
+	font = catherine.configs.Font,
+	size = 150,
+	weight = 1000,
+	outline = true
+} )

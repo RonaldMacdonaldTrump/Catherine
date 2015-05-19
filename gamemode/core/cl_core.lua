@@ -40,7 +40,10 @@ catherine.intro = catherine.intro or {
 	introDone = false
 }
 local entityCaches = { }
-local nextEntityCacheWork = CurTime( )
+local nextEntityCacheWork = RealTime( )
+local lastEntity = nil
+local rpInformation_backgroundA = 0
+local rpInformation_backgroundblurA = 0
 local toscreen = FindMetaTable( "Vector" ).ToScreen
 local OFFSET_PLAYER = Vector( 0, 0, 30 )
 local OFFSET_AD_ESP = Vector( 0, 0, 50 )
@@ -48,6 +51,8 @@ local frameworkLogoMat = Material( catherine.configs.frameworkLogo )
 local gradientUpMat = Material( "gui/gradient_up" )
 local gradientCenterMat = Material( "gui/center_gradient" )
 local introBooA = 0
+local math_app = math.Approach
+local hook_run = hook.Run
 
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hud.GetBlockModules( ) ) do
@@ -158,7 +163,7 @@ function GM:HUDDrawScoreBoard( )
 	
 	// Intro codes
 	if ( catherine.intro.status and catherine.intro.startTime != 0 ) then
-		if ( catherine.intro.startTime + 5 <= CurTime( ) ) then
+		if ( catherine.intro.startTime <= CurTime( ) ) then
 			catherine.intro.firstStage = true
 
 			if ( catherine.intro.firstStageX >= scrW / 2 - 512 / 2 ) then
@@ -167,7 +172,7 @@ function GM:HUDDrawScoreBoard( )
 			
 			if ( !catherine.intro.firstStageEffect ) then
 				introBooA = 255
-				surface.PlaySound( "CAT/intro_slide.wav" ) // Tooong!
+				surface.PlaySound( "CAT/intro_slide_2.wav" ) // Tooong!
 				catherine.intro.firstStageEffect = true
 			end
 			
@@ -175,7 +180,7 @@ function GM:HUDDrawScoreBoard( )
 				catherine.intro.firstStageShowingTime = CurTime( )
 			end
 			
-			if ( catherine.intro.firstStageShowingTime + 4 <= CurTime( ) ) then
+			if ( catherine.intro.firstStageShowingTime + 2 <= CurTime( ) ) then
 				if ( !catherine.intro.secondStageShowingTime ) then
 					catherine.intro.secondStageShowingTime = CurTime( )
 				end
@@ -184,14 +189,14 @@ function GM:HUDDrawScoreBoard( )
 				
 				if ( !catherine.intro.secondStageEffect ) then
 					introBooA = 255
-					surface.PlaySound( "CAT/intro_slide.wav" ) // Tooong!
+					surface.PlaySound( "CAT/intro_slide_2.wav" ) // Tooong!
 					catherine.intro.secondStageEffect = true
 				end
 				
-				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, 0 - 512, 33 )
+				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, 0 - 512, 25 )
 				
 				if ( !catherine.intro.secondStageEnding ) then
-					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, scrW / 2 - 512 / 2, 33 )
+					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, scrW / 2 - 512 / 2, 25 )
 				end
 				
 				if ( catherine.intro.firstStageEnding ) then
@@ -202,8 +207,8 @@ function GM:HUDDrawScoreBoard( )
 					end
 				end
 				
-				if ( catherine.intro.secondStageShowingTime + 4 <= CurTime( ) ) then
-					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, 0 - 512, 33 )
+				if ( catherine.intro.secondStageShowingTime + 2 <= CurTime( ) ) then
+					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, 0 - 512, 25 )
 
 					if ( !catherine.intro.secondStageEnding ) then
 						surface.PlaySound( "CAT/UI/intro_done.wav" ) // Sike!
@@ -228,7 +233,7 @@ function GM:HUDDrawScoreBoard( )
 
 	if ( catherine.intro.loadingAlpha > 0 ) then
 		// Loading circle
-		catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 5, 5 )
+		catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 7, 7 )
 		
 		draw.NoTexture( )
 		surface.SetDrawColor( 90, 90, 90, catherine.intro.loadingAlpha )
@@ -289,7 +294,7 @@ function GM:DrawDoorText( ent )
 	local title = ent.GetNetVar( ent, "title", LANG( "Door_UI_Default" ) )
 	local desc = catherine.door.GetDetailString( ent )
 	
-	surface.SetFont( "catherine_normal50" )
+	surface.SetFont( "catherine_outline35" )
 	local titleW, titleH = surface.GetTextSize( title )
 	local descW, descH = surface.GetTextSize( desc )
 	local longW = descW > titleW and descW or titleW
@@ -309,7 +314,7 @@ function GM:DrawDoorText( ent )
 		surface.SetMaterial( gradientCenterMat )
 		surface.DrawTexturedRect( 0 - longW / 2, 80, longW, 1 )
 		
-		draw.SimpleText( title, "catherine_normal40", 0, 0, Color( 235, 235, 235, a ), 1, 1 )
+		draw.SimpleText( title, "catherine_outline35", 0, 0, Color( 235, 235, 235, a ), 1, 1 )
 	cam.End3D2D( )
 	
 	cam.Start3D2D( posBack, angBack, titleScale )
@@ -321,15 +326,15 @@ function GM:DrawDoorText( ent )
 		surface.SetMaterial( gradientCenterMat )
 		surface.DrawTexturedRect( 0 - longW / 2, 80, longW, 1 )
 		
-		draw.SimpleText( title, "catherine_normal40", 0, 0, Color( 235, 235, 235, a ), 1, 1 )
+		draw.SimpleText( title, "catherine_outline35", 0, 0, Color( 235, 235, 235, a ), 1, 1 )
 	cam.End3D2D( )
 	
 	cam.Start3D2D( pos, ang, descScale )
-		draw.SimpleText( desc, "catherine_normal50", 0, 90, Color( 235, 235, 235, a ), 1, 1 )
+		draw.SimpleText( desc, "catherine_outline50", 0, 140, Color( 235, 235, 235, a ), 1, 1 )
 	cam.End3D2D( )
 	
 	cam.Start3D2D( posBack, angBack, descScale )
-		draw.SimpleText( desc, "catherine_normal50", 0, 90, Color( 235, 235, 235, a ), 1, 1 )
+		draw.SimpleText( desc, "catherine_outline50", 0, 140, Color( 235, 235, 235, a ), 1, 1 )
 	cam.End3D2D( )
 end
 
@@ -395,15 +400,21 @@ end
 
 function GM:EntityCacheWork( pl )
 	if ( !pl:IsCharacterLoaded( ) ) then return end
-	if ( nextEntityCacheWork <= CurTime( ) ) then
+	local rt = RealTime( )
+	
+	if ( nextEntityCacheWork <= rt ) then
 		local data = { }
 		data.start = pl:GetShootPos( )
 		data.endpos = data.start + pl:GetAimVector( ) * 160
 		data.filter = pl
-		local ent = util.TraceLine( data ).Entity
+		
+		lastEntity = util.TraceLine( data ).Entity
 
-		entityCaches[ ent ] = IsValid( ent ) and true or nil
-		nextEntityCacheWork = CurTime( ) + 0.5
+		if ( IsValid( lastEntity ) ) then
+			entityCaches[ lastEntity ] = true
+		end
+
+		nextEntityCacheWork = rt + 0.5
 	end
 	
 	for k, v in pairs( entityCaches ) do
@@ -412,18 +423,25 @@ function GM:EntityCacheWork( pl )
 			continue
 		end
 		
-		local a = Lerp( 0.02, k.CAT_entityCacheAlpha or 0, catherine.util.GetAlphaFromDistance( k:GetPos( ), pl:GetPos( ), 256 ) )
-		k.CAT_entityCacheAlpha = a
-
-		if ( a <= 0 ) then
-			entityCaches[ k ] = nil
-			continue
+		if ( lastEntity != k ) then
+			entityCaches[ k ] = false
 		end
 		
-		if ( k.DrawEntityTargetID ) then
-			k:DrawEntityTargetID( pl, k, a )
-		else
-			hook.Run( "DrawEntityTargetID", pl, k, a )
+		local targetAlpha = v and 255 or 0
+		local a = math_app( k.CAT_entityCacheAlpha or 0, targetAlpha, FrameTime( ) * 120 )
+
+		if ( a > 0 ) then
+			if ( k.DrawEntityTargetID ) then
+				k:DrawEntityTargetID( pl, k, a )
+			else
+				hook_run( "DrawEntityTargetID", pl, k, a )
+			end
+		end
+		
+		k.CAT_entityCacheAlpha = a
+		
+		if ( targetAlpha == 0 and a == 0 ) then
+			entityCaches[ k ] = nil
 		end
 	end
 end
@@ -432,14 +450,37 @@ function GM:HUDPaint( )
 	if ( IsValid( catherine.vgui.character ) ) then return end
 	local pl = LocalPlayer( )
 	
-	hook.Run( "HUDBackgroundDraw" )
+	hook_run( "HUDBackgroundDraw" )
 	catherine.hud.Draw( pl )
 	catherine.bar.Draw( pl )
 	catherine.hint.Draw( pl )
-	hook.Run( "HUDDraw" )
+	hook_run( "HUDDraw" )
 	
 	if ( pl:Alive( ) ) then
-		hook.Run( "EntityCacheWork", pl )
+		hook_run( "EntityCacheWork", pl )
+	end
+end
+
+function GM:HUDBackgroundDraw( )
+	if ( IsValid( catherine.vgui.information ) ) then
+		rpInformation_backgroundA = Lerp( 0.03, rpInformation_backgroundA, 100 )
+		rpInformation_backgroundblurA = Lerp( 0.05, rpInformation_backgroundblurA, 3 )
+	else
+		if ( rpInformation_backgroundA > 0 ) then
+			rpInformation_backgroundA = Lerp( 0.03, rpInformation_backgroundA, 0 )
+		end
+		
+		if ( rpInformation_backgroundblurA > 0 ) then
+			rpInformation_backgroundblurA = Lerp( 0.05, rpInformation_backgroundblurA, 0 )
+		end
+	end
+
+	if ( rpInformation_backgroundblurA > 0 ) then
+		catherine.util.BlurDraw( 0, 0, ScrW( ), ScrH( ), rpInformation_backgroundblurA )
+	end
+	
+	if ( rpInformation_backgroundA > 0 ) then
+		draw.RoundedBox( 0, 0, 0, ScrW( ), ScrH( ), Color( 50, 50, 50, rpInformation_backgroundA ) )
 	end
 end
 
@@ -468,7 +509,7 @@ function GM:CalcViewModelView( wep, viewMdl, oldEyePos, oldEyeAngles, eyePos, ey
 end
 
 function GM:PlayerCantLookScoreboard( pl )
-
+	return false
 end
 
 function GM:ScoreboardPlayerOption( pl, target )
@@ -539,6 +580,12 @@ function GM:RenderScreenspaceEffects( )
 	tab[ "$pp_colour_mulb" ] = data.mulb or 0
 
 	DrawColorModify( tab )
+end
+
+function GM:VGUIMousePressed( pnl, code )
+	if ( IsValid( catherine.vgui.information ) and IsValid( pnl ) and pnl:GetParent( ) != catherine.vgui.information ) then
+		catherine.vgui.information:Close( )
+	end
 end
 
 function GM:ScreenResolutionChanged( oldW, oldH )

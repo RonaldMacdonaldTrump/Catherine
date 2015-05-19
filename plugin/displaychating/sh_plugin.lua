@@ -33,23 +33,30 @@ catherine.language.Merge( "korean", {
 	[ "DC_Plugin_Desc" ] = "해당 사람이 채팅을 치고 있는 경우 머리 위에 메세지를 출력합니다."
 } )
 
-if ( CLIENT ) then
-	function PLUGIN:PostPlayerDraw( pl )
-		if ( !pl.IsChatTyping( pl ) ) then return end
-		local lp = LocalPlayer( )
-		local a = catherine.util.GetAlphaFromDistance( lp.GetPos( lp ), pl.GetPos( pl ), 312 )
+if ( SERVER ) then return end
+
+function PLUGIN:PostPlayerDraw( pl )
+	if ( !pl:IsChatTyping( ) ) then return end
+	local lp = LocalPlayer( )
+	local a = catherine.util.GetAlphaFromDistance( lp:GetPos( ), pl:GetPos( ), 312 )
+	
+	if ( a <= 0 or !pl:Alive( ) or pl:IsNoclipping( ) ) then return end
+	local index = pl:LookupBone( "ValveBiped.Bip01_Head1" )
+	
+	if ( index ) then
+		local pos = pl:GetBonePosition( index ) + Vector( 0, 0, 15 )
+		local ang = lp:EyeAngles( )
 		
-		if ( math.Round( a ) <= 0 or !pl:Alive( ) or pl.GetMoveType( pl ) == MOVETYPE_NOCLIP ) then return end
+		pos = pos + ang:Up( )
+		ang:RotateAroundAxis( ang:Forward( ), 90 )
+		ang:RotateAroundAxis( ang:Right( ), 90 )
 		
-		local ang = lp.EyeAngles( lp )
-		local pos = pl.GetBonePosition( pl, pl.LookupBone( pl, "ValveBiped.Bip01_Head1" ) ) + Vector( 0, 0, 15 )
+		if ( !self.typingText ) then
+			self.typingText = LANG( "DisplayChating_Talking" )
+		end
 		
-		pos = pos + ang.Up( ang )
-		ang:RotateAroundAxis( ang.Forward( ang ), 90 )
-		ang:RotateAroundAxis( ang.Right( ang ), 90 )
-		
-		local text = LANG( "DisplayChating_Talking" )
-		
+		local text = self.typingText
+
 		surface.SetFont( "catherine_normal50" )
 		local tw, th = surface.GetTextSize( text )
 		
@@ -57,4 +64,8 @@ if ( CLIENT ) then
 			draw.SimpleText( text, "catherine_normal50", 0 - tw / 2, 0, Color( 255, 255, 255, a ) )
 		cam.End3D2D( )
 	end
+end
+
+function PLUGIN:LanguageChanged( )
+	self.typingText = LANG( "DisplayChating_Talking" )
 end

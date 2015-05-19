@@ -33,7 +33,7 @@ function catherine.plugin.Include( dir )
 	local _, folders = file.Find( dir .. "/plugin/*", "LUA" )
 	
 	for k, v in pairs( folders ) do
-		PLUGIN = catherine.plugin.Get( v ) or { FolderName = dir .. "/plugin/" .. v }
+		PLUGIN = catherine.plugin.Get( v ) or { uniqueID = v, FolderName = dir .. "/plugin/" .. v }
 		
 		local pluginDir = PLUGIN.FolderName
 		

@@ -15,13 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
-// 이 라이브러리는 현재 개발중 입니다!
-// This library is still developing!
-catherine.door = catherine.door or { }
 
+catherine.door = catherine.door or { }
 CAT_DOOR_CHANGE_PERMISSION = 1
 CAT_DOOR_CHANGE_DESC = 2
-
 CAT_DOOR_FLAG_OWNER = 1
 CAT_DOOR_FLAG_ALL = 2
 CAT_DOOR_FLAG_BASIC = 3
