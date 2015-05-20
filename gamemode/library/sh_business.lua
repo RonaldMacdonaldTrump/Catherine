@@ -24,10 +24,10 @@ if ( SERVER ) then
 		local cost = 0
 		
 		for k, v in pairs( shipLists ) do
-			local itemTable = catherine.item.FindByID( v.uniqueID )
+			local itemTable = catherine.item.FindByID( k )
 			if ( itemTable ) then continue end
 			
-			cost = cost + ( itemTable.cost * v.count )
+			cost = cost + ( itemTable.cost * v )
 		end
 		
 		if ( !catherine.cash.Has( pl, cost ) ) then

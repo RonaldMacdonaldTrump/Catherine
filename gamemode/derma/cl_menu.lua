@@ -175,7 +175,7 @@ function PANEL:AddMenuItem( name, func )
 	self.ListsBase.Lists:SetWide( math.min( w + menuItem:GetWide( ), self.w ) )
 	self.ListsBase.Lists:SetPos( self.w / 2 - w / 2, 0 )
 	
-	return menuItem
+	return menuItem, menuItem:GetWide( )
 end
 
 function PANEL:OnKeyCodePressed( key )

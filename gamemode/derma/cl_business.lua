@@ -336,7 +336,7 @@ function PANEL:BuildShipment( )
 			
 			netstream.Start( "catherine.item.Give", k )
 			
-			count = LANG( "Basic_UI_Count", v )
+			count = LANG( "Basic_UI_Count", self.shipments[ k ] )
 			
 			if ( table.Count( self.shipments ) == 0 and IsValid( self.ent ) ) then
 				netstream.Start( "catherine.business.RemoveShipment", self.ent:EntIndex( ) )

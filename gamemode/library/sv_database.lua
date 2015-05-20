@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `catherine_characters` (
 	`_charVar` text,
 	`_inv` text,
 	`_cash` int(11) unsigned DEFAULT NULL,
-	`_faction` varchar(50) NOT NULL,
+	`_faction` varchar(50) NOT NULL
 	PRIMARY KEY (`_id`)
 );
 CREATE TABLE IF NOT EXISTS `catherine_players` (
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `catherine_players` (
 	`_catData` text,
 	`_steamID64` text,
 	`_ipAddress` varchar(15) DEFAULT NULL,
-	`_lastConnect` text,
+	`_lastConnect` text
 	PRIMARY KEY (`_id`)
 );
 ]]
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `catherine_players` (
 	`_catData` TEXT,
 	`_steamID64` TEXT,
 	`_ipAddress` TEXT,
-	`_lastConnect` TEXT,
+	`_lastConnect` TEXT
 );
 ]]
 
@@ -128,7 +128,7 @@ catherine.database.modules[ "mysqloo" ] = {
 		end
 		
 		function result:onError( err )
-			catherine.util.Print( Color( 255, 0, 0 ), "MySQLoo Query Error : " .. query .. " -> " .. err .. " !!!" )
+			MsgC( Color( 255, 0, 0 ), "[CAT Query ERROR] " .. query .. " -> " .. err .. " !!!\n" )
 		end
 		
 		result:start( )
@@ -165,7 +165,7 @@ catherine.database.modules[ "sqlite" ] = {
 		local result = sql.Query( query )
 		
 		if ( result == false ) then
-			catherine.util.Print( Color( 255, 0, 0 ), "SQLite Query Error : " .. query .. " -> " .. sql.LastError( ) .. " !!!" )
+			MsgC( Color( 255, 0, 0 ), "[CAT Query ERROR] " .. query .. " -> " .. sql.LastError( ) .. " !!!\n" )
 			return
 		end
 		
