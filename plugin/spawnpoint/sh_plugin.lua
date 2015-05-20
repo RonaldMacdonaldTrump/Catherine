@@ -21,7 +21,22 @@ PLUGIN.name = "^SPP_Plugin_Name"
 PLUGIN.author = "L7D"
 PLUGIN.desc = "^SPP_Plugin_Desc"
 
-catherine.util.Include( "sh_language.lua" )
+catherine.language.Merge( "english", {
+	[ "SPP_Plugin_Name" ] = "Spawn Point",
+	[ "SPP_Plugin_Desc" ] = "Good stuff.",
+	[ "Spawnpoint_Notify_Add" ] = "You added spawnpoint for '%s' faction.",
+	[ "Spawnpoint_Notify_Remove" ] = "You removed %s's spawn points.",
+	[ "Spawnpoint_Notify_Remove_No" ] = "This place hasn't spawnpoint!"
+} )
+
+catherine.language.Merge( "korean", {
+	[ "SPP_Plugin_Name" ] = "스폰 포인트",
+	[ "SPP_Plugin_Desc" ] = "팩션에 따른 스폰 포인트를 지정할 수 있습니다.",
+	[ "Spawnpoint_Notify_Add" ] = "당신은 '%s' 팩션을 위한 스폰 포인트를 추가했습니다.",
+	[ "Spawnpoint_Notify_Remove" ] = "당신은 %s개의 스폰 포인트를 지웠습니다.",
+	[ "Spawnpoint_Notify_Remove_No" ] = "이 장소에는 스폰 포인트가 없습니다!"
+} )
+
 catherine.util.Include( "sv_plugin.lua" )
 
 catherine.command.Register( {
@@ -38,7 +53,7 @@ catherine.command.Register( {
 				
 				PLUGIN.lists[ map ] = PLUGIN.lists[ map ] or { }
 				PLUGIN.lists[ map ][ faction ] = PLUGIN.lists[ map ][ faction ] or { }
-				PLUGIN.lists[ map ][ faction ][ #PLUGIN.lists[ map ][ faction ] + 1 ] = pl.GetPos( pl )
+				PLUGIN.lists[ map ][ faction ][ #PLUGIN.lists[ map ][ faction ] + 1 ] = pl:GetPos( )
 				
 				PLUGIN:SavePoints( )
 				
@@ -58,7 +73,7 @@ catherine.command.Register( {
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local rad = math.max( tonumber( args[ 1 ] or "" ) or 140, 8 )
-		local pos = pl.GetPos( pl )
+		local pos = pl:GetPos( )
 		local map = game.GetMap( )
 		local i = 0
 
