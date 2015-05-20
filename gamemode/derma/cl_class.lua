@@ -20,9 +20,7 @@ local PANEL = { }
 
 function PANEL:Init( )
 	catherine.vgui.class = self
-	
-	self.classes = nil
-	
+
 	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
 	self:SetMenuName( LANG( "Class_UI_Title" ) )
 
@@ -56,7 +54,6 @@ end
 
 function PANEL:BuildClasses( )
 	self.Lists:Clear( )
-	local delta = 0
 	
 	for k, v in pairs( self.classes or { } ) do
 		local name = catherine.util.StuffLanguage( v.name )
@@ -65,17 +62,13 @@ function PANEL:BuildClasses( )
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Lists:GetWide( ), 70 )
 		panel.Paint = function( pnl, w, h )
-			local players = #catherine.class.GetPlayers( v.uniqueID )
+			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 			
 			draw.SimpleText( name, "catherine_normal25", 80, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( desc, "catherine_normal15", 80, 50, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( LANG( "Class_UI_LimitStr", players, v.limit or LANG( "Class_UI_Unlimited" ) ), "catherine_normal20", w - 10, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			draw.SimpleText( LANG( "Class_UI_LimitStr", #catherine.class.GetPlayers( v.uniqueID ), v.limit or LANG( "Class_UI_Unlimited" ) ), "catherine_normal20", w - 10, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			draw.SimpleText( LANG( "Class_UI_SalaryStr", catherine.cash.GetName( v.salary or 0 ) ), "catherine_normal20", w - 10, 50, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
-			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 		end
-		panel:SetAlpha( 0 )
-		panel:AlphaTo( 255, 0.1, delta )
-		delta = delta + 0.05
 		
 		local button = vgui.Create( "DButton", panel )
 		button:SetSize( panel:GetWide( ), panel:GetTall( ) )

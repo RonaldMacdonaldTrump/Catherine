@@ -21,7 +21,7 @@ local PANEL = { }
 function PANEL:Init( )
 	catherine.vgui.inventory = self
 
-	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
+	self:SetMenuSize( ScrW( ) * 0.7, ScrH( ) * 0.8 )
 	self:SetMenuName( LANG( "Inventory_UI_Title" ) )
 
 	self.Lists = vgui.Create( "DPanelList", self )
@@ -47,42 +47,35 @@ function PANEL:OnMenuRecovered( )
 end
 
 function PANEL:GetInventory( )
-	local tab = { }
+	local inventory = { }
 	
 	for k, v in pairs( catherine.inventory.Get( ) ) do
 		local itemTable = catherine.item.FindByID( k )
-		if ( !itemTable ) then continue end
-		
 		local category = itemTable.category
-		tab[ category ] = tab[ category ] or { }
-		tab[ category ][ v.uniqueID ] = v
+		
+		inventory[ category ] = inventory[ category ] or { }
+		inventory[ category ][ k ] = v
 	end
-	
-	table.sort( tab, function( a, b )
-		return a.category < b.category
-	end )
-	
+
 	self.weight:SetWeight( catherine.inventory.GetWeights( ) )
 	
-	return tab
+	return inventory
 end
 
 function PANEL:BuildInventory( )
-	self.Lists:Clear( )
-	local delta = 0
+	local pl = self.player
 	
-	for k, v in pairs( self:GetInventory( ) ) do
+	self.Lists:Clear( )
+
+	for k, v in SortedPairs( self:GetInventory( ) ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
-		form:SetAlpha( 0 )
-		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
 			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
-		delta = delta + 0.05
 
 		local lists = vgui.Create( "DPanelList", form )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
@@ -92,36 +85,39 @@ function PANEL:BuildInventory( )
 		
 		form:AddItem( lists )
 		
-		for k1, v1 in pairs( v ) do
+		for k1, v1 in SortedPairsByMemberValue( v, "uniqueID" ) do
 			local w, h = 64, 64
 			local itemTable = catherine.item.FindByID( v1.uniqueID )
-			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( self.player, itemTable, self.player:GetInvItemDatas( itemTable.uniqueID ), true ) or nil
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, pl:GetInvItemDatas( k1 ), true ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
+			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, k1 )
 			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( model, itemTable.skin or 0 )
 			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
 			spawnIcon.DoClick = function( )
-				catherine.item.OpenMenuUse( v1.uniqueID )
+				catherine.item.OpenMenuUse( k1 )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
-				if ( catherine.inventory.IsEquipped( v1.uniqueID ) ) then
+				if ( catherine.inventory.IsEquipped( k1 ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
 					surface.SetMaterial( Material( "icon16/accept.png" ) )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
 				
 				if ( itemTable.DrawInformation ) then
-					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemDatas( itemTable.uniqueID ) )
+					itemTable:DrawInformation( pl, itemTable, w, h, pl:GetInvItemDatas( k1 ) )
 				end
 				
-				if ( v1.itemCount > 1 ) then
+				if ( !noDrawItemCount and v1.itemCount > 1 ) then
 					draw.SimpleText( v1.itemCount, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
+			
 			lists:AddItem( spawnIcon )
 		end
+		
 		self.Lists:AddItem( form )
 	end
 end

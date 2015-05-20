@@ -140,24 +140,18 @@ if ( SERVER ) then
 else
 	function catherine.class.GetJoinable( )
 		local pl = LocalPlayer( )
+		local team = pl:Team( )
+		local class = pl:Class( )
 		local classes = { }
 		
 		for k, v in pairs( catherine.class.GetAll( ) ) do
-			if ( v.faction == pl:Team( ) and pl:Class( ) != v.index and !v.cantJoinUsingMenu ) then
+			if ( v.faction == team and class != v.index and !v.cantJoinUsingMenu ) then
 				classes[ #classes + 1 ] = v
 			end
 		end
 		
 		return classes
 	end
-	
-	function catherine.class.CharacterCharVarChanged( )
-		if ( IsValid( catherine.vgui.class ) ) then
-			catherine.vgui.class:InitializeClasses( )
-		end
-	end
-	
-	hook.Add( "CharacterCharVarChanged", "catherine.class.CharacterCharVarChanged", catherine.class.CharacterCharVarChanged )
 end
 
 local META = FindMetaTable( "Player" )

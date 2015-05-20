@@ -305,12 +305,4 @@ else
 	function META:GetInvItemDatas( uniqueID )
 		return catherine.inventory.GetItemDatas( uniqueID )
 	end
-	
-	function catherine.inventory.CharacterVarChanged( )
-		if ( IsValid( catherine.vgui.inventory ) and !catherine.vgui.inventory:IsHiding( ) ) then
-			catherine.vgui.inventory:BuildInventory( )
-		end
-	end
-	
-	hook.Add( "CharacterVarChanged", "catherine.inventory.CharacterVarChanged", catherine.inventory.CharacterVarChanged )
 end
