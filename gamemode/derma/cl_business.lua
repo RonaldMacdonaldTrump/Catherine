@@ -21,6 +21,8 @@ local PANEL = { }
 function PANEL:Init( )
 	catherine.vgui.business = self
 	
+	self.business = nil
+	self.shoppingcartInfo = nil
 	self.shoppingcart = { }
 	
 	self:SetMenuSize( ScrW( ) * 0.95, ScrH( ) * 0.8 )
@@ -205,16 +207,14 @@ function PANEL:BuildBusiness( )
 		
 		for k1, v1 in pairs( v ) do
 			local w, h = 64, 64
-			local itemTable = catherine.item.FindByID( v1.uniqueID )
-			if ( !itemTable ) then continue end
-			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
+			local model = v1.GetDropModel and v1:GetDropModel( ) or v1.model
 			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
-			spawnIcon:SetModel( model, itemTable.skin or 0 )
-			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. "\n" .. ( itemTable.cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetName( itemTable.cost ) ) )
+			spawnIcon:SetModel( model, v1.skin or 0 )
+			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( v1 ) .. "\n" .. ( v1.cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetName( v1.cost ) ) )
 			spawnIcon.DoClick = function( )
-				local uniqueID = itemTable.uniqueID
+				local uniqueID = k1
 				local shoppingCart = self.shoppingcart
 				
 				if ( shoppingCart[ uniqueID ] ) then
@@ -225,11 +225,12 @@ function PANEL:BuildBusiness( )
 				
 				self:RefreshShoppingCartInfo( )
 				self:BuildShoppingCart( )
+				
 				self.buyItems:SetStr( LANG( "Business_UI_BuyButtonStr", self:GetShipmentCount( ) ) )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
-				if ( itemTable.DrawInformation ) then
-					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemDatas( itemTable.uniqueID ) )
+				if ( v1.DrawInformation ) then
+					v1:DrawInformation( self.player, v1, w, h, self.player:GetInvItemDatas( k1 ) )
 				end
 			end
 			
