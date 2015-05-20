@@ -65,20 +65,21 @@ function PLUGIN:SaveVendors( )
 	
 	for k, v in pairs( ents.FindByClass( "cat_vendor" ) ) do
 		if ( !v.vendorData ) then continue end
-
+		local vendorData = v.vendorData
+		
 		data[ #data + 1 ] = {
-			name = v.vendorData.name,
-			desc = v.vendorData.desc,
-			factions = v.vendorData.factions,
-			classes = v.vendorData.classes,
-			inv = v.vendorData.inv,
-			cash = v.vendorData.cash,
-			setting = v.vendorData.setting,
-			status = v.vendorData.status,
-			items = v.vendorData.items,
-			model = v.vendorData.model,
-			pos = v.GetPos( v ),
-			ang = v.GetAngles( v )
+			name = vendorData.name,
+			desc = vendorData.desc,
+			factions = vendorData.factions,
+			classes = vendorData.classes,
+			inv = vendorData.inv,
+			cash = vendorData.cash,
+			setting = vendorData.setting,
+			status = vendorData.status,
+			items = vendorData.items,
+			model = vendorData.model,
+			pos = v:GetPos( ),
+			ang = v:GetAngles( )
 		}
 	end
 	
@@ -109,6 +110,7 @@ function PLUGIN:MakeVendor( ent, data )
 	
 	for k, v in pairs( vars ) do
 		local val = data[ v.id ] and data[ v.id ] or v.default
+		
 		ent:SetNetVar( v.id, val )
 		ent.vendorData[ v.id ] = val
 	end
@@ -326,11 +328,13 @@ function PLUGIN:CanUseVendor( pl, ent )
 	end
 	
 	local factionData = ent.vendorData.factions
+	
 	if ( !pl:IsAdmin( ) and #factionData != 0 and !table.HasValue( factionData, pl:Faction( ) ) ) then
 		return false
 	end
 	
 	local classData = ent.vendorData.classes
+	
 	if ( !pl:IsAdmin( ) and #classData != 0 and !table.HasValue( classData, pl:Class( ) ) ) then
 		return false
 	end
