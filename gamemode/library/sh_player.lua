@@ -15,7 +15,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
-//Catherine is currently in devloping. Restart the database after update.
 
 catherine.player = catherine.player or { }
 local META = FindMetaTable( "Player" )

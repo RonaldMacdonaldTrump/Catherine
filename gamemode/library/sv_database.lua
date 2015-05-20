@@ -252,9 +252,17 @@ if ( !catherine.database.Connected ) then
 	catherine.database.Connect( )
 end
 
+--[[
+	[ How can i reset the database? ]
+	
+	Type 'cat_db_init' command in 'Dedicated Console'.
+	( if you are working Local Server, Run command in Client Console !! ( You are must joined Super Admin! ) )
+]]--
+
 concommand.Add( "cat_db_init", function( pl )
-	if ( IsValid( pl ) and !pl:IsSuperAdmin( ) ) then
-		catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
+	if ( game.IsDedicated( ) and IsValid( pl ) ) then
+		return
+	elseif ( !game.IsDedicated( ) and !pl:IsSuperAdmin( ) ) then
 		return
 	end
 	

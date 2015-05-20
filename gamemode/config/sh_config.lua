@@ -56,6 +56,12 @@ catherine.configs.defaultRPInformation = {
 }
 
 if ( SERVER ) then
+	catherine.configs.attachmentBlacklist = {
+		"weapon_physcannon",
+		"weapon_physgun",
+		"gmod_tool",
+		"gmod_camera"
+	}
 	catherine.configs.HaXCheckInterval = 600
 	catherine.configs.hintInterval = 30
 	catherine.configs.environmentSendInterval = 60
