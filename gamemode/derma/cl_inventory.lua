@@ -51,6 +51,7 @@ function PANEL:GetInventory( )
 	
 	for k, v in pairs( catherine.inventory.Get( ) ) do
 		local itemTable = catherine.item.FindByID( k )
+		if ( !itemTable ) then continue end
 		local category = itemTable.category
 		
 		inventory[ category ] = inventory[ category ] or { }
