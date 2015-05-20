@@ -22,24 +22,20 @@ PLUGIN.author = "L7D"
 PLUGIN.desc = "^ST_Plugin_Desc"
 
 catherine.language.Merge( "english", {
-	[ "Stamina_Title" ] = "Stamina",
-	[ "Stamina_Desc" ] = "How long you can run for.",
 	[ "ST_Plugin_Name" ] = "Stamina",
-	[ "ST_Plugin_Desc" ] = "Good stuff."
+	[ "ST_Plugin_Desc" ] = "Good stuff.",
+	[ "Stamina_Title" ] = "Stamina",
+	[ "Stamina_Desc" ] = "How long you can run for."
 } )
 
 catherine.language.Merge( "korean", {
-	[ "Stamina_Title" ] = "기력",
-	[ "Stamina_Desc" ] = "높을 수록 장시간을 달릴 수 있습니다.",
 	[ "ST_Plugin_Name" ] = "기력",
-	[ "ST_Plugin_Desc" ] = "RP 를 위한 기력 플러그인 입니다."
+	[ "ST_Plugin_Desc" ] = "RP 를 위한 기력 플러그인 입니다.",
+	[ "Stamina_Title" ] = "기력",
+	[ "Stamina_Desc" ] = "높을 수록 장시간을 달릴 수 있습니다."
 } )
 
 if ( SERVER ) then
-	function PLUGIN:PlayerSpawnedInCharacter( pl )
-		catherine.character.SetCharVar( pl, "stamina", catherine.character.GetCharVar( pl, "stamina", 100 ) )
-	end
-	
 	function PLUGIN:PlayerDeath( pl )
 		catherine.character.SetCharVar( pl, "stamina", 100 )
 	end
