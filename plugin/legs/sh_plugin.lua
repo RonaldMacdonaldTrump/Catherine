@@ -18,7 +18,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 local PLUGIN = PLUGIN
 PLUGIN.name = "^Legs_Plugin_Name"
-PLUGIN.author = "Chessnut" // Thx!
+PLUGIN.author = "Chessnut"
 PLUGIN.desc = "^Legs_Plugin_Desc"
 
 catherine.language.Merge( "english", {
@@ -91,7 +91,7 @@ local HIDDEN_BONES = {
 }
 
 function PLUGIN:CreateLeg( )
-	if ( !CAT_CONVAR_LEGS.GetBool( CAT_CONVAR_LEGS ) ) then
+	if ( GetConVarString( "cat_convar_legs" ) == "0" ) then
 		return
 	end
 
@@ -99,49 +99,58 @@ function PLUGIN:CreateLeg( )
 		self.legEntity:Remove( )
 	end
 
-	self.legEntity = ClientsideModel( LocalPlayer( ).GetModel( LocalPlayer( ) ), 10 )
-
-	if ( IsValid( self.legEntity ) ) then
+	local legEnt = ClientsideModel( LocalPlayer( ):GetModel( ), 10 )
+	
+	if ( IsValid( legEnt ) ) then
 		for k, v in pairs( HIDDEN_BONES ) do
-			local index = self.legEntity.LookupBone( self.legEntity, v )
-			if ( !index ) then continue end
+			local index = legEnt:LookupBone( v )
 			
-			self.legEntity:ManipulateBoneScale( index, vector_origin )
-			self.legEntity:ManipulateBonePosition( index, Vector( -100, -100, 0 ) )
+			if ( index ) then continue end
+			
+			legEnt:ManipulateBoneScale( index, vector_origin )
+			legEnt:ManipulateBonePosition( index, Vector( -100, -100, 0 ) )
 		end
 
-		self.legEntity:SetNoDraw( true )
-		self.legEntity:SetIK( false )
+		legEnt:SetNoDraw( true )
+		legEnt:SetIK( false )
 	end
+	
+	self.legEntity = legEnt
 end
 
 function PLUGIN:Think( )
 	local pl = LocalPlayer( )
 
-	if ( IsValid( pl ) and CAT_CONVAR_LEGS:GetBool( CAT_CONVAR_LEGS ) ) then
-		if ( !IsValid( self.legEntity ) or ( IsValid( self.legEntity ) and self.legEntity.GetModel( self.legEntity ) != pl:GetModel( ) ) ) then
-			self:CreateLeg( )
-		end
+	if ( IsValid( pl ) or GetConVarString( "cat_convar_legs" ) == "0" ) then
+		return
+	end
+
+	local legEnt = self.legEntity
+	
+	if ( !IsValid( legEnt ) or ( IsValid( legEnt ) and legEnt:GetModel( ) != pl:GetModel( ) ) ) then
+		self:CreateLeg( )
 	end
 end
 
 function PLUGIN:PostDrawViewModel( )
-	if ( CAT_CONVAR_LEGS.GetBool( CAT_CONVAR_LEGS ) and IsValid( self.legEntity ) ) then
+	local legEnt = self.legEntity
+	
+	if ( GetConVarString( "cat_convar_legs" ) == "1" and IsValid( legEnt ) ) then
 		local pl = LocalPlayer( )
 		local rt = RealTime( )
-		local ang = pl.GetAngles( pl )
+		local ang = pl:GetAngles( )
 
 		ang.p = 0
 		ang.r = 0
 
-		self.legEntity:SetPos( pl.GetPos( pl ) + pl.GetForward( pl ) * 15 + pl.GetUp( pl ) * -17 )
-		self.legEntity:SetSequence( pl.GetSequence( pl ) )
-		self.legEntity:SetAngles( ang )
-		self.legEntity:SetPoseParameter( "move_yaw", 360 * pl.GetPoseParameter( pl, "move_yaw" ) - 180 )
-		self.legEntity:SetPoseParameter( "move_x", pl.GetPoseParameter( pl, "move_x" ) * 2 - 1 )
-		self.legEntity:SetPoseParameter( "move_y", pl.GetPoseParameter( pl, "move_y" ) * 2 - 1 )
-		self.legEntity:FrameAdvance( rt - ( self.lastRT or rt ) )
-		self.legEntity:DrawModel( )
+		legEnt:SetPos( pl:GetPos( ) + pl:GetForward( ) * 15 + pl:GetUp( ) * -17 )
+		legEnt:SetSequence( pl:GetSequence( ) )
+		legEnt:SetAngles( ang )
+		legEnt:SetPoseParameter( "move_yaw", 360 * pl:GetPoseParameter( "move_yaw" ) - 180 )
+		legEnt:SetPoseParameter( "move_x", pl:GetPoseParameter( "move_x" ) * 2 - 1 )
+		legEnt:SetPoseParameter( "move_y", pl:GetPoseParameter( "move_y" ) * 2 - 1 )
+		legEnt:FrameAdvance( rt - ( self.lastRT or rt ) )
+		legEnt:DrawModel( )
 
 		self.lastRT = rt
 	end
