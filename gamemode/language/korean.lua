@@ -191,6 +191,7 @@ LANGUAGE.data = {
 	[ "Item_FuncStr02_Weapon" ] = "장착 해제",
 	[ "Item_FuncStr01_Basic" ] = "가지기",
 	[ "Item_FuncStr02_Basic" ] = "떨어트리기",
+	[ "Item_Notify01_Weapon" ] = "당신은 이 형식의 무기를 더 이상 장착할 수 없습니다!",
 	
 	[ "Item_Free" ] = "무료!",
 	

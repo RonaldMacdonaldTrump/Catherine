@@ -256,7 +256,7 @@ end
 	[ How can i reset the database? ]
 	
 	Type 'cat_db_init' command in 'Dedicated Console'.
-	( if you are working Local Server, Run command in Client Console !! ( You are must joined Super Admin! ) )
+	( if you are working Local Server, Run command in Client Console !! ( You are must be joined 'Super Admin' group. ) )
 ]]--
 
 concommand.Add( "cat_db_init", function( pl )
