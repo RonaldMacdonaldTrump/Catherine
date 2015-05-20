@@ -189,6 +189,7 @@ LANGUAGE.data = {
 	
 	[ "Item_FuncStr01_Weapon" ] = "Equip",
 	[ "Item_FuncStr02_Weapon" ] = "Unequip",
+	[ "Item_Notify01_Weapon" ] = "You can't equip this kind of weapon anymore!",
 	[ "Item_FuncStr01_Basic" ] = "Take",
 	[ "Item_FuncStr02_Basic" ] = "Drop",
 	

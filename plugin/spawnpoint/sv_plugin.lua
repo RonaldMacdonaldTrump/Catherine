@@ -44,8 +44,9 @@ end
 
 function PLUGIN:PlayerSpawnedInCharacter( pl )
 	local pos = self:GetRandomPos( pl:Faction( ) )
-	if ( !pos ) then return end
 	
-	pos.z = pos.z + 10
-	pl.SetPos( pl, pos )
+	if ( pos ) then
+		pos.z = pos.z + 10
+		pl:SetPos( pos )
+	end
 end

@@ -40,7 +40,6 @@ function catherine.item.Register( itemTable )
 	itemTable.name = itemTable.name or "A Name"
 	itemTable.desc = itemTable.desc or "A Desc"
 	itemTable.weight = itemTable.weight or 0
-	itemTable.useDynamicItemData = itemTable.useDynamicItemData or true
 	itemTable.itemData = itemTable.itemData or { }
 	itemTable.cost = itemTable.cost or 0
 	itemTable.category = itemTable.category or "^Item_Category_Other"
@@ -68,14 +67,13 @@ function catherine.item.Register( itemTable )
 				hook.Run( "OnItemTake", pl, itemTable )
 
 				local itemData = itemTable.itemData
-				
+
 				if ( IsValid( ent ) and itemTable.useDynamicItemData ) then
 					itemData = table.Count( ent:GetItemData( ) ) == table.Count( itemTable.itemData ) and ent:GetItemData( ) or itemTable.itemData
 				end
 
 				catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
-					uniqueID = itemTable.uniqueID,
-					itemData = itemData
+					uniqueID = itemTable.uniqueID
 				} )
 				
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )

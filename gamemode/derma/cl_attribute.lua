@@ -43,15 +43,12 @@ end
 
 function PANEL:BuildAttribute( )
 	self.Lists:Clear( )
-	local delta = 0
+
 	for k, v in pairs( catherine.attribute.GetAll( ) ) do
 		local item = vgui.Create( "catherine.vgui.attributeItem" )
 		item:SetTall( 90 )
 		item:SetAttribute( v )
 		item:SetProgress( catherine.attribute.GetProgress( k ) )
-		item:SetAlpha( 0 )
-		item:AlphaTo( 255, 0.1, delta )
-		delta = delta + 0.05
 		
 		self.Lists:AddItem( item )
 	end
@@ -62,13 +59,20 @@ vgui.Register( "catherine.vgui.attribute", PANEL, "catherine.vgui.menuBase" )
 local PANEL = { }
 
 function PANEL:Init( )
-	self.attributeTable, self.attAni, self.attTextAni, self.attProgress = nil, 0, 0, 0
+	self.attributeTable = nil
+	self.attAni = 0
+	self.attTextAni = 0
+	self.attProgress = 0
 end
 
 function PANEL:Paint( w, h )
 	if ( !self.attributeTable ) then return end
-	self.attAni = Lerp( 0.08, self.attAni, ( self.attProgress / self.attributeTable.max ) * 360 )
-	self.attTextAni = Lerp( 0.1, self.attTextAni, ( self.attProgress / self.attributeTable.max ) )
+	local per = self.attProgress / self.attributeTable.max
+	
+	self.attAni = Lerp( 0.08, self.attAni, per * 360 )
+	self.attTextAni = Lerp( 0.1, self.attTextAni, per )
+	
+	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 	
 	draw.NoTexture( )
 	surface.SetDrawColor( 200, 200, 200, 255 )
@@ -86,17 +90,16 @@ function PANEL:Paint( w, h )
 		draw.RoundedBox( 0, 10, 10, 70, 70, Color( 50, 50, 50, 100 ) )
 	end
 	
-	draw.SimpleText( self.attribute_name, "catherine_normal25", 100, 30, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( self.attribute_desc, "catherine_normal15", 100, 60, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
+	draw.SimpleText( self.attribute_name, "catherine_normal25", 100, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.attribute_desc, "catherine_normal15", 100, 60, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 	
-	draw.SimpleText( math.Round( self.attTextAni * 100 ) .. " %", "catherine_normal20", w - ( h / 3 ) - 15, h / 2, Color( 90, 90, 90, 255 ), 1, 1 )
+	draw.SimpleText( math.Round( self.attTextAni * 100 ) .. " %", "catherine_normal20", w - ( h / 3 ) - 15, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 end
 
 function PANEL:SetAttribute( attributeTable )
 	self.attributeTable = attributeTable
-	self.attribute_name = catherine.util.StuffLanguage( self.attributeTable.name )
-	self.attribute_desc = catherine.util.StuffLanguage( self.attributeTable.desc )
+	self.attribute_name = catherine.util.StuffLanguage( attributeTable.name )
+	self.attribute_desc = catherine.util.StuffLanguage( attributeTable.desc )
 end
 
 function PANEL:SetProgress( progress )

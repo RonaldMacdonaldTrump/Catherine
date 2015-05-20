@@ -20,9 +20,8 @@ local PANEL = { }
 
 function PANEL:Init( )
 	catherine.vgui.storage = self
-
-	self.entCheck = CurTime( ) + 1
-
+	
+	self.ent = nil
 	self.player = LocalPlayer( )
 	self.w, self.h = ScrW( ) * 0.7, ScrH( ) * 0.6
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
@@ -112,7 +111,7 @@ function PANEL:InitializeStorage( ent )
 		local category = itemTable.category
 		
 		storageInventory[ category ] = storageInventory[ category ] or { }
-		storageInventory[ category ][ v.uniqueID ] = v
+		storageInventory[ category ][ k ] = v
 	end
 
 	for k, v in pairs( catherine.inventory.Get( ) ) do
@@ -121,13 +120,13 @@ function PANEL:InitializeStorage( ent )
 		local category = itemTable.category
 		
 		playerInventory[ category ] = playerInventory[ category ] or { }
-		playerInventory[ category ][ v.uniqueID ] = v
+		playerInventory[ category ][ k ] = v
 	end
 	
 	self.playerInventory = playerInventory
 	self.storageInventory = storageInventory
 	
-	self.storageWeight:SetWeight( catherine.storage.GetWeights( self.ent ) )
+	self.storageWeight:SetWeight( catherine.storage.GetWeights( ent ) )
 	self.playerWeight:SetWeight( catherine.inventory.GetWeights( ) )
 
 	self:BuildStorage( )
@@ -137,30 +136,29 @@ function PANEL:Think( )
 	if ( ( self.entCheck or 0 ) <= CurTime( ) ) then
 		if ( !IsValid( self.ent ) and !self.closeing ) then
 			self:Close( )
+			
 			return
 		end
 		
-		self.entCheck = CurTime( ) + 1
+		self.entCheck = CurTime( ) + 0.05
 	end
 end
 
 function PANEL:BuildStorage( )
+	local pl = self.player
+	
 	self.storageLists:Clear( )
 	self.playerLists:Clear( )
-	local delta = 0
-	
+
 	for k, v in pairs( self.storageInventory or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.storageLists:GetWide( ), 54 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
-		form:SetAlpha( 0 )
-		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
 			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
-		delta = delta + 0.05
 
 		local lists = vgui.Create( "DPanelList", form )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
@@ -172,10 +170,10 @@ function PANEL:BuildStorage( )
 
 		for k1, v1 in pairs( v ) do
 			local w, h = 54, 54
-			local itemTable = catherine.item.FindByID( v1.uniqueID )
-			if ( !itemTable ) then continue end
-			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( self.player, itemTable, self.player:GetInvItemDatas( itemTable.uniqueID ), false ) or nil
+			local itemTable = catherine.item.FindByID( k1 )
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, pl:GetInvItemDatas( k1 ), false ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
+			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, k1 )
 			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
@@ -185,7 +183,7 @@ function PANEL:BuildStorage( )
 				netstream.Start( "catherine.storage.Work", {
 					self.ent:EntIndex( ),
 					CAT_STORAGE_ACTION_REMOVE,
-					v1.uniqueID
+					1
 				} )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
@@ -199,7 +197,7 @@ function PANEL:BuildStorage( )
 					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemDatas( itemTable.uniqueID ) )
 				end
 				
-				if ( v1.itemCount > 1 ) then
+				if ( !noDrawItemCount and v1.itemCount > 1 ) then
 					draw.SimpleText( v1.itemCount, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
@@ -209,21 +207,16 @@ function PANEL:BuildStorage( )
 		
 		self.storageLists:AddItem( form )
 	end
-	
-	delta = 0
-	
+
 	for k, v in pairs( self.playerInventory or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.playerLists:GetWide( ), 54 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
-		form:SetAlpha( 0 )
-		form:AlphaTo( 255, 0.1, delta )
 		form.Paint = function( pnl, w, h )
 			catherine.theme.Draw( CAT_THEME_FORM, w, h )
 		end
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
-		delta = delta + 0.05
 
 		local lists = vgui.Create( "DPanelList", form )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
@@ -235,10 +228,10 @@ function PANEL:BuildStorage( )
 
 		for k1, v1 in pairs( v ) do
 			local w, h = 54, 54
-			local itemTable = catherine.item.FindByID( v1.uniqueID )
-			if ( !itemTable ) then continue end
-			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( self.player, itemTable, self.player:GetInvItemDatas( itemTable.uniqueID ), true ) or nil
+			local itemTable = catherine.item.FindByID( k1 )
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, pl:GetInvItemDatas( k1 ), true ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
+			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, k1 )
 			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
@@ -249,8 +242,8 @@ function PANEL:BuildStorage( )
 					self.ent:EntIndex( ),
 					CAT_STORAGE_ACTION_ADD,
 					{
-						uniqueID = v1.uniqueID,
-						itemData = self.player:GetInvItemDatas( itemTable.uniqueID )
+						uniqueID = k1,
+						itemData = pl:GetInvItemDatas( k1 )
 					}
 				} )
 			end
@@ -262,10 +255,10 @@ function PANEL:BuildStorage( )
 				end
 				
 				if ( itemTable.DrawInformation ) then
-					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemDatas( itemTable.uniqueID ) )
+					itemTable:DrawInformation( pl, itemTable, w, h, pl:GetInvItemDatas( k1 ) )
 				end
 				
-				if ( v1.itemCount > 1 ) then
+				if ( !noDrawItemCount and v1.itemCount > 1 ) then
 					draw.SimpleText( v1.itemCount, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
@@ -281,6 +274,7 @@ function PANEL:Close( )
 	if ( self.closeing ) then return end
 	
 	self.closeing = true
+	
 	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
 		self:Remove( )
 		self = nil

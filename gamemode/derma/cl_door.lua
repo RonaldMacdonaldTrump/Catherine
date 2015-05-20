@@ -21,10 +21,10 @@ local PANEL = { }
 function PANEL:Init( )
 	catherine.vgui.door = self
 
+	self.door = nil
 	self.mode = 0
 	self.doorDesc = ""
 	self.doorCurLen = 0
-	
 	self.player = LocalPlayer( )
 	self.w, self.h = ScrW( ) * 0.5, ScrH( ) * 0.6
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
@@ -70,7 +70,7 @@ function PANEL:Init( )
 	end
 	self.doorDescEnt.OnTextChanged = function( pnl )
 		self.doorDesc = pnl:GetText( )
-		self.doorCurLen = self.doorDesc.utf8len( self.doorDesc )
+		self.doorCurLen = pnl:GetText( ):utf8len( )
 	end
 	self.doorDescEnt.OnEnter = function( pnl )
 		if ( self.mode == CAT_DOOR_FLAG_BASIC ) then
@@ -125,6 +125,8 @@ function PANEL:Init( )
 	self.close:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.close.Click = function( )
+		if ( self.closeing ) then return end
+		
 		self:Close( )
 	end
 end
@@ -261,6 +263,7 @@ function PANEL:Refresh( )
 
 	self.doorDesc = doorDesc
 	self.doorDescEnt:SetText( doorDesc )
+	
 	self:BuildPlayerList( )
 end
 
@@ -278,16 +281,18 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:Think( )
-	if ( ( self.nextPerCheck or 0 ) <= CurTime( ) ) then
+	if ( ( self.nextPerCheck or 0 ) <= CurTime( ) and !self.closeing ) then
 		if ( IsValid( self.door ) ) then
 			local has, flag = catherine.door.IsHasDoorPermission( self.player, self.door )
 			
 			if ( !has ) then
 				self:Close( )
+				
 				return
 			end
 		else
 			self:Close( )
+			
 			return
 		end
 		
@@ -296,9 +301,8 @@ function PANEL:Think( )
 end
 
 function PANEL:Close( )
-	if ( self.closeing ) then return end
-	
 	self.closeing = true
+	
 	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
 		self:Remove( )
 		self = nil

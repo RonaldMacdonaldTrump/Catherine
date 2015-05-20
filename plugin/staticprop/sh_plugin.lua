@@ -21,19 +21,35 @@ PLUGIN.name = "^SP_Plugin_Name"
 PLUGIN.author = "L7D"
 PLUGIN.desc = "^SP_Plugin_Desc"
 
-catherine.util.Include( "sh_language.lua" )
+catherine.language.Merge( "english", {
+	[ "SP_Plugin_Name" ] = "Static Prop",
+	[ "SP_Plugin_Desc" ] = "Good stuff.",
+	[ "Staticprop_Notify_Add" ] = "You are added this entity in static props.",
+	[ "Staticprop_Notify_Remove" ] = "You are removed this entity in static props.",
+	[ "Staticprop_Notify_IsNotProp" ] = "This entity is not prop!"
+} )
+
+catherine.language.Merge( "korean", {
+	[ "SP_Plugin_Name" ] = "고정식 프롭",
+	[ "SP_Plugin_Desc" ] = "프롭이 영구적으로 저장되게 할 수 있습니다.",
+	[ "Staticprop_Notify_Add" ] = "당신은 이 물체를 고정식 프롭에 추가했습니다.",
+	[ "Staticprop_Notify_Remove" ] = "당신은 이 물체의 고정식 프롭 설정을 해제했습니다.",
+	[ "Staticprop_Notify_IsNotProp" ] = "이 물체는 프롭이 아닙니다!"
+} )
 
 catherine.command.Register( {
 	command = "staticprop",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
-		local ent = pl.GetEyeTraceNoCursor( pl ).Entity
+		local ent = pl:GetEyeTraceNoCursor( ).Entity
 
 		if ( IsValid( ent ) ) then
 			if ( catherine.entity.IsProp( ent ) and !catherine.entity.IsDoor( ent ) ) then
-				ent:SetNetVar( "isStatic", !ent.GetNetVar( ent, "isStatic", false ) )
+				local curStatus = ent:GetNetVar( "isStatic", false )
 				
-				if ( ent.GetNetVar( ent, "isStatic" ) ) then
+				ent:SetNetVar( "isStatic", !curStatus )
+				
+				if ( curStatus ) then
 					catherine.util.NotifyLang( pl, "Staticprop_Notify_Add" )
 				else
 					catherine.util.NotifyLang( pl, "Staticprop_Notify_Remove" )
@@ -55,16 +71,17 @@ function PLUGIN:DataSave( )
 	local data = { }
 	
 	for k, v in pairs( ents.GetAll( ) ) do
-		if ( !v.GetNetVar( v, "isStatic" ) ) then continue end
+		if ( !v:GetNetVar( "isStatic" ) ) then continue end
 		
 		data[ #data + 1 ] = v
 	end
 	
 	if ( #data == 0 ) then return end
 	local persistentData = duplicator.CopyEnts( data )
-	if ( !persistentData ) then return end
 	
-	catherine.data.Set( "staticprops", persistentData )
+	if ( persistentData ) then
+		catherine.data.Set( "staticprops", persistentData )
+	end
 end
 
 function PLUGIN:DataLoad( )

@@ -22,15 +22,15 @@ PLUGIN.author = "L7D"
 PLUGIN.desc = "^DC_Plugin_Desc"
 
 catherine.language.Merge( "english", {
-	[ "DisplayChating_Talking" ] = "Talking ...",
 	[ "DC_Plugin_Name" ] = "Display Chating",
-	[ "DC_Plugin_Desc" ] = "Good stuff."
+	[ "DC_Plugin_Desc" ] = "Good stuff.",
+	[ "DisplayChating_Talking" ] = "Talking ..."
 } )
 
 catherine.language.Merge( "korean", {
-	[ "DisplayChating_Talking" ] = "말 하는 중 ...",
 	[ "DC_Plugin_Name" ] = "채팅 표시",
-	[ "DC_Plugin_Desc" ] = "해당 사람이 채팅을 치고 있는 경우 머리 위에 메세지를 출력합니다."
+	[ "DC_Plugin_Desc" ] = "해당 사람이 채팅을 치고 있는 경우 머리 위에 메세지를 출력합니다.",
+	[ "DisplayChating_Talking" ] = "말 하는 중 ..."
 } )
 
 if ( SERVER ) then return end

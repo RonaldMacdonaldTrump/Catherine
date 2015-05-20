@@ -27,6 +27,12 @@ BASE.weaponClass = "weapon_smg1"
 BASE.itemData = {
 	equiped = false
 }
+BASE.weaponType = "primary"
+BASE.attachmentLimit = {
+	primary = 1,
+	secondary = 1,
+	melee = 1
+}
 BASE.func = { }
 BASE.func.equip = {
 	text = "^Item_FuncStr01_Weapon",
@@ -39,11 +45,23 @@ BASE.func.equip = {
 			return
 		end
 		
+		local playerWeaponType = catherine.character.GetCharVar( pl, "equippingWeaponTypes", { } )
+		local itemWeaponType = itemTable.weaponType
+		
+		if (
+			playerWeaponType[ itemWeaponType ] and
+			( !itemTable.attachmentLimit[ itemWeaponType ] or
+			playerWeaponType[ itemWeaponType ] >= itemTable.attachmentLimit[ itemWeaponType ] )
+		) then
+			catherine.util.NotifyLang( pl, "Item_Notify01_Weapon" )
+			return
+		end
+		
 		if ( type( ent ) == "Entity" ) then
 			catherine.item.Give( pl, itemTable.uniqueID )
 			ent:Remove( )
 		end
-		
+
 		local wep = pl:Give( itemTable.weaponClass )
 		
 		if ( IsValid( wep ) ) then
@@ -51,9 +69,16 @@ BASE.func.equip = {
 			wep:SetClip1( 0 )
 		end
 
+		if ( playerWeaponType[ itemWeaponType ] ) then
+			playerWeaponType[ itemWeaponType ] = playerWeaponType[ itemWeaponType ] + 1
+		else
+			playerWeaponType[ itemWeaponType ] = 1
+		end
+
 		catherine.attachment.Refresh( pl )
 		
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
+		catherine.character.SetCharVar( pl, "equippingWeaponTypes", playerWeaponType )
 		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", true )
 	end,
 	canLook = function( pl, itemTable )
@@ -69,9 +94,21 @@ BASE.func.unequip = {
 			pl:StripWeapon( itemTable.weaponClass )
 		end
 		
+		local playerWeaponType = catherine.character.GetCharVar( pl, "equippingWeaponTypes", { } )
+		local itemWeaponType = itemTable.weaponType
+
+		if ( playerWeaponType[ itemWeaponType ] ) then
+			playerWeaponType[ itemWeaponType ] = playerWeaponType[ itemWeaponType ] - 1
+			
+			if ( playerWeaponType[ itemWeaponType ] <= 0 ) then
+				playerWeaponType[ itemWeaponType ] = nil
+			end
+		end
+		
 		catherine.attachment.Refresh( pl )
 		
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
+		catherine.character.SetCharVar( pl, "equippingWeaponTypes", playerWeaponType )
 		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", false )
 	end,
 	canLook = function( pl, itemTable )
@@ -93,37 +130,25 @@ if ( SERVER ) then
 			if ( !catherine.inventory.IsEquipped( pl, k ) ) then continue end
 			
 			catherine.item.Work( pl, k, "unequip" )
-			catherine.item.Spawn( k, pl.GetPos( pl ) )
+			catherine.item.Spawn( k, pl:GetPos( ) )
 			catherine.item.Take( pl, k )
 		end
 	end )
 
 	hook.Add( "OnItemDrop", "catherine.item.hooks.weapon_base.OnItemDrop", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
-		
-		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
-			pl:StripWeapon( itemTable.weaponClass )
-		end
-		
+
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 	
 	hook.Add( "OnItemStorageMove", "catherine.item.hooks.weapon_base.OnItemStorageMove", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
-		
-		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
-			pl:StripWeapon( itemTable.weaponClass )
-		end
-		
+
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 	
 	hook.Add( "OnItemVendorSold", "catherine.item.hooks.weapon_base.OnItemVendorSold", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
-		
-		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
-			pl:StripWeapon( itemTable.weaponClass )
-		end
 		
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )

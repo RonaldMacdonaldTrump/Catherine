@@ -513,7 +513,7 @@ catherine.command.Register( {
 			args[ 1 ] = tonumber( args[ 1 ] )
 			
 			catherine.environment.buffer.hour = args[ 1 ] and math.Clamp( args[ 1 ], 1, 24 ) or catherine.environment.buffer.hour
-			catherine.environment.SyncToAll( )
+			catherine.environment.SendAllEnvironmentConfig( )
 			catherine.environment.AutomaticDayNight( )
 			
 			catherine.util.NotifyLang( pl, "Command_SetTimeHour_Fin", args[ 1 ] )

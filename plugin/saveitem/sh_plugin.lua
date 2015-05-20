@@ -40,8 +40,8 @@ function PLUGIN:DataSave( )
 		data[ #data + 1 ] = {
 			uniqueID = v:GetItemUniqueID( ),
 			itemData = v:GetItemData( ),
-			pos = v.GetPos( v ),
-			ang = v.GetAngles( v )
+			pos = v:GetPos( ),
+			ang = v:GetAngles( )
 		}
 	end
 	

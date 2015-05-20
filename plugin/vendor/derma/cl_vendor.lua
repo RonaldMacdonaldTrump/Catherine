@@ -21,10 +21,7 @@ local PANEL = { }
 
 function PANEL:Init( )
 	catherine.vgui.vendor = self
-
-	self.ent = nil
-	self.entCheck = CurTime( ) + 1
-	self.closeing = false
+	
 	self.vendorData = { inv = nil }
 	self.player = LocalPlayer( )
 	self.w, self.h = ScrW( ) * 0.6, ScrH( ) * 0.8
@@ -83,6 +80,7 @@ function PANEL:Init( )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	self:ShowCloseButton( false )
+	
 	if ( !PLUGIN.VENDOR_NOANI ) then
 		self:SetAlpha( 0 )
 		self:AlphaTo( 255, 0.2, 0 )
@@ -147,6 +145,7 @@ function PANEL:Init( )
 	self.buyPanel.Lists:EnableVerticalScrollbar( true )	
 	self.buyPanel.Lists.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
+		
 		if ( self.count == 0 ) then
 			draw.SimpleText( "Sorry! :(", "catherine_normal30", w / 2, h / 2 - 30, Color( 50, 50, 50, 255 ), 1, 1 )
 			draw.SimpleText( "You can not buy anything!", "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
@@ -166,6 +165,7 @@ function PANEL:Init( )
 	self.sellPanel.Lists:EnableVerticalScrollbar( true )	
 	self.sellPanel.Lists.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
+		
 		if ( self.count == 0 ) then
 			draw.SimpleText( "Sorry! :(", "catherine_normal30", w / 2, h / 2 - 30, Color( 50, 50, 50, 255 ), 1, 1 )
 			draw.SimpleText( "You can not sell anything!", "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
@@ -201,6 +201,7 @@ function PANEL:Init( )
 	self.close:SetGradientColor( Color( 255, 150, 150, 255 ) )
 	self.close.Click = function( )
 		if ( self.closeing ) then return end
+		
 		self:Close( )
 		netstream.Start( "catherine.plugin.vendor.VendorClose" )
 	end
@@ -719,8 +720,13 @@ function PANEL:ItemInformationPanel( itemTable, data )
 		self.itemInformationPanel = nil
 	end
 
-	local x, y = self.GetPos( self )
-	local newData = data or { uniqueID = itemTable.uniqueID, stock = 0, cost = itemTable.cost, type = 1 }
+	local x, y = self:GetPos( )
+	local newData = data or {
+		uniqueID = itemTable.uniqueID,
+		stock = 0,
+		cost = itemTable.cost,
+		type = 1
+	}
 	
 	self.itemInformationPanel = vgui.Create( "DPanel" )
 	self.itemInformationPanel:SetSize( ScrW( ) * 0.15, ScrH( ) * 0.5 )
@@ -757,6 +763,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 				type = newData.type
 			}
 		} )
+		
 		self.itemInformationPanel:Remove( )
 		self.itemInformationPanel = nil
 	end
@@ -774,6 +781,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 			CAT_VENDOR_ACTION_ITEM_UNCHANGE,
 			newData.uniqueID
 		} )
+		
 		self.itemInformationPanel:Remove( )
 		self.itemInformationPanel = nil
 	end
@@ -798,6 +806,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	end
 	self.itemInformationPanel.typeChange.Click = function( )
 		local menu = DermaMenu( )
+		
 		menu:AddOption( "Only Buy", function( )
 			netstream.Start( "catherine.plugin.vendor.VendorWork", {
 				self.ent,
@@ -809,6 +818,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 					type = 2
 				}
 			} )
+			
 			self.itemInformationPanel:Remove( )
 			self.itemInformationPanel = nil
 		end )
@@ -824,6 +834,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 					type = 3
 				}
 			} )
+			
 			self.itemInformationPanel:Remove( )
 			self.itemInformationPanel = nil
 		end )
@@ -839,6 +850,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 					type = 4
 				}
 			} )
+			
 			self.itemInformationPanel:Remove( )
 			self.itemInformationPanel = nil
 		end )
@@ -890,27 +902,30 @@ end
 function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	
-	if ( !IsValid( self.ent ) ) then return end
-	local name = self.ent.GetNetVar( self.ent, "name" )
-	
-	if ( name ) then
-		draw.SimpleText( name, "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	if ( IsValid( self.ent ) ) then
+		local name = self.ent:GetNetVar( "name" )
+		
+		if ( name ) then
+			draw.SimpleText( name, "catherine_normal25", 10, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		end
 	end
 end
 
 function PANEL:InitializeVendor( ent )
 	self.ent = ent
 	self.vendorData = PLUGIN:GetVendorDatas( ent )
-	self.vendorData.inv = ent.GetNetVar( ent, "inv", { } )
+	self.vendorData.inv = ent:GetNetVar( "inv", { } )
 end
 
 function PANEL:Think( )
-	if ( self.entCheck <= CurTime( ) ) then
+	if ( ( self.entCheck or 0 ) <= CurTime( ) ) then
 		if ( !IsValid( self.ent ) and !self.closeing ) then
 			self:Close( )
+			
 			return
 		end
-		self.entCheck = CurTime( ) + 0.01
+		
+		self.entCheck = CurTime( ) + 0.5
 	end
 end
 
@@ -919,14 +934,17 @@ function PANEL:Close( )
 		self.itemInformationPanel:Remove( )
 		self.itemInformationPanel = nil
 	end
+	
 	if ( !PLUGIN.VENDOR_NOANI ) then
 		self.closeing = true
+		
 		self:AlphaTo( 0, 0.2, 0, function( )
 			self:Remove( )
 			self = nil
 		end )
 	else
 		self.closeing = true
+		
 		self:Remove( )
 		self = nil
 	end

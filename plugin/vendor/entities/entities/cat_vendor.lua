@@ -48,7 +48,7 @@ if ( SERVER ) then
 	end
 	
 	function ENT:SetAni( )
-		for k, v in pairs( self.GetSequenceList( self ) ) do
+		for k, v in pairs( self:GetSequenceList( ) ) do
 			if ( !v:lower( ):find( "idle" ) or v == "idlenoise" ) then continue end
 			
 			self:ResetSequence( k )

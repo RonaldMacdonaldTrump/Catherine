@@ -23,8 +23,6 @@ function PANEL:Init( )
 
 	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
 	self:SetMenuName( LANG( "Option_UI_Title" ) )
-	
-	self.optionTable = nil
 
 	self.Lists = vgui.Create( "DPanelList", self )
 	self.Lists:SetPos( 10, 35 )
@@ -44,14 +42,17 @@ function PANEL:OnMenuRecovered( )
 end
 
 function PANEL:InitializeOption( )
-	local opt = { }
+	local option = { }
 	
 	for k, v in pairs( catherine.option.GetAll( ) ) do
-		opt[ v.category ] = opt[ v.category ] or { }
-		opt[ v.category ][ #opt[ v.category ] + 1 ] = v
+		local category = v.category
+		
+		option[ category ] = option[ category ] or { }
+		option[ category ][ #option[ category ] + 1 ] = v
 	end
 	
-	self.optionTable = opt
+	self.optionTable = option
+	
 	self:BuildOption( )
 end
 
@@ -73,8 +74,10 @@ function PANEL:BuildOption( )
 			local item = vgui.Create( "catherine.vgui.optionItem" )
 			item:SetSize( self.Lists:GetWide( ), 60 )
 			item:SetOption( v1 )
+			
 			form:AddItem( item )
 		end
+		
 		self.Lists:AddItem( form )
 	end
 end
@@ -84,7 +87,8 @@ vgui.Register( "catherine.vgui.option", PANEL, "catherine.vgui.menuBase" )
 local PANEL = { }
 
 function PANEL:Init( )
-	self.optionTable, self.val, self.iconX, self.iconColor = nil, nil, 5, Color( 50, 50, 50, 255 )
+	self.iconX = 5
+	self.iconColor = Color( 50, 50, 50, 255 )
 	
 	self.Button = vgui.Create( "DButton", self )
 	self.Button:SetSize( 70, 30 )
@@ -92,6 +96,7 @@ function PANEL:Init( )
 	self.Button:SetText( "" )
 	self.Button.Paint = function( pnl, w, h )
 		if ( !self.optionTable ) then return end
+		
 		self.val = catherine.option.Get( self.optionTable.uniqueID )
 		
 		if ( tobool( self.val ) == true ) then
@@ -128,24 +133,25 @@ end
 
 function PANEL:Paint( w, h )
 	if ( !self.optionTable ) then return end
-	local opt = self.optionTable
+
+	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 	
 	draw.SimpleText( self.name, "catherine_normal25", 15, 15, Color( 30, 30, 30, 255 ), TEXT_ALIGN_LEFT, 1 )
 	draw.SimpleText( self.desc, "catherine_normal15", 15, 40, Color( 30, 30, 30, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 end
 
 function PANEL:PerformLayout( w, h )
 	self.Button:SetSize( 70, 30 )
 	self.Button:SetPos( w - self.Button:GetWide( ) - 20, h / 2 - self.Button:GetTall( ) / 2 )
+	
 	self.List:SetSize( self:GetWide( ) * 0.3, 30 )
 	self.List:SetPos( self:GetWide( ) - self.List:GetWide( ) - 20, self:GetTall( ) / 2 - self.List:GetTall( ) / 2 )
 end
 
 function PANEL:SetOption( optionTable )
 	self.optionTable = optionTable
-	self.name = catherine.util.StuffLanguage( self.optionTable.name )
-	self.desc = catherine.util.StuffLanguage( self.optionTable.desc )
+	self.name = catherine.util.StuffLanguage( optionTable.name )
+	self.desc = catherine.util.StuffLanguage( optionTable.desc )
 	
 	if ( optionTable.typ == CAT_OPTION_LIST ) then
 		self.Button:SetVisible( false )
@@ -157,12 +163,14 @@ function PANEL:SetOption( optionTable )
 
 		self.List.DoClick = function( )
 			local menu = DermaMenu( )
+			
 			for k, v in pairs( data.data ) do
 				menu:AddOption( v.name, function( )
 					v.func( )
 					self.List:SetText( v.name )
 				end )
 			end
+			
 			menu:Open( )
 		end
 	end

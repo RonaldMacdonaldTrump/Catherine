@@ -17,7 +17,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.environment = catherine.environment or { buffer = catherine.configs.defaultRPInformation }
-catherine.environment.TimeTick = CurTime( ) + 0.2
+catherine.environment.NextTimeTick = catherine.environment.NextTimeTick or CurTime( ) + catherine.configs.rpTimeInterval
+local rpTimeInterval = catherine.configs.rpTimeInterval
 local monthLen = {
 	31,
 	28,
@@ -56,15 +57,15 @@ function catherine.environment.GetTimeString( )
 end
 
 if ( SERVER ) then
-	catherine.environment.SyncTick = catherine.environment.SyncTick or CurTime( ) + 60
-	catherine.environment.TemperatureTick = catherine.environment.TemperatureTick or CurTime( )
-	catherine.environment.currentLightFlag = catherine.environment.currentLightFlag or nil
-
+	catherine.environment.NextSendTick = catherine.environment.NextSendTick or CurTime( ) + 60
+	catherine.environment.NextTemperatureTick = catherine.environment.NextTemperatureTick or CurTime( )
+	local enviromentSendInterval = catherine.configs.environmentSendInterval
+	
 	function catherine.environment.Work( )
-		if ( catherine.environment.TimeTick <= CurTime( ) ) then
+		if ( catherine.environment.NextTimeTick <= CurTime( ) ) then
 			local d = catherine.environment.buffer
+			
 			if ( !d.second ) then
-				catherine.util.ErrorPrint( "catherine.environment.Work has error!" )
 				return
 			end
 			
@@ -96,26 +97,23 @@ if ( SERVER ) then
 				d.month = 1
 			end
 
-			catherine.environment.TimeTick = CurTime( ) + 0.2
+			catherine.environment.NextTimeTick = CurTime( ) + rpTimeInterval
 		end
 		
-		if ( catherine.environment.TemperatureTick <= CurTime( ) ) then
-			local nextTick = math.random( 60, 200 )
-			
+		if ( catherine.environment.NextTemperatureTick <= CurTime( ) ) then
 			catherine.environment.buffer.temperature = catherine.environment.CalcTemperature( )
 
-			catherine.environment.SendTemperatureToAll( )
-			catherine.environment.TemperatureTick = CurTime( ) + nextTick
+			catherine.environment.SendTemperatureConfig( )
+			catherine.environment.NextTemperatureTick = CurTime( ) + math.random( 60, 200 )
 		end
 		
-		if ( catherine.environment.SyncTick <= CurTime( ) ) then
-			catherine.environment.SyncToAll( )
-			catherine.environment.SyncTick = CurTime( ) + 60
+		if ( catherine.environment.NextSendTick <= CurTime( ) ) then
+			catherine.environment.SendAllEnvironmentConfig( )
+			catherine.environment.NextSendTick = CurTime( ) + enviromentSendInterval
 		end
 	end
 
 	function catherine.environment.GetLightDataByHour( )
-		local hour = catherine.environment.GetHour( )
 		local lightDatas = {
 			[ 1 ] = { // AM 1
 				lightStyle = "b",
@@ -308,8 +306,8 @@ if ( SERVER ) then
 				}
 			}
 		}
-		
-		return lightDatas[ hour ]
+
+		return lightDatas[ catherine.environment.GetHour( ) ]
 	end
 	
 	function catherine.environment.GetHour( )
@@ -324,21 +322,21 @@ if ( SERVER ) then
 		local dayNightData = catherine.environment.GetLightDataByHour( )
 		if ( !dayNightData ) then return end
 		
-		local Sun = ents.FindByClass( "env_sun" )[ 1 ]
-		local SkyPaint = ents.FindByClass( "env_skypaint" )[ 1 ]
+		local sun = ents.FindByClass( "env_sun" )[ 1 ]
+		local skyPaint = ents.FindByClass( "env_skypaint" )[ 1 ]
 		
-		if ( IsValid( Sun ) ) then
-			Sun:Fire( dayNightData.sun == true and "TurnOn" or "TurnOff" )
+		if ( IsValid( sun ) ) then
+			sun:Fire( dayNightData.sun == true and "TurnOn" or "TurnOff" )
 		end
 		
-		if ( !IsValid( SkyPaint ) ) then
-			SkyPaint = ents.Create( "env_skypaint" )
-			SkyPaint:Spawn( )
-			SkyPaint:Activate( )
+		if ( !IsValid( skyPaint ) ) then
+			skyPaint = ents.Create( "env_skypaint" )
+			skyPaint:Spawn( )
+			skyPaint:Activate( )
 		end
 
-		SkyPaint:SetTopColor( dayNightData.skyColors.top )
-		SkyPaint:SetBottomColor( dayNightData.skyColors.bottom )
+		skyPaint:SetTopColor( dayNightData.skyColors.top )
+		skyPaint:SetBottomColor( dayNightData.skyColors.bottom )
 
 		catherine.environment.SetLightFlag( dayNightData.lightStyle )
 	end
@@ -361,17 +359,12 @@ if ( SERVER ) then
 		return math.Clamp( temp, 0, 35 )
 	end
 
-	function catherine.environment.SyncToPlayer( pl )
-		if ( !IsValid( pl ) ) then return end
-		netstream.Start( pl, "catherine.environment.Sync", catherine.environment.buffer )
+	function catherine.environment.SendAllEnvironmentConfig( pl )
+		netstream.Start( pl, "catherine.environment.SendAllEnvironmentConfig", catherine.environment.buffer )
 	end
 	
-	function catherine.environment.SendTemperatureToAll( )
-		netstream.Start( nil, "catherine.environment.SendTemperatureToAll", catherine.environment.buffer.temperature )
-	end
-	
-	function catherine.environment.SyncToAll( )
-		netstream.Start( nil, "catherine.environment.Sync", catherine.environment.buffer )
+	function catherine.environment.SendTemperatureConfig( )
+		netstream.Start( nil, "catherine.environment.SendTemperatureConfig", catherine.environment.buffer.temperature )
 	end
 
 	function catherine.environment.DataSave( )
@@ -394,11 +387,11 @@ if ( SERVER ) then
 	hook.Add( "DataSave", "catherine.environment.DataSave", catherine.environment.DataSave )
 	hook.Add( "DataLoad", "catherine.environment.DataLoad", catherine.environment.DataLoad )
 else
-	netstream.Hook( "catherine.environment.Sync", function( data )
+	netstream.Hook( "catherine.environment.SendAllEnvironmentConfig", function( data )
 		catherine.environment.buffer = data
 	end )
 	
-	netstream.Hook( "catherine.environment.SendTemperatureToAll", function( data )
+	netstream.Hook( "catherine.environment.SendTemperatureConfig", function( data )
 		catherine.environment.buffer.temperature = data
 	end )
 
@@ -408,10 +401,10 @@ else
 
 	function catherine.environment.WorkClient( )
 		if ( table.Count( catherine.environment.buffer ) != 7 ) then return end
-		if ( catherine.environment.TimeTick <= CurTime( ) ) then
+		if ( catherine.environment.NextTimeTick <= CurTime( ) ) then
 			local d = catherine.environment.buffer
+			
 			if ( !d.second ) then
-				catherine.util.ErrorPrint( "catherine.environment.Work has error!" )
 				return
 			end
 			
@@ -442,7 +435,7 @@ else
 				d.month = 1
 			end
 
-			catherine.environment.TimeTick = CurTime( ) + 0.2
+			catherine.environment.NextTimeTick = CurTime( ) + rpTimeInterval
 		end
 	end
 

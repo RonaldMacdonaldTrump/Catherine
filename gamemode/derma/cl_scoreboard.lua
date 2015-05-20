@@ -55,29 +55,34 @@ end
 
 function PANEL:Refresh( )
 	self.playerCount = #player.GetAllByLoaded( )
+	
 	self:SortPlayerLists( )
 end
 
 function PANEL:SortPlayerLists( )
-	self.playerLists = { }
+	local players = { }
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		local factionTable = catherine.faction.FindByIndex( v:Team( ) )
 		if ( !factionTable ) then continue end
 		local name = factionTable.name or "LOADING"
 		
-		self.playerLists[ name ] = self.playerLists[ name ] or { }
-		self.playerLists[ name ][ #self.playerLists[ name ] + 1 ] = v
+		players[ name ] = players[ name ] or { }
+		players[ name ][ #players[ name ] + 1 ] = v
 	end
+	
+	self.playerLists = players
 	
 	self:RefreshPlayerLists( )
 end
 
 function PANEL:RefreshPlayerLists( )
-	if ( self.cantLook or !self.playerLists ) then return end
+	if ( self.cantLook ) then return end
+	local pl = self.player
+	
 	self.Lists:Clear( )
 
-	for k, v in pairs( self.playerLists ) do
+	for k, v in pairs( self.playerLists or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
@@ -89,7 +94,7 @@ function PANEL:RefreshPlayerLists( )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
 
 		for k1, v1 in pairs( v ) do
-			local know = self.player == v1 and true or self.player:IsKnow( v1 )
+			local know = pl == v1 and true or pl:IsKnow( v1 )
 			
 			local panel = vgui.Create( "DPanel" )
 			panel:SetSize( form:GetWide( ), 50 )

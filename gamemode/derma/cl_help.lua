@@ -39,6 +39,9 @@ function PANEL:Init( )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
 	
+	local defTitle = LANG( "Help_UI_DefPageTitle" )
+	local defDesc = LANG( "Help_UI_DefPageDesc" )
+	
 	self.html = vgui.Create( "DHTML", self )
 	self.html:SetPos( self.w * 0.2 + 20, 35 )
 	self.html:SetSize( self.w * 0.8 - 60, self.h - 45 )
@@ -46,34 +49,26 @@ function PANEL:Init( )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 		
 		if ( self.isDef ) then
-			draw.SimpleText( LANG( "Help_UI_DefPageTitle" ), "catherine_normal25", w / 2, h / 2 - 25, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( LANG( "Help_UI_DefPageDesc" ), "catherine_normal20", w / 2, h / 2 + 10, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( defTitle, "catherine_normal25", w / 2, h / 2 - 25, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( defDesc, "catherine_normal20", w / 2, h / 2 + 10, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
 	end
 
-	for k, v in pairs( catherine.help.GetAll( ) ) do
-		self.helps[ v.category ] = v
-	end
-
-	self:BuildHelps( )
+	self:InitalizeHelps( )
 end
 
 function PANEL:OnMenuRecovered( )
-	for k, v in pairs( catherine.help.GetAll( ) ) do
-		self.helps[ v.category ] = v
-	end
-	
-	self:BuildHelps( )
+	self:InitalizeHelps( )
 end
 
 function PANEL:MenuPaint( w, h )
 	if ( self.html:IsLoading( ) ) then
 		self.loadingAlpha = Lerp( 0.05, self.loadingAlpha, 255 )
-	elseif ( !self.html:IsLoading( ) and math.Round( self.loadingAlpha ) > 0 ) then
+	elseif ( !self.html:IsLoading( ) and self.loadingAlpha > 0 ) then
 		self.loadingAlpha = Lerp( 0.05, self.loadingAlpha, 0 )
 	end
 	
-	if ( math.Round( self.loadingAlpha ) > 0 ) then
+	if ( self.loadingAlpha > 0 ) then
 		self.loadingAni = math.Approach( self.loadingAni, self.loadingAni - 5, 5 )
 		
 		draw.NoTexture( )
@@ -82,9 +77,18 @@ function PANEL:MenuPaint( w, h )
 	end
 end
 
+function PANEL:InitalizeHelps( )
+	for k, v in pairs( catherine.help.GetAll( ) ) do
+		self.helps[ v.category ] = v
+	end
+	
+	self:BuildHelps( )
+end
+
 function PANEL:DoWork( data )
 	if ( data.types == CAT_HELP_WEBPAGE ) then
 		self.html:OpenURL( data.codes )
+		
 		return
 	end
 	
@@ -99,11 +103,13 @@ function PANEL:DoWork( data )
 		</style>
 		</head>
 	]]
+	
 	self.html:SetHTML( prefix .. data.codes )
 end
 
 function PANEL:BuildHelps( )
 	self.categorys:Clear( )
+	
 	for k, v in pairs( self.helps ) do
 		local panel = vgui.Create( "catherine.vgui.button", self )
 		panel:SetSize( self.categorys:GetWide( ), 30 )

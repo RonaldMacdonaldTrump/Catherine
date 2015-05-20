@@ -84,6 +84,8 @@ function PANEL:AddRPInformation( text )
 end
 
 function PANEL:Paint( w, h )
+	local pl = self.player
+	
 	self.x = Lerp( 0.07, self.x, ScrW( ) - w )
 	
 	self:SetPos( self.x, self.y )
@@ -94,10 +96,10 @@ function PANEL:Paint( w, h )
 	surface.SetMaterial( Material( "gui/gradient_up" ) )
 	surface.DrawTexturedRect( 0, 0, w, h )
 	
-	draw.SimpleText( self.player:Name( ), "catherine_normal25", 90, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( self.player:FactionName( ), "catherine_normal20", 15, 80, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+	draw.SimpleText( pl:Name( ), "catherine_normal25", 90, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( pl:FactionName( ), "catherine_normal20", 15, 80, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 	
-	local className = self.player:ClassName( )
+	local className = pl:ClassName( )
 	
 	if ( className ) then
 		draw.SimpleText( className, "catherine_normal15", 15, 100, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
@@ -116,7 +118,7 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:OnKeyCodePressed( key )
-	if ( key == KEY_F1 ) then
+	if ( key == KEY_F1 and !self.closeing ) then
 		self:Close( )
 	end
 end
@@ -125,6 +127,7 @@ function PANEL:Close( )
 	if ( self.closeing ) then return end
 	
 	self.closeing = true
+	
 	self:MoveTo( ScrW( ), self.y, 0.1, 0, nil, function( )
 		self:Remove( )
 		self = nil

@@ -52,14 +52,14 @@ if ( SERVER ) then
 		} )
 	end
 	
-	function catherine.catData.SyncToPlayer( pl )
+	function catherine.catData.SendAllNetworkRegistries( pl )
 		local steamID = pl:SteamID( )
 		
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data ) then return end
 			
 			catherine.catData.networkRegistry[ steamID ] = util.JSONToTable( data[ 1 ][ "_catData" ] )
-			netstream.Start( pl, "catherine.catData.Sync", catherine.catData.networkRegistry[ steamID ] )
+			netstream.Start( pl, "catherine.catData.SendAllNetworkRegistries", catherine.catData.networkRegistry[ steamID ] )
 		end )
 	end
 
@@ -78,7 +78,7 @@ else
 		catherine.catData.networkRegistry[ data ] = nil
 	end )
 	
-	netstream.Hook( "catherine.catData.Sync", function( data )
+	netstream.Hook( "catherine.catData.SendAllNetworkRegistries", function( data )
 		catherine.catData.networkRegistry = data
 	end )
 	
