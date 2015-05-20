@@ -40,6 +40,7 @@ catherine.configs.schematicViewPos = {
 	pos = Vector( -18.818655, 898.651184, 354.860474 ),
 	ang = Angle( 12.549129, -54.947598, 0.000000 )
 }
+catherine.configs.rpTimeInterval = 0.2
 catherine.configs.alwaysRaised = {
 	weapon_physgun = true,
 	gmod_tool = true
@@ -57,6 +58,7 @@ catherine.configs.defaultRPInformation = {
 if ( SERVER ) then
 	catherine.configs.HaXCheckInterval = 600
 	catherine.configs.hintInterval = 30
+	catherine.configs.environmentSendInterval = 60
 	catherine.configs.netRegistryOptimizeInterval = 350
 	catherine.configs.saveInterval = 300
 	catherine.configs.voiceAllow = false

@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
+//Catherine is currently in devloping. Restart the database after update.
 
 catherine.player = catherine.player or { }
 local META = FindMetaTable( "Player" )
@@ -25,40 +26,43 @@ if ( SERVER ) then
 	function catherine.player.Initialize( pl, func )
 		if ( !IsValid( pl ) ) then return end
 		
-		local function loadCatPower( )
-			--[[ Kernel Loading. ^_^; ]]--
-			catherine.player.PlayerInformationInitialize( pl )
-			catherine.net.SyncAllVars( pl )
-			catherine.character.SyncAllNetworkRegistry( pl )
-			catherine.environment.SyncToPlayer( pl )
-			catherine.character.SyncCharacterList( pl )
-			catherine.catData.SyncToPlayer( pl )
+		local function Initializing( )
+			if ( !IsValid( pl ) ) then return end
+			--[[ Initializing a Catherine ... :> ]]--
+			
+			catherine.player.PlayerInformationUpdate( pl )
+			catherine.net.SendAllNetworkRegistries( pl ) // Send ALL entity, player network registries.
+			catherine.character.SendAllNetworkRegistries( pl ) // Send ALL character network registries.
+			catherine.environment.SendAllEnvironmentConfig( pl ) // Send ALL enviroment configs.
+			catherine.character.SendPlayerCharacterList( pl )
+			catherine.catData.SendAllNetworkRegistries( pl ) // Send ALL CAT DATA network registries.
 
 			timer.Simple( 1, function( )
 				netstream.Start( pl, "catherine.loadingFinished" )
 				pl:Freeze( false )
-				pl:UnLock( )
 				
-				--[[ Welcome to Catherine. ^_^; ]]--
+				--[[ Finish! ]]--
 			end )
 		end
 		
 		netstream.Hook( "catherine.player.CheckLocalPlayer_Receive", function( )
-			netstream.Start( pl, "catherine.IntroStart" )
+			if ( !IsValid( pl ) ) then return end
+			
+			netstream.Start( pl, "catherine.introStart" )
+			
 			timer.Simple( 1, function( )
-				loadCatPower( )
+				Initializing( )
 			end )
 		end )
 		
 		pl:Freeze( true )
-		pl:Lock( )
 		
 		netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
 	end
 
-	function catherine.player.PlayerInformationInitialize( pl )
+	function catherine.player.PlayerInformationUpdate( pl )
 		local steamID = pl:SteamID( )
-		
+
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data or #data == 0 ) then
 				if ( steamID == catherine.configs.OWNER and pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
@@ -74,7 +78,16 @@ if ( SERVER ) then
 				catherine.database.InsertDatas( "catherine_players", {
 					_steamName = pl:SteamName( ),
 					_steamID = steamID,
-					_catData = { }
+					_steamID64 = pl:SteamID64( ),
+					_catData = { },
+					_ipAddress = pl:IPAddress( ),
+					_lastConnect = catherine.util.GetRealTime( )
+				} )
+			else
+				catherine.database.UpdateDatas( "catherine_players", "_steamID = '" .. steamID .. "'", {
+					_steamName = pl:SteamName( ),
+					_ipAddress = pl:IPAddress( ),
+					_lastConnect = catherine.util.GetRealTime( )
 				} )
 			end
 		end )

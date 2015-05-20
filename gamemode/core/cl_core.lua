@@ -617,13 +617,13 @@ netstream.Hook( "catherine.ShowHelp", function( )
 	end
 end )
 
-netstream.Hook( "catherine.IntroStart", function( )
+netstream.Hook( "catherine.introStart", function( )
 	catherine.intro.loading = true
 	catherine.intro.status = true
 	catherine.intro.startTime = CurTime( )
 end )
 
-netstream.Hook( "catherine.IntroStop", function( )
+netstream.Hook( "catherine.introStop", function( )
 	catherine.intro.status = false
 end )
 

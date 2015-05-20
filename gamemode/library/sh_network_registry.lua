@@ -36,7 +36,11 @@ if ( SERVER ) then
 				id = ent:SteamID( )
 			end
 			
-			netstream.Start( nil, "catherine.net.SetNetVar", { id, key, value } )
+			netstream.Start( nil, "catherine.net.SetNetVar", {
+				id,
+				key,
+				value
+			} )
 		end
 	end
 	
@@ -48,11 +52,14 @@ if ( SERVER ) then
 		catherine.net.globalRegistry[ key ] = value
 		
 		if ( !noSync ) then
-			netstream.Start( nil, "catherine.net.SetNetGlobalVar", { key, value } )
+			netstream.Start( nil, "catherine.net.SetNetGlobalVar", {
+				key,
+				value
+			} )
 		end
 	end
 
-	function catherine.net.SyncAllVars( pl )
+	function catherine.net.SendAllNetworkRegistries( pl )
 		local convert = { }
 		
 		for k, v in pairs( catherine.net.entityRegistry ) do
@@ -66,7 +73,10 @@ if ( SERVER ) then
 			convert[ id ] = v
 		end
 
-		netstream.Start( pl, "catherine.net.SyncAllVars", { convert, catherine.net.globalRegistry } )
+		netstream.Start( pl, "catherine.net.SendAllNetworkRegistries", {
+			convert,
+			catherine.net.globalRegistry
+		} )
 	end
 	
 	function catherine.net.NetworkRegistryOptimize( )
@@ -76,7 +86,7 @@ if ( SERVER ) then
 			catherine.net.entityRegistry[ k ] = nil
 		end
 		
-		catherine.net.SyncAllVars( )
+		catherine.net.SendAllNetworkRegistries( )
 	end
 
 	function META:SetNetVar( key, value, noSync )
@@ -126,7 +136,7 @@ else
 		catherine.net.globalRegistry[ data ] = nil
 	end )
 	
-	netstream.Hook( "catherine.net.SyncAllVars", function( data )
+	netstream.Hook( "catherine.net.SendAllNetworkRegistries", function( data )
 		catherine.net.entityRegistry = data[ 1 ]
 		catherine.net.globalRegistry = data[ 2 ]
 	end )

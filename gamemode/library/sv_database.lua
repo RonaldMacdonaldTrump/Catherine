@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `catherine_characters` (
 	`_model` varchar(160) NOT NULL,
 	`_att` varchar(180) DEFAULT NULL,
 	`_schema` varchar(24) NOT NULL,
-	`_registerTime` int(11) unsigned NOT NULL,
+	`_registerTime` text,
 	`_steamID` varchar(20) NOT NULL,
 	`_charVar` text,
 	`_inv` text,
@@ -37,6 +37,9 @@ CREATE TABLE IF NOT EXISTS `catherine_players` (
 	`_steamName` varchar(70) NOT NULL,
 	`_steamID` varchar(20) NOT NULL,
 	`_catData` text,
+	`_steamID64` text,
+	`_ipAddress` varchar(15) DEFAULT NULL,
+	`_lastConnect` text,
 	PRIMARY KEY (`_id`)
 );
 ]]
@@ -49,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `catherine_characters` (
 	`_model` TEXT,
 	`_att` TEXT,
 	`_schema` TEXT,
-	`_registerTime` INTEGER,
+	`_registerTime` TEXT,
 	`_steamID` TEXT,
 	`_charVar` TEXT,
 	`_inv` TEXT,
@@ -60,7 +63,10 @@ CREATE TABLE IF NOT EXISTS `catherine_players` (
 	`_id` INTEGER PRIMARY KEY,
 	`_steamName` TEXT,
 	`_steamID` TEXT,
-	`_catData` TEXT
+	`_catData` TEXT,
+	`_steamID64` TEXT,
+	`_ipAddress` TEXT,
+	`_lastConnect` TEXT,
 );
 ]]
 
