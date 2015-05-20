@@ -23,7 +23,7 @@ if ( SERVER ) then
 	CAT_INV_ACTION_ADD = 1
 	CAT_INV_ACTION_REMOVE = 2
 	CAT_INV_ACTION_UPDATE = 3
-	
+
 	function catherine.inventory.Work( pl, workID, data )
 		if ( workID == CAT_INV_ACTION_ADD ) then
 			local inventory = catherine.inventory.Get( pl )
@@ -39,6 +39,8 @@ if ( SERVER ) then
 				}
 			else
 				local itemTable = catherine.item.FindByID( uniqueID )
+				
+				if ( !itemTable ) then return end
 				
 				inventory[ uniqueID ] = {
 					uniqueID = uniqueID,
@@ -305,4 +307,12 @@ else
 	function META:GetInvItemDatas( uniqueID )
 		return catherine.inventory.GetItemDatas( uniqueID )
 	end
+	
+	function catherine.inventory.CharacterVarChanged( )
+		if ( IsValid( catherine.vgui.inventory ) and !catherine.vgui.inventory:IsHiding( ) ) then
+			catherine.vgui.inventory:BuildInventory( )
+		end
+	end
+	
+	hook.Add( "CharacterVarChanged", "catherine.inventory.CharacterVarChanged", catherine.inventory.CharacterVarChanged )
 end
