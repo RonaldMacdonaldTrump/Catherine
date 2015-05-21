@@ -19,6 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local PLUGIN = PLUGIN
 PLUGIN.curSlot = 1
 PLUGIN.weapons = PLUGIN.weapons or { }
+PLUGIN.showTime = 0
 PLUGIN.fadeTime = 0
 PLUGIN.maxHighX = 0
 PLUGIN.curSlotY = 0
@@ -89,6 +90,8 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 end
 
 function PLUGIN:HUDDraw( )
+	if ( !LocalPlayer( ):IsCharacterLoaded( ) or !LocalPlayer( ):Alive( ) ) then return end
+	
 	local scrW, scrH = ScrW( ), ScrH( )
 	
 	for k, v in pairs( self.weapons ) do

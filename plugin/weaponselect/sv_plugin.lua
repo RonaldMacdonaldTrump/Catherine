@@ -23,7 +23,7 @@ concommand.Add( "cat_ws_selectWeapon", function( pl, _, args )
 end )
 
 function PLUGIN:PlayerGiveWeapon( pl, uniqueID )
-	timer.Simple( 0.5, function( )
+	timer.Simple( 1, function( )
 		netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
 			1,
 			uniqueID

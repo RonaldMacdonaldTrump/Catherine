@@ -118,6 +118,8 @@ BASE.func.unequip = {
 
 if ( SERVER ) then
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.hooks.weapon_base.PlayerSpawnedInCharacter", function( pl )
+		catherine.character.SetCharVar( pl, "equippingWeaponTypes", { } )
+		
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
 			local itemTable = catherine.item.FindByID( k )
 			if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( pl, k ) ) then continue end
