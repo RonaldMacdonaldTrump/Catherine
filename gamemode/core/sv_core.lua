@@ -116,6 +116,14 @@ function GM:PlayerSpawn( pl )
 
 	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
 	pl:AllowFlashlight( status )
+	
+	if ( catherine.configs.giveHand ) then
+		pl:Give( "cat_fist" )
+	end
+	
+	if ( catherine.configs.giveKey ) then
+		pl:Give( "cat_key" )
+	end
 
 	if ( pl:IsCharacterLoaded( ) and !pl.CAT_loadingChar ) then
 		hook.Run( "PlayerSpawnedInCharacter", pl )
@@ -134,15 +142,8 @@ end
 
 function GM:PlayerSpawnedInCharacter( pl )
 	catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
+
 	hook.Run( "OnSpawnedInCharacter", pl )
-	
-	if ( catherine.configs.giveHand ) then
-		pl:Give( "cat_fist" )
-	end
-	
-	if ( catherine.configs.giveKey ) then
-		pl:Give( "cat_key" )
-	end
 end
 
 function GM:PlayerSetHandsModel( pl, ent )
@@ -445,6 +446,14 @@ function GM:Tick( )
 			v.CAT_nextJumpUpdate = CurTime( ) + 1
 		end
 	end
+end
+
+function GM:PlayerGiveWeapon( pl, uniqueID )
+
+end
+
+function GM:PlayerStripWeapon( pl, uniqueID )
+
 end
 
 function GM:GetUnknownTargetName( pl, target )

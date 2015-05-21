@@ -20,6 +20,9 @@ AddCSLuaFile( )
 
 SWEP.HoldType = "normal"
 SWEP.PrintName = "Key"
+SWEP.Instructions = "Primary Fire : Lock.\nSecondary Fire : Unlock."
+SWEP.Purpose = "Locking and unlocking entities that you have access to."
+SWEP.Author = "L7D"
 SWEP.ViewModel = Model( "models/weapons/c_arms_cstrike.mdl" )
 SWEP.WorldModel = ""
 SWEP.AlwaysLowered = true

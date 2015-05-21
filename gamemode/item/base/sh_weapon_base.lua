@@ -47,7 +47,7 @@ BASE.func.equip = {
 		
 		local playerWeaponType = catherine.character.GetCharVar( pl, "equippingWeaponTypes", { } )
 		local itemWeaponType = itemTable.weaponType
-		
+
 		if (
 			playerWeaponType[ itemWeaponType ] and
 			( !itemTable.attachmentLimit[ itemWeaponType ] or
@@ -119,10 +119,19 @@ BASE.func.unequip = {
 if ( SERVER ) then
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.hooks.weapon_base.PlayerSpawnedInCharacter", function( pl )
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
-			if ( !catherine.inventory.IsEquipped( pl, k ) ) then continue end
-			
+			local itemTable = catherine.item.FindByID( k )
+			if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( pl, k ) ) then continue end
+
 			catherine.item.Work( pl, k, "equip" )
 		end
+		
+		if ( catherine.configs.giveHand and pl:HasWeapon( "cat_fist" ) ) then
+			pl:SelectWeapon( "cat_fist" )
+		end
+	end )
+	
+	hook.Add( "CharacterLoadingStart", "catherine.item.hooks.weapon_base.CharacterLoadingStart", function( pl )
+		catherine.character.SetCharVar( pl, "equippingWeaponTypes", { } )
 	end )
 
 	hook.Add( "PlayerDeath", "catherine.item.hooks.weapon_base.PlayerDeath", function( pl )
