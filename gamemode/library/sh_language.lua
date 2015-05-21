@@ -58,18 +58,11 @@ if ( SERVER ) then
 	end
 else
 	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", catherine.configs.defaultLanguage, true, true )
-	local curLang = GetConVarString( "cat_convar_language" )
-	
+
 	function LANG( key, ... )
-		local languageTable = catherine.language.lists[ curLang ] or catherine.language.lists[ "english" ]
+		local languageTable = catherine.language.lists[ GetConVarString( "cat_convar_language" ) ] or catherine.language.lists[ "english" ]
 		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
 		
 		return Format( languageTable.data[ key ], ... )
 	end
-	
-	function catherine.language.LanguageChanged( )
-		curLang = GetConVarString( "cat_convar_language" )
-	end
-	
-	hook.Add( "LanguageChanged", "catherine.language.LanguageChanged", catherine.language.LanguageChanged )
 end

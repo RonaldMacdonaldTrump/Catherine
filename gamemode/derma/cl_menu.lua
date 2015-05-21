@@ -19,10 +19,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local PANEL = { }
 
 function PANEL:Init( )
-	if ( IsValid( catherine.vgui.menu ) ) then
-		catherine.vgui.menu:Remove( )
-	end
-	
 	catherine.vgui.menu = self
 	
 	self.player = LocalPlayer( )
@@ -257,7 +253,7 @@ end
 function PANEL:OnRemove( )
 	local activePanel = catherine.menu.GetActivePanel( )
 	
-	if ( IsValid( self ) and IsValid( activePanel ) and self == pnl ) then
+	if ( IsValid( self ) and IsValid( activePanel ) ) then
 		activePanel:Close( )
 	end
 	

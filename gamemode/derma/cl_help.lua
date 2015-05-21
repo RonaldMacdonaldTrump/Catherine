@@ -78,6 +78,8 @@ function PANEL:MenuPaint( w, h )
 end
 
 function PANEL:InitalizeHelps( )
+	self.helps = { }
+	
 	for k, v in pairs( catherine.help.GetAll( ) ) do
 		self.helps[ v.category ] = v
 	end
