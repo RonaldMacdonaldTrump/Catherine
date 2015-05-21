@@ -20,6 +20,8 @@ AddCSLuaFile( )
 
 SWEP.PrintName = "Fists"
 SWEP.Author = "1F24DCA, L7D, Chessnut"
+SWEP.Instructions = "Primary Fire : Punch.\nSecondary Fire : Knock."
+SWEP.Purpose = "Punching characters and knocking on doors."
 SWEP.HoldType = "normal"
 SWEP.Slot = 1
 SWEP.SlotPos = 1

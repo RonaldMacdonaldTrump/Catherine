@@ -344,7 +344,21 @@ if ( SERVER ) then
 			end
 		end
 	end
-
+	
+	META.CATGiveWeapon = META.CATGiveWeapon or META.Give
+	META.CATTakeWeapon = META.CATTakeWeapon or META.StripWeapon
+	
+	function META:Give( uniqueID )
+		hook.Run( "PlayerGiveWeapon", self, uniqueID )
+		
+		return self:CATGiveWeapon( uniqueID )
+	end
+	
+	function META:StripWeapon( uniqueID )
+		hook.Run( "PlayerStripWeapon", self, uniqueID )
+		
+		return self:CATTakeWeapon( uniqueID )
+	end
 
 	function catherine.player.PlayerSwitchWeapon( pl, oldWep, newWep )
 		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then

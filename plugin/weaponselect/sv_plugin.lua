@@ -17,19 +17,37 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "^WS_Plugin_Name"
-PLUGIN.author = "L7D"
-PLUGIN.desc = "^WS_Plugin_Desc"
 
-catherine.language.Merge( "english", {
-	[ "WS_Plugin_Name" ] = "Weapon Select",
-	[ "WS_Plugin_Desc" ] = "Good stuff."
-} )
+concommand.Add( "cat_ws_selectWeapon", function( pl, _, args )
+	pl:SelectWeapon( args[ 1 ] )
+end )
 
-catherine.language.Merge( "korean", {
-	[ "WS_Plugin_Name" ] = "무기 선택",
-	[ "WS_Plugin_Desc" ] = "RP 에 맞는 무기 선택으로 바꿔줍니다."
-} )
+function PLUGIN:PlayerGiveWeapon( pl, uniqueID )
+	timer.Simple( 0.5, function( )
+		netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
+			1,
+			uniqueID
+		} )
+	end )
+end
 
-catherine.util.Include( "sv_plugin.lua" )
-catherine.util.Include( "cl_plugin.lua" )
+function PLUGIN:PlayerDeath( pl )
+	timer.Simple( 0.5, function( )
+		netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
+			3
+		} )
+	end )
+end
+
+function PLUGIN:PlayerStripWeapon( pl, uniqueID )
+	netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
+		2,
+		uniqueID
+	} )
+end
+
+function PLUGIN:CharacterLoadingStart( pl )
+	netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
+		3
+	} )
+end

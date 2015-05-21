@@ -82,7 +82,7 @@ function PANEL:Init( )
 		self.activePanelShowX = Lerp( 0.09, self.activePanelShowX, x + self.activePanelShowTargetX )
 		self.activePanelShowW = Lerp( 0.09, self.activePanelShowW, self.activePanelShowTargetW )
 
-		draw.RoundedBox( 0, self.activePanelShowX, 0, self.activePanelShowW, 10, Color( mainCol.r, mainCol.g, mainCol.b, 235 ) )
+		draw.RoundedBox( 0, self.activePanelShowX, 0, self.activePanelShowW, 5, Color( mainCol.r, mainCol.g, mainCol.b, 235 ) )
 	end
 	
 	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
@@ -112,8 +112,9 @@ function PANEL:AddMenuItem( name, func )
 				activePanel:FakeHide( )
 				catherine.menu.SetActivePanel( nil )
 				catherine.menu.SetActivePanelName( nil )
+				catherine.menu.SetActivePanelData( 0, 0 )
 				self.activePanelShowTargetW = 0
-				self.activePanelShowTargetX = pnl.itemXPos
+				self.activePanelShowTargetX = 0
 				
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_SAMEMENU )
 			else

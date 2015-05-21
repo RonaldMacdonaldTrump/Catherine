@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `catherine_characters` (
 	`_charVar` text,
 	`_inv` text,
 	`_cash` int(11) unsigned DEFAULT NULL,
-	`_faction` varchar(50) NOT NULL
+	`_faction` varchar(50) NOT NULL,
 	PRIMARY KEY (`_id`)
 );
 CREATE TABLE IF NOT EXISTS `catherine_players` (
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `catherine_players` (
 	`_catData` text,
 	`_steamID64` text,
 	`_ipAddress` varchar(15) DEFAULT NULL,
-	`_lastConnect` text
+	`_lastConnect` text,
 	PRIMARY KEY (`_id`)
 );
 ]]
@@ -265,9 +265,24 @@ concommand.Add( "cat_db_init", function( pl )
 	elseif ( !game.IsDedicated( ) and !pl:IsSuperAdmin( ) ) then
 		return
 	end
-	
-	catherine.database.Query( DROP_TABLES, function( )
-		catherine.util.Print( Color( 255, 0, 0 ), "Database has initialized." )
-		catherine.database.Connect( )
-	end )
+
+	if ( catherine.database.object ) then
+		local ex = string.Explode( ";", DROP_TABLES )
+		
+		for i = 1, 2 do
+			catherine.database.Query( ex[ i ], function( )
+				if ( i == 2 ) then
+					catherine.util.Print( Color( 255, 0, 0 ), "ALL Database has initialized." )
+					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "ALL Database has initialized!!!" )
+					catherine.database.Connect( )
+				end
+			end )
+		end
+	else
+		catherine.database.Query( DROP_TABLES, function( )
+			catherine.util.Print( Color( 255, 0, 0 ), "ALL Database has initialized." )
+			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "ALL Database has initialized!!!" )
+			catherine.database.Connect( )
+		end )
+	end
 end )
