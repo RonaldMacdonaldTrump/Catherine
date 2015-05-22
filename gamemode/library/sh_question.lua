@@ -53,7 +53,7 @@ function catherine.question.FindByIndex( typ, index )
 end
 
 if ( SERVER ) then
-	function catherine.question.InitializeData( pl )
+	function catherine.question.Start( pl )
 		local data = {
 			questions = { }
 		}
@@ -65,6 +65,11 @@ if ( SERVER ) then
 			
 			if ( #questions > 0 ) then
 				data.questions = questions
+				
+				netstream.Start( pl, "catherine.question.Start", {
+					questionType = questionType,
+					questions = questions
+				} )
 			else
 				print("Can't run - reason 1")
 			end
@@ -73,9 +78,25 @@ if ( SERVER ) then
 			
 			if ( #questions > 0 ) then
 				data.questions = questions
+				
+				netstream.Start( pl, "catherine.question.Start", {
+					questionType = questionType,
+					questions = questions
+				} )
+				
+				data.juror = catherine.util.GetAdmins( )
+				
+				--[[
+				for k, v in pairs( data.juror ) do
+					if ( !IsValid( v ) or !v:IsPlayer( ) ) then continue end
+					
+					
+				end--]]
 			else
 				print("Can't run - reason 2")
 			end
+		else
+			print(" !")
 		end
 	end
 	
@@ -106,7 +127,16 @@ if ( SERVER ) then
 	end
 	
 	function catherine.question.GetQuestionType( )
-		return #catherine.util.GetAdmins( ) > 0 and CAT_QUESTION_DESCRIPTIVE or CAT_QUESTION_MULTIPLE_CHOICE
+		local adminsCount = #catherine.util.GetAdmins( )
+		local descriptiveCount = #catherine.question.GetAllDescriptive( )
+		
+		if ( adminsCount <= 0 or descriptiveCount == 0 and #catherine.question.GetAllMultipleChoice( ) > 0 ) then
+			return CAT_QUESTION_MULTIPLE_CHOICE
+		elseif ( adminsCount > 0 and descriptiveCount != 0 ) then
+			return CAT_QUESTION_DESCRIPTIVE
+		else
+			return nil
+		end
 	end
 	
 	function catherine.question.SetQuestionComplete( pl, val )
@@ -137,6 +167,10 @@ if ( SERVER ) then
 		catherine.question.CheckMultipleChoice( pl, data )
 	end )
 else
+	netstream.Hook( "catherine.question.Start", function( data )
+		// menu call;
+	end )
+	
 	netstream.Hook( "catherine.question.CloseMenu", function( data )
 		// menu close ;
 	end )
