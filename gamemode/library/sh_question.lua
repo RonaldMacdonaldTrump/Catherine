@@ -110,8 +110,9 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.question.ReceiveDescriptive( pl, data )
+	function catherine.question.SendDescriptiveToJuror( pl, data )
 		local bufferData = catherine.question.descriptiveBuffer[ pl ]
+		data.descriptiveID = pl:SteamID( )
 		
 		for k, v in pairs( bufferData.juror ) do
 			if ( !IsValid( v ) ) then
@@ -122,6 +123,32 @@ if ( SERVER ) then
 			netstream.Start( v, "catherine.question.SendDescriptiveToJuror", data )
 			bufferData.jurorsAnswer[ v ] = { fin = false }
 		end
+		
+		catherine.question.WaitingJurorsReceive( pl, bufferData )
+	end
+	
+	function catherine.question.ReceiveDescriptiveAnswerFromJuror( pl, juror, allow )
+		local bufferData = catherine.question.descriptiveBuffer[ pl ]
+		
+		if ( !bufferData ) then return end
+		
+		bufferData.jurorsAnswer[ juror ] = allow
+		
+		if ( bufferData.juror == table.Count( bufferData.jurorsAnswer ) ) then
+			catherine.question.FinishDescriptive( pl )
+		end
+	end
+	
+	function catherine.question.FinishDescriptive( pl )
+	
+	end
+	
+	function catherine.question.WaitingJurorsReceive( descriptiveID, bufferData )
+		
+	end
+	
+	function catherine.question.InsertJurorsReceive( pl, descriptiveID, allow )
+		
 	end
 	
 	function catherine.question.CheckMultipleChoice( pl, answers )
