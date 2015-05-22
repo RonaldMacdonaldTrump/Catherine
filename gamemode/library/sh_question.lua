@@ -205,6 +205,23 @@ if ( SERVER ) then
 	} )
 	--]]
 	
+	function catherine.question.PlayerDisconnected( pl )
+		local buffer = catherine.question.descriptiveBuffer[ pl ]
+		
+		if ( buffer ) then
+			
+			for k, v in pairs( buffer.juror ) do
+				if ( !IsValid( v ) ) then continue end
+				
+				netstream.Start( v, "catherine.question.StopDescriptiveToJuror" )
+			end
+			
+			catherine.question.descriptiveBuffer[ pl ] = nil
+		end
+	end
+	
+	hook.Add( "PlayerDisconnected", "catherine.question.PlayerDisconnected", catherine.question.PlayerDisconnected )
+	
 	netstream.Hook( "catherine.question.CheckMultipleChoice", function( pl, data )
 		catherine.question.CheckMultipleChoice( pl, data )
 	end )
@@ -215,5 +232,13 @@ else
 	
 	netstream.Hook( "catherine.question.CloseMenu", function( data )
 		// menu close ;
+	end )
+	
+	netstream.Hook( "catherine.question.SendDescriptiveToJuror", function( data )
+	
+	end )
+	
+	netstream.Hook( "catherine.question.StopDescriptiveToJuror", function( data )
+
 	end )
 end
