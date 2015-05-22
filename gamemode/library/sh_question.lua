@@ -53,6 +53,8 @@ function catherine.question.FindByIndex( typ, index )
 end
 
 if ( SERVER ) then
+	catherine.question.descriptiveBuffer = catherine.question.descriptiveBuffer or { }
+	
 	function catherine.question.Start( pl )
 		local data = {
 			questions = { }
@@ -79,12 +81,20 @@ if ( SERVER ) then
 			if ( #questions > 0 ) then
 				data.questions = questions
 				
+				catherine.question.descriptiveBuffer[ pl ] = {
+					status = 0
+					juror = catherine.util.GetAdmins( ),
+					jurorsAnswer = { }
+				}
+				
 				netstream.Start( pl, "catherine.question.Start", {
 					questionType = questionType,
 					questions = questions
 				} )
 				
-				data.juror = catherine.util.GetAdmins( )
+				
+				
+				//data.juror = catherine.util.GetAdmins( ) // ?
 				
 				--[[
 				for k, v in pairs( data.juror ) do
@@ -97,6 +107,20 @@ if ( SERVER ) then
 			end
 		else
 			print(" !")
+		end
+	end
+	
+	function catherine.question.ReceiveDescriptive( pl, data )
+		local bufferData = catherine.question.descriptiveBuffer[ pl ]
+		
+		for k, v in pairs( bufferData.juror ) do
+			if ( !IsValid( v ) ) then
+				table.remove( bufferData.juror, k )
+				continue
+			end
+			
+			netstream.Start( v, "catherine.question.SendDescriptiveToJuror", data )
+			bufferData.jurorsAnswer[ v ] = { fin = false }
 		end
 	end
 	
@@ -160,6 +184,24 @@ if ( SERVER ) then
 			1,
 			3
 		}
+	} )
+	
+	
+	
+	catherine.question.ReceiveDescriptive( pl, {
+		{
+			index = 1,
+			val = "답변 1"
+		},
+		{
+			index = 2,
+			val = "답변 2"
+		},
+		{
+			index = 3,
+			val = "답변 3"
+		}
+		
 	} )
 	--]]
 	
