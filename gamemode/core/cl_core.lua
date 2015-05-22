@@ -109,7 +109,7 @@ function GM:CalcView( pl, pos, ang, fov )
 	return viewData
 	--]]
 	
-	if ( IsValid( catherine.vgui.character ) or !pl:IsCharacterLoaded( ) ) then
+	if ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or !pl:IsCharacterLoaded( ) ) then
 		viewData = {
 			origin = catherine.configs.schematicViewPos.pos,
 			angles = catherine.configs.schematicViewPos.ang
@@ -144,6 +144,7 @@ function GM:HUDDrawScoreBoard( )
 
 	// Backgrounds
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, catherine.intro.backAlpha ) )
+	
 	surface.SetDrawColor( 200, 200, 200, catherine.intro.backAlpha )
 	surface.SetMaterial( gradientUpMat )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )

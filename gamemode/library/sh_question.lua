@@ -32,7 +32,7 @@ end
 function catherine.question.RegisterDescriptive( title, defVal )
 	catherine.question.lists.descriptive[ #catherine.question.lists.descriptive + 1 ] = {
 		title = title,
-		defVal = defVal
+		defVal = defVal or ""
 	}
 end
 
@@ -66,6 +66,8 @@ if ( SERVER ) then
 			local questions = catherine.question.GetAllMultipleChoice( )
 			
 			if ( #questions > 0 ) then
+				print("1")
+				
 				data.questions = questions
 				
 				netstream.Start( pl, "catherine.question.Start", {
@@ -79,10 +81,12 @@ if ( SERVER ) then
 			local questions = catherine.question.GetAllDescriptive( )
 			
 			if ( #questions > 0 ) then
+				print("2")
+				
 				data.questions = questions
 				
 				catherine.question.descriptiveBuffer[ pl ] = {
-					status = 0
+					status = 0,
 					juror = catherine.util.GetAdmins( ),
 					jurorsAnswer = { }
 				}
@@ -110,13 +114,15 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.question.SendDescriptiveToJuror( pl, data )
+	function catherine.question.SendDescriptiveToJuror( pl, answer )
 		local bufferData = catherine.question.descriptiveBuffer[ pl ]
 		
 		if ( !bufferData ) then return end
-		
+		local data = {
+			answer = answer,
+			descriptiveID = pl:SteamID( )
+		}
 		bufferData.countDown = 60
-		data.descriptiveID = pl:SteamID( )
 		
 		for k, v in pairs( bufferData.juror ) do
 			if ( !IsValid( v ) ) then
@@ -124,9 +130,14 @@ if ( SERVER ) then
 				continue
 			end
 			
+			print("Send!",v)
+			
 			netstream.Start( v, "catherine.question.SendDescriptiveToJuror", data )
 			bufferData.jurorsAnswer[ v ] = { fin = false }
 		end
+		
+		print("Wait run")
+		pl:SetNetVar( "question_wait", true )
 		
 		catherine.question.WaitingJurorsReceive( pl, bufferData )
 	end
@@ -144,6 +155,8 @@ if ( SERVER ) then
 	end
 	
 	function catherine.question.FinishDescriptive( pl )
+		print("Finish!",pl)
+		pl:SetNetVar( "question_wait", nil )
 		// fin
 	end
 	
@@ -154,6 +167,7 @@ if ( SERVER ) then
 		timer.Create( uniqueID, 1, 0, function( )
 			if ( countDown > 0 ) then
 				countDown = countDown - 1
+				print("CountDown!",countDown)
 			else
 				catherine.question.FinishDescriptive( pl )
 				timer.Remove( uniqueID )
@@ -165,7 +179,7 @@ if ( SERVER ) then
 		local questionTable = catherine.question.GetAllMultipleChoice( )
 		
 		if ( #questionTable == 0 ) then
-			catherine.question.SetQuestionComplete( pl, "1" )
+			//catherine.question.SetQuestionComplete( pl, "1" )
 			netstream.Start( pl, "catherine.question.CloseMenu" )
 			return
 		end
@@ -178,12 +192,13 @@ if ( SERVER ) then
 		
 		for k, v in pairs( answers ) do
 			if ( v != answerIndexes[ k ] ) then
-				pl:Kick( "Answer is not valid!" )
+				//pl:Kick( "Answer is not valid!" )
+				print("Nooo")
 				return
 			end
 		end
 		
-		catherine.question.SetQuestionComplete( pl, "1" )
+		//catherine.question.SetQuestionComplete( pl, "1" )
 		netstream.Start( pl, "catherine.question.CloseMenu" )
 	end
 	
@@ -203,6 +218,11 @@ if ( SERVER ) then
 	function catherine.question.SetQuestionComplete( pl, val )
 		catherine.catData.SetVar( pl, "question", val, false, true )
 	end
+	
+	
+	//catherine.question.Start( player.GetByID(1) )
+	
+	
 	
 	--[[
 	catherine.question.RegisterMultipleChoice( "1", ..., 2 )
@@ -262,13 +282,28 @@ if ( SERVER ) then
 	netstream.Hook( "catherine.question.CheckMultipleChoice", function( pl, data )
 		catherine.question.CheckMultipleChoice( pl, data )
 	end )
+	
+	netstream.Hook( "catherine.question.StartDescriptive", function( pl, data )
+		catherine.question.SendDescriptiveToJuror( pl, data )
+	end )
+	
+	concommand.Add( "quiz_start", function( pl )
+		catherine.question.Start( player.GetByID(1) )
+	end )
 else
 	netstream.Hook( "catherine.question.Start", function( data )
-		// menu call;
+		if ( IsValid( catherine.vgui.question ) ) then
+			catherine.vgui.question:Remove( )
+		end
+		
+		catherine.vgui.question = vgui.Create( "catherine.vgui.question" )
+		catherine.vgui.question:InitializeQuestion( data.questionType )
 	end )
 	
 	netstream.Hook( "catherine.question.CloseMenu", function( data )
-		// menu close ;
+		if ( IsValid( catherine.vgui.question ) ) then
+			catherine.vgui.question:Remove( )
+		end
 	end )
 	
 	netstream.Hook( "catherine.question.SendDescriptiveToJuror", function( data )
@@ -279,3 +314,13 @@ else
 
 	end )
 end
+
+catherine.question.RegisterMultipleChoice( "What is your name?", {
+	"Chessnut", "L7D"
+}, 2 )
+
+catherine.question.RegisterMultipleChoice( "What is this server?", {
+	"Cider 2", "HL2RP"
+}, 2 )
+
+catherine.question.RegisterDescriptive( "asd", "" )
