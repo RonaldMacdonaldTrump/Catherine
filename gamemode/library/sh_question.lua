@@ -112,6 +112,10 @@ if ( SERVER ) then
 	
 	function catherine.question.SendDescriptiveToJuror( pl, data )
 		local bufferData = catherine.question.descriptiveBuffer[ pl ]
+		
+		if ( !bufferData ) then return end
+		
+		bufferData.countDown = 60
 		data.descriptiveID = pl:SteamID( )
 		
 		for k, v in pairs( bufferData.juror ) do
@@ -132,7 +136,7 @@ if ( SERVER ) then
 		
 		if ( !bufferData ) then return end
 		
-		bufferData.jurorsAnswer[ juror ] = allow
+		bufferData.jurorsAnswer[ juror ] = { fin = true, allow = allow }
 		
 		if ( bufferData.juror == table.Count( bufferData.jurorsAnswer ) ) then
 			catherine.question.FinishDescriptive( pl )
@@ -140,15 +144,21 @@ if ( SERVER ) then
 	end
 	
 	function catherine.question.FinishDescriptive( pl )
-	
+		// fin
 	end
 	
-	function catherine.question.WaitingJurorsReceive( descriptiveID, bufferData )
+	function catherine.question.WaitingJurorsReceive( pl, bufferData )
+		local uniqueID = "catherine.question.timer.WaitingJurorsReceive_" .. pl:SteamID( )
+		local countDown = bufferData.countDown
 		
-	end
-	
-	function catherine.question.InsertJurorsReceive( pl, descriptiveID, allow )
-		
+		timer.Create( uniqueID, 1, 0, function( )
+			if ( countDown > 0 ) then
+				countDown = countDown - 1
+			else
+				catherine.question.FinishDescriptive( pl )
+				timer.Remove( uniqueID )
+			end
+		end )
 	end
 	
 	function catherine.question.CheckMultipleChoice( pl, answers )
