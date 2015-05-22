@@ -79,25 +79,30 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.question.Check( pl, data )
-		local questionType = data.questionType
+	function catherine.question.CheckMultipleChoice( pl, answers )
+		local questionTable = catherine.question.GetAllMultipleChoice( )
 		
-		if ( questionType == CAT_QUESTION_MULTIPLE_CHOICE ) then
-			local answers = data.answers
-			local answerIndexes = data.answerIndexes
-			
-			for k, v in pairs( answers ) do
-				if ( v != answerIndexes[ k ] ) then
-					pl:Kick( "Answer is not valid!" )
-					return
-				end
-			end
-			
+		if ( #questionTable == 0 ) then
 			catherine.question.SetQuestionComplete( pl, "1" )
 			netstream.Start( pl, "catherine.question.CloseMenu" )
-		elseif ( questionType == CAT_QUESTION_DESCRIPTIVE ) then
-			// to do
+			return
 		end
+		
+		local answerIndexes = { }
+		
+		for k, v in pairs( questionTable ) do
+			answerIndexes[ k ] = v.answerIndex
+		end
+		
+		for k, v in pairs( answers ) do
+			if ( v != answerIndexes[ k ] ) then
+				pl:Kick( "Answer is not valid!" )
+				return
+			end
+		end
+		
+		catherine.question.SetQuestionComplete( pl, "1" )
+		netstream.Start( pl, "catherine.question.CloseMenu" )
 	end
 	
 	function catherine.question.GetQuestionType( )
@@ -127,6 +132,12 @@ if ( SERVER ) then
 		}
 	} )
 	--]]
+	
+	netstream.Hook( "catherine.question.CheckMultipleChoice", function( pl, data )
+		catherine.question.CheckMultipleChoice( pl, data )
+	end )
 else
-
+	netstream.Hook( "catherine.question.CloseMenu", function( data )
+		// menu close ;
+	end )
 end
