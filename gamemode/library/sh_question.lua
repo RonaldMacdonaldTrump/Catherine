@@ -80,12 +80,53 @@ if ( SERVER ) then
 	end
 	
 	function catherine.question.Check( pl, data )
+		local questionType = data.questionType
 		
+		if ( questionType == CAT_QUESTION_MULTIPLE_CHOICE ) then
+			local answers = data.answers
+			local answerIndexes = data.answerIndexes
+			
+			for k, v in pairs( answers ) do
+				if ( v != answerIndexes[ k ] ) then
+					pl:Kick( "Answer is not valid!" )
+					return
+				end
+			end
+			
+			catherine.question.SetQuestionComplete( pl, "1" )
+			netstream.Start( pl, "catherine.question.CloseMenu" )
+		elseif ( questionType == CAT_QUESTION_DESCRIPTIVE ) then
+			// to do
+		end
 	end
 	
 	function catherine.question.GetQuestionType( )
 		return #catherine.util.GetAdmins( ) > 0 and CAT_QUESTION_DESCRIPTIVE or CAT_QUESTION_MULTIPLE_CHOICE
 	end
+	
+	function catherine.question.SetQuestionComplete( pl, val )
+		catherine.catData.SetVar( pl, "question", val, false, true )
+	end
+	
+	--[[
+	catherine.question.RegisterMultipleChoice( "1", ..., 2 )
+	catherine.question.RegisterMultipleChoice( "2", ..., 1 )
+	catherine.question.RegisterMultipleChoice( "3", ..., 3 )
+	
+	catherine.question.Check( pl, {
+		questionType = CAT_QUESTION_MULTIPLE_CHOICE,
+		answers = {
+			2,
+			1,
+			3
+		},
+		answerIndexes = {
+			2,
+			1,
+			3
+		}
+	} )
+	--]]
 else
 
 end
