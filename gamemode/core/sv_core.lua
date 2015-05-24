@@ -111,6 +111,7 @@ function GM:PlayerSpawn( pl )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	pl:SetNetVar( "isTied", false )
 	pl:SetupHands( )
+	pl:SetCanZoom( false )
 
 	catherine.util.TopNotify( pl, false )
 
