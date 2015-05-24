@@ -96,7 +96,7 @@ function catherine.bar.Draw( )
 		if ( v.a > 0 ) then
 			local col = v.col
 			
-			draw.RoundedBox( 0, 5, v.y, barW, barH, Color( 255, 255, 255, v.a / 2 ) )
+			draw.RoundedBox( 0, 5, v.y, barW, barH, Color( 255, 255, 255, v.a / 1.5 ) )
 			draw.RoundedBox( 0, 5, v.y, v.w, barH, Color( col.r, col.g, col.b, v.a ) )
 		end
 	end

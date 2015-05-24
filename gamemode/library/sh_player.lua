@@ -144,6 +144,7 @@ if ( SERVER ) then
 						uniqueID = "zip_tie"
 					} )
 				
+					target:SetWeaponRaised( false )
 					target:SetNetVar( "isTied", true )
 					
 					return true
@@ -182,7 +183,7 @@ if ( SERVER ) then
 			end )
 		end
 	end
-	
+
 	function catherine.player.BunnyHopProtection( pl )
 		if ( pl:KeyPressed( IN_JUMP ) and ( pl.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
 			if ( !pl.CAT_nextBunnyCheck ) then
@@ -319,6 +320,14 @@ if ( SERVER ) then
 	end
 
 	function META:SetWeaponRaised( bool, wep )
+		if ( catherine.player.IsTied( self ) ) then
+			if ( self:GetWeaponRaised( ) ) then
+				self:SetNetVar( "weaponRaised", false )
+			end
+			
+			return
+		end
+		
 		wep = wep or self:GetActiveWeapon( )
 		
 		self:SetNetVar( "weaponRaised", bool )

@@ -86,7 +86,7 @@ else
 	catherine.configs.schemaLogo = catherine.configs.frameworkLogo
 	catherine.configs.mainColor = Color( 50, 50, 50 )
 	
-	catherine.configs.mainBarWideScale = 0.3
+	catherine.configs.mainBarWideScale = 0.2
 	catherine.configs.mainBarTallSize = 6
 	catherine.configs.maxChatboxLine = 50
 end

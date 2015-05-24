@@ -73,11 +73,11 @@ end
 
 function catherine.hud.ZipTie( pl, w, h )
 	if ( catherine.player.IsTied( pl ) ) then
-		setColor( 70, 70, 70, 255 )
+		setColor( 70, 70, 70, 100 )
 		setMat( gradient_center )
-		drawMat( w / 2 - w / 2 / 2, h * 0.3 - ( h * 0.2 ) / 2, w / 2, h * 0.1 )
+		drawMat( w / 2 - w / 2 / 2, 0, w / 2, 40 )
 		
-		drawText( LANG( "Item_Message03_ZT" ), "catherine_normal35", w / 2, h * 0.3 - 45, Color( 255, 255, 255, 255 ), 1, 1 )
+		drawText( LANG( "Item_Message03_ZT" ), "catherine_normal20", w / 2, 20, Color( 255, 255, 255, 255 ), 1, 1 )
 	end
 end
 
