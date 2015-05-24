@@ -46,6 +46,12 @@ function PLUGIN:PlayerStripWeapon( pl, uniqueID )
 	} )
 end
 
+function PLUGIN:PlayerRagdollJoined( pl )
+	netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
+		3
+	} )
+end
+
 function PLUGIN:CharacterLoadingStart( pl )
 	netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
 		3

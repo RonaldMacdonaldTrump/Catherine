@@ -52,35 +52,40 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 		end
 	end
 	
-	if ( bind == "invnext" or bind == "slot1" ) then
-		if ( self.curSlot < wepsCount ) then
-			self.curSlot = self.curSlot + 1
-		elseif ( self.curSlot >= wepsCount ) then
-			self.curSlot = 1
+	if ( ( self.nextBind or 0 ) <= CurTime( ) ) then
+		if ( bind == "invnext" or bind == "slot1" ) then
+			if ( self.curSlot < wepsCount ) then
+				self.curSlot = self.curSlot + 1
+			elseif ( self.curSlot >= wepsCount ) then
+				self.curSlot = 1
+			end
+			
+			surface.PlaySound( "common/talk.wav" )
+			
+			self.nextBind = CurTime( ) + 0.08
+			self.showTime = CurTime( )
+			self.fadeTime = CurTime( ) + 3
+			
+			hook.Run( "OnWeaponSlotChanged", pl, self.curSlot )
+			
+			return true
+		elseif ( bind == "invprev" or bind == "slot2" ) then
+			if ( self.curSlot > 1 ) then
+				self.curSlot = self.curSlot - 1
+			elseif ( self.curSlot <= 1 ) then
+				self.curSlot = wepsCount
+			end
+			
+			surface.PlaySound( "common/talk.wav" )
+			
+			self.nextBind = CurTime( ) + 0.08
+			self.showTime = CurTime( )
+			self.fadeTime = CurTime( ) + 3
+			
+			hook.Run( "OnWeaponSlotChanged", pl, self.curSlot )
+			
+			return true
 		end
-		
-		surface.PlaySound( "common/talk.wav" )
-		self.showTime = CurTime( )
-		self.fadeTime = CurTime( ) + 3
-		
-		hook.Run( "OnWeaponSlotChanged", pl, self.curSlot )
-		
-		return true
-	elseif ( bind == "invprev" or bind == "slot2" ) then
-		if ( self.curSlot > 1 ) then
-			self.curSlot = self.curSlot - 1
-		elseif ( self.curSlot <= 1 ) then
-			self.curSlot = wepsCount
-		end
-		
-		surface.PlaySound( "common/talk.wav" )
-		
-		self.showTime = CurTime( )
-		self.fadeTime = CurTime( ) + 3
-		
-		hook.Run( "OnWeaponSlotChanged", pl, self.curSlot )
-		
-		return true
 	end
 end
 
