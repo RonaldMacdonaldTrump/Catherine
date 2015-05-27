@@ -296,6 +296,13 @@ LANGUAGE.data = {
 	[ "Chat_Str_Connect" ] = "%s 님이 서버에 들어오셨습니다.",
 	[ "Chat_Str_Disconnect" ] = "%s 님이 서버에서 나가셨습니다.",
 	
+	// Question
+	[ "Question_UIStr" ] = "질문",
+	
+	[ "Question_UI_Continue" ] = "진행하기",
+	[ "Question_UI_Disconnect" ] = "서버에서 나가기",
+	[ "Question_Notify_DisconnectQ" ] = "이 서버에서 정말로 나가시겠습니까?",
+	
 	// Basic
 	[ "Basic_UI_StringRequest" ] = "요청",
 	[ "Basic_UI_Question" ] = "질문",

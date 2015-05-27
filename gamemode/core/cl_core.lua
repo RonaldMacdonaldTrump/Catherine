@@ -138,6 +138,10 @@ function GM:CalcView( pl, pos, ang, fov )
 	return viewData
 end
 
+function GM:CantDrawBar( )
+	return IsValid( catherine.vgui.question )
+end
+
 function GM:HUDDrawScoreBoard( )
 	if ( LocalPlayer( ):IsCharacterLoaded( ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
@@ -219,9 +223,13 @@ function GM:HUDDrawScoreBoard( )
 						catherine.intro.introDone = true
 						catherine.intro.status = false
 						
-						if ( !catherine.intro.loading and catherine.intro.introDone and !IsValid( catherine.vgui.character ) ) then
-							catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
-							// Call character panel
+						if ( !catherine.intro.loading and catherine.intro.introDone ) then
+							if ( !catherine.question.IsQuestionComplete( ) ) then
+								catherine.question.Start( )
+							else
+								catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+							end
+							// Call panel
 						end
 					end
 				end

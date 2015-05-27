@@ -182,7 +182,7 @@ function PANEL:OnKeyCodePressed( key )
 end
 
 function PANEL:Paint( w, h )
-	self.blurAmount = Lerp( 0.05, self.blurAmount, self.closeing and 0 or 3 )
+	self.blurAmount = Lerp( 0.05, self.blurAmount, self.closing and 0 or 3 )
 	
 	if ( self:IsVisible( ) ) then
 		catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
@@ -247,7 +247,7 @@ function PANEL:Show( )
 	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
 	self.ListsBase.Lists:SetSize( 0, self.ListsBase:GetTall( ) )
 	
-	self.closeing = false
+	self.closing = false
 end
 
 function PANEL:OnRemove( )
@@ -263,11 +263,11 @@ function PANEL:OnRemove( )
 end
 
 function PANEL:Close( )
-	if ( self.closeing ) then return end
+	if ( self.closing ) then return end
 	
 	CloseDermaMenus( )
 	gui.EnableScreenClicker( false )
-	self.closeing = true
+	self.closing = true
 	
 	local activePanel = catherine.menu.GetActivePanel( )
 	

@@ -485,6 +485,7 @@ if ( SERVER ) then
 		catherine.character.Delete( pl, data )
 	end )
 else
+	catherine.character.panelMusic = catherine.character.panelMusic or nil
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
 	
 	netstream.Hook( "catherine.character.CreateResult", function( data )

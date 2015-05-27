@@ -118,15 +118,15 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:OnKeyCodePressed( key )
-	if ( key == KEY_F1 and !self.closeing ) then
+	if ( key == KEY_F1 and !self.closing ) then
 		self:Close( )
 	end
 end
 
 function PANEL:Close( )
-	if ( self.closeing ) then return end
+	if ( self.closing ) then return end
 	
-	self.closeing = true
+	self.closing = true
 	
 	self:MoveTo( ScrW( ), self.y, 0.1, 0, nil, function( )
 		self:Remove( )

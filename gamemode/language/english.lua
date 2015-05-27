@@ -296,6 +296,13 @@ LANGUAGE.data = {
 	[ "Chat_Str_Connect" ] = "%s has joined to server.",
 	[ "Chat_Str_Disconnect" ] = "%s has disconnected to server.",
 	
+	// Question
+	[ "Question_UIStr" ] = "Question",
+	
+	[ "Question_UI_Continue" ] = "Continue",
+	[ "Question_UI_Disconnect" ] = "Disconnect",
+	[ "Question_Notify_DisconnectQ" ] = "Are you sure you want to disconnect from the server?",
+	
 	// Basic
 	[ "Basic_UI_StringRequest" ] = "Request",
 	[ "Basic_UI_Question" ] = "Question",

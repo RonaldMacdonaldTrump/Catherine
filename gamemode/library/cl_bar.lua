@@ -54,7 +54,7 @@ end
 
 function catherine.bar.Draw( )
 	if ( GetConVarString( "cat_convar_bar" ) == "0" ) then return end
-	if ( !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) or #catherine.bar.lists == 0 ) then
+	if ( hook.Run( "CantDrawBar" ) or !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) or #catherine.bar.lists == 0 ) then
 		hook.Run( "HUDDrawBarBottom", 5, 5 )
 		return
 	end

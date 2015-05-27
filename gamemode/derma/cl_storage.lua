@@ -134,7 +134,7 @@ end
 
 function PANEL:Think( )
 	if ( ( self.entCheck or 0 ) <= CurTime( ) ) then
-		if ( !IsValid( self.ent ) and !self.closeing ) then
+		if ( !IsValid( self.ent ) and !self.closing ) then
 			self:Close( )
 			
 			return
@@ -271,9 +271,9 @@ function PANEL:BuildStorage( )
 end
 
 function PANEL:Close( )
-	if ( self.closeing ) then return end
+	if ( self.closing ) then return end
 	
-	self.closeing = true
+	self.closing = true
 	
 	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
 		self:Remove( )
