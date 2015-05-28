@@ -60,7 +60,7 @@ if ( SERVER ) then
 		
 		for k, v in pairs( answers ) do
 			if ( v != answerIndexes[ k ] ) then
-				pl:Kick( "Answer is not valid!" )
+				pl:Kick( "Answer has a wrong!" )
 				return
 			end
 		end
@@ -105,7 +105,11 @@ else
 		end
 	end
 	
-	function catherine.question.IsQuestionComplete( )
-		return catherine.catData.GetVar( "question" )
+	function catherine.question.CanQuestion( )
+		if ( !catherine.configs.enableQuiz or catherine.catData.GetVar( "question" ) or #catherine.question.GetAll( ) == 0 ) then
+			return false
+		else
+			return true
+		end
 	end
 end

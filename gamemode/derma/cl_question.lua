@@ -16,16 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-concommand.Add( "quiz_open", function( )
-	if ( IsValid( catherine.vgui.question ) ) then
-		catherine.vgui.question:Remove( )
-		
-		catherine.vgui.question = vgui.Create( "catherine.vgui.question" )
-	else
-		catherine.vgui.question = vgui.Create( "catherine.vgui.question" )
-	end
-end )
-
 local PANEL = { }
 
 function PANEL:Init( )
@@ -74,7 +64,6 @@ function PANEL:Init( )
 		end
 	end
 	self.changeLanguage.Click = function( pnl )
-		
 		local menu = DermaMenu( )
 			
 		for k, v in pairs( catherine.language.GetAll( ) ) do
@@ -173,6 +162,7 @@ function PANEL:Close( )
 	if ( self.closing ) then return end
 	
 	self.closing = true
+	
 	self:Remove( )
 	self = nil
 end

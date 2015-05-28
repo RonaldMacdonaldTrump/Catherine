@@ -292,6 +292,7 @@ LANGUAGE.data = {
 	[ "Chat_Str_IC" ] = "%s 님의 말 %s",
 	[ "Chat_Str_Yell" ] = "%s 님의 소리치기 %s",
 	[ "Chat_Str_Whisper" ] = "%s 님의 속삭이기 %s",
+	[ "Chat_Str_Console" ] = "콘솔",
 	[ "Chat_Str_Roll" ] = "%s 님이 주사위를 굴렸습니다. - %s",
 	[ "Chat_Str_Connect" ] = "%s 님이 서버에 들어오셨습니다.",
 	[ "Chat_Str_Disconnect" ] = "%s 님이 서버에서 나가셨습니다.",

@@ -40,6 +40,7 @@ catherine.configs.schematicViewPos = {
 	pos = Vector( -18.818655, 898.651184, 354.860474 ),
 	ang = Angle( 12.549129, -54.947598, 0.000000 )
 }
+catherine.configs.enableQuiz = true
 catherine.configs.rpTimeInterval = 0.2
 catherine.configs.alwaysRaised = {
 	weapon_physgun = true,
@@ -75,6 +76,8 @@ if ( SERVER ) then
 	catherine.configs.clearMap = true
 	catherine.configs.enable_oocDelay = true
 	catherine.configs.enable_loocDelay = false
+	catherine.configs.doorBreach = true
+	
 	catherine.configs.oocDelay = 60
 	catherine.configs.loocDelay = 2
 	

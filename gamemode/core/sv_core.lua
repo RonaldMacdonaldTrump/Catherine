@@ -18,16 +18,17 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 function GM:ShowHelp( pl )
 	if ( !pl:IsCharacterLoaded( ) ) then return end
-	local status = hook.Run( "CanLookF1", pl )
-	if ( !status ) then return end
+	local status = hook.Run( "CantLookF1", pl )
 	
-	netstream.Start( pl, "catherine.ShowHelp" )
+	if ( !status ) then
+		netstream.Start( pl, "catherine.ShowHelp" )
+	end
 end
 
 function GM:ShowTeam( pl )
 	if ( !pl:IsCharacterLoaded( ) ) then return end
-	local status = hook.Run( "CanLookF2", pl )
-	if ( !status ) then return end
+	local status = hook.Run( "CantLookF2", pl )
+	if ( status ) then return end
 	
 	local ent = pl:GetEyeTrace( 70 ).Entity
 	
@@ -54,14 +55,6 @@ function GM:ShowTeam( pl )
 	else
 		netstream.Start( pl, "catherine.recognize.SelectMenu" )
 	end
-end
-
-function GM:CanLookF1( pl )
-	return true
-end
-
-function GM:CanLookF2( pl )
-	return true
 end
 
 function GM:PlayerFirstSpawned( pl, id )
@@ -205,6 +198,39 @@ function GM:EntityTakeDamage( ent, dmginfo )
 					end
 				else
 					hook.Run( "PlayerTakeDamage", pl, attacker, ent )
+				end
+			end
+		end
+	end
+	
+	if ( catherine.configs.doorBreach ) then
+		local pl = dmginfo:GetAttacker( )
+
+		if ( IsValid( pl ) and ent:GetClass( ) == "prop_door_rotating" and dmginfo:IsBulletDamage( ) and !pl:IsNoclipping( ) and ( ent.CAT_nextDoorBreach or 0 ) <= CurTime( ) ) then
+			local index = ent:LookupBone( "handle" )
+			
+			if ( index ) then
+				local pos = dmginfo:GetDamagePosition( )
+		 
+				if ( pl:GetEyeTrace( ).Entity != ent or pl:GetPos( ):Distance( pos ) < 130 and pos:Distance( ent:GetBonePosition( index ) ) <= 5 ) then
+					ent:EmitSound( "physics/wood/wood_crate_break" .. math.random( 1, 5 ) .. ".wav", 150 )
+
+					local effect = EffectData( )
+					effect:SetStart( pos )
+					effect:SetOrigin( pos )
+					effect:SetScale( 10 )
+					util.Effect( "GlassImpact", effect, true, true )
+					
+					local dummyName = pl:SteamID( ) .. CurTime( )
+					pl:SetName( dummyName )
+					
+					ent:Fire( "SetSpeed", 100 )
+					ent:Fire( "UnLock" )
+					ent:Fire( "OpenAwayFrom", dummyName )
+					
+					ent:EmitSound( "physics/wood/wood_plank_break" .. math.random( 1, 4 ) .. ".wav", 100, 120 )
+					
+					ent.CAT_nextDoorBreach = CurTime( ) + 3
 				end
 			end
 		end

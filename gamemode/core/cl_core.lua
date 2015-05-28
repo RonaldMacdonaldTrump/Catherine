@@ -138,6 +138,22 @@ function GM:CalcView( pl, pos, ang, fov )
 	return viewData
 end
 
+local iconMat = Material( "icon16/server.png" )
+
+function GM:OnPlayerChat( pl, text, teamOnly, isDead )
+	if ( !IsValid( pl ) ) then
+		chat.AddText( iconMat, Color( 150, 150, 150 ), LANG( "Chat_Str_Console" ), Color( 255, 255, 255 ), " : ".. text )
+	end
+
+	return true
+end
+
+function GM:ChatText( index, name, text )
+	if ( index == 0 ) then
+		chat.AddText( iconMat, Color( 255, 255, 255 ), text )
+	end
+end
+
 function GM:CantDrawBar( )
 	return IsValid( catherine.vgui.question )
 end
@@ -224,7 +240,7 @@ function GM:HUDDrawScoreBoard( )
 						catherine.intro.status = false
 						
 						if ( !catherine.intro.loading and catherine.intro.introDone ) then
-							if ( !catherine.question.IsQuestionComplete( ) ) then
+							if ( catherine.question.CanQuestion( ) ) then
 								catherine.question.Start( )
 							else
 								catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
