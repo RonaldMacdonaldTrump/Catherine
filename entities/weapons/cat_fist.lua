@@ -48,6 +48,7 @@ SWEP.Secondary.Delay = 0.5
 SWEP.HitDistance = 76
 SWEP.LowerAngles = Angle( 0, 5, -15 )
 SWEP.UseHands = false
+SWEP.CanFireLowered = true
 
 function SWEP:Precache( )
 	util.PrecacheSound( "npc/vort/claw_swing1.wav" )
@@ -142,7 +143,7 @@ function SWEP:CanMoveable( ent )
 	return true
 end
 
-function SWEP:DoPickup( ent )
+function SWEP:DoPickup( ent, stamina )
 	if ( ent:IsPlayerHolding( ) ) then
 		return
 	end
@@ -156,6 +157,7 @@ function SWEP:DoPickup( ent )
 
 		pl:PickupObject( ent )
 		pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 3 ) .. ".wav", 75 )
+		catherine.character.SetCharVar( pl, "stamina", stamina - 5 )
 	end )
 
 	self:SetNextSecondaryFire( CurTime( ) + 1 )
@@ -164,6 +166,12 @@ end
 function SWEP:SecondaryAttack( )
 	if ( !IsFirstTimePredicted( ) ) then return end
 	local pl = self.Owner
+	local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
+	
+	if ( stamina < 10 ) then
+		return
+	end
+	
 	local ent = util.TraceLine( {
 		start = pl:GetShootPos( ),
 		endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * self.HitDistance,
@@ -177,7 +185,7 @@ function SWEP:SecondaryAttack( )
 			local physObject = ent:GetPhysicsObject( )
 			physObject:Wake( )
 
-			self:DoPickup( ent )
+			self:DoPickup( ent, stamina )
 		end
 	end
 	
