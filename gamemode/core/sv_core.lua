@@ -264,7 +264,7 @@ function GM:KeyPress( pl, key )
 	elseif ( key == IN_USE ) then
 		local data = { }
 		data.start = pl:GetShootPos( )
-		data.endpos = data.start + pl:GetAimVector( ) * 60
+		data.endpos = data.start + pl:GetAimVector( ) * 100
 		data.filter = pl
 		local ent = util.TraceLine( data ).Entity
 		
@@ -510,6 +510,8 @@ function GM:InitPostEntity( )
 end
 
 function GM:ShutDown( )
+	catherine.shuttingDown = true
+	
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Shutting down ... :)" )
 	
 	hook.Run( "PostDataSave" )
