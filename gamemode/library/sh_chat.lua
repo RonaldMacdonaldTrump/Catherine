@@ -383,7 +383,7 @@ else
 	chat.AddTextBuffer = chat.AddTextBuffer or chat.AddText
 	
 	function chat.AddText( ... )
-		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		local data = { }
 		local lastColor = Color( 255, 255, 255 )
 

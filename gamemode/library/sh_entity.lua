@@ -46,7 +46,11 @@ if ( SERVER ) then
 		
 		for k, v in pairs( menuTable ) do
 			forServer[ v.uniqueID ] = v.func
-			forClient[ v.uniqueID ] = { text = v.text, uniqueID = v.uniqueID }
+			forClient[ v.uniqueID ] = {
+				text = v.text,
+				uniqueID = v.uniqueID,
+				icon = v.icon
+			}
 		end
 		
 		ent.IsCustomUse = true
@@ -82,7 +86,7 @@ else
 					index,
 					v.uniqueID
 				} )
-			end )
+			end ):SetImage( v.icon or "icon16/information.png" )
 		end
 		
 		menu:Open( )

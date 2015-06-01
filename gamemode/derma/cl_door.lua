@@ -125,7 +125,7 @@ function PANEL:Init( )
 	self.close:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.close.Click = function( )
-		if ( self.closeing ) then return end
+		if ( self.closing ) then return end
 		
 		self:Close( )
 	end
@@ -281,7 +281,7 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:Think( )
-	if ( ( self.nextPerCheck or 0 ) <= CurTime( ) and !self.closeing ) then
+	if ( ( self.nextPerCheck or 0 ) <= CurTime( ) and !self.closing ) then
 		if ( IsValid( self.door ) ) then
 			local has, flag = catherine.door.IsHasDoorPermission( self.player, self.door )
 			
@@ -301,7 +301,7 @@ function PANEL:Think( )
 end
 
 function PANEL:Close( )
-	self.closeing = true
+	self.closing = true
 	
 	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
 		self:Remove( )

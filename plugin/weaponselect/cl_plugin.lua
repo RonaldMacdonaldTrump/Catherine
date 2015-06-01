@@ -62,7 +62,7 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 			
 			surface.PlaySound( "common/talk.wav" )
 			
-			self.nextBind = CurTime( ) + 0.1
+			self.nextBind = CurTime( ) + 0.08
 			self.showTime = CurTime( )
 			self.fadeTime = CurTime( ) + 3
 			
@@ -78,7 +78,7 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 			
 			surface.PlaySound( "common/talk.wav" )
 			
-			self.nextBind = CurTime( ) + 0.1
+			self.nextBind = CurTime( ) + 0.08
 			self.showTime = CurTime( )
 			self.fadeTime = CurTime( ) + 3
 			

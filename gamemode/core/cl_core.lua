@@ -109,7 +109,7 @@ function GM:CalcView( pl, pos, ang, fov )
 	return viewData
 	--]]
 	
-	if ( IsValid( catherine.vgui.character ) or !pl:IsCharacterLoaded( ) ) then
+	if ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or !pl:IsCharacterLoaded( ) ) then
 		viewData = {
 			origin = catherine.configs.schematicViewPos.pos,
 			angles = catherine.configs.schematicViewPos.ang
@@ -138,12 +138,33 @@ function GM:CalcView( pl, pos, ang, fov )
 	return viewData
 end
 
+local iconMat = Material( "icon16/server.png" )
+
+function GM:OnPlayerChat( pl, text, teamOnly, isDead )
+	if ( !IsValid( pl ) ) then
+		chat.AddText( iconMat, Color( 150, 150, 150 ), LANG( "Chat_Str_Console" ), Color( 255, 255, 255 ), " : ".. text )
+	end
+
+	return true
+end
+
+function GM:ChatText( index, name, text )
+	if ( index == 0 ) then
+		chat.AddText( iconMat, Color( 255, 255, 255 ), text )
+	end
+end
+
+function GM:CantDrawBar( )
+	return IsValid( catherine.vgui.question )
+end
+
 function GM:HUDDrawScoreBoard( )
 	if ( LocalPlayer( ):IsCharacterLoaded( ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 
 	// Backgrounds
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, catherine.intro.backAlpha ) )
+	
 	surface.SetDrawColor( 200, 200, 200, catherine.intro.backAlpha )
 	surface.SetMaterial( gradientUpMat )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )
@@ -218,9 +239,13 @@ function GM:HUDDrawScoreBoard( )
 						catherine.intro.introDone = true
 						catherine.intro.status = false
 						
-						if ( !catherine.intro.loading and catherine.intro.introDone and !IsValid( catherine.vgui.character ) ) then
-							catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
-							// Call character panel
+						if ( !catherine.intro.loading and catherine.intro.introDone ) then
+							if ( catherine.question.CanQuestion( ) ) then
+								catherine.question.Start( )
+							else
+								catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+							end
+							// Call panel
 						end
 					end
 				end

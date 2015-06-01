@@ -135,8 +135,21 @@ function PANEL:Init( )
 end
 
 function PANEL:PlayMusic( )
-	self.music = CreateSound( self.player, catherine.configs.characterMenuMusic )
-	self.music:Play( )
+	local musicDir = catherine.configs.characterMenuMusic
+	local music = CreateSound( self.player, musicDir )
+	music:Play( )
+	
+	timer.Create( "Catherine.timer.character.RepeatMusic", SoundDuration( musicDir ) + 2, 0, function( )
+		if ( !IsValid( self ) or !music ) then
+			timer.Remove( "Catherine.timer.character.RepeatMusic" )
+			return
+		end
+		
+		music:Stop( )
+		music:Play( )
+	end )
+	
+	catherine.character.panelMusic = music
 end
 
 function PANEL:CreateCharacterPanel( )
@@ -283,16 +296,20 @@ end
 function PANEL:BackToMainMenu( )
 	if ( self.mode == 0 ) then return end
 	local delta = 0
+	
 	for k, v in pairs( self.mainButtons ) do
 		if ( !IsValid( v ) ) then continue end
+		
 		v:SetVisible( true )
 		v:AlphaTo( 255, 0.2, delta, nil, function( )
 
 		end )
+		
 		delta = delta + 0.05
 	end
 	
 	self.back:AlphaTo( 0, 0.2, 0 )
+	
 	timer.Simple( 0.2, function( )
 		self.back:SetVisible( false )
 	end )
@@ -316,14 +333,17 @@ end
 
 function PANEL:JoinMenu( func )
 	if ( self.mode == 1 ) then return end
-	
 	local delta = 0
+	
 	for k, v in pairs( self.mainButtons ) do
 		if ( !IsValid( v ) ) then continue end
+		
 		v:AlphaTo( 0, 0.2, delta )
+		
 		timer.Simple( 0.2 + delta, function( )
 			v:SetVisible( false )
 		end )
+		
 		delta = delta + 0.1
 	end
 	
@@ -339,10 +359,22 @@ function PANEL:JoinMenu( func )
 end
 
 function PANEL:Close( )
-	if ( IsValid( self.music ) ) then
-		self.music:FadeOut( 3 )
+	if ( self.closing ) then return end
+	local music = catherine.character.panelMusic
+	
+	self.closing = true
+	
+	if ( music ) then
+		music:FadeOut( 3 )
+		
+		timer.Simple( 3, function( )
+			catherine.character.panelMusic = nil
+		end )
+		
+		timer.Remove( "Catherine.timer.character.RepeatMusic" )
 	end
-	self:AlphaTo( 0, 0.2, 0, function( )
+	
+	self:AlphaTo( 0, 0.3, 0, function( )
 		self:Remove( )
 		self = nil
 	end )

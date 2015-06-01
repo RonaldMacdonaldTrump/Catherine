@@ -292,9 +292,17 @@ LANGUAGE.data = {
 	[ "Chat_Str_IC" ] = "%s says %s",
 	[ "Chat_Str_Yell" ] = "%s yells %s",
 	[ "Chat_Str_Whisper" ] = "%s whispers %s",
+	[ "Chat_Str_Console" ] = "Console",
 	[ "Chat_Str_Roll" ] = "%s roll %s",
 	[ "Chat_Str_Connect" ] = "%s has joined to server.",
 	[ "Chat_Str_Disconnect" ] = "%s has disconnected to server.",
+	
+	// Question
+	[ "Question_UIStr" ] = "Question",
+	
+	[ "Question_UI_Continue" ] = "Continue",
+	[ "Question_UI_Disconnect" ] = "Disconnect",
+	[ "Question_Notify_DisconnectQ" ] = "Are you sure you want to disconnect from the server?",
 	
 	// Basic
 	[ "Basic_UI_StringRequest" ] = "Request",

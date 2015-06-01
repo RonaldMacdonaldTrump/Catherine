@@ -364,7 +364,7 @@ end
 
 function PANEL:Think( )
 	if ( ( self.entCheck or 0 ) <= CurTime( ) ) then
-		if ( !IsValid( self.ent ) and !self.closeing ) then
+		if ( !IsValid( self.ent ) and !self.closing ) then
 			self:Close( )
 			
 			return
@@ -375,9 +375,9 @@ function PANEL:Think( )
 end
 
 function PANEL:Close( )
-	if ( self.closeing ) then return end
+	if ( self.closing ) then return end
 	
-	self.closeing = true
+	self.closing = true
 	
 	self:AlphaTo( 0, 0.2, 0, function( )
 		self:Remove( )

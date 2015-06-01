@@ -54,7 +54,7 @@ end
 
 function catherine.bar.Draw( )
 	if ( GetConVarString( "cat_convar_bar" ) == "0" ) then return end
-	if ( !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) or #catherine.bar.lists == 0 ) then
+	if ( hook.Run( "CantDrawBar" ) or !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) or #catherine.bar.lists == 0 ) then
 		hook.Run( "HUDDrawBarBottom", 5, 5 )
 		return
 	end
@@ -96,7 +96,7 @@ function catherine.bar.Draw( )
 		if ( v.a > 0 ) then
 			local col = v.col
 			
-			draw.RoundedBox( 0, 5, v.y, barW, barH, Color( 255, 255, 255, v.a / 2 ) )
+			draw.RoundedBox( 0, 5, v.y, barW, barH, Color( 255, 255, 255, v.a / 1.5 ) )
 			draw.RoundedBox( 0, 5, v.y, v.w, barH, Color( col.r, col.g, col.b, v.a ) )
 		end
 	end

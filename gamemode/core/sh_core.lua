@@ -271,7 +271,7 @@ end
 local KEY_BLACKLIST = IN_ATTACK + IN_ATTACK2
 
 function GM:StartCommand( pl, cmd )
-	if ( !pl:GetWeaponRaised( ) ) then
+	if ( !pl:GetWeaponRaised( ) or catherine.player.IsTied( pl ) ) then
 		local wep = pl:GetActiveWeapon( )
 		
 		if ( IsValid( wep ) and wep.CanFireLowered ) then
