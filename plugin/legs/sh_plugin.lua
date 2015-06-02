@@ -105,26 +105,26 @@ function PLUGIN:CreateLeg( )
 		for k, v in pairs( HIDDEN_BONES ) do
 			local index = legEnt:LookupBone( v )
 			
-			if ( index ) then continue end
+			if ( !index ) then continue end
 			
-			legEnt:ManipulateBoneScale( index, vector_origin )
+			legEnt:ManipulateBoneScale( index, Vector( 0, 0, 0 ) )
 			legEnt:ManipulateBonePosition( index, Vector( -100, -100, 0 ) )
 		end
 
 		legEnt:SetNoDraw( true )
 		legEnt:SetIK( false )
+		
+		self.legEntity = legEnt
 	end
-	
-	self.legEntity = legEnt
 end
 
 function PLUGIN:Think( )
 	local pl = LocalPlayer( )
 
-	if ( IsValid( pl ) or GetConVarString( "cat_convar_legs" ) == "0" ) then
+	if ( !IsValid( pl ) or GetConVarString( "cat_convar_legs" ) == "0" ) then
 		return
 	end
-
+	
 	local legEnt = self.legEntity
 	
 	if ( !IsValid( legEnt ) or ( IsValid( legEnt ) and legEnt:GetModel( ) != pl:GetModel( ) ) ) then

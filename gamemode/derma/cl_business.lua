@@ -250,14 +250,14 @@ function PANEL:Init( )
 
 	self.entCheck = CurTime( ) + 1
 	self.w, self.h = ScrW( ) * 0.4, ScrH( ) * 0.6
-
+	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
+	
 	self:SetSize( self.w, self.h )
-	self:Center( )
+	self:SetPos( ScrW( ), self.y )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	self:ShowCloseButton( false )
-	self:SetAlpha( 0 )
-	self:AlphaTo( 255, 0.2, 0 )
+	self:MoveTo( ScrW( ) / 2 - self.w / 2, self.y, 0.2, 0 )
 
 	self.Lists = vgui.Create( "DPanelList", self )
 	self.Lists:SetPos( 10, 35 )
@@ -277,6 +277,8 @@ function PANEL:Init( )
 	self.close:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.close.Click = function( )
+		if ( self.closing ) then return end
+		
 		self:Close( )
 	end
 end
@@ -359,6 +361,7 @@ end
 function PANEL:InitializeShipment( ent, shipments )
 	self.ent = ent
 	self.shipments = shipments
+	
 	self:BuildShipment( )
 end
 
@@ -370,16 +373,14 @@ function PANEL:Think( )
 			return
 		end
 		
-		self.entCheck = CurTime( ) + 0.05
+		self.entCheck = CurTime( ) + 0.5
 	end
 end
 
 function PANEL:Close( )
-	if ( self.closing ) then return end
-	
 	self.closing = true
 	
-	self:AlphaTo( 0, 0.2, 0, function( )
+	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
 		self:Remove( )
 		self = nil
 	end )

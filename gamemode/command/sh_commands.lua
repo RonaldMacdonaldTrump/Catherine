@@ -40,6 +40,7 @@ catherine.command.Register( {
 		if ( !pl:GetNetVar( "gettingup" ) ) then
 			if ( catherine.player.IsRagdolled( pl ) ) then
 				pl:SetNetVar( "gettingup", true )
+				
 				catherine.util.TopNotify( pl, false )
 				catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_GettingUp" ), 3, function( )
 					catherine.player.RagdollWork( pl, false )
@@ -63,10 +64,11 @@ catherine.command.Register( {
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					local nameBuffer = target:Name( )
+					local localBuffer = pl:Name( )
+					local targetBuffer = target:Name( )
 					
 					catherine.character.SetVar( target, "_name", args[ 2 ] )
-					catherine.util.NotifyAllLang( "Character_Notify_SetName", pl:Name( ), args[ 2 ], nameBuffer )
+					catherine.util.NotifyAllLang( "Character_Notify_SetName", localBuffer, args[ 2 ], targetBuffer )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end

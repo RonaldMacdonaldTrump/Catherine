@@ -101,6 +101,7 @@ function PANEL:BuildInventory( )
 				catherine.item.OpenMenuUse( k1 )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
+			
 				if ( catherine.inventory.IsEquipped( k1 ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
 					surface.SetMaterial( Material( "icon16/accept.png" ) )
@@ -112,7 +113,13 @@ function PANEL:BuildInventory( )
 				end
 				
 				if ( !noDrawItemCount and v1.itemCount > 1 ) then
-					draw.SimpleText( v1.itemCount, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					local count = v1.itemCount
+					
+					surface.SetFont( "catherine_normal20" )
+					local tw, th = surface.GetTextSize( count )
+					
+					draw.RoundedBox( 0, 5 - tw / 2, h - 20, tw * 2, 20, Color( 50, 50, 50, 200 ) )
+					draw.SimpleText( count, "catherine_normal20", 5, h - 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
 			

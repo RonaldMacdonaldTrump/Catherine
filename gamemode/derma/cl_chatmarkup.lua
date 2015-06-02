@@ -33,37 +33,51 @@ function PANEL:SetFont( font )
 end
 
 function PANEL:Run( ... )
-	local data, latestColor = "", Color( 255, 255, 255 )
-	if ( self.font ) then data = "<font=" .. self.font .. ">" end
+	local data = ""
+	local lastColor = Color( 255, 255, 255 )
+	
+	if ( self.font ) then
+		data = "<font=" .. self.font .. ">"
+	end
 
 	for k, v in ipairs( { ... } ) do
 		local types = type( v )
+		
 		if ( types == "table" and v.r and v.g and v.b ) then
-			if ( v != latestColor ) then data = data .. "</color>" end
+			if ( v != latestColor ) then
+				data = data .. "</color>"
+			end
+			
 			latestColor = v
 			data = data .. "<color="..v.r..","..v.g..","..v.b..">"
 		elseif ( types == "Player" ) then
 			local col = team.GetColor( v:Team( ) )
+			
 			data = data .. "<color=" .. col.r .. "," .. col.g .. "," .. col.b .. ">" .. v:Name( ) .. "</color>"
 		elseif ( types == "IMaterial" or types == "table" and type( v[ 1 ] ) == "IMaterial" ) then
 			local w, h = 12, 12
 			local material = v
+			
 			if ( type( v ) == "table" and v[ 2 ] and v[ 3 ] ) then
 				material = v[ 1 ]
 				w = v[ 2 ]
 				h = v[ 3 ]
 			end
+			
 			data = data .. "<img=" .. material:GetName( )..".png," .. w .. "x" .. h .. "> "
 		else
 			v = tostring( v )
-			v = string.gsub( v, "&", "&amp;" )
-			v = string.gsub( v, "<", "&lt;" )
-			v = string.gsub( v, ">", "&gt;" )
+			v = v:gsub( "&", "&amp;" )
+			v = v:gsub( "<", "&lt;" )
+			v = v:gsub( ">", "&gt;" )
+			
 			data = data .. v
 		end
 	end
 
-	if ( self.font ) then data = data .. "</font>" end
+	if ( self.font ) then
+		data = data .. "</font>"
+	end
 
 	self.markup = catherine.markup.Parse( data, self.maxWidth )
 
@@ -76,11 +90,19 @@ end
 
 function PANEL:Paint( w, h )
 	if ( !self.markup ) then return end
-	local alpha = 255
-	if ( self.start and self.finish ) then alpha = math.Clamp( 255 - math.TimeFraction( self.start, self.finish, CurTime( ) ) * 255, 0, 255 ) end
-	if ( catherine.chat.isOpened ) then alpha = 255 end
-	self:SetAlpha( alpha )
-	if ( alpha > 0 ) then
+	local a = 255
+	
+	if ( self.start and self.finish ) then
+		a = math.Clamp( 255 - math.TimeFraction( self.start, self.finish, CurTime( ) ) * 255, 0, 255 )
+	end
+	
+	if ( catherine.chat.isOpened ) then
+		a = 255
+	end
+	
+	self:SetAlpha( a )
+	
+	if ( a > 0 ) then
 		self.markup:Draw( 1, 0, 0, 0 )
 	end
 end

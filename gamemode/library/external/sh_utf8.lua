@@ -111,7 +111,7 @@ local function utf8charbytes (s, i)
  
                 -- validate byte 3
                 if c3 < 128 or c3 > 191 then
-                        error("Invalid UTF-8 character")
+                        //error("Invalid UTF-8 character")
                 end
  
                 return 3

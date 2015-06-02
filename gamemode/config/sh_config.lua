@@ -17,6 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.configs = catherine.configs or { }
+catherine.configs.buildVer = "beta"
 
 catherine.configs.OWNER = "" 
 catherine.configs.defaultLanguage = "english"
@@ -25,7 +26,7 @@ catherine.configs.doorCost = 50
 catherine.configs.doorSellCost = 25
 catherine.configs.playerDefaultRunSpeed = 275
 catherine.configs.playerDefaultWalkSpeed = 90
-catherine.configs.defaultCash = 100
+catherine.configs.defaultCash = 0
 catherine.configs.cashName = "Dollars"
 catherine.configs.cashModel = "models/props_lab/box01a.mdl"
 catherine.configs.characterMenuMusic = "music/hl2_song19.mp3"

@@ -186,6 +186,8 @@ function PANEL:Paint( w, h )
 	
 	if ( self:IsVisible( ) ) then
 		catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
+		
+		draw.SimpleText( "Catherine " .. catherine.version.Ver .. " " .. catherine.configs.buildVer, "catherine_normal15", 10, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 	end
 end
 

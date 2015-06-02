@@ -99,6 +99,7 @@ function GM:PlayerSpawn( pl )
 	pl:SetNetVar( "noDrawOriginal", nil )
 	
 	pl:SetNoDraw( false )
+	pl:SetNotSolid( false )
 	pl:Freeze( false )
 	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
@@ -320,6 +321,8 @@ end
 function GM:PlayerInitialSpawn( pl )
 	timer.Simple( 1, function( )
 		pl:SetNoDraw( true )
+		pl:SetNotSolid( true )
+		
 		catherine.player.Initialize( pl )
 	end )
 end

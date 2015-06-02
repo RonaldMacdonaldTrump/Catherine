@@ -392,6 +392,7 @@ else
 		end
 
 		catherine.chat.AddText( unpack( data ) )
+		
 		surface.PlaySound( "common/talk.wav" )
 
 		for k, v in ipairs( data ) do
@@ -458,7 +459,7 @@ else
 			local text = pnl:GetText( )
 			
 			if ( text != "" ) then
-				text = string.utf8sub( text, 1 )
+				text = text:utf8sub( 1 )
 				netstream.Start( "catherine.chat.Run", text )
 				catherine.chat.history[ #catherine.chat.history + 1 ] = text
 				
@@ -472,6 +473,7 @@ else
 			self:Remove( )
 			self = nil
 			typingText = ""
+			
 			hook.Run( "FinishChat" )
 		end
 		
@@ -523,9 +525,7 @@ else
 		self = vgui.Create( "EditablePanel", self )
 		self:SetPos( CHATBox_x, CHATBox_y + CHATBox_h - 25 )
 		self:SetSize( CHATBox_w, 25 )
-		self.Paint = function( pnl, w, h )
-
-		end
+		self.Paint = function( pnl, w, h ) end
 		
 		self.textEnt = vgui.Create( "DTextEntry", self )
 		self.textEnt:Dock( FILL )
@@ -535,6 +535,7 @@ else
 		self.textEnt:SetAllowNonAsciiCharacters( true )
 		self.textEnt.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 200 ) )
+			
 			surface.SetDrawColor( 0, 0, 0, 200 )
 			surface.DrawOutlinedRect( 0, 0, w, h )
 			
@@ -550,20 +551,23 @@ else
 			elseif ( code == KEY_UP ) then
 				if ( initHistoryKey > 1 ) then
 					initHistoryKey = initHistoryKey - 1
+					
 					pnl:SetText( catherine.chat.history[ initHistoryKey ] )
-					pnl:SetCaretPos( string.utf8len( catherine.chat.history[ initHistoryKey ] ) )
+					pnl:SetCaretPos( catherine.chat.history[ initHistoryKey ]:utf8len( ) )
 				end
 			elseif ( code == KEY_DOWN ) then
 				if ( initHistoryKey < #catherine.chat.history ) then
 					initHistoryKey = initHistoryKey + 1
+					
 					pnl:SetText( catherine.chat.history[ initHistoryKey ] )
-					pnl:SetCaretPos( string.utf8len( catherine.chat.history[ initHistoryKey ] ) )
+					pnl:SetCaretPos( catherine.chat.history[ initHistoryKey ]:utf8len( ) )
 				end
 			end
 		end
 
 		self:MakePopup( )
 		self.textEnt:RequestFocus( )
+		
 		hook.Run( "StartChat" )
 	end
 	

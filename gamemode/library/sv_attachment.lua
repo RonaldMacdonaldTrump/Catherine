@@ -54,6 +54,8 @@ function catherine.attachment.Refresh( pl )
 			if ( !boneIndex ) then continue end
 			
 			local attachmentEnt = ents.Create( "cat_attachment" )
+			attachmentEnt:DrawShadow( false )
+			attachmentEnt:SetNotSolid( true )
 			attachmentEnt:SetAttachmentParent( pl )
 			attachmentEnt:SetAttachmentOffset( offsetPos )
 			attachmentEnt:SetAttachmentAngles( offsetAng )
@@ -68,7 +70,7 @@ function catherine.attachment.Refresh( pl )
 	
 	for k, v in pairs( pl.CAT_weaponAttachments ) do
 		local wep = pl:GetWeapon( k )
-		
+
 		if ( !IsValid( wep ) ) then
 			v:Remove( )
 			pl.CAT_weaponAttachments[ k ] = nil

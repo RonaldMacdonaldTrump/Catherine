@@ -41,8 +41,8 @@ local function rebuildHelp( )
 	
 	catherine.help.Register( CAT_HELP_HTML, title_creadit, [[
 		<b>]] .. title_creadit .. [[</b><br><br>
-		<b>L7D</b><br>Development and Design.<br><br>
-		<b>Chessnut</b><br>Good helper.<br><br>
+		<b>L7D</b><br>Development and Design.<br>(http://steamcommunity.com/id/L7D/)<br><br>
+		<b>Chessnut</b><br>Good helper.<br>(http://steamcommunity.com/profiles/76561198030127257/)<br><br>
 		<b>Kyle Smith</b><br>UTF-8 module.<br><br>
 		<b>thelastpenguin™</b><br>pON module.<br><br>
 		<b>Alexander Grist-Hucker</b><br>netstream 2 module.<br><br><br>
