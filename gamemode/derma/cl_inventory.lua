@@ -101,7 +101,6 @@ function PANEL:BuildInventory( )
 				catherine.item.OpenMenuUse( k1 )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
-			
 				if ( catherine.inventory.IsEquipped( k1 ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
 					surface.SetMaterial( Material( "icon16/accept.png" ) )

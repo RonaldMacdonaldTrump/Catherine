@@ -140,7 +140,7 @@ else
 	function catherine.command.GetMatchCommands( text )
 		local commands = { }
 		local sub = 0
-		text = text.sub( text, 2 )
+		text = text:sub( 2 )
 		
 		for k, v in pairs( catherine.command.GetAll( ) ) do
 			if ( catherine.util.CheckStringMatch( k, text ) ) then

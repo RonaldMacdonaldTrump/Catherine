@@ -94,6 +94,7 @@ LANGUAGE.data = {
 	[ "UnknownError" ] = "알 수 없는 오류가 발생하였습니다, 죄송합니다!",
 	[ "Basic_Notify_UnknownPlayer" ] = "올바른 캐릭터의 이름을 입력하세요!",
 	[ "Basic_Notify_NoArg" ] = "%s 번째 인수를 입력하세요!",
+	[ "Basic_Notify_InputText" ] = "문자를 입력하세요!",
 
 	// Version
 	[ "Version_UI_Title" ] = "캐서린 버전",

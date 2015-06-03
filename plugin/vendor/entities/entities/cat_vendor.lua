@@ -52,7 +52,6 @@ if ( SERVER ) then
 			if ( !v:lower( ):find( "idle" ) or v == "idlenoise" ) then continue end
 			
 			self:ResetSequence( k )
-			
 			return
 		end
 		
@@ -81,7 +80,7 @@ else
 		local pos = toscreen( self:LocalToWorld( self:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		
-		draw.SimpleText( self:GetNetVar( "name", "" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( self:GetNetVar( "name", "" ), "catherine_outline20", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		draw.SimpleText( self:GetNetVar( "desc", "" ), "catherine_outline15", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
 	end
 end

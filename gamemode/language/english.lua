@@ -94,6 +94,7 @@ LANGUAGE.data = {
 	[ "UnknownError" ] = "Unknown Error!",
 	[ "Basic_Notify_UnknownPlayer" ] = "You are not giving a valid character name!",
 	[ "Basic_Notify_NoArg" ] = "Please enter the %s argument!",
+	[ "Basic_Notify_InputText" ] = "Please enter the text!",
 
 	// Version
 	[ "Version_UI_Title" ] = "Version",
@@ -312,7 +313,7 @@ LANGUAGE.data = {
 	[ "Basic_UI_OK" ] = "OK",
 	[ "Basic_UI_YES" ] = "YES",
 	[ "Basic_UI_NO" ] = "NO",
-	[ "Basic_UI_Count" ] = "%'s",
+	[ "Basic_UI_Count" ] = "%s's",
 	[ "Basic_Framework_Author" ] = "Development and design by %s.",
 	[ "Basic_Notify_BunnyHop" ] = "Do not Bunny-hop!",
 	

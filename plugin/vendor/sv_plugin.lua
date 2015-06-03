@@ -304,7 +304,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 
 		self:SetVendorData( ent, "inv", vendorInv )
 		
-		catherine.util.Notify( pl, "Item data updated!" )
+		catherine.util.NotifyLang( pl, "Vendor_Notify_ItemDataUpdate" )
 	elseif ( workID == CAT_VENDOR_ACTION_ITEM_UNCHANGE ) then
 		local uniqueID = data
 		local itemTable = catherine.item.FindByID( uniqueID )
