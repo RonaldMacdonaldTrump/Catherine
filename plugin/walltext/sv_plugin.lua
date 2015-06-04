@@ -46,7 +46,7 @@ function PLUGIN:AddText( pl, text, size )
 		pos = tr.HitPos + tr.HitNormal,
 		ang = tr.HitNormal:Angle( ),
 		text = text,
-		size = math.max( math.abs( size or 0.25 ), 0.005 )
+		size = math.max( math.abs( size or 1 ) / 8, 0.005 )
 	}
 	local ang = data.ang
 	
