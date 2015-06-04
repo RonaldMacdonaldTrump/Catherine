@@ -34,7 +34,6 @@ ITEM.func.take = {
 	canShowIsWorld = true,
 	func = function( pl, itemTable, ent )
 		if ( !IsValid( ent ) ) then
-			catherine.util.Notify( pl, "This isn't a valid entity!" )
 			return
 		end
 		
@@ -56,8 +55,10 @@ ITEM.func.drop = {
 			return
 		end
 				
-		catherine.util.StringReceiver( pl, "Cash_UniqueDropMoney", "What amount for drop money?", catherine.cash.Get( pl ), function( _, val )
+		catherine.util.StringReceiver( pl, "Cash_UniqueDropMoney", "^Item_DropQ_Wallet", catherine.cash.Get( pl ), function( _, val )
 			val = tonumber( val )
+			
+			if ( !val ) then return end
 			
 			if ( !catherine.cash.Has( pl, val ) ) then
 				catherine.util.NotifyLang( pl, "Cash_Notify_HasNot" )
@@ -76,6 +77,7 @@ ITEM.func.drop = {
 if ( SERVER ) then
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.hooks.wallet.PlayerSpawnedInCharacter", function( pl )
 		if ( catherine.inventory.HasItem( pl, "wallet" ) ) then return end
+		
 		catherine.item.Give( pl, "wallet" )
 	end )
 else

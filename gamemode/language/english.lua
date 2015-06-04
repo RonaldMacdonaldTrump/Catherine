@@ -58,6 +58,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_CantSwitchUsing" ] = "You can't use same character!",
 	[ "Character_Notify_CantSwitchDeath" ] = "You can't switch character on death!",
 	[ "Character_Notify_CantSwitchTied" ] = "You can't switch character on tied!",
+	[ "Character_Notify_MaxLimitHit" ] = "You can't create more character!",
 	[ "Character_Notify_SetName" ] = "%s are set %s name for %s.",
 	[ "Character_Notify_SetDesc" ] = "%s are set %s description for %s.",
 	[ "Character_Notify_SetModel" ] = "%s are set %s model for %s.",
@@ -179,6 +180,7 @@ LANGUAGE.data = {
 	[ "Item_Desc_Wallet" ] = catherine.configs.cashName .. " in a small stack.",
 	[ "Item_FuncStr01_Wallet" ] = "Take " .. catherine.configs.cashName,
 	[ "Item_FuncStr02_Wallet" ] = "Drop " .. catherine.configs.cashName,
+	[ "Item_DropQ_Wallet" ] = "What are you want amount for drop money?",
 	
 	[ "Item_Notify01_ZT" ] = "This player is already tied!",
 	[ "Item_Notify02_ZT" ] = "You don't have Zip Tie!",

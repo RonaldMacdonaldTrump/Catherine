@@ -68,7 +68,7 @@ function PANEL:MenuPaint( w, h )
 		self.loadingAlpha = Lerp( 0.05, self.loadingAlpha, 0 )
 	end
 	
-	if ( self.loadingAlpha > 0 ) then
+	if ( math.Round( self.loadingAlpha ) > 0 ) then
 		self.loadingAni = math.Approach( self.loadingAni, self.loadingAni - 5, 5 )
 		
 		draw.NoTexture( )

@@ -65,8 +65,8 @@ function catherine.plugin.Include( dir )
 			
 			for k, v in pairs( PLUGIN ) do
 				if ( type( v ) == "function" ) then
-					catherine.hook.caches[ k ] = catherine.hook.caches[ k ] or { }
-					catherine.hook.caches[ k ][ PLUGIN ] = v
+					CAT_HOOK_PLUGIN_CACHES[ k ] = CAT_HOOK_PLUGIN_CACHES[ k ] or { }
+					CAT_HOOK_PLUGIN_CACHES[ k ][ PLUGIN ] = v
 				end
 			end
 			

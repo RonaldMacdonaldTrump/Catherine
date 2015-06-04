@@ -17,31 +17,24 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.hook = catherine.hook or { }
-catherine.hook.caches = { }
+CAT_HOOK_PLUGIN_CACHES = { }
 
 hook.CallCatHooks = hook.CallCatHooks or hook.Call
 
 function hook.Call( hookID, gamemode, ... )
-	local cacheData = catherine.hook.caches[ hookID ]
+	local cacheData = CAT_HOOK_PLUGIN_CACHES[ hookID ]
 	
-	if ( cacheData ) then
-		for k, v in pairs( cacheData ) do
-			local success, result = pcall( v, k, ... )
+	for k, v in pairs( cacheData or { } ) do
+		local success, result = pcall( v, k, ... )
 
-			if ( success ) then
-				result = { result }
-				
-				if ( #result > 0 ) then
-					return unpack( result )
-				end
-			else
-				catherine.bugX.Work( CAT_BUG_X_FLAG_PLUGIN, {
-					pluginID = k.uniqueID,
-					hookID = hookID
-				} )
-				
-				ErrorNoHalt( "[CAT ERROR] SORRY, On the plugin <" .. k.uniqueID .. ">'s hooks <" .. hookID .. "> has a critical error ...\n" .. result .. "\n" )
+		if ( success ) then
+			result = { result }
+			
+			if ( #result > 0 ) then
+				return unpack( result )
 			end
+		else
+			ErrorNoHalt( "\n[CAT ERROR] SORRY, On the plugin <" .. k.uniqueID .. ">'s hooks <" .. hookID .. "> has a critical error :< ...\n\n" .. result .. "\n" )
 		end
 	end
 
@@ -55,7 +48,7 @@ function hook.Call( hookID, gamemode, ... )
 				return unpack( result )
 			end
 		else
-			ErrorNoHalt( "[CAT ERROR] SORRY, Schema hooks <" .. hookID .. "> has a critical error ...\n" .. result .. "\n" )
+			ErrorNoHalt( "\n[CAT ERROR] SORRY, Schema hooks <" .. hookID .. "> has a critical error :< ...\n\n" .. result .. "\n" )
 		end
 	end
 	

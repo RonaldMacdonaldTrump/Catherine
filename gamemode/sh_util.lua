@@ -248,8 +248,33 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.util.TopNotify", message )
 	end
 
-	function catherine.util.PlaySound( pl, dir )
-		netstream.Start( pl, "catherine.util.PlaySound", dir )
+	function catherine.util.PlayAdvanceSound( pl, uniqueID, dir, volume )
+		pl.CAT_soundAdvPlaying = pl.CAT_soundAdvPlaying or { }
+		
+		if ( !pl.CAT_soundAdvPlaying[ uniqueID ] or pl.CAT_soundAdvPlaying[ uniqueID ] != dir ) then
+			pl.CAT_soundAdvPlaying[ uniqueID ] = dir
+			
+			netstream.Start( pl, "catherine.util.PlayAdvanceSound", {
+				uniqueID,
+				dir,
+				volume
+			} )
+		end
+	end
+	
+	function catherine.util.PlaySimpleSound( pl, dir )
+		netstream.Start( pl, "catherine.util.PlaySimpleSound", dir )
+	end
+	
+	function catherine.util.StopAdvanceSound( pl, uniqueID, fadeOut )
+		if ( pl.CAT_soundAdvPlaying and pl.CAT_soundAdvPlaying[ uniqueID ] ) then
+			pl.CAT_soundAdvPlaying[ uniqueID ] = nil
+			
+			netstream.Start( pl, "catherine.util.StopAdvanceSound", {
+				uniqueID,
+				fadeOut
+			} )
+		end
 	end
 
 	function catherine.util.AddResourceInFolder( dir )
@@ -322,6 +347,7 @@ if ( SERVER ) then
 	end )
 else
 	catherine.util.materials = catherine.util.materials or { }
+	catherine.util.advSounds = catherine.util.advSounds or { }
 	CAT_UTIL_BUTTOMSOUND_1 = 1
 	CAT_UTIL_BUTTOMSOUND_2 = 2
 	CAT_UTIL_BUTTOMSOUND_3 = 3
@@ -372,9 +398,42 @@ else
 			draw.RoundedBox( 0, 0, 0, ScrW( ), ScrH( ), Color( col.r, col.g, col.b, a ) )
 		end )
 	end )
+
+	netstream.Hook( "catherine.util.PlayAdvanceSound", function( data )
+		if ( !IsValid( LocalPlayer( ) ) ) then return end
+		local uniqueID = data[ 1 ]
+		local dir = data[ 2 ]
+		local volume = data[ 3 ]
+
+		if ( catherine.util.advSounds[ uniqueID ] ) then
+			catherine.util.advSounds[ uniqueID ]:Stop( )
+		end
+		
+		local soundObj = CreateSound( LocalPlayer( ), dir )
+		soundObj:PlayEx( volume, 100 )
+		
+		catherine.util.advSounds[ uniqueID ] = soundObj
+	end )
 	
-	netstream.Hook( "catherine.util.PlaySound", function( data )
+	netstream.Hook( "catherine.util.PlaySimpleSound", function( data )
 		surface.PlaySound( data )
+	end )
+	
+	netstream.Hook( "catherine.util.StopAdvanceSound", function( data )
+		if ( !IsValid( LocalPlayer( ) ) ) then return end
+		local uniqueID = data[ 1 ]
+		local fadeOut = data[ 2 ]
+		local soundObj = catherine.util.advSounds[ uniqueID ]
+		
+		if ( soundObj ) then
+			if ( fadeOut == 0 ) then
+				soundObj:Stop( )
+			else
+				soundObj:FadeOut( fadeOut )
+			end
+			
+			catherine.util.advSounds[ uniqueID ] = nil
+		end
 	end )
 
 	netstream.Hook( "catherine.util.Notify", function( data )

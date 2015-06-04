@@ -57,7 +57,7 @@ catherine.character.NewVar( "name", {
 	doNetworking = true,
 	default = "Johnson",
 	checkValid = function( data )
-		if ( data:len( ) >= catherine.configs.characterNameMinLen and data:len( ) < catherine.configs.characterNameMaxLen ) then
+		if ( data:utf8len( ) >= catherine.configs.characterNameMinLen and data:utf8len( ) <= catherine.configs.characterNameMaxLen ) then
 			return true
 		end
 		
@@ -70,7 +70,7 @@ catherine.character.NewVar( "desc", {
 	doNetworking = true,
 	default = "No desc.",
 	checkValid = function( data )
-		if ( data:len( ) >= catherine.configs.characterDescMinLen and data:len( ) < catherine.configs.characterDescMaxLen ) then
+		if ( data:utf8len( ) >= catherine.configs.characterDescMinLen and data:utf8len( ) <= catherine.configs.characterDescMaxLen ) then
 			return true
 		end
 		
@@ -226,6 +226,13 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.Create( pl, data )
+		local steamID = pl:SteamID( )
+		
+		if ( catherine.character.buffers[ steamID ] and #catherine.character.buffers[ steamID ] >= catherine.configs.maxCharacters ) then
+			netstream.Start( pl, "catherine.character.CreateResult", "^Character_Notify_MaxLimitHit" )
+			return
+		end
+		
 		local charVars = { }
 		
 		for k, v in pairs( catherine.character.GetVarAll( ) ) do
@@ -251,7 +258,7 @@ if ( SERVER ) then
 		end
 
 		catherine.database.InsertDatas( "catherine_characters", charVars, function( )
-			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. pl:SteamID( ) .. " has created a '" .. charVars._name .. "' character.", true )
+			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. steamID .. " has created a '" .. charVars._name .. "' character.", true )
 			netstream.Start( pl, "catherine.character.CreateResult", true )
 			catherine.character.SendPlayerCharacterList( pl )
 		end )

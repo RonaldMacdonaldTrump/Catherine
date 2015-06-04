@@ -55,6 +55,12 @@ if ( SERVER ) then
 				if ( math.Round( staminaDown ) < 5 ) then
 					v:SetRunSpeed( v:GetWalkSpeed( ) )
 					catherine.attribute.AddProgress( v, CAT_ATT_STAMINA, 0.05 )
+					
+					if ( ( v.CAT_nextBreathingSound or CurTime( ) ) <= CurTime( ) ) then
+						catherine.util.PlayAdvanceSound( v, "ST_BreathingSound", "player/breathe1.wav", 100 )
+						v.CAT_isBreathing = true
+						v.CAT_nextBreathingSound = CurTime( ) + 1
+					end
 				else
 					catherine.character.SetCharVar( v, "stamina", staminaDown )
 				end
@@ -68,10 +74,15 @@ if ( SERVER ) then
 						v:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( v ) )
 					end
 					
+					if ( staminaUp > 30 and v.CAT_isBreathing ) then
+						catherine.util.StopAdvanceSound( v, "ST_BreathingSound", 5 )
+						v.CAT_isBreathing = nil
+					end
+					
 					if ( staminaUp != catherine.character.GetCharVar( v, "stamina", 100 ) ) then
 						catherine.character.SetCharVar( v, "stamina", staminaUp )
 					end
-					
+
 					v.CAT_nextStaminaUp = CurTime( ) + 3
 				end
 			end
