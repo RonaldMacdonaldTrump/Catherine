@@ -67,6 +67,10 @@ function GM:ContextMenuOpen( )
 	return false
 end
 
+function GM:ShouldDrawLocalPlayer( pl )
+	return IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question )
+end
+
 function GM:HUDPaintBackground( )
 	local lp = LocalPlayer( )
 	if ( !lp:IsAdmin( ) or !lp:IsNoclipping( ) ) then return end

@@ -83,6 +83,24 @@ function GM:PlayerSpray( pl )
 	return !hook.Run( "PlayerCanSpray", pl )
 end
 
+function GM:PlayerCharacterLoaded( pl )
+
+	local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
+	
+	if ( factionTable and factionTable.salary and factionTable.salary > 0 ) then
+		timer.Create( "Catherine.timer.Salary_" .. pl:SteamID( ), factionTable.salaryTime or 350, 0, function( )
+			if ( !IsValid( pl ) ) then
+				timer.Remove( "Catherine.timer.Salary_" .. pl:SteamID( ) )
+				return
+			end
+			local amount = hook.Run( "GetSalaryAmount", pl, factionTable ) or factionTable.salary
+			
+			catherine.cash.Give( pl, amount )
+			catherine.util.NotifyLang( pl, "Cash_Notify_Salary", amount )
+		end )
+	end
+end
+
 function GM:PlayerSpawn( pl )
 	if ( IsValid( pl.deathBody ) ) then
 		pl.deathBody:Remove( )
@@ -164,6 +182,8 @@ function GM:PlayerDisconnected( pl )
 	if ( IsValid( pl.deathBody ) ) then
 		pl.deathBody:Remove( )
 	end
+	
+	timer.Remove( "Catherine.timer.Salary_" .. pl:SteamID( ) )
 	
 	catherine.chat.Send( pl, "disconnect" )
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. pl:SteamID( ) .. " has disconnected a server." )

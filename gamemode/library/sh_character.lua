@@ -210,6 +210,7 @@ if ( SERVER ) then
 		end
 		
 		hook.Run( "PlayerSpawnedInCharacter", pl )
+		hook.Run( "PlayerCharacterLoaded", pl )
 
 		pl:SetNetVar( "charID", id )
 		pl:SetNetVar( "charLoaded", true )

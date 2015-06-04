@@ -34,6 +34,7 @@ LANGUAGE.data = {
 	[ "Cash_Notify_Take" ] = "%s 님이 %s 만큼의 돈을 %s 님에게서 빼았었습니다.",
 	[ "Cash_Notify_HasNot" ] = "당신은 충분한 " .. catherine.configs.cashName .. " 가 없습니다!",
 	[ "Cash_Notify_NotValidAmount" ] = "올바른 금액을 입력하세요!",
+	[ "Cash_Notify_Salary" ] = "당신은 %s " .. catherine.configs.cashName .. " 을 월급으로 받았습니다.",
 	
 	// Character
 	[ "Character_UI_Title" ] = "캐릭터",

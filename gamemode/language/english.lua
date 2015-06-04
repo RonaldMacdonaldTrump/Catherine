@@ -34,6 +34,7 @@ LANGUAGE.data = {
 	[ "Cash_Notify_Take" ] = "%s have taken %s from %s",
 	[ "Cash_Notify_HasNot" ] = "You don't have a enough " .. catherine.configs.cashName .. "!",
 	[ "Cash_Notify_NotValidAmount" ] = "Please enter right amount!",
+	[ "Cash_Notify_Salary" ] = "You have received %s " .. catherine.configs.cashName .. " from your salary.",
 	
 	// Character
 	[ "Character_UI_Title" ] = "Character",

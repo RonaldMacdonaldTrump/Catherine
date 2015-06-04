@@ -22,16 +22,29 @@ catherine.notify.lists = { }
 function catherine.notify.Add( message, time, sound )
 	local index = #catherine.notify.lists + 1
 	
+	message = message or "Error"
+	
+	surface.SetFont( "catherine_normal15" )
+	local tw, th = surface.GetTextSize( message )
+	
 	surface.PlaySound( sound or "buttons/button24.wav" )
 	
+	local w = ScrW( ) * 0.4
+	
+	if ( tw >= ScrW( ) * 0.4 ) then
+		w = w + ( tw - w ) + 20
+	end
+	
 	catherine.notify.lists[ index ] = {
-		message = message or "Error",
+		message = message,
 		endTime = CurTime( ) + ( time or 5 ),
-		x = ScrW( ) / 2 - ( ScrW( ) * 0.4 ) / 2,
+		x = ScrW( ) / 2 - ( w ) / 2,
 		y = ( ScrH( ) - 10 ) - ( index * 25 ),
-		w = ScrW( ) * 0.4,
+		w = w,
 		h = 20,
-		a = 0
+		a = 0,
+		tw = tw,
+		th = th
 	}
 end
 
