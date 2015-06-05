@@ -277,7 +277,7 @@ LANGUAGE.data = {
 	
 	// Option
 	[ "Option_UI_Title" ] = "설정",
-	[ "Option_Category_01" ] = "프레임워크 설정",
+	[ "Option_Category_01" ] = "프레임워크",
 	[ "Option_Category_02" ] = "개발자",
 	
 	[ "Option_Str_BAR_Name" ] = "상단바 표시",
@@ -286,11 +286,11 @@ LANGUAGE.data = {
 	[ "Option_Str_MAINHUD_Name" ] = "메인 HUD 표시",
 	[ "Option_Str_MAINHUD_Desc" ] = "메인 HUD 를 표시합니다.",
 	
-	[ "Option_Str_MAINLANG_Name" ] = "메인 언어",
-	[ "Option_Str_MAINLANG_Desc" ] = "메인 언어를 변경할 수 있습니다.",
+	[ "Option_Str_MAINLANG_Name" ] = "언어",
+	[ "Option_Str_MAINLANG_Desc" ] = "캐서린의 언어를 변경할 수 있습니다.",
 	
-	[ "Option_Str_HINT_Name" ] = "힌트 표시",
-	[ "Option_Str_HINT_Desc" ] = "RP 에 도움이 되는 힌트를 표시합니다.",
+	[ "Option_Str_HINT_Name" ] = "RP 도움말 표시",
+	[ "Option_Str_HINT_Desc" ] = "RP 에 도움이 되는 도움말을 표시합니다.",
 	
 	// Chat
 	[ "Chat_Str_IC" ] = "%s 님의 말 %s",

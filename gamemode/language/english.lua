@@ -277,7 +277,7 @@ LANGUAGE.data = {
 	
 	// Option
 	[ "Option_UI_Title" ] = "Option",
-	[ "Option_Category_01" ] = "Framework Settings",
+	[ "Option_Category_01" ] = "Framework",
 	[ "Option_Category_02" ] = "Development",
 
 	[ "Option_Str_BAR_Name" ] = "Show Bar",

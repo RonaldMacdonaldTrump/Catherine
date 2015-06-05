@@ -27,7 +27,7 @@ function PANEL:Init( )
 	self.Lists = vgui.Create( "DPanelList", self )
 	self.Lists:SetPos( 10, 35 )
 	self.Lists:SetSize( self.w - 20, self.h - 45 )
-	self.Lists:SetSpacing( 5 )
+	self.Lists:SetSpacing( 0 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
@@ -87,11 +87,10 @@ vgui.Register( "catherine.vgui.option", PANEL, "catherine.vgui.menuBase" )
 local PANEL = { }
 
 function PANEL:Init( )
-	self.iconX = 5
-	self.iconColor = Color( 50, 50, 50, 255 )
+	self.a = 0
 	
 	self.Button = vgui.Create( "DButton", self )
-	self.Button:SetSize( 70, 30 )
+	self.Button:SetSize( 45, 45 )
 	self.Button:SetPos( self:GetWide( ) - self.Button:GetWide( ) - 20, self:GetTall( ) / 2 - self.Button:GetTall( ) / 2 )
 	self.Button:SetText( "" )
 	self.Button.Paint = function( pnl, w, h )
@@ -100,20 +99,18 @@ function PANEL:Init( )
 		self.val = catherine.option.Get( self.optionTable.uniqueID )
 		
 		if ( tobool( self.val ) == true ) then
-			self.iconX = Lerp( 0.03, self.iconX, w - 25 )
-			self.iconColor.g = Lerp( 0.03, self.iconColor.g, 200 )
+			self.a = Lerp( 0.09, self.a, 255 )
 		else
-			self.iconX = Lerp( 0.03, self.iconX, 5 )
-			self.iconColor.g = Lerp( 0.03, self.iconColor.g, 50 )
+			self.a = Lerp( 0.09, self.a, 0 )
 		end
 		
-		surface.SetDrawColor( 0, 0, 0, 255 )
-		surface.SetMaterial( Material( "CAT/ui/option_sw_o.png", "smooth" ) )
+		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.SetMaterial( Material( "CAT/ui/option_sw_background01.png", "smooth" ) )
 		surface.DrawTexturedRect( 0, 0, w, h )
 		
-		surface.SetDrawColor( self.iconColor )
-		surface.SetMaterial( Material( "CAT/ui/option_sw_c.png", "smooth" ) )
-		surface.DrawTexturedRect( self.iconX, h / 2 - 20 / 2, 20, 20 )
+		surface.SetDrawColor( 255, 255, 255, self.a )
+		surface.SetMaterial( Material( "CAT/ui/option_sw_core01.png", "smooth" ) )
+		surface.DrawTexturedRect( 0, 0, w, h )
 	end
 	self.Button.DoClick = function( pnl )
 		surface.PlaySound( "common/talk.wav" )
@@ -136,12 +133,12 @@ function PANEL:Paint( w, h )
 
 	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 	
-	draw.SimpleText( self.name, "catherine_normal25", 15, 15, Color( 30, 30, 30, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( self.desc, "catherine_normal15", 15, 40, Color( 30, 30, 30, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.name, "catherine_normal20", 15, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.desc, "catherine_normal15", 15, 40, Color( 80, 80, 80, 255 ), TEXT_ALIGN_LEFT, 1 )
 end
 
 function PANEL:PerformLayout( w, h )
-	self.Button:SetSize( 70, 30 )
+	self.Button:SetSize( 45, 45 )
 	self.Button:SetPos( w - self.Button:GetWide( ) - 20, h / 2 - self.Button:GetTall( ) / 2 )
 	
 	self.List:SetSize( self:GetWide( ) * 0.3, 30 )

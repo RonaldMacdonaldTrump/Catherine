@@ -50,7 +50,7 @@ function PANEL:OnMenuRecovered( )
 end
 
 function PANEL:MenuPaint( w, h )
-	draw.SimpleText( GetHostName( ) .. " : " .. #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_normal20", w, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
+	draw.SimpleText( GetHostName( ) .. " | " .. #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_normal20", w, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
 end
 
 function PANEL:Refresh( )
@@ -104,7 +104,7 @@ function PANEL:RefreshPlayerLists( )
 					return
 				end
 
-				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
+				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 				
 				if ( v1:SteamID( ) == "STEAM_0:1:25704824" ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
@@ -151,6 +151,7 @@ function PANEL:RefreshPlayerLists( )
 			spawnIcon:SetSize( 40, 40 )
 			spawnIcon:SetModel( v1:GetModel( ) )
 			spawnIcon:SetToolTip( false )
+			spawnIcon:SetDisabled( true )
 			spawnIcon.PaintOver = function( pnl, w, h )
 				surface.SetDrawColor( 50, 50, 50, 150 )
 				surface.DrawOutlinedRect( 0, 0, w, h )

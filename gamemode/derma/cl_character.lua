@@ -44,6 +44,16 @@ function PANEL:Init( )
 			self.mainAlpha = Lerp( 0.05, self.mainAlpha, 0 )
 		end
 		
+		local sin = math.sin( CurTime( ) / 2 )
+
+		surface.SetDrawColor( 90, 90, 90, 100 )
+		surface.SetMaterial( Material( "gui/gradient_down" ) )
+		surface.DrawTexturedRect( 0, 0, w, h )
+		
+		surface.SetDrawColor( 0, 0, 0, math.max( sin * 255, 200 ) )
+		surface.SetMaterial( Material( "gui/gradient_up" ) )
+		surface.DrawTexturedRect( 0, 0, w, h )
+		
 		surface.SetDrawColor( 110, 110, 110, self.mainAlpha / 3 )
 		surface.SetMaterial( Material( "gui/gradient" ) )
 		surface.DrawTexturedRect( 0, h * 0.7 - 35, w * 0.3, 70 )

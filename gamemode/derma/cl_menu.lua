@@ -45,7 +45,7 @@ function PANEL:Init( )
 	local mainCol = catherine.configs.mainColor
 	
 	self.ListsBase = vgui.Create( "DPanel", self )
-	self.ListsBase:SetSize( self.w, 50 )
+	self.ListsBase:SetSize( self.w, 45 )
 	self.ListsBase:SetPos( 0, self.h )
 	self.ListsBase:MoveTo( 0, self.h - self.ListsBase:GetTall( ), 0.2, 0.1, nil, function( )
 		local delta = 0
@@ -73,12 +73,13 @@ function PANEL:Init( )
 	self.ListsBase.Paint = function( pnl, w, h )
 		local x, y = self.ListsBase.Lists:GetPos( )
 		
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 235 ) )
-		
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+		draw.RoundedBox( 0, 0, 0, w, 1, Color( 50, 50, 50, 255 ) )
+
 		self.activePanelShowX = Lerp( 0.09, self.activePanelShowX, x + self.activePanelShowTargetX )
 		self.activePanelShowW = Lerp( 0.09, self.activePanelShowW, self.activePanelShowTargetW )
 
-		draw.RoundedBox( 0, self.activePanelShowX, 0, self.activePanelShowW, 5, Color( mainCol.r, mainCol.g, mainCol.b, 235 ) )
+		draw.RoundedBox( 0, self.activePanelShowX, 0, self.activePanelShowW, 5, Color( mainCol.r, mainCol.g, mainCol.b, 255 ) )
 	end
 	
 	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
@@ -112,6 +113,7 @@ function PANEL:AddMenuItem( name, func )
 				self.activePanelShowTargetW = 0
 				self.activePanelShowTargetX = 0
 				
+				surface.PlaySound( "ui/buttonrollover.wav" )
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_SAMEMENU )
 			else
 				local newActivePanel = func( self, pnl )
@@ -127,6 +129,7 @@ function PANEL:AddMenuItem( name, func )
 				self.activePanelShowTargetW = pnl:GetWide( )
 				self.activePanelShowTargetX = pnl.itemXPos
 				
+				surface.PlaySound( "ui/buttonclick.wav" )
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_SAMEMENU_NO )
 			end
 		else
@@ -146,6 +149,7 @@ function PANEL:AddMenuItem( name, func )
 				self.activePanelShowTargetW = pnl:GetWide( )
 				self.activePanelShowTargetX = pnl.itemXPos
 				
+				surface.PlaySound( "ui/buttonclick.wav" )
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_NOTSAMEMENU )
 			else
 				local newActivePanel = func( self, pnl )
@@ -161,6 +165,7 @@ function PANEL:AddMenuItem( name, func )
 				self.activePanelShowTargetW = pnl:GetWide( )
 				self.activePanelShowTargetX = pnl.itemXPos
 				
+				surface.PlaySound( "ui/buttonclick.wav" )
 				hook.Run( "MenuItemClicked", CAT_MENU_STATUS_NOTSAMEMENU_NO )
 			end
 		end
@@ -186,7 +191,7 @@ function PANEL:Paint( w, h )
 	
 	if ( self:IsVisible( ) ) then
 		catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
-		
+
 		draw.SimpleText( "Catherine " .. catherine.version.Ver .. " " .. catherine.configs.buildVer, "catherine_normal15", 10, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 	end
 end
@@ -210,7 +215,7 @@ function PANEL:Show( )
 	end
 	
 	self.ListsBase = vgui.Create( "DPanel", self )
-	self.ListsBase:SetSize( self.w, 50 )
+	self.ListsBase:SetSize( self.w, 45 )
 	self.ListsBase:SetPos( 0, self.h )
 	self.ListsBase:MoveTo( 0, self.h - self.ListsBase:GetTall( ), 0.2, 0.1, nil, function( )
 		local delta = 0
@@ -238,12 +243,13 @@ function PANEL:Show( )
 	self.ListsBase.Paint = function( pnl, w, h )
 		local x, y = self.ListsBase.Lists:GetPos( )
 		
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 235 ) )
-		
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+		draw.RoundedBox( 0, 0, 0, w, 1, Color( 50, 50, 50, 255 ) )
+
 		self.activePanelShowX = Lerp( 0.09, self.activePanelShowX, x + self.activePanelShowTargetX )
 		self.activePanelShowW = Lerp( 0.09, self.activePanelShowW, self.activePanelShowTargetW )
 
-		draw.RoundedBox( 0, self.activePanelShowX, 0, self.activePanelShowW, 5, Color( mainCol.r, mainCol.g, mainCol.b, 235 ) )
+		draw.RoundedBox( 0, self.activePanelShowX, 0, self.activePanelShowW, 5, Color( mainCol.r, mainCol.g, mainCol.b, 255 ) )
 	end
 	
 	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
