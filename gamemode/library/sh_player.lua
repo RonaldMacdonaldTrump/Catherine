@@ -183,6 +183,26 @@ if ( SERVER ) then
 			end )
 		end
 	end
+	
+	function catherine.player.SetCharacterBan( pl, status, func )
+		if ( status ) then
+			catherine.character.SetCharVar( pl, "charBanned", true )
+			
+			if ( func ) then
+				func( )
+			end
+		else
+			catherine.character.SetCharVar( pl, "charBanned", nil )
+			
+			if ( func ) then
+				func( )
+			end
+		end
+	end
+	
+	function catherine.player.IsCharacterBanned( pl )
+		return catherine.character.GetCharVar( pl, "charBanned" )
+	end
 
 	function catherine.player.BunnyHopProtection( pl )
 		if ( pl:KeyPressed( IN_JUMP ) and ( pl.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then

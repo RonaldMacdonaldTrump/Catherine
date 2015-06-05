@@ -474,9 +474,26 @@ function GM:EntityCacheWork( pl )
 	end
 end
 
+local getCharVar = catherine.character.GetCharVar
+
 function GM:HUDPaint( )
 	if ( IsValid( catherine.vgui.character ) ) then return end
 	local pl = LocalPlayer( )
+	
+	if ( getCharVar( pl, "charBanned" ) ) then
+		local scrW, scrH = ScrW( ), ScrH( )
+		
+		draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, 255 ) )
+	
+		surface.SetDrawColor( 200, 200, 200, 255 )
+		surface.SetMaterial( gradientUpMat )
+		surface.DrawTexturedRect( 0, 0, scrW, scrH )
+		
+		draw.SimpleText( ":(", "catherine_normal45", scrW / 2, scrH / 2, Color( 0, 0, 0, 255 ), 1, 1 )
+		draw.SimpleText( LANG( "Character_Notify_CharBanned" ), "catherine_normal25", scrW / 2, scrH / 2 + 60, Color( 0, 0, 0, 255 ), 1, 1 )
+		
+		return
+	end
 	
 	hook_run( "HUDBackgroundDraw" )
 	catherine.hud.Draw( pl )

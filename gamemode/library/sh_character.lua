@@ -172,17 +172,21 @@ if ( SERVER ) then
 		if ( !character ) then
 			return false, "^Character_Notify_IsNotValid"
 		end
-		
-		local factionTable = catherine.faction.FindByID( character._faction )
-
-		if ( !factionTable ) then
-			return false, "^Character_Notify_IsNotValidFaction"
-		end
 
 		local prevID = pl:GetCharacterID( )
 		
 		if ( prevID == id ) then
 			return false, "^Character_Notify_CantSwitchUsing"
+		end
+		
+		if ( character._charVar and character._charVar[ "charBanned" ] ) then
+			return false, "^Character_Notify_CharBanned"
+		end
+		
+		local factionTable = catherine.faction.FindByID( character._faction )
+
+		if ( !factionTable ) then
+			return false, "^Character_Notify_IsNotValidFaction"
 		end
 		
 		hook.Run( "CharacterLoadingStart", pl, prevID, id )

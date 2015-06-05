@@ -82,6 +82,45 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	command = "charban",
+	canRun = function( pl ) return pl:IsAdmin( ) end,
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			local target = catherine.util.FindPlayerByName( args[ 1 ] )
+			
+			if ( IsValid( target ) and target:IsPlayer( ) ) then
+				local status = catherine.player.IsCharacterBanned( pl )
+				
+				if ( status ) then
+					catherine.player.SetCharacterBan( pl, false, function( )
+						pl:Freeze( false )
+						
+						if ( pl.CAT_charBanLatestPos ) then
+							pl:SetPos( pl.CAT_charBanLatestPos )
+						else
+							pl:KillSilent( )
+						end
+					end )
+					catherine.util.NotifyAllLang( "Character_Notify_CharUnBan", pl:Name( ), target:Name( ) )
+				else
+					catherine.player.SetCharacterBan( pl, true, function( )
+						pl.CAT_charBanLatestPos = pl:GetPos( )
+						
+						pl:SetPos( Vector( 0, 0, 100000000 ) )
+						pl:Freeze( true )
+					end )
+					catherine.util.NotifyAllLang( "Character_Notify_CharBan", pl:Name( ), target:Name( ) )
+				end
+			else
+				catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
+			end
+		else
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+		end
+	end
+} )
+
+catherine.command.Register( {
 	command = "charsetdesc",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
