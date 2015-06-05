@@ -145,6 +145,8 @@ LANGUAGE.data = {
 	[ "Scoreboard_PlayerOption02_Str" ] = "Change Name",
 	[ "Scoreboard_PlayerOption02_Q" ] = "What are you want for this player name?",
 	[ "Scoreboard_PlayerOption03_Str" ] = "Give Whitelist",
+	[ "Scoreboard_PlayerOption04_Str" ] = "Character BAN / UnBAN",
+	[ "Scoreboard_PlayerOption04_Q" ] = "Are you sure ban / unban this character?",
 	
 	// Help
 	[ "Help_UI_Title" ] = "Help",

@@ -32,7 +32,7 @@ function catherine.notify.Add( message, time, sound )
 	local w = ScrW( ) * 0.4
 	
 	if ( tw >= ScrW( ) * 0.4 ) then
-		w = w + ( tw - w ) + 20
+		w = w + ( tw - w ) + 50
 	end
 	
 	catherine.notify.lists[ index ] = {

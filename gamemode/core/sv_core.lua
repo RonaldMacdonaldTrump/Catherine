@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 function GM:ShowHelp( pl )
-	if ( !pl:IsCharacterLoaded( ) ) then return end
+	if ( !pl:IsCharacterLoaded( ) or catherine.character.GetCharVar( pl, "charBanned" ) ) then return end
 	local status = hook.Run( "CantLookF1", pl )
 	
 	if ( !status ) then
@@ -26,7 +26,7 @@ function GM:ShowHelp( pl )
 end
 
 function GM:ShowTeam( pl )
-	if ( !pl:IsCharacterLoaded( ) ) then return end
+	if ( !pl:IsCharacterLoaded( ) or catherine.character.GetCharVar( pl, "charBanned" ) ) then return end
 	local status = hook.Run( "CantLookF2", pl )
 	if ( status ) then return end
 	
@@ -84,7 +84,6 @@ function GM:PlayerSpray( pl )
 end
 
 function GM:PlayerCharacterLoaded( pl )
-
 	local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
 	
 	if ( factionTable and factionTable.salary and factionTable.salary > 0 ) then

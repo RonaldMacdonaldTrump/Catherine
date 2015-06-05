@@ -145,6 +145,8 @@ LANGUAGE.data = {
 	[ "Scoreboard_PlayerOption02_Str" ] = "이름 바꾸기",
 	[ "Scoreboard_PlayerOption02_Q" ] = "이름을 무엇으로 바꾸시겠습니까?",
 	[ "Scoreboard_PlayerOption03_Str" ] = "화이트리스트 지급",
+	[ "Scoreboard_PlayerOption04_Str" ] = "캐릭터 밴 / 밴 해제",
+	[ "Scoreboard_PlayerOption04_Q" ] = "정말로 이 캐릭터를 밴 / 밴 해제 하시겠습니까?",
 	
 	// Help
 	[ "Help_UI_Title" ] = "도움 자료",

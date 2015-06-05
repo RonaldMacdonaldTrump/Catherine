@@ -25,6 +25,8 @@ if ( SERVER ) then
 	CAT_INV_ACTION_UPDATE = 3
 
 	function catherine.inventory.Work( pl, workID, data )
+		if ( catherine.character.GetCharVar( pl, "charBanned" ) ) then return end
+
 		if ( workID == CAT_INV_ACTION_ADD ) then
 			local inventory = catherine.inventory.Get( pl )
 			local uniqueID = data.uniqueID

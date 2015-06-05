@@ -489,7 +489,7 @@ function GM:HUDPaint( )
 		surface.SetMaterial( gradientUpMat )
 		surface.DrawTexturedRect( 0, 0, scrW, scrH )
 		
-		draw.SimpleText( ":(", "catherine_normal45", scrW / 2, scrH / 2, Color( 0, 0, 0, 255 ), 1, 1 )
+		draw.SimpleText( ":(", "catherine_normal50", scrW / 2, scrH / 2, Color( 0, 0, 0, 255 ), 1, 1 )
 		draw.SimpleText( LANG( "Character_Notify_CharBanned" ), "catherine_normal25", scrW / 2, scrH / 2 + 60, Color( 0, 0, 0, 255 ), 1, 1 )
 		
 		return
@@ -576,6 +576,13 @@ function GM:ScoreboardPlayerOption( pl, target )
 				end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
 			)
 		end )
+		
+		menu:AddOption( LANG( "Scoreboard_PlayerOption04_Str" ), function( )
+			Derma_Query( LANG( "Scoreboard_PlayerOption04_Q" ), "", LANG( "Basic_UI_OK" ), function( )
+					catherine.command.Run( "charban", target:Name( ) )
+				end, LANG( "Basic_UI_NO" ), function( ) end
+			)
+		end )
 	end
 	
 	menu:Open( )
@@ -592,12 +599,21 @@ end
 function GM:ScoreboardShow( )
 	if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 	
-	if ( IsValid( catherine.vgui.menu ) and !catherine.vgui.menu:IsVisible( ) ) then
-		catherine.vgui.menu:Show( )
-		gui.EnableScreenClicker( false )
+	if ( getCharVar( LocalPlayer( ), "charBanned" ) ) then
+		if ( IsValid( catherine.vgui.character ) ) then
+			catherine.vgui.character:Remove( )
+			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+		else
+			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+		end
 	else
-		catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )
-		gui.EnableScreenClicker( true )
+		if ( IsValid( catherine.vgui.menu ) and !catherine.vgui.menu:IsVisible( ) ) then
+			catherine.vgui.menu:Show( )
+			gui.EnableScreenClicker( false )
+		else
+			catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )
+			gui.EnableScreenClicker( true )
+		end
 	end
 end
 

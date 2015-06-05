@@ -62,7 +62,7 @@ catherine.command.Register( {
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
-				
+
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					local localBuffer = pl:Name( )
 					local targetBuffer = target:Name( )

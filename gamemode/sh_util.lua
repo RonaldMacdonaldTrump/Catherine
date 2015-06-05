@@ -74,7 +74,17 @@ function catherine.util.FindPlayerByStuff( use, str )
 end
 
 function catherine.util.CheckStringMatch( one, two )
-	return one:lower( ):match( two:lower( ) )
+	if ( one and two ) then
+		local one2, two2 = one:lower( ), two:lower( )
+
+		if ( one == two ) then return true end
+		if ( one2 == two2 ) then return true end
+
+		if ( one:find( two ) ) then return true end
+		if ( one2:find( two2 ) ) then return true end
+	end
+	
+	return false
 end
 
 function catherine.util.GetUniqueName( name )
