@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `catherine_players` (
 	`_steamID` varchar(20) NOT NULL,
 	`_catData` text,
 	`_steamID64` text,
-	`_ipAddress` varchar(15) DEFAULT NULL,
+	`_ipAddress` varchar(50) DEFAULT NULL,
 	`_lastConnect` text,
 	PRIMARY KEY (`_id`)
 );
