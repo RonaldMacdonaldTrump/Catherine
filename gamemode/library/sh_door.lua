@@ -160,7 +160,7 @@ if ( SERVER ) then
 		end
 		
 		if ( force ) then
-			ent:SetNetVar( "title", title )
+			ent:SetNetVar( "title", title != "" and title or nil )
 		else
 			local has, flag = catherine.door.IsHasDoorPermission( target, ent )
 			
@@ -168,8 +168,19 @@ if ( SERVER ) then
 				return false, "Door_Notify_NoOwner"
 			end
 			
-			ent:SetNetVar( "title", title )
+			ent:SetNetVar( "title", title != "" and title or nil )
 		end
+		
+		return true
+	end
+	
+	function catherine.door.SetDoorDescription( pl, ent, desc )
+		if ( !IsValid( pl ) or !desc ) then return end
+		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
+			return false, "Entity_Notify_NotDoor"
+		end
+		
+		ent:SetNetVar( "forceDesc", desc != "" and desc or nil )
 		
 		return true
 	end
@@ -332,18 +343,23 @@ else
 	end )
 
 	function catherine.door.GetDetailString( ent )
-		local owner = ent.GetNetVar( ent, "permissions" )
-		local customDesc = ent.GetNetVar( ent, "customDesc" )
+		local owner = ent:GetNetVar( "permissions" )
+		local customDesc = ent:GetNetVar( "customDesc" )
+		local forceDesc = ent:GetNetVar( "forceDesc" )
 		
-		if ( customDesc ) then
-			return customDesc
+		if ( forceDesc ) then
+			return forceDesc
 		else
-			if ( owner ) then
-				return LANG( "Door_Message_AlreadySold" )
-			elseif ( !owner and catherine.door.IsBuyableDoor( ent ) ) then
-				return LANG( "Door_Message_Buyable" )
+			if ( customDesc ) then
+				return customDesc
 			else
-				return LANG( "Door_Message_CantBuy" )
+				if ( owner ) then
+					return LANG( "Door_Message_AlreadySold" )
+				elseif ( !owner and catherine.door.IsBuyableDoor( ent ) ) then
+					return LANG( "Door_Message_Buyable" )
+				else
+					return LANG( "Door_Message_CantBuy" )
+				end
 			end
 		end
 	end

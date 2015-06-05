@@ -410,10 +410,33 @@ catherine.command.Register( {
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
+			args[ 1 ] = table.concat( args, " " )
+			
 			local success, langKey, par = catherine.door.SetDoorTitle( pl, pl:GetEyeTrace( 70 ).Entity, args[ 1 ], true )
 			
 			if ( success ) then
 				catherine.util.NotifyLang( pl, "Door_Notify_SetTitle" )
+			else
+				catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
+			end
+		else
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+		end
+	end
+} )
+
+catherine.command.Register( {
+	command = "doorsetdesc",
+	syntax = "[Text]",
+	canRun = function( pl ) return pl:IsAdmin( ) end,
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			args[ 1 ] = table.concat( args, " " )
+			
+			local success, langKey, par = catherine.door.SetDoorDescription( pl, pl:GetEyeTrace( 70 ).Entity, args[ 1 ] )
+			
+			if ( success ) then
+				catherine.util.NotifyLang( pl, "Door_Notify_SetDesc" )
 			else
 				catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 			end
