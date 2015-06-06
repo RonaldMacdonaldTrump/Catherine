@@ -74,7 +74,7 @@ if ( SERVER ) then
 	catherine.configs.voice3D = true
 	catherine.configs.giveHand = true
 	catherine.configs.giveKey = true
-	catherine.configs.spawnTime = 30
+	catherine.configs.spawnTime = 50
 	catherine.configs.clearMap = true
 	catherine.configs.enable_oocDelay = true
 	catherine.configs.enable_loocDelay = false

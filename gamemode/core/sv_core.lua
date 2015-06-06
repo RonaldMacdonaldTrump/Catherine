@@ -115,6 +115,7 @@ function GM:PlayerSpawn( pl )
 
 	pl:SetNetVar( "noDrawOriginal", nil )
 	
+	pl:Freeze( false )
 	pl:SetNoDraw( false )
 	pl:SetNotSolid( false )
 	pl:Freeze( false )
@@ -446,6 +447,7 @@ end
 
 function GM:DoPlayerDeath( pl )
 	pl:SetNoDraw( true )
+	pl:Freeze( true )
 
 	if ( !pl.CAT_ragdoll ) then
 		local ent = ents.Create( "prop_ragdoll" )

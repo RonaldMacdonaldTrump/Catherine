@@ -194,8 +194,8 @@ netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
 	if ( id == 1 ) then
 		local wep = LocalPlayer( ):GetWeapon( uniqueID )
 		
-		if ( !wep ) then return end
-		
+		if ( !wep or !IsValid( wep ) ) then return end
+
 		local markupText = "<font=catherine_normal20>"
 		local markupObject = nil
 		local markupFound = false

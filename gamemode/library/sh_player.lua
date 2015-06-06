@@ -376,7 +376,9 @@ if ( SERVER ) then
 	
 	META.CATGiveWeapon = META.CATGiveWeapon or META.Give
 	META.CATTakeWeapon = META.CATTakeWeapon or META.StripWeapon
-	
+	META.CATGodEnable = META.CATGodEnable or META.GodEnable
+	META.CATGodDisable = META.CATGodDisable or META.GodDisable
+
 	function META:Give( uniqueID )
 		hook.Run( "PlayerGiveWeapon", self, uniqueID )
 		
@@ -387,6 +389,26 @@ if ( SERVER ) then
 		hook.Run( "PlayerStripWeapon", self, uniqueID )
 		
 		return self:CATTakeWeapon( uniqueID )
+	end
+	
+	function META:GodEnable( )
+		hook.Run( "PlayerGodMode", self, true )
+		
+		self.CAT_godMode = true
+		
+		return self:CATGodEnable( )
+	end
+	
+	function META:GodDisable( )
+		hook.Run( "PlayerGodMode", self, false )
+		
+		self.CAT_godMode = nil
+		
+		return self:CATGodDisable( )
+	end
+	
+	function META:IsInGod( )
+		return self.CAT_godMode
 	end
 
 	function catherine.player.PlayerSwitchWeapon( pl, oldWep, newWep )

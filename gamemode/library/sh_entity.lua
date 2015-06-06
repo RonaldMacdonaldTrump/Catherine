@@ -110,5 +110,5 @@ META2.CATGetPrintName = META2.CATGetPrintName or META2.GetPrintName
 local languageStuff = catherine.util.StuffLanguage
 
 function META2:GetPrintName( )
-	return languageStuff( self.PrintName )
+	return languageStuff( self:CATGetPrintName( ) )
 end

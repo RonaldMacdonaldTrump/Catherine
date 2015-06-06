@@ -58,5 +58,7 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 end
 
 function PLUGIN:ShouldDrawLocalPlayer( pl )
-	return GetConVarString( "cat_convar_thirdperson" ) == "1"
+	if ( GetConVarString( "cat_convar_thirdperson" ) == "1" ) then
+		return GAMEMODE:ShouldDrawLocalPlayer( pl, true )
+	end
 end

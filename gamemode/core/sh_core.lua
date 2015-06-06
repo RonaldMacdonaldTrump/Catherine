@@ -204,6 +204,12 @@ function GM:PlayerNoClip( pl, bool )
 		
 		if ( SERVER ) then
 			pl:SetNetVar( "nocliping", true )
+			
+			if ( pl:IsInGod( ) ) then
+				pl.CAT_alreadyNoclipGod = true
+			else
+				pl:GodEnable( )
+			end
 		end
 		
 		hook.Run( "PlayerNoclipJoined", pl )
@@ -214,6 +220,12 @@ function GM:PlayerNoClip( pl, bool )
 		
 		if ( SERVER ) then
 			pl:SetNetVar( "nocliping", false )
+			
+			if ( pl.CAT_alreadyNoclipGod ) then
+				pl.CAT_alreadyNoclipGod = nil
+			else
+				pl:GodDisable( )
+			end
 		end
 		
 		hook.Run( "PlayerNoclipExited", pl )

@@ -19,10 +19,16 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.notify = catherine.notify or { }
 catherine.notify.lists = { }
 
+function GM:AddNotify( str, _, length )
+	catherine.notify.Add( str, length )
+end
+
 function catherine.notify.Add( message, time, sound )
 	local index = #catherine.notify.lists + 1
 	
 	message = message or "Error"
+	
+	MsgC( Color( 0, 255, 0 ), "[CAT Notify] " .. message .. "\n" )
 	
 	surface.SetFont( "catherine_normal15" )
 	local tw, th = surface.GetTextSize( message )

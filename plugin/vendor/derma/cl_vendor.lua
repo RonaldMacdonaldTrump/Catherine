@@ -201,7 +201,7 @@ function PANEL:Init( )
 	self.manageItemPanel.Lists.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
-
+	
 	self.close = vgui.Create( "catherine.vgui.button", self )
 	self.close:SetPos( self.w - 30, 0 )
 	self.close:SetSize( 30, 25 )

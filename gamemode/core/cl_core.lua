@@ -67,8 +67,8 @@ function GM:ContextMenuOpen( )
 	return false
 end
 
-function GM:ShouldDrawLocalPlayer( pl )
-	return IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question )
+function GM:ShouldDrawLocalPlayer( pl, bool )
+	return bool or IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question )
 end
 
 function GM:HUDPaintBackground( )
