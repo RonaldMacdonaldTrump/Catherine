@@ -288,15 +288,17 @@ if ( SERVER ) then
 		
 		for k, v in pairs( ents.GetAll( ) ) do
 			if ( !catherine.entity.IsDoor( v ) ) then continue end
-			local title = v.GetNetVar( v, "title", "Door" )
-			local cantBuy = v.GetNetVar( v, "cantBuy", false )
-			local doorDisabled = v.GetNetVar( v, "disabled" )
-			if ( !doorDisabled and ( title == "Door" or !cantBuy ) ) then continue end
+			local title = v:GetNetVar( "title" )
+			local desc = v:GetNetVar( "forceDesc" )
+			local cantBuy = v:GetNetVar( "cantBuy", false )
+			local doorDisabled = v:GetNetVar( "disabled" )
+			if ( !desc and !title and !cantBuy ) then continue end
 			
 			data[ #data + 1 ] = {
 				title = title,
+				desc = desc,
 				cantBuy = cantBuy,
-				index = v.EntIndex( v ),
+				index = v:EntIndex(  ),
 				doorDisabled = doorDisabled
 			}
 		end
@@ -307,11 +309,26 @@ if ( SERVER ) then
 	function catherine.door.DataLoad( )
 		for k, v in pairs( ents.GetAll( ) ) do
 			for k1, v1 in pairs( catherine.data.Get( "doors", { } ) ) do
-				if ( IsValid( v ) and catherine.entity.IsDoor( v ) and v.EntIndex( v ) == v1.index ) then
+				if ( IsValid( v ) and catherine.entity.IsDoor( v ) and v:EntIndex(  ) == v1.index ) then
 					if ( v1.doorDisabled ) then
 						v:SetNetVar( "disabled", true )
+						
+						if ( v1.title ) then
+							v:SetNetVar( "title", v1.title )
+						end
+						
+						if ( v1.desc ) then
+							v:SetNetVar( "forceDesc", v1.desc )
+						end
 					else
-						v:SetNetVar( "title", v1.title )
+						if ( v1.title ) then
+							v:SetNetVar( "title", v1.title )
+						end
+						
+						if ( v1.desc ) then
+							v:SetNetVar( "forceDesc", v1.desc )
+						end
+						
 						v:SetNetVar( "cantBuy", v1.cantBuy )
 					end
 				end
