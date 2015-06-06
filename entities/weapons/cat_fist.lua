@@ -18,10 +18,10 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 AddCSLuaFile( )
 
-SWEP.PrintName = "Fists"
+SWEP.PrintName = "^Weapon_Fists_Name"
 SWEP.Author = "1F24DCA, L7D, Chessnut"
-SWEP.Instructions = "Primary Fire : Punch.\nSecondary Fire : Knock."
-SWEP.Purpose = "Punching characters and knocking on doors."
+SWEP.Instructions = "^Weapon_Fists_Instructions"
+SWEP.Purpose = "^Weapon_Fists_Purpose"
 SWEP.HoldType = "normal"
 SWEP.Slot = 1
 SWEP.SlotPos = 1

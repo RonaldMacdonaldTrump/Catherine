@@ -284,9 +284,16 @@ LANGUAGE.data = {
 	[ "Option_UI_Title" ] = "설정",
 	[ "Option_Category_01" ] = "프레임워크",
 	[ "Option_Category_02" ] = "개발자",
+	[ "Option_Category_03" ] = "관리자",
 	
 	[ "Option_Str_BAR_Name" ] = "상단바 표시",
 	[ "Option_Str_BAR_Desc" ] = "상단에 있는 바를 표시합니다.",
+	
+	[ "Option_Str_ADMIN_ESP_Name" ] = "어드민 ESP 표시",
+	[ "Option_Str_ADMIN_ESP_Desc" ] = "노클립을 했을 때 플레이어의 위에 정보를 뜨게 합니다.",
+	
+	[ "Option_Str_Always_ADMIN_ESP_Name" ] = "계속 어드민 ESP 표시",
+	[ "Option_Str_Always_ADMIN_ESP_Desc" ] = "노클립을 안했을 때도 플레이어 위에 정보를 뜨게 합니다.",
 	
 	[ "Option_Str_MAINHUD_Name" ] = "메인 HUD 표시",
 	[ "Option_Str_MAINHUD_Desc" ] = "메인 HUD 를 표시합니다.",
@@ -329,7 +336,19 @@ LANGUAGE.data = {
 	[ "Command_SetTimeHour_Fin" ] = "당신은 RP 시간을 %s시로 설정하셨습니다.",
 	
 	[ "AntiHaX_KickMessage" ] = "죄송합니다, 당신은 치트 프로그램 사용으로 감지되어 킥 당하셨습니다 :(",
-	[ "AntiHaX_KickMessage_TimeOut" ] = "죄송합니다, 당신은 치트 프로그램 확인 작업의 제한 시간을 초과했습니다 :("
+	[ "AntiHaX_KickMessage_TimeOut" ] = "죄송합니다, 당신은 치트 프로그램 확인 작업의 제한 시간을 초과했습니다 :(",
+	
+	[ "Weapon_Instructions_Title" ] = "- 설명서 -",
+	[ "Weapon_Purpose_Title" ] = "- 용도 -",
+	[ "Weapon_Author_Title" ] = "- 개발자 -",
+	
+	[ "Weapon_Fists_Name" ] = "주먹",
+	[ "Weapon_Fists_Instructions" ] = "왼쪽 키 : 펀치,\n오른쪽 키 : 노크.",
+	[ "Weapon_Fists_Purpose" ] = "사람을 떄리거나 문을 노크할 수 있습니다.",
+	
+	[ "Weapon_Key_Name" ] = "열쇠",
+	[ "Weapon_Key_Instructions" ] = "왼쪽 키 : 잠금,\n오른쪽 키 : 잠금 해제.",
+	[ "Weapon_Key_Purpose" ] = "물체를 잠그거나 잠금을 풀 수 있습니다."
 }
 
 catherine.language.Register( LANGUAGE )

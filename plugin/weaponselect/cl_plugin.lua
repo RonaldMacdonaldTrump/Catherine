@@ -127,7 +127,6 @@ function PLUGIN:HUDDraw( )
 				surface.SetMaterial( gradient_left )
 				surface.DrawTexturedRect( self.maxHighX + 20, scrH * 0.3 + 20, 230, markupObject:GetHeight( ) + 10 )
 	
-				//draw.RoundedBox( 0, self.maxHighX + 20, scrH * 0.3 + 20, 230, markupObject:GetHeight( ) + 5, Color( 80, 80, 80, v.a / 2 ) )
 				markupObject:Draw( self.maxHighX + 30, scrH * 0.3 + 25, 0, TEXT_ALIGN_LEFT, v.a )
 			end
 		end
@@ -145,6 +144,49 @@ function PLUGIN:HUDDraw( )
 	end
 end
 
+local languageStuff = catherine.util.StuffLanguage
+
+function PLUGIN:LanguageChanged( )
+	self.curSlot = 1
+	self.weapons = { }
+		
+	for k, v in pairs( LocalPlayer( ):GetWeapons( ) ) do
+		if ( !v or !IsValid( v ) ) then return end
+		
+		local markupText = "<font=catherine_normal20>"
+		local markupObject = nil
+		local markupFound = false
+		
+		if ( v.Instructions and v.Instructions != "" ) then
+			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Instructions_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( v.Instructions ) .. "</font>\n\n"
+			markupFound = true
+		end
+		
+		if ( v.Author and v.Author != "" ) then
+			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Author_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( v.Author ) .. "</font>\n\n"
+			markupFound = true
+		end
+		
+		if ( v.Purpose and v.Purpose != "" ) then
+			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Purpose_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( v.Purpose ) .. "</font>\n\n"
+			markupFound = true
+		end
+		
+		if ( markupFound ) then
+			markupObject = markup.Parse( markupText .. "</font>", 230 )
+		end
+
+		self.weapons[ #self.weapons + 1 ] = {
+			name = v:GetPrintName( ),
+			uniqueID = v:GetClass( ),
+			x = ScrW( ) * 0.25,
+			a = 0,
+			xMinus = 0,
+			markupObject = markupObject
+		}
+	end
+end
+
 netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
 	local id = data[ 1 ]
 	local uniqueID = data[ 2 ]
@@ -159,17 +201,17 @@ netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
 		local markupFound = false
 		
 		if ( wep.Instructions and wep.Instructions != "" ) then
-			markupText = markupText .. "<color=220,220,220,255>- Instructions -</color>\n<font=catherine_normal15>" .. wep.Instructions .. "</font>\n\n"
+			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Instructions_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( wep.Instructions ) .. "</font>\n\n"
 			markupFound = true
 		end
 		
 		if ( wep.Author and wep.Author != "" ) then
-			markupText = markupText .. "<color=220,220,220,255>- Author -</color>\n<font=catherine_normal15>" .. wep.Author .. "</font>\n\n"
+			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Author_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( wep.Author ) .. "</font>\n\n"
 			markupFound = true
 		end
 		
 		if ( wep.Purpose and wep.Purpose != "" ) then
-			markupText = markupText .. "<color=220,220,220,255>- Purpose -</color>\n<font=catherine_normal15>" .. wep.Purpose .. "</font>\n\n"
+			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Purpose_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( wep.Purpose ) .. "</font>\n\n"
 			markupFound = true
 		end
 		

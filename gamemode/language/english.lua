@@ -284,9 +284,16 @@ LANGUAGE.data = {
 	[ "Option_UI_Title" ] = "Option",
 	[ "Option_Category_01" ] = "Framework",
 	[ "Option_Category_02" ] = "Development",
+	[ "Option_Category_03" ] = "Administrator",
 
 	[ "Option_Str_BAR_Name" ] = "Show Bar",
 	[ "Option_Str_BAR_Desc" ] = "Displays the Bar.",
+	
+	[ "Option_Str_ADMIN_ESP_Name" ] = "Show Admin ESP",
+	[ "Option_Str_ADMIN_ESP_Desc" ] = "Displays the player information if you are in noclip.",
+	
+	[ "Option_Str_Always_ADMIN_ESP_Name" ] = "Always Show Admin ESP",
+	[ "Option_Str_Always_ADMIN_ESP_Desc" ] = "Displays the player information as always.",
 	
 	[ "Option_Str_MAINHUD_Name" ] = "Show Main HUD",
 	[ "Option_Str_MAINHUD_Desc" ] = "Displays Main HUD.",
@@ -329,7 +336,19 @@ LANGUAGE.data = {
 	[ "Command_SetTimeHour_Fin" ] = "You are set RP time to %s(hour).",
 	
 	[ "AntiHaX_KickMessage" ] = "Sorry, You have been kicked by using cheat program :(",
-	[ "AntiHaX_KickMessage_TimeOut" ] = "Sorry, Your spend too much time for checking cheat programs :("
+	[ "AntiHaX_KickMessage_TimeOut" ] = "Sorry, Your spend too much time for checking cheat programs :(",
+	
+	[ "Weapon_Instructions_Title" ] = "- Instructions -",
+	[ "Weapon_Purpose_Title" ] = "- Purpose -",
+	[ "Weapon_Author_Title" ] = "- Author -",
+	
+	[ "Weapon_Fists_Name" ] = "Fists",
+	[ "Weapon_Fists_Instructions" ] = "Primary Fire : Punch.\nSecondary Fire : Knock.",
+	[ "Weapon_Fists_Purpose" ] = "Punching characters and knocking on doors.",
+	
+	[ "Weapon_Key_Name" ] = "Keys",
+	[ "Weapon_Key_Instructions" ] = "Primary Fire : Lock.\nSecondary Fire : Unlock.",
+	[ "Weapon_Key_Purpose" ] = "Locking and unlocking entities that you have access to."
 }
 
 catherine.language.Register( LANGUAGE )

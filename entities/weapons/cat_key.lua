@@ -19,9 +19,9 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 AddCSLuaFile( )
 
 SWEP.HoldType = "normal"
-SWEP.PrintName = "Key"
-SWEP.Instructions = "Primary Fire : Lock.\nSecondary Fire : Unlock."
-SWEP.Purpose = "Locking and unlocking entities that you have access to."
+SWEP.PrintName = "^Weapon_Key_Name"
+SWEP.Instructions = "^Weapon_Key_Instructions"
+SWEP.Purpose = "^Weapon_Key_Purpose"
 SWEP.Author = "L7D"
 SWEP.ViewModel = Model( "models/weapons/c_arms_cstrike.mdl" )
 SWEP.WorldModel = ""

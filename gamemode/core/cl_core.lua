@@ -73,7 +73,7 @@ end
 
 function GM:HUDPaintBackground( )
 	local lp = LocalPlayer( )
-	if ( !lp:IsAdmin( ) or !lp:IsNoclipping( ) ) then return end
+	if ( !lp:IsAdmin( ) or ( GetConVarString( "cat_convar_alwaysadminesp" ) == "0" and !lp:IsNoclipping( ) ) or GetConVarString( "cat_convar_adminesp" ) == "0" ) then return end
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( lp == v ) then continue end
@@ -529,7 +529,6 @@ end
 function GM:CalcViewModelView( wep, viewMdl, oldEyePos, oldEyeAngles, eyePos, eyeAng )
 	if ( !IsValid( wep ) ) then return end
 	local pl = LocalPlayer( )
-	local val = pl:GetWeaponRaised( ) and 0 or 100
 	local fraction = ( pl.wepRaisedFraction or 0 ) / 100
 	local lowerAng = wep.LowerAngles or Angle( 30, -30, -25 )
 	
@@ -537,7 +536,7 @@ function GM:CalcViewModelView( wep, viewMdl, oldEyePos, oldEyeAngles, eyePos, ey
 	eyeAng:RotateAroundAxis( eyeAng:Forward( ), lowerAng.y * fraction )
 	eyeAng:RotateAroundAxis( eyeAng:Right( ), lowerAng.r * fraction )
 	
-	pl.wepRaisedFraction = Lerp( FrameTime( ) * 2, pl.wepRaisedFraction or 0, val )
+	pl.wepRaisedFraction = Lerp( FrameTime( ) * 2, pl.wepRaisedFraction or 0, pl:GetWeaponRaised( ) and 0 or 100 )
 	
 	viewMdl:SetAngles( eyeAng )
 	
@@ -668,6 +667,12 @@ netstream.Hook( "catherine.ShowHelp", function( )
 		catherine.vgui.information = vgui.Create( "catherine.vgui.information" )
 	end
 end )
+
+CAT_CONVAR_ADMIN_ESP = CreateClientConVar( "cat_convar_adminesp", 1, true, true )
+CAT_CONVAR_ALWAYS_ADMIN_ESP = CreateClientConVar( "cat_convar_alwaysadminesp", 0, true, true )
+
+catherine.option.Register( "CONVAR_ADMIN_ESP", "cat_convar_adminesp", "^Option_Str_ADMIN_ESP_Name", "^Option_Str_ADMIN_ESP_Desc", "^Option_Category_03", CAT_OPTION_SWITCH )
+catherine.option.Register( "CONVAR_ALWAYS_ADMIN_ESP", "cat_convar_alwaysadminesp", "^Option_Str_Always_ADMIN_ESP_Name", "^Option_Str_Always_ADMIN_ESP_Desc", "^Option_Category_03", CAT_OPTION_SWITCH )
 
 netstream.Hook( "catherine.introStart", function( )
 	catherine.intro.loading = true

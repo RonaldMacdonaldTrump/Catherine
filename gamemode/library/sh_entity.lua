@@ -103,3 +103,12 @@ else
 	
 	hook.Add( "LanguageChanged", "catherine.entity.LanguageChanged", catherine.entity.LanguageChanged )
 end
+
+local META2 = FindMetaTable( "Weapon" )
+
+META2.CATGetPrintName = META2.CATGetPrintName or META2.GetPrintName
+local languageStuff = catherine.util.StuffLanguage
+
+function META2:GetPrintName( )
+	return languageStuff( self.PrintName )
+end
