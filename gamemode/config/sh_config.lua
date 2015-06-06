@@ -85,7 +85,6 @@ if ( SERVER ) then
 	
 	catherine.configs.enable_Log = true
 	catherine.configs.enable_AntiHaX = true
-	catherine.configs.enable_BugX = true
 else
 	catherine.configs.frameworkLogo = "CAT/logos/main01.png"
 	catherine.configs.schemaLogo = catherine.configs.frameworkLogo
