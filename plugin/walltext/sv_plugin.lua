@@ -18,7 +18,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 local PLUGIN = PLUGIN
 
-function PLUGIN:EntityDataLoaded( pl )
+function PLUGIN:PlayerLoadFinished( pl )
 	self:SyncTextAll( pl )
 end
 
