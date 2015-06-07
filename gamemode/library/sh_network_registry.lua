@@ -21,10 +21,11 @@ local META = FindMetaTable( "Entity" )
 local META2 = FindMetaTable( "Player" )
 // 네트워킹 시스템; ^-^; 2015-03-10 학교 컴실에서.. // 이전
 // 새로운 네트워킹 시스템; ^-^; 2015-04-09 집에서..
+// 오류 고친 네트워킹 시스템; ^-^; 2015-06-07 밤늦게 로이드랑 집에서..
 
 if ( SERVER ) then
 	catherine.net.NextOptimizeTick = catherine.net.NextOptimizeTick or CurTime( ) + catherine.configs.netRegistryOptimizeInterval
-	
+
 	function catherine.net.SetNetVar( ent, key, value, noSync )
 		catherine.net.entityRegistry[ ent ] = catherine.net.entityRegistry[ ent ] or { }
 		catherine.net.entityRegistry[ ent ][ key ] = value
@@ -69,7 +70,7 @@ if ( SERVER ) then
 			if ( k:IsPlayer( ) ) then
 				id = k:SteamID( )
 			end
-			
+
 			convert[ id ] = v
 		end
 
@@ -79,11 +80,34 @@ if ( SERVER ) then
 		} )
 	end
 	
-	function catherine.net.NetworkRegistryOptimize( )
+	local function scanErrorInTable( tab )
+		for k, v in pairs( tab ) do
+			if ( ( type( k ) == "Entity" or type( k ) == "Player" ) and !IsValid( k ) ) then
+				MsgC( Color( 255, 0, 0 ), "[CAT Network] Catherine are found Network Registry Error, so now fixing ...\n" )
+				tab[ k ] = nil
+			end
+
+			if ( ( type( v ) == "Entity" or type( v ) ) == "Player" ) then
+				if ( !IsValid( v ) ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT Network] Catherine are found Network Registry Error, so now fixing ...\n" )
+					tab[ k ] = nil
+				end
+			elseif ( type( v ) == "table" ) then
+				scanErrorInTable( v )
+			end
+		end
+	end
+	
+	function catherine.net.ScanErrorNetworkRegistry( )
 		for k, v in pairs( catherine.net.entityRegistry ) do
-			if ( IsValid( k ) or k == NULL ) then continue end
+			if ( ( type( k ) == "Entity" or type( k ) == "Player" ) and !IsValid( k ) ) then
+				MsgC( Color( 255, 255, 0 ), "[CAT Network] Catherine are found Network Registry Error, so now fixing ...\n" )
+				catherine.net.entityRegistry[ k ] = nil
+			end
 			
-			catherine.net.entityRegistry[ k ] = nil
+			if ( type( v ) == "table" ) then
+				scanErrorInTable( v )
+			end
 		end
 		
 		catherine.net.SendAllNetworkRegistries( )
@@ -97,7 +121,7 @@ if ( SERVER ) then
 	
 	function catherine.net.Think( )
 		if ( catherine.net.NextOptimizeTick <= CurTime( ) ) then
-			catherine.net.NetworkRegistryOptimize( )
+			catherine.net.ScanErrorNetworkRegistry( )
 			
 			catherine.net.NextOptimizeTick = CurTime( ) + catherine.configs.netRegistryOptimizeInterval
 		end
@@ -108,14 +132,14 @@ if ( SERVER ) then
 		netstream.Start( nil, "catherine.net.ClearNetVar", ent:EntIndex( ) )
 	end
 	
-	function catherine.net.PlayerDisconnectedInCharacter( pl )
+	function catherine.net.PlayerDisconnected( pl )
 		catherine.net.entityRegistry[ pl ] = nil
 		netstream.Start( nil, "catherine.net.ClearNetVar", pl:SteamID( ) )
 	end
 
 	hook.Add( "Think", "catherine.net.Think", catherine.net.Think )
 	hook.Add( "EntityRemoved", "catherine.net.EntityRemoved", catherine.net.EntityRemoved )
-	hook.Add( "PlayerDisconnectedInCharacter", "catherine.net.PlayerDisconnectedInCharacter", catherine.net.PlayerDisconnectedInCharacter )
+	hook.Add( "PlayerDisconnected", "catherine.net.PlayerDisconnected", catherine.net.PlayerDisconnected )
 else
 	netstream.Hook( "catherine.net.SetNetVar", function( data )
 		local steamID = data[ 1 ]
