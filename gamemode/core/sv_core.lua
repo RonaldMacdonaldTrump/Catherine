@@ -300,17 +300,17 @@ function GM:KeyPress( pl, key )
 		end
 
 		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
-			if ( hook.Run( "PlayerCanUseDoor", pl, ent ) == false ) then
-				return
-			end
-			
 			catherine.door.DoorSpamProtection( pl, ent )
 
-			return hook.Run( "PlayerUseDoor", pl, ent )
+			hook.Run( "PlayerUse", pl, ent )
 		elseif ( IsValid( ent ) and ent.IsCustomUse ) then
 			netstream.Start( pl, "catherine.entity.CustomUseMenu", ent:EntIndex( ) )
 		end
 	end
+end
+
+function GM:PlayerCanUseDoor( pl, ent )
+	return !pl.CAT_cantUseDoor
 end
 
 function GM:PlayerUse( pl, ent )
@@ -324,8 +324,18 @@ function GM:PlayerUse( pl, ent )
 	end
 
 	local isDoor = catherine.entity.IsDoor( ent )
-
-	return ( isDoor and !pl.CAT_cantUseDoor == true ) and true or !isDoor and true
+	
+	if ( isDoor ) then
+		local result = hook.Run( "PlayerCanUseDoor", pl, ent )
+		
+		if ( result == false ) then
+			return false
+		else
+			hook.Run( "PlayerUseDoor", pl, ent )
+		end
+	end
+	
+	return true
 end
 
 function GM:PlayerSay( pl, text )
@@ -389,6 +399,8 @@ function GM:PlayerTakeDamage( pl, attacker, ragdollEntity )
 	end
 	
 	pl.CAT_healthRecover = true
+	
+	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 
 	local sound = hook.Run( "GetPlayerPainSound", pl )
 	local gender = pl:GetGender( )

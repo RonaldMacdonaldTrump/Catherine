@@ -149,6 +149,14 @@ function catherine.util.RemoveEntityByClass( class )
 	end
 end
 
+function catherine.util.GetDoorPartner( ent )
+	for k, v in pairs( ents.FindInSphere( ent:GetPos( ), 128 ) ) do
+		if ( v:GetClass( ) == "prop_door_rotating" and ent != v ) then
+			return v
+		end
+	end
+end
+
 local holdTypes = {
 	weapon_physgun = "smg",
 	weapon_physcannon = "smg",
