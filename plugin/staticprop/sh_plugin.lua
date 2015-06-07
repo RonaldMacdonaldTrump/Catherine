@@ -45,11 +45,11 @@ catherine.command.Register( {
 
 		if ( IsValid( ent ) ) then
 			if ( catherine.entity.IsProp( ent ) and !catherine.entity.IsDoor( ent ) ) then
-				local curStatus = ent:GetNetVar( "isStatic", false )
-				
+				local curStatus = ent:GetNetVar( "isStatic" )
+
 				ent:SetNetVar( "isStatic", !curStatus )
 
-				catherine.util.NotifyLang( pl, curStatus and "Staticprop_Notify_Add" or "Staticprop_Notify_Remove" )
+				catherine.util.NotifyLang( pl, !curStatus and "Staticprop_Notify_Add" or "Staticprop_Notify_Remove" )
 				
 				PLUGIN:DataSave( )
 			else
