@@ -382,15 +382,17 @@ if ( SERVER ) then
 	META.CATGodDisable = META.CATGodDisable or META.GodDisable
 
 	function META:Give( uniqueID )
+		local wep = self:CATGiveWeapon( uniqueID )
+		
 		hook.Run( "PlayerGiveWeapon", self, uniqueID )
 		
-		return self:CATGiveWeapon( uniqueID )
+		return wep
 	end
 	
 	function META:StripWeapon( uniqueID )
 		hook.Run( "PlayerStripWeapon", self, uniqueID )
 		
-		return self:CATTakeWeapon( uniqueID )
+		self:CATTakeWeapon( uniqueID )
 	end
 	
 	function META:GodEnable( )
@@ -398,7 +400,7 @@ if ( SERVER ) then
 		
 		self.CAT_godMode = true
 		
-		return self:CATGodEnable( )
+		self:CATGodEnable( )
 	end
 	
 	function META:GodDisable( )
@@ -406,7 +408,7 @@ if ( SERVER ) then
 		
 		self.CAT_godMode = nil
 		
-		return self:CATGodDisable( )
+		self:CATGodDisable( )
 	end
 	
 	function META:IsInGod( )

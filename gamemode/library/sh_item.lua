@@ -231,6 +231,14 @@ else
 		catherine.item.OpenEntityUseMenu( data )
 	end )
 	
+	function catherine.item.Work( uniqueID, funcID, ent_isMenu )
+		netstream.Start( "catherine.item.Work", {
+			uniqueID,
+			funcID,
+			ent_isMenu
+		} )
+	end
+	
 	function catherine.item.OpenMenuUse( uniqueID )
 		local pl = LocalPlayer( )
 		local itemTable = catherine.item.FindByID( uniqueID )
@@ -240,11 +248,7 @@ else
 			if ( !v.canShowIsMenu or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
 			
 			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
-				netstream.Start( "catherine.item.Work", {
-					uniqueID,
-					k,
-					true
-				} )
+				catherine.item.Work( uniqueID, k, true )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
 		
@@ -263,11 +267,7 @@ else
 			if ( !v.canShowIsWorld or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
 
 			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
-				netstream.Start( "catherine.item.Work", {
-					uniqueID,
-					k,
-					ent
-				} )
+				catherine.item.Work( uniqueID, k, ent )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
 		

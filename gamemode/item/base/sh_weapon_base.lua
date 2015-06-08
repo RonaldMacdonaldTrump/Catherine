@@ -163,6 +163,16 @@ if ( SERVER ) then
 		
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
+else
+	function BASE:DoRightClick( pl, itemData )
+		local uniqueID = self.uniqueID
+		
+		if ( catherine.inventory.IsEquipped( uniqueID ) ) then
+			catherine.item.Work( uniqueID, "unequip", true )
+		else
+			catherine.item.Work( uniqueID, "equip", true )
+		end
+	end
 end
 
 catherine.item.Register( BASE )

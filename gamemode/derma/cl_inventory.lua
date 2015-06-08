@@ -89,7 +89,8 @@ function PANEL:BuildInventory( )
 		for k1, v1 in SortedPairsByMemberValue( v, "uniqueID" ) do
 			local w, h = 64, 64
 			local itemTable = catherine.item.FindByID( v1.uniqueID )
-			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, pl:GetInvItemDatas( k1 ), true ) or nil
+			local itemData = pl:GetInvItemDatas( k1 )
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, itemData, true ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, k1 )
 			
@@ -100,6 +101,11 @@ function PANEL:BuildInventory( )
 			spawnIcon.DoClick = function( )
 				catherine.item.OpenMenuUse( k1 )
 			end
+			spawnIcon.DoRightClick = function( )
+				if ( itemTable.DoRightClick ) then
+					itemTable:DoRightClick( pl, itemData )
+				end
+			end
 			spawnIcon.PaintOver = function( pnl, w, h )
 				if ( catherine.inventory.IsEquipped( k1 ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
@@ -108,7 +114,7 @@ function PANEL:BuildInventory( )
 				end
 				
 				if ( itemTable.DrawInformation ) then
-					itemTable:DrawInformation( pl, itemTable, w, h, pl:GetInvItemDatas( k1 ) )
+					itemTable:DrawInformation( pl, itemTable, w, h, itemData )
 				end
 				
 				if ( !noDrawItemCount and v1.itemCount > 1 ) then

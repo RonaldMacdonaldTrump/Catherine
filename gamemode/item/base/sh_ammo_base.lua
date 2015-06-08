@@ -65,4 +65,8 @@ BASE.func.use = {
 	end
 }
 
+function BASE:DoRightClick( pl, itemData )
+	catherine.item.Work( self.uniqueID, "use", true )
+end
+
 catherine.item.Register( BASE )
