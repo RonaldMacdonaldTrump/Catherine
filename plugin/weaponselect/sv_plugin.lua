@@ -30,6 +30,12 @@ function PLUGIN:PlayerSpawnedInCharacter( pl )
 	end )
 end
 
+function PLUGIN:PlayerRagdollJoined( pl )
+	netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
+		3
+	} )
+end
+
 function PLUGIN:PlayerGiveWeapon( pl, uniqueID )
 	if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) ) then return end
 	

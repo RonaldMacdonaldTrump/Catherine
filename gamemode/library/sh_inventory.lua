@@ -25,6 +25,11 @@ if ( SERVER ) then
 	CAT_INV_ACTION_UPDATE = 3
 
 	function catherine.inventory.Work( pl, workID, data )
+		if ( !pl:Alive( ) ) then
+			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
+			return
+		end
+		
 		if ( catherine.character.GetCharVar( pl, "charBanned" ) ) then return end
 
 		if ( workID == CAT_INV_ACTION_ADD ) then
