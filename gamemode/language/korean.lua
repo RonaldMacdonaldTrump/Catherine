@@ -147,6 +147,10 @@ LANGUAGE.data = {
 	[ "Scoreboard_PlayerOption03_Str" ] = "화이트리스트 지급",
 	[ "Scoreboard_PlayerOption04_Str" ] = "캐릭터 밴 / 밴 해제",
 	[ "Scoreboard_PlayerOption04_Q" ] = "정말로 이 캐릭터를 밴 / 밴 해제 하시겠습니까?",
+	[ "Scoreboard_PlayerOption05_Str" ] = "플래그 주기",
+	[ "Scoreboard_PlayerOption05_Q" ] = "어떤 플래그를 주시겠습니까?",
+	[ "Scoreboard_PlayerOption06_Str" ] = "플래그 뺏기",
+	[ "Scoreboard_PlayerOption06_Q" ] = "어떤 플래그를 뺏으시겠습니까?",
 	
 	// Help
 	[ "Help_UI_Title" ] = "도움 자료",

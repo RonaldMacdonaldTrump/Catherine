@@ -79,6 +79,10 @@ catherine.flag.Register( "s", "^Flag_s_Desc" )
 
 if ( SERVER ) then
 	function catherine.flag.Give( pl, flagID )
+		if ( flagID == "" ) then
+			return false, "Flag_Notify_NotValid", { flagID }
+		end
+		
 		local ex = string.Explode( "", flagID )
 		local flags = catherine.character.GetCharVar( pl, "flags", "" )
 		
@@ -107,6 +111,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.flag.Take( pl, flagID )
+		if ( flagID == "" ) then
+			return false, "Flag_Notify_NotValid", { flagID }
+		end
+		
 		local ex = string.Explode( "", flagID )
 		local flags = catherine.character.GetCharVar( pl, "flags", "" )
 		
@@ -158,6 +166,15 @@ if ( SERVER ) then
 	end
 	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.flag.PlayerSpawnedInCharacter", catherine.flag.PlayerSpawnedInCharacter )
+	
+	netstream.Hook( "catherine.flag.Scoreboard_PlayerOption06", function( pl, data )
+		if ( !IsValid( data ) ) then return end
+		
+		netstream.Start( pl, "catherine.flag.Scoreboard_PlayerOption06_Receive", {
+			data,
+			catherine.character.GetCharVar( data, "flags", "" )
+		} )
+	end )
 else
 	local function rebuildFlag( )
 		local title_flag = LANG( "Help_Category_Flag" )
@@ -172,6 +189,15 @@ else
 	
 	netstream.Hook( "catherine.flag.BuildHelp", function( data )
 		rebuildFlag( )
+	end )
+	
+	netstream.Hook( "catherine.flag.Scoreboard_PlayerOption06_Receive", function( data )
+		Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption06_Q" ), data[ 2 ] or "", function( val )
+				if ( !IsValid( data[ 1 ] ) ) then return end
+				
+				catherine.command.Run( "flagtake", data[ 1 ]:Name( ), val )
+			end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
+		)
 	end )
 	
 	function catherine.flag.Has( uniqueID )

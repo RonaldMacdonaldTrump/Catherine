@@ -564,18 +564,20 @@ function GM:ScoreboardPlayerOption( pl, target )
 				catherine.command.Run( "plygivewhitelist", target:Name( ), v.uniqueID )
 			end ):SetToolTip( catherine.util.StuffLanguage( v.desc ) )
 		end
-	end
-	
-	if ( pl:IsAdmin( ) ) then
-		menu:AddOption( LANG( "Scoreboard_PlayerOption02_Str" ), function( )
-			Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption02_Q" ), target:Name( ), function( val )
-					if ( val != target:Name( ) ) then
-						catherine.command.Run( "charsetname", target:Name( ), val )
-					end
+		
+		menu:AddOption( LANG( "Scoreboard_PlayerOption05_Str" ), function( )
+			Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption05_Q" ), "", function( val )
+					catherine.command.Run( "flaggive", target:Name( ), val )
 				end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
 			)
 		end )
 		
+		menu:AddOption( LANG( "Scoreboard_PlayerOption06_Str" ), function( )
+			netstream.Start( "catherine.flag.Scoreboard_PlayerOption06", target )
+		end )
+	end
+	
+	if ( pl:IsAdmin( ) ) then
 		menu:AddOption( LANG( "Scoreboard_PlayerOption04_Str" ), function( )
 			Derma_Query( LANG( "Scoreboard_PlayerOption04_Q" ), "", LANG( "Basic_UI_OK" ), function( )
 					catherine.command.Run( "charban", target:Name( ) )

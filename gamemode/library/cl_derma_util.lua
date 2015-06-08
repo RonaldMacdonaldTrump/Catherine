@@ -175,7 +175,7 @@ function Derma_StringRequest( strTitle, strText, strDefaultText, fnEnter, fnCanc
 		Window:Close( )
 		
 		if ( fnCancel ) then
-			fnEnter( TextEntry:GetText( ) )
+			fnCancel( TextEntry:GetText( ) )
 		end
 	end
 	ButtonCancel:MoveRightOf( Button, 5 )
