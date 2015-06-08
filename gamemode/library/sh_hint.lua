@@ -57,7 +57,7 @@ else
 	
 	netstream.Hook( "catherine.hint.Receive", function( data )
 		local msg = catherine.util.StuffLanguage( catherine.hint.lists[ data ].message )
-		surface.SetFont( "catherine_normal25" )
+		surface.SetFont( "catherine_normal20" )
 		local tw, th = surface.GetTextSize( msg )
 		
 		catherine.hint.curHint = {
@@ -83,7 +83,7 @@ else
 			t.x = Lerp( 0.03, t.x, t.targetX )
 		end
 
-		draw.SimpleText( t.message, "catherine_normal25", t.x, 5, Color( 255, 255, 255, 255 ), 1 )
+		draw.SimpleText( t.message, "catherine_normal20", t.x, 5, Color( 255, 255, 255, 255 ), 1 )
 	end
 end
 

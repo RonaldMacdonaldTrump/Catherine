@@ -22,7 +22,17 @@ concommand.Add( "cat_ws_selectWeapon", function( pl, _, args )
 	pl:SelectWeapon( args[ 1 ] )
 end )
 
+function PLUGIN:PlayerSpawnedInCharacter( pl )
+	timer.Simple( 1, function( )
+		netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
+			4
+		} )
+	end )
+end
+
 function PLUGIN:PlayerGiveWeapon( pl, uniqueID )
+	if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) ) then return end
+	
 	timer.Simple( 0.05, function( )
 		netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
 			1,
@@ -31,29 +41,11 @@ function PLUGIN:PlayerGiveWeapon( pl, uniqueID )
 	end )
 end
 
-function PLUGIN:PlayerDeath( pl )
-	timer.Simple( 0.5, function( )
-		netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
-			3
-		} )
-	end )
-end
-
 function PLUGIN:PlayerStripWeapon( pl, uniqueID )
+	if ( !IsValid( pl ) ) then return end
+
 	netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
 		2,
 		uniqueID
-	} )
-end
-
-function PLUGIN:PlayerRagdollJoined( pl )
-	netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
-		3
-	} )
-end
-
-function PLUGIN:CharacterLoadingStart( pl )
-	netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
-		3
 	} )
 end

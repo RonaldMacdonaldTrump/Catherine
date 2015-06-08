@@ -238,5 +238,44 @@ netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
 	elseif ( id == 3 ) then
 		PLUGIN.curSlot = 1
 		PLUGIN.weapons = { }
+	elseif ( id == 4 ) then
+		PLUGIN.curSlot = 1
+		PLUGIN.weapons = { }
+		
+		for k, v in pairs( LocalPlayer( ):GetWeapons( ) ) do
+			if ( !v or !IsValid( v ) ) then return end
+			
+			local markupText = "<font=catherine_normal20>"
+			local markupObject = nil
+			local markupFound = false
+			
+			if ( v.Instructions and v.Instructions != "" ) then
+				markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Instructions_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( v.Instructions ) .. "</font>\n\n"
+				markupFound = true
+			end
+			
+			if ( v.Author and v.Author != "" ) then
+				markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Author_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( v.Author ) .. "</font>\n\n"
+				markupFound = true
+			end
+			
+			if ( v.Purpose and v.Purpose != "" ) then
+				markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Purpose_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( v.Purpose ) .. "</font>\n\n"
+				markupFound = true
+			end
+			
+			if ( markupFound ) then
+				markupObject = markup.Parse( markupText .. "</font>", 230 )
+			end
+
+			PLUGIN.weapons[ #PLUGIN.weapons + 1 ] = {
+				name = v:GetPrintName( ),
+				uniqueID = v:GetClass( ),
+				x = ScrW( ) * 0.25,
+				a = 0,
+				xMinus = 0,
+				markupObject = markupObject
+			}
+		end
 	end
 end )
