@@ -344,7 +344,8 @@ if ( SERVER ) then
 		local chatInformation = {
 			text = text,
 			uniqueID = classTable.uniqueID,
-			pl = pl
+			pl = pl,
+			target = target
 		}
 		
 		chatInformation = hook.Run( "OnChatControl", chatInformation ) or chatInformation
