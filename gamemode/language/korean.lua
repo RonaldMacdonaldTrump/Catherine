@@ -342,6 +342,7 @@ LANGUAGE.data = {
 	[ "AntiHaX_KickMessage" ] = "죄송합니다, 당신은 치트 프로그램 사용으로 감지되어 킥 당하셨습니다 :(",
 	[ "AntiHaX_KickMessage_TimeOut" ] = "죄송합니다, 당신은 치트 프로그램 확인 작업의 제한 시간을 초과했습니다 :(",
 	
+	// Weapon
 	[ "Weapon_Instructions_Title" ] = "- 설명서 -",
 	[ "Weapon_Purpose_Title" ] = "- 용도 -",
 	[ "Weapon_Author_Title" ] = "- 개발자 -",

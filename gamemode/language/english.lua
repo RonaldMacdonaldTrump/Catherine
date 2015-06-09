@@ -343,6 +343,7 @@ LANGUAGE.data = {
 	[ "AntiHaX_KickMessage" ] = "Sorry, you have been kicked for using cheats.",
 	[ "AntiHaX_KickMessage_TimeOut" ] = "Sorry, you have been kicked because the anti-cheat timed out.",
 	
+	// Weapon
 	[ "Weapon_Instructions_Title" ] = "- Instructions -",
 	[ "Weapon_Purpose_Title" ] = "- Purpose -",
 	[ "Weapon_Author_Title" ] = "- Author -",
