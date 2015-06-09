@@ -584,6 +584,13 @@ function GM:ScoreboardPlayerOption( pl, target )
 				end, LANG( "Basic_UI_NO" ), function( ) end
 			)
 		end )
+		
+		menu:AddOption( LANG( "Scoreboard_PlayerOption02_Str" ), function( )
+			Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption02_Q" ), target:Name( ), function( val )
+					catherine.command.Run( "charsetname", target:Name( ), val )
+				end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
+			)
+		end )
 	end
 	
 	menu:Open( )
