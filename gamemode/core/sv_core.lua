@@ -307,6 +307,10 @@ function GM:KeyPress( pl, key )
 		
 		if ( !IsValid( ent ) ) then return end
 		
+		if ( ent.CAT_ignoreUse ) then
+			return
+		end
+		
 		if ( ent:GetClass( ) == "prop_ragdoll" ) then
 			ent = ent:GetNetVar( "player" )
 		end

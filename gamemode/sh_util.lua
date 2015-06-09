@@ -308,6 +308,116 @@ if ( SERVER ) then
 			resource.AddFile( dir .. "/" .. v )
 		end
 	end
+	
+	function catherine.util.ForceDoorOpen( ent, lifeTime, vel, ignorePartnerDoor )
+		if ( !catherine.entity.IsDoor( ent ) ) then
+			return
+		end
+		
+		lifeTime = lifeTime or 150
+		vel = vel or VectorRand( ) * 120
+		
+		if ( IsValid( ent.CAT_doorDummy ) ) then
+			ent.CAT_doorDummy:Remove( )
+		end
+
+		local partner = catherine.util.GetDoorPartner( ent )
+		
+		if ( IsValid( partner ) and !ignorePartnerDoor ) then
+			catherine.util.ForceDoorOpen( partner, lifeTime, vel, true )
+		end
+		
+		local col = ent:GetColor( )
+		
+		local dummyEnt = ents.Create( "prop_physics" )
+		dummyEnt:SetPos( ent:GetPos( ) )
+		dummyEnt:SetAngles( ent:GetAngles( ) )
+		dummyEnt:SetModel( ent:GetModel( ) )
+		dummyEnt:SetColor( col )
+		dummyEnt:SetMaterial( ent:GetMaterial( ) )
+		dummyEnt:SetSkin( ent:GetSkin( ) or 0 )
+		dummyEnt:SetRenderMode( RENDERMODE_TRANSALPHA )
+		dummyEnt:SetOwner( ent )
+		dummyEnt:SetCollisionGroup( COLLISION_GROUP_WEAPON )
+		dummyEnt:Spawn( )
+		dummyEnt:CallOnRemove( "RecoverDoor", function( )
+			if ( !IsValid( ent ) ) then return end
+
+			ent:SetNotSolid( false )
+			ent:SetNoDraw( false )
+			ent:DrawShadow( true )
+			ent.CAT_ignoreUse = nil
+			
+			for k, v in pairs( ents.GetAll( ) ) do
+				if ( v:GetParent( ) != ent ) then continue end
+				
+				v:SetNotSolid( false )
+				v:SetNoDraw( false )
+			end
+		end )
+		
+		ent:Fire( "UnLock" )
+		ent:Fire( "Open" )
+		ent:SetNotSolid( true )
+		ent:SetNoDraw( true )
+		ent:DrawShadow( false )
+		ent:DeleteOnRemove( dummyEnt )
+		ent.CAT_doorDummy = dummyEnt
+		ent.CAT_ignoreUse = true
+		
+		for k, v in ipairs( ent:GetBodyGroups( ) ) do
+			dummyEnt:SetBodygroup( v.id, ent:GetBodygroup( v.id ) )
+		end
+
+		for k, v in ipairs( ents.GetAll( ) ) do
+			if ( v:GetParent( ) != ent ) then continue end
+			
+			v:SetNotSolid( true )
+			v:SetNoDraw( true )
+		end
+		
+		local physObject = ent:GetPhysicsObject( )
+		
+		if ( IsValid( physObject ) ) then
+			physObject:SetVelocity( vel )
+		end
+		
+		local timerID = "Catherine.timer.DoorForceOpener_" .. ent:EntIndex( )
+		local timerID2 = "Catherine.timer.DoorRestore_" .. ent:EntIndex( )
+		
+		timer.Create( timerID, 1, 0, function( )
+			if ( IsValid( ent ) and IsValid( ent.CAT_doorDummy ) ) then
+				ent:Fire( "Open" )
+			else
+				timer.Remove( timerID )
+			end
+		end )
+
+		timer.Create( timerID2, lifeTime, 1, function( )
+			if ( !IsValid( ent ) or !IsValid( ent.CAT_doorDummy ) ) then
+				return
+			end
+			
+			local timerID3 = "Catherine.timer.DoorFader_" .. ent:EntIndex( )
+			local alpha = col.a
+
+			timer.Create( timerID3, 0.1, col.a, function( )
+				if ( IsValid( dummyEnt ) ) then
+					alpha = alpha - 1
+					dummyEnt:SetColor( Color( col.r, col.g, col.b, alpha ) )
+					
+					if ( alpha <= 0 ) then
+						dummyEnt:Remove( )
+					end
+				else
+					timer.Remove( timerID2 )
+					timer.Remove( timerID3 )
+				end
+			end )
+		end )
+		
+		return dummyEnt
+	end
 
 	function catherine.util.StringReceiver( pl, id, msg, defV, func )
 		local steamID = pl:SteamID( )
