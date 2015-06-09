@@ -105,12 +105,7 @@ function GM:PlayerSpawn( pl )
 		pl.deathBody:Remove( )
 		pl.deathBody = nil
 	end
-	
-	if ( IsValid( pl.CAT_ragdoll ) ) then
-		pl.CAT_ragdoll:Remove( )
-		pl.CAT_ragdoll = nil
-	end
-	
+
 	pl.CAT_deathSoundPlayed = nil
 
 	pl:SetNetVar( "noDrawOriginal", nil )
@@ -125,6 +120,7 @@ function GM:PlayerSpawn( pl )
 	pl:SetupHands( )
 	pl:SetCanZoom( false )
 
+	catherine.util.ProgressBar( pl, false )
 	catherine.util.TopNotify( pl, false )
 
 	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
@@ -314,7 +310,7 @@ function GM:KeyPress( pl, key )
 		if ( ent:GetClass( ) == "prop_ragdoll" ) then
 			ent = ent:GetNetVar( "player" )
 		end
-		
+
 		if ( IsValid( ent ) and ent:IsPlayer( ) ) then
 			return hook.Run( "PlayerInteract", pl, ent )
 		end
@@ -505,8 +501,21 @@ function GM:PlayerDeath( pl )
 	
 	local respawnTime = hook.Run( "GetRespawnTime", pl ) or catherine.configs.spawnTime
 	
+	catherine.util.ProgressBar( pl, false )
+	
+	pl.CAT_isDeadFunc = true
+
 	catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Dead_01" ), respawnTime, function( )
+		if ( IsValid( pl.CAT_ragdoll ) ) then
+			pl.CAT_ragdoll:Remove( )
+			pl.CAT_ragdoll = nil
+		end
+		
 		pl:Spawn( )
+
+		timer.Simple( 0, function( )
+			pl.CAT_isDeadFunc = nil
+		end )
 	end )
 
 	catherine.util.TopNotify( pl, false )

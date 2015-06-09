@@ -262,20 +262,22 @@ if ( SERVER ) then
 				
 				pl:SetNetVar( "ragdollIndex", nil )
 				pl:SetNetVar( "isRagdolled", nil )
-				
-				pl:SetPos( ent:GetPos( ) )
-				pl:SetNotSolid( false )
-				pl:SetNoDraw( false )
-				pl:Freeze( false )
-				pl:SetMoveType( MOVETYPE_WALK )
-				pl:SetLocalVelocity( vector_origin )
-				
-				for k, v in ipairs( ent.CAT_weaponsBuffer ) do
-					pl:Give( v )
+
+				if ( !pl.CAT_isDeadFunc ) then
+					pl:SetPos( ent:GetPos( ) )
+					pl:SetNotSolid( false )
+					pl:SetNoDraw( false )
+					pl:Freeze( false )
+					pl:SetMoveType( MOVETYPE_WALK )
+					pl:SetLocalVelocity( vector_origin )
+
+					for k, v in ipairs( ent.CAT_weaponsBuffer ) do
+						pl:Give( v )
+					end
+					
+					catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
+					hook.Run( "PlayerRagdollExited", pl )
 				end
-				
-				catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
-				hook.Run( "PlayerRagdollExited", pl )
 			end )
 
 			pl.CAT_ragdoll = ent
@@ -297,16 +299,25 @@ if ( SERVER ) then
 			pl:SetNetVar( "isRagdolled", true )
 			
 			if ( time ) then
+				pl:SetNetVar( "isForceRagdolled", true )
+				
 				local uniqueID = "Catherine.timer.RagdollWork_" .. ent:EntIndex( )
 				
 				catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
 					catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 					catherine.player.RagdollWork( pl )
+					pl:SetNetVar( "isForceRagdolled", nil )
 					timer.Remove( uniqueID )
 				end )
 
 				timer.Create( uniqueID, 1, 0, function( )
 					if ( !IsValid( pl ) ) then return end
+
+					if ( !pl:Alive( ) ) then
+						timer.Remove( uniqueID )
+						return
+					end
+					
 					local ragdoll = pl.CAT_ragdoll
 
 					if ( IsValid( ragdoll ) ) then

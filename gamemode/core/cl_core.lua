@@ -302,7 +302,7 @@ function GM:PlayerBindPress( pl, code, pressed )
 		return true
 	end
 	
-	if ( !pl:GetNetVar( "gettingup" ) and catherine.player.IsRagdolled( pl ) and code:find( "+jump" ) and pressed ) then
+	if ( !pl:GetNetVar( "gettingup" ) and catherine.player.IsRagdolled( pl ) and !pl:GetNetVar( "isForceRagdolled" ) and code:find( "+jump" ) and pressed ) then
 		catherine.command.Run( "chargetup" )
 		
 		return true

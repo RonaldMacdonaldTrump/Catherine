@@ -91,6 +91,9 @@ function ENT:GetAttachmentPos( )
 	
 	if ( pos and ang and parent and boneIndex ) then
 		local bonePos, boneAng = parent:GetBonePosition( boneIndex )
+		
+		if ( !bonePos or !boneAng ) then return pos, ang end
+		
 		local x, y, z = boneAng:Up( ) * pos.x, boneAng:Right( ) * pos.y, boneAng:Forward( ) * pos.z
 		
 		boneAng:RotateAroundAxis( boneAng:Forward( ), ang.p )

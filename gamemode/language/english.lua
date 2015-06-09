@@ -121,7 +121,7 @@ LANGUAGE.data = {
 	
 	// Business
 	[ "Business_UI_Title" ] = "Business",
-	[ "Business_UI_NoBuyable" ] = "You can not not buy this!",
+	[ "Business_UI_NoBuyable" ] = "You can not buy this!",
 	[ "Business_UI_BuyButtonStr" ] = "Buy Item > %s",
 	[ "Business_UI_ShoppingCartStr" ] = "Shopping Cart",
 	[ "Business_UI_TotalStr" ] = "Total %s",
