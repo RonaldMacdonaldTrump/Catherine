@@ -82,26 +82,28 @@ if ( SERVER ) then
 	
 	local function scanErrorInTable( tab )
 		for k, v in pairs( tab ) do
-			if ( ( type( k ) == "Entity" or type( k ) == "Player" ) and !IsValid( k ) ) then
-				MsgC( Color( 255, 0, 0 ), "[CAT Network] Catherine are found Network Registry Error, so now fixing ...\n" )
+			local keyType = type( k )
+			local valueType = type( v )
+			
+			if ( ( keyType == "Entity" or keyType == "Player" ) and !IsValid( k ) ) then
 				tab[ k ] = nil
 			end
 
-			if ( ( type( v ) == "Entity" or type( v ) ) == "Player" ) then
-				if ( !IsValid( v ) ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT Network] Catherine are found Network Registry Error, so now fixing ...\n" )
+			if ( type( v ) == "table" ) then
+				scanErrorInTable( v )
+			else
+				if ( ( valueType == "Entity" or valueType == "Player" ) and !IsValid( v ) ) then
 					tab[ k ] = nil
 				end
-			elseif ( type( v ) == "table" ) then
-				scanErrorInTable( v )
 			end
 		end
 	end
 	
 	function catherine.net.ScanErrorNetworkRegistry( )
 		for k, v in pairs( catherine.net.entityRegistry ) do
-			if ( ( type( k ) == "Entity" or type( k ) == "Player" ) and !IsValid( k ) ) then
-				MsgC( Color( 255, 255, 0 ), "[CAT Network] Catherine are found Network Registry Error, so now fixing ...\n" )
+			local keyType = type( k )
+			
+			if ( ( keyType == "Entity" or keyType == "Player" ) and !IsValid( k ) ) then
 				catherine.net.entityRegistry[ k ] = nil
 			end
 			
@@ -126,12 +128,12 @@ if ( SERVER ) then
 			catherine.net.NextOptimizeTick = CurTime( ) + catherine.configs.netRegistryOptimizeInterval
 		end
 	end
-	
+
 	function catherine.net.EntityRemoved( ent )
 		catherine.net.entityRegistry[ ent ] = nil
 		netstream.Start( nil, "catherine.net.ClearNetVar", ent:EntIndex( ) )
 	end
-	
+
 	function catherine.net.PlayerDisconnected( pl )
 		catherine.net.entityRegistry[ pl ] = nil
 		netstream.Start( nil, "catherine.net.ClearNetVar", pl:SteamID( ) )

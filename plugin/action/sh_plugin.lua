@@ -136,9 +136,6 @@ if ( SERVER ) then
 		PLUGIN:ExitAction( pl )
 	end )
 else
-	PLUGIN.AngData = Angle( 0, 0, 0 )
-	PLUGIN.MouseSensitive = 20
-	
 	function PLUGIN:PlayerBindPress( pl, bind, pressed )
 		if ( self:IsActioning( pl ) and bind == "+jump" ) then
 			if ( pl:GetNetVar( "doingAction" ) and pl.CAT_leavingAction ) then
@@ -156,15 +153,6 @@ else
 		end
 	end
 	
-	function PLUGIN:InputMouseApply( command, x, y, ang )
-		if ( self:IsActioning( LocalPlayer( ) ) ) then
-			self.AngData = self.AngData - Angle( -y / self.MouseSensitive, x / self.MouseSensitive, 0 )
-			self.AngData.p = math.Clamp( self.AngData.p, -80, 80 )
-		else
-			self.AngData = Angle( 0, 0, 0 )
-		end
-	end
-
 	function PLUGIN:CalcView( pl, pos, ang, fov )
 		if ( self:IsActioning( pl ) ) then
 			local data = { }
@@ -184,7 +172,7 @@ else
 				end
 				
 				local ga = pl:GetAttachment( la ) 
-				local newAng = Angle( 0, pl:GetAngles( ).y, 0 ) + self.AngData
+				local newAng = Angle( 0, pl:GetAngles( ).y, 0 )
 				local tr = util.TraceLine( {
 					start = ga.Pos,
 					endpos = ga.Pos + newAng:Forward( ) * -80 + newAng:Up( ) * 20 + newAng:Right( ) * 0
