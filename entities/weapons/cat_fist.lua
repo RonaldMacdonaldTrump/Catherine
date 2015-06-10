@@ -146,7 +146,7 @@ function SWEP:PrimaryAttack( )
 end
 
 function SWEP:CanMoveable( ent )
-	local physObject = ent:GetPhysicsObject()
+	local physObject = ent:GetPhysicsObject( )
 
 	if ( !IsValid( physObject ) ) then
 		return false
@@ -188,11 +188,11 @@ function SWEP:SecondaryAttack( )
 		return
 	end
 	
-	local ent = util.TraceLine( {
-		start = pl:GetShootPos( ),
-		endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * self.HitDistance,
-		filter = pl
-	} ).Entity
+	local data = { }
+	data.start = pl:GetShootPos( )
+	data.endpos = data.start + pl:GetAimVector( ) * self.HitDistance
+	data.filter = pl
+	local ent = util.TraceLine( data ).Entity
 	
 	if ( IsValid( ent ) ) then
 		if ( catherine.entity.IsDoor( ent ) ) then
