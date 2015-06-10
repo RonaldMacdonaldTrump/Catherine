@@ -109,16 +109,32 @@ function SWEP:PrimaryAttack( )
 			dmgInfo:SetAttacker( pl )
 			dmgInfo:SetInflictor( self )
 			dmgInfo:SetDamage( math.random( 8, 12 ) )
+			
 			ent:TakeDamageInfo( dmgInfo )
+			
+			catherine.effect.Create( "BLOOD", {
+				ent = ent,
+				pos = dmgInfo:GetDamagePosition( ),
+				scale = dmgInfo:GetDamageForce( ),
+				decalCount = 1
+			} )
 		elseif ( ent:GetClass( ) == "prop_ragdoll" ) then
-			local target = ent:GetNetVar( "player" )
+			local target = catherine.entity.GetPlayer( ent )
 			
 			if ( IsValid( target ) and target:IsPlayer( ) ) then
 				local dmgInfo = DamageInfo( )
 				dmgInfo:SetAttacker( pl )
 				dmgInfo:SetInflictor( self )
 				dmgInfo:SetDamage( math.random( 8, 12 ) )
+				
 				target:TakeDamageInfo( dmgInfo )
+				
+				catherine.effect.Create( "BLOOD", {
+					ent = target,
+					pos = dmgInfo:GetDamagePosition( ),
+					scale = dmgInfo:GetDamageForce( ),
+					decalCount = 1
+				} )
 			end
 		end
 		

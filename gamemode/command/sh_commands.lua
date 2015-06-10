@@ -20,7 +20,7 @@ catherine.command.Register( {
 	command = "charfallover",
 	canRun = function( pl ) return pl:Alive( ) end,
 	runFunc = function( pl, args )
-		if ( catherine.player.IsRagdolled( pl ) ) then
+		if ( pl:IsRagdolled( ) ) then
 			catherine.util.NotifyLang( pl, "Player_Message_AlreadyFallovered" )
 			return
 		end
@@ -29,7 +29,7 @@ catherine.command.Register( {
 			args[ 1 ] = tonumber( args[ 1 ] )
 		end
 		
-		catherine.player.RagdollWork( pl, !catherine.player.IsRagdolled( pl ), args[ 1 ] )
+		catherine.player.RagdollWork( pl, !pl:IsRagdolled( ), args[ 1 ] )
 	end
 } )
 
@@ -37,8 +37,12 @@ catherine.command.Register( {
 	command = "chargetup",
 	canRun = function( pl ) return pl:Alive( ) end,
 	runFunc = function( pl, args )
+		if ( pl:GetNetVar( "isForceRagdolled" ) ) then
+			return
+		end
+		
 		if ( !pl:GetNetVar( "gettingup" ) ) then
-			if ( catherine.player.IsRagdolled( pl ) ) then
+			if ( pl:IsRagdolled( ) ) then
 				pl:SetNetVar( "gettingup", true )
 				
 				catherine.util.TopNotify( pl, false )

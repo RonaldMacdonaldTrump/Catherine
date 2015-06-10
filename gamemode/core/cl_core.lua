@@ -124,7 +124,7 @@ function GM:CalcView( pl, pos, ang, fov )
 
 	local ent = Entity( pl:GetNetVar( "ragdollIndex", 0 ) )
 
-	if ( IsValid( ent ) and ent:GetClass( ) == "prop_ragdoll" and catherine.player.IsRagdolled( pl ) ) then
+	if ( IsValid( ent ) and ent:GetClass( ) == "prop_ragdoll" and pl:IsRagdolled( ) ) then
 		local index = ent:LookupAttachment( "eyes" )
 		
 		if ( index ) then
@@ -302,7 +302,7 @@ function GM:PlayerBindPress( pl, code, pressed )
 		return true
 	end
 	
-	if ( !pl:GetNetVar( "gettingup" ) and catherine.player.IsRagdolled( pl ) and !pl:GetNetVar( "isForceRagdolled" ) and code:find( "+jump" ) and pressed ) then
+	if ( !pl:GetNetVar( "gettingup" ) and pl:IsRagdolled( ) and !pl:GetNetVar( "isForceRagdolled" ) and code:find( "+jump" ) and pressed ) then
 		catherine.command.Run( "chargetup" )
 		
 		return true
@@ -375,7 +375,7 @@ function GM:FinishChat( )
 end
 
 function GM:DrawEntityTargetID( pl, ent, a )
-	if ( ent:GetNetVar( "noDrawOriginal" ) == true or ( ent:IsPlayer( ) and catherine.player.IsRagdolled( ent ) ) ) then
+	if ( ent:GetNetVar( "noDrawOriginal" ) == true or ( ent:IsPlayer( ) and ent:IsRagdolled( ) ) ) then
 		return
 	end
 	
@@ -406,12 +406,12 @@ function GM:DrawEntityTargetID( pl, ent, a )
 end
 
 function GM:PlayerInformationDraw( pl, target, x, y, a )
-	if ( catherine.player.IsRagdolled( target ) ) then
+	if ( target:IsRagdolled( ) ) then
 		draw.SimpleText( LANG( "Player_Message_Ragdolled_HUD" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		y = y + 20
 	end
 	
-	if ( catherine.player.IsTied( target ) ) then
+	if ( target:IsTied( ) ) then
 		draw.SimpleText( LANG( "Player_Message_UnTie" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		y = y + 20
 	end

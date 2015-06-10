@@ -155,7 +155,7 @@ if ( SERVER ) then
 	catherine.character.SaveTick = catherine.character.SaveTick or CurTime( ) + catherine.configs.saveInterval
 	
 	function catherine.character.New( pl, id )
-		if ( catherine.player.IsTied( pl ) ) then
+		if ( pl:IsTied( ) ) then
 			return false, "^Character_Notify_CantSwitchTied"
 		end
 		
@@ -163,7 +163,7 @@ if ( SERVER ) then
 			return false, "^Character_Notify_CantSwitchDeath"
 		end
 		
-		if ( catherine.player.IsRagdolled( pl ) ) then
+		if ( pl:IsRagdolled( ) ) then
 			return false, "^Character_Notify_CantSwitchRagdolled"
 		end
 		

@@ -112,12 +112,12 @@ if ( SERVER ) then
 	
 	function catherine.player.SetTie( pl, target, bool, force, removeItem )
 		if ( bool ) then
-			if ( catherine.player.IsTied( pl ) and !force ) then
+			if ( pl:IsTied( ) and !force ) then
 				catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 				return
 			end
 		
-			if ( catherine.player.IsTied( target ) ) then
+			if ( target:IsTied( ) ) then
 				catherine.util.NotifyLang( pl, "Item_Notify01_ZT" )
 				return
 			end
@@ -138,7 +138,7 @@ if ( SERVER ) then
 				if ( !IsValid( target ) ) then return end
 				
 				if ( target:GetClass( ) == "prop_ragdoll" ) then
-					target = target:GetNetVar( "player" )
+					target = catherine.entity.GetPlayer( target )
 				end
 				
 				if ( IsValid( target ) ) then
@@ -153,12 +153,12 @@ if ( SERVER ) then
 				end
 			end )
 		else
-			if ( catherine.player.IsTied( pl ) and !force ) then
+			if ( pl:IsTied( ) and !force ) then
 				catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 				return
 			end
 			
-			if ( !catherine.player.IsTied( target ) ) then
+			if ( !target:IsTied( ) ) then
 				catherine.util.NotifyLang( pl, "Item_Notify04_ZT" )
 				return
 			end
@@ -174,7 +174,7 @@ if ( SERVER ) then
 				if ( !IsValid( target ) ) then return end
 				
 				if ( target:GetClass( ) == "prop_ragdoll" ) then
-					target = target:GetNetVar( "player" )
+					target = catherine.entity.GetPlayer( target )
 				end
 		
 				if ( IsValid( target ) ) then
@@ -353,7 +353,7 @@ if ( SERVER ) then
 	end
 
 	function META:SetWeaponRaised( bool, wep )
-		if ( catherine.player.IsTied( self ) ) then
+		if ( self:IsTied( ) ) then
 			if ( self:GetWeaponRaised( ) ) then
 				self:SetNetVar( "weaponRaised", false )
 			end
@@ -464,7 +464,7 @@ function META:GetWeaponRaised( )
 		end
 	end
 	
-	if ( catherine.player.IsTied( self ) ) then
+	if ( self:IsTied( ) ) then
 		return false
 	end
 	
@@ -494,20 +494,20 @@ function META:IsNoclipping( )
 	return self:GetNetVar( "nocliping", false )
 end
 
+function META:IsRagdolled( )
+	return self:GetNetVar( "isRagdolled", false )
+end
+
+function META:IsTied( )
+	return pl:GetNetVar( "isTied", false )
+end
+
 function META:IsChatTyping( )
 	return self:GetNetVar( "isTyping", false )
 end
 
 function META:IsRunning( )
 	return twoD( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
-end
-
-function catherine.player.IsRagdolled( pl )
-	return pl:GetNetVar( "isRagdolled", nil )
-end
-
-function catherine.player.IsTied( pl )
-	return pl:GetNetVar( "isTied", false )
 end
 
 function player.GetAllByLoaded( )

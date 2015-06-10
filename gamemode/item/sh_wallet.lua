@@ -50,7 +50,7 @@ ITEM.func.drop = {
 	icon = "icon16/money_delete.png",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, isMenu )
-		if ( catherine.player.IsTied( pl ) ) then
+		if ( pl:IsTied( ) ) then
 			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 			return
 		end

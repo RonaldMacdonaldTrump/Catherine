@@ -92,6 +92,7 @@ function GM:PlayerCharacterLoaded( pl )
 				timer.Remove( "Catherine.timer.Salary_" .. pl:SteamID( ) )
 				return
 			end
+			
 			local amount = hook.Run( "GetSalaryAmount", pl, factionTable ) or factionTable.salary
 			
 			catherine.cash.Give( pl, amount )
@@ -198,7 +199,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 	local entPlayer = ent
 	
 	if ( ent:GetClass( ) == "prop_ragdoll" ) then
-		local pl = ent:GetNetVar( "player" )
+		local pl = catherine.entity.GetPlayer( ent )
 		
 		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
 			local inflictor = dmgInfo:GetInflictor( )
@@ -212,6 +213,8 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 			if ( amount >= 20 or dmgInfo:IsBulletDamage( ) ) then
 				pl.CAT_ignore_hurtSound = true
 				
+				// Uh....
+				pl:TakeDamage( amount, attacker, inflictor )
 				catherine.effect.Create( "BLOOD", {
 					ent = ent,
 					pos = dmgInfo:GetDamagePosition( ),
@@ -219,13 +222,10 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 					decalCount = 1
 				} )
 				
-				pl:TakeDamage( amount, attacker, inflictor )
 				pl.CAT_ignore_hurtSound = nil
 
-				if ( pl:Health( ) <= 0 ) then
-					if ( !pl.CAT_deathSoundPlayed ) then
-						hook.Run( "PlayerDeathSound", pl, ent )
-					end
+				if ( pl:Health( ) <= 0 and !pl.CAT_deathSoundPlayed ) then
+					hook.Run( "PlayerDeathSound", pl, ent )
 				else
 					hook.Run( "PlayerTakeDamage", pl, attacker, ent )
 				end
@@ -302,8 +302,10 @@ end
 
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Create( "Catherine.timer.WeaponToggle." .. pl:SteamID( ), 1, 1, function( )
-			pl:ToggleWeaponRaised( )
+		timer.Create( "Catherine.timer.WeaponToggle" .. pl:SteamID( ), 1, 1, function( )
+			if ( IsValid( pl ) ) then
+				pl:ToggleWeaponRaised( )
+			end
 		end )
 	elseif ( key == IN_USE ) then
 		local data = { }
@@ -311,28 +313,32 @@ function GM:KeyPress( pl, key )
 		data.endpos = data.start + pl:GetAimVector( ) * 100
 		data.filter = pl
 		local ent = util.TraceLine( data ).Entity
-		
-		if ( !IsValid( ent ) ) then return end
-		
-		if ( ent.CAT_ignoreUse ) then
+
+		if ( !IsValid( ent ) or ent.CAT_ignoreUse ) then
 			return
 		end
 		
 		if ( ent:GetClass( ) == "prop_ragdoll" ) then
-			ent = ent:GetNetVar( "player" )
+			ent = catherine.entity.GetPlayer( ent )
 		end
+		
+		if ( !IsValid( ent ) ) then return end
 
-		if ( IsValid( ent ) and ent:IsPlayer( ) ) then
-			return hook.Run( "PlayerInteract", pl, ent )
-		end
-
-		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
+		if ( catherine.entity.IsDoor( ent ) ) then
 			catherine.door.DoorSpamProtection( pl, ent )
 
 			hook.Run( "PlayerUse", pl, ent )
-		elseif ( IsValid( ent ) and ent.IsCustomUse ) then
+		elseif ( ent:IsPlayer( ) ) then
+			return hook.Run( "PlayerInteract", pl, ent )
+		elseif ( ent.IsCustomUse ) then
 			netstream.Start( pl, "catherine.entity.CustomUseMenu", ent:EntIndex( ) )
 		end
+	end
+end
+
+function GM:KeyRelease( pl, key )
+	if ( key == IN_RELOAD ) then
+		timer.Remove( "Catherine.timer.WeaponToggle_" .. pl:SteamID( ) )
 	end
 end
 
@@ -341,7 +347,7 @@ function GM:PlayerCanUseDoor( pl, ent )
 end
 
 function GM:PlayerUse( pl, ent )
-	if ( catherine.player.IsTied( pl ) ) then
+	if ( pl:IsTied( ) ) then
 		if ( ( pl.CAT_tiedMSG or 0 ) <= CurTime( ) ) then
 			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 			pl.CAT_tiedMSG = CurTime( ) + 5
@@ -367,12 +373,6 @@ end
 
 function GM:PlayerSay( pl, text )
 	catherine.chat.Run( pl, text )
-end
-
-function GM:KeyRelease( pl, key )
-	if ( key == IN_RELOAD ) then
-		timer.Remove( "Catherine.timer.WeaponToggle." .. pl:SteamID( ) )
-	end
 end
 
 function GM:PlayerInitialSpawn( pl )
@@ -544,7 +544,7 @@ function GM:Tick( )
 		catherine.player.BunnyHopProtection( v )
 		catherine.player.HealthRecoverTick( v )
 		
-		if ( ( v.CAT_nextJumpUpdate or 0 ) <= CurTime( ) and v:Alive( ) and !catherine.player.IsRagdolled( v ) and !v:InVehicle( ) and v:GetMoveType( ) == MOVETYPE_WALK and v:IsInWorld( ) and !v:IsOnGround( ) ) then
+		if ( ( v.CAT_nextJumpUpdate or 0 ) <= CurTime( ) and v:Alive( ) and !v:IsRagdolled( ) and !v:InVehicle( ) and v:GetMoveType( ) == MOVETYPE_WALK and v:IsInWorld( ) and !v:IsOnGround( ) ) then
 			hook.Run( "PlayerJump", v )
 			v.CAT_nextJumpUpdate = CurTime( ) + 1
 		end

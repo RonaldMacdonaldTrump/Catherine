@@ -71,7 +71,7 @@ catherine.chat.Register( "ic", {
 		chat.AddText( Color( 255, 255, 150 ), LANG( "Chat_Str_IC", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 300,
-	canRun = function( pl ) return !catherine.player.IsRagdolled( pl ) and pl:Alive( ) end,
+	canRun = function( pl ) return !pl:IsRagdolled( ) and pl:Alive( ) end,
 	canHear = function( pl ) return pl:Alive( ) end
 } )
 
@@ -104,7 +104,7 @@ catherine.chat.Register( "roll", {
 		chat.AddText( Color( 158, 122, 19 ), LANG( "Chat_Str_Roll", name, catherine.chat.PreSet( text ) ) )
 	end,
 	canHearRange = 600,
-	canRun = function( pl ) return !catherine.player.IsRagdolled( pl ) and pl:Alive( ) end,
+	canRun = function( pl ) return !pl:IsRagdolled( ) and pl:Alive( ) end,
 } )
 
 catherine.chat.Register( "pm", {
@@ -134,7 +134,7 @@ catherine.chat.Register( "yell", {
 	end,
 	canHearRange = 600,
 	command = { "/y", "/yell" },
-	canRun = function( pl ) return !catherine.player.IsRagdolled( pl ) and pl:Alive( ) end,
+	canRun = function( pl ) return !pl:IsRagdolled( ) and pl:Alive( ) end,
 } )
 
 catherine.chat.Register( "whisper", {
@@ -149,7 +149,7 @@ catherine.chat.Register( "whisper", {
 	end,
 	canHearRange = 150,
 	command = { "/w", "/whisper" },
-	canRun = function( pl ) return !catherine.player.IsRagdolled( pl ) and pl:Alive( ) end,
+	canRun = function( pl ) return !pl:IsRagdolled( ) and pl:Alive( ) end,
 } )
 
 catherine.chat.Register( "ooc", {
