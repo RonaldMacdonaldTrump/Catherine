@@ -210,7 +210,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 				return
 			end
 			
-			if ( amount >= 20 or dmgInfo:IsBulletDamage( ) ) then
+			if ( amount >= 20 and dmgInfo:IsBulletDamage( ) ) then // if ( amount >= 20 and dmgInfo:IsBulletDamage( ) ) then :  need? :<
 				pl.CAT_ignore_hurtSound = true
 				
 				// Uh....
