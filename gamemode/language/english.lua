@@ -294,6 +294,9 @@ LANGUAGE.data = {
 	[ "Option_Str_BAR_Name" ] = "Show Bar",
 	[ "Option_Str_BAR_Desc" ] = "Displays the Bar.",
 	
+	[ "Option_Str_CHAT_TIMESTAMP_Name" ] = "Show Chat Timestamp",
+	[ "Option_Str_CHAT_TIMESTAMP_Desc" ] = "Displays chat timestamp in the chat message.",
+	
 	[ "Option_Str_ADMIN_ESP_Name" ] = "Show Admin ESP",
 	[ "Option_Str_ADMIN_ESP_Desc" ] = "Only show the administrative ESP if in noclipping.",
 	

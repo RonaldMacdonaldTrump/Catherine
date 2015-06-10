@@ -93,6 +93,12 @@ function catherine.util.GetRealTime( )
 	return one.year .. "-" .. one.month .. "-" .. one.day .. " | " .. dst .. " " .. hour .. ":" .. os.date( "%M" )
 end
 
+function catherine.util.GetChatTimeStamp( )
+	local hour = tonumber( os.date( "%H" ) )
+
+	return os.date( "%p" ) .. " " .. ( hour > 12 and hour - 12 or hour ) .. ":" .. os.date( "%M" )
+end
+
 function catherine.util.GetAdmins( isSuperAdmin )
 	local players = { }
 	

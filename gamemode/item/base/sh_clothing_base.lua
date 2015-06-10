@@ -67,7 +67,7 @@ BASE.func.wear = {
 		catherine.character.SetCharVar( pl, "clothWearing", true )
 	end,
 	canLook = function( pl, itemTable )
-		return !catherine.inventory.GetItemData( itemTable.uniqueID, "wearing" )
+		return !catherine.inventory.GetItemData( itemTable.uniqueID, "wearing" ) and !catherine.character.GetCharVar( pl, "clothWearing" )
 	end
 }
 BASE.func.takeoff = {
@@ -80,12 +80,6 @@ BASE.func.takeoff = {
 			return
 		end
 		
-		local replacement = itemTable.replacement
-		
-		if ( replacement and #replacement == 2 ) then
-			originalModel = pl:GetModel( ):lower( ):gsub( replacement[ 2 ], replacement[ 1 ] )
-		end
-
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 100 )
 		pl:SetModel( originalModel )
 		pl:SetupHands( )
@@ -131,6 +125,14 @@ if ( SERVER ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
+else
+	function BASE:DrawInformation( pl, itemTable, w, h, itemData )
+		if ( itemData.wearing ) then
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface.SetMaterial( Material( "icon16/accept.png" ) )
+			surface.DrawTexturedRect( 5, 5, 16, 16 )
+		end
+	end
 end
 
 catherine.item.Register( BASE )

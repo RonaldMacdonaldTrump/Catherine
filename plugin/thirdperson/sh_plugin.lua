@@ -22,16 +22,16 @@ PLUGIN.author = "L7D"
 PLUGIN.desc = "^Thirdperson_Plugin_Desc"
 
 catherine.language.Merge( "english", {
-	[ "Option_Str_Thirdperson_Name" ] = "Enable Third Person",
+	[ "Option_Str_Thirdperson_Name" ] = "Enable Third Person (Beta)",
 	[ "Option_Str_Thirdperson_Desc" ] = "Enable the Third Person.",
-	[ "Thirdperson_Plugin_Name" ] = "Third Person",
+	[ "Thirdperson_Plugin_Name" ] = "Third Person (Beta)",
 	[ "Thirdperson_Plugin_Desc" ] = "Good stuff."
 } )
 
 catherine.language.Merge( "korean", {
-	[ "Option_Str_Thirdperson_Name" ] = "3인칭 활성화",
+	[ "Option_Str_Thirdperson_Name" ] = "3인칭 활성화 (베타)",
 	[ "Option_Str_Thirdperson_Desc" ] = "3인칭을 활성화 합니다.",
-	[ "Thirdperson_Plugin_Name" ] = "3인칭",
+	[ "Thirdperson_Plugin_Name" ] = "3인칭 (베타)",
 	[ "Thirdperson_Plugin_Desc" ] = "3인칭으로 플레이 할 수 있게 합니다."
 } )
 

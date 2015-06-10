@@ -379,6 +379,7 @@ function GM:PlayerInitialSpawn( pl )
 	timer.Simple( 1, function( )
 		pl:SetNoDraw( true )
 		pl:SetNotSolid( true )
+		pl:GodEnable( )
 		
 		catherine.player.Initialize( pl )
 	end )

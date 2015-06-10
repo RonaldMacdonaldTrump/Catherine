@@ -68,7 +68,11 @@ catherine.chat.Register( "ic", {
 			name = desc
 		end
 		
-		chat.AddText( Color( 255, 255, 150 ), LANG( "Chat_Str_IC", name, catherine.chat.PreSet( text ) ) )
+		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
+			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", Color( 255, 255, 150 ), LANG( "Chat_Str_IC", name, catherine.chat.PreSet( text ) ) )
+		else
+			chat.AddText( Color( 255, 255, 150 ), LANG( "Chat_Str_IC", name, catherine.chat.PreSet( text ) ) )
+		end
 	end,
 	canHearRange = 300,
 	canRun = function( pl ) return !pl:IsRagdolled( ) and pl:Alive( ) end,
@@ -77,10 +81,14 @@ catherine.chat.Register( "ic", {
 
 catherine.chat.Register( "me", {
 	func = function( pl, text )
-		chat.AddText( Color( 224, 255, 255 ), "** " .. pl:Name( ) .. " " .. text )
+		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
+			
+		else
+			chat.AddText( Color( 224, 255, 255 ), "** " .. pl:Name( ) .. " " .. text )
+		end
 	end,
 	command = { "/me" },
-	canHearRange = 1500,
+	canHearRange = 900,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
@@ -89,7 +97,7 @@ catherine.chat.Register( "it", {
 		chat.AddText( Color( 224, 255, 255 ), "*** " .. pl:Name( ) .. " " .. text )
 	end,
 	command = { "/it" },
-	canHearRange = 1000,
+	canHearRange = 650,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
@@ -366,6 +374,9 @@ else
 	local CHATBox_w, CHATBox_h = ScrW( ) * 0.5, ScrH( ) * 0.3
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
 	local maxchatLine = catherine.configs.maxChatboxLine
+	
+	CAT_CONVAR_CHAT_TIMESTAMP = CreateClientConVar( "cat_convar_chat_timestamp", 1, true, true )
+	catherine.option.Register( "CONVAR_CHAT_TIMESTAMP", "cat_convar_chat_timestamp", "^Option_Str_CHAT_TIMESTAMP_Name", "^Option_Str_CHAT_TIMESTAMP_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
 	
 	netstream.Hook( "catherine.chat.Post", function( data )
 		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end

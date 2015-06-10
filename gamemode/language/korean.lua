@@ -293,6 +293,9 @@ LANGUAGE.data = {
 	[ "Option_Str_BAR_Name" ] = "상단바 표시",
 	[ "Option_Str_BAR_Desc" ] = "상단에 있는 바를 표시합니다.",
 	
+	[ "Option_Str_CHAT_TIMESTAMP_Name" ] = "채팅 타임스탬프 표시",
+	[ "Option_Str_CHAT_TIMESTAMP_Desc" ] = "채팅이 수신된 시간을 채팅 옆에 표시합니다.",
+	
 	[ "Option_Str_ADMIN_ESP_Name" ] = "어드민 ESP 표시",
 	[ "Option_Str_ADMIN_ESP_Desc" ] = "노클립을 했을 때 플레이어의 위에 정보를 뜨게 합니다.",
 	
