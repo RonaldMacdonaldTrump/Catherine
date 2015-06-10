@@ -32,7 +32,7 @@ catherine.language.Merge( "korean", {
 	[ "Option_Str_Thirdperson_Name" ] = "3인칭 활성화",
 	[ "Option_Str_Thirdperson_Desc" ] = "3인칭을 활성화 합니다.",
 	[ "Thirdperson_Plugin_Name" ] = "3인칭",
-	[ "Thirdperson_Plugin_Desc" ] = "Good stuff."
+	[ "Thirdperson_Plugin_Desc" ] = "3인칭으로 플레이 할 수 있게 합니다."
 } )
 
 if ( SERVER ) then return end
@@ -42,7 +42,7 @@ catherine.option.Register( "CONVAR_THIRD_PERSON", "cat_convar_thirdperson", "^Op
 
 function PLUGIN:CalcView( pl, pos, ang, fov )
 	if ( GetConVarString( "cat_convar_thirdperson" ) == "0" ) then return end
-	
+
 	local tr = util.TraceLine( {
 		start = pos,
 		endpos = pos - ( ang:Forward( ) * 100 )
@@ -53,7 +53,7 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 		angles = ang,
 		fov = fov
 	}
-	
+
 	return GAMEMODE:CalcView( pl, data.origin, data.angles, data.fov )
 end
 

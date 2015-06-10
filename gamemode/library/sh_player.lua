@@ -499,7 +499,7 @@ function META:IsRagdolled( )
 end
 
 function META:IsTied( )
-	return pl:GetNetVar( "isTied", false )
+	return self:GetNetVar( "isTied", false )
 end
 
 function META:IsChatTyping( )

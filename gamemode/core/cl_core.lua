@@ -100,19 +100,6 @@ function GM:CalcView( pl, pos, ang, fov )
 		return viewData
 	end
 	
-	--[[ // Thirdperson support :<
-	local data = util.TraceLine( {
-		start = pos,
-		endpos = pos - ( ang:Forward( ) * 100 )
-	} )
-
-	viewData = {
-		origin = data.Fraction < 1 and ( data.HitPos + data.HitNormal * 5 ) or data.HitPos
-	}
-	
-	return viewData
-	--]]
-	
 	if ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or !pl:IsCharacterLoaded( ) ) then
 		viewData = {
 			origin = catherine.configs.schematicViewPos.pos,

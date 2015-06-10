@@ -205,20 +205,20 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 			local inflictor = dmgInfo:GetInflictor( )
 			local attacker = dmgInfo:GetAttacker( )
 			local amount = dmgInfo:GetDamage( )
-			
-			if ( !attacker:IsPlayer( ) and ( attacker:GetClass( ) == "prop_ragdoll" or catherine.entity.IsDoor( attacker ) or amount < 5 ) ) then
+
+			if ( !attacker:IsPlayer( ) or attacker:GetClass( ) == "prop_ragdoll" or catherine.entity.IsDoor( attacker ) or amount < 5 ) then
 				return
 			end
 			
-			if ( amount >= 20 and dmgInfo:IsBulletDamage( ) ) then // if ( amount >= 20 and dmgInfo:IsBulletDamage( ) ) then :  need? :<
+			if ( amount >= 20 or dmgInfo:IsBulletDamage( ) ) then // if ( amount >= 20 and dmgInfo:IsBulletDamage( ) ) then :  need? :<
 				pl.CAT_ignore_hurtSound = true
-				
+
 				// Uh....
 				pl:TakeDamage( amount, attacker, inflictor )
 				catherine.effect.Create( "BLOOD", {
 					ent = ent,
 					pos = dmgInfo:GetDamagePosition( ),
-					scale = dmgInfo:GetDamageForce( ),
+					scale = 1,
 					decalCount = 1
 				} )
 				
@@ -426,35 +426,39 @@ function GM:PlayerTakeDamage( pl, attacker, ragdollEntity )
 	end
 	
 	pl.CAT_healthRecover = true
-	
-	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 
-	local sound = hook.Run( "GetPlayerPainSound", pl )
-	local gender = pl:GetGender( )
+	if ( !pl.CAT_ignoreScreenColor ) then
+		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+	end
 	
-	if ( !sound ) then
-		local hitGroup = pl:LastHitGroup( )
-		
-		if ( hitGroup == HITGROUP_HEAD ) then
-			sound = "vo/npc/" .. gender .. "01/ow0" .. math.random( 1, 2 ) .. ".wav"
-		elseif ( hitGroup == HITGROUP_CHEST or hitGroup == HITGROUP_GENERIC ) then
-			sound = "vo/npc/" .. gender .. "01/hitingut0" .. math.random( 1, 2 ) .. ".wav"
-		elseif ( hitGroup == HITGROUP_LEFTLEG or hitGroup == HITGROUP_RIGHTLEG ) then
-			sound = "vo/npc/" .. gender .. "01/myleg0" .. math.random( 1, 2 ) .. ".wav"
-		elseif ( hitGroup == HITGROUP_LEFTARM or hitGroup == HITGROUP_RIGHTARM ) then
-			sound = "vo/npc/" .. gender .. "01/myarm0" .. math.random( 1, 2 ) .. ".wav"
-		elseif ( hitGroup == HITGROUP_GEAR ) then
-			sound = "vo/npc/" .. gender .. "01/startle0" .. math.random( 1, 2 ) .. ".wav"
+	if ( !pl.CAT_ignore_hurtSound ) then
+		local sound = hook.Run( "GetPlayerPainSound", pl )
+		local gender = pl:GetGender( )
+	
+		if ( !sound ) then
+			local hitGroup = pl:LastHitGroup( )
+			
+			if ( hitGroup == HITGROUP_HEAD ) then
+				sound = "vo/npc/" .. gender .. "01/ow0" .. math.random( 1, 2 ) .. ".wav"
+			elseif ( hitGroup == HITGROUP_CHEST or hitGroup == HITGROUP_GENERIC ) then
+				sound = "vo/npc/" .. gender .. "01/hitingut0" .. math.random( 1, 2 ) .. ".wav"
+			elseif ( hitGroup == HITGROUP_LEFTLEG or hitGroup == HITGROUP_RIGHTLEG ) then
+				sound = "vo/npc/" .. gender .. "01/myleg0" .. math.random( 1, 2 ) .. ".wav"
+			elseif ( hitGroup == HITGROUP_LEFTARM or hitGroup == HITGROUP_RIGHTARM ) then
+				sound = "vo/npc/" .. gender .. "01/myarm0" .. math.random( 1, 2 ) .. ".wav"
+			elseif ( hitGroup == HITGROUP_GEAR ) then
+				sound = "vo/npc/" .. gender .. "01/startle0" .. math.random( 1, 2 ) .. ".wav"
+			end
 		end
-	end
 
-	if ( IsValid( ragdollEntity ) ) then
-		ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
-		
-		return true
-	end
+		if ( IsValid( ragdollEntity ) ) then
+			ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+			
+			return true
+		end
 
-	pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+		pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+	end
 	
 	return true
 end

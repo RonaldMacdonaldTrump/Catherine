@@ -115,7 +115,7 @@ function SWEP:PrimaryAttack( )
 			catherine.effect.Create( "BLOOD", {
 				ent = ent,
 				pos = dmgInfo:GetDamagePosition( ),
-				scale = dmgInfo:GetDamageForce( ),
+				scale = 1,
 				decalCount = 1
 			} )
 		elseif ( ent:GetClass( ) == "prop_ragdoll" ) then
@@ -132,7 +132,7 @@ function SWEP:PrimaryAttack( )
 				catherine.effect.Create( "BLOOD", {
 					ent = target,
 					pos = dmgInfo:GetDamagePosition( ),
-					scale = dmgInfo:GetDamageForce( ),
+					scale = 1,
 					decalCount = 1
 				} )
 			end
