@@ -432,8 +432,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.Save( pl )
-		if ( !IsValid( pl ) or !pl.IsPlayer( pl ) ) then
-			catherine.util.ErrorPrint( "Character save error!, player is not valid!" )
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
 			return
 		end
 		
@@ -441,6 +440,7 @@ if ( SERVER ) then
 		
 		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
 		if ( !networkRegistry ) then return end
+		
 		local steamID = pl:SteamID( )
 		
 		for k, v in pairs( networkRegistry ) do

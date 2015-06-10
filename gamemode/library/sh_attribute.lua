@@ -24,7 +24,6 @@ catherine.attribute.lists = catherine.attribute.lists or { }
 
 function catherine.attribute.Register( attributeTable )
 	if ( !attributeTable or !attributeTable.index ) then
-		catherine.util.ErrorPrint( "Attribute register error, can't found attribute table!" )
 		return
 	end
 	

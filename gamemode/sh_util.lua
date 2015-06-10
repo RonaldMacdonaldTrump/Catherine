@@ -22,10 +22,6 @@ function catherine.util.Print( col, val )
 	MsgC( col or Color( 255, 255, 255 ), "[CAT] " .. val .. "\n" )
 end
 
-function catherine.util.ErrorPrint( val )
-	MsgC( Color( 0, 255, 255 ), "[CAT LUA ERROR] " .. val .. "\n" )
-end
-
 function catherine.util.Include( dir, typ )
 	dir = dir:lower( )
 	
@@ -243,7 +239,7 @@ if ( SERVER ) then
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
 		if ( func ) then
-			local timerID = message .. pl:SteamID( )
+			local timerID = pl:SteamID( )
 			
 			timer.Remove( timerID )
 			

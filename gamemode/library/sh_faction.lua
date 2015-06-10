@@ -22,7 +22,6 @@ local META = FindMetaTable( "Player" )
 
 function catherine.faction.Register( factionTable )
 	if ( !factionTable or !factionTable.index ) then
-		catherine.util.ErrorPrint( "Faction register error, can't found faction table!" )
 		return
 	end
 	

@@ -123,9 +123,6 @@ function GM:PlayerSpawn( pl )
 	catherine.util.ProgressBar( pl, false )
 	catherine.util.TopNotify( pl, false )
 
-	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
-	pl:AllowFlashlight( status )
-	
 	if ( catherine.configs.giveHand ) then
 		pl:Give( "cat_fist" )
 	end
@@ -197,19 +194,31 @@ function GM:PlayerCanHearPlayersVoice( pl, target )
 	return catherine.configs.voiceAllow, catherine.configs.voice3D
 end
 
-function GM:EntityTakeDamage( ent, dmginfo )
+function GM:EntityTakeDamage( ent, dmgInfo )
 	local entPlayer = ent
 	
 	if ( ent:GetClass( ) == "prop_ragdoll" ) then
 		local pl = ent:GetNetVar( "player" )
 		
 		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
-			local inflictor = dmginfo:GetInflictor( )
-			local attacker = dmginfo:GetAttacker( )
-			local amount = dmginfo:GetDamage( )
+			local inflictor = dmgInfo:GetInflictor( )
+			local attacker = dmgInfo:GetAttacker( )
+			local amount = dmgInfo:GetDamage( )
 			
-			if ( amount >= 20 or dmginfo:IsBulletDamage( ) ) then
+			if ( !attacker:IsPlayer( ) and ( attacker:GetClass( ) == "prop_ragdoll" or catherine.entity.IsDoor( attacker ) or amount < 5 ) ) then
+				return
+			end
+			
+			if ( amount >= 20 or dmgInfo:IsBulletDamage( ) ) then
 				pl.CAT_ignore_hurtSound = true
+				
+				catherine.effect.Create( "BLOOD", {
+					ent = ent,
+					pos = dmgInfo:GetDamagePosition( ),
+					scale = dmgInfo:GetDamageForce( ),
+					decalCount = 1
+				} )
+				
 				pl:TakeDamage( amount, attacker, inflictor )
 				pl.CAT_ignore_hurtSound = nil
 
@@ -225,9 +234,9 @@ function GM:EntityTakeDamage( ent, dmginfo )
 	end
 	
 	if ( catherine.configs.doorBreach ) then
-		local pl = dmginfo:GetAttacker( )
+		local pl = dmgInfo:GetAttacker( )
 
-		if ( IsValid( pl ) and ent:GetClass( ) == "prop_door_rotating" and dmginfo:IsBulletDamage( ) and !pl:IsNoclipping( ) and ( ent.CAT_nextDoorBreach or 0 ) <= CurTime( ) ) then
+		if ( IsValid( pl ) and ent:GetClass( ) == "prop_door_rotating" and dmgInfo:IsBulletDamage( ) and !pl:IsNoclipping( ) and ( ent.CAT_nextDoorBreach or 0 ) <= CurTime( ) ) then
 			local partner = catherine.util.GetDoorPartner( ent )
 			
 			if ( IsValid( ent.lock ) or ( IsValid( partner ) and IsValid( partner.lock ) ) ) then
@@ -237,7 +246,7 @@ function GM:EntityTakeDamage( ent, dmginfo )
 			local index = ent:LookupBone( "handle" )
 			
 			if ( index ) then
-				local pos = dmginfo:GetDamagePosition( )
+				local pos = dmgInfo:GetDamagePosition( )
 		 
 				if ( pl:GetEyeTrace( ).Entity != ent or pl:GetPos( ):Distance( pos ) < 130 and pos:Distance( ent:GetBonePosition( index ) ) <= 5 ) then
 					ent:EmitSound( "physics/wood/wood_crate_break" .. math.random( 1, 5 ) .. ".wav", 150 )
@@ -269,13 +278,15 @@ function GM:EntityTakeDamage( ent, dmginfo )
 		end
 	end
 	
-	if ( ent:IsPlayer( ) and dmginfo:IsBulletDamage( ) ) then
+	if ( ent:IsPlayer( ) and dmgInfo:IsBulletDamage( ) ) then
 		local steamID = ent:SteamID( )
 		
 		ent:SetRunSpeed( ent:GetWalkSpeed( ) )
 
 		timer.Remove( "Catherine.timer.RunSpamProtection_" .. steamID )
 		timer.Create( "Catherine.timer.RunSpamProtection_" .. steamID, 2, 1, function( )
+			if ( !IsValid( ent ) ) then return end
+			
 			ent:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( ent ) )
 		end )
 	end
