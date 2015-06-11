@@ -46,7 +46,7 @@ SWEP.Secondary.Ammo = ""
 SWEP.Secondary.Delay = 0.5
 
 SWEP.HitDistance = 76
-SWEP.LowerAngles = Angle( 0, 5, -15 )
+SWEP.LowerAngles = Angle( 0, 5, -33 )
 SWEP.UseHands = false
 SWEP.CanFireLowered = true
 

@@ -121,6 +121,8 @@ function GM:PlayerSpawn( pl )
 	pl:SetupHands( )
 	pl:SetCanZoom( false )
 
+	catherine.limb.HealBody( pl, 100 )
+
 	catherine.util.ProgressBar( pl, false )
 	catherine.util.TopNotify( pl, false )
 
@@ -137,13 +139,50 @@ function GM:PlayerSpawn( pl )
 	end
 end
 
-function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
-	if ( !pl:IsPlayer( ) or pl.CAT_ignoreScreenColor ) then return end
+function GM:PlayerLimbTakeDamage( pl, hitGroup, amount )
 
-	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+end
+
+function GM:PlayerLimbDamageHealed( pl, hitGroup, amount )
+
+end
+
+function GM:PlayerJump( pl )
 	
-	if ( hitGroup == CAT_BODY_ID_HEAD ) then
-		catherine.util.ScreenColorEffect( pl, nil, 2, 0.005 )
+end
+
+function GM:PlayerInfoTable( pl, infoTable )
+	local jumpPower = infoTable.jumpPower
+	
+	local leftLegLimb = catherine.limb.GetDamage( pl, HITGROUP_LEFTLEG )
+	local rightLegLimb = catherine.limb.GetDamage( pl, HITGROUP_RIGHTLEG )
+	local originalJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
+
+	if ( ( leftLegLimb and leftLegLimb != 0 ) and ( rightLegLimb and rightLegLimb != 0 ) ) then
+		
+		local per = ( math.max( leftLegLimb, leftLegLimb ) / 100 ) * originalJumpPower / originalJumpPower
+		
+		jumpPower = originalJumpPower - ( originalJumpPower * per )
+
+		return {
+			jumpPower = jumpPower
+		}
+	else
+		return {
+			jumpPower = originalJumpPower
+		}
+	end
+end
+
+function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
+	if ( !pl:IsPlayer( ) ) then return end
+	
+	if ( !pl.CAT_ignoreScreenColor ) then
+		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+		
+		if ( hitGroup == CAT_BODY_ID_HEAD ) then
+			catherine.util.ScreenColorEffect( pl, nil, 2, 0.005 )
+		end
 	end
 end
 
@@ -196,8 +235,6 @@ function GM:PlayerCanHearPlayersVoice( pl, target )
 end
 
 function GM:EntityTakeDamage( ent, dmgInfo )
-	local entPlayer = ent
-	
 	if ( ent:GetClass( ) == "prop_ragdoll" ) then
 		local pl = catherine.entity.GetPlayer( ent )
 		
@@ -210,7 +247,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 				return
 			end
 			
-			if ( amount >= 20 or dmgInfo:IsBulletDamage( ) ) then // if ( amount >= 20 and dmgInfo:IsBulletDamage( ) ) then :  need? :<
+			if ( amount >= 20 or dmgInfo:IsBulletDamage( ) ) then
 				pl.CAT_ignore_hurtSound = true
 
 				// Uh....
@@ -227,10 +264,12 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 				if ( pl:Health( ) <= 0 and !pl.CAT_deathSoundPlayed ) then
 					hook.Run( "PlayerDeathSound", pl, ent )
 				else
-					hook.Run( "PlayerTakeDamage", pl, attacker, ent )
+					hook.Run( "PlayerTakeDamage", pl, attacker, dmgInfo, ent )
 				end
 			end
 		end
+	elseif ( ent:IsPlayer( ) ) then
+		hook.Run( "PlayerTakeDamage", ent, dmgInfo:GetAttacker( ), dmgInfo )
 	end
 	
 	if ( catherine.configs.doorBreach ) then
@@ -247,7 +286,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 			
 			if ( index ) then
 				local pos = dmgInfo:GetDamagePosition( )
-		 
+
 				if ( pl:GetEyeTrace( ).Entity != ent or pl:GetPos( ):Distance( pos ) < 130 and pos:Distance( ent:GetBonePosition( index ) ) <= 5 ) then
 					ent:EmitSound( "physics/wood/wood_crate_break" .. math.random( 1, 5 ) .. ".wav", 150 )
 
@@ -421,7 +460,7 @@ function GM:PlayerSpawnProp( pl )
 	return pl:HasFlag( "e" )
 end
 
-function GM:PlayerTakeDamage( pl, attacker, ragdollEntity )
+function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 	if ( pl:Health( ) <= 0 ) then
 		return true
 	end
@@ -432,13 +471,20 @@ function GM:PlayerTakeDamage( pl, attacker, ragdollEntity )
 		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 	end
 	
+	local hitGroup = pl:LastHitGroup( )
+
+	if ( dmgInfo:IsDamageType( DMG_FALL ) ) then
+		catherine.limb.TakeDamage( pl, HITGROUP_LEFTLEG, dmgInfo:GetDamage( ) )
+		catherine.limb.TakeDamage( pl, HITGROUP_RIGHTLEG, dmgInfo:GetDamage( ) )
+	else
+		catherine.limb.TakeDamage( pl, hitGroup, dmgInfo:GetDamage( ) )
+	end
+
 	if ( !pl.CAT_ignore_hurtSound ) then
 		local sound = hook.Run( "GetPlayerPainSound", pl )
 		local gender = pl:GetGender( )
 	
 		if ( !sound ) then
-			local hitGroup = pl:LastHitGroup( )
-			
 			if ( hitGroup == HITGROUP_HEAD ) then
 				sound = "vo/npc/" .. gender .. "01/ow0" .. math.random( 1, 2 ) .. ".wav"
 			elseif ( hitGroup == HITGROUP_CHEST or hitGroup == HITGROUP_GENERIC ) then
@@ -465,7 +511,7 @@ function GM:PlayerTakeDamage( pl, attacker, ragdollEntity )
 end
 
 function GM:PlayerHurt( pl, attacker )
-	return !pl.CAT_ignore_hurtSound and hook.Run( "PlayerTakeDamage", pl, attacker ) or true
+	return true
 end
 
 function GM:PlayerDeathSound( pl, ragdollEntity )
@@ -552,6 +598,24 @@ function GM:Tick( )
 		if ( ( v.CAT_nextJumpUpdate or 0 ) <= CurTime( ) and v:Alive( ) and !v:IsRagdolled( ) and !v:InVehicle( ) and v:GetMoveType( ) == MOVETYPE_WALK and v:IsInWorld( ) and !v:IsOnGround( ) ) then
 			hook.Run( "PlayerJump", v )
 			v.CAT_nextJumpUpdate = CurTime( ) + 1
+		end
+		
+		local infoOverride = hook.Run( "PlayerInfoTable", v, {
+			jumpPower = v:GetJumpPower( ),
+			runSpeed = v:GetRunSpeed( ),
+			walkSpeed = v:GetWalkSpeed( )
+		} ) or { }
+		
+		if ( infoOverride.jumpPower ) then
+			v:SetJumpPower( infoOverride.jumpPower )
+		end
+		
+		if ( infoOverride.runSpeed ) then
+			v:SetRunSpeed( infoOverride.runSpeed )
+		end
+		
+		if ( infoOverride.walkSpeed ) then
+			v:SetWalkSpeed( infoOverride.walkSpeed )
 		end
 	end
 end

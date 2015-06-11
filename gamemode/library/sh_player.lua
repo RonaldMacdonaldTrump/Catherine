@@ -241,6 +241,10 @@ if ( SERVER ) then
 	function catherine.player.GetPlayerDefaultRunSpeed( pl )
 		return hook.Run( "GetCustomPlayerDefaultRunSpeed", pl ) or catherine.configs.playerDefaultRunSpeed
 	end
+	
+	function catherine.player.GetPlayerDefaultJumpPower( pl )
+		return hook.Run( "GetCustomPlayerDefaultJumpPower", pl ) or catherine.configs.playerDefaultJumpPower
+	end
 
 	function catherine.player.RagdollWork( pl, status, time )
 		if ( status ) then

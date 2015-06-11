@@ -439,11 +439,11 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
 			return
 		end
-		
-		hook.Run( "PostCharacterSave", pl )
-		
+
 		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
 		if ( !networkRegistry ) then return end
+		
+		hook.Run( "PostCharacterSave", pl )
 		
 		local steamID = pl:SteamID( )
 		

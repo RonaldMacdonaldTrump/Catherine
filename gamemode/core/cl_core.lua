@@ -248,7 +248,7 @@ function GM:HUDDrawScoreBoard( )
 
 	if ( catherine.intro.loadingAlpha > 0 ) then
 		// Loading circle
-		catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 7, 7 )
+		catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 4, 4 )
 		
 		draw.NoTexture( )
 		surface.SetDrawColor( 90, 90, 90, catherine.intro.loadingAlpha )
@@ -493,20 +493,6 @@ function GM:HUDPaint( )
 	end
 end
 
-function GM:HUDBackgroundDraw( )
-	if ( IsValid( catherine.vgui.information ) ) then
-		rpInformation_backgroundblurA = math.Approach( rpInformation_backgroundblurA, 3, 0.1 )
-	else
-		if ( rpInformation_backgroundblurA > 0 ) then
-			rpInformation_backgroundblurA = math.Approach( rpInformation_backgroundblurA, 0, 0.1 )
-		end
-	end
-
-	if ( rpInformation_backgroundblurA > 0 ) then
-		catherine.util.BlurDraw( 0, 0, ScrW( ), ScrH( ), rpInformation_backgroundblurA )
-	end
-end
-
 function GM:PostRenderVGUI( )
 	if ( IsValid( catherine.vgui.character ) ) then return end
 	
@@ -627,12 +613,6 @@ function GM:RenderScreenspaceEffects( )
 	tab[ "$pp_colour_mulb" ] = data.mulb or 0
 
 	DrawColorModify( tab )
-end
-
-function GM:VGUIMousePressed( pnl, code )
-	if ( IsValid( catherine.vgui.information ) and IsValid( pnl ) and pnl:GetParent( ) != catherine.vgui.information ) then
-		catherine.vgui.information:Close( )
-	end
 end
 
 function GM:ScreenResolutionChanged( oldW, oldH )

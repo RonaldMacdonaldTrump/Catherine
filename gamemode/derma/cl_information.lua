@@ -22,48 +22,156 @@ function PANEL:Init( )
 	catherine.vgui.information = self
 	
 	self.player = LocalPlayer( )
-	self.w, self.h = ScrW( ) * 0.3, ScrH( )
-	self.x, self.y = ScrW( ), ScrH( ) / 2 - self.h / 2
-
+	self.w, self.h = ScrW( ), ScrH( )
+	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
+	self.blurAmount = 0
+	self.backAlpha = 50
+	
 	self:SetSize( self.w, self.h )
 	self:SetPos( self.x, self.y )
 	self:SetTitle( "" )
 	self:SetDraggable( false )
 	self:ShowCloseButton( false )
 	self:MakePopup( )
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.1, 0 )
 	
-	self.Lists = vgui.Create( "DPanelList", self )
-	self.Lists:SetPos( 15, 130 )
-	self.Lists:SetSize( self.w - 30, self.h - 220 )
-	self.Lists:SetSpacing( 5 )
-	self.Lists:EnableHorizontal( false )
-	self.Lists:EnableVerticalScrollbar( true )	
-	self.Lists:SetDrawBackground( false )
+	local pl = self.player
 	
-	self.descEnt = vgui.Create( "DTextEntry", self )
-	self.descEnt:SetPos( 90, 45 )
-	self.descEnt:SetSize( self.w - 100, 30 )
-	self.descEnt:SetFont( "catherine_normal15" )
-	self.descEnt:SetText( self.player:Desc( ) )
-	self.descEnt:SetAllowNonAsciiCharacters( true )
-	self.descEnt.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
-		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
-	end
-	self.descEnt.OnEnter = function( pnl )
-		catherine.command.Run( "charphysdesc", self.descEnt:GetText( ) )
-	end
+	self.TopPanel = vgui.Create( "DPanel", self )
+	
+	self.TopPanel.w, self.TopPanel.h = self.w * 0.6, self.h * 0.3
+	self.TopPanel.x, self.TopPanel.y = self.w / 2 - self.TopPanel.w / 2, 0 - self.TopPanel.h
+	
+	self.TopPanel:SetSize( self.TopPanel.w, self.TopPanel.h )
+	self.TopPanel:SetPos( self.TopPanel.x, self.TopPanel.y )
+	
+	self.TopPanel.Paint = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 50 ) )
+	
+		surface.SetDrawColor( 255, 255, 255, 235 )
+		surface.SetMaterial( Material( "gui/gradient_up" ) )
+		surface.DrawTexturedRect( 0, 0, w, h )
+		
+		surface.SetDrawColor( 255, 255, 255, 100 )
+		surface.SetMaterial( Material( "gui/gradient_down" ) )
+		surface.DrawTexturedRect( 0, 0, w, h )
+	
+		draw.SimpleText( pl:Name( ), "catherine_normal30", 90, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( pl:FactionName( ), "catherine_normal20", 15, 80, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 
-	self.playerModel = vgui.Create( "SpawnIcon", self )
-	self.playerModel:SetPos( 15, 15 )
-	self.playerModel:SetSize( 60, 60 )
-	self.playerModel:SetModel( self.player:GetModel( ) )
-	self.playerModel:SetToolTip( false )
-	self.playerModel:SetDisabled( true )
-	self.playerModel.PaintOver = function( pnl, w, h )
+		draw.SimpleText( self.TopPanel.descEnt:GetText( ):utf8len( ) .. "/" .. catherine.configs.characterDescMaxLen, "catherine_normal15", w - 10, 60, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		
+		local icon = Material( "icon16/user.png" )
+		
+		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
+			icon = Material( "icon16/bug.png" )
+		elseif ( pl:IsSuperAdmin( ) ) then
+			icon = Material( "icon16/shield.png" )
+		elseif ( pl:IsAdmin( ) ) then
+			icon = Material( "icon16/star.png" )
+		end
+		
+		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.SetMaterial( icon )
+		surface.DrawTexturedRect( w - ( 20 + ( 16 / 2 ) ), 25 - 16 / 2, 16, 16 )
+		
+		local className = pl:ClassName( )
+	
+		if ( className ) then
+			draw.SimpleText( className, "catherine_normal15", 15, 100, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+		end
+	end
+	
+	self.TopPanel.Lists = vgui.Create( "DPanelList", self.TopPanel )
+	self.TopPanel.Lists:SetPos( 15, 130 )
+	self.TopPanel.Lists:SetSize( self.TopPanel.w - 30, self.TopPanel.h - 220 )
+	self.TopPanel.Lists:SetSpacing( 5 )
+	self.TopPanel.Lists:EnableHorizontal( false )
+	self.TopPanel.Lists:EnableVerticalScrollbar( true )	
+	self.TopPanel.Lists:SetDrawBackground( false )
+	
+	self.TopPanel.playerModel = vgui.Create( "SpawnIcon", self.TopPanel )
+	self.TopPanel.playerModel:SetPos( 15, 15 )
+	self.TopPanel.playerModel:SetSize( 60, 60 )
+	self.TopPanel.playerModel:SetModel( pl:GetModel( ) )
+	self.TopPanel.playerModel:SetToolTip( false )
+	self.TopPanel.playerModel:SetDisabled( true )
+	self.TopPanel.playerModel.PaintOver = function( pnl, w, h )
 		surface.SetDrawColor( 50, 50, 50, 255 )
 		surface.DrawOutlinedRect( 0, 0, w, h )
 	end
+	
+	self.TopPanel.descEnt = vgui.Create( "DTextEntry", self.TopPanel )
+	self.TopPanel.descEnt:SetPos( 90, 45 )
+	self.TopPanel.descEnt:SetSize( self.TopPanel.w - 150, 30 )
+	self.TopPanel.descEnt:SetFont( "catherine_normal15" )
+	self.TopPanel.descEnt:SetText( pl:Desc( ) )
+	self.TopPanel.descEnt:SetAllowNonAsciiCharacters( true )
+	self.TopPanel.descEnt.Paint = function( pnl, w, h )
+		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
+		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+	end
+	self.TopPanel.descEnt.OnEnter = function( pnl )
+		catherine.command.Run( "charphysdesc", pnl:GetText( ) )
+	end
+	
+	self.LeftPanel = vgui.Create( "DPanel", self )
+	
+	self.LeftPanel.w, self.LeftPanel.h = self.w * 0.2, 65
+	self.LeftPanel.x, self.LeftPanel.y = 0 - self.LeftPanel.w, self.h - self.LeftPanel.h - 20
+	
+	self.LeftPanel:SetSize( self.LeftPanel.w, self.LeftPanel.h )
+	self.LeftPanel:SetPos( self.LeftPanel.x, self.LeftPanel.y )
+	
+	self.LeftPanel.Paint = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 100 ) )
+	
+		surface.SetDrawColor( 255, 255, 255, 235 )
+		surface.SetMaterial( Material( "gui/gradient" ) )
+		surface.DrawTexturedRect( 0, 0, w, h )
+	
+		draw.SimpleText( catherine.environment.GetDateString( ), "catherine_normal40", 10, h - 65, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+		draw.SimpleText( catherine.environment.GetTimeString( ), "catherine_normal25", 10, h - 30, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+		
+		draw.SimpleText( catherine.environment.GetTemperatureString( ), "catherine_normal25", w - 10, h - 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT ) // to do;
+	end
+	
+	self.RightPanel = vgui.Create( "DPanel", self )
+	
+	self.RightPanel.w, self.RightPanel.h = 131, 312
+	self.RightPanel.x, self.RightPanel.y = self.w, self.h - self.RightPanel.h - 20
+	
+	self.RightPanel:SetSize( self.RightPanel.w, self.RightPanel.h )
+	self.RightPanel:SetPos( self.RightPanel.x, self.RightPanel.y )
+	
+	self.RightPanel.Paint = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 100 ) )
+	
+		surface.SetDrawColor( 255, 255, 255, 235 )
+		surface.SetMaterial( Material( "VGUI/gradient-r" ) )
+		surface.DrawTexturedRect( 0, 0, w, h )
+
+		surface.SetDrawColor( 0, 0, 0, 235 )
+		surface.SetMaterial( Material( "CAT/limb/body.png", "smooth" ) )
+		surface.DrawTexturedRect( w / 2 - ( w - 20 ) / 2, h / 2 - ( h - 20 ) / 2, w - 20, h - 20 )
+		
+		for k, v in pairs( catherine.limb.GetTable( ) ) do
+			local mat = catherine.limb.materials[ k ]
+			
+			if ( mat ) then
+				local col = catherine.limb.GetColor( v )
+				
+				surface.SetDrawColor( col )
+				surface.SetMaterial( mat )
+				surface.DrawTexturedRect( w / 2 - ( w - 20 ) / 2, h / 2 - ( h - 20 ) / 2, w - 20, h - 20 )
+			end
+		end
+	end
+	
+	self.TopPanel:MoveTo( self.TopPanel.x, 20, 0.1, 0 )
+	self.LeftPanel:MoveTo( 20, self.LeftPanel.y, 0.1, 0 )
+	self.RightPanel:MoveTo( self.w - self.RightPanel.w - 20, self.RightPanel.y, 0.1, 0 )
 	
 	local data = { }
 	local rpInformation = hook.Run( "AddRPInformation", self, data )
@@ -75,46 +183,23 @@ end
 
 function PANEL:AddRPInformation( text )
 	local panel = vgui.Create( "DPanel" )
-	panel:SetSize( self.Lists:GetWide( ), 20 )
+	panel:SetSize( self.TopPanel.Lists:GetWide( ), 20 )
 	panel.Paint = function( pnl, w, h )
-		draw.SimpleText( text, "catherine_normal20", 0, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( text, "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 	end
 	
-	self.Lists:AddItem( panel )
+	self.TopPanel.Lists:AddItem( panel )
 end
 
 function PANEL:Paint( w, h )
-	local pl = self.player
-	
-	self.x = Lerp( 0.07, self.x, ScrW( ) - w )
-	
-	self:SetPos( self.x, self.y )
-	
-	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 235 ) )
-	
-	surface.SetDrawColor( 200, 200, 200, 235 )
-	surface.SetMaterial( Material( "gui/gradient_up" ) )
-	surface.DrawTexturedRect( 0, 0, w, h )
-	
-	draw.SimpleText( pl:Name( ), "catherine_normal25", 90, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( pl:FactionName( ), "catherine_normal20", 15, 80, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
-	
-	local className = pl:ClassName( )
-	
-	if ( className ) then
-		draw.SimpleText( className, "catherine_normal15", 15, 100, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+	if ( !self.closing ) then
+		self.blurAmount = Lerp( 0.03, self.blurAmount, 7 )
+	else
+		self.backAlpha = Lerp( 0.03, self.backAlpha, 0 )
 	end
 
-	draw.SimpleText( catherine.environment.GetDateString( ), "catherine_normal35", w - 5, h - 65, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
-	draw.SimpleText( catherine.environment.GetTimeString( ), "catherine_normal25", w - 5, h - 35, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
-	
-	--[[
-	surface.SetDrawColor( 255, 255, 255, 255 )
-	surface.SetMaterial( Material( "CAT/date/sun.png", "smooth" ) )
-	surface.DrawTexturedRect( 15, h - 65, 54, 54 )
-	--]]
-	
-	draw.SimpleText( catherine.environment.GetTemperatureString( ), "catherine_normal25", 10, h - 35, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT ) // to do;
+	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, self.backAlpha ) )
 end
 
 function PANEL:OnKeyCodePressed( key )
@@ -128,7 +213,11 @@ function PANEL:Close( )
 	
 	self.closing = true
 	
-	self:MoveTo( ScrW( ), self.y, 0.1, 0, nil, function( )
+	self.TopPanel:MoveTo( self.TopPanel.x, 0 - self.TopPanel.h, 0.3, 0 )
+	self.LeftPanel:MoveTo( 0 - self.LeftPanel.w, self.LeftPanel.y, 0.3, 0 )
+	self.RightPanel:MoveTo( self.w, self.RightPanel.y, 0.2, 0 )
+	
+	self:AlphaTo( 0, 0.3, 0, function( )
 		self:Remove( )
 		self = nil
 	end )
