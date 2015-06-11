@@ -21,7 +21,6 @@ catherine.class.lists = { }
 
 function catherine.class.Register( classTable )
 	if ( !classTable or !classTable.index ) then
-		catherine.util.ErrorPrint( "Class register error, can't found class table!" )
 		return
 	end
 	

@@ -37,8 +37,13 @@ function PLUGIN:PlayerSpawnedInCharacter( pl )
 	local lastPos = catherine.character.GetCharVar( pl, "lastPos" )
 	
 	if ( lastPos and ( lastPos.map and lastPos.map:lower( ) == game.GetMap( ):lower( ) ) ) then
-		pl:SetPos( lastPos.pos and lastPos.pos or pl:GetPos( ) )
-		pl:SetEyeAngles( lastPos.ang and lastPos.ang or Angle( 0, 0, 0 ) )
+		if ( lastPos.pos ) then
+			pl:SetPos( lastPos.pos )
+		end
+		
+		if ( lastPos.ang ) then
+			pl:SetEyeAngles( lastPos.ang )
+		end
 		
 		catherine.character.SetCharVar( pl, "lastPos", nil )
 	end
@@ -51,6 +56,8 @@ function PLUGIN:PlayerDeath( pl )
 end
 
 function PLUGIN:PostCharacterSave( pl )
+	if ( !pl:IsCharacterLoaded( ) ) then return end // 이거 필요?
+	
 	catherine.character.SetCharVar( pl, "lastPos", {
 		pos = pl:GetPos( ),
 		ang = pl:EyeAngles( ),

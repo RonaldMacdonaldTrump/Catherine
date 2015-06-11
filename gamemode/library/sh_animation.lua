@@ -33,6 +33,10 @@ function catherine.animation.Get( mdl )
 	return catherine.animation.lists[ mdl ] or ( mdl:find( "female" ) and "citizen_female" or "citizen_male" )
 end
 
+function catherine.animation.IsClass( ent, class )
+	return catherine.animation.lists[ ent:GetModel( ):lower( ) ] == class
+end
+
 local function RegisterCitizen( gender )
 	for k, v in pairs( file.Find("models/humans/group01/" .. gender .. "_*.mdl", "GAME" ) ) do
 		catherine.animation.Register( "citizen_" .. gender, "models/humans/group01/" .. v )

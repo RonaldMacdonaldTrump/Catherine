@@ -104,6 +104,10 @@ else
 	hook.Add( "LanguageChanged", "catherine.entity.LanguageChanged", catherine.entity.LanguageChanged )
 end
 
+function catherine.entity.GetPlayer( ent )
+	return ent:GetNetVar( "player" )
+end
+
 local META2 = FindMetaTable( "Weapon" )
 
 META2.CATGetPrintName = META2.CATGetPrintName or META2.GetPrintName

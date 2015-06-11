@@ -19,10 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.item = catherine.item or { bases = { }, items = { } }
 
 function catherine.item.Register( itemTable )
-	if ( !itemTable ) then
-		catherine.util.ErrorPrint( "Item register error, can't found item table!" )
-		return
-	end
+	if ( !itemTable ) then return end
 	
 	if ( itemTable.isBase ) then
 		catherine.item.bases[ itemTable.uniqueID ] = itemTable
@@ -34,6 +31,8 @@ function catherine.item.Register( itemTable )
 		
 		if ( base ) then
 			itemTable = table.Inherit( itemTable, base )
+		else
+			MsgC( Color( 255, 0, 0 ), "[CAT Item ERROR] Can't find Base item file ... <" .. itemTable.base .. ">\n" )
 		end
 	end
 	
@@ -49,7 +48,7 @@ function catherine.item.Register( itemTable )
 			icon = "icon16/basket_put.png",
 			canShowIsWorld = true,
 			func = function( pl, itemTable, ent )
-				if ( catherine.player.IsTied( pl ) ) then
+				if ( pl:IsTied( ) ) then
 					catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 					return
 				end
@@ -87,7 +86,7 @@ function catherine.item.Register( itemTable )
 			icon = "icon16/basket_remove.png",
 			canShowIsMenu = true,
 			func = function( pl, itemTable )
-				if ( catherine.player.IsTied( pl ) ) then
+				if ( pl:IsTied( ) ) then
 					catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 					return
 				end

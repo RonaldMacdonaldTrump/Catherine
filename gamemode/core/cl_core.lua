@@ -100,19 +100,6 @@ function GM:CalcView( pl, pos, ang, fov )
 		return viewData
 	end
 	
-	--[[ // Thirdperson support :<
-	local data = util.TraceLine( {
-		start = pos,
-		endpos = pos - ( ang:Forward( ) * 100 )
-	} )
-
-	viewData = {
-		origin = data.Fraction < 1 and ( data.HitPos + data.HitNormal * 5 ) or data.HitPos
-	}
-	
-	return viewData
-	--]]
-	
 	if ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or !pl:IsCharacterLoaded( ) ) then
 		viewData = {
 			origin = catherine.configs.schematicViewPos.pos,
@@ -124,7 +111,7 @@ function GM:CalcView( pl, pos, ang, fov )
 
 	local ent = Entity( pl:GetNetVar( "ragdollIndex", 0 ) )
 
-	if ( IsValid( ent ) and ent:GetClass( ) == "prop_ragdoll" and catherine.player.IsRagdolled( pl ) ) then
+	if ( IsValid( ent ) and ent:GetClass( ) == "prop_ragdoll" and pl:IsRagdolled( ) ) then
 		local index = ent:LookupAttachment( "eyes" )
 		
 		if ( index ) then
@@ -261,7 +248,7 @@ function GM:HUDDrawScoreBoard( )
 
 	if ( catherine.intro.loadingAlpha > 0 ) then
 		// Loading circle
-		catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 7, 7 )
+		catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 4, 4 )
 		
 		draw.NoTexture( )
 		surface.SetDrawColor( 90, 90, 90, catherine.intro.loadingAlpha )
@@ -302,7 +289,7 @@ function GM:PlayerBindPress( pl, code, pressed )
 		return true
 	end
 	
-	if ( !pl:GetNetVar( "gettingup" ) and catherine.player.IsRagdolled( pl ) and !pl:GetNetVar( "isForceRagdolled" ) and code:find( "+jump" ) and pressed ) then
+	if ( !pl:GetNetVar( "gettingup" ) and pl:IsRagdolled( ) and !pl:GetNetVar( "isForceRagdolled" ) and code:find( "+jump" ) and pressed ) then
 		catherine.command.Run( "chargetup" )
 		
 		return true
@@ -375,7 +362,7 @@ function GM:FinishChat( )
 end
 
 function GM:DrawEntityTargetID( pl, ent, a )
-	if ( ent:GetNetVar( "noDrawOriginal" ) == true or ( ent:IsPlayer( ) and catherine.player.IsRagdolled( ent ) ) ) then
+	if ( ent:GetNetVar( "noDrawOriginal" ) == true or ( ent:IsPlayer( ) and ent:IsRagdolled( ) ) ) then
 		return
 	end
 	
@@ -406,12 +393,12 @@ function GM:DrawEntityTargetID( pl, ent, a )
 end
 
 function GM:PlayerInformationDraw( pl, target, x, y, a )
-	if ( catherine.player.IsRagdolled( target ) ) then
+	if ( target:IsRagdolled( ) ) then
 		draw.SimpleText( LANG( "Player_Message_Ragdolled_HUD" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		y = y + 20
 	end
 	
-	if ( catherine.player.IsTied( target ) ) then
+	if ( target:IsTied( ) ) then
 		draw.SimpleText( LANG( "Player_Message_UnTie" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		y = y + 20
 	end
@@ -503,20 +490,6 @@ function GM:HUDPaint( )
 	
 	if ( pl:Alive( ) ) then
 		hook_run( "EntityCacheWork", pl )
-	end
-end
-
-function GM:HUDBackgroundDraw( )
-	if ( IsValid( catherine.vgui.information ) ) then
-		rpInformation_backgroundblurA = math.Approach( rpInformation_backgroundblurA, 3, 0.1 )
-	else
-		if ( rpInformation_backgroundblurA > 0 ) then
-			rpInformation_backgroundblurA = math.Approach( rpInformation_backgroundblurA, 0, 0.1 )
-		end
-	end
-
-	if ( rpInformation_backgroundblurA > 0 ) then
-		catherine.util.BlurDraw( 0, 0, ScrW( ), ScrH( ), rpInformation_backgroundblurA )
 	end
 end
 
@@ -640,12 +613,6 @@ function GM:RenderScreenspaceEffects( )
 	tab[ "$pp_colour_mulb" ] = data.mulb or 0
 
 	DrawColorModify( tab )
-end
-
-function GM:VGUIMousePressed( pnl, code )
-	if ( IsValid( catherine.vgui.information ) and IsValid( pnl ) and pnl:GetParent( ) != catherine.vgui.information ) then
-		catherine.vgui.information:Close( )
-	end
 end
 
 function GM:ScreenResolutionChanged( oldW, oldH )

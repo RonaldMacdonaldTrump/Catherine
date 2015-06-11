@@ -155,7 +155,7 @@ if ( SERVER ) then
 	catherine.character.SaveTick = catherine.character.SaveTick or CurTime( ) + catherine.configs.saveInterval
 	
 	function catherine.character.New( pl, id )
-		if ( catherine.player.IsTied( pl ) ) then
+		if ( pl:IsTied( ) ) then
 			return false, "^Character_Notify_CantSwitchTied"
 		end
 		
@@ -163,7 +163,7 @@ if ( SERVER ) then
 			return false, "^Character_Notify_CantSwitchDeath"
 		end
 		
-		if ( catherine.player.IsRagdolled( pl ) ) then
+		if ( pl:IsRagdolled( ) ) then
 			return false, "^Character_Notify_CantSwitchRagdolled"
 		end
 		
@@ -177,6 +177,10 @@ if ( SERVER ) then
 		
 		if ( prevID == id ) then
 			return false, "^Character_Notify_CantSwitchUsing"
+		end
+		
+		if ( !prevID ) then
+			pl:GodDisable( )
 		end
 		
 		if ( character._charVar and character._charVar[ "charBanned" ] ) then
@@ -432,15 +436,15 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.Save( pl )
-		if ( !IsValid( pl ) or !pl.IsPlayer( pl ) ) then
-			catherine.util.ErrorPrint( "Character save error!, player is not valid!" )
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
 			return
 		end
+
+		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
+		if ( !networkRegistry ) then return end
 		
 		hook.Run( "PostCharacterSave", pl )
 		
-		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
-		if ( !networkRegistry ) then return end
 		local steamID = pl:SteamID( )
 		
 		for k, v in pairs( networkRegistry ) do

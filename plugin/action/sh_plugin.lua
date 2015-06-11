@@ -40,11 +40,11 @@ catherine.util.Include( "sh_actions.lua" )
 
 if ( SERVER ) then
 	function PLUGIN:StartAction( pl, seq )
-		if ( self:IsActioning( pl ) or !pl:Alive( ) or catherine.player.IsRagdolled( pl ) ) then
+		if ( self:IsActioning( pl ) or !pl:Alive( ) or pl:IsRagdolled( ) ) then
 			return false, "ACT_Plugin_Notify_Cant01"
 		end
 
-		if ( catherine.player.IsTied( pl ) ) then
+		if ( pl:IsTied( ) ) then
 			return false, "Item_Notify03_ZT"
 		end
 		

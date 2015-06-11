@@ -46,7 +46,7 @@ SWEP.Secondary.Ammo = ""
 SWEP.Secondary.Delay = 0.5
 
 SWEP.HitDistance = 76
-SWEP.LowerAngles = Angle( 0, 5, -15 )
+SWEP.LowerAngles = Angle( 0, 5, -33 )
 SWEP.UseHands = false
 SWEP.CanFireLowered = true
 
@@ -109,16 +109,32 @@ function SWEP:PrimaryAttack( )
 			dmgInfo:SetAttacker( pl )
 			dmgInfo:SetInflictor( self )
 			dmgInfo:SetDamage( math.random( 8, 12 ) )
+			
 			ent:TakeDamageInfo( dmgInfo )
+			
+			catherine.effect.Create( "BLOOD", {
+				ent = ent,
+				pos = dmgInfo:GetDamagePosition( ),
+				scale = 1,
+				decalCount = 1
+			} )
 		elseif ( ent:GetClass( ) == "prop_ragdoll" ) then
-			local target = ent:GetNetVar( "player" )
+			local target = catherine.entity.GetPlayer( ent )
 			
 			if ( IsValid( target ) and target:IsPlayer( ) ) then
 				local dmgInfo = DamageInfo( )
 				dmgInfo:SetAttacker( pl )
 				dmgInfo:SetInflictor( self )
 				dmgInfo:SetDamage( math.random( 8, 12 ) )
+				
 				target:TakeDamageInfo( dmgInfo )
+				
+				catherine.effect.Create( "BLOOD", {
+					ent = target,
+					pos = dmgInfo:GetDamagePosition( ),
+					scale = 1,
+					decalCount = 1
+				} )
 			end
 		end
 		
@@ -130,7 +146,7 @@ function SWEP:PrimaryAttack( )
 end
 
 function SWEP:CanMoveable( ent )
-	local physObject = ent:GetPhysicsObject()
+	local physObject = ent:GetPhysicsObject( )
 
 	if ( !IsValid( physObject ) ) then
 		return false
@@ -172,11 +188,11 @@ function SWEP:SecondaryAttack( )
 		return
 	end
 	
-	local ent = util.TraceLine( {
-		start = pl:GetShootPos( ),
-		endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * self.HitDistance,
-		filter = pl
-	} ).Entity
+	local data = { }
+	data.start = pl:GetShootPos( )
+	data.endpos = data.start + pl:GetAimVector( ) * self.HitDistance
+	data.filter = pl
+	local ent = util.TraceLine( data ).Entity
 	
 	if ( IsValid( ent ) ) then
 		if ( catherine.entity.IsDoor( ent ) ) then

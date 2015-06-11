@@ -92,6 +92,7 @@ function GM:PlayerCharacterLoaded( pl )
 				timer.Remove( "Catherine.timer.Salary_" .. pl:SteamID( ) )
 				return
 			end
+			
 			local amount = hook.Run( "GetSalaryAmount", pl, factionTable ) or factionTable.salary
 			
 			catherine.cash.Give( pl, amount )
@@ -120,12 +121,11 @@ function GM:PlayerSpawn( pl )
 	pl:SetupHands( )
 	pl:SetCanZoom( false )
 
+	catherine.limb.HealBody( pl, 100 )
+
 	catherine.util.ProgressBar( pl, false )
 	catherine.util.TopNotify( pl, false )
 
-	local status = hook.Run( "PlayerCanFlashlight", pl ) or false
-	pl:AllowFlashlight( status )
-	
 	if ( catherine.configs.giveHand ) then
 		pl:Give( "cat_fist" )
 	end
@@ -139,13 +139,50 @@ function GM:PlayerSpawn( pl )
 	end
 end
 
-function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
-	if ( !pl:IsPlayer( ) or pl.CAT_ignoreScreenColor ) then return end
+function GM:PlayerLimbTakeDamage( pl, hitGroup, amount )
 
-	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+end
+
+function GM:PlayerLimbDamageHealed( pl, hitGroup, amount )
+
+end
+
+function GM:PlayerJump( pl )
 	
-	if ( hitGroup == CAT_BODY_ID_HEAD ) then
-		catherine.util.ScreenColorEffect( pl, nil, 2, 0.005 )
+end
+
+function GM:PlayerInfoTable( pl, infoTable )
+	local jumpPower = infoTable.jumpPower
+	
+	local leftLegLimb = catherine.limb.GetDamage( pl, HITGROUP_LEFTLEG )
+	local rightLegLimb = catherine.limb.GetDamage( pl, HITGROUP_RIGHTLEG )
+	local originalJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
+
+	if ( ( leftLegLimb and leftLegLimb != 0 ) and ( rightLegLimb and rightLegLimb != 0 ) ) then
+		
+		local per = ( math.max( leftLegLimb, leftLegLimb ) / 100 ) * originalJumpPower / originalJumpPower
+		
+		jumpPower = originalJumpPower - ( originalJumpPower * per )
+
+		return {
+			jumpPower = jumpPower
+		}
+	else
+		return {
+			jumpPower = originalJumpPower
+		}
+	end
+end
+
+function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
+	if ( !pl:IsPlayer( ) ) then return end
+	
+	if ( !pl.CAT_ignoreScreenColor ) then
+		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+		
+		if ( hitGroup == CAT_BODY_ID_HEAD ) then
+			catherine.util.ScreenColorEffect( pl, nil, 2, 0.005 )
+		end
 	end
 end
 
@@ -197,37 +234,48 @@ function GM:PlayerCanHearPlayersVoice( pl, target )
 	return catherine.configs.voiceAllow, catherine.configs.voice3D
 end
 
-function GM:EntityTakeDamage( ent, dmginfo )
-	local entPlayer = ent
-	
+function GM:EntityTakeDamage( ent, dmgInfo )
 	if ( ent:GetClass( ) == "prop_ragdoll" ) then
-		local pl = ent:GetNetVar( "player" )
+		local pl = catherine.entity.GetPlayer( ent )
 		
 		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
-			local inflictor = dmginfo:GetInflictor( )
-			local attacker = dmginfo:GetAttacker( )
-			local amount = dmginfo:GetDamage( )
+			local inflictor = dmgInfo:GetInflictor( )
+			local attacker = dmgInfo:GetAttacker( )
+			local amount = dmgInfo:GetDamage( )
+
+			if ( !attacker:IsPlayer( ) or attacker:GetClass( ) == "prop_ragdoll" or catherine.entity.IsDoor( attacker ) or amount < 5 ) then
+				return
+			end
 			
-			if ( amount >= 20 or dmginfo:IsBulletDamage( ) ) then
+			if ( amount >= 20 or dmgInfo:IsBulletDamage( ) ) then
 				pl.CAT_ignore_hurtSound = true
+
+				// Uh....
 				pl:TakeDamage( amount, attacker, inflictor )
+				catherine.effect.Create( "BLOOD", {
+					ent = ent,
+					pos = dmgInfo:GetDamagePosition( ),
+					scale = 1,
+					decalCount = 1
+				} )
+				
 				pl.CAT_ignore_hurtSound = nil
 
-				if ( pl:Health( ) <= 0 ) then
-					if ( !pl.CAT_deathSoundPlayed ) then
-						hook.Run( "PlayerDeathSound", pl, ent )
-					end
+				if ( pl:Health( ) <= 0 and !pl.CAT_deathSoundPlayed ) then
+					hook.Run( "PlayerDeathSound", pl, ent )
 				else
-					hook.Run( "PlayerTakeDamage", pl, attacker, ent )
+					hook.Run( "PlayerTakeDamage", pl, attacker, dmgInfo, ent )
 				end
 			end
 		end
+	elseif ( ent:IsPlayer( ) ) then
+		hook.Run( "PlayerTakeDamage", ent, dmgInfo:GetAttacker( ), dmgInfo )
 	end
 	
 	if ( catherine.configs.doorBreach ) then
-		local pl = dmginfo:GetAttacker( )
+		local pl = dmgInfo:GetAttacker( )
 
-		if ( IsValid( pl ) and ent:GetClass( ) == "prop_door_rotating" and dmginfo:IsBulletDamage( ) and !pl:IsNoclipping( ) and ( ent.CAT_nextDoorBreach or 0 ) <= CurTime( ) ) then
+		if ( IsValid( pl ) and ent:GetClass( ) == "prop_door_rotating" and dmgInfo:IsBulletDamage( ) and !pl:IsNoclipping( ) and ( ent.CAT_nextDoorBreach or 0 ) <= CurTime( ) ) then
 			local partner = catherine.util.GetDoorPartner( ent )
 			
 			if ( IsValid( ent.lock ) or ( IsValid( partner ) and IsValid( partner.lock ) ) ) then
@@ -237,8 +285,8 @@ function GM:EntityTakeDamage( ent, dmginfo )
 			local index = ent:LookupBone( "handle" )
 			
 			if ( index ) then
-				local pos = dmginfo:GetDamagePosition( )
-		 
+				local pos = dmgInfo:GetDamagePosition( )
+
 				if ( pl:GetEyeTrace( ).Entity != ent or pl:GetPos( ):Distance( pos ) < 130 and pos:Distance( ent:GetBonePosition( index ) ) <= 5 ) then
 					ent:EmitSound( "physics/wood/wood_crate_break" .. math.random( 1, 5 ) .. ".wav", 150 )
 
@@ -269,13 +317,15 @@ function GM:EntityTakeDamage( ent, dmginfo )
 		end
 	end
 	
-	if ( ent:IsPlayer( ) and dmginfo:IsBulletDamage( ) ) then
+	if ( ent:IsPlayer( ) and dmgInfo:IsBulletDamage( ) ) then
 		local steamID = ent:SteamID( )
 		
 		ent:SetRunSpeed( ent:GetWalkSpeed( ) )
 
 		timer.Remove( "Catherine.timer.RunSpamProtection_" .. steamID )
 		timer.Create( "Catherine.timer.RunSpamProtection_" .. steamID, 2, 1, function( )
+			if ( !IsValid( ent ) ) then return end
+			
 			ent:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( ent ) )
 		end )
 	end
@@ -291,8 +341,10 @@ end
 
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Create( "Catherine.timer.WeaponToggle." .. pl:SteamID( ), 1, 1, function( )
-			pl:ToggleWeaponRaised( )
+		timer.Create( "Catherine.timer.WeaponToggle" .. pl:SteamID( ), 1, 1, function( )
+			if ( IsValid( pl ) ) then
+				pl:ToggleWeaponRaised( )
+			end
 		end )
 	elseif ( key == IN_USE ) then
 		local data = { }
@@ -300,28 +352,32 @@ function GM:KeyPress( pl, key )
 		data.endpos = data.start + pl:GetAimVector( ) * 100
 		data.filter = pl
 		local ent = util.TraceLine( data ).Entity
-		
-		if ( !IsValid( ent ) ) then return end
-		
-		if ( ent.CAT_ignoreUse ) then
+
+		if ( !IsValid( ent ) or ent.CAT_ignoreUse ) then
 			return
 		end
 		
 		if ( ent:GetClass( ) == "prop_ragdoll" ) then
-			ent = ent:GetNetVar( "player" )
+			ent = catherine.entity.GetPlayer( ent )
 		end
+		
+		if ( !IsValid( ent ) ) then return end
 
-		if ( IsValid( ent ) and ent:IsPlayer( ) ) then
-			return hook.Run( "PlayerInteract", pl, ent )
-		end
-
-		if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) ) then
+		if ( catherine.entity.IsDoor( ent ) ) then
 			catherine.door.DoorSpamProtection( pl, ent )
 
 			hook.Run( "PlayerUse", pl, ent )
-		elseif ( IsValid( ent ) and ent.IsCustomUse ) then
+		elseif ( ent:IsPlayer( ) ) then
+			return hook.Run( "PlayerInteract", pl, ent )
+		elseif ( ent.IsCustomUse ) then
 			netstream.Start( pl, "catherine.entity.CustomUseMenu", ent:EntIndex( ) )
 		end
+	end
+end
+
+function GM:KeyRelease( pl, key )
+	if ( key == IN_RELOAD ) then
+		timer.Remove( "Catherine.timer.WeaponToggle_" .. pl:SteamID( ) )
 	end
 end
 
@@ -330,7 +386,7 @@ function GM:PlayerCanUseDoor( pl, ent )
 end
 
 function GM:PlayerUse( pl, ent )
-	if ( catherine.player.IsTied( pl ) ) then
+	if ( pl:IsTied( ) ) then
 		if ( ( pl.CAT_tiedMSG or 0 ) <= CurTime( ) ) then
 			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 			pl.CAT_tiedMSG = CurTime( ) + 5
@@ -358,16 +414,11 @@ function GM:PlayerSay( pl, text )
 	catherine.chat.Run( pl, text )
 end
 
-function GM:KeyRelease( pl, key )
-	if ( key == IN_RELOAD ) then
-		timer.Remove( "Catherine.timer.WeaponToggle." .. pl:SteamID( ) )
-	end
-end
-
 function GM:PlayerInitialSpawn( pl )
 	timer.Simple( 1, function( )
 		pl:SetNoDraw( true )
 		pl:SetNotSolid( true )
+		pl:GodEnable( )
 		
 		catherine.player.Initialize( pl )
 	end )
@@ -409,47 +460,58 @@ function GM:PlayerSpawnProp( pl )
 	return pl:HasFlag( "e" )
 end
 
-function GM:PlayerTakeDamage( pl, attacker, ragdollEntity )
+function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 	if ( pl:Health( ) <= 0 ) then
 		return true
 	end
 	
 	pl.CAT_healthRecover = true
-	
-	catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 
-	local sound = hook.Run( "GetPlayerPainSound", pl )
-	local gender = pl:GetGender( )
+	if ( !pl.CAT_ignoreScreenColor ) then
+		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+	end
 	
-	if ( !sound ) then
-		local hitGroup = pl:LastHitGroup( )
-		
-		if ( hitGroup == HITGROUP_HEAD ) then
-			sound = "vo/npc/" .. gender .. "01/ow0" .. math.random( 1, 2 ) .. ".wav"
-		elseif ( hitGroup == HITGROUP_CHEST or hitGroup == HITGROUP_GENERIC ) then
-			sound = "vo/npc/" .. gender .. "01/hitingut0" .. math.random( 1, 2 ) .. ".wav"
-		elseif ( hitGroup == HITGROUP_LEFTLEG or hitGroup == HITGROUP_RIGHTLEG ) then
-			sound = "vo/npc/" .. gender .. "01/myleg0" .. math.random( 1, 2 ) .. ".wav"
-		elseif ( hitGroup == HITGROUP_LEFTARM or hitGroup == HITGROUP_RIGHTARM ) then
-			sound = "vo/npc/" .. gender .. "01/myarm0" .. math.random( 1, 2 ) .. ".wav"
-		elseif ( hitGroup == HITGROUP_GEAR ) then
-			sound = "vo/npc/" .. gender .. "01/startle0" .. math.random( 1, 2 ) .. ".wav"
+	local hitGroup = pl:LastHitGroup( )
+
+	if ( dmgInfo:IsDamageType( DMG_FALL ) ) then
+		catherine.limb.TakeDamage( pl, HITGROUP_LEFTLEG, dmgInfo:GetDamage( ) )
+		catherine.limb.TakeDamage( pl, HITGROUP_RIGHTLEG, dmgInfo:GetDamage( ) )
+	else
+		catherine.limb.TakeDamage( pl, hitGroup, dmgInfo:GetDamage( ) )
+	end
+
+	if ( !pl.CAT_ignore_hurtSound ) then
+		local sound = hook.Run( "GetPlayerPainSound", pl )
+		local gender = pl:GetGender( )
+	
+		if ( !sound ) then
+			if ( hitGroup == HITGROUP_HEAD ) then
+				sound = "vo/npc/" .. gender .. "01/ow0" .. math.random( 1, 2 ) .. ".wav"
+			elseif ( hitGroup == HITGROUP_CHEST or hitGroup == HITGROUP_GENERIC ) then
+				sound = "vo/npc/" .. gender .. "01/hitingut0" .. math.random( 1, 2 ) .. ".wav"
+			elseif ( hitGroup == HITGROUP_LEFTLEG or hitGroup == HITGROUP_RIGHTLEG ) then
+				sound = "vo/npc/" .. gender .. "01/myleg0" .. math.random( 1, 2 ) .. ".wav"
+			elseif ( hitGroup == HITGROUP_LEFTARM or hitGroup == HITGROUP_RIGHTARM ) then
+				sound = "vo/npc/" .. gender .. "01/myarm0" .. math.random( 1, 2 ) .. ".wav"
+			elseif ( hitGroup == HITGROUP_GEAR ) then
+				sound = "vo/npc/" .. gender .. "01/startle0" .. math.random( 1, 2 ) .. ".wav"
+			end
 		end
-	end
 
-	if ( IsValid( ragdollEntity ) ) then
-		ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
-		
-		return true
-	end
+		if ( IsValid( ragdollEntity ) ) then
+			ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+			
+			return true
+		end
 
-	pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+		pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+	end
 	
 	return true
 end
 
 function GM:PlayerHurt( pl, attacker )
-	return !pl.CAT_ignore_hurtSound and hook.Run( "PlayerTakeDamage", pl, attacker ) or true
+	return true
 end
 
 function GM:PlayerDeathSound( pl, ragdollEntity )
@@ -533,9 +595,27 @@ function GM:Tick( )
 		catherine.player.BunnyHopProtection( v )
 		catherine.player.HealthRecoverTick( v )
 		
-		if ( ( v.CAT_nextJumpUpdate or 0 ) <= CurTime( ) and v:Alive( ) and !catherine.player.IsRagdolled( v ) and !v:InVehicle( ) and v:GetMoveType( ) == MOVETYPE_WALK and v:IsInWorld( ) and !v:IsOnGround( ) ) then
+		if ( ( v.CAT_nextJumpUpdate or 0 ) <= CurTime( ) and v:Alive( ) and !v:IsRagdolled( ) and !v:InVehicle( ) and v:GetMoveType( ) == MOVETYPE_WALK and v:IsInWorld( ) and !v:IsOnGround( ) ) then
 			hook.Run( "PlayerJump", v )
 			v.CAT_nextJumpUpdate = CurTime( ) + 1
+		end
+		
+		local infoOverride = hook.Run( "PlayerInfoTable", v, {
+			jumpPower = v:GetJumpPower( ),
+			runSpeed = v:GetRunSpeed( ),
+			walkSpeed = v:GetWalkSpeed( )
+		} ) or { }
+		
+		if ( infoOverride.jumpPower ) then
+			v:SetJumpPower( infoOverride.jumpPower )
+		end
+		
+		if ( infoOverride.runSpeed ) then
+			v:SetRunSpeed( infoOverride.runSpeed )
+		end
+		
+		if ( infoOverride.walkSpeed ) then
+			v:SetWalkSpeed( infoOverride.walkSpeed )
 		end
 	end
 end

@@ -26,6 +26,7 @@ catherine.configs.doorCost = 50
 catherine.configs.doorSellCost = 25
 catherine.configs.playerDefaultRunSpeed = 275
 catherine.configs.playerDefaultWalkSpeed = 90
+catherine.configs.playerDefaultJumpPower = 120
 catherine.configs.defaultCash = 0
 catherine.configs.cashName = "Dollars"
 catherine.configs.cashModel = "models/props_lab/box01a.mdl"
@@ -74,7 +75,7 @@ if ( SERVER ) then
 	catherine.configs.voice3D = true
 	catherine.configs.giveHand = true
 	catherine.configs.giveKey = true
-	catherine.configs.spawnTime = 50
+	catherine.configs.spawnTime = 5
 	catherine.configs.clearMap = true
 	catherine.configs.enable_oocDelay = true
 	catherine.configs.enable_loocDelay = false
@@ -82,6 +83,8 @@ if ( SERVER ) then
 	
 	catherine.configs.oocDelay = 60
 	catherine.configs.loocDelay = 2
+	
+	catherine.configs.limbDamageAutoRecover = 5
 	
 	catherine.configs.enable_Log = true
 	catherine.configs.enable_AntiHaX = true

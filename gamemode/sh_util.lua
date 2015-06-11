@@ -22,10 +22,6 @@ function catherine.util.Print( col, val )
 	MsgC( col or Color( 255, 255, 255 ), "[CAT] " .. val .. "\n" )
 end
 
-function catherine.util.ErrorPrint( val )
-	MsgC( Color( 0, 255, 255 ), "[CAT LUA ERROR] " .. val .. "\n" )
-end
-
 function catherine.util.Include( dir, typ )
 	dir = dir:lower( )
 	
@@ -95,6 +91,12 @@ function catherine.util.GetRealTime( )
 	local one, dst, hour = os.date( "*t" ), os.date( "%p" ), os.date( "%I" )
 	
 	return one.year .. "-" .. one.month .. "-" .. one.day .. " | " .. dst .. " " .. hour .. ":" .. os.date( "%M" )
+end
+
+function catherine.util.GetChatTimeStamp( )
+	local hour = tonumber( os.date( "%H" ) )
+
+	return os.date( "%p" ) .. " " .. ( hour > 12 and hour - 12 or hour ) .. ":" .. os.date( "%M" )
 end
 
 function catherine.util.GetAdmins( isSuperAdmin )
@@ -243,7 +245,7 @@ if ( SERVER ) then
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
 		if ( func ) then
-			local timerID = message .. pl:SteamID( )
+			local timerID = pl:SteamID( )
 			
 			timer.Remove( timerID )
 			
