@@ -39,6 +39,14 @@ end
 
 if ( SERVER ) then
 	catherine.entity.customUse = catherine.entity.customUse or { }
+	
+	function catherine.entity.SetIgnoreUse( ent, bool )
+		ent.CAT_ignoreUse = bool
+	end
+	
+	function catherine.entity.GetIgnoreUse( ent )
+		return ent.CAT_ignoreUse
+	end 
 
 	function catherine.entity.RegisterUseMenu( ent, menuTable )
 		local forServer = { }

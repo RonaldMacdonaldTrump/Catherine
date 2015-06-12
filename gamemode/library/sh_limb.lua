@@ -37,13 +37,13 @@ local limbBones = {
 	[ "ValveBiped.Bip01_Spine2" ] = HITGROUP_CHEST
 };
 local healAmount = {
-	[ HITGROUP_HEAD ] = 1,
+	[ HITGROUP_HEAD ] = 0.4,
 	[ HITGROUP_CHEST ] = 0.8,
-	[ HITGROUP_STOMACH ] = 1,
-	[ HITGROUP_RIGHTARM ] = 3,
-	[ HITGROUP_LEFTARM ] = 3,
-	[ HITGROUP_LEFTLEG ] = 2.7,
-	[ HITGROUP_RIGHTLEG ] = 2.7
+	[ HITGROUP_STOMACH ] = 0.5,
+	[ HITGROUP_RIGHTARM ] = 1,
+	[ HITGROUP_LEFTARM ] = 1,
+	[ HITGROUP_LEFTLEG ] = 1,
+	[ HITGROUP_RIGHTLEG ] = 1
 }
 
 function catherine.limb.BoneToHitGroup( boneID )

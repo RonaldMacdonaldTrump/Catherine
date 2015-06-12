@@ -26,6 +26,12 @@ LANGUAGE.data = {
 	[ "Class_UI_Unlimited" ] = "무제한",
 	[ "Class_UI_NoJoinable" ] = "당신이 가입할 수 있는 클래스가 없습니다.",
 	
+	// GlobalBan
+	[ "GlobalBan_UI_Title" ] = "공식밴",
+	[ "GlobalBan_UI_Blank" ] = "아직 공식밴 처리된 사용자가 없습니다.",
+	[ "GlobalBan_UI_NotUsing" ] = "이 서버는 공식밴 서비스를 사용하고 있지 않습니다.",
+	[ "GlobalBan_UI_Users" ] = "%s명의 사용자가 차단되었습니다.",
+	
 	// Cash
 	[ "Cash_UI_HasStr" ] = "당신은 %s " .. catherine.configs.cashName .. " 를 가지고 있습니다.",
 	[ "Cash_UI_TargetHasStr" ] = "이 사람은 %s " .. catherine.configs.cashName .. " 를 가지고 있습니다.",
@@ -340,6 +346,9 @@ LANGUAGE.data = {
 	[ "Basic_Framework_Author" ] = "%s 에 의해 개발 및 디자인.",
 	[ "Basic_Notify_BunnyHop" ] = "버니합을 하지 마십시오!",
 	
+	[ "Command_ChangeLevel_Fin" ] = "%s초 후 맵이 %s 로 바뀝니다.",
+	[ "Command_ChangeLevel_Error01" ] = "맵이 올바르지 않습니다!",
+	[ "Command_RestartLevel_Fin" ] = "%s초 후 서버가 리부팅 됩니다.",
 	[ "Command_ClearDecals_Fin" ] = "맵에 있는 데칼을 모두 지웠습니다.",
 	[ "Command_SetTimeHour_Fin" ] = "당신은 RP 시간을 %s시로 설정하셨습니다.",
 	

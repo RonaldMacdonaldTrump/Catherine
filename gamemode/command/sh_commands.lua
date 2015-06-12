@@ -574,7 +574,43 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	command = "restartlevel",
+	syntax = "[Time]",
+	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
+	runFunc = function( pl, args )
+		local time = args[ 1 ] or 5
+
+		catherine.util.NotifyAllLang( "Command_RestartLevel_Fin", time )
+		
+		timer.Simple( time, function( )
+			RunConsoleCommand( "changelevel", game.GetMap( ) )
+		end )
+	end
+} )
+
+catherine.command.Register( {
+	command = "changelevel",
+	syntax = "[Map] [Time]",
+	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
+	runFunc = function( pl, args )
+		local map = args[ 1 ]
+		local time = args[ 2 ] or 5
+		
+		if ( file.Exists( "maps/" .. map .. ".bsp", "GAME" ) ) then
+			catherine.util.NotifyAllLang( "Command_ChangeLevel_Fin", time, map )
+			
+			timer.Simple( time, function( )
+				RunConsoleCommand( "changelevel", map )
+			end )
+		else
+			catherine.util.NotifyLang( pl, "Command_ChangeLevel_Error01" )
+		end
+	end
+} )
+
+catherine.command.Register( {
 	command = "settimehour",
+	syntax = "[0 ~ 24]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then

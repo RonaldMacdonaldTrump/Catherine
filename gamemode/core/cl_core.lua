@@ -126,7 +126,7 @@ function GM:CalcView( pl, pos, ang, fov )
 		end
 	end
 
-	return viewData
+	return viewData or self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
 end
 
 local iconMat = Material( "icon16/server.png" )
@@ -619,9 +619,7 @@ function GM:RenderScreenspaceEffects( )
 
 		if ( motionBlurData.status == false and motionBlurData.fadeTime ) then
 			motionBlurData.drawAlpha = Lerp( motionBlurData.fadeTime, motionBlurData.drawAlpha, 0 )
-			
-			print("runn",motionBlurData.drawAlpha)
-			
+
 			if ( math.Round( motionBlurData.drawAlpha ) <= 0 ) then
 				catherine.util.motionBlur = nil
 			end

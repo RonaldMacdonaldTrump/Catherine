@@ -18,6 +18,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.player = catherine.player or { }
 local META = FindMetaTable( "Player" )
+local META2 = FindMetaTable( "Entity" )
 local velo = FindMetaTable( "Entity" ).GetVelocity
 local twoD = FindMetaTable( "Vector" ).Length2D
 
@@ -238,10 +239,26 @@ if ( SERVER ) then
 		end
 	end
 	
+	function catherine.player.SetIgnoreHurtSound( pl, bool )
+		pl.CAT_ignore_hurtSound = bool
+	end
+	
+	function catherine.player.SetIgnoreScreenColor( pl, bool )
+		pl.CAT_ignoreScreenColor = bool
+	end
+	
+	function catherine.player.GetIgnoreHurtSound( pl )
+		return pl.CAT_ignore_hurtSound
+	end
+
+	function catherine.player.GetIgnoreScreenColor( pl )
+		return pl.CAT_ignoreScreenColor
+	end
+	
 	function catherine.player.GetPlayerDefaultRunSpeed( pl )
 		return hook.Run( "GetCustomPlayerDefaultRunSpeed", pl ) or catherine.configs.playerDefaultRunSpeed
 	end
-	
+
 	function catherine.player.GetPlayerDefaultJumpPower( pl )
 		return hook.Run( "GetCustomPlayerDefaultJumpPower", pl ) or catherine.configs.playerDefaultJumpPower
 	end
@@ -395,6 +412,24 @@ if ( SERVER ) then
 	META.CATTakeWeapon = META.CATTakeWeapon or META.StripWeapon
 	META.CATGodEnable = META.CATGodEnable or META.GodEnable
 	META.CATGodDisable = META.CATGodDisable or META.GodDisable
+	META2.CATSetHealth = META2.CATSetHealth or META2.SetHealth
+	META.CATSetArmor = META.CATSetArmor or META.SetArmor
+
+	function META:SetHealth( health )
+		local oldHealth = self:Health( )
+		
+		self:CATSetHealth( health )
+		
+		hook.Run( "PlayerHealthSet", self, health, oldHealth )
+	end
+	
+	function META:SetArmor( armor )
+		local oldArmor = self:Armor( )
+		
+		self:CATSetArmor( armor )
+		
+		hook.Run( "PlayerArmorSet", self, armor, oldArmor )
+	end
 
 	function META:Give( uniqueID )
 		local wep = self:CATGiveWeapon( uniqueID )

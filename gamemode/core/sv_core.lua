@@ -83,6 +83,19 @@ function GM:PlayerSpray( pl )
 	return !hook.Run( "PlayerCanSpray", pl )
 end
 
+function GM:PlayerHealthSet( pl, newHealth, oldHealth )
+	local maxHealth = pl:GetMaxHealth( )
+	
+	if ( newHealth > oldHealth ) then
+		catherine.limb.HealBody( pl, ( newHealth - oldHealth ) / 2.2 )
+	end
+	
+	if ( newHealth >= maxHealth ) then
+		catherine.limb.HealBody( pl, 100 )
+		pl:RemoveAllDecals( )
+	end
+end
+
 function GM:PlayerCharacterLoaded( pl )
 	local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
 	
@@ -165,21 +178,27 @@ end
 
 function GM:PlayerInfoTable( pl, infoTable )
 	local jumpPower = infoTable.jumpPower
+	local runSpeed = infoTable.runSpeed
 	local leftLegLimb = catherine.limb.GetDamage( pl, HITGROUP_LEFTLEG )
 	local rightLegLimb = catherine.limb.GetDamage( pl, HITGROUP_RIGHTLEG )
-	local originalJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
+	local defJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
+	local defRunSpeed = catherine.player.GetPlayerDefaultRunSpeed( pl )
 
-	if ( ( leftLegLimb and leftLegLimb != 0 ) and ( rightLegLimb and rightLegLimb != 0 ) ) then
-		local per = ( math.max( leftLegLimb, leftLegLimb ) / 100 ) * originalJumpPower / originalJumpPower
+	if ( ( leftLegLimb and leftLegLimb != 0 ) or ( rightLegLimb and rightLegLimb != 0 ) ) then
+		local per = ( math.max( leftLegLimb, leftLegLimb ) / 100 ) * defJumpPower / defJumpPower
+		local per2 = ( math.max( leftLegLimb, leftLegLimb ) / 100 ) * defRunSpeed / defRunSpeed
 		
-		jumpPower = originalJumpPower - ( originalJumpPower * per )
+		jumpPower = defJumpPower - ( defJumpPower * per )
+		runSpeed = defRunSpeed - ( defRunSpeed * per2 )
 
 		return {
-			jumpPower = jumpPower
+			jumpPower = jumpPower,
+			runSpeed = runSpeed
 		}
 	else
 		return {
-			jumpPower = originalJumpPower
+			jumpPower = defJumpPower,
+			runSpeed = defRunSpeed
 		}
 	end
 end
@@ -258,10 +277,11 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 			end
 			
 			if ( amount >= 20 or dmgInfo:IsBulletDamage( ) ) then
-				pl.CAT_ignore_hurtSound = true
+				catherine.player.SetIgnoreHurtSound( pl, true )
 
 				// Uh....
 				pl:TakeDamage( amount, attacker, inflictor )
+				
 				catherine.effect.Create( "BLOOD", {
 					ent = ent,
 					pos = dmgInfo:GetDamagePosition( ),
@@ -269,7 +289,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 					decalCount = 1
 				} )
 				
-				pl.CAT_ignore_hurtSound = nil
+				catherine.player.SetIgnoreHurtSound( pl, nil )
 
 				if ( pl:Health( ) <= 0 and !pl.CAT_deathSoundPlayed ) then
 					hook.Run( "PlayerDeathSound", pl, ent )
@@ -410,7 +430,7 @@ function GM:PlayerUse( pl, ent )
 	if ( isDoor ) then
 		local result = hook.Run( "PlayerCanUseDoor", pl, ent )
 
-		if ( result == false or ent.CAT_ignoreUse ) then
+		if ( result == false or catherine.entity.GetIgnoreUse( ent ) ) then
 			return false
 		else
 			hook.Run( "PlayerUseDoor", pl, ent )
@@ -422,6 +442,7 @@ end
 
 function GM:PlayerSay( pl, text )
 	catherine.chat.Run( pl, text )
+	catherine.log.Add( CAT_LOG_FLAG_BASIC, pl:Name( ) .. ", " .. pl:SteamName( ) .. " typed chat " .. text )
 end
 
 function GM:PlayerInitialSpawn( pl )
@@ -477,7 +498,7 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 	
 	pl.CAT_healthRecover = true
 
-	if ( !pl.CAT_ignoreScreenColor ) then
+	if ( !catherine.player.GetIgnoreScreenColor( pl ) ) then
 		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 	end
 	
@@ -490,7 +511,7 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 		catherine.limb.TakeDamage( pl, hitGroup, dmgInfo:GetDamage( ) )
 	end
 
-	if ( !pl.CAT_ignore_hurtSound ) then
+	if ( !catherine.player.GetIgnoreHurtSound( pl ) ) then
 		local sound = hook.Run( "GetPlayerPainSound", pl )
 		local gender = pl:GetGender( )
 	
@@ -596,8 +617,30 @@ function GM:PlayerDeath( pl )
 	pl:SetNetVar( "deathTime", CurTime( ) )
 	
 	catherine.log.Add( nil, pl:SteamName( ) .. ", " .. pl:SteamID( ) .. " has a died [Character Name : " .. pl:Name( ) .. "]", true )
-	
-	//hook.Run( "PlayerGone", pl ) :?
+end
+
+function GM:PlayerThink( pl )
+	if ( ( pl.CAT_playerInfoTableTick or 0 ) <= CurTime( ) ) then
+		local infoOverride = hook.Run( "PlayerInfoTable", pl, {
+			jumpPower = pl:GetJumpPower( ),
+			runSpeed = pl:GetRunSpeed( ),
+			walkSpeed = pl:GetWalkSpeed( )
+		} ) or { }
+		
+		if ( infoOverride.jumpPower and infoOverride.jumpPower != pl:GetJumpPower( ) ) then
+			pl:SetJumpPower( infoOverride.jumpPower )
+		end
+		
+		if ( infoOverride.runSpeed and infoOverride.runSpeed != pl:GetRunSpeed( ) ) then
+			pl:SetRunSpeed( infoOverride.runSpeed )
+		end
+		
+		if ( infoOverride.walkSpeed and infoOverride.walkSpeed != pl:GetWalkSpeed( ) ) then
+			pl:SetWalkSpeed( infoOverride.walkSpeed )
+		end
+		
+		pl.CAT_playerInfoTableTick = CurTime( ) + 0.1
+	end
 end
 
 function GM:Tick( )
@@ -610,23 +653,7 @@ function GM:Tick( )
 			v.CAT_nextJumpUpdate = CurTime( ) + 1
 		end
 		
-		local infoOverride = hook.Run( "PlayerInfoTable", v, {
-			jumpPower = v:GetJumpPower( ),
-			runSpeed = v:GetRunSpeed( ),
-			walkSpeed = v:GetWalkSpeed( )
-		} ) or { }
-		
-		if ( infoOverride.jumpPower ) then
-			v:SetJumpPower( infoOverride.jumpPower )
-		end
-		
-		if ( infoOverride.runSpeed ) then
-			v:SetRunSpeed( infoOverride.runSpeed )
-		end
-		
-		if ( infoOverride.walkSpeed ) then
-			v:SetWalkSpeed( infoOverride.walkSpeed )
-		end
+		hook.Run( "PlayerThink", v )
 	end
 end
 

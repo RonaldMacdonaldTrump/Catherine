@@ -17,7 +17,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.recognize = catherine.recognize or { }
-// 이 라이브러리는 최대한 최적화 하였습니다, 마지막 갱신 : 2015-05-08
 
 if ( SERVER ) then
 	function catherine.recognize.DoKnow( pl, code, target )
@@ -34,6 +33,8 @@ if ( SERVER ) then
 			
 			catherine.recognize.RegisterKnow( pl, v )
 		end
+		
+		catherine.util.PlaySimpleSound( pl, "buttons/button17.wav" )
 	end
 	
 	function catherine.recognize.RegisterKnow( pl, target )

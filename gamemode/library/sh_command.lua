@@ -91,6 +91,8 @@ if ( SERVER ) then
 		end
 
 		commandTable.runFunc( pl, args )
+		
+		catherine.log.Add( CAT_LOG_FLAG_BASIC, pl:Name( ) .. ", " .. pl:SteamName( ) .. " are using /" .. id .. " " .. table.concat( args or { }, " " ), true )
 	end
 	
 	function catherine.command.RunByText( pl, text )

@@ -39,6 +39,21 @@ if ( SERVER ) then
 	function PLUGIN:PlayerDeath( pl )
 		catherine.character.SetCharVar( pl, "stamina", 100 )
 	end
+	
+	function PLUGIN:GetCustomPlayerDefaultRunSpeed( pl )
+		local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
+		
+		if ( math.Round( stamina ) <= 10 or pl.CAT_stm_rec ) then
+			if ( math.Round( stamina ) >= 100 ) then
+				pl.CAT_stm_rec = nil
+				return
+			end
+			
+			pl.CAT_stm_rec = true
+			
+			return pl:GetWalkSpeed( )
+		end
+	end
 
 	function PLUGIN:Think( )
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
@@ -53,7 +68,6 @@ if ( SERVER ) then
 				local staminaDown = math.Clamp( catherine.character.GetCharVar( v, "stamina", 100 ) + ( -10 + math.min( catherine.attribute.GetProgress( v, CAT_ATT_STAMINA ) * 0.25, 7.5 ) ), 0, 100 )
 				
 				if ( math.Round( staminaDown ) < 5 ) then
-					v:SetRunSpeed( v:GetWalkSpeed( ) )
 					catherine.attribute.AddProgress( v, CAT_ATT_STAMINA, 0.05 )
 					
 					if ( ( v.CAT_nextBreathingSound or CurTime( ) ) <= CurTime( ) ) then
@@ -69,11 +83,7 @@ if ( SERVER ) then
 			else
 				if ( v.CAT_nextStaminaUp <= CurTime( ) ) then
 					local staminaUp = math.Clamp( catherine.character.GetCharVar( v, "stamina", 100 ) + 5, 0, 100 )
-					
-					if ( staminaUp >= 100 ) then
-						v:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( v ) )
-					end
-					
+
 					if ( staminaUp > 30 and v.CAT_isBreathing ) then
 						catherine.util.StopAdvanceSound( v, "ST_BreathingSound", 5 )
 						v.CAT_isBreathing = nil

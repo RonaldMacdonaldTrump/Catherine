@@ -31,6 +31,12 @@ LANGUAGE.data = {
 	[ "Class_UI_Unlimited" ] = "Unlimited",
 	[ "Class_UI_NoJoinable" ] = "You can not join this!",
 	
+	// GlobalBan
+	[ "GlobalBan_UI_Title" ] = "Global Ban",
+	[ "GlobalBan_UI_Blank" ] = "Doesn't have user in Global Ban.",
+	[ "GlobalBan_UI_NotUsing" ] = "This server doesn't using Global Ban service.",
+	[ "GlobalBan_UI_Users" ] = "%s's users are blocked.",
+	
 	// Cash
 	[ "Cash_UI_HasStr" ] = "You have %s " .. catherine.configs.cashName ..".",
 	[ "Cash_UI_TargetHasStr" ] = "This player has %s " .. catherine.configs.cashName ..".",
@@ -341,6 +347,9 @@ LANGUAGE.data = {
 	[ "Basic_Framework_Author" ] = "Development and design by %s.",
 	[ "Basic_Notify_BunnyHop" ] = "Do not Bunny-hop!",
 	
+	[ "Command_ChangeLevel_Fin" ] = "%s(sec) after change map to %s.",
+	[ "Command_ChangeLevel_Error01" ] = "Map is not a valid!",
+	[ "Command_RestartLevel_Fin" ] = "%s(sc) after restart a server.",
 	[ "Command_ClearDecals_Fin" ] = "You have cleared all decals on the map.",
 	[ "Command_SetTimeHour_Fin" ] = "You have set the roleplay time to %s(hour).",
 	

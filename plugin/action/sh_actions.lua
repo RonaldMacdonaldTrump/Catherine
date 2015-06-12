@@ -38,6 +38,34 @@ local actionTable = {
 				doExitSeq = "Sit_Ground_to_Idle"
 			}
 		}
+	},
+	[ "cheer" ] = {
+		text = "Cheer!",
+		actions = {
+			citizen_male = {
+				seq = "cheer1"
+			},
+			citizen_felame = {
+				seq = "cheer1"
+			}
+		}
+	},
+	[ "stand" ] = {
+		text = "Stand!",
+		actions = {
+			citizen_male = {
+				seq = "lineidle01",
+				noAutoExit = true
+			},
+			citizen_felame = {
+				seq = "lineidle01",
+				noAutoExit = true
+			},
+			metrocop = {
+				seq = "plazathreat2",
+				noAutoExit = true
+			}
+		}
 	}
 }
 
