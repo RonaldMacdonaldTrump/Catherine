@@ -212,6 +212,7 @@ LANGUAGE.data = {
 	[ "Entity_Notify_NotValid" ] = "이것은 올바르지 않은 엔티티 입니다!",
 	[ "Entity_Notify_NotPlayer" ] = "이것은 올바르지 않은 플레이어 입니다!",
 	[ "Entity_Notify_NotDoor" ] = "이것은 올바르지 않은 문 입니다!",
+	[ "Entity_Notify_TooFar" ] = "물체와의 거리가 너무 멈니다!",
 	
 	// Command
 	[ "Command_Notify_NotFound" ] = "해당 명령어는 존재하지 않습니다!",

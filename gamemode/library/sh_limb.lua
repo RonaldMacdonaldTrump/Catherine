@@ -37,7 +37,7 @@ local limbBones = {
 	[ "ValveBiped.Bip01_Spine2" ] = HITGROUP_CHEST
 };
 local healAmount = {
-	[ HITGROUP_HEAD ] = 0.5,
+	[ HITGROUP_HEAD ] = 1,
 	[ HITGROUP_CHEST ] = 0.8,
 	[ HITGROUP_STOMACH ] = 1,
 	[ HITGROUP_RIGHTARM ] = 3,

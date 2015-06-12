@@ -81,11 +81,7 @@ catherine.chat.Register( "ic", {
 
 catherine.chat.Register( "me", {
 	func = function( pl, text )
-		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
-			
-		else
-			chat.AddText( Color( 224, 255, 255 ), "** " .. pl:Name( ) .. " " .. text )
-		end
+		chat.AddText( Color( 224, 255, 255 ), "** " .. pl:Name( ) .. " " .. text )
 	end,
 	command = { "/me" },
 	canHearRange = 900,

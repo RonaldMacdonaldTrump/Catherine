@@ -140,11 +140,23 @@ function GM:PlayerSpawn( pl )
 end
 
 function GM:PlayerLimbTakeDamage( pl, hitGroup, amount )
-
+	if ( hitGroup == HITGROUP_HEAD ) then
+		local visibility = 1 - ( ( amount / 100 ) / 1 )
+		
+		catherine.util.StartMotionBlur( pl, math.max( visibility, 0.13 ), 1, 0.02 )
+	end
 end
 
 function GM:PlayerLimbDamageHealed( pl, hitGroup, amount )
-
+	if ( hitGroup == HITGROUP_HEAD ) then
+		local visibility = 1 - ( amount / 100 )
+		
+		catherine.util.StartMotionBlur( pl, visibility, 1, 0.02 )
+		
+		if ( visibility == 0 ) then
+			catherine.util.StopMotionBlur( pl )
+		end
+	end
 end
 
 function GM:PlayerJump( pl )
@@ -153,13 +165,11 @@ end
 
 function GM:PlayerInfoTable( pl, infoTable )
 	local jumpPower = infoTable.jumpPower
-	
 	local leftLegLimb = catherine.limb.GetDamage( pl, HITGROUP_LEFTLEG )
 	local rightLegLimb = catherine.limb.GetDamage( pl, HITGROUP_RIGHTLEG )
 	local originalJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
 
 	if ( ( leftLegLimb and leftLegLimb != 0 ) and ( rightLegLimb and rightLegLimb != 0 ) ) then
-		
 		local per = ( math.max( leftLegLimb, leftLegLimb ) / 100 ) * originalJumpPower / originalJumpPower
 		
 		jumpPower = originalJumpPower - ( originalJumpPower * per )
@@ -399,8 +409,8 @@ function GM:PlayerUse( pl, ent )
 	
 	if ( isDoor ) then
 		local result = hook.Run( "PlayerCanUseDoor", pl, ent )
-		
-		if ( result == false ) then
+
+		if ( result == false or ent.CAT_ignoreUse ) then
 			return false
 		else
 			hook.Run( "PlayerUseDoor", pl, ent )

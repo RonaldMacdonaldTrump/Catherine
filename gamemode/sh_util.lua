@@ -153,7 +153,7 @@ end
 
 function catherine.util.GetDoorPartner( ent )
 	for k, v in pairs( ents.FindInSphere( ent:GetPos( ), 128 ) ) do
-		if ( v:GetClass( ) == "prop_door_rotating" and ent != v ) then
+		if ( v:GetModel( ) == ent:GetModel( ) and v:GetClass( ) == "prop_door_rotating" and ent != v ) then
 			return v
 		end
 	end
@@ -420,6 +420,19 @@ if ( SERVER ) then
 		
 		return dummyEnt
 	end
+	
+	function catherine.util.StartMotionBlur( pl, addAlpha, drawAlpha, delay )
+		
+		netstream.Start( pl, "catherine.util.StartMotionBlur", {
+			addAlpha,
+			drawAlpha,
+			delay
+		} )
+	end
+	
+	function catherine.util.StopMotionBlur( pl, fadeTime )
+		netstream.Start( pl, "catherine.util.StopMotionBlur", fadeTime )
+	end
 
 	function catherine.util.StringReceiver( pl, id, msg, defV, func )
 		local steamID = pl:SteamID( )
@@ -478,6 +491,7 @@ if ( SERVER ) then
 else
 	catherine.util.materials = catherine.util.materials or { }
 	catherine.util.advSounds = catherine.util.advSounds or { }
+	catherine.util.motionBlur = catherine.util.motionBlur or nil
 	CAT_UTIL_BUTTOMSOUND_1 = 1
 	CAT_UTIL_BUTTOMSOUND_2 = 2
 	CAT_UTIL_BUTTOMSOUND_3 = 3
@@ -508,6 +522,27 @@ else
 		)
 	end )
 	
+	netstream.Hook( "catherine.util.StartMotionBlur", function( data )
+		catherine.util.motionBlur = {
+			status = true,
+			addAlpha = data[ 1 ],
+			drawAlpha = data[ 2 ],
+			delay = data[ 3 ]
+		}
+	end )
+	
+	netstream.Hook( "catherine.util.StopMotionBlur", function( data )
+		local motionBlurData = catherine.util.motionBlur
+		
+		motionBlurData = {
+			status = false,
+			fadeTime = data,
+			addAlpha = motionBlurData.addAlpha,
+			drawAlpha = motionBlurData.drawAlpha,
+			delay = motionBlurData.delay
+		}
+	end )
+	
 	netstream.Hook( "catherine.util.ScreenColorEffect", function( data )
 		local col = data[ 1 ]
 		local time = CurTime( ) + ( data[ 2 ] or 0.1 )
@@ -519,7 +554,7 @@ else
 			if ( time <= CurTime( ) ) then
 				a = Lerp( fadeTime, a, 0 )
 				
-				if ( a <= 0 ) then
+				if ( math.Round( a ) <= 0 ) then
 					hook.Remove( "HUDPaint", "catherine.util.ScreenColorEffect" )
 					return
 				end

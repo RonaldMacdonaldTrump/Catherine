@@ -176,7 +176,7 @@ catherine.command.Register( {
 		if ( args[ 1 ] ) then
 			local newDesc = args[ 1 ]
 			
-			if ( newDesc:len( ) >= catherine.configs.characterDescMinLen and newDesc:len( ) < catherine.configs.characterDescMaxLen ) then
+			if ( newDesc:utf8len( ) >= catherine.configs.characterDescMinLen and newDesc:utf8len( ) < catherine.configs.characterDescMaxLen ) then
 				catherine.character.SetVar( pl, "_desc", newDesc )
 				catherine.util.NotifyLang( pl, "Character_Notify_SetDescLC", newDesc )
 			else

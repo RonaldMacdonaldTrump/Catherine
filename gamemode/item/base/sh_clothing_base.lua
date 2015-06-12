@@ -120,7 +120,13 @@ if ( SERVER ) then
 		end
 	end )
 	
-	hook.Add( "OnItemVendorSold", "catherine.item.hooks.weapon_base.OnItemVendorSold", function( pl, itemTable )
+	hook.Add( "OnItemVendorSold", "catherine.item.hooks.clothing_base.OnItemVendorSold", function( pl, itemTable )
+		if ( itemTable.isCloth ) then
+			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
+		end
+	end )
+	
+	hook.Add( "OnItemForceTake", "catherine.item.hooks.clothing_base.OnItemForceTake", function( pl, itemTable )
 		if ( itemTable.isCloth ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end

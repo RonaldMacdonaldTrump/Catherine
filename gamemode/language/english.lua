@@ -213,6 +213,7 @@ LANGUAGE.data = {
 	[ "Entity_Notify_NotValid" ] = "This isn't a valid entity!",
 	[ "Entity_Notify_NotPlayer" ] = "This isn't a valid player!",
 	[ "Entity_Notify_NotDoor" ] = "This isn't a valid door!",
+	[ "Entity_Notify_TooFar" ] = "You are too far by entity!",
 	
 	// Command
 	[ "Command_Notify_NotFound" ] = "Command not found!",

@@ -163,6 +163,12 @@ if ( SERVER ) then
 		
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
+	
+	hook.Add( "OnItemForceTake", "catherine.item.hooks.weapon_base.OnItemForceTake", function( pl, itemTable )
+		if ( !itemTable.isWeapon ) then return end
+		
+		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+	end )
 else
 	function BASE:DoRightClick( pl, itemData )
 		local uniqueID = self.uniqueID

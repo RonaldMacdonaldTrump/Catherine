@@ -276,7 +276,7 @@ function GM:PostDrawTranslucentRenderables( depth, skybox )
 	if ( depth or skybox ) then return end
 
 	for k, v in pairs( ents.FindInSphere( LocalPlayer( ):GetPos( ), 256 ) ) do
-		if ( !IsValid( v ) or !catherine.entity.IsDoor( v ) or catherine.door.IsDoorDisabled( v ) ) then continue end
+		if ( !IsValid( v ) or !catherine.entity.IsDoor( v ) or v:GetNoDraw( ) or catherine.door.IsDoorDisabled( v ) ) then continue end
 		
 		hook.Run( "DrawDoorText", v )
 	end
@@ -613,6 +613,22 @@ function GM:RenderScreenspaceEffects( )
 	tab[ "$pp_colour_mulb" ] = data.mulb or 0
 
 	DrawColorModify( tab )
+	
+	if ( catherine.util.motionBlur ) then
+		local motionBlurData = catherine.util.motionBlur
+
+		if ( motionBlurData.status == false and motionBlurData.fadeTime ) then
+			motionBlurData.drawAlpha = Lerp( motionBlurData.fadeTime, motionBlurData.drawAlpha, 0 )
+			
+			print("runn",motionBlurData.drawAlpha)
+			
+			if ( math.Round( motionBlurData.drawAlpha ) <= 0 ) then
+				catherine.util.motionBlur = nil
+			end
+		end
+		
+		DrawMotionBlur( motionBlurData.addAlpha, motionBlurData.drawAlpha, motionBlurData.delay )
+	end
 end
 
 function GM:ScreenResolutionChanged( oldW, oldH )
