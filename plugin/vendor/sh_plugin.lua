@@ -104,6 +104,7 @@ catherine.language.Merge( "english", {
 	[ "Vendor_UI_VendorItemBuyOnlyTypeStr" ] = "Buy Only",
 	[ "Vendor_UI_VendorItemSellOnlyTypeStr" ] = "Sell Only",
 	[ "Vendor_UI_VendorItemBothTypeStr" ] = "Buy and Sell",
+	[ "Vendor_UI_HasCash" ] = "This vendor has %s.",
 	
 	[ "VED_Plugin_Name" ] = "Vendor",
 	[ "VED_Plugin_Desc" ] = "Good stuff."
@@ -152,6 +153,7 @@ catherine.language.Merge( "korean", {
 	[ "Vendor_UI_VendorItemBuyOnlyTypeStr" ] = "구매만 가능",
 	[ "Vendor_UI_VendorItemSellOnlyTypeStr" ] = "판매만 가능",
 	[ "Vendor_UI_VendorItemBothTypeStr" ] = "구매, 판매 가능",
+	[ "Vendor_UI_HasCash" ] = "이 상인은 %s 를 가지고 있습니다.",
 	
 	[ "VED_Plugin_Name" ] = "상인",
 	[ "VED_Plugin_Desc" ] = "맵에 NPC 상인을 추가합니다."

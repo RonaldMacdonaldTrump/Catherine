@@ -251,7 +251,11 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		end
 		
 		local success = catherine.item.Give( pl, uniqueID, count )
-		if ( !success ) then return end
+		
+		if ( !success ) then
+			catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
+			return
+		end
 		
 		catherine.cash.Take( pl, itemCost )
 		self:SetVendorData( ent, "inv", vendorInv )

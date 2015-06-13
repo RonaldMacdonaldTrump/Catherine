@@ -23,7 +23,7 @@ function PANEL:Init( )
 	
 	self.globalBan = catherine.net.GetNetGlobalVar( "cat_globalban_database" )
 	
-	self:SetMenuSize( ScrW( ) * 0.7, ScrH( ) * 0.75 )
+	self:SetMenuSize( ScrW( ) * 0.5, ScrH( ) * 0.75 )
 	self:SetMenuName( LANG( "GlobalBan_UI_Title" ) )
 
 	self.Lists = vgui.Create( "DPanelList", self )

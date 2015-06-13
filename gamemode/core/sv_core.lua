@@ -371,7 +371,7 @@ end
 
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Create( "Catherine.timer.WeaponToggle" .. pl:SteamID( ), 1, 1, function( )
+		timer.Create( "Catherine.timer.WeaponToggle." .. pl:SteamID( ), 1, 1, function( )
 			if ( IsValid( pl ) ) then
 				pl:ToggleWeaponRaised( )
 			end
@@ -407,7 +407,7 @@ end
 
 function GM:KeyRelease( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Remove( "Catherine.timer.WeaponToggle_" .. pl:SteamID( ) )
+		timer.Remove( "Catherine.timer.WeaponToggle." .. pl:SteamID( ) )
 	end
 end
 
@@ -450,6 +450,7 @@ function GM:PlayerInitialSpawn( pl )
 		pl:SetNoDraw( true )
 		pl:SetNotSolid( true )
 		pl:GodEnable( )
+		pl:SetPos( Vector( 0, 0, 10000000 ) )
 		
 		catherine.player.Initialize( pl )
 	end )

@@ -22,7 +22,7 @@ local PANEL = { }
 function PANEL:Init( )
 	catherine.vgui.vendor = self
 	
-	self.vendorData = { inv = nil }
+	self.vendorData = { cash = nil, inv = nil }
 	self.player = LocalPlayer( )
 	self.w, self.h = ScrW( ) * 0.6, ScrH( ) * 0.8
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
@@ -967,6 +967,8 @@ function PANEL:Paint( w, h )
 		if ( name ) then
 			draw.SimpleText( name, "catherine_normal20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 		end
+		
+		draw.SimpleText( LANG( "Vendor_UI_HasCash", catherine.cash.GetName( self.vendorData.cash ) ), "catherine_normal20", w - 35, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 	end
 end
 
@@ -974,6 +976,7 @@ function PANEL:InitializeVendor( ent )
 	self.ent = ent
 	self.vendorData = PLUGIN:GetVendorDatas( ent )
 	self.vendorData.inv = ent:GetNetVar( "inv", { } )
+	self.vendorData.cash = ent:GetNetVar( "cash", 0 )
 end
 
 function PANEL:Think( )
