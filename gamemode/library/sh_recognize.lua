@@ -63,7 +63,13 @@ else
 		local menu = DermaMenu( )
 		
 		menu:AddOption( LANG( "Recognize_UI_Option_LookingPlayer" ), function( )
-			local ent = LocalPlayer( ):GetEyeTrace( 70 ).Entity
+			local pl = LocalPlayer( )
+			
+			local data = { }
+			data.start = pl:GetShootPos( )
+			data.endpos = data.start + pl:GetAimVector( ) * 70
+			data.filter = pl
+			local ent = util.TraceLine( data ).Entity
 
 			if ( IsValid( ent ) and ent:IsPlayer( ) ) then
 				netstream.Start( "catherine.recognize.DoKnow", {
@@ -73,19 +79,19 @@ else
 			else
 				catherine.notify.Add( LANG( "Entity_Notify_NotPlayer" ), 5 )
 			end
-		end )
+		end ):SetImage( "icon16/status_online.png" )
 		
 		menu:AddOption( LANG( "Recognize_UI_Option_TalkRange" ), function( )
 			netstream.Start( "catherine.recognize.DoKnow", { 0 } )
-		end )
+		end ):SetImage( "icon16/user.png" )
 		
 		menu:AddOption( LANG( "Recognize_UI_Option_WhisperRange" ), function( )
 			netstream.Start( "catherine.recognize.DoKnow", { 1 } )
-		end )
+		end ):SetImage( "icon16/user_green.png" )
 		
 		menu:AddOption( LANG( "Recognize_UI_Option_YellRange" ), function( )
 			netstream.Start( "catherine.recognize.DoKnow", { 2 } )
-		end )
+		end ):SetImage( "icon16/user_red.png" )
 		
 		menu:Open( )
 		menu:Center( )

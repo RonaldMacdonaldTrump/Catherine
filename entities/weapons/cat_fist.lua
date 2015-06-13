@@ -84,7 +84,6 @@ function SWEP:PrimaryAttack( )
 	tr.start = pl:GetShootPos( )
 	tr.endpos = tr.start + pl:GetAimVector( ) * self.HitDistance
 	tr.filter = pl
-		
 	local ent = util.TraceLine( tr ).Entity
 	
 	catherine.character.SetCharVar( pl, "stamina", stamina - 5 )

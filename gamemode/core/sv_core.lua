@@ -29,8 +29,12 @@ function GM:ShowTeam( pl )
 	if ( !pl:IsCharacterLoaded( ) or catherine.character.GetCharVar( pl, "charBanned" ) ) then return end
 	local status = hook.Run( "CantLookF2", pl )
 	if ( status ) then return end
-	
-	local ent = pl:GetEyeTrace( 70 ).Entity
+
+	local data = { }
+	data.start = pl:GetShootPos( )
+	data.endpos = data.start + pl:GetAimVector( ) * 70
+	data.filter = pl
+	local ent = util.TraceLine( data ).Entity
 	
 	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) and !catherine.door.IsDoorDisabled( ent ) ) then
 		local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
@@ -170,6 +174,16 @@ function GM:PlayerLimbDamageHealed( pl, hitGroup, amount )
 			catherine.util.StopMotionBlur( pl )
 		end
 	end
+end
+
+function GM:GetLockTime( pl )
+	return math.max( 5 * ( math.max( catherine.limb.GetDamage( pl, HITGROUP_LEFTARM ),
+	catherine.limb.GetDamage( pl, HITGROUP_RIGHTARM ) ) / 100 ), 1.8 )
+end
+
+function GM:GetUnlockTime( pl )
+	return math.max( 5 * ( math.max( catherine.limb.GetDamage( pl, HITGROUP_LEFTARM ),
+	catherine.limb.GetDamage( pl, HITGROUP_RIGHTARM ) ) / 100 ), 1.8 )
 end
 
 function GM:PlayerJump( pl )

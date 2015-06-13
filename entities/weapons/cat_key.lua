@@ -29,15 +29,6 @@ SWEP.AlwaysLowered = true
 SWEP.CanFireLowered = true
 SWEP.DrawHUD = false
 
-function SWEP:PreDrawViewModel( viewMdl, wep, pl )
-	local fists = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl:GetModel( ) ) )
-	if ( fists and fists.model ) then
-		viewMdl:SetModel( fists.model )
-		viewMdl:SetSkin( fists.skin )
-		viewMdl:SetBodyGroups( fists.body )
-	end
-end
-
 function SWEP:Deploy( )
 	local pl = self.Owner
 	if ( CLIENT or !IsValid( pl ) ) then return true end
@@ -55,19 +46,31 @@ end
 function SWEP:PrimaryAttack( )
 	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
-	local ent = pl:GetEyeTrace( 70 ).Entity
+	
+	local data = { }
+	data.start = pl:GetShootPos( )
+	data.endpos = data.start + pl:GetAimVector( ) * 40
+	data.filter = pl
+	local ent = util.TraceLine( data ).Entity
 
 	if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) or ent.CAT_doorLocked ) then return end
 	local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
+	
 	if ( !has or flag == 0 ) then return end
 	
 	pl:Freeze( true )
-	catherine.util.ProgressBar( pl, LANG( pl, "Door_Message_Locking" ), 2, function( )
+	
+	local time = hook.Run( "GetLockTime", pl ) or 2
+
+	catherine.util.ProgressBar( pl, LANG( pl, "Door_Message_Locking" ), time, function( )
+		if ( !IsValid( pl ) or !pl:Alive( ) ) then return end
+		
 		if ( IsValid( ent ) ) then
 			ent.CAT_doorLocked = true
 			ent:Fire( "Lock" )
 			ent:EmitSound( "doors/door_latch3.wav" )
 		end
+		
 		pl:Freeze( false )
 	end )
 
@@ -77,19 +80,31 @@ end
 function SWEP:SecondaryAttack( )
 	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
-	local ent = pl:GetEyeTrace( 70 ).Entity
+	
+	local data = { }
+	data.start = pl:GetShootPos( )
+	data.endpos = data.start + pl:GetAimVector( ) * 40
+	data.filter = pl
+	local ent = util.TraceLine( data ).Entity
 	
 	if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) or !ent.CAT_doorLocked ) then return end
 	local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
+	
 	if ( !has or flag == 0 ) then return end
 	
+	local time = hook.Run( "GetUnlockTime", pl ) or 2
+	
 	pl:Freeze( true )
-	catherine.util.ProgressBar( pl, LANG( pl, "Door_Message_UnLocking" ), 2, function( )
+	
+	catherine.util.ProgressBar( pl, LANG( pl, "Door_Message_UnLocking" ), time, function( )
+		if ( !IsValid( pl ) or !pl:Alive( ) ) then return end
+		
 		if ( IsValid( ent ) ) then
 			ent.CAT_doorLocked = false
 			ent:Fire( "Unlock" )
 			ent:EmitSound( "doors/door_latch3.wav" )
 		end
+		
 		pl:Freeze( false )
 	end )
 	
