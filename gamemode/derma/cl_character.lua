@@ -154,15 +154,17 @@ function PANEL:PlayMusic( )
 	
 	music:Play( )
 	
-	timer.Create( "Catherine.timer.character.RepeatMusic", SoundDuration( musicDir ) + 2, 0, function( )
-		if ( !IsValid( self ) or !music ) then
-			timer.Remove( "Catherine.timer.character.RepeatMusic" )
-			return
-		end
-		
-		music:Stop( )
-		music:Play( )
-	end )
+	if ( musicDir:find( ".wav" ) ) then
+		timer.Create( "Catherine.timer.character.RepeatMusic", SoundDuration( musicDir ) + 2, 0, function( )
+			if ( !IsValid( self ) or !music ) then
+				timer.Remove( "Catherine.timer.character.RepeatMusic" )
+				return
+			end
+			
+			music:Stop( )
+			music:Play( )
+		end )
+	end
 	
 	catherine.character.panelMusic = music
 end

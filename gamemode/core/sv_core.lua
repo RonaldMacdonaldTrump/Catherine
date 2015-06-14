@@ -460,11 +460,11 @@ function GM:PlayerSay( pl, text )
 end
 
 function GM:PlayerInitialSpawn( pl )
-	timer.Simple( 1, function( )
+	timer.Simple( 2, function( )
 		pl:SetNoDraw( true )
 		pl:SetNotSolid( true )
 		pl:GodEnable( )
-		pl:SetPos( Vector( 0, 0, 10000000 ) )
+		pl:SetPos( Vector( 0, 0, 10000 ) )
 		
 		catherine.player.Initialize( pl )
 	end )
