@@ -158,6 +158,10 @@ LANGUAGE.data = {
 	[ "Scoreboard_PlayerOption03_Str" ] = "Give Whitelist",
 	[ "Scoreboard_PlayerOption04_Str" ] = "Character Ban / Unban",
 	[ "Scoreboard_PlayerOption04_Q" ] = "Are you sure you would like to ban / unban this character?",
+	[ "Scoreboard_PlayerOption05_Str" ] = "Flag Give",
+	[ "Scoreboard_PlayerOption05_Q" ] = "What are you want to give flags?",
+	[ "Scoreboard_PlayerOption06_Str" ] = "Flag Take",
+	[ "Scoreboard_PlayerOption06_Q" ] = "What are you want to take flags?",
 	
 	// Help
 	[ "Help_UI_Title" ] = "Help",
