@@ -151,6 +151,23 @@ function catherine.util.RemoveEntityByClass( class )
 	end
 end
 
+function catherine.util.IsInBox( ent, minVector, maxVector, ignoreZPos )
+	local pos = ent:GetPos( )
+
+	if ( ignoreZPos ) then
+		if ( ( pos.x >= math.min( minVector.x, maxVector.x ) and pos.x <= math.max( minVector.x, maxVector.x ) )
+		and ( pos.y >= math.min( minVector.y, maxVector.y ) and pos.y <= math.max( minVector.y, maxVector.y ) ) ) then
+			return true
+		end
+	else
+		if ( ( pos.x >= math.min( minVector.x, maxVector.x ) and pos.x <= math.max( minVector.x, maxVector.x ) )
+		and ( pos.y >= math.min( minVector.y, maxVector.y ) and pos.y <= math.max( minVector.y, maxVector.y ) )
+		and ( pos.z >= math.min( minVector.z, maxVector.z ) and pos.z <= math.max( minVector.z, maxVector.z ) ) ) then
+			return true
+		end
+	end
+end
+
 function catherine.util.GetDoorPartner( ent )
 	for k, v in pairs( ents.FindInSphere( ent:GetPos( ), 128 ) ) do
 		if ( v:GetModel( ) == ent:GetModel( ) and v:GetClass( ) == "prop_door_rotating" and ent != v ) then

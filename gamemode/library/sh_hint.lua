@@ -52,7 +52,7 @@ if ( SERVER ) then
 else
 	catherine.hint.curHint = catherine.hint.curHint or nil
 	
-	CAT_CONVAR_HINT = CreateClientConVar( "cat_convar_hint", 1, true, true )
+	CAT_CONVAR_HINT = CreateClientConVar( "cat_convar_hint", "1", true, true )
 	catherine.option.Register( "CONVAR_HINT", "cat_convar_hint", "^Option_Str_HINT_Name", "^Option_Str_HINT_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
 	
 	netstream.Hook( "catherine.hint.Receive", function( data )

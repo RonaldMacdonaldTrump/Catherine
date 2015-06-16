@@ -38,6 +38,10 @@ if ( SERVER ) then
 			catherine.environment.SendAllEnvironmentConfig( pl ) // Send ALL enviroment configs.
 			catherine.character.SendPlayerCharacterList( pl )
 			catherine.catData.SendAllNetworkRegistries( pl ) // Send ALL CAT DATA network registries.
+			
+			if ( !catherine.catData.GetVar( pl, "language" ) ) then
+				catherine.player.UpdateLanguageSetting( pl )
+			end
 
 			timer.Simple( 1, function( )
 				netstream.Start( pl, "catherine.loadingFinished" )
@@ -60,6 +64,11 @@ if ( SERVER ) then
 		pl:Freeze( true )
 		
 		netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
+	end
+	
+	function catherine.player.UpdateLanguageSetting( pl )
+		pl:ConCommand( "cat_convar_language " .. catherine.configs.defaultLanguage )
+		catherine.catData.SetVar( pl, "language", true, nil, true )
 	end
 
 	function catherine.player.PlayerInformationUpdate( pl )

@@ -61,6 +61,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_CantDeleteUsing" ] = "사용하고 있는 캐릭터를 지울 수 없습니다!",
 	[ "Character_Notify_CantSwitchRagdolled" ] = "기절한 상태에서는 캐릭터를 바꿀 수 없습니다!",
 	[ "Character_Notify_IsNotValid" ] = "이 캐릭터는 올바르지 않습니다!",
+	[ "Character_Notify_CantUseThisFaction" ] = "당신은 이 팩션을 사용할 수 없습니다!",
 	[ "Character_Notify_IsNotValidFaction" ] = "이 캐릭터의 팩션이 올바르지 않습니다!",
 	[ "Character_Notify_CharBanned" ] = "이 캐릭터는 밴 되었습니다!",
 	[ "Character_Notify_CantSwitchUsing" ] = "같은 캐릭터를 또 사용할 수 없습니다!",

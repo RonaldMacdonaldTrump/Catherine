@@ -93,7 +93,7 @@ if ( SERVER ) then
 		
 		return true
 	end
-	
+
 	function catherine.faction.RemoveWhiteList( pl, id )
 		local factionTable = catherine.faction.FindByID( id )
 		

@@ -68,7 +68,7 @@ function GM:ContextMenuOpen( )
 end
 
 function GM:ShouldDrawLocalPlayer( pl, bool )
-	return bool or IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question )
+	return bool
 end
 
 function GM:HUDPaintBackground( )
@@ -99,15 +99,6 @@ function GM:CalcView( pl, pos, ang, fov )
 		
 		return viewData
 	end
-	
-	if ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or !pl:IsCharacterLoaded( ) ) then
-		viewData = {
-			origin = catherine.configs.schematicViewPos.pos,
-			angles = catherine.configs.schematicViewPos.ang
-		}
-		
-		return viewData
-	end
 
 	local ent = Entity( pl:GetNetVar( "ragdollIndex", 0 ) )
 
@@ -126,7 +117,7 @@ function GM:CalcView( pl, pos, ang, fov )
 		end
 	end
 
-	return viewData or self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
+	return self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
 end
 
 local iconMat = Material( "icon16/server.png" )
@@ -630,24 +621,7 @@ function GM:RenderScreenspaceEffects( )
 end
 
 function GM:ScreenResolutionChanged( oldW, oldH )
-	local scrW, scrH = ScrW( ), ScrH( )
-	local information = hook.Run( "GetSchemaInformation" )
-
-	catherine.hud.RegisterWelcomeIntroAnimation( 1, function( )
-		return information.title
-	end, "catherine_normal25", 2, 9, nil, scrW * 0.8, scrH * 0.55, TEXT_ALIGN_RIGHT )
-
-	catherine.hud.RegisterWelcomeIntroAnimation( 2, function( )
-		return information.desc
-	end, "catherine_normal15", 6, 8, nil, scrW * 0.8, scrH * 0.55 + 35, TEXT_ALIGN_RIGHT )
-
-	catherine.hud.RegisterWelcomeIntroAnimation( 3, function( )
-		return catherine.environment.GetDateString( ) .. " : " .. catherine.environment.GetTimeString( )
-	end, "catherine_normal15", 8, 10, nil, scrW * 0.8, scrH * 0.55 + 55, TEXT_ALIGN_RIGHT )
-
-	catherine.hud.RegisterWelcomeIntroAnimation( 4, function( )
-		return information.author
-	end, "catherine_normal20", 7, 9, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
+	catherine.hud.WelcomeIntroInitialize( true )
 end
 
 netstream.Hook( "catherine.ShowHelp", function( )
@@ -658,8 +632,8 @@ netstream.Hook( "catherine.ShowHelp", function( )
 	end
 end )
 
-CAT_CONVAR_ADMIN_ESP = CreateClientConVar( "cat_convar_adminesp", 1, true, true )
-CAT_CONVAR_ALWAYS_ADMIN_ESP = CreateClientConVar( "cat_convar_alwaysadminesp", 0, true, true )
+CAT_CONVAR_ADMIN_ESP = CreateClientConVar( "cat_convar_adminesp", "1", true, true )
+CAT_CONVAR_ALWAYS_ADMIN_ESP = CreateClientConVar( "cat_convar_alwaysadminesp", "0", true, true )
 
 catherine.option.Register( "CONVAR_ADMIN_ESP", "cat_convar_adminesp", "^Option_Str_ADMIN_ESP_Name", "^Option_Str_ADMIN_ESP_Desc", "^Option_Category_03", CAT_OPTION_SWITCH )
 catherine.option.Register( "CONVAR_ALWAYS_ADMIN_ESP", "cat_convar_alwaysadminesp", "^Option_Str_Always_ADMIN_ESP_Name", "^Option_Str_Always_ADMIN_ESP_Desc", "^Option_Category_03", CAT_OPTION_SWITCH )

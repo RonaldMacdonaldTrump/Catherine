@@ -66,6 +66,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_CantDeleteUsing" ] = "You can not delete the character you are currently using!",
 	[ "Character_Notify_CantSwitchRagdolled" ] = "You can not switch characters while you are unconscious!",
 	[ "Character_Notify_IsNotValid" ] = "This character is not valid!",
+	[ "Character_Notify_CantUseThisFaction" ] = "You can't use this faction!",
 	[ "Character_Notify_IsNotValidFaction" ] = "This character's faction is not valid!",
 	[ "Character_Notify_CharBanned" ] = "This character is banned!",
 	[ "Character_Notify_CantSwitchUsing" ] = "You are already using this character!",

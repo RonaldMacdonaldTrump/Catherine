@@ -56,7 +56,7 @@ catherine.character.NewVar( "name", {
 	field = "_name",
 	doNetworking = true,
 	default = "Johnson",
-	checkValid = function( data )
+	checkValid = function( pl, data )
 		if ( data:utf8len( ) >= catherine.configs.characterNameMinLen and data:utf8len( ) <= catherine.configs.characterNameMaxLen ) then
 			return true
 		end
@@ -69,7 +69,7 @@ catherine.character.NewVar( "desc", {
 	field = "_desc",
 	doNetworking = true,
 	default = "No desc.",
-	checkValid = function( data )
+	checkValid = function( pl, data )
 		if ( data:utf8len( ) >= catherine.configs.characterDescMinLen and data:utf8len( ) <= catherine.configs.characterDescMaxLen ) then
 			return true
 		end
@@ -81,7 +81,7 @@ catherine.character.NewVar( "desc", {
 catherine.character.NewVar( "model", {
 	field = "_model",
 	default = "models/breen.mdl",
-	checkValid = function( data )
+	checkValid = function( pl, data )
 		if ( data == "" ) then
 			return false, "^Character_Notify_SelectModel"
 		end
@@ -147,7 +147,16 @@ catherine.character.NewVar( "cash", {
 catherine.character.NewVar( "faction", {
 	field = "_faction",
 	doNetworking = true,
-	default = "citizen"
+	default = "citizen",
+	checkValid = function( pl, data )
+		local factionTable = catherine.faction.FindByID( data )
+		
+		if ( SERVER and factionTable and ( ( factionTable.isWhitelist and catherine.faction.HasWhiteList( pl, data ) ) or ( !factionTable.isWhitelist ) ) ) then
+			return true
+		end
+
+		return false, "^Character_Notify_CantUseThisFaction"
+	end
 } )
 
 if ( SERVER ) then
@@ -253,8 +262,9 @@ if ( SERVER ) then
 
 			if ( data[ k ] ) then
 				var = data[ k ]
+				
 				if ( v.checkValid ) then
-					local success, reason = v.checkValid( var )
+					local success, reason = v.checkValid( pl, var )
 					
 					if ( success == false ) then
 						netstream.Start( pl, "catherine.character.CreateResult", reason )
@@ -582,6 +592,10 @@ else
 	netstream.Hook( "catherine.character.SendPlayerCharacterList", function( data )
 		catherine.character.localCharacters = data
 	end )
+	
+	function catherine.character.SetCustomBackground( bool )
+		catherine.character.customBackgroundEnabled = bool
+	end
 end
 
 function catherine.character.GetVar( pl, key, default )

@@ -41,9 +41,13 @@ function PANEL:Init( )
 		if ( self.mode == 0 ) then
 			self.mainAlpha = Lerp( 0.03, self.mainAlpha, 255 )
 		else
-			self.mainAlpha = Lerp( 0.05, self.mainAlpha, 0 )
+			self.mainAlpha = Lerp( 0.08, self.mainAlpha, 0 )
 		end
 		
+		if ( !catherine.character.customBackgroundEnabled ) then
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 0, 0, 0, 255 ) )
+		end
+
 		local sin = math.sin( CurTime( ) / 2 )
 
 		surface.SetDrawColor( 90, 90, 90, 100 )
@@ -62,9 +66,48 @@ function PANEL:Init( )
 		surface.SetMaterial( Material( "gui/gradient" ) )
 		surface.DrawTexturedRect( 0, h * 0.75 - 10, w * 0.3, 170 )
 		
+		surface.SetDrawColor( 110, 110, 110, self.mainAlpha )
+		surface.SetMaterial( Material( "vgui/gradient-r" ) )
+		surface.DrawTexturedRect( w - ( w * 0.3 ), 15, w * 0.3, 40 )
+		
 		draw.SimpleText( schemaTitle, "catherine_normal25", 30, h * 0.75 - 70, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 		draw.SimpleText( schemaDesc, "catherine_normal15", 30, h * 0.75 - 35, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 	end
+	
+	self.changeLanguage = vgui.Create( "catherine.vgui.button", self )
+	self.changeLanguage:SetPos( self.w - ( self.w * 0.2 ) - 20, 20 )
+	self.changeLanguage:SetSize( self.w * 0.2, 30 )
+	self.changeLanguage:SetStr( "" )
+	self.changeLanguage:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.changeLanguage.PaintOverAll = function( pnl )
+		local languageTable = catherine.language.FindByID( GetConVarString( "cat_convar_language" ) )
+		
+		if ( languageTable ) then
+			pnl:SetStr( languageTable.name )
+		end
+	end
+	self.changeLanguage.Click = function( pnl )
+		local menu = DermaMenu( )
+			
+		for k, v in pairs( catherine.language.GetAll( ) ) do
+			menu:AddOption( v.name, function( )
+				RunConsoleCommand( "cat_convar_language", k )
+
+				timer.Simple( 0, function( )
+					schemaTitle = catherine.util.StuffLanguage( Schema and Schema.Title or "Example" )
+					schemaDesc = catherine.util.StuffLanguage( Schema and Schema.Desc or "Test" )
+					
+					self.createCharacter:SetStr( LANG( "Character_UI_CreateCharStr" ) )
+					self.useCharacter:SetStr( LANG( "Character_UI_LoadCharStr" ) )
+					self.changeLog:SetStr( LANG( "Character_UI_ChangeLogStr" ) )
+					self.back:SetStr( LANG( "Character_UI_BackStr" ) )
+				end )
+			end )
+		end
+		
+		menu:Open( )
+	end
+	self.mainButtons[ #self.mainButtons + 1 ] = self.changeLanguage
 
 	self.createCharacter = vgui.Create( "catherine.vgui.button", self )
 	self.createCharacter:SetPos( 30, self.h * 0.75 )
@@ -150,6 +193,8 @@ end
 
 function PANEL:PlayMusic( )
 	local musicDir = catherine.configs.characterMenuMusic
+	musicDir = type( musicDir ) == "table" and table.Random( musicDir ) or musicDir
+	
 	local music = CreateSound( self.player, musicDir )
 	
 	music:Play( )
@@ -303,9 +348,11 @@ function PANEL:UseCharacterPanel( )
 		if ( !self.loadCharacter.Lists[ self.loadCharacter.curr ] ) then return end
 		
 		local uniquePanel = self.loadCharacter.Lists[ self.loadCharacter.curr ].panel
+		
 		SetTargetPanelPos( uniquePanel, self.CharacterPanel:GetWide( ) / 2 - uniquePanel:GetWide( ) / 2, 255 )
 			
 		local right, left = uniquePanel.x + uniquePanel:GetWide( ) + 24, uniquePanel.x - 24
+		
 		for i = self.loadCharacter.curr - 1, 1, -1 do
 			local prevPanel = self.loadCharacter.Lists[ i ].panel
 			
@@ -699,13 +746,15 @@ function PANEL:Init( )
 	self.nextStage:SetGradientColor( Color( 50, 50, 50, 150 ) )
 	self.nextStage.Click = function( )
 		local i = 0
-
+		local pl = self.parent.player
+		
 		for k, v in pairs( self.data ) do
 			local vars = catherine.character.FindVarByID( k )
 			
 			if ( vars and vars.checkValid ) then
 				i = i + 1
-				local success, reason = vars.checkValid( self.data[ k ] )
+				
+				local success, reason = vars.checkValid( pl, self.data[ k ] )
 				
 				if ( success == false ) then
 					self:PrintErrorMessage( catherine.util.StuffLanguage( reason ) )

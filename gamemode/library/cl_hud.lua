@@ -129,7 +129,7 @@ function catherine.hud.Ammo( pl, w, h )
 	end
 end
 
-function catherine.hud.WelcomeIntroInitialize( )
+function catherine.hud.WelcomeIntroInitialize( noRun )
 	local scrW, scrH = ScrW( ), ScrH( )
 	local information = hook.Run( "GetSchemaInformation" )
 
@@ -149,7 +149,9 @@ function catherine.hud.WelcomeIntroInitialize( )
 		return information.author
 	end, "catherine_normal20", 7, 9, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
 
-	catherine.hud.welcomeIntroWorkingData = { initStartTime = CurTime( ) }
+	if ( !noRun ) then
+		catherine.hud.welcomeIntroWorkingData = { initStartTime = CurTime( ) }
+	end
 end
 
 function catherine.hud.RegisterWelcomeIntroAnimation( key, text, font, startTime, showingTime, col, startX, startY, xAlign, yAlign )
@@ -259,8 +261,8 @@ function catherine.hud.ProgressBar( pl, w, h )
 	drawText( data.message or "", "catherine_normal25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 end
 
-CAT_CONVAR_HUD = CreateClientConVar( "cat_convar_hud", 1, true, true )
-CAT_CONVAR_BAR = CreateClientConVar( "cat_convar_bar", 1, true, true )
+CAT_CONVAR_HUD = CreateClientConVar( "cat_convar_hud", "1", true, true )
+CAT_CONVAR_BAR = CreateClientConVar( "cat_convar_bar", "1", true, true )
 
 local modules = {
 	"CHudHealth",

@@ -42,8 +42,8 @@ catherine.configs.schematicViewPos = {
 	pos = Vector( -18.818655, 898.651184, 354.860474 ),
 	ang = Angle( 12.549129, -54.947598, 0.000000 )
 }
-catherine.configs.enableQuiz = true
-catherine.configs.rpTimeInterval = 0.2
+catherine.configs.enableQuiz = true --[[ Enabled a Quiz system. ]]--
+catherine.configs.rpTimeInterval = 0.2 --[[ Setting a one second Interval. ]]--
 catherine.configs.alwaysRaised = {
 	weapon_physgun = true,
 	gmod_tool = true
@@ -58,7 +58,7 @@ catherine.configs.defaultRPInformation = {
 	second = 1,
 	temperature = 25
 }
-catherine.configs.enable_globalBan = true
+catherine.configs.enable_globalBan = true --[[ Enabled a GlobalBan system. ]]--
 
 if ( SERVER ) then
 	catherine.configs.attachmentBlacklist = {
@@ -72,11 +72,11 @@ if ( SERVER ) then
 	catherine.configs.environmentSendInterval = 60
 	catherine.configs.netRegistryOptimizeInterval = 350
 	catherine.configs.saveInterval = 300
-	catherine.configs.voiceAllow = false
+	catherine.configs.voiceAllow = false --[[ Allow a Voice chat. ]]--
 	catherine.configs.voice3D = true
 	catherine.configs.giveHand = true
 	catherine.configs.giveKey = true
-	catherine.configs.spawnTime = 60
+	catherine.configs.spawnTime = 60 --[[ Setting a Spawn time. ]]--
 	catherine.configs.clearMap = true
 	catherine.configs.enable_oocDelay = true
 	catherine.configs.enable_loocDelay = false

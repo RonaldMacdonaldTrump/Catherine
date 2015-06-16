@@ -371,7 +371,7 @@ else
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
 	local maxchatLine = catherine.configs.maxChatboxLine
 	
-	CAT_CONVAR_CHAT_TIMESTAMP = CreateClientConVar( "cat_convar_chat_timestamp", 1, true, true )
+	CAT_CONVAR_CHAT_TIMESTAMP = CreateClientConVar( "cat_convar_chat_timestamp", "1", true, true )
 	catherine.option.Register( "CONVAR_CHAT_TIMESTAMP", "cat_convar_chat_timestamp", "^Option_Str_CHAT_TIMESTAMP_Name", "^Option_Str_CHAT_TIMESTAMP_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
 	
 	netstream.Hook( "catherine.chat.Post", function( data )
