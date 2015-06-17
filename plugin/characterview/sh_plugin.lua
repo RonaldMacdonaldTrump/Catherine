@@ -76,7 +76,7 @@ catherine.command.Register( {
 
 if ( SERVER ) then return end
 
-PLUGIN.nextViewChange = PLUGIN.nextViewChange or CurTime( ) + 5
+PLUGIN.nextViewChange = PLUGIN.nextViewChange or RealTime( ) + 5
 
 netstream.Hook( "catherine.plugin.characterview.SyncViews", function( data )
 	PLUGIN.charViews = data
@@ -98,9 +98,9 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 			self.lastView = table.Random( self.charViews )
 		end
 		
-		if ( self.nextViewChange <= CurTime( ) ) then
+		if ( self.nextViewChange <= RealTime( ) ) then
 			self.lastView = table.Random( self.charViews )
-			self.nextViewChange = CurTime( ) + 5 + math.random( 2, 6 )
+			self.nextViewChange = RealTime( ) + math.random( 7, 15 )
 		end
 
 		local angSin = math.sin( CurTime( ) / 6 )

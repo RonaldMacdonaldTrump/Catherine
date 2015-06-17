@@ -38,10 +38,6 @@ catherine.configs.characterDescMinLen = 10
 catherine.configs.characterDescMaxLen = 32
 catherine.configs.doorDescMaxLen = 30
 catherine.configs.Font = "Segoe UI"
-catherine.configs.schematicViewPos = {
-	pos = Vector( -18.818655, 898.651184, 354.860474 ),
-	ang = Angle( 12.549129, -54.947598, 0.000000 )
-}
 catherine.configs.enableQuiz = true --[[ Enabled a Quiz system. ]]--
 catherine.configs.rpTimeInterval = 0.2 --[[ Setting a one second Interval. ]]--
 catherine.configs.alwaysRaised = {

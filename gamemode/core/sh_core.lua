@@ -198,11 +198,13 @@ function GM:PlayerNoClip( pl, bool )
 	end
 	
 	if ( pl:GetMoveType( ) == MOVETYPE_WALK ) then
+		pl:SetNotSolid( true )
 		pl:SetNoDraw( true )
 		pl:DrawShadow( false )
 		pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
 		
 		if ( SERVER ) then
+			pl:DrawWorldModel( false )
 			pl:SetNetVar( "nocliping", true )
 			
 			if ( pl:IsInGod( ) ) then
@@ -214,11 +216,13 @@ function GM:PlayerNoClip( pl, bool )
 		
 		hook.Run( "PlayerNoclipJoined", pl )
 	else
+		pl:SetNotSolid( false )
 		pl:SetNoDraw( false )
 		pl:DrawShadow( true )
 		pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
 		
 		if ( SERVER ) then
+			pl:DrawWorldModel( true )
 			pl:SetNetVar( "nocliping", false )
 			
 			if ( pl.CAT_alreadyNoclipGod ) then

@@ -109,13 +109,13 @@ LANGUAGE.data = {
 	[ "Basic_Notify_InputText" ] = "문자를 입력하세요!",
 
 	// Version
-	[ "Version_UI_Title" ] = "캐서린 버전",
+	[ "Version_UI_Title" ] = "버전",
 	[ "Version_UI_YourVer_AV" ] = "버전 '%s'",
 	[ "Version_UI_YourVer_NO" ] = "버전 '올바르지 않음'",
 	[ "Version_UI_Checking" ] = "버전을 확인하는 중 ...",
 	[ "Version_UI_CheckButtonStr" ] = "버전 확인",
-	[ "Version_Notify_FoundNew" ] = "이 서버는 최신 버전의 캐서린으로 업데이트가 필요합니다!",
-	[ "Version_Notify_AlreadyNew" ] = "이 서버는 최신 버전의 캐서린을 사용하고 있습니다, 감사합니다.",
+	[ "Version_Notify_FoundNew" ] = "이 서버는 최신 버전으로 업데이트가 필요합니다!",
+	[ "Version_Notify_AlreadyNew" ] = "이 서버는 최신 버전을 사용하고 있습니다, 감사합니다.",
 	[ "Version_Notify_CheckError" ] = "버전을 확인하는 중 오류가 발생하였습니다. - %s",
 	
 	// Attribute
