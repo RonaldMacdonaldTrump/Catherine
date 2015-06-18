@@ -68,7 +68,7 @@ function GM:ContextMenuOpen( )
 end
 
 function GM:ShouldDrawLocalPlayer( pl, bool )
-	return bool
+
 end
 
 function GM:HUDPaintBackground( )

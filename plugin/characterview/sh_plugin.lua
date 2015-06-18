@@ -89,6 +89,8 @@ netstream.Hook( "catherine.plugin.characterview.SyncViews", function( data )
 end )
 
 function PLUGIN:ShouldDrawLocalPlayer( pl )
+	if ( GetConVarString( "cat_convar_thirdperson" ) == "1" ) then return end
+	
 	return ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and catherine.character.customBackgroundEnabled
 end
 

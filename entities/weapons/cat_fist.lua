@@ -30,7 +30,7 @@ SWEP.DrawCrosshair = false
 SWEP.DrawHUD = false
 SWEP.ViewModel = Model( "models/weapons/c_arms_cstrike.mdl" )
 SWEP.WorldModel	= ""
-SWEP.ViewModelFOV = 50
+SWEP.ViewModelFOV = 55
 
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
@@ -57,12 +57,12 @@ function SWEP:Precache( )
 end
 
 function SWEP:PreDrawViewModel( viewMdl, wep, pl )
-	local fists = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl:GetModel( ) ) )
-	
-	if ( fists and fists.model ) then
-		viewMdl:SetModel( fists.model )
-		viewMdl:SetSkin( fists.skin )
-		viewMdl:SetBodyGroups( fists.body )
+	local info = player_manager.RunClass( pl, "GetHandsModel" )
+
+	if ( info and info.model ) then
+		viewMdl:SetModel( info.model )
+		viewMdl:SetSkin( info.skin )
+		viewMdl:SetBodyGroups( info.body )
 	end
 end
 

@@ -62,6 +62,6 @@ end
 
 function PLUGIN:ShouldDrawLocalPlayer( pl )
 	if ( GetConVarString( "cat_convar_thirdperson" ) == "1" ) then
-		return GAMEMODE:ShouldDrawLocalPlayer( pl, true )
+		return true
 	end
 end

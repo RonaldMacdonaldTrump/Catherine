@@ -131,11 +131,11 @@ function GM:PlayerSpawn( pl )
 	pl:Freeze( false )
 	pl:SetNoDraw( false )
 	pl:SetNotSolid( false )
-	pl:Freeze( false )
+	player_manager.SetPlayerClass( pl, "cat_player" )
 	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	pl:SetNetVar( "isTied", false )
-	pl:SetupHands( )
+	//pl:SetupHands( )
 	pl:SetCanZoom( false )
 
 	catherine.limb.HealBody( pl, 100 )
@@ -193,21 +193,18 @@ end
 function GM:PlayerInfoTable( pl, infoTable )
 	local jumpPower = infoTable.jumpPower
 	local runSpeed = infoTable.runSpeed
-	local leftLegLimb = catherine.limb.GetDamage( pl, HITGROUP_LEFTLEG )
-	local rightLegLimb = catherine.limb.GetDamage( pl, HITGROUP_RIGHTLEG )
+	local leftLegLimbDmg = catherine.limb.GetDamage( pl, HITGROUP_LEFTLEG )
+	local rightLegLimbDmg = catherine.limb.GetDamage( pl, HITGROUP_RIGHTLEG )
 	local defJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
 	local defRunSpeed = catherine.player.GetPlayerDefaultRunSpeed( pl )
 
-	if ( ( leftLegLimb and leftLegLimb != 0 ) or ( rightLegLimb and rightLegLimb != 0 ) ) then
-		local per = ( math.max( leftLegLimb, leftLegLimb ) / 100 ) * defJumpPower / defJumpPower
-		local per2 = ( math.max( leftLegLimb, leftLegLimb ) / 100 ) * defRunSpeed / defRunSpeed
-		
-		jumpPower = defJumpPower - ( defJumpPower * per )
-		runSpeed = defRunSpeed - ( defRunSpeed * per2 )
+	if ( ( leftLegLimbDmg and leftLegLimbDmg != 0 ) or ( rightLegLimbDmg and rightLegLimbDmg != 0 ) ) then
+		local per = ( math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ) * defJumpPower / defJumpPower
+		local per2 = ( math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ) * defRunSpeed / defRunSpeed
 
 		return {
-			jumpPower = jumpPower,
-			runSpeed = runSpeed
+			jumpPower = defJumpPower * per,
+			runSpeed = defRunSpeed * per2
 		}
 	else
 		return {
