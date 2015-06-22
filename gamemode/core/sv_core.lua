@@ -526,7 +526,7 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 		local sound = hook.Run( "GetPlayerPainSound", pl )
 		local gender = pl:GetGender( )
 	
-		if ( !sound ) then
+		if ( sound == nil ) then
 			if ( hitGroup == HITGROUP_HEAD ) then
 				sound = "vo/npc/" .. gender .. "01/ow0" .. math.random( 1, 2 ) .. ".wav"
 			elseif ( hitGroup == HITGROUP_CHEST or hitGroup == HITGROUP_GENERIC ) then
@@ -540,13 +540,15 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 			end
 		end
 
-		if ( IsValid( ragdollEntity ) ) then
-			ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
-			
-			return true
-		end
+		if ( sound != false ) then
+			if ( IsValid( ragdollEntity ) ) then
+				ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+				
+				return true
+			end
 
-		pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+			pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+		end
 	end
 	
 	return true
@@ -560,15 +562,17 @@ function GM:PlayerDeathSound( pl, ragdollEntity )
 	local sound = hook.Run( "GetPlayerDeathSound", pl )
 	local gender = pl:GetGender( )
 	
-	if ( IsValid( ragdollEntity ) ) then
-		ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
-		pl.CAT_deathSoundPlayed = true
+	if ( sound != false ) then
+		if ( IsValid( ragdollEntity ) ) then
+			ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+			pl.CAT_deathSoundPlayed = true
+			
+			return true
+		end
 		
-		return true
+		pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+		pl.CAT_deathSoundPlayed = true
 	end
-	
-	pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
-	pl.CAT_deathSoundPlayed = true
 	
 	return true
 end
