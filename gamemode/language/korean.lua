@@ -41,6 +41,7 @@ LANGUAGE.data = {
 	[ "Cash_Notify_HasNot" ] = "당신은 충분한 " .. catherine.configs.cashName .. " 가 없습니다!",
 	[ "Cash_Notify_NotValidAmount" ] = "올바른 금액을 입력하세요!",
 	[ "Cash_Notify_Salary" ] = "당신은 %s " .. catherine.configs.cashName .. " 을 월급으로 받았습니다.",
+	[ "Cash_Notify_Get" ] = "당신은 %s " .. catherine.configs.cashName .. " 를 찾으셨습니다.",
 	
 	// Character
 	[ "Character_UI_Title" ] = "캐릭터",
@@ -195,6 +196,7 @@ LANGUAGE.data = {
 	[ "Item_Category_Wallet" ] = "지갑",
 	[ "Item_Name_Wallet" ] = "지갑",
 	[ "Item_Desc_Wallet" ] = catherine.configs.cashName .. " 가 쌓여있습니다.",
+	[ "Item_Desc_World_Wallet" ] = "%s 가 쌓여있습니다.",
 	[ "Item_FuncStr01_Wallet" ] = catherine.configs.cashName .. " 가지기",
 	[ "Item_FuncStr02_Wallet" ] = catherine.configs.cashName .. " 떨어트리기",
 	[ "Item_DropQ_Wallet" ] = "떨어트릴 " .. catherine.configs.cashName .. " 의 금액을 입력하세요.",

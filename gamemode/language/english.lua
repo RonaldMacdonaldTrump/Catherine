@@ -46,6 +46,7 @@ LANGUAGE.data = {
 	[ "Cash_Notify_HasNot" ] = "You do not have a enough " .. catherine.configs.cashName .. "!",
 	[ "Cash_Notify_NotValidAmount" ] = "Please enter a valid amount!",
 	[ "Cash_Notify_Salary" ] = "You have received %s " .. catherine.configs.cashName .. " from your salary.",
+	[ "Cash_Notify_Get" ] = "You are found %s " .. catherine.configs.cashName .. ".",
 	
 	// Character
 	[ "Character_UI_Title" ] = "Character",
@@ -200,6 +201,7 @@ LANGUAGE.data = {
 	[ "Item_Category_Wallet" ] = "Wallet",
 	[ "Item_Name_Wallet" ] = "Wallet",
 	[ "Item_Desc_Wallet" ] = catherine.configs.cashName .. " in a small stack.",
+	[ "Item_Desc_World_Wallet" ] = "%s in a small stack.",
 	[ "Item_FuncStr01_Wallet" ] = "Take " .. catherine.configs.cashName,
 	[ "Item_FuncStr02_Wallet" ] = "Drop " .. catherine.configs.cashName,
 	[ "Item_DropQ_Wallet" ] = "How much money would you like to drop?",

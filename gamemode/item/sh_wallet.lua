@@ -38,7 +38,10 @@ ITEM.func.take = {
 		end
 		
 		local itemData = ent:GetItemData( )
+		
 		catherine.cash.Give( pl, itemData.amount )
+		catherine.util.NotifyLang( pl, "Cash_Notify_Get", itemData.amount )
+		
 		ent:Remove( )
 	end,
 	canLook = function( )
@@ -82,7 +85,7 @@ if ( SERVER ) then
 	end )
 else
 	function ITEM:GetDesc( pl, itemTable, itemData, isInv )
-		return isInv and LANG( "Cash_UI_HasStr", catherine.cash.Get( pl ) )
+		return isInv and LANG( "Cash_UI_HasStr", catherine.cash.Get( pl ) ) or LANG( "Item_Desc_World_Wallet", catherine.cash.GetName( itemData.amount ) )
 	end
 end
 
