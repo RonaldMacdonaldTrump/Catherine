@@ -48,7 +48,7 @@ function catherine.plugin.Include( dir )
 			end
 			
 			for k1, v1 in pairs( file.Find( pluginDir .. "/attribute/*.lua", "LUA" ) ) do
-				catherine.util.Include( pluginDir .. "/attribute/" .. v1 )
+				catherine.util.Include( pluginDir .. "/attribute/" .. v1, "SHARED" )
 			end
 			
 			for k1, v1 in pairs( file.Find( pluginDir .. "/library/*.lua", "LUA" ) ) do
@@ -56,11 +56,11 @@ function catherine.plugin.Include( dir )
 			end
 			
 			for k1, v1 in pairs( file.Find( pluginDir .. "/class/*.lua", "LUA" ) ) do
-				catherine.util.Include( pluginDir .. "/class/" .. v1 )
+				catherine.util.Include( pluginDir .. "/class/" .. v1, "SHARED" )
 			end
 			
 			for k1, v1 in pairs( file.Find( pluginDir .. "/faction/*.lua", "LUA" ) ) do
-				catherine.util.Include( pluginDir .. "/faction/" .. v1 )
+				catherine.util.Include( pluginDir .. "/faction/" .. v1, "SHARED" )
 			end
 			
 			for k, v in pairs( PLUGIN ) do

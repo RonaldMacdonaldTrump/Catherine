@@ -135,7 +135,6 @@ function GM:PlayerSpawn( pl )
 	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	pl:SetNetVar( "isTied", false )
-	//pl:SetupHands( )
 	pl:SetCanZoom( false )
 
 	catherine.limb.HealBody( pl, 100 )
@@ -382,7 +381,7 @@ end
 
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Create( "Catherine.timer.WeaponToggle." .. pl:SteamID( ), 1, 1, function( )
+		timer.Create( "Catherine.timer.WeaponToggle_" .. pl:SteamID( ), 1, 1, function( )
 			if ( IsValid( pl ) ) then
 				pl:ToggleWeaponRaised( )
 			end
@@ -418,7 +417,7 @@ end
 
 function GM:KeyRelease( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Remove( "Catherine.timer.WeaponToggle." .. pl:SteamID( ) )
+		timer.Remove( "Catherine.timer.WeaponToggle_" .. pl:SteamID( ) )
 	end
 end
 
@@ -607,6 +606,9 @@ function GM:PlayerDeath( pl )
 	local respawnTime = hook.Run( "GetRespawnTime", pl ) or catherine.configs.spawnTime
 	
 	catherine.util.ProgressBar( pl, false )
+	
+	pl:SetViewEntity( NULL )
+	pl:UnSpectate( )
 	
 	pl.CAT_isDeadFunc = true
 

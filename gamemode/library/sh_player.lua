@@ -252,12 +252,20 @@ if ( SERVER ) then
 		pl.CAT_ignore_hurtSound = bool
 	end
 	
+	function catherine.player.SetIgnoreGiveFlagWeapon( pl, bool )
+		pl.CAT_ignoreGiveFlagWeapon = bool
+	end
+	
 	function catherine.player.SetIgnoreScreenColor( pl, bool )
 		pl.CAT_ignoreScreenColor = bool
 	end
 	
 	function catherine.player.GetIgnoreHurtSound( pl )
 		return pl.CAT_ignore_hurtSound
+	end
+	
+	function catherine.player.GetIgnoreGiveFlagWeapon( pl )
+		return pl.CAT_ignoreGiveFlagWeapon
 	end
 
 	function catherine.player.GetIgnoreScreenColor( pl )

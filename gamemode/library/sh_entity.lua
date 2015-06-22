@@ -116,6 +116,12 @@ function catherine.entity.GetPlayer( ent )
 	return ent:GetNetVar( "player" )
 end
 
+META.CATGetModel = META.CATGetModel or META.GetModel
+
+function META:GetModel( )
+	return self:GetNetVar( "fakeModel" ) or self:CATGetModel( )
+end
+
 local META2 = FindMetaTable( "Weapon" )
 
 META2.CATGetPrintName = META2.CATGetPrintName or META2.GetPrintName

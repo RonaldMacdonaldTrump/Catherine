@@ -211,13 +211,16 @@ function SWEP:Deploy( )
 	if ( !IsValid( self.Owner ) ) then return end
 
 	local viewMdl = self.Owner:GetViewModel( )
-	viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( "fists_draw" ) )
 	
-	timer.Simple( viewMdl:SequenceDuration( ), function( ) 
-		viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( "fists_idle_0" .. math.random( 1, 2 ) ) )
-	end )
-	
-	return true
+	if ( IsValid( viewMdl ) ) then
+		viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( "fists_draw" ) )
+		
+		timer.Simple( viewMdl:SequenceDuration( ), function( ) 
+			viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( "fists_idle_0" .. math.random( 1, 2 ) ) )
+		end )
+		
+		return true
+	end
 end
 
 function SWEP:Initialize( )
