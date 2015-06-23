@@ -78,7 +78,13 @@ LANGUAGE.data = {
 	[ "Character_Notify_SelectModel" ] = "캐릭터 모델을 선택하세요!",
 	[ "Character_Notify_NameLimitHit" ] = "캐릭터 이름은 " .. catherine.configs.characterNameMinLen .." 자 이상 " .. catherine.configs.characterNameMaxLen .. " 자 이하 되어야 합니다!",
 	[ "Character_Notify_DescLimitHit" ] = "캐릭터 설명은 " .. catherine.configs.characterDescMinLen .."자 이상 " .. catherine.configs.characterDescMaxLen .. "자 이하 되어야 합니다!",
-		
+	
+	// Accessory
+	[ "Accessory_Wear_ModelError" ] = "모델 오류가 있습니다.",
+	[ "Accessory_Wear_BoneExists" ] = "해당 부위에 이미 악세서리가 있습니다.",
+	[ "Accessory_Wear_BoneNotExists" ] = "해당 부위에 악세서리가 없습니다.",
+	[ "Accessory_Wear_BoneIndexError" ] = "부위 데이터가 올바르지 않습니다.",
+	
 	// Faction
 	[ "Faction_UI_Title" ] = "팩션",
 	[ "Faction_Notify_Give" ] = "%s 님이 %s 팩션에 대한 권한을 %s 님에게 부여했습니다.",

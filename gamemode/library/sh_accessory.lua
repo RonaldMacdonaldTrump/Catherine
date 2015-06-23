@@ -27,19 +27,19 @@ if ( SERVER ) then
 			local bone = itemTable.bone
 			
 			if ( !itemTable.model ) then
-				return false, "MODEL ERROR"
+				return false, "^Accessory_Wear_ModelError"
 			end
 			
 			local accessoryDatas = catherine.character.GetCharVar( pl, "accessory", { } )
 			
 			if ( accessoryDatas[ bone ] and IsValid( Entity( accessoryDatas[ bone ] ) ) ) then
-				return false, "BONE ALREADY EXISTS"
+				return false, "^Accessory_Wear_BoneError"
 			end
 			
 			local boneIndex = pl:LookupBone( bone )
 			
 			if ( !boneIndex ) then
-				return false, "BONE INDEX NOT EXISTS"
+				return false, "^Accessory_Wear_BoneIndexError"
 			end
 
 			local accessoryEnt = ents.Create( "cat_accessory_base" )
@@ -62,14 +62,14 @@ if ( SERVER ) then
 			local bone = itemTable.bone
 			
 			if ( !itemTable.model ) then
-				return false, "MODEL ERROR"
+				return false, "^Accessory_Wear_ModelError"
 			end
 			
 			local accessoryDatas = catherine.character.GetCharVar( pl, "accessory", { } )
 			local accessoryData = accessoryDatas[ bone ]
 			
 			if ( !accessoryData ) then
-				return false, "BONE NOT EXISTS"
+				return false, "^Accessory_Wear_BoneNotExists"
 			end
 			
 			accessoryData = Entity( accessoryData )
@@ -106,14 +106,14 @@ function catherine.accessory.CanWork( pl, workID, data )
 		local itemTable = data.itemTable
 		
 		if ( !itemTable.model ) then
-			return false, "MODEL ERROR"
+			return false, "^Accessory_Wear_ModelError"
 		end
 		
 		local accessoryDatas = catherine.character.GetCharVar( pl, "accessory", { } )
 		local accessoryData = accessoryDatas[ itemTable.bone ]
 
 		if ( accessoryData and IsValid( Entity( accessoryData ) ) ) then
-			return false, "BONE ALREADY EXISTS"
+			return false, "^Accessory_Wear_BoneError"
 		end
 		
 		return true
@@ -121,11 +121,11 @@ function catherine.accessory.CanWork( pl, workID, data )
 		local itemTable = data.itemTable
 		
 		if ( !itemTable.model ) then
-			return false, "MODEL ERROR"
+			return false, "^Accessory_Wear_ModelError"
 		end
 
 		if ( !catherine.character.GetCharVar( pl, "accessory", { } )[ itemTable.bone ] ) then
-			return false, "BONE NOT EXISTS2"
+			return false, "^Accessory_Wear_BoneNotExists"
 		end
 		
 		return true

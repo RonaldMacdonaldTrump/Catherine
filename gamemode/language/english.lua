@@ -94,6 +94,12 @@ LANGUAGE.data = {
 	[ "Faction_Notify_HasNot" ] = "%s does not have the %s whitelist!",
 	[ "Faction_Notify_SelectPlease" ] = "Please select a faction!",
 	
+	// Accessory
+	[ "Accessory_Wear_ModelError" ] = "Model error.",
+	[ "Accessory_Wear_BoneExists" ] = "This bone already has accessory.",
+	[ "Accessory_Wear_BoneNotExists" ] = "This bone not has accessory.",
+	[ "Accessory_Wear_BoneIndexError" ] = "Bone data is not a valid.",
+	
 	// Flag
 	[ "Flag_Notify_Give" ] = "%s has given %s to %s",
 	[ "Flag_Notify_Take" ] = "%s has taken %s from %s",
