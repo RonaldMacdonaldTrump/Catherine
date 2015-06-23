@@ -66,10 +66,24 @@ function PLUGIN:PlayerThink( pl )
 			local currArea = pl:GetCurrentArea( )
 
 			for k, v in pairs( self:GetAllAreas( ) ) do
-				if ( catherine.util.IsInBox( pl, v.minVector, v.maxVector, true ) and currArea != k ) then
-					pl.CAT_area_currArea = k
+				if ( catherine.util.IsInBox( pl, v.minVector, v.maxVector, true ) ) then
+					if ( currArea != k ) then
+						pl:SetNetVar( "currArea", k )
+						pl:SetNetVar( "currAreaName", v.name )
+						pl.CAT_area_currArea = k
 
-					hook.Run( "PlayerAreaChanged", pl, k )
+						hook.Run( "PlayerAreaChanged", pl, k )
+					end
+					
+					break
+				else
+					if ( k == #self:GetAllAreas( ) ) then
+						pl:SetNetVar( "currArea", nil )
+						pl:SetNetVar( "currAreaName", nil )
+						pl.CAT_area_currArea = nil
+
+						hook.Run( "PlayerAreaChanged", pl )
+					end
 				end
 			end
 		end
@@ -80,13 +94,19 @@ end
 
 function PLUGIN:PlayerSpawnedInCharacter( pl )
 	pl.CAT_area_currArea = nil
+	pl:SetNetVar( "currArea", nil )
+	pl:SetNetVar( "currAreaName", nil )
 end
 
 function PLUGIN:PlayerDeath( pl )
 	pl.CAT_area_currArea = nil
+	pl:SetNetVar( "currArea", nil )
+	pl:SetNetVar( "currAreaName", nil )
 end
 
 function PLUGIN:PlayerAreaChanged( pl, areaID )
+	if ( !areaID ) then return end
+	
 	if ( pl:GetInfo( "cat_convar_showarea" ) == "1" ) then
 		local areaTable = self:FindAreaByID( areaID )
 		
@@ -98,4 +118,8 @@ end
 
 function META:GetCurrentArea( )
 	return self.CAT_area_currArea
+end
+
+function META:GetCurrentAreaName( )
+	return self:GetNetVar( "currAreaName" )
 end

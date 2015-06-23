@@ -32,7 +32,7 @@ if ( SERVER ) then
 			
 			local accessoryDatas = catherine.character.GetCharVar( pl, "accessory", { } )
 			
-			if ( accessoryDatas[ bone ] and IsValid( accessoryDatas[ bone ] ) ) then
+			if ( accessoryDatas[ bone ] and IsValid( Entity( accessoryDatas[ bone ] ) ) ) then
 				return false, "BONE ALREADY EXISTS"
 			end
 			
@@ -52,7 +52,7 @@ if ( SERVER ) then
 			accessoryEnt:SetParent( pl )
 			accessoryEnt:SetModel( itemTable.model )
 			
-			accessoryDatas[ bone ] = accessoryEnt
+			accessoryDatas[ bone ] = accessoryEnt:EntIndex( )
 			
 			catherine.character.SetCharVar( pl, "accessory", accessoryDatas )
 			
@@ -72,6 +72,8 @@ if ( SERVER ) then
 				return false, "BONE NOT EXISTS"
 			end
 			
+			accessoryData = Entity( accessoryData )
+			
 			if ( IsValid( accessoryData ) ) then
 				accessoryData:Remove( )
 			end
@@ -88,6 +90,8 @@ if ( SERVER ) then
 		if ( !pl:IsCharacterLoaded( ) ) then return end
 		
 		for k, v in pairs( catherine.character.GetCharVar( pl, "accessory", { } ) ) do
+			v = Entity( v )
+			
 			if ( IsValid( v ) ) then
 				v:Remove( )
 			end
@@ -95,8 +99,6 @@ if ( SERVER ) then
 	end
 	
 	hook.Add( "CharacterLoadingStart", "catherine.accessory.CharacterLoadingStart", catherine.accessory.CharacterLoadingStart )
-else
-
 end
 
 function catherine.accessory.CanWork( pl, workID, data )
@@ -109,8 +111,8 @@ function catherine.accessory.CanWork( pl, workID, data )
 		
 		local accessoryDatas = catherine.character.GetCharVar( pl, "accessory", { } )
 		local accessoryData = accessoryDatas[ itemTable.bone ]
-		
-		if ( accessoryData and IsValid( accessoryData ) ) then
+
+		if ( accessoryData and IsValid( Entity( accessoryData ) ) ) then
 			return false, "BONE ALREADY EXISTS"
 		end
 		
@@ -123,7 +125,7 @@ function catherine.accessory.CanWork( pl, workID, data )
 		end
 
 		if ( !catherine.character.GetCharVar( pl, "accessory", { } )[ itemTable.bone ] ) then
-			return false, "BONE NOT EXISTS"
+			return false, "BONE NOT EXISTS2"
 		end
 		
 		return true

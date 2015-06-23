@@ -71,7 +71,7 @@ else
 			return
 		end
 		
-		if ( pl:IsNoclipping( ) or ( lp == pl and !lp:ShouldDrawLocalPlayer( ) ) ) then
+		if ( pl:IsNoclipping( ) or !pl:Alive( ) or ( lp == pl and !lp:ShouldDrawLocalPlayer( ) ) ) then
 			return
 		end
 		

@@ -33,6 +33,7 @@ BASE.useDynamicItemData = false
 BASE.func = { }
 BASE.func.wear = {
 	text = "^Item_FuncStr01_Accessory",
+	icon = "icon16/world_go.png",
 	canShowIsWorld = true,
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
@@ -59,6 +60,7 @@ BASE.func.wear = {
 }
 BASE.func.takeoff = {
 	text = "^Item_FuncStr02_Accessory",
+	icon = "icon16/world_delete.png",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
 		local result, langKey, par = catherine.accessory.Work( pl, CAT_ACCESSORY_ACTION_TAKEOFF, {
@@ -72,9 +74,9 @@ BASE.func.takeoff = {
 		end
 	end,
 	canLook = function( pl, itemTable )
-		return catherine.inventory.GetItemData( itemTable.uniqueID, "wearing" ) and catherine.accessory.CanWork( pl, CAT_ACCESSORY_ACTION_TAKEOFF, {
+		return tobool( catherine.inventory.GetItemData( itemTable.uniqueID, "wearing" ) and catherine.accessory.CanWork( pl, CAT_ACCESSORY_ACTION_TAKEOFF, {
 			itemTable = itemTable
-		} )
+		} ) )
 	end
 }
 
@@ -83,11 +85,18 @@ if ( SERVER ) then
 		timer.Simple( 1, function( )
 			for k, v in pairs( catherine.inventory.Get( pl ) ) do
 				local itemTable = catherine.item.FindByID( k )
-				local accessoryData = catherine.character.GetCharVar( pl, "accessory", { } )[ itemTable.bone ]
 				
-				if ( !itemTable.isAccessory or !catherine.inventory.GetItemData( pl, k, "wearing" ) or ( accessoryData and IsValid( accessoryData ) ) ) then continue end
-				
-				catherine.item.Work( pl, k, "wear" )
+				if ( itemTable.isAccessory ) then
+					local accessoryDatas = catherine.character.GetCharVar( pl, "accessory", { } )
+					local accessoryData = Entity( accessoryDatas[ itemTable.bone ] or 0 )
+
+					if ( !catherine.inventory.GetItemData( pl, k, "wearing" ) or ( IsValid( accessoryData ) and accessoryData:GetClass( ) == "cat_accessory_base" ) ) then continue end
+					
+					accessoryDatas[ itemTable.bone ] = nil
+					
+					catherine.character.SetCharVar( pl, "accessory", accessoryDatas )
+					catherine.item.Work( pl, k, "wear" )
+				end
 			end
 		end )
 	end )
