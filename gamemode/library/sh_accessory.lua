@@ -32,13 +32,24 @@ if ( SERVER ) then
 			
 			local accessoryDatas = catherine.character.GetCharVar( pl, "accessory", { } )
 			
-			if ( accessoryDatas[ bone ] ) then
+			if ( accessoryDatas[ bone ] and IsValid( accessoryDatas[ bone ] ) ) then
 				return false, "BONE ALREADY EXISTS"
 			end
+			//BASE.offsetVector = Vector( 0, 3, 3 )
+			//BASE.offsetAngles = Angle( 270, 270, 0 )
+			local boneIndex = pl:LookupBone( bone )
 			
+			if ( !boneIndex ) then
+				return false, "BONE INDEX NOT EXISTS"
+			end
+
 			local accessoryEnt = ents.Create( "cat_accessory_base" )
 			accessoryEnt:DrawShadow( false )
 			accessoryEnt:SetNotSolid( true )
+			accessoryEnt:SetAccessoryParent( pl )
+			accessoryEnt:SetAccessoryOffSet( itemTable.offsetVector )
+			accessoryEnt:SetAccessoryAngles( itemTable.offsetAngles )
+			accessoryEnt:SetAccessoryBoneIndex( boneIndex )
 			accessoryEnt:SetParent( pl )
 			accessoryEnt:SetModel( itemTable.model )
 			

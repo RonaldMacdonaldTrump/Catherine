@@ -78,10 +78,6 @@ BASE.func.takeoff = {
 	end
 }
 
-function BASE:GetDropModel( )
-	return "models/props_c17/suitCase_passenger_physics.mdl"
-end
-
 if ( SERVER ) then
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.hooks.accessory_base.PlayerSpawnedInCharacter", function( pl )
 		timer.Simple( 1, function( )

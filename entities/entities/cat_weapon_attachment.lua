@@ -27,13 +27,13 @@ AddCSLuaFile( )
 DEFINE_BASECLASS( "base_gmodentity" )
 
 ENT.Type = "anim"
-ENT.PrintName = "Catherine Attachment"
+ENT.PrintName = "Catherine Weapon Attachment"
 ENT.Author = "LauScript"
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
 function ENT:SetupDataTables( )
-	self:NetworkVar( "Vector", 0, "AttachmentOffset" )
+	self:NetworkVar( "Vector", 0, "AttachmentOffSet" )
 	self:NetworkVar( "Angle", 0, "AttachmentAngles" )
 	self:NetworkVar( "Entity", 0, "AttachmentParent" )
 	self:NetworkVar( "Int", 0, "AttachmentBoneIndex" )
@@ -55,7 +55,6 @@ if ( SERVER ) then
 			physObject:Wake( )
 		end
 	end
-
 else
 	function ENT:Think( )
 		local pos, ang = self:GetAttachmentPos( )
@@ -84,7 +83,7 @@ else
 end
 
 function ENT:GetAttachmentPos( )
-	local pos = self:GetAttachmentOffset( )
+	local pos = self:GetAttachmentOffSet( )
 	local ang = self:GetAttachmentAngles( )
 	local parent = self:GetAttachmentParent( )
 	local boneIndex = self:GetAttachmentBoneIndex( )
