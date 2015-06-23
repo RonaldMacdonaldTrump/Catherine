@@ -53,7 +53,7 @@ function catherine.attachment.Refresh( pl )
 		
 			if ( !boneIndex ) then continue end
 			
-			local attachmentEnt = ents.Create( "cat_attachment" )
+			local attachmentEnt = ents.Create( "cat_weapon_attachment" )
 			attachmentEnt:DrawShadow( false )
 			attachmentEnt:SetNotSolid( true )
 			attachmentEnt:SetAttachmentParent( pl )

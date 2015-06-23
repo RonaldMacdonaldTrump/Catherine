@@ -35,8 +35,7 @@ if ( SERVER ) then
 			if ( accessoryDatas[ bone ] and IsValid( accessoryDatas[ bone ] ) ) then
 				return false, "BONE ALREADY EXISTS"
 			end
-			//BASE.offsetVector = Vector( 0, 3, 3 )
-			//BASE.offsetAngles = Angle( 270, 270, 0 )
+			
 			local boneIndex = pl:LookupBone( bone )
 			
 			if ( !boneIndex ) then
@@ -84,6 +83,18 @@ if ( SERVER ) then
 			return true
 		end
 	end
+	
+	function catherine.accessory.CharacterLoadingStart( pl )
+		if ( !pl:IsCharacterLoaded( ) ) then return end
+		
+		for k, v in pairs( catherine.character.GetCharVar( pl, "accessory", { } ) ) do
+			if ( IsValid( v ) ) then
+				v:Remove( )
+			end
+		end
+	end
+	
+	hook.Add( "CharacterLoadingStart", "catherine.accessory.CharacterLoadingStart", catherine.accessory.CharacterLoadingStart )
 else
 
 end
@@ -95,8 +106,11 @@ function catherine.accessory.CanWork( pl, workID, data )
 		if ( !itemTable.model ) then
 			return false, "MODEL ERROR"
 		end
-
-		if ( catherine.character.GetCharVar( pl, "accessory", { } )[ itemTable.bone ] ) then
+		
+		local accessoryDatas = catherine.character.GetCharVar( pl, "accessory", { } )
+		local accessoryData = accessoryDatas[ itemTable.bone ]
+		
+		if ( accessoryData and IsValid( accessoryData ) ) then
 			return false, "BONE ALREADY EXISTS"
 		end
 		

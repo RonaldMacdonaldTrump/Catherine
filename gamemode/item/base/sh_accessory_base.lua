@@ -83,7 +83,9 @@ if ( SERVER ) then
 		timer.Simple( 1, function( )
 			for k, v in pairs( catherine.inventory.Get( pl ) ) do
 				local itemTable = catherine.item.FindByID( k )
-				if ( !itemTable.isAccessory or !catherine.inventory.GetItemData( pl, k, "wearing" ) ) then continue end
+				local accessoryData = catherine.character.GetCharVar( pl, "accessory", { } )[ itemTable.bone ]
+				
+				if ( !itemTable.isAccessory or !catherine.inventory.GetItemData( pl, k, "wearing" ) or ( accessoryData and IsValid( accessoryData ) ) ) then continue end
 				
 				catherine.item.Work( pl, k, "wear" )
 			end
