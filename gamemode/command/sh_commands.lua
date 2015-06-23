@@ -565,6 +565,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "cleardecals",
+	desc = "Clear all map decals (Example : Blood).",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		for k, v in pairs( player.GetAll( ) ) do
@@ -577,6 +578,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "restartlevel",
+	desc = "Restart server as the same map.",
 	syntax = "[Time]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
@@ -592,6 +594,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "changelevel",
+	desc = "Restart server as the typed map.",
 	syntax = "[Map] [Time]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
@@ -612,6 +615,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "settimehour",
+	desc = "Change RP hour as the typed hour.",
 	syntax = "[0 ~ 24]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )

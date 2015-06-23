@@ -24,12 +24,14 @@ include( "shared.lua" )
 
 local function schemaSettingFix( )
 	if ( GetConVarString( "gamemode" ):lower( ) == "catherine" ) then
-		local _, gmDirs = file.Find( "gamemodes/*", "GAME" )
+		catherine.util.Print( Color( 255, 255, 0 ), "WARNING! : Don't setting gamemode as Catherine, finding Schema gamemode ..." )
+		
+		local _, dirs = file.Find( "gamemodes/*", "GAME" )
 		
 		for k, v in pairs( gmDirs ) do
 			if ( !v:lower( ):find( "cat_" ) ) then continue end
 			
-			catherine.util.Print( Color( 255, 255, 0 ), "Don't setting gamemode to Catherine, automatic change to " .. v .. "!" )
+			catherine.util.Print( Color( 0, 255, 0 ), "WARNING! : Don't setting gamemode as Catherine, change gamemode as '" .. v .. "'!" )
 			RunConsoleCommand( "gamemode", v )
 			RunConsoleCommand( "changelevel", game.GetMap( ) )
 		end
