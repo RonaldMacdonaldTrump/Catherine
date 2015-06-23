@@ -190,6 +190,9 @@ LANGUAGE.data = {
 	[ "Item_Category_Clothing" ] = "옷",
 	[ "Item_FuncStr01_Clothing" ] = "입기",
 	[ "Item_FuncStr02_Clothing" ] = "벗기",
+	[ "Item_Category_Accessory" ] = "악세서리",
+	[ "Item_FuncStr01_Accessory" ] = "입기",
+	[ "Item_FuncStr02_Accessory" ] = "벗기",
 	[ "Item_Category_Ammo" ] = "탄약",
 	[ "Item_FuncStr01_Ammo" ] = "사용",
 	

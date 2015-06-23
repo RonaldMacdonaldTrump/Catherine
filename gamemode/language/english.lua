@@ -195,6 +195,9 @@ LANGUAGE.data = {
 	[ "Item_Category_Clothing" ] = "Clothing",
 	[ "Item_FuncStr01_Clothing" ] = "Wear",
 	[ "Item_FuncStr02_Clothing" ] = "Take off",
+	[ "Item_Category_Accessory" ] = "Accessory",
+	[ "Item_FuncStr01_Accessory" ] = "Wear",
+	[ "Item_FuncStr02_Accessory" ] = "Take off",
 	[ "Item_Category_Ammo" ] = "Ammunition",
 	[ "Item_FuncStr01_Ammo" ] = "Use",
 	
