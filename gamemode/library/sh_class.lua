@@ -144,13 +144,23 @@ else
 		local classes = { }
 		
 		for k, v in pairs( catherine.class.GetAll( ) ) do
-			if ( v.faction == team and class != v.index and !v.cantJoinUsingMenu ) then
+			local classTable = catherine.class.FindByIndex( k )
+
+			if ( ( v.faction == team and class != k and !v.cantJoinUsingMenu ) or ( class != nil and v.isDefault and k != class ) ) then
 				classes[ #classes + 1 ] = v
 			end
 		end
 		
 		return classes
 	end
+	
+	function catherine.class.CharacterCharVarChanged( pl )
+		if ( pl == LocalPlayer( ) and IsValid( catherine.vgui.class ) and !catherine.vgui.class:IsHiding( ) ) then
+			catherine.vgui.class:InitializeClasses( )
+		end
+	end
+	
+	hook.Add( "CharacterCharVarChanged", "catherine.class.CharacterCharVarChanged", catherine.class.CharacterCharVarChanged )
 end
 
 local META = FindMetaTable( "Player" )
