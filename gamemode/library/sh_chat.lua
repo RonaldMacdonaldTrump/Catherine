@@ -428,6 +428,7 @@ else
 	catherine.chat.msg = catherine.chat.msg or { }
 	catherine.chat.history = catherine.chat.history or { }
 	catherine.chat.overrideFont = catherine.chat.overrideFont or nil
+	
 	local typingText = ""
 	local CHATBox_w, CHATBox_h = ScrW( ) * 0.5, ScrH( ) * 0.3
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
