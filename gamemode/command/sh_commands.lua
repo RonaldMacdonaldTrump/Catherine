@@ -539,7 +539,9 @@ catherine.command.Register( {
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					catherine.chat.Send( pl, "pm", args[ 2 ], { pl, target }, target )
+					local text = table.concat( args, " ", 2, #args )
+					
+					catherine.chat.Send( pl, "pm", text, { pl, target }, target )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end

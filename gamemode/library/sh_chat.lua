@@ -81,19 +81,19 @@ catherine.chat.Register( "ic", {
 
 catherine.chat.Register( "me", {
 	func = function( pl, text )
-		chat.AddText( Color( 224, 255, 255 ), "** " .. pl:Name( ) .. " " .. text )
+		chat.AddText( Color( 240, 230, 140 ), "** " .. pl:Name( ) .. " - " .. text )
 	end,
-	command = { "/me" },
-	canHearRange = 900,
+	command = { "/me", "/ME", "/Me" },
+	canHearRange = 800,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
 catherine.chat.Register( "it", {
 	func = function( pl, text )
-		chat.AddText( Color( 224, 255, 255 ), "*** " .. pl:Name( ) .. " " .. text )
+		chat.AddText( Color( 224, 255, 255 ), "*** " .. pl:Name( ) .. " - " .. text )
 	end,
 	command = { "/it" },
-	canHearRange = 650,
+	canHearRange = 550,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
@@ -113,7 +113,11 @@ catherine.chat.Register( "roll", {
 
 catherine.chat.Register( "pm", {
 	func = function( pl, text, ex )
-		chat.AddText( Color( 255, 255, 0 ), "[PM] " .. pl:Name( ) .. " : " .. text )
+		if ( ex[ 1 ] == pl ) then
+			chat.AddText( Color( 142, 229, 238 ), "[PM] " .. pl:Name( ) .. " : " .. text )
+		else
+			chat.AddText( Color( 132, 112, 255 ), "[PM] " .. pl:Name( ) .. " : " .. text )
+		end
 	end,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
@@ -366,6 +370,7 @@ else
 	catherine.chat.isOpened = catherine.chat.isOpened or false
 	catherine.chat.msg = catherine.chat.msg or { }
 	catherine.chat.history = catherine.chat.history or { }
+	catherine.chat.font = catherine.chat.font or nil
 	local typingText = ""
 	local CHATBox_w, CHATBox_h = ScrW( ) * 0.5, ScrH( ) * 0.3
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
@@ -382,7 +387,17 @@ else
 		local ex = data[ 4 ]
 
 		if ( classTable and IsValid( speaker ) ) then
+			local font = classTable.font
+			
+			if ( font ) then
+				catherine.chat.SetOverrideFont( font )
+			end
+			
 			classTable.func( speaker, text, ex )
+			
+			if ( font ) then
+				catherine.chat.SetOverrideFont( font )
+			end
 		end
 	end )
 	
@@ -416,10 +431,14 @@ else
 		return chat.AddTextBuffer( unpack( data ) )
 	end
 	
+	function catherine.chat.SetOverrideFont( font )
+		catherine.chat.font = font
+	end
+	
 	function catherine.chat.AddText( ... )
 		local msg = vgui.Create( "catherine.vgui.ChatMarkUp" )
 		msg:Dock( TOP )
-		msg:SetFont( "catherine_chat" )
+		msg:SetFont( catherine.chat.font or "catherine_chat" )
 		msg:SetMaxWidth( CHATBox_w - 16 )
 		msg:Run( ... )
 		
