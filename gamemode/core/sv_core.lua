@@ -80,7 +80,7 @@ function GM:CanPlayerSuicide( pl )
 end
 
 function GM:GetGameDescription( )
-	return "CAT - " .. ( Schema and Schema.Name or "Unknown" )
+	return "CAT : " .. ( Schema and Schema.Name or "UNKNOWN" )
 end
 
 function GM:PlayerSpray( pl )
@@ -192,6 +192,7 @@ end
 function GM:PlayerInfoTable( pl, infoTable )
 	local jumpPower = infoTable.jumpPower
 	local runSpeed = infoTable.runSpeed
+	local walkSpeed = infoTable.walkSpeed
 	local leftLegLimbDmg = catherine.limb.GetDamage( pl, HITGROUP_LEFTLEG )
 	local rightLegLimbDmg = catherine.limb.GetDamage( pl, HITGROUP_RIGHTLEG )
 	local defJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
@@ -203,7 +204,7 @@ function GM:PlayerInfoTable( pl, infoTable )
 
 		return {
 			jumpPower = defJumpPower * per,
-			runSpeed = defRunSpeed * per2
+			runSpeed = math.max( defRunSpeed * per2, walkSpeed )
 		}
 	else
 		return {

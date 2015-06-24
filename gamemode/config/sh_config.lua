@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.configs = catherine.configs or { }
-catherine.configs.buildVer = "beta"
+catherine.configs.buildVer = "BETA"
 
 catherine.configs.OWNER = "" 
 catherine.configs.defaultLanguage = "english"
@@ -79,13 +79,17 @@ if ( SERVER ) then
 	catherine.configs.enable_oocDelay = true
 	catherine.configs.enable_loocDelay = false
 	catherine.configs.forceAllowOOC = function( pl )
-		return pl:IsAdmin( )
+		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
+			return true
+		end
+		
+		if ( pl:IsAdmin( ) ) then
+			return true
+		end
 	end
-	
 	catherine.configs.forceAllowLOOC = function( pl )
 	
 	end
-	
 	catherine.configs.oocDelay = 60
 	catherine.configs.loocDelay = 2
 	
@@ -94,7 +98,7 @@ if ( SERVER ) then
 	catherine.configs.enable_Log = true
 	catherine.configs.enable_AntiHaX = true
 else
-	catherine.configs.frameworkLogo = "CAT/logos/main01.png"
+	catherine.configs.frameworkLogo = "CAT/logos/main02.png"
 	catherine.configs.schemaLogo = catherine.configs.frameworkLogo
 	catherine.configs.mainColor = Color( 50, 50, 50 )
 	

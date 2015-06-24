@@ -43,10 +43,24 @@ for i = 1, 8 do
 		weight = 1000,
 		outline = true
 	} )
+	
+	catherine.font.Register( "catherine_italic" .. size, {
+		font = font,
+		size = size,
+		weight = 1000,
+		italic = true
+	} )
 end
 
 catherine.font.Register( "catherine_chat", {
 	font = font,
 	size = 17,
 	weight = 1000
+} )
+
+catherine.font.Register( "catherine_chat_italic", {
+	font = font,
+	size = 17,
+	weight = 1000,
+	italic = true
 } )

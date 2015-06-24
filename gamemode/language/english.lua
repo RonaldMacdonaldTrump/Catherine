@@ -156,7 +156,7 @@ LANGUAGE.data = {
 	
 	// Scoreboard
 	[ "Scoreboard_UI_Title" ] = "Player List",
-	[ "Scoreboard_UI_Author" ] = "Framework Author",
+	[ "Scoreboard_UI_Author" ] = "Gamemode Author",
 	[ "Scoreboard_UI_UnknownDesc" ] = "You do not recognize this person.",
 	[ "Scoreboard_UI_PlayerDetailStr" ] = "Steam Name : %s\nSteam ID : %s\nPing : %s",
 	[ "Scoreboard_UI_can notLook_Str" ] = "You can not look at this.",

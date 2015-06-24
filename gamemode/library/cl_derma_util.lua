@@ -17,6 +17,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 function Derma_Message( strText, strTitle, strButtonText )
+	surface.PlaySound( "CAT/notify01.wav" )
+	
 	local Window = vgui.Create( "DFrame" )
 	Window:SetTitle( "" )
 	Window:SetSize( ScrW( ), ScrH( ) * 0.15 )
@@ -57,6 +59,8 @@ function Derma_Message( strText, strTitle, strButtonText )
 end
 
 function Derma_Query( strText, strTitle, ... )
+	surface.PlaySound( "CAT/notify01.wav" )
+	
 	local Window = vgui.Create( "DFrame" )
 	Window:SetTitle( "" )
 	Window:SetSize( ScrW( ), ScrH( ) * 0.15 )

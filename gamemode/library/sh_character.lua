@@ -321,9 +321,12 @@ if ( SERVER ) then
 		
 		if ( !noSync ) then
 			local target = nil
-			if ( globalVar and globalVar.doLocal ) then target = pl end
 			
-			netstream.Start( target, "catherine.character.SetVar", { steamID, key, value } )
+			if ( varTable and varTable.doLocal ) then
+				target = pl
+			end
+			
+			netstream.Start( target, "catherine.character.SetVar", { pl, key, value } )
 		end
 		
 		hook.Run( "CharacterVarChanged", pl, key, value )
@@ -336,7 +339,7 @@ if ( SERVER ) then
 		catherine.character.networkRegistry[ steamID ][ "_charVar" ][ key ] = value
 		
 		if ( !noSync ) then
-			netstream.Start( pl, "catherine.character.SetCharVar", { steamID, key, value } )
+			netstream.Start( pl, "catherine.character.SetCharVar", { pl, key, value } )
 		end
 		
 		hook.Run( "CharacterCharVarChanged", pl, key, value )
@@ -419,15 +422,18 @@ if ( SERVER ) then
 		local steamID = pl:SteamID( )
 		
 		catherine.character.networkRegistry[ steamID ] = { }
+		
 		for k, v in pairs( data ) do
 			local varTable = catherine.character.FindVarByField( k )
+			
 			if ( varTable and !varTable.doNetworking ) then continue end
 			
 			catherine.character.networkRegistry[ steamID ][ k ] = v
 		end
 		
 		hook.Run( "CreateNetworkRegistry", pl, catherine.character.networkRegistry[ steamID ] )
-		netstream.Start( nil, "catherine.character.CreateNetworkRegistry", { steamID, catherine.character.networkRegistry[ steamID ] } )
+		
+		netstream.Start( nil, "catherine.character.CreateNetworkRegistry", { pl, catherine.character.networkRegistry[ steamID ] } )
 	end
 
 	function catherine.character.SendAllNetworkRegistries( pl )
@@ -552,11 +558,12 @@ else
 	end )
 	
 	netstream.Hook( "catherine.character.CreateNetworkRegistry", function( data )
-		local steamID = data[ 1 ]
+		local pl = data[ 1 ]
 		local registry = data[ 2 ]
 		
-		catherine.character.networkRegistry[ steamID ] = registry
-		hook.Run( "CreateNetworkRegistry", catherine.util.FindPlayerByStuff( "SteamID", steamID ), registry )
+		catherine.character.networkRegistry[ pl:SteamID( ) ] = registry
+		
+		hook.Run( "CreateNetworkRegistry", pl, registry )
 	end )
 
 	netstream.Hook( "catherine.character.DeleteNetworkRegistry", function( data )
@@ -568,25 +575,29 @@ else
 	end )
 	
 	netstream.Hook( "catherine.character.SetVar", function( data )
-		local steamID = data[ 1 ]
+		local pl = data[ 1 ]
 		local key = data[ 2 ]
 		local value = data[ 3 ]
+		local steamID = pl:SteamID( )
 		
 		if ( !catherine.character.networkRegistry[ steamID ] ) then return end
+		
 		catherine.character.networkRegistry[ steamID ][ key ] = value
 		
-		hook.Run( "CharacterVarChanged", catherine.util.FindPlayerByStuff( "SteamID", steamID ), key, value )
+		hook.Run( "CharacterVarChanged", pl, key, value )
 	end )
 
 	netstream.Hook( "catherine.character.SetCharVar", function( data )
-		local steamID = data[ 1 ]
+		local pl = data[ 1 ]
 		local key = data[ 2 ]
 		local value = data[ 3 ]
+		local steamID = pl:SteamID( )
 		
 		if ( !catherine.character.networkRegistry[ steamID ] or !catherine.character.networkRegistry[ steamID ][ "_charVar" ] ) then return end
+		
 		catherine.character.networkRegistry[ steamID ][ "_charVar" ][ key ] = value
 		
-		hook.Run( "CharacterCharVarChanged", catherine.util.FindPlayerByStuff( "SteamID", steamID ), key, value )
+		hook.Run( "CharacterCharVarChanged", pl, key, value )
 	end )
 
 	netstream.Hook( "catherine.character.SendPlayerCharacterList", function( data )
@@ -600,6 +611,7 @@ end
 
 function catherine.character.GetVar( pl, key, default )
 	local steamID = pl:SteamID( )
+	
 	if ( !catherine.character.networkRegistry[ steamID ] ) then return default end
 	
 	return catherine.character.networkRegistry[ steamID ][ key ] or default
@@ -607,6 +619,7 @@ end
 
 function catherine.character.GetCharVar( pl, key, default )
 	local steamID = pl:SteamID( )
+	
 	if ( !catherine.character.networkRegistry[ steamID ] or !catherine.character.networkRegistry[ steamID ][ "_charVar" ] ) then return default end
 	
 	return catherine.character.networkRegistry[ steamID ][ "_charVar" ][ key ] or default

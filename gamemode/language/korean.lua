@@ -151,7 +151,7 @@ LANGUAGE.data = {
 	
 	// Scoreboard
 	[ "Scoreboard_UI_Title" ] = "플레이어 목록",
-	[ "Scoreboard_UI_Author" ] = "프레임워크 개발자 :)",
+	[ "Scoreboard_UI_Author" ] = "게임모드 개발자",
 	[ "Scoreboard_UI_UnknownDesc" ] = "당신은 이 사람을 모릅니다.",
 	[ "Scoreboard_UI_PlayerDetailStr" ] = "스팀 이름 : %s\n스팀 고유 번호 : %s\n핑 : %s\n플레이어 옵션을 보시려면 클릭하세요.",
 	[ "Scoreboard_UI_CanNotLook_Str" ] = "당신은 볼 수 없습니다.",
@@ -167,9 +167,9 @@ LANGUAGE.data = {
 	[ "Scoreboard_PlayerOption06_Q" ] = "어떤 플래그를 뺏으시겠습니까?",
 	
 	// Help
-	[ "Help_UI_Title" ] = "도움 자료",
-	[ "Help_UI_DefPageTitle" ] = "도움 자료에 오신 것을 환영합니다.",
-	[ "Help_UI_DefPageDesc" ] = "왼쪽의 메뉴에서 자료를 선택하세요.",
+	[ "Help_UI_Title" ] = "도움말",
+	[ "Help_UI_DefPageTitle" ] = "도움말에 오신 것을 환영합니다.",
+	[ "Help_UI_DefPageDesc" ] = "왼쪽의 메뉴에서 도움말을 선택하세요.",
 	[ "Help_Category_Flag" ] = "플래그",
 	[ "Help_Category_Credit" ] = "제작자",
 	[ "Help_Category_Changelog" ] = "업데이트 로그",
