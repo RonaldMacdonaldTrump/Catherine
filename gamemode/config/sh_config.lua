@@ -74,9 +74,17 @@ if ( SERVER ) then
 	catherine.configs.giveKey = true
 	catherine.configs.spawnTime = 60 --[[ Setting a Spawn time. ]]--
 	catherine.configs.clearMap = true
+	catherine.configs.doorBreach = true
+	
 	catherine.configs.enable_oocDelay = true
 	catherine.configs.enable_loocDelay = false
-	catherine.configs.doorBreach = true
+	catherine.configs.forceAllowOOC = function( pl )
+		return pl:IsAdmin( )
+	end
+	
+	catherine.configs.forceAllowLOOC = function( pl )
+	
+	end
 	
 	catherine.configs.oocDelay = 60
 	catherine.configs.loocDelay = 2
