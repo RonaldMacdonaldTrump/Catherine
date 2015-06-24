@@ -80,7 +80,7 @@ function GM:CanPlayerSuicide( pl )
 end
 
 function GM:GetGameDescription( )
-	return "CAT - " .. ( Schema and Schema.Name or "Unknown" )
+	return "CAT : " .. ( Schema and Schema.Name or "UNKNOWN" )
 end
 
 function GM:PlayerSpray( pl )
@@ -135,7 +135,6 @@ function GM:PlayerSpawn( pl )
 	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	pl:SetNetVar( "isTied", false )
-	//pl:SetupHands( )
 	pl:SetCanZoom( false )
 
 	catherine.limb.HealBody( pl, 100 )
@@ -193,6 +192,7 @@ end
 function GM:PlayerInfoTable( pl, infoTable )
 	local jumpPower = infoTable.jumpPower
 	local runSpeed = infoTable.runSpeed
+	local walkSpeed = infoTable.walkSpeed
 	local leftLegLimbDmg = catherine.limb.GetDamage( pl, HITGROUP_LEFTLEG )
 	local rightLegLimbDmg = catherine.limb.GetDamage( pl, HITGROUP_RIGHTLEG )
 	local defJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
@@ -204,7 +204,7 @@ function GM:PlayerInfoTable( pl, infoTable )
 
 		return {
 			jumpPower = defJumpPower * per,
-			runSpeed = defRunSpeed * per2
+			runSpeed = math.max( defRunSpeed * per2, walkSpeed )
 		}
 	else
 		return {
@@ -382,7 +382,7 @@ end
 
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Create( "Catherine.timer.WeaponToggle." .. pl:SteamID( ), 1, 1, function( )
+		timer.Create( "Catherine.timer.WeaponToggle_" .. pl:SteamID( ), 1, 1, function( )
 			if ( IsValid( pl ) ) then
 				pl:ToggleWeaponRaised( )
 			end
@@ -418,7 +418,7 @@ end
 
 function GM:KeyRelease( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Remove( "Catherine.timer.WeaponToggle." .. pl:SteamID( ) )
+		timer.Remove( "Catherine.timer.WeaponToggle_" .. pl:SteamID( ) )
 	end
 end
 
@@ -527,7 +527,7 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 		local sound = hook.Run( "GetPlayerPainSound", pl )
 		local gender = pl:GetGender( )
 	
-		if ( !sound ) then
+		if ( sound == nil ) then
 			if ( hitGroup == HITGROUP_HEAD ) then
 				sound = "vo/npc/" .. gender .. "01/ow0" .. math.random( 1, 2 ) .. ".wav"
 			elseif ( hitGroup == HITGROUP_CHEST or hitGroup == HITGROUP_GENERIC ) then
@@ -541,13 +541,15 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 			end
 		end
 
-		if ( IsValid( ragdollEntity ) ) then
-			ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
-			
-			return true
-		end
+		if ( sound != false ) then
+			if ( IsValid( ragdollEntity ) ) then
+				ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+				
+				return true
+			end
 
-		pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+			pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
+		end
 	end
 	
 	return true
@@ -561,15 +563,17 @@ function GM:PlayerDeathSound( pl, ragdollEntity )
 	local sound = hook.Run( "GetPlayerDeathSound", pl )
 	local gender = pl:GetGender( )
 	
-	if ( IsValid( ragdollEntity ) ) then
-		ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
-		pl.CAT_deathSoundPlayed = true
+	if ( sound != false ) then
+		if ( IsValid( ragdollEntity ) ) then
+			ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+			pl.CAT_deathSoundPlayed = true
+			
+			return true
+		end
 		
-		return true
+		pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
+		pl.CAT_deathSoundPlayed = true
 	end
-	
-	pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 7, 9 ) .. ".wav" )
-	pl.CAT_deathSoundPlayed = true
 	
 	return true
 end
@@ -607,6 +611,9 @@ function GM:PlayerDeath( pl )
 	local respawnTime = hook.Run( "GetRespawnTime", pl ) or catherine.configs.spawnTime
 	
 	catherine.util.ProgressBar( pl, false )
+	
+	pl:SetViewEntity( NULL )
+	pl:UnSpectate( )
 	
 	pl.CAT_isDeadFunc = true
 

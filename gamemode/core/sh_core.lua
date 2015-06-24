@@ -311,5 +311,5 @@ function GM:GetPlayerInformation( pl, target, isFull )
 		return target:Name( ), target:Desc( )
 	end
 	
-	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target:Desc( ) or string.utf8sub( target:Desc( ), 1, 37 ) .. "..."
+	return hook.Run( "GetUnknownTargetName", pl, target ), isFull and target:Desc( ) or ( target:Desc( ):utf8sub( 1, 37 ) .. "..." )
 end

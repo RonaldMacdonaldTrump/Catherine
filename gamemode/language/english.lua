@@ -46,6 +46,7 @@ LANGUAGE.data = {
 	[ "Cash_Notify_HasNot" ] = "You do not have a enough " .. catherine.configs.cashName .. "!",
 	[ "Cash_Notify_NotValidAmount" ] = "Please enter a valid amount!",
 	[ "Cash_Notify_Salary" ] = "You have received %s " .. catherine.configs.cashName .. " from your salary.",
+	[ "Cash_Notify_Get" ] = "You are found %s " .. catherine.configs.cashName .. ".",
 	
 	// Character
 	[ "Character_UI_Title" ] = "Character",
@@ -92,6 +93,12 @@ LANGUAGE.data = {
 	[ "Faction_Notify_AlreadyHas" ] = "%s already has the %s whitelist!",
 	[ "Faction_Notify_HasNot" ] = "%s does not have the %s whitelist!",
 	[ "Faction_Notify_SelectPlease" ] = "Please select a faction!",
+	
+	// Accessory
+	[ "Accessory_Wear_ModelError" ] = "Model error.",
+	[ "Accessory_Wear_BoneExists" ] = "This bone already has accessory.",
+	[ "Accessory_Wear_BoneNotExists" ] = "This bone not has accessory.",
+	[ "Accessory_Wear_BoneIndexError" ] = "Bone data is not a valid.",
 	
 	// Flag
 	[ "Flag_Notify_Give" ] = "%s has given %s to %s",
@@ -149,7 +156,7 @@ LANGUAGE.data = {
 	
 	// Scoreboard
 	[ "Scoreboard_UI_Title" ] = "Player List",
-	[ "Scoreboard_UI_Author" ] = "Framework Author",
+	[ "Scoreboard_UI_Author" ] = "Gamemode Author",
 	[ "Scoreboard_UI_UnknownDesc" ] = "You do not recognize this person.",
 	[ "Scoreboard_UI_PlayerDetailStr" ] = "Steam Name : %s\nSteam ID : %s\nPing : %s",
 	[ "Scoreboard_UI_can notLook_Str" ] = "You can not look at this.",
@@ -194,12 +201,16 @@ LANGUAGE.data = {
 	[ "Item_Category_Clothing" ] = "Clothing",
 	[ "Item_FuncStr01_Clothing" ] = "Wear",
 	[ "Item_FuncStr02_Clothing" ] = "Take off",
+	[ "Item_Category_Accessory" ] = "Accessory",
+	[ "Item_FuncStr01_Accessory" ] = "Wear",
+	[ "Item_FuncStr02_Accessory" ] = "Take off",
 	[ "Item_Category_Ammo" ] = "Ammunition",
 	[ "Item_FuncStr01_Ammo" ] = "Use",
 	
 	[ "Item_Category_Wallet" ] = "Wallet",
 	[ "Item_Name_Wallet" ] = "Wallet",
 	[ "Item_Desc_Wallet" ] = catherine.configs.cashName .. " in a small stack.",
+	[ "Item_Desc_World_Wallet" ] = "%s in a small stack.",
 	[ "Item_FuncStr01_Wallet" ] = "Take " .. catherine.configs.cashName,
 	[ "Item_FuncStr02_Wallet" ] = "Drop " .. catherine.configs.cashName,
 	[ "Item_DropQ_Wallet" ] = "How much money would you like to drop?",

@@ -41,6 +41,7 @@ LANGUAGE.data = {
 	[ "Cash_Notify_HasNot" ] = "당신은 충분한 " .. catherine.configs.cashName .. " 가 없습니다!",
 	[ "Cash_Notify_NotValidAmount" ] = "올바른 금액을 입력하세요!",
 	[ "Cash_Notify_Salary" ] = "당신은 %s " .. catherine.configs.cashName .. " 을 월급으로 받았습니다.",
+	[ "Cash_Notify_Get" ] = "당신은 %s " .. catherine.configs.cashName .. " 를 찾으셨습니다.",
 	
 	// Character
 	[ "Character_UI_Title" ] = "캐릭터",
@@ -77,7 +78,13 @@ LANGUAGE.data = {
 	[ "Character_Notify_SelectModel" ] = "캐릭터 모델을 선택하세요!",
 	[ "Character_Notify_NameLimitHit" ] = "캐릭터 이름은 " .. catherine.configs.characterNameMinLen .." 자 이상 " .. catherine.configs.characterNameMaxLen .. " 자 이하 되어야 합니다!",
 	[ "Character_Notify_DescLimitHit" ] = "캐릭터 설명은 " .. catherine.configs.characterDescMinLen .."자 이상 " .. catherine.configs.characterDescMaxLen .. "자 이하 되어야 합니다!",
-		
+	
+	// Accessory
+	[ "Accessory_Wear_ModelError" ] = "모델 오류가 있습니다.",
+	[ "Accessory_Wear_BoneExists" ] = "해당 부위에 이미 악세서리가 있습니다.",
+	[ "Accessory_Wear_BoneNotExists" ] = "해당 부위에 악세서리가 없습니다.",
+	[ "Accessory_Wear_BoneIndexError" ] = "부위 데이터가 올바르지 않습니다.",
+	
 	// Faction
 	[ "Faction_UI_Title" ] = "팩션",
 	[ "Faction_Notify_Give" ] = "%s 님이 %s 팩션에 대한 권한을 %s 님에게 부여했습니다.",
@@ -144,7 +151,7 @@ LANGUAGE.data = {
 	
 	// Scoreboard
 	[ "Scoreboard_UI_Title" ] = "플레이어 목록",
-	[ "Scoreboard_UI_Author" ] = "프레임워크 개발자 :)",
+	[ "Scoreboard_UI_Author" ] = "게임모드 개발자",
 	[ "Scoreboard_UI_UnknownDesc" ] = "당신은 이 사람을 모릅니다.",
 	[ "Scoreboard_UI_PlayerDetailStr" ] = "스팀 이름 : %s\n스팀 고유 번호 : %s\n핑 : %s\n플레이어 옵션을 보시려면 클릭하세요.",
 	[ "Scoreboard_UI_CanNotLook_Str" ] = "당신은 볼 수 없습니다.",
@@ -160,9 +167,9 @@ LANGUAGE.data = {
 	[ "Scoreboard_PlayerOption06_Q" ] = "어떤 플래그를 뺏으시겠습니까?",
 	
 	// Help
-	[ "Help_UI_Title" ] = "도움 자료",
-	[ "Help_UI_DefPageTitle" ] = "도움 자료에 오신 것을 환영합니다.",
-	[ "Help_UI_DefPageDesc" ] = "왼쪽의 메뉴에서 자료를 선택하세요.",
+	[ "Help_UI_Title" ] = "도움말",
+	[ "Help_UI_DefPageTitle" ] = "도움말에 오신 것을 환영합니다.",
+	[ "Help_UI_DefPageDesc" ] = "왼쪽의 메뉴에서 도움말을 선택하세요.",
 	[ "Help_Category_Flag" ] = "플래그",
 	[ "Help_Category_Credit" ] = "제작자",
 	[ "Help_Category_Changelog" ] = "업데이트 로그",
@@ -189,12 +196,16 @@ LANGUAGE.data = {
 	[ "Item_Category_Clothing" ] = "옷",
 	[ "Item_FuncStr01_Clothing" ] = "입기",
 	[ "Item_FuncStr02_Clothing" ] = "벗기",
+	[ "Item_Category_Accessory" ] = "악세서리",
+	[ "Item_FuncStr01_Accessory" ] = "입기",
+	[ "Item_FuncStr02_Accessory" ] = "벗기",
 	[ "Item_Category_Ammo" ] = "탄약",
 	[ "Item_FuncStr01_Ammo" ] = "사용",
 	
 	[ "Item_Category_Wallet" ] = "지갑",
 	[ "Item_Name_Wallet" ] = "지갑",
 	[ "Item_Desc_Wallet" ] = catherine.configs.cashName .. " 가 쌓여있습니다.",
+	[ "Item_Desc_World_Wallet" ] = "%s 가 쌓여있습니다.",
 	[ "Item_FuncStr01_Wallet" ] = catherine.configs.cashName .. " 가지기",
 	[ "Item_FuncStr02_Wallet" ] = catherine.configs.cashName .. " 떨어트리기",
 	[ "Item_DropQ_Wallet" ] = "떨어트릴 " .. catherine.configs.cashName .. " 의 금액을 입력하세요.",

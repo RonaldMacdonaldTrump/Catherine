@@ -81,19 +81,21 @@ catherine.chat.Register( "ic", {
 
 catherine.chat.Register( "me", {
 	func = function( pl, text )
-		chat.AddText( Color( 224, 255, 255 ), "** " .. pl:Name( ) .. " " .. text )
+		chat.AddText( Color( 193, 255, 193 ), "** " .. pl:Name( ) .. " - " .. text )
 	end,
-	command = { "/me" },
-	canHearRange = 900,
+	font = "catherine_chat_italic",
+	command = { "/me", "/ME", "/Me" },
+	canHearRange = 800,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
 catherine.chat.Register( "it", {
 	func = function( pl, text )
-		chat.AddText( Color( 224, 255, 255 ), "*** " .. pl:Name( ) .. " " .. text )
+		chat.AddText( Color( 193, 255, 193 ), "*** " .. pl:Name( ) .. " - " .. text )
 	end,
+	font = "catherine_chat_italic",
 	command = { "/it" },
-	canHearRange = 650,
+	canHearRange = 550,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
@@ -113,14 +115,30 @@ catherine.chat.Register( "roll", {
 
 catherine.chat.Register( "pm", {
 	func = function( pl, text, ex )
-		chat.AddText( Color( 255, 255, 0 ), "[PM] " .. pl:Name( ) .. " : " .. text )
+		if ( ex[ 1 ] == pl ) then
+			if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
+				chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", Color( 142, 229, 238 ), "[PM] " .. pl:Name( ) .. " : " .. text )
+			else
+				chat.AddText( Color( 142, 229, 238 ), "[PM] " .. pl:Name( ) .. " : " .. text )
+			end
+		else
+			if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
+				chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", Color( 132, 112, 255 ), "[PM] " .. pl:Name( ) .. " : " .. text )
+			else
+				chat.AddText( Color( 132, 112, 255 ), "[PM] " .. pl:Name( ) .. " : " .. text )
+			end
+		end
 	end,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
 
 catherine.chat.Register( "event", {
 	func = function( _, text )
-		chat.AddText( Color( 194, 93, 39 ), text )
+		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
+			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", Color( 194, 93, 39 ), text )
+		else
+			chat.AddText( Color( 194, 93, 39 ), text )
+		end
 	end,
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	command = { "/event" }
@@ -134,10 +152,15 @@ catherine.chat.Register( "yell", {
 			name = desc
 		end
 		
-		chat.AddText( Color( 255, 255, 150 ), LANG( "Chat_Str_Yell", name, catherine.chat.PreSet( text ) ) )
+		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
+			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", Color( 255, 255, 150 ), LANG( "Chat_Str_Yell", name, catherine.chat.PreSet( text ) ) )
+		else
+			chat.AddText( Color( 255, 255, 150 ), LANG( "Chat_Str_Yell", name, catherine.chat.PreSet( text ) ) )
+		end
 	end,
 	canHearRange = 600,
-	command = { "/y", "/yell" },
+	font = "catherine_normal20",
+	command = { "/y", "/Y", "/yell", "/Yell", "/YELL" },
 	canRun = function( pl ) return !pl:IsRagdolled( ) and pl:Alive( ) end,
 } )
 
@@ -149,10 +172,15 @@ catherine.chat.Register( "whisper", {
 			name = desc
 		end
 
-		chat.AddText( Color( 255, 255, 150 ), LANG( "Chat_Str_Whisper", name, catherine.chat.PreSet( text ) ) )
+		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
+			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", Color( 255, 255, 150 ), LANG( "Chat_Str_Whisper", name, catherine.chat.PreSet( text ) ) )
+		else
+			chat.AddText( Color( 255, 255, 150 ), LANG( "Chat_Str_Whisper", name, catherine.chat.PreSet( text ) ) )
+		end
 	end,
 	canHearRange = 150,
-	command = { "/w", "/whisper" },
+	font = "catherine_normal15",
+	command = { "/w", "/W", "/whisper", "/Whisper", "/WHISPER" },
 	canRun = function( pl ) return !pl:IsRagdolled( ) and pl:Alive( ) end,
 } )
 
@@ -161,55 +189,73 @@ catherine.chat.Register( "ooc", {
 		local icon = Material( "icon16/user.png" )
 		
 		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
-			icon = Material( "icon16/bug.png" )
+			icon = Material( "icon16/thumb_up.png" )
 		elseif ( pl:IsSuperAdmin( ) ) then
 			icon = Material( "icon16/shield.png" )
 		elseif ( pl:IsAdmin( ) ) then
 			icon = Material( "icon16/star.png" )
 		end
 		
-		chat.AddText( icon, Color( 250, 40, 40 ), "[OOC] ", pl, color_white, " : ".. text )
+		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
+			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 250, 40, 40 ), "[OOC] ", pl, Color( 255, 255, 255 ), " : ".. text )
+		else
+			chat.AddText( icon, Color( 250, 40, 40 ), "[OOC] ", pl, Color( 255, 255, 255 ), " : ".. text )
+		end
 	end,
 	isGlobal = true,
-	command = {
-		"/ooc", "//"
-	},
+	command = { "/ooc", "/OOC", "/Ooc", "//" },
 	noSpace = true,
 	canRun = function( pl )
 		if ( !catherine.configs.enable_oocDelay ) then return true end
+		local forceAllow = catherine.configs.forceAllowOOC
 		
-		if ( ( pl.CAT_nextOOC or 0 ) <= CurTime( ) ) then
-			pl.CAT_nextOOC = CurTime( ) + catherine.configs.oocDelay
+		if ( forceAllow and type( forceAllow ) == "function" ) then
+			local success, langKey, par = forceAllow( pl )
+			
+			if ( success != nil ) then
+				return success, langKey, par
+			end
+		end
+		
+		if ( ( pl.CAT_nextCanOOC or 0 ) <= CurTime( ) ) then
+			pl.CAT_nextCanOOC = CurTime( ) + catherine.configs.oocDelay
 			
 			return true
 		else
-			catherine.util.NotifyLang( pl, "Command_OOC_Error", math.ceil( pl.CAT_nextOOC - CurTime( ) ) )
-			
-			return false
+			return false, "Command_OOC_Error", { math.ceil( pl.CAT_nextCanOOC - CurTime( ) ) }
 		end
 	end
 } )
 
 catherine.chat.Register( "looc", {
 	func = function( pl, text )
-		chat.AddText( Color( 250, 40, 40 ), "[LOOC] ", pl, color_white, " : ".. text )
+		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
+			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", Color( 255, 127, 80 ), "[LOOC] ", pl, Color( 255, 255, 255 ), " : ".. text )
+		else
+			chat.AddText( Color( 255, 127, 80 ), "[LOOC] ", pl, Color( 255, 255, 255 ), " : ".. text )
+		end
 	end,
 	canHearRange = 600,
-	command = {
-		"/looc", ".//", "[["
-	},
+	command = { "/looc", "/Looc", "/LOOC", ".//", "[[" },
 	noSpace = true,
 	canRun = function( pl )
 		if ( !catherine.configs.enable_loocDelay ) then return true end
+		local forceAllow = catherine.configs.forceAllowLOOC
 		
-		if ( ( pl.CAT_nextLOOC or 0 ) <= CurTime( ) ) then
-			pl.CAT_nextLOOC = CurTime( ) + catherine.configs.loocDelay
+		if ( forceAllow and type( forceAllow ) == "function" ) then
+			local success, langKey, par = forceAllow( pl )
+			
+			if ( success != nil ) then
+				return success, langKey, par
+			end
+		end
+		
+		if ( ( pl.CAT_nextCanLOOC or 0 ) <= CurTime( ) ) then
+			pl.CAT_nextCanLOOC = CurTime( ) + catherine.configs.loocDelay
 			
 			return true
 		else
-			catherine.util.NotifyLang( pl, "Command_LOOC_Error", math.ceil( pl.CAT_nextLOOC - CurTime( ) ) )
-			
-			return false
+			return false, "Command_LOOC_Error", { math.ceil( pl.CAT_nextCanLOOC - CurTime( ) ) }
 		end
 	end
 } )
@@ -219,14 +265,18 @@ catherine.chat.Register( "connect", {
 		local icon = Material( "icon16/user.png" )
 		
 		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
-			icon = Material( "icon16/bug.png" )
+			icon = Material( "icon16/thumb_up.png" )
 		elseif ( pl:IsSuperAdmin( ) ) then
 			icon = Material( "icon16/shield.png" )
 		elseif ( pl:IsAdmin( ) ) then
 			icon = Material( "icon16/star.png" )
 		end
 		
-		chat.AddText( icon, Color( 0, 206, 209 ), LANG( "Chat_Str_Connect", pl:Name( ) ) )
+		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
+			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Connect", pl:Name( ) ) )
+		else
+			chat.AddText( icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Connect", pl:Name( ) ) )
+		end
 	end,
 	isGlobal = true
 } )
@@ -236,14 +286,18 @@ catherine.chat.Register( "disconnect", {
 		local icon = Material( "icon16/user.png" )
 		
 		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
-			icon = Material( "icon16/bug.png" )
+			icon = Material( "icon16/thumb_up.png" )
 		elseif ( pl:IsSuperAdmin( ) ) then
 			icon = Material( "icon16/shield.png" )
 		elseif ( pl:IsAdmin( ) ) then
 			icon = Material( "icon16/star.png" )
 		end
 		
-		chat.AddText( icon, Color( 0, 206, 209 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
+		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
+			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
+		else
+			chat.AddText( icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
+		end
 	end,
 	isGlobal = true
 } )
@@ -253,8 +307,15 @@ if ( SERVER ) then
 		local classTable = catherine.chat.FindByID( catherine.chat.FindIDByText( text ) )
 		if ( !classTable ) then return end
 
-		if ( !catherine.chat.CanChat( pl, classTable ) ) then
-			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
+		local success, langKey, par = catherine.chat.CanChat( pl, classTable )
+		
+		if ( success == false ) then
+			if ( langKey ) then
+				catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
+			else
+				catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
+			end
+			
 			return
 		end
 
@@ -276,6 +337,7 @@ if ( SERVER ) then
 
 		if ( catherine.command.IsCommand( text ) ) then
 			catherine.command.RunByText( pl, text )
+			
 			return
 		end
 		
@@ -287,6 +349,7 @@ if ( SERVER ) then
 		
 		chatInformation = hook.Run( "OnChatControl", chatInformation ) or chatInformation
 		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, classTable ) or "" ) .. chatInformation.text )
+		
 		hook.Run( "ChatPosted", chatInformation )
 	end
 	
@@ -296,7 +359,12 @@ if ( SERVER ) then
 		local uniqueID = classTable.uniqueID
 
 		if ( classTable.isGlobal and !forceTarget ) then
-			netstream.Start( nil, "catherine.chat.Post", { pl, uniqueID, text, { ... } } )
+			netstream.Start( nil, "catherine.chat.Post", {
+				pl,
+				uniqueID,
+				text,
+				{ ... }
+			} )
 		else
 			if ( type( forceTarget ) == "table" and #forceTarget > 0 ) then
 				netstream.Start( forceTarget, "catherine.chat.Post", {
@@ -354,6 +422,7 @@ if ( SERVER ) then
 		
 		chatInformation = hook.Run( "OnChatControl", chatInformation ) or chatInformation
 		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, classTable ) or "" ) .. chatInformation.text, target, ... )
+		
 		hook.Run( "ChatPosted", chatInformation )
 	end
 	
@@ -366,6 +435,8 @@ else
 	catherine.chat.isOpened = catherine.chat.isOpened or false
 	catherine.chat.msg = catherine.chat.msg or { }
 	catherine.chat.history = catherine.chat.history or { }
+	catherine.chat.overrideFont = catherine.chat.overrideFont or nil
+	
 	local typingText = ""
 	local CHATBox_w, CHATBox_h = ScrW( ) * 0.5, ScrH( ) * 0.3
 	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
@@ -375,14 +446,21 @@ else
 	catherine.option.Register( "CONVAR_CHAT_TIMESTAMP", "cat_convar_chat_timestamp", "^Option_Str_CHAT_TIMESTAMP_Name", "^Option_Str_CHAT_TIMESTAMP_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
 	
 	netstream.Hook( "catherine.chat.Post", function( data )
-		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
 		local speaker = data[ 1 ]
 		local classTable = catherine.chat.FindByID( data[ 2 ] )
-		local text = data[ 3 ]
-		local ex = data[ 4 ]
 
 		if ( classTable and IsValid( speaker ) ) then
-			classTable.func( speaker, text, ex )
+			local font = classTable.font
+			
+			if ( font ) then
+				catherine.chat.SetOverrideFont( font )
+			end
+			
+			classTable.func( speaker, data[ 3 ], data[ 4 ] )
+			
+			if ( font ) then
+				catherine.chat.SetOverrideFont( nil )
+			end
 		end
 	end )
 	
@@ -416,10 +494,14 @@ else
 		return chat.AddTextBuffer( unpack( data ) )
 	end
 	
+	function catherine.chat.SetOverrideFont( font )
+		catherine.chat.overrideFont = font
+	end
+	
 	function catherine.chat.AddText( ... )
-		local msg = vgui.Create( "catherine.vgui.ChatMarkUp" )
+		local msg = vgui.Create( "catherine.vgui.chatmarkup" )
 		msg:Dock( TOP )
-		msg:SetFont( "catherine_chat" )
+		msg:SetFont( catherine.chat.overrideFont or "catherine_chat" )
 		msg:SetMaxWidth( CHATBox_w - 16 )
 		msg:Run( ... )
 		
@@ -429,17 +511,23 @@ else
 			local scrollBar = catherine.chat.backpanel.history.VBar
 			
 			catherine.chat.backpanel.history:AddItem( msg )
-
-			scrollBar.CanvasSize = scrollBar.CanvasSize + msg:GetTall( )
-			scrollBar:AnimateTo( scrollBar.CanvasSize, 0.25, 0, 0.25 )
+			
+			if ( scrollBar.Scroll == scrollBar.CanvasSize or !catherine.chat.isOpened ) then
+				scrollBar.CanvasSize = scrollBar.CanvasSize + msg:GetTall( )
+				scrollBar:AnimateTo( scrollBar.CanvasSize, 0.25, 0, 0.25 )
+			end
 		end
 		
 		if ( #catherine.chat.msg > maxchatLine ) then
-			catherine.chat.msg[ 1 ]:Remove( )
+			local firstPanel = catherine.chat.msg[ 1 ]
+			
+			if ( IsValid( firstPanel ) ) then
+				firstPanel:Remove( )
+			end
+
 			table.remove( catherine.chat.msg, 1 )
 		end
 	end
-
 
 	function catherine.chat.CreateBase( )
 		if ( IsValid( catherine.chat.backpanel ) ) then return end
@@ -447,7 +535,7 @@ else
 		catherine.chat.backpanel = vgui.Create( "DPanel" )
 		catherine.chat.backpanel:SetPos( CHATBox_x, CHATBox_y )
 		catherine.chat.backpanel:SetSize( CHATBox_w, CHATBox_h - 25 )
-		catherine.chat.backpanel:SetDrawBackground( false )
+		catherine.chat.backpanel.Paint = function( ) end
 
 		catherine.chat.backpanel.history = vgui.Create( "DScrollPanel", catherine.chat.backpanel )
 		catherine.chat.backpanel.history:Dock( FILL )
@@ -486,7 +574,7 @@ else
 		end
 		
 		catherine.chat.backpanel.PaintOver = function( pnl, w, h )
-			if ( typingText:sub( 1, 1 ) == "/" ) then
+			if ( typingText:sub( 1, 1 ) == "/" and typingText:sub( 1, 2 ) != "//" ) then
 				surface.SetDrawColor( 50, 50, 50, 255 )
 				surface.SetMaterial( Material( "gui/gradient_up" ) )
 				surface.DrawTexturedRect( 0, 0, w, h )
@@ -495,37 +583,33 @@ else
 				local chatY = CHATBox_h - 25
 
 				if ( #commands == 1 ) then
-					local commandText = "/" .. commands[ 1 ].command
+					local commandTable = commands[ 1 ]
+					local commandText = "/" .. commandTable.command
+					
 					surface.SetFont( "catherine_normal25" )
 					local tw, th = surface.GetTextSize( commandText )
 						
 					draw.SimpleText( commandText, "catherine_normal25", 15, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
-					draw.SimpleText( commands[ 1 ].syntax, "catherine_normal15", 30 + tw, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
-					draw.SimpleText( catherine.util.StuffLanguage( commands[ 1 ].desc ), "catherine_normal20", 15, chatY - 20, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+					draw.SimpleText( commandTable.syntax, "catherine_normal15", 30 + tw, chatY - 48, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+					draw.SimpleText( catherine.util.StuffLanguage( commandTable.desc ), "catherine_normal20", 15, chatY - 20, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
 				else
 					for k, v in pairs( commands ) do
 						local yPos = chatY - ( 20 * k )
+						
 						if ( yPos <= 10 ) then continue end
-						
-						local commandText = "/" .. v.command
-						local currText = commandText:sub( 1, sub + 1 )
-						
-						surface.SetFont( "catherine_normal20" )
-						local tw, th = surface.GetTextSize( currText )
 
-						draw.SimpleText( currText, "catherine_normal20", 15, yPos, Color( 150, 235, 150, 255 ), TEXT_ALIGN_LEFT, 1 )
-						draw.SimpleText( commandText:gsub( currText, "" ), "catherine_normal20", 15 + tw, yPos, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( "/" .. v.command, "catherine_normal20", 15, yPos, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 					end
 				end
 				
-				if ( catherine.chat.backpanel.history.alpha > 10 ) then
-					catherine.chat.backpanel.history.alpha = Lerp( 0.05, catherine.chat.backpanel.history.alpha, 100 )
-					catherine.chat.backpanel.history:SetAlpha( catherine.chat.backpanel.history.alpha )
+				if ( pnl.history.alpha > 10 ) then
+					pnl.history.alpha = Lerp( 0.05, pnl.history.alpha, 100 )
+					pnl.history:SetAlpha( pnl.history.alpha )
 				end
 			else
-				if ( catherine.chat.backpanel.history.alpha < 255 ) then
-					catherine.chat.backpanel.history.alpha = Lerp( 0.05, catherine.chat.backpanel.history.alpha, 255 )
-					catherine.chat.backpanel.history:SetAlpha( catherine.chat.backpanel.history.alpha )
+				if ( pnl.history.alpha < 255 ) then
+					pnl.history.alpha = Lerp( 0.05, pnl.history.alpha, 255 )
+					pnl.history:SetAlpha( pnl.history.alpha )
 				end
 			end
 		end
@@ -533,7 +617,7 @@ else
 		self = vgui.Create( "EditablePanel", self )
 		self:SetPos( CHATBox_x, CHATBox_y + CHATBox_h - 25 )
 		self:SetSize( CHATBox_w, 25 )
-		self.Paint = function( pnl, w, h ) end
+		self.Paint = function( ) end
 		
 		self.textEnt = vgui.Create( "DTextEntry", self )
 		self.textEnt:Dock( FILL )
@@ -551,7 +635,8 @@ else
 		end
 		self.textEnt.OnTextChanged = function( pnl )
 			typingText = pnl:GetText( )
-			hook.Run( "ChatTextChanged", pnl:GetText( ) )
+			
+			hook.Run( "ChatTextChanged", typingText )
 		end
 		self.textEnt.OnKeyCodeTyped = function( pnl, code )
 			if ( code == KEY_ENTER ) then
@@ -560,15 +645,19 @@ else
 				if ( initHistoryKey > 1 ) then
 					initHistoryKey = initHistoryKey - 1
 					
-					pnl:SetText( catherine.chat.history[ initHistoryKey ] )
-					pnl:SetCaretPos( catherine.chat.history[ initHistoryKey ]:utf8len( ) )
+					local savedText = catherine.chat.history[ initHistoryKey ]
+					
+					pnl:SetText( savedText )
+					pnl:SetCaretPos( savedText:utf8len( ) )
 				end
 			elseif ( code == KEY_DOWN ) then
 				if ( initHistoryKey < #catherine.chat.history ) then
 					initHistoryKey = initHistoryKey + 1
 					
-					pnl:SetText( catherine.chat.history[ initHistoryKey ] )
-					pnl:SetCaretPos( catherine.chat.history[ initHistoryKey ]:utf8len( ) )
+					local savedText = catherine.chat.history[ initHistoryKey ]
+					
+					pnl:SetText( savedText )
+					pnl:SetCaretPos( savedText:utf8len( ) )
 				end
 			end
 		end
@@ -584,4 +673,4 @@ else
 	end
 end
 
-hook.Remove( "PlayerSay", "ULXMeCheck" ) // ULX -_-;
+hook.Remove( "PlayerSay", "ULXMeCheck" ) // Remove ULX ME command :>

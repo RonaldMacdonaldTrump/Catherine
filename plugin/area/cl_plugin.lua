@@ -17,6 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
+local META = FindMetaTable( "Player" )
 PLUGIN.currAreaDisplay = PLUGIN.currAreaDisplay or nil
 
 CAT_CONVAR_SHOW_AREA = CreateClientConVar( "cat_convar_showarea", "1", true, true )
@@ -69,6 +70,14 @@ function PLUGIN:StartAreaDisplay( text )
 		textA = 0,
 		fadeTime = CurTime( ) + 5
 	}
+end
+
+function META:GetCurrentArea( )
+	return self:GetNetVar( "currArea" )
+end
+
+function META:GetCurrentAreaName( )
+	return self:GetNetVar( "currAreaName" )
 end
 
 function PLUGIN:HUDPaint( )

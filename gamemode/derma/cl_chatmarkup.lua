@@ -20,6 +20,7 @@ local PANEL = { }
 
 function PANEL:Init( )
 	self:SetDrawBackground( false )
+	
 	self.start = CurTime( )
 	self.finish = CurTime( ) + 15
 end
@@ -49,7 +50,7 @@ function PANEL:Run( ... )
 			end
 			
 			latestColor = v
-			data = data .. "<color="..v.r..","..v.g..","..v.b..">"
+			data = data .. "<color=" .. v.r .. "," .. v.g .. "," .. v.b .. ">"
 		elseif ( types == "Player" ) then
 			local col = team.GetColor( v:Team( ) )
 			
@@ -64,7 +65,7 @@ function PANEL:Run( ... )
 				h = v[ 3 ]
 			end
 			
-			data = data .. "<img=" .. material:GetName( )..".png," .. w .. "x" .. h .. "> "
+			data = data .. "<img=" .. material:GetName( ) .. ".png," .. w .. "x" .. h .. "> "
 		else
 			v = tostring( v )
 			v = v:gsub( "&", "&amp;" )
@@ -79,17 +80,17 @@ function PANEL:Run( ... )
 		data = data .. "</font>"
 	end
 
-	self.markup = catherine.markup.Parse( data, self.maxWidth )
+	self.markupObject = catherine.markup.Parse( data, self.maxWidth )
 
-	function self.markup:DrawText( text, font, x, y, color, hAlign, vAlign, alpha )
+	function self.markupObject:DrawText( text, font, x, y, color, hAlign, vAlign, alpha )
 		draw.SimpleTextOutlined( text, font, x, y, color, hAlign, vAlign, 1, Color( 0, 0, 0, 255 ) )
 	end
 
-	self:SetSize( self.markup:GetWidth( ), self.markup:GetHeight( ) )
+	self:SetSize( self.markupObject:GetWidth( ), self.markupObject:GetHeight( ) )
 end
 
 function PANEL:Paint( w, h )
-	if ( !self.markup ) then return end
+	if ( !self.markupObject ) then return end
 	local a = 255
 	
 	if ( self.start and self.finish ) then
@@ -103,8 +104,8 @@ function PANEL:Paint( w, h )
 	self:SetAlpha( a )
 	
 	if ( a > 0 ) then
-		self.markup:Draw( 1, 0, 0, 0 )
+		self.markupObject:Draw( 1, 0, 0, 0 )
 	end
 end
 
-vgui.Register( "catherine.vgui.ChatMarkUp", PANEL, "DPanel" )
+vgui.Register( "catherine.vgui.chatmarkup", PANEL, "DPanel" )

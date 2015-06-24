@@ -93,26 +93,28 @@ catherine.command.Register( {
 			local target = catherine.util.FindPlayerByName( args[ 1 ] )
 			
 			if ( IsValid( target ) and target:IsPlayer( ) ) then
-				local status = catherine.player.IsCharacterBanned( pl )
+				local status = catherine.player.IsCharacterBanned( target )
 				
 				if ( status ) then
-					catherine.player.SetCharacterBan( pl, false, function( )
-						pl:Freeze( false )
+					catherine.player.SetCharacterBan( target, false, function( )
+						target:Freeze( false )
 						
-						if ( pl.CAT_charBanLatestPos ) then
-							pl:SetPos( pl.CAT_charBanLatestPos )
+						if ( target.CAT_charBanLatestPos ) then
+							target:SetPos( target.CAT_charBanLatestPos )
 						else
-							pl:KillSilent( )
+							target:KillSilent( )
 						end
 					end )
+					
 					catherine.util.NotifyAllLang( "Character_Notify_CharUnBan", pl:Name( ), target:Name( ) )
 				else
-					catherine.player.SetCharacterBan( pl, true, function( )
-						pl.CAT_charBanLatestPos = pl:GetPos( )
+					catherine.player.SetCharacterBan( target, true, function( )
+						target.CAT_charBanLatestPos = target:GetPos( )
 						
-						pl:SetPos( Vector( 0, 0, 100000000 ) )
-						pl:Freeze( true )
+						target:SetPos( Vector( 0, 0, 10000 ) )
+						target:Freeze( true )
 					end )
+					
 					catherine.util.NotifyAllLang( "Character_Notify_CharBan", pl:Name( ), target:Name( ) )
 				end
 			else
@@ -537,7 +539,9 @@ catherine.command.Register( {
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					catherine.chat.Send( pl, "pm", args[ 2 ], { pl, target }, target )
+					local text = table.concat( args, " ", 2, #args )
+					
+					catherine.chat.Send( pl, "pm", text, { pl, target }, target )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -563,6 +567,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "cleardecals",
+	desc = "Clear all map decals (Example : Blood).",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		for k, v in pairs( player.GetAll( ) ) do
@@ -575,6 +580,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "restartlevel",
+	desc = "Restart server as the same map.",
 	syntax = "[Time]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
@@ -590,6 +596,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "changelevel",
+	desc = "Restart server as the typed map.",
 	syntax = "[Map] [Time]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
@@ -610,6 +617,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "settimehour",
+	desc = "Change RP hour as the typed hour.",
 	syntax = "[0 ~ 24]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )

@@ -19,6 +19,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local PANEL = { }
 
 function PANEL:Init( )
+	hook.Run( "CharacterMenuJoined", LocalPlayer( ) )
+	
 	catherine.vgui.character = self
 	
 	self.player = LocalPlayer( )
@@ -477,6 +479,8 @@ function PANEL:Close( )
 	end
 	
 	self:AlphaTo( 0, 0.3, 0, function( )
+		hook.Run( "CharacterMenuExited", self.player )
+		
 		self:Remove( )
 		self = nil
 	end )

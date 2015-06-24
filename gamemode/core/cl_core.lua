@@ -620,6 +620,18 @@ function GM:RenderScreenspaceEffects( )
 	end
 end
 
+function GM:CharacterMenuJoined( pl )
+	if ( IsValid( catherine.chat.backpanel ) ) then
+		catherine.chat.backpanel:SetVisible( false )
+	end
+end
+
+function GM:CharacterMenuExited( pl )
+	if ( IsValid( catherine.chat.backpanel ) ) then
+		catherine.chat.backpanel:SetVisible( true )
+	end
+end
+
 function GM:ScreenResolutionChanged( oldW, oldH )
 	catherine.hud.WelcomeIntroInitialize( true )
 end
