@@ -40,7 +40,7 @@ catherine.util.Include( "sh_actions.lua" )
 
 if ( SERVER ) then
 	function PLUGIN:StartAction( pl, seq )
-		if ( self:IsActioning( pl ) or !pl:Alive( ) or pl:IsRagdolled( ) ) then
+		if ( pl:IsActioning( ) or !pl:Alive( ) or pl:IsRagdolled( ) ) then
 			return false, "ACT_Plugin_Notify_Cant01"
 		end
 
@@ -91,7 +91,7 @@ if ( SERVER ) then
 	end
 	
 	function PLUGIN:ExitAction( pl )
-		if ( !self:IsActioning( pl ) ) then
+		if ( !pl:IsActioning( ) ) then
 			return false, "ACT_Plugin_Notify_Cant01"
 		end
 		
@@ -126,7 +126,7 @@ if ( SERVER ) then
 	end
 	
 	function PLUGIN:Move( pl, moveData )
-		if ( pl:IsCharacterLoaded( ) and self:IsActioning( pl ) ) then
+		if ( pl:IsCharacterLoaded( ) and pl:IsActioning( ) ) then
 			moveData:SetForwardSpeed( 0 )
 			moveData:SetSideSpeed( 0 )
 		end
@@ -137,7 +137,7 @@ if ( SERVER ) then
 	end )
 else
 	function PLUGIN:PlayerBindPress( pl, bind, pressed )
-		if ( self:IsActioning( pl ) and bind == "+jump" ) then
+		if ( pl:IsActioning( ) and bind == "+jump" ) then
 			if ( pl:GetNetVar( "doingAction" ) and pl.CAT_leavingAction ) then
 				pl.CAT_leavingAction = nil
 				timer.Remove( "Catherine.plugin.action.timer.WaitAction" )
@@ -154,48 +154,47 @@ else
 	end
 	
 	function PLUGIN:CalcView( pl, pos, ang, fov )
-		if ( self:IsActioning( pl ) ) then
-			local data = { }
+		if ( pl:IsActioning( ) and pl:GetViewEntity( ) == pl ) then
+			local viewData = { }
 			
-			local tr = util.TraceLine( {
+			local thirdPersonLine = util.TraceLine( {
 				start = pos,
 				endpos = pos - ( ang:Forward( ) * 100 )
 			} )
 
-			data.origin = tr.Fraction < 1 and ( tr.HitPos + tr.HitNormal * 5 ) or tr.HitPos
+			viewData.origin = thirdPersonLine.Fraction < 1 and ( thirdPersonLine.HitPos + thirdPersonLine.HitNormal * 5 ) or thirdPersonLine.HitPos
 			
-			if ( pl:GetViewEntity( ) == pl ) then
-				local la = pl:LookupAttachment( "eyes" )
-				
-				if ( la == 0 ) then
-					la = pl:LookupAttachment( "eyes" )
-				end
-				
-				local ga = pl:GetAttachment( la ) 
-				local newAng = Angle( 0, pl:GetAngles( ).y, 0 )
-				local tr = util.TraceLine( {
-					start = ga.Pos,
-					endpos = ga.Pos + newAng:Forward( ) * -80 + newAng:Up( ) * 20 + newAng:Right( ) * 0
-				} )
-
-				data.origin = tr.HitPos + tr.HitNormal * 4
-				data.angles = newAng
-				data.fov = fov
+			local la = pl:LookupAttachment( "eyes" )
+			
+			if ( la == 0 ) then
+				la = pl:LookupAttachment( "eyes" )
 			end
 			
-			return GAMEMODE:CalcView( pl, data.origin, data.angles, data.fov )
+			local ga = pl:GetAttachment( la ) 
+			local newAng = Angle( 0, pl:GetAngles( ).y, 0 )
+			local tr = util.TraceLine( {
+				start = ga.Pos,
+				endpos = ga.Pos + newAng:Forward( ) * -80 + newAng:Up( ) * 20 + newAng:Right( ) * 0
+			} )
+
+			viewData.origin = tr.HitPos + tr.HitNormal * 4
+			viewData.angles = newAng
+			
+			return viewData
 		end
 	end
 
 	function PLUGIN:ShouldDrawLocalPlayer( pl )
-		if ( self:IsActioning( pl ) ) then
+		if ( pl:IsActioning( ) ) then
 			return true
 		end
 	end
 end
 
-function PLUGIN:IsActioning( pl )
-	return pl:GetNetVar( "isActioning" )
+local META = FindMetaTable( "Player" )
+
+function META:IsActioning( )
+	return self:GetNetVar( "isActioning" )
 end
 
 for k, v in pairs( PLUGIN.actions ) do

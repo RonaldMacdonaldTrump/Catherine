@@ -52,12 +52,13 @@ local gradientCenterMat = Material( "gui/center_gradient" )
 local introBooA = 0
 local math_app = math.Approach
 local hook_run = hook.Run
+local trace_line = util.TraceLine
 
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hud.GetBlockModules( ) ) do
-		if ( v != name ) then continue end
-		
-		return false
+		if ( v == name ) then
+			return false
+		end
 	end
 	
 	return true
@@ -93,11 +94,9 @@ function GM:CalcView( pl, pos, ang, fov )
 	local viewData = self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
 
 	if ( catherine.intro.status ) then
-		viewData = {
+		return {
 			origin = Vector( 0, 0, 200000 )
 		}
-		
-		return viewData
 	end
 
 	local ent = Entity( pl:GetNetVar( "ragdollIndex", 0 ) )
@@ -108,12 +107,10 @@ function GM:CalcView( pl, pos, ang, fov )
 		if ( index ) then
 			local data = ent:GetAttachment( index )
 
-			viewData = {
+			return {
 				origin = data and data.Pos,
 				angles = data and data.Ang
 			}
-			
-			return viewData
 		end
 	end
 
@@ -143,7 +140,8 @@ end
 function GM:HUDDrawScoreBoard( )
 	if ( LocalPlayer( ):IsCharacterLoaded( ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
-
+	local realTime = RealTime( ) // YES, this is real time, thats all.
+	
 	// Backgrounds
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, catherine.intro.backAlpha ) )
 	
@@ -165,7 +163,7 @@ function GM:HUDDrawScoreBoard( )
 	
 	// Intro codes
 	if ( catherine.intro.status and catherine.intro.startTime != 0 ) then
-		if ( catherine.intro.startTime <= CurTime( ) ) then
+		if ( catherine.intro.startTime <= realTime ) then
 			catherine.intro.firstStage = true
 
 			if ( catherine.intro.firstStageX >= scrW / 2 - 512 / 2 ) then
@@ -179,12 +177,12 @@ function GM:HUDDrawScoreBoard( )
 			end
 			
 			if ( !catherine.intro.firstStageShowingTime ) then
-				catherine.intro.firstStageShowingTime = CurTime( )
+				catherine.intro.firstStageShowingTime = realTime
 			end
 			
-			if ( catherine.intro.firstStageShowingTime + 2 <= CurTime( ) ) then
+			if ( catherine.intro.firstStageShowingTime + 2 <= realTime ) then
 				if ( !catherine.intro.secondStageShowingTime ) then
-					catherine.intro.secondStageShowingTime = CurTime( )
+					catherine.intro.secondStageShowingTime = realTime
 				end
 			
 				catherine.intro.secondStage = true
@@ -209,7 +207,7 @@ function GM:HUDDrawScoreBoard( )
 					end
 				end
 				
-				if ( catherine.intro.secondStageShowingTime + 2 <= CurTime( ) ) then
+				if ( catherine.intro.secondStageShowingTime + 2 <= realTime ) then
 					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, 0 - 512, 25 )
 
 					if ( !catherine.intro.secondStageEnding ) then
@@ -296,11 +294,11 @@ function GM:DrawDoorText( ent )
 	end
 	
 	local data = catherine.door.CalcDoorTextPos( ent )
-	
 	local title = ent.GetNetVar( ent, "title", LANG( "Door_UI_Default" ) )
 	local desc = catherine.door.GetDetailString( ent )
 	
 	surface.SetFont( "catherine_outline35" )
+	
 	local titleW, titleH = surface.GetTextSize( title )
 	local descW, descH = surface.GetTextSize( desc )
 	local longW = descW > titleW and descW or titleW
@@ -360,7 +358,7 @@ function GM:DrawEntityTargetID( pl, ent, a )
 	local entPlayer = ent
 	
 	if ( ent:GetClass( ) == "prop_ragdoll" ) then
-		entPlayer = ent.GetNetVar( ent, "player" )
+		entPlayer = ent:GetNetVar( "player" )
 	end
 	
 	if ( !IsValid( entPlayer ) or !entPlayer:IsPlayer( ) ) then return end
@@ -406,21 +404,21 @@ end
 
 function GM:EntityCacheWork( pl )
 	if ( !pl:IsCharacterLoaded( ) ) then return end
-	local rt = RealTime( )
+	local realTime = RealTime( )
 	
-	if ( nextEntityCacheWork <= rt ) then
+	if ( nextEntityCacheWork <= realTime ) then
 		local data = { }
 		data.start = pl:GetShootPos( )
 		data.endpos = data.start + pl:GetAimVector( ) * 160
 		data.filter = pl
 		
-		lastEntity = util.TraceLine( data ).Entity
+		lastEntity = trace_line( data ).Entity
 
 		if ( IsValid( lastEntity ) ) then
 			entityCaches[ lastEntity ] = true
 		end
 
-		nextEntityCacheWork = rt + 0.5
+		nextEntityCacheWork = realTime + 0.5
 	end
 	
 	for k, v in pairs( entityCaches ) do
@@ -493,14 +491,14 @@ end
 function GM:CalcViewModelView( wep, viewMdl, oldEyePos, oldEyeAngles, eyePos, eyeAng )
 	if ( !IsValid( wep ) ) then return end
 	local pl = LocalPlayer( )
-	local fraction = ( pl.wepRaisedFraction or 0 ) / 100
+	local fraction = ( pl.CAT_wepRaisedFraction or 0 ) / 100
 	local lowerAng = wep.LowerAngles or Angle( 30, -30, -25 )
 	
 	eyeAng:RotateAroundAxis( eyeAng:Up( ), lowerAng.p * fraction )
 	eyeAng:RotateAroundAxis( eyeAng:Forward( ), lowerAng.y * fraction )
 	eyeAng:RotateAroundAxis( eyeAng:Right( ), lowerAng.r * fraction )
 	
-	pl.wepRaisedFraction = Lerp( FrameTime( ) * 2, pl.wepRaisedFraction or 0, pl:GetWeaponRaised( ) and 0 or 100 )
+	pl.CAT_wepRaisedFraction = Lerp( FrameTime( ) * 2, pl.CAT_wepRaisedFraction or 0, pl:GetWeaponRaised( ) and 0 or 100 )
 	
 	viewMdl:SetAngles( eyeAng )
 	
@@ -653,7 +651,7 @@ catherine.option.Register( "CONVAR_ALWAYS_ADMIN_ESP", "cat_convar_alwaysadminesp
 netstream.Hook( "catherine.introStart", function( )
 	catherine.intro.loading = true
 	catherine.intro.status = true
-	catherine.intro.startTime = CurTime( )
+	catherine.intro.startTime = RealTime( )
 end )
 
 netstream.Hook( "catherine.introStop", function( )
