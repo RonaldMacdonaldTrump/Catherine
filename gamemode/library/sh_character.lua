@@ -238,6 +238,16 @@ if ( SERVER ) then
 		end
 		
 		pl.CAT_loadingChar = nil
+		
+		if ( !pl.CAT_characterLoadBuffer ) then
+			pl.CAT_characterLoadBuffer = { }
+		end
+		
+		if ( !pl.CAT_characterLoadBuffer[ id ] ) then
+			hook.Run( "PlayerCharacterTodayFirstLoaded", pl )
+		end
+		
+		pl.CAT_characterLoadBuffer[ id ] = true
 
 		return true
 		// Fin!

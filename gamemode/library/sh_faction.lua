@@ -28,6 +28,14 @@ function catherine.faction.Register( factionTable )
 	catherine.faction.lists[ factionTable.index ] = factionTable
 	team.SetUp( factionTable.index, factionTable.name, factionTable.color )
 	
+	for k, v in pairs( factionTable.models or { } ) do
+		util.PrecacheModel( v )
+	end
+	
+	if ( factionTable.factionImage ) then
+		resource.AddFile( factionTable.factionImage )
+	end
+	
 	return factionTable.index
 end
 

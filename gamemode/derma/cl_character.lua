@@ -492,10 +492,11 @@ local PANEL = { }
 
 function PANEL:Init( )
 	self.parent = self:GetParent( )
-	self.w, self.h = self.parent.w * 0.8, self.parent.h * 0.6
+	self.w, self.h = 532, 376
 	self.data = { faction = nil }
 	self.factionList = catherine.faction.GetPlayerUsableFaction( self.parent.player )
 	self.progressPercent, self.progressPercentAni = 0, 0
+	self.factionImage = nil
 
 	self:SetSize( self.w, self.h )
 	self:SetPos( self.parent.w, self.parent.h / 2 - self.h / 2 )
@@ -510,61 +511,40 @@ function PANEL:Init( )
 	self.label01:SetText( LANG( "Faction_UI_Title" ) )
 	self.label01:SizeToContents( )
 
-	self.Lists = vgui.Create( "DHorizontalScroller", self )
-	self.Lists:SetPos( 10, 60 )
-	self.Lists:SetSize( 0, self.h - 85 )
-	
-	for k, v in pairs( self.factionList ) do
-		local factionName = catherine.util.StuffLanguage( v.name )
+	self.selectFaction = vgui.Create( "catherine.vgui.button", self )
+	self.selectFaction:SetPos( 10, 50 )
+	self.selectFaction:SetSize( self.w - 20, 40 )
+	self.selectFaction:SetStr( LANG( "Character_UI_SelectFaction" ) )
+	self.selectFaction:SetStrFont( "catherine_normal20" )
+	self.selectFaction:SetStrColor( Color( 50, 50, 50, 255 ) )
+	self.selectFaction:SetGradientColor( Color( 50, 50, 50, 150 ) )
+	self.selectFaction.Click = function( )
+		local menu = DermaMenu( )
 		
-		local panel = vgui.Create( "DPanel" )
-		panel:SetSize( 200, self.Lists:GetTall( ) )
-		panel.Paint = function( pnl, w, h )
-			if ( self.data.faction == v.uniqueID ) then
-				surface.SetDrawColor( 70, 70, 70, 255 )
-				surface.SetMaterial( Material( "gui/gradient_up" ) )
-				surface.DrawTexturedRect( 0, 0, w, h )
+		for k, v in pairs( self.factionList ) do
+			local factionName = catherine.util.StuffLanguage( v.name )
 			
-				draw.SimpleText( factionName, "catherine_normal15", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
-			else
-				draw.SimpleText( factionName, "catherine_normal15", w / 2, h - 30, Color( 50, 50, 50, 255 ), 1, 1 )
-			end
-		end
-		
-		local model = vgui.Create( "DModelPanel", panel )
-		model:SetSize( panel:GetWide( ), panel:GetTall( ) - 60 )
-		model:SetCursor( "none" )
-		model:SetPos( 0, 0 )
-		model:MoveToBack( )
-		model:SetModel( table.Random( v.models ) )
-		model:SetVisible( true )
-		model:SetFOV( 40 )
-		model.LayoutEntity = function( pnl, ent )
-			ent:SetIK( false )
-			ent:SetAngles( Angle( 0, 45, 0 ) )
-			pnl:RunAnimation( )
-		end
-		
-		local button = vgui.Create( "DButton", panel )
-		button:Dock( FILL )
-		button:SetText( "" )
-		button.DoClick = function( pnl )
-			if ( self.data.faction == v.uniqueID ) then
-				self.data.faction = nil
-			else
+			menu:AddOption( factionName, function( )
+				self.selectFaction:SetStr( factionName )
 				self.data.faction = v.uniqueID
-			end
+				
+				if ( v.factionImage ) then
+					self.factionImage = v.factionImage
+				elseif ( !v.factionImage ) then
+					self.factionImage = nil
+				end
+			end )
 		end
-		button:SetDrawBackground( false )
 		
-		self.Lists:AddPanel( panel )
-		self.Lists:SetSize( self.Lists:GetWide( ) + 200, self.Lists:GetTall( ) )
-		self.Lists:SetPos( self.w / 2 - self.Lists:GetWide( ) / 2, 60 )
+		menu:Open( )
+	end
+	self.selectFaction.PaintBackground = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 215, 215, 215, 255 ) )
 	end
 
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
-	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 15 )
-	self.nextStage:SetSize( self.w * 0.2, 25 )
+	self.nextStage:SetPos( self.w - self.w * 0.4 - 10, 15 )
+	self.nextStage:SetSize( self.w * 0.4, 25 )
 	self.nextStage:SetStr( LANG( "Basic_UI_Continue" ) )
 	self.nextStage:SetStrFont( "catherine_normal20" )
 	self.nextStage:SetStrColor( Color( 50, 50, 50, 255 ) )
@@ -612,6 +592,12 @@ function PANEL:Paint( w, h )
 	
 	draw.RoundedBox( 0, 10, 45, w - 20, 2, Color( 50, 50, 50, 255 ) )
 	draw.RoundedBox( 0, 0, 10, w, h - 20, Color( 255, 255, 255, 200 ) )
+	
+	if ( self.factionImage ) then
+		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.SetMaterial( Material( self.factionImage ) )
+		surface.DrawTexturedRect( w / 2 - 512 / 2, 100, 512, 256 )
+	end
 end
 
 vgui.Register( "catherine.character.stageOne", PANEL, "DPanel" )

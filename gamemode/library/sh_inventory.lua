@@ -16,6 +16,10 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+if ( !catherine.item ) then
+	catherine.util.Include( "sh_item.lua" )
+end
+
 catherine.inventory = catherine.inventory or { }
 local META = FindMetaTable( "Player" )
 

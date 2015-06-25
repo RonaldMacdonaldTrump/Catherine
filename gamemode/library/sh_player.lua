@@ -30,7 +30,7 @@ if ( SERVER ) then
 			if ( !IsValid( pl ) ) then return end
 			--[[ Initializing a Catherine ... :> ]]--
 			
-			catherine.net.ScanErrorNetworkRegistry( ) // Just.
+			catherine.net.ScanErrorInNetworkRegistry( ) // Need this.
 			
 			catherine.player.PlayerInformationUpdate( pl )
 			catherine.net.SendAllNetworkRegistries( pl ) // Send ALL entity, player network registries.

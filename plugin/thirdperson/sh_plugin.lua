@@ -49,7 +49,7 @@ function META:CanOverrideView( )
 		!IsValid( catherine.vgui.character ) and
 		GetConVarString( "cat_convar_thirdperson" ) == "1" and
 		!IsValid( self:GetVehicle( ) ) and
-		!IsValid( Entity( pl:GetNetVar( "ragdollIndex", 0 ) ) ) and
+		!IsValid( Entity( self:GetNetVar( "ragdollIndex", 0 ) ) ) and
 		self:IsCharacterLoaded( ) and
 		!self:IsActioning( ) and
 		self:Alive( )
