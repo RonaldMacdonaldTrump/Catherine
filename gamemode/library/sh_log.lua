@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+if ( !catherine.configs.enable_Log ) then return end
+
 catherine.log = catherine.log or { }
 CAT_LOG_FLAG_IMPORTANT = 1
 CAT_LOG_FLAG_BASIC = 2

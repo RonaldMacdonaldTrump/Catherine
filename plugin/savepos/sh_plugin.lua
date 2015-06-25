@@ -37,8 +37,14 @@ function PLUGIN:PlayerSpawnedInCharacter( pl )
 	local lastPos = catherine.character.GetCharVar( pl, "lastPos" )
 	
 	if ( lastPos and ( lastPos.map and lastPos.map:lower( ) == game.GetMap( ):lower( ) ) ) then
+		local posBackup = pl:GetPos( )
+		
 		if ( lastPos.pos ) then
 			pl:SetPos( lastPos.pos )
+			
+			if ( pl:IsStuck( ) ) then
+				pl:SetPos( posBackup )
+			end
 		end
 		
 		if ( lastPos.ang ) then

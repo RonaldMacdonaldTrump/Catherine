@@ -103,7 +103,7 @@ if ( SERVER ) then
 		catherine.character.SetCharVar( pl, "limbTable", { } )
 	end
 	
-	function catherine.limb.AutoRecover( )
+	function catherine.limb.Think( )
 		if ( catherine.limb.NextRecoverTick <= CurTime( ) ) then
 			for k, v in pairs( player.GetAllByLoaded( ) ) do
 				for k1, v1 in pairs( catherine.character.GetCharVar( v, "limbTable", { } ) ) do
@@ -119,7 +119,7 @@ if ( SERVER ) then
 		end
 	end
 	
-	hook.Add( "Think", "catherine.limb.AutoRecover", catherine.limb.AutoRecover )
+	hook.Add( "Think", "catherine.limb.Think", catherine.limb.Think )
 else
 	catherine.limb.materials = {
 		[ HITGROUP_HEAD ] = Material( "CAT/Limb/head.png" ),

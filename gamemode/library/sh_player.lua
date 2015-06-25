@@ -566,6 +566,14 @@ function META:IsRunning( )
 	return twoD( velo( self ) ) >= ( catherine.configs.playerDefaultRunSpeed - 5 )
 end
 
+function META:IsStuck( )
+	return util.TraceEntity( {
+		start = self:GetPos( ),
+		endpos = self:GetPos( ),
+		filter = self
+	}, self ).StartSolid
+end
+
 function player.GetAllByLoaded( )
 	local players = { }
 	

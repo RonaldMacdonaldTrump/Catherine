@@ -19,18 +19,27 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.inventory = catherine.inventory or { }
 local META = FindMetaTable( "Player" )
 
+// Optimize.
+local getCharVar = catherine.character.GetCharVar
+local setVar = catherine.character.SetVar
+local getVar = catherine.character.GetVar
+local itemFindByID = catherine.item.FindByID
+local math_max = math.max
+local table_copy = table.Copy
+local baseInvMaxWeight = catherine.configs.baseInventoryWeight
+
 if ( SERVER ) then
 	CAT_INV_ACTION_ADD = 1
 	CAT_INV_ACTION_REMOVE = 2
 	CAT_INV_ACTION_UPDATE = 3
 
 	function catherine.inventory.Work( pl, workID, data )
-		if ( catherine.character.GetCharVar( pl, "charBanned" ) ) then return end
+		if ( getCharVar( pl, "charBanned" ) ) then return end
 
 		if ( workID == CAT_INV_ACTION_ADD ) then
 			local inventory = catherine.inventory.Get( pl )
 			local uniqueID = data.uniqueID
-			local itemCount = math.max( data.itemCount or 1, 1 ) or 1
+			local itemCount = math_max( data.itemCount or 1, 1 ) or 1
 			local invData = inventory[ uniqueID ]
 			
 			if ( invData ) then
@@ -40,7 +49,7 @@ if ( SERVER ) then
 					itemData = data.itemData or invData.itemData
 				}
 			else
-				local itemTable = catherine.item.FindByID( uniqueID )
+				local itemTable = itemFindByID( uniqueID )
 				
 				if ( !itemTable ) then return end
 				
@@ -51,7 +60,7 @@ if ( SERVER ) then
 				}
 			end
 
-			catherine.character.SetVar( pl, "_inv", inventory )
+			setVar( pl, "_inv", inventory )
 		elseif ( workID == CAT_INV_ACTION_REMOVE ) then
 			local inventory = catherine.inventory.Get( pl )
 			local uniqueID = data.uniqueID
@@ -68,7 +77,7 @@ if ( SERVER ) then
 				inventory[ uniqueID ] = nil
 			end
 			
-			catherine.character.SetVar( pl, "_inv", inventory )
+			setVar( pl, "_inv", inventory )
 		elseif ( workID == CAT_INV_ACTION_UPDATE ) then
 			local inventory = catherine.inventory.Get( pl )
 			local uniqueID = data.uniqueID
@@ -81,13 +90,13 @@ if ( SERVER ) then
 					itemData = data.newData
 				}
 				
-				catherine.character.SetVar( pl, "_inv", inventory )
+				setVar( pl, "_inv", inventory )
 			end
 		end
 	end
 
 	function catherine.inventory.Get( pl )
-		return table.Copy( catherine.character.GetVar( pl, "_inv", { } ) )
+		return table_copy( getVar( pl, "_inv", { } ) )
 	end
 
 	function catherine.inventory.GetInvItem( pl, uniqueID )
@@ -109,12 +118,12 @@ if ( SERVER ) then
 	end
 	
 	function catherine.inventory.GetWeights( pl, customAdd )
-		local inventory = catherine.inventory.Get( pl )
 		local invWeight = 0
-		local invMaxWeight = catherine.configs.baseInventoryWeight
+		local invMaxWeight = baseInvMaxWeight
 		
-		for k, v in pairs( inventory ) do
-			local itemTable = catherine.item.FindByID( k )
+		for k, v in pairs( catherine.inventory.Get( pl ) ) do
+			local itemTable = itemFindByID( k )
+			
 			if ( !itemTable ) then continue end
 
 			if ( itemTable.isBag ) then
@@ -128,11 +137,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.inventory.GetOnlyMaxWeight( pl )
-		local inventory = catherine.inventory.Get( pl )
-		local invMaxWeight = catherine.configs.baseInventoryWeight
+		local invMaxWeight = baseInvMaxWeight
 		
-		for k, v in pairs( inventory ) do
-			local itemTable = catherine.item.FindByID( k )
+		for k, v in pairs( catherine.inventory.Get( pl ) ) do
+			local itemTable = itemFindByID( k )
 
 			if ( itemTable and itemTable.isBag ) then
 				invMaxWeight = invMaxWeight + ( v.itemCount * ( itemTable.weightPlus or 0 ) )
@@ -207,21 +215,21 @@ if ( SERVER ) then
 		local changed = false
 		
 		for k, v in pairs( inventory ) do
-			if ( catherine.item.FindByID( k ) ) then continue end
+			if ( itemFindByID( k ) ) then continue end
 			
 			inventory[ k ] = nil
 			changed = true
 		end
 		
 		if ( changed ) then
-			catherine.character.SetVar( pl, "_inv", inventory )
+			setVar( pl, "_inv", inventory )
 		end
 	end
 
 	hook.Add( "CreateNetworkRegistry", "catherine.inventory.CreateNetworkRegistry", catherine.inventory.CreateNetworkRegistry )
 else
 	function catherine.inventory.Get( )
-		return table.Copy( catherine.character.GetVar( LocalPlayer( ), "_inv", { } ) )
+		return table_copy( getVar( LocalPlayer( ), "_inv", { } ) )
 	end
 	
 	function catherine.inventory.GetInvItem( uniqueID )
@@ -243,12 +251,12 @@ else
 	end
 
 	function catherine.inventory.GetWeights( customAdd )
-		local inventory = catherine.inventory.Get( )
 		local invWeight = 0
-		local invMaxWeight = catherine.configs.baseInventoryWeight
+		local invMaxWeight = baseInvMaxWeight
 		
-		for k, v in pairs( inventory ) do
-			local itemTable = catherine.item.FindByID( k )
+		for k, v in pairs( catherine.inventory.Get( ) ) do
+			local itemTable = itemFindByID( k )
+			
 			if ( !itemTable ) then continue end
 			
 			if ( itemTable.isBag ) then
@@ -262,11 +270,10 @@ else
 	end
 	
 	function catherine.inventory.GetOnlyMaxWeight( )
-		local inventory = catherine.inventory.Get( )
-		local invMaxWeight = catherine.configs.baseInventoryWeight
+		local invMaxWeight = baseInvMaxWeight
 		
-		for k, v in pairs( inventory ) do
-			local itemTable = catherine.item.FindByID( k )
+		for k, v in pairs( catherine.inventory.Get( ) ) do
+			local itemTable = itemFindByID( k )
 
 			if ( itemTable and itemTable.isBag ) then
 				invMaxWeight = invMaxWeight + ( v.itemCount * ( itemTable.weightPlus or 0 ) )

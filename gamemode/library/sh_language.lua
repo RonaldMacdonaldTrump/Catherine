@@ -42,25 +42,33 @@ end
 
 function catherine.language.Merge( uniqueID, data )
 	local languageTable = catherine.language.FindByID( uniqueID )
-	if ( !languageTable ) then return end
 	
-	languageTable.data = table.Merge( languageTable.data, data )
+	if ( languageTable ) then
+		languageTable.data = table.Merge( languageTable.data, data )
+	end
 end
 
 catherine.language.Include( catherine.FolderName .. "/gamemode" )
 
+local languageMasterTable = catherine.language.lists
+local Format = Format
+
 if ( SERVER ) then
 	function LANG( pl, key, ... )
-		local languageTable = catherine.language.lists[ pl:GetInfo( "cat_convar_language" ) ] or catherine.language.lists[ "english" ]
+		local languageTable = languageMasterTable[ pl:GetInfo( "cat_convar_language" ) ] or languageMasterTable[ "english" ]
+		
 		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
 		
 		return Format( languageTable.data[ key ], ... )
 	end
 else
+	local GetConVarString = GetConVarString
+	
 	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", catherine.configs.defaultLanguage, true, true )
-
+	
 	function LANG( key, ... )
-		local languageTable = catherine.language.lists[ GetConVarString( "cat_convar_language" ) ] or catherine.language.lists[ "english" ]
+		local languageTable = languageMasterTable[ GetConVarString( "cat_convar_language" ) ] or languageMasterTable[ "english" ]
+		
 		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
 		
 		return Format( languageTable.data[ key ], ... )

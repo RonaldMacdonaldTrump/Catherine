@@ -19,9 +19,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.net = catherine.net or { globalRegistry = { }, entityRegistry = { } }
 local META = FindMetaTable( "Entity" )
 local META2 = FindMetaTable( "Player" )
-// 네트워킹 시스템; ^-^; 2015-03-10 학교 컴실에서.. // 이전
-// 새로운 네트워킹 시스템; ^-^; 2015-04-09 집에서..
-// 오류 고친 네트워킹 시스템; ^-^; 2015-06-07 밤늦게 로이드랑 집에서..
 
 if ( SERVER ) then
 	catherine.net.NextOptimizeTick = catherine.net.NextOptimizeTick or CurTime( ) + catherine.configs.netRegistryOptimizeInterval
@@ -31,14 +28,8 @@ if ( SERVER ) then
 		catherine.net.entityRegistry[ ent ][ key ] = value
 		
 		if ( !noSync ) then
-			local id = ent:EntIndex( )
-			
-			if ( ent:IsPlayer( ) ) then
-				id = ent:SteamID( )
-			end
-			
 			netstream.Start( nil, "catherine.net.SetNetVar", {
-				id,
+				ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( ),
 				key,
 				value
 			} )
@@ -64,14 +55,9 @@ if ( SERVER ) then
 		local convert = { }
 		
 		for k, v in pairs( catherine.net.entityRegistry ) do
-			if ( !IsValid( k ) or k == NULL ) then continue end
-			local id = k:EntIndex( )
+			if ( !IsValid( k ) ) then continue end
 			
-			if ( k:IsPlayer( ) ) then
-				id = k:SteamID( )
-			end
-
-			convert[ id ] = v
+			convert[ k:IsPlayer( ) and k:SteamID( ) or k:EntIndex( ) ] = v
 		end
 
 		netstream.Start( pl, "catherine.net.SendAllNetworkRegistries", {
@@ -99,7 +85,7 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.net.ScanErrorNetworkRegistry( )
+	function catherine.net.ScanErrorInNetworkRegistry( )
 		for k, v in pairs( catherine.net.entityRegistry ) do
 			local keyType = type( k )
 			
@@ -123,7 +109,7 @@ if ( SERVER ) then
 	
 	function catherine.net.Think( )
 		if ( catherine.net.NextOptimizeTick <= CurTime( ) ) then
-			catherine.net.ScanErrorNetworkRegistry( )
+			catherine.net.ScanErrorInNetworkRegistry( )
 			
 			catherine.net.NextOptimizeTick = CurTime( ) + catherine.configs.netRegistryOptimizeInterval
 		end
@@ -168,12 +154,8 @@ else
 	end )
 	
 	function catherine.net.GetNetVar( ent, key, default )
-		local id = ent:EntIndex( )
-			
-		if ( ent:IsPlayer( ) ) then
-			id = ent:SteamID( )
-		end
-			
+		local id = ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( )
+		
 		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
 	end
 end
