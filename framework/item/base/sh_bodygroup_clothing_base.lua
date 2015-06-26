@@ -38,6 +38,11 @@ BASE.func.wear = {
 		local bodygroupID = itemTable.bodyGroup
 
 		if ( bodygroupID < pl:GetNumBodyGroups( ) ) then
+			if ( type( ent ) == "Entity" ) then
+				catherine.item.Give( pl, itemTable.uniqueID )
+				ent:Remove( )
+			end
+		
 			if ( !bodygroups[ bodygroupID ] and pl:GetBodygroup( bodygroupID ) == 0 ) then
 				bodygroups[ bodygroupID ] = 1
 				
