@@ -29,14 +29,14 @@ function catherine.schema.Initialization( )
 		IntroTitle = "Example",
 		IntroDesc = "A schema."
 	}
-	
+
 	local schemaFolderName = Schema.FolderName
 	
 	catherine.faction.Include( schemaFolderName .. "/schema" )
 	catherine.class.Include( schemaFolderName .. "/schema" )
 	catherine.item.Include( schemaFolderName .. "/schema" )
 	catherine.attribute.Include( schemaFolderName .. "/schema" )
-	catherine.util.Include( "schema/sh_schema.lua" )
+	catherine.util.Include( schemaFolderName .. "/schema/sh_schema.lua" )
 	catherine.language.Include( schemaFolderName .. "/schema" )
 	catherine.util.IncludeInDir( "library", schemaFolderName .. "/schema/" )
 	catherine.util.IncludeInDir( "derma", schemaFolderName .. "/schema/" )

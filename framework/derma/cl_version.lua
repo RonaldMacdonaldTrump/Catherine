@@ -21,7 +21,7 @@ local PANEL = { }
 function PANEL:Init( )
 	catherine.vgui.version = self
 	
-	self.version = catherine.version.Ver
+	self.version = GAMEMODE.Version
 	self.needUpdate = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
 	self.status = false
 	self.mat = {
@@ -56,7 +56,7 @@ function PANEL:Init( )
 end
 
 function PANEL:Refresh( )
-	self.version = catherine.version.Ver
+	self.version = GAMEMODE.Version
 	self.needUpdate = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
 end
 

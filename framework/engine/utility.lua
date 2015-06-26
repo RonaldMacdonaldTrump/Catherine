@@ -41,9 +41,10 @@ end
 
 function catherine.util.IncludeInDir( dir, prefix )
 	local dir2 = ( prefix or "catherine/framework/" ) .. dir .. "/*.lua"
+	local dir3 = ( prefix or "catherine/framework/" ) .. dir
 
 	for k, v in pairs( file.Find( dir2, "LUA" ) ) do
-		catherine.util.Include( dir .. "/" .. v )
+		catherine.util.Include( dir3 .. "/" .. v )
 	end
 end
 
@@ -220,7 +221,7 @@ function catherine.util.GetHoldType( wep )
 	end
 end
 
-catherine.util.IncludeInDir( "library/external", "catherine/gamemode/" )
+catherine.util.IncludeInDir( "engine/external" )
 
 if ( SERVER ) then
 	catherine.util.receiver = catherine.util.receiver or { str = { }, qry = { } }

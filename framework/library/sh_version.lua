@@ -16,9 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.version = catherine.version or {
-	Ver = "2015-06-25"
-}
+catherine.version = catherine.version or { }
 
 if ( SERVER ) then
 	catherine.version.checked = catherine.version.checked or false
@@ -30,12 +28,12 @@ if ( SERVER ) then
 				local globalVer = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
 				local foundNew = false
 				
-				if ( body != catherine.version.Ver ) then
+				if ( body != GAMEMODE.Version ) then
 					if ( globalVer == false ) then
 						catherine.net.SetNetGlobalVar( "cat_needUpdate", true )
 					end
 					
-					catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. catherine.version.Ver .. " -> " .. body .. "]" )
+					catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. GAMEMODE.Version .. " -> " .. body .. "]" )
 					foundNew = true
 				else
 					foundNew = false

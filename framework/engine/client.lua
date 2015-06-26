@@ -255,7 +255,7 @@ function GM:HUDDrawScoreBoard( )
 	surface.DrawTexturedRect( catherine.intro.secondStageX, scrH / 2 - 256 / 2, 512, 256 )
 
 	// Catherine version
-	draw.SimpleText( LANG( "Version_UI_YourVer_AV", catherine.version.Ver ), "catherine_normal15", scrW - 20, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( LANG( "Version_UI_YourVer_AV", self.Version ), "catherine_normal15", scrW - 20, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_RIGHT, 1 )
 	
 	// Whitescreen
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, introBooA ) )

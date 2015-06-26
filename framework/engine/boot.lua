@@ -19,58 +19,58 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local DeriveGamemode = DeriveGamemode
 local AddCSLuaFile = AddCSLuaFile
 local include = include
-local cat_include = catherine.util.Include
-local cat_includeDir = catherine.util.IncludeInDir
 local baseDir = "catherine/framework"
 
 DeriveGamemode( "sandbox" )
 
-catherine.Name = "Catherine"
-catherine.Desc = "A free role-playing framework for Garry's Mod."
-catherine.Author = "L7D"
+GM.Name = "Catherine"
+GM.Desc = "A free role-playing framework for Garry's Mod."
+GM.Author = "L7D"
+GM.Version = "2015/06/26"
+
+catherine.FolderName = GM.FolderName
 
 function catherine.Initialize( )
+	--[[ Load utilities ... ]]--
+	AddCSLuaFile( baseDir .. "/engine/utility.lua" )
+	include( baseDir .. "/engine/utility.lua" )
+	
 	--[[ Load framework configs ... ]]--
 	AddCSLuaFile( baseDir .. "/config/framework_config.lua" )
 	include( baseDir .. "/config/framework_config.lua" )
 	
-	--[[ Load utilities ... ]]--
-	AddCSLuaFile( "utility.lua" )
-	include( "utility.lua" )
-
-	--[[ Load external library files ... ]]--
-	cat_includeDir( "engine/external" )
-	
 	--[[ Load library files ... ]]--
-	cat_includeDir( "library" )
+	catherine.util.IncludeInDir( "library" )
 	
+	AddCSLuaFile( baseDir .. "/engine/schema.lua" )
+	include( baseDir .. "/engine/schema.lua" )
+	
+	--[[ Load engine files ... ]]--
+	if ( SERVER ) then
+		AddCSLuaFile( baseDir .. "/engine/client.lua" )
+		AddCSLuaFile( baseDir .. "/engine/shared.lua" )
+		include( baseDir .. "/engine/server.lua" )
+		include( baseDir .. "/engine/shared.lua" )
+		include( baseDir .. "/engine/crypto.lua" )
+		include( baseDir .. "/engine/data.lua" )
+		include( baseDir .. "/engine/database.lua" )
+	else
+		include( baseDir .. "/engine/client.lua" )
+		include( baseDir .. "/engine/shared.lua" )
+	end
+
 	--[[ Load derma(UI) files ... ]]--
-	cat_includeDir( "derma" )
-	
+	catherine.util.IncludeInDir( "derma" )
+
 	--[[ Load commands ... ]]--
 	AddCSLuaFile( baseDir .. "/command/commands.lua" )
 	include( baseDir .. "/command/commands.lua" )
 
-	--[[ Load engine files ... ]]--
 	if ( SERVER ) then
-		AddCSLuaFile( "shared.lua" )
-		AddCSLuaFile( "client.lua" )
-		include( "crypto.lua" )
-		include( "data.lua" )
-		include( "database.lua" )
-		include( "server.lua" )
-		include( "shared.lua" )
-	else
-		include( "client.lua" )
-		include( "shared.lua" )
-	end
-
-	AddCSLuaFile( "schema.lua" )
-	include( "schema.lua" )
-	
-	--[[ Connect to database ... ]]--
-	if ( !catherine.database.Connected ) then
-		catherine.database.Connect( )
+		--[[ Connect to database ... ]]--
+		if ( !catherine.database.Connected ) then
+			catherine.database.Connect( )
+		end
 	end
 	
 	--[[ Initalized. ]]--
