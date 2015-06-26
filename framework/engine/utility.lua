@@ -40,7 +40,7 @@ function catherine.util.Include( dir, typ )
 end
 
 function catherine.util.IncludeInDir( dir, prefix )
-	local dir2 = ( prefix or "catherine/gamemode/" ) .. dir .. "/*.lua"
+	local dir2 = ( prefix or "catherine/framework/" ) .. dir .. "/*.lua"
 
 	for k, v in pairs( file.Find( dir2, "LUA" ) ) do
 		catherine.util.Include( dir .. "/" .. v )

@@ -16,8 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.schema = catherine.schema or { }
-catherine.schema.loaded = catherine.schema.loaded or false
+catherine.schema = catherine.schema or { loaded = false }
 
 function catherine.schema.Initialization( )
 	Schema = Schema or {
@@ -39,8 +38,8 @@ function catherine.schema.Initialization( )
 	catherine.attribute.Include( schemaFolderName .. "/gamemode/schema" )
 	catherine.util.Include( "schema/sh_schema.lua" )
 	catherine.language.Include( schemaFolderName .. "/gamemode/schema" )
-	catherine.util.IncludeInDir( "schema/library", schemaFolderName .. "/gamemode/" )
-	catherine.util.IncludeInDir( "schema/derma", schemaFolderName .. "/gamemode/" )
+	catherine.util.IncludeInDir( "library", schemaFolderName .. "/gamemode/schema/" )
+	catherine.util.IncludeInDir( "derma", schemaFolderName .. "/gamemode/schema/" )
 	catherine.plugin.Include( schemaFolderName )
 	catherine.plugin.Include( catherine.FolderName )
 

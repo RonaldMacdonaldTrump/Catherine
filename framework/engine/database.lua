@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+if ( CLIENT ) then return end
+
 local CREATE_TABLES_USING_MYSQL = [[
 CREATE TABLE IF NOT EXISTS `catherine_characters` (
 	`_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -76,7 +78,7 @@ local DROP_TABLES = [[
 ]]
 
 catherine.database = catherine.database or { modules = { } }
-catherine.util.Include( "catherine/gamemode/config/sv_database.lua" )
+include( "catherine/framework/config/database_config.lua" )
 catherine.database.Connected = catherine.database.Connected or false
 catherine.database.ErrorMsg = catherine.database.ErrorMsg or "Server has not connected to Database."
 catherine.database.object = catherine.database.object or nil
@@ -246,10 +248,6 @@ function catherine.database.GetDatas( tab, cre, func )
 	end
 	
 	catherine.database.query( query, func )
-end
-
-if ( !catherine.database.Connected ) then
-	catherine.database.Connect( )
 end
 
 --[[

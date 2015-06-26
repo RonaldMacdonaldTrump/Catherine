@@ -48,7 +48,7 @@ function catherine.language.Merge( uniqueID, data )
 	end
 end
 
-catherine.language.Include( catherine.FolderName .. "/gamemode" )
+catherine.language.Include( catherine.FolderName .. "/framework" )
 
 local languageMasterTable = catherine.language.lists
 local Format = Format

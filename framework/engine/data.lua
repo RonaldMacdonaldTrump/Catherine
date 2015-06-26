@@ -18,16 +18,17 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.data = catherine.data or { buffer = { } }
 
-function catherine.data.GamemodeInitialized( )
+function catherine.data.FrameworkInitialized( )
 	file.CreateDir( "catherine" )
 	file.CreateDir( "catherine/globals" )
 end
 
 function catherine.data.SchemaInitialized( )
+	file.CreateDir( "catherine" )
 	file.CreateDir( "catherine/" .. catherine.schema.GetUniqueID( ) )
 end
 
-hook.Add( "GamemodeInitialized", "catherine.data.GamemodeInitialized", catherine.data.GamemodeInitialized )
+hook.Add( "FrameworkInitialized", "catherine.data.FrameworkInitialized", catherine.data.FrameworkInitialized )
 hook.Add( "SchemaInitialized", "catherine.data.SchemaInitialized", catherine.data.SchemaInitialized )
 
 function catherine.data.Set( key, value, ignoreMap, isGlobal )

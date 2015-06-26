@@ -164,7 +164,7 @@ function catherine.item.Include( dir )
 	end
 end
 
-catherine.item.Include( catherine.FolderName .. "/gamemode" )
+catherine.item.Include( catherine.FolderName .. "/framework" )
 
 if ( SERVER ) then
 	function catherine.item.Work( pl, uniqueID, funcID, ent_isMenu )

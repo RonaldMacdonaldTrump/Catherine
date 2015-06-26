@@ -19,7 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine = catherine or GM
 catherine.vgui = catherine.vgui or { }
 
-include( "shared.lua" )
+include( "catherine/framework/engine/client.lua" )
 
 timer.Remove( "HintSystem_Annoy1" )
 timer.Remove( "HintSystem_Annoy2" )
