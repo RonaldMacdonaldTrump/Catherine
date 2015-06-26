@@ -32,14 +32,14 @@ function catherine.schema.Initialization( )
 	
 	local schemaFolderName = Schema.FolderName
 	
-	catherine.faction.Include( schemaFolderName .. "/gamemode/schema" )
-	catherine.class.Include( schemaFolderName .. "/gamemode/schema" )
-	catherine.item.Include( schemaFolderName .. "/gamemode/schema" )
-	catherine.attribute.Include( schemaFolderName .. "/gamemode/schema" )
+	catherine.faction.Include( schemaFolderName .. "/schema" )
+	catherine.class.Include( schemaFolderName .. "/schema" )
+	catherine.item.Include( schemaFolderName .. "/schema" )
+	catherine.attribute.Include( schemaFolderName .. "/schema" )
 	catherine.util.Include( "schema/sh_schema.lua" )
-	catherine.language.Include( schemaFolderName .. "/gamemode/schema" )
-	catherine.util.IncludeInDir( "library", schemaFolderName .. "/gamemode/schema/" )
-	catherine.util.IncludeInDir( "derma", schemaFolderName .. "/gamemode/schema/" )
+	catherine.language.Include( schemaFolderName .. "/schema" )
+	catherine.util.IncludeInDir( "library", schemaFolderName .. "/schema/" )
+	catherine.util.IncludeInDir( "derma", schemaFolderName .. "/schema/" )
 	catherine.plugin.Include( schemaFolderName )
 	catherine.plugin.Include( catherine.FolderName )
 
