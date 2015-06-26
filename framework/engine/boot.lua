@@ -81,15 +81,17 @@ end
 
 catherine.Initialize( )
 
-catherine.util.AddResourceInFolder( "materials/CAT" )
-catherine.util.AddResourceInFolder( "sound/CAT" )
+if ( SERVER ) then
+	catherine.util.AddResourceInFolder( "materials/CAT" )
+	catherine.util.AddResourceInFolder( "sound/CAT" )
 
-if ( game.IsDedicated( ) ) then
-	concommand.Remove( "gm_save" )
-	
-	concommand.Add( "gm_save", function( pl )
-		if ( IsValid( pl ) ) then
-			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
-		end
-	end )
+	if ( game.IsDedicated( ) ) then
+		concommand.Remove( "gm_save" )
+		
+		concommand.Add( "gm_save", function( pl )
+			if ( IsValid( pl ) ) then
+				catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
+			end
+		end )
+	end
 end
