@@ -20,6 +20,7 @@ local PLUGIN = PLUGIN
 PLUGIN.name = "^Thirdperson_Plugin_Name"
 PLUGIN.author = "L7D"
 PLUGIN.desc = "^Thirdperson_Plugin_Desc"
+PLUGIN.enable = true
 
 catherine.language.Merge( "english", {
 	[ "Option_Str_Thirdperson_Name" ] = "Enable Third Person",
@@ -35,33 +36,45 @@ catherine.language.Merge( "korean", {
 	[ "Thirdperson_Plugin_Desc" ] = "3인칭으로 플레이 할 수 있게 합니다."
 } )
 
-if ( SERVER ) then return end
+if ( SERVER or !PLUGIN.enable ) then return end
 
 CAT_CONVAR_THIRDPERSON = CreateClientConVar( "cat_convar_thirdperson", "0", true, true )
 catherine.option.Register( "CONVAR_THIRD_PERSON", "cat_convar_thirdperson", "^Option_Str_Thirdperson_Name", "^Option_Str_Thirdperson_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
 
+local META = FindMetaTable( "Player" )
+
+function META:CanOverrideView( )
+	if (
+		IsValid( self ) and
+		!IsValid( catherine.vgui.character ) and
+		GetConVarString( "cat_convar_thirdperson" ) == "1" and
+		!IsValid( self:GetVehicle( ) ) and
+		!IsValid( Entity( self:GetNetVar( "ragdollIndex", 0 ) ) ) and
+		self:IsCharacterLoaded( ) and
+		!self:IsActioning( ) and
+		self:Alive( )
+	) then
+		return true
+	end
+end
+	
 function PLUGIN:CalcView( pl, pos, ang, fov )
-	if ( GetConVarString( "cat_convar_thirdperson" ) == "0" ) then return end
-	local tr = util.TraceLine( {
-		start = pos,
-		endpos = pos - ( ang:Forward( ) * 100 )
-	} )
-
-	local data = {
-		origin = tr.Fraction < 1 and ( tr.HitPos + tr.HitNormal * 5 ) or tr.HitPos,
-		angles = ang,
-		fov = fov
-	}
-
-	return {
-		origin = tr.Fraction < 1 and ( tr.HitPos + tr.HitNormal * 5 ) or tr.HitPos,
-		angles = ang,
-		fov = fov
-	}
+	if ( pl:CanOverrideView( ) and pl:GetViewEntity( ) == pl ) then
+		local tr = util.TraceLine( {
+			start = pos,
+			endpos = pos - ( ang:Forward( ) * 100 )
+		} )
+		
+		return {
+			origin = tr.Fraction < 1 and ( tr.HitPos + tr.HitNormal * 5 ) or tr.HitPos,
+			angles = ang,
+			fov = fov
+		}
+	end
 end
 
 function PLUGIN:ShouldDrawLocalPlayer( pl )
-	if ( GetConVarString( "cat_convar_thirdperson" ) == "1" ) then
-		return true
+	if ( pl:GetViewEntity( ) == pl and !IsValid( pl:GetVehicle( ) ) ) then
+		return pl:CanOverrideView( )
 	end
 end

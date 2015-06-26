@@ -98,9 +98,17 @@ function PLUGIN:CreateLeg( )
 	if ( IsValid( self.legEntity ) ) then
 		self.legEntity:Remove( )
 	end
+	
+	if ( !util.IsValidModel( LocalPlayer( ):GetModel( ) ) ) then
+		if ( IsValid( self.legEntity ) ) then
+			self.legEntity:Remove( )
+		end
+		
+		return
+	end
 
 	local legEnt = ClientsideModel( LocalPlayer( ):GetModel( ), 10 )
-	
+
 	if ( IsValid( legEnt ) ) then
 		for k, v in pairs( HIDDEN_BONES ) do
 			local index = legEnt:LookupBone( v )
@@ -121,10 +129,18 @@ end
 function PLUGIN:Think( )
 	local pl = LocalPlayer( )
 
-	if ( !IsValid( pl ) or GetConVarString( "cat_convar_legs" ) == "0" ) then
+	if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) or GetConVarString( "cat_convar_legs" ) == "0" ) then
 		return
 	end
 	
+	if ( !util.IsValidModel( pl:GetModel( ) ) ) then
+		if ( IsValid( self.legEntity ) ) then
+			self.legEntity:Remove( )
+		end
+		
+		return
+	end
+
 	local legEnt = self.legEntity
 	
 	if ( !IsValid( legEnt ) or ( IsValid( legEnt ) and legEnt:GetModel( ) != pl:GetModel( ) ) ) then
@@ -133,11 +149,10 @@ function PLUGIN:Think( )
 end
 
 function PLUGIN:PostDrawViewModel( )
-	local legEnt = self.legEntity
-	
-	if ( GetConVarString( "cat_convar_legs" ) == "1" and IsValid( legEnt ) ) then
+	if ( GetConVarString( "cat_convar_legs" ) == "1" and IsValid( self.legEntity ) ) then
+		local legEnt = self.legEntity
 		local pl = LocalPlayer( )
-		local rt = RealTime( )
+		local realTime = RealTime( )
 		local ang = pl:GetAngles( )
 
 		ang.p = 0
@@ -149,9 +164,9 @@ function PLUGIN:PostDrawViewModel( )
 		legEnt:SetPoseParameter( "move_yaw", 360 * pl:GetPoseParameter( "move_yaw" ) - 180 )
 		legEnt:SetPoseParameter( "move_x", pl:GetPoseParameter( "move_x" ) * 2 - 1 )
 		legEnt:SetPoseParameter( "move_y", pl:GetPoseParameter( "move_y" ) * 2 - 1 )
-		legEnt:FrameAdvance( rt - ( self.lastRT or rt ) )
+		legEnt:FrameAdvance( realTime - ( self.lastRT or realTime ) )
 		legEnt:DrawModel( )
 
-		self.lastRT = rt
+		self.lastRT = realTime
 	end
 end

@@ -16,10 +16,10 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine = catherine or GM
+catherine = catherine or { }
 catherine.vgui = catherine.vgui or { }
 
-include( "shared.lua" )
+include( "catherine/framework/engine/boot.lua" )
 
 timer.Remove( "HintSystem_Annoy1" )
 timer.Remove( "HintSystem_Annoy2" )

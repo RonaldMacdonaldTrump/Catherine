@@ -16,38 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine = catherine or GM
+catherine = catherine or { }
 
+AddCSLuaFile( "catherine/framework/engine/boot.lua" )
 AddCSLuaFile( "cl_init.lua" )
-AddCSLuaFile( "shared.lua" )
-include( "shared.lua" )
-
-local function schemaSettingFix( )
-	if ( GetConVarString( "gamemode" ):lower( ) == "catherine" ) then
-		catherine.util.Print( Color( 255, 255, 0 ), "WARNING! : Don't setting gamemode as Catherine, finding Schema gamemode ..." )
-		
-		local _, dirs = file.Find( "gamemodes/*", "GAME" )
-		
-		for k, v in pairs( gmDirs ) do
-			if ( !v:lower( ):find( "cat_" ) ) then continue end
-			
-			catherine.util.Print( Color( 0, 255, 0 ), "WARNING! : Don't setting gamemode as Catherine, change gamemode as '" .. v .. "'!" )
-			RunConsoleCommand( "gamemode", v )
-			RunConsoleCommand( "changelevel", game.GetMap( ) )
-		end
-	end
-end
-
-schemaSettingFix( )
-catherine.util.AddResourceInFolder( "materials/CAT" )
-catherine.util.AddResourceInFolder( "sound/CAT" )
-
-if ( game.IsDedicated( ) ) then
-	concommand.Remove( "gm_save" )
-	
-	concommand.Add( "gm_save", function( pl )
-		if ( IsValid( pl ) ) then
-			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
-		end
-	end )
-end
+include( "catherine/framework/engine/boot.lua" )
