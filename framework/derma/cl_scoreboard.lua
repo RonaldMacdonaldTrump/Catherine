@@ -23,7 +23,7 @@ function PANEL:Init( )
 
 	self.playerCount = 0
 	self.cantLook = hook.Run( "PlayerCantLookScoreboard", self.player )
-	
+
 	self:SetMenuSize( ScrW( ) * 0.65, ScrH( ) * 0.85 )
 	self:SetMenuName( LANG( "Scoreboard_UI_Title" ) )
 	
@@ -36,7 +36,7 @@ function PANEL:Init( )
 	self.Lists.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 		
-		if ( self.cantLook ) then
+		if ( self.cantLook == true ) then
 			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
 			draw.SimpleText( LANG( "Scoreboard_UI_CanNotLook_Str" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
@@ -77,7 +77,7 @@ function PANEL:SortPlayerLists( )
 end
 
 function PANEL:RefreshPlayerLists( )
-	if ( self.cantLook ) then return end
+	if ( self.cantLook == true ) then return end
 	local pl = self.player
 	
 	self.Lists:Clear( )
