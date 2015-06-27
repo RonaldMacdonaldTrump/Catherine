@@ -374,6 +374,7 @@ LANGUAGE.data = {
 	[ "Command_RestartLevel_Fin" ] = "%s(sc) after restart a server.",
 	[ "Command_ClearDecals_Fin" ] = "You have cleared all decals on the map.",
 	[ "Command_SetTimeHour_Fin" ] = "You have set the roleplay time to %s(hour).",
+	[ "Command_PrintBodyGroup_Fin" ] = "Printed target player Body groups on the Console.",
 	
 	[ "AntiHaX_KickMessage" ] = "Sorry, you have been kicked for using cheats.",
 	[ "AntiHaX_KickMessage_TimeOut" ] = "Sorry, you have been kicked because the anti-cheat timed out.",

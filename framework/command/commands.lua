@@ -634,3 +634,36 @@ catherine.command.Register( {
 		end
 	end
 } )
+
+catherine.command.Register( {
+	command = "printplayerbodygroups",
+	desc = "Print player body groups on the Console.",
+	syntax = "[Name]",
+	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			local target = catherine.util.FindPlayerByName( args[ 1 ] )
+			
+			if ( IsValid( target ) and target:IsPlayer( ) ) then
+				netstream.Start( pl, "catherine.command.printplayerbodygroups", target:GetBodyGroups( ) )
+				catherine.util.NotifyLang( pl, "Command_PrintBodyGroup_Fin" )
+			else
+				catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
+			end
+		else
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+		end
+	end
+} )
+
+if ( CLIENT ) then
+	netstream.Hook( "catherine.command.printplayerbodygroups", function( data )
+		PrintTable( data )
+		
+		if ( #data > 0 ) then
+			MsgC( Color( 255, 255, 0 ), "[CAT]This is target player Body groups, look at 'id' and 'name'.\n" )
+		else
+			MsgC( Color( 255, 255, 0 ), "[CAT]This player doesn't have any Body groups!\n" )
+		end
+	end )
+end

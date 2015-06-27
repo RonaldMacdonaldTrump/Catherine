@@ -119,7 +119,13 @@ end
 META.CATGetModel = META.CATGetModel or META.GetModel
 
 function META:GetModel( )
-	return self:GetNetVar( "fakeModel" ) or self:CATGetModel( )
+	local originalModel = self:CATGetModel( )
+	
+	if ( IsValid( self ) ) then
+		return self:GetNetVar( "fakeModel", originalModel )
+	end
+	
+	return originalModel
 end
 
 local META2 = FindMetaTable( "Weapon" )
