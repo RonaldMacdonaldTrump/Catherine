@@ -28,6 +28,7 @@ BASE.itemData = {
 BASE.isBodygroupCloth = true
 BASE.useDynamicItemData = false
 BASE.bodyGroup = 0
+BASE.bodyGroupSubModelIndex = 0
 BASE.func = { }
 BASE.func.wear = {
 	text = "^Item_FuncStr01_BodygroupClothing",
@@ -42,16 +43,16 @@ BASE.func.wear = {
 				catherine.item.Give( pl, itemTable.uniqueID )
 				ent:Remove( )
 			end
-		
+
 			if ( !bodygroups[ bodygroupID ] and pl:GetBodygroup( bodygroupID ) == 0 ) then
-				bodygroups[ bodygroupID ] = 1
+				bodygroups[ bodygroupID ] = itemTable.bodyGroupSubModelIndex
 				
-				pl:SetBodygroup( bodygroupID, 1 )
+				pl:SetBodygroup( bodygroupID, itemTable.bodyGroupSubModelIndex )
 				
 				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "wearing", true )
 				catherine.character.SetCharVar( pl, "bodygroups", bodygroups )
 			elseif ( bodygroups[ bodygroupID ] and pl:GetBodygroup( bodygroupID ) == 0 ) then
-				pl:SetBodygroup( bodygroupID, 1 )
+				pl:SetBodygroup( bodygroupID, itemTable.bodyGroupSubModelIndex )
 				
 				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "wearing", true )
 			else
@@ -75,7 +76,7 @@ BASE.func.takeoff = {
 		local bodygroupID = itemTable.bodyGroup
 		
 		if ( bodygroupID < pl:GetNumBodyGroups( ) ) then
-			if ( bodygroups[ bodygroupID ] and pl:GetBodygroup( bodygroupID ) == 1 ) then
+			if ( bodygroups[ bodygroupID ] and pl:GetBodygroup( bodygroupID ) == itemTable.bodyGroupSubModelIndex ) then
 				bodygroups[ bodygroupID ] = nil
 				
 				pl:SetBodygroup( bodygroupID, 0 )
@@ -115,7 +116,7 @@ function BASE:CanTakeOff( pl )
 	local bodygroups = catherine.character.GetCharVar( pl, "bodygroups", { } )
 	
 	if ( self.bodyGroup < pl:GetNumBodyGroups( ) ) then
-		if ( bodygroups[ self.bodyGroup ] and pl:GetBodygroup( self.bodyGroup ) == 1 ) then
+		if ( bodygroups[ self.bodyGroup ] and pl:GetBodygroup( self.bodyGroup ) == self.bodyGroupSubModelIndex ) then
 			return true
 		end
 	end
@@ -134,25 +135,25 @@ if ( SERVER ) then
 	end )
 
 	hook.Add( "OnItemDrop", "catherine.item.hooks.bodygroup_clothing_base.OnItemDrop", function( pl, itemTable )
-		if ( itemTable.isBodygroupCloth ) then
+		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
 	hook.Add( "OnItemStorageMove", "catherine.item.hooks.bodygroup_clothing_base.OnItemStorageMove", function( pl, itemTable )
-		if ( itemTable.isBodygroupCloth ) then
+		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
 	hook.Add( "OnItemVendorSold", "catherine.item.hooks.bodygroup_clothing_base.OnItemVendorSold", function( pl, itemTable )
-		if ( itemTable.isBodygroupCloth ) then
+		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
 	hook.Add( "OnItemForceTake", "catherine.item.hooks.bodygroup_clothing_base.OnItemForceTake", function( pl, itemTable )
-		if ( itemTable.isBodygroupCloth ) then
+		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
