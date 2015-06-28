@@ -123,15 +123,24 @@ function BASE:CanTakeOff( pl )
 end
 
 if ( SERVER ) then
-	hook.Add( "PlayerCharacterTodayFirstLoaded", "catherine.item.hooks.bodygroup_clothing_base.PlayerCharacterTodayFirstLoaded", function( pl )
+	hook.Add( "PlayerCharacterLoaded", "catherine.item.hooks.bodygroup_clothing_base.PlayerCharacterLoaded", function( pl )
 		timer.Simple( 1, function( )
 			for k, v in pairs( catherine.inventory.Get( pl ) ) do
 				local itemTable = catherine.item.FindByID( k )
-				if ( !itemTable.isBodygroupCloth or !catherine.inventory.GetItemData( pl, k, "wearing" ) ) then continue end
+				if ( !itemTable.isBodygroupCloth or pl:GetBodygroup( itemTable.bodyGroup ) == itemTable.bodyGroupSubModelIndex ) then continue end
 				
 				catherine.item.Work( pl, k, "wear" )
 			end
 		end )
+	end )
+	
+	hook.Add( "CharacterLoadingStart", "catherine.item.hooks.bodygroup_clothing_base.CharacterLoadingStart", function( pl )
+		for k, v in pairs( catherine.inventory.Get( pl ) ) do
+			local itemTable = catherine.item.FindByID( k )
+			if ( !itemTable.isBodygroupCloth or !catherine.inventory.GetItemData( pl, k, "wearing" ) ) then continue end
+			
+			pl:SetBodygroup( itemTable.bodyGroup, 0 )
+		end
 	end )
 
 	hook.Add( "OnItemDrop", "catherine.item.hooks.bodygroup_clothing_base.OnItemDrop", function( pl, itemTable )
