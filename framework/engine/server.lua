@@ -46,7 +46,7 @@ function GM:ShowTeam( pl )
 	data.filter = pl
 	local ent = util.TraceLine( data ).Entity
 	
-	if ( IsValid( ent ) and catherine.entity.IsDoor( ent ) and !catherine.door.IsDoorDisabled( ent ) ) then
+	if ( IsValid( ent ) and ent:IsDoor( ) and !catherine.door.IsDoorDisabled( ent ) ) then
 		local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
 		
 		if ( has ) then
@@ -293,7 +293,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 			local attacker = dmgInfo:GetAttacker( )
 			local amount = dmgInfo:GetDamage( )
 
-			if ( !attacker:IsPlayer( ) or attacker:GetClass( ) == "prop_ragdoll" or catherine.entity.IsDoor( attacker ) or amount < 5 ) then
+			if ( !attacker:IsPlayer( ) or attacker:GetClass( ) == "prop_ragdoll" or attacker:IsDoor( ) or amount < 5 ) then
 				return
 			end
 			
@@ -414,7 +414,7 @@ function GM:KeyPress( pl, key )
 		
 		if ( !IsValid( ent ) ) then return end
 
-		if ( catherine.entity.IsDoor( ent ) ) then
+		if ( ent:IsDoor( ) ) then
 			catherine.door.DoorSpamProtection( pl, ent )
 
 			hook.Run( "PlayerUse", pl, ent )
@@ -446,7 +446,7 @@ function GM:PlayerUse( pl, ent )
 		return false
 	end
 
-	local isDoor = catherine.entity.IsDoor( ent )
+	local isDoor = ent:IsDoor( )
 	
 	if ( isDoor ) then
 		local result = hook.Run( "PlayerCanUseDoor", pl, ent )

@@ -194,7 +194,7 @@ function SWEP:SecondaryAttack( )
 	local ent = util.TraceLine( data ).Entity
 	
 	if ( IsValid( ent ) ) then
-		if ( catherine.entity.IsDoor( ent ) ) then
+		if ( ent:IsDoor( ) ) then
 			self:EmitSound( "physics/wood/wood_crate_impact_hard2.wav", math.random( 50, 100 ) )
 		elseif ( !ent:IsPlayer( ) and !ent:IsNPC( ) and self:CanMoveable( ent ) ) then
 			local physObject = ent:GetPhysicsObject( )

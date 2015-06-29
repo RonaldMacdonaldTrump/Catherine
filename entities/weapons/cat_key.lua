@@ -53,7 +53,7 @@ function SWEP:PrimaryAttack( )
 	data.filter = pl
 	local ent = util.TraceLine( data ).Entity
 
-	if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) or ent.CAT_doorLocked ) then return end
+	if ( !IsValid( ent ) or !ent:IsDoor( ) or ent.CAT_doorLocked ) then return end
 	local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
 	
 	if ( !has or flag == 0 ) then return end
@@ -87,7 +87,7 @@ function SWEP:SecondaryAttack( )
 	data.filter = pl
 	local ent = util.TraceLine( data ).Entity
 	
-	if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) or !ent.CAT_doorLocked ) then return end
+	if ( !IsValid( ent ) or !ent:IsDoor( ) or !ent.CAT_doorLocked ) then return end
 	local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
 	
 	if ( !has or flag == 0 ) then return end

@@ -77,6 +77,8 @@ function catherine.faction.Include( dir )
 	end
 end
 
+catherine.faction.Include( catherine.FolderName .. "/framework" )
+
 if ( SERVER ) then
 	function catherine.faction.AddWhiteList( pl, id )
 		local factionTable = catherine.faction.FindByID( id )

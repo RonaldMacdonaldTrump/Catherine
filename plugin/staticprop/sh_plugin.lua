@@ -44,7 +44,7 @@ catherine.command.Register( {
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
 
 		if ( IsValid( ent ) ) then
-			if ( catherine.entity.IsProp( ent ) and !catherine.entity.IsDoor( ent ) ) then
+			if ( catherine.entity.IsProp( ent ) and !ent:IsDoor( ) ) then
 				local curStatus = ent:GetNetVar( "isStatic" )
 
 				ent:SetNetVar( "isStatic", !curStatus )

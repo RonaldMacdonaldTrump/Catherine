@@ -37,7 +37,7 @@ if ( SERVER ) then
 				return
 			end
 			
-			local permissions = ent.GetNetVar( ent, "permissions" )
+			local permissions = ent:GetNetVar( "permissions" )
 			
 			if ( !permissions ) then
 				catherine.util.NotifyLang( pl, "Door_Notify_NoOwner" )
@@ -80,7 +80,7 @@ if ( SERVER ) then
 			netstream.Start( pl, "catherine.door.DoorMenuRefresh" )
 			catherine.util.NotifyLang( pl, "Door_Notify_ChangePer" )
 		elseif ( workID == CAT_DOOR_CHANGE_DESC ) then
-			local permissions = ent.GetNetVar( ent, "permissions" )
+			local permissions = ent:GetNetVar( "permissions" )
 			
 			if ( !permissions ) then
 				catherine.util.NotifyLang( pl, "Door_Notify_NoOwner" )
@@ -94,7 +94,7 @@ if ( SERVER ) then
 				return
 			end
 			
-			if ( catherine.configs.doorDescMaxLen <= data.utf8len( data ) ) then
+			if ( catherine.configs.doorDescMaxLen <= data:utf8len( ) ) then
 				catherine.util.NotifyLang( pl, "Door_Notify_SetDescHitLimit" )
 				return
 			end
@@ -106,7 +106,7 @@ if ( SERVER ) then
 	
 	function catherine.door.Buy( pl, ent )
 		if ( !IsValid( pl ) ) then return end
-		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
+		if ( !IsValid( ent ) or !ent:IsDoor( ) ) then
 			return false, "Entity_Notify_NotDoor"
 		end
 		
@@ -114,11 +114,12 @@ if ( SERVER ) then
 			return false, "Door_Notify_CantBuyable"
 		end
 
-		if ( ent.GetNetVar( ent, "permissions" ) ) then
+		if ( ent:GetNetVar( "permissions" ) ) then
 			return false, "Door_Notify_AlreadySold"
 		end
 		
 		local cost = catherine.door.GetDoorCost( pl, ent )
+		
 		if ( !catherine.cash.Has( pl, cost ) ) then
 			return false, "Cash_Notify_HasNot"
 		end
@@ -138,7 +139,7 @@ if ( SERVER ) then
 	
 	function catherine.door.Sell( pl, ent )
 		if ( !IsValid( pl ) ) then return end
-		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
+		if ( !IsValid( ent ) or !ent:IsDoor( ) ) then
 			return false, "Entity_Notify_NotDoor"
 		end
 
@@ -155,7 +156,7 @@ if ( SERVER ) then
 	
 	function catherine.door.SetDoorTitle( pl, ent, title, force )
 		if ( !IsValid( pl ) or !title ) then return end
-		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
+		if ( !IsValid( ent ) or !ent:IsDoor( ) ) then
 			return false, "Entity_Notify_NotDoor"
 		end
 		
@@ -176,7 +177,7 @@ if ( SERVER ) then
 	
 	function catherine.door.SetDoorDescription( pl, ent, desc )
 		if ( !IsValid( pl ) or !desc ) then return end
-		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
+		if ( !IsValid( ent ) or !ent:IsDoor( ) ) then
 			return false, "Entity_Notify_NotDoor"
 		end
 		
@@ -186,12 +187,12 @@ if ( SERVER ) then
 	end
 	
 	function catherine.door.SetDoorStatus( pl, ent )
-		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
+		if ( !IsValid( ent ) or !ent:IsDoor( ) ) then
 			return false, "Entity_Notify_NotDoor"
 		end
 		
-		local curStatus = ent.GetNetVar( ent, "cantBuy", false )
-		local curOwner = ent.GetNetVar( ent, "permissions" )
+		local curStatus = ent:GetNetVar( "cantBuy", false )
+		local curOwner = ent:GetNetVar( "permissions" )
 		
 		if ( curStatus ) then
 			ent:SetNetVar( "cantBuy", false )
@@ -213,12 +214,12 @@ if ( SERVER ) then
 	end
 	
 	function catherine.door.SetDoorActive( pl, ent )
-		if ( !IsValid( ent ) or !catherine.entity.IsDoor( ent ) ) then
+		if ( !IsValid( ent ) or !ent:IsDoor( ) ) then
 			return false, "Entity_Notify_NotDoor"
 		end
 		
-		local curStatus = ent.GetNetVar( ent, "disabled" )
-		local curOwner = ent.GetNetVar( ent, "permissions" )
+		local curStatus = ent:GetNetVar( "disabled" )
+		local curOwner = ent:GetNetVar( "permissions" )
 		
 		if ( curStatus ) then
 			ent:SetNetVar( "disabled", nil )
@@ -287,7 +288,7 @@ if ( SERVER ) then
 		local data = { }
 		
 		for k, v in pairs( ents.GetAll( ) ) do
-			if ( !catherine.entity.IsDoor( v ) ) then continue end
+			if ( !v:IsDoor( ) ) then continue end
 			local title = v:GetNetVar( "title" )
 			local desc = v:GetNetVar( "forceDesc" )
 			local cantBuy = v:GetNetVar( "cantBuy", false )
@@ -295,10 +296,10 @@ if ( SERVER ) then
 			if ( !desc and !title and !cantBuy and !doorDisabled ) then continue end
 			
 			data[ #data + 1 ] = {
+				index = v:EntIndex( ),
 				title = title,
 				desc = desc,
 				cantBuy = cantBuy,
-				index = v:EntIndex( ),
 				doorDisabled = doorDisabled
 			}
 		end
@@ -309,7 +310,7 @@ if ( SERVER ) then
 	function catherine.door.DataLoad( )
 		for k, v in pairs( ents.GetAll( ) ) do
 			for k1, v1 in pairs( catherine.data.Get( "doors", { } ) ) do
-				if ( IsValid( v ) and catherine.entity.IsDoor( v ) and v:EntIndex(  ) == v1.index ) then
+				if ( IsValid( v ) and v:IsDoor( ) and v:EntIndex(  ) == v1.index ) then
 					if ( v1.doorDisabled ) then
 						v:SetNetVar( "disabled", true )
 						
@@ -387,11 +388,11 @@ else
 	--]]
 	
 	function catherine.door.CalcDoorTextPos( ent, rev )
-		local max = ent.OBBMaxs( ent )
-		local min = ent.OBBMins( ent )
+		local max = ent:OBBMaxs( )
+		local min = ent:OBBMins( )
 		
 		local data = { }
-		data.endpos = ent.LocalToWorld( ent, ent.OBBCenter( ent ) )
+		data.endpos = ent:LocalToWorld( ent:OBBCenter( ) )
 		data.filter = ents.FindInSphere( data.endpos, 23 )
 		
 		for k, v in pairs( data.filter ) do
@@ -413,27 +414,27 @@ else
 			w = size.y
 			
 			if ( rev ) then
-				data.start = data.endpos - ( ent.GetUp( ent ) * len )
+				data.start = data.endpos - ( ent:GetUp( ) * len )
 			else
-				data.start = data.endpos + ( ent.GetUp( ent ) * len )
+				data.start = data.endpos + ( ent:GetUp( ) * len )
 			end
 		elseif ( size.x < size.y ) then
 			len = size.x
 			w = size.y
 			
 			if ( rev ) then
-				data.start = data.endpos - ( ent.GetForward( ent ) * len )
+				data.start = data.endpos - ( ent:GetForward( ) * len )
 			else
-				data.start = data.endpos + ( ent.GetForward( ent ) * len )
+				data.start = data.endpos + ( ent:GetForward( ) * len )
 			end
 		elseif ( size.y < size.x ) then
 			len = size.y
 			w = size.x
 			
 			if ( rev ) then
-				data.start = data.endpos - ( ent.GetRight( ent ) * len )
+				data.start = data.endpos - ( ent:GetRight( ) * len )
 			else
-				data.start = data.endpos + ( ent.GetRight( ent ) * len )
+				data.start = data.endpos + ( ent:GetRight( ) * len )
 			end
 		end
 
@@ -443,15 +444,15 @@ else
 			return catherine.door.CalcDoorTextPos( ent, true )
 		end
 
-		local ang = tr.HitNormal.Angle( tr.HitNormal )
+		local ang = tr.HitNormal:Angle( )
 		local pos = tr.HitPos - ( ( ( data.endpos - tr.HitPos ):Length( ) * 2 ) + 2 ) * tr.HitNormal
-		local angBack = tr.HitNormal.Angle( tr.HitNormal )
+		local angBack = tr.HitNormal:Angle( )
 		local posBack = tr.HitPos + ( tr.HitNormal * 2 )
 		
-		ang:RotateAroundAxis( ang.Forward( ang ), 90 )
-		ang:RotateAroundAxis( ang.Right( ang ), 90 )
-		angBack:RotateAroundAxis( angBack.Forward( angBack ), 90 )
-		angBack:RotateAroundAxis( angBack.Right( angBack ), -90 )
+		ang:RotateAroundAxis( ang:Forward( ), 90 )
+		ang:RotateAroundAxis( ang:Right( ), 90 )
+		angBack:RotateAroundAxis( angBack:Forward( ), 90 )
+		angBack:RotateAroundAxis( angBack:Right( ), -90 )
 		
 		return {
 			pos = pos,
@@ -465,7 +466,7 @@ else
 end
 
 function catherine.door.IsDoorOwner( pl, ent, flag )
-	local permissions = ent.GetNetVar( ent, "permissions", { } )
+	local permissions = ent:GetNetVar( "permissions", { } )
 	local targetID = pl:GetCharacterID( )
 
 	if ( permissions[ targetID ] ) then
@@ -476,7 +477,7 @@ function catherine.door.IsDoorOwner( pl, ent, flag )
 end
 
 function catherine.door.IsHasDoorPermission( pl, ent )
-	local permissions = ent.GetNetVar( ent, "permissions", { } )
+	local permissions = ent:GetNetVar( "permissions", { } )
 	local targetID = pl:GetCharacterID( )
 	
 	if ( permissions[ targetID ] ) then
@@ -487,9 +488,9 @@ function catherine.door.IsHasDoorPermission( pl, ent )
 end
 
 function catherine.door.IsBuyableDoor( ent )
-	return !ent.GetNetVar( ent, "cantBuy", false )
+	return !ent:GetNetVar( "cantBuy", false )
 end
 
 function catherine.door.IsDoorDisabled( ent )
-	return ent.GetNetVar( ent, "disabled", false )
+	return ent:GetNetVar( "disabled", false )
 end
