@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+if ( !catherine.configs.enable_globalBan ) then return end
+
 catherine.globalban = catherine.globalban or { }
 
 if ( SERVER ) then
@@ -79,14 +81,4 @@ if ( SERVER ) then
 	hook.Add( "Think", "catherine.globalban.Think", catherine.globalban.Think )
 	hook.Add( "PlayerLoadFinished", "catherine.globalban.PlayerLoadFinished", catherine.globalban.PlayerLoadFinished )
 	hook.Add( "CheckPassword", "catherine.globalban.CheckPassword", catherine.globalban.CheckPassword )
-	
-	local tab = {
-		{
-			name = "gundalf",
-			steamID = "STEAM_0:0:72960848",
-			reason = "Bad RP User, Profanity."
-		}
-	}
-	
-	file.Write( "tt.txt", util.TableToJSON( tab )) 
 end

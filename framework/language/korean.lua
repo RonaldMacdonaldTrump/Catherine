@@ -349,6 +349,7 @@ LANGUAGE.data = {
 	
 	// Question
 	[ "Question_UIStr" ] = "질문",
+	[ "Question_KickMessage" ] = "답변중에 틀린 항목이 있습니다!",
 	
 	[ "Question_UI_Continue" ] = "진행하기",
 	[ "Question_UI_Disconnect" ] = "서버에서 나가기",

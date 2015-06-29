@@ -60,7 +60,9 @@ if ( SERVER ) then
 		
 		for k, v in pairs( answers ) do
 			if ( v != answerIndexes[ k ] ) then
-				pl:Kick( "Answer has a wrong!" )
+				local kickMessage = LANG( pl, "Question_KickMessage" )
+				
+				pl:Kick( kickMessage )
 				return
 			end
 		end
