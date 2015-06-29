@@ -16,6 +16,16 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+if ( game.IsDedicated( ) ) then
+	concommand.Remove( "gm_save" )
+	
+	concommand.Add( "gm_save", function( pl )
+		if ( IsValid( pl ) ) then
+			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
+		end
+	end )
+end
+
 function GM:ShowHelp( pl )
 	if ( !pl:IsCharacterLoaded( ) or catherine.character.GetCharVar( pl, "charBanned" ) ) then return end
 	local status = hook.Run( "CantLookF1", pl )

@@ -42,6 +42,7 @@ function catherine.Initialize( )
 	--[[ Load library files ... ]]--
 	catherine.util.IncludeInDir( "library" )
 	
+	--[[ Load schema file ... ]]--
 	AddCSLuaFile( baseDir .. "/engine/schema.lua" )
 	include( baseDir .. "/engine/schema.lua" )
 	
@@ -49,12 +50,16 @@ function catherine.Initialize( )
 	if ( SERVER ) then
 		AddCSLuaFile( baseDir .. "/engine/client.lua" )
 		AddCSLuaFile( baseDir .. "/engine/shared.lua" )
+		AddCSLuaFile( baseDir .. "/engine/character.lua" )
+		include( baseDir .. "/engine/character.lua" )
 		include( baseDir .. "/engine/server.lua" )
 		include( baseDir .. "/engine/shared.lua" )
 		include( baseDir .. "/engine/crypto.lua" )
 		include( baseDir .. "/engine/data.lua" )
 		include( baseDir .. "/engine/database.lua" )
+		include( baseDir .. "/engine/resource.lua" )
 	else
+		include( baseDir .. "/engine/character.lua" )
 		include( baseDir .. "/engine/client.lua" )
 		include( baseDir .. "/engine/shared.lua" )
 	end
@@ -80,18 +85,3 @@ function catherine.Initialize( )
 end
 
 catherine.Initialize( )
-
-if ( SERVER ) then
-	catherine.util.AddResourceInFolder( "materials/CAT" )
-	catherine.util.AddResourceInFolder( "sound/CAT" )
-
-	if ( game.IsDedicated( ) ) then
-		concommand.Remove( "gm_save" )
-		
-		concommand.Add( "gm_save", function( pl )
-			if ( IsValid( pl ) ) then
-				catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
-			end
-		end )
-	end
-end
