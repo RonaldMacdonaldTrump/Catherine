@@ -30,13 +30,13 @@ function catherine.entity.IsProp( ent )
 end
 
 function META:IsDoor( )
-	local class = ent:GetClass( )
+	local class = self:GetClass( )
 	
 	return class == "func_door" or class == "func_door_rotating" or class == "prop_door_rotating"
 end
 
 function META:IsProp( )
-	return ent:GetClass( ):find( "prop_" )
+	return self:GetClass( ):find( "prop_" )
 end
 
 if ( SERVER ) then
@@ -86,9 +86,12 @@ if ( SERVER ) then
 	end )
 else
 	netstream.Hook( "catherine.entity.CustomUseMenu", function( data )
+		local pl = LocalPlayer( )
 		local index = data
 		local ent = Entity( index )
 		local menu = DermaMenu( )
+
+		if ( pl:GetActiveWeapon( ):GetClass( ) == "weapon_physgun" and pl:KeyDown( IN_ATTACK ) ) then return end
 		
 		for k, v in pairs( IsValid( ent ) and ent:GetNetVar( "customUseClient" ) or { } ) do
 			menu:AddOption( catherine.util.StuffLanguage( v.text ), function( )
