@@ -16,11 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-if ( !catherine.character ) then
-	catherine.util.Include( "sh_character.lua" )
-end
-catherine.attribute = catherine.attribute or { }
-catherine.attribute.lists = catherine.attribute.lists or { }
+catherine.attribute = catherine.attribute or { lists = { } }
 
 function catherine.attribute.Register( attributeTable )
 	if ( !attributeTable or !attributeTable.index ) then
@@ -61,17 +57,24 @@ function catherine.attribute.Include( dir )
 	end
 end
 
+catherine.attribute.Include( catherine.FolderName .. "/framework" )
+
 if ( SERVER ) then
 	function catherine.attribute.SetProgress( pl, uniqueID, progress )
-		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		local attributeTable = catherine.attribute.FindByID( uniqueID )
+		
 		if ( !attributeTable ) then return end
 		
-		attribute[ uniqueID ] = attribute[ uniqueID ] or {
-			per = 0,
-			progress = attributeTable.default
-		}
-		attribute[ uniqueID ].progress = math.Clamp( progress, 0, attributeTable.max )
+		local attribute = catherine.character.GetVar( pl, "_att", { } )
+		
+		if ( attribute[ uniqueID ] ) then
+			attribute[ uniqueID ].progress = math.Clamp( progress, 0, attributeTable.max )
+		else
+			attribute[ uniqueID ] = {
+				per = 0,
+				progress = math.Clamp( progress, 0, attributeTable.max )
+			}
+		end
 		
 		catherine.character.SetVar( pl, "_att", attribute )
 		
@@ -81,33 +84,37 @@ if ( SERVER ) then
 	function catherine.attribute.AddProgress( pl, uniqueID, progress )
 		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		local attributeTable = catherine.attribute.FindByID( uniqueID )
+		
 		if ( !attributeTable or attribute[ uniqueID ].progress >= attributeTable.max ) then return end
 		
-		attribute[ uniqueID ] = attribute[ uniqueID ] or {
-			per = 0,
-			progress = attributeTable.default
-		}
-		attribute[ uniqueID ].progress = math.Clamp( attribute[ uniqueID ].progress + progress, 0, attributeTable.max )
-		
+		if ( attribute[ uniqueID ] ) then
+			attribute[ uniqueID ].progress = math.Clamp( attribute[ uniqueID ].progress + progress, 0, attributeTable.max )
+		else
+			attribute[ uniqueID ] = {
+				per = 0,
+				progress = attributeTable.default
+			}
+		end
+
 		catherine.character.SetVar( pl, "_att", attribute )
 		
 		hook.Run( "AttributeChanged", pl, uniqueID )
 	end
 	
 	function catherine.attribute.RemoveProgress( pl, uniqueID, progress )
-		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		local attributeTable = catherine.attribute.FindByID( uniqueID )
+		
 		if ( !attributeTable ) then return end
 		
-		attribute[ uniqueID ] = attribute[ uniqueID ] or {
-			per = 0,
-			progress = attributeTable.default
-		}
-		attribute[ uniqueID ].progress = math.Clamp( attribute[ uniqueID ].progress - progress, 0, attributeTable.max )
+		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		
-		catherine.character.SetVar( pl, "_att", attribute )
+		if ( attribute[ uniqueID ] ) then
+			attribute[ uniqueID ].progress = math.Clamp( attribute[ uniqueID ].progress - progress, 0, attributeTable.max )
+			
+			catherine.character.SetVar( pl, "_att", attribute )
 		
-		hook.Run( "AttributeChanged", pl, uniqueID )
+			hook.Run( "AttributeChanged", pl, uniqueID )
+		end
 	end
 
 	function catherine.attribute.GetProgress( pl, uniqueID )

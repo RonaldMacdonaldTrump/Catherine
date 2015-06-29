@@ -39,6 +39,10 @@ function catherine.Initialize( )
 	AddCSLuaFile( baseDir .. "/config/framework_config.lua" )
 	include( baseDir .. "/config/framework_config.lua" )
 	
+	--[[ Load character file ... ]]--
+	AddCSLuaFile( baseDir .. "/engine/character.lua" )
+	include( baseDir .. "/engine/character.lua" )
+	
 	--[[ Load library files ... ]]--
 	catherine.util.IncludeInDir( "library" )
 	
@@ -50,8 +54,6 @@ function catherine.Initialize( )
 	if ( SERVER ) then
 		AddCSLuaFile( baseDir .. "/engine/client.lua" )
 		AddCSLuaFile( baseDir .. "/engine/shared.lua" )
-		AddCSLuaFile( baseDir .. "/engine/character.lua" )
-		include( baseDir .. "/engine/character.lua" )
 		include( baseDir .. "/engine/server.lua" )
 		include( baseDir .. "/engine/shared.lua" )
 		include( baseDir .. "/engine/crypto.lua" )
@@ -59,7 +61,6 @@ function catherine.Initialize( )
 		include( baseDir .. "/engine/database.lua" )
 		include( baseDir .. "/engine/resource.lua" )
 	else
-		include( baseDir .. "/engine/character.lua" )
 		include( baseDir .. "/engine/client.lua" )
 		include( baseDir .. "/engine/shared.lua" )
 	end
