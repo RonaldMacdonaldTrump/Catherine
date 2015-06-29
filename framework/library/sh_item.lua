@@ -252,7 +252,7 @@ else
 		local pl = LocalPlayer( )
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local menu = DermaMenu( )
-		
+
 		for k, v in pairs( itemTable and itemTable.func or { } ) do
 			if ( !v.canShowIsMenu or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
 			
@@ -268,7 +268,9 @@ else
 		local pl = LocalPlayer( )
 		local ent = Entity( data[ 1 ] )
 		local uniqueID = data[ 2 ]
-		if ( !IsValid( ent ) or !IsValid( pl:GetEyeTrace( ).Entity ) ) then return end
+
+		if ( !IsValid( ent ) or !IsValid( pl:GetEyeTrace( ).Entity ) or pl:GetActiveWeapon( ) == "weapon_physgun" ) then return end
+		
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local menu = DermaMenu( )
 		

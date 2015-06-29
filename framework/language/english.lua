@@ -352,6 +352,7 @@ LANGUAGE.data = {
 	
 	// Question
 	[ "Question_UIStr" ] = "Question",
+	[ "Question_KickMessage" ] = "Answer has a wrong!",
 	
 	[ "Question_UI_Continue" ] = "Continue",
 	[ "Question_UI_Disconnect" ] = "Disconnect",

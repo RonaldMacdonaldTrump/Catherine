@@ -330,7 +330,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.ForceDoorOpen( ent, lifeTime, vel, ignorePartnerDoor )
-		if ( !catherine.entity.IsDoor( ent ) ) then
+		if ( !ent:IsDoor( ) ) then
 			return
 		end
 		

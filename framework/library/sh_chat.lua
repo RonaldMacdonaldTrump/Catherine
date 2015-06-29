@@ -347,10 +347,17 @@ if ( SERVER ) then
 			pl = pl
 		}
 		
-		chatInformation = hook.Run( "OnChatControl", chatInformation ) or chatInformation
-		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, classTable ) or "" ) .. chatInformation.text )
+		local chatOverride = hook.Run( "OnChatControl", chatInformation )
 		
-		hook.Run( "ChatPosted", chatInformation )
+		if ( chatOverride == false ) then
+			return
+		elseif ( chatOverride == nil ) then
+			chatOverride = chatInformation
+		end
+		
+		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, classTable ) or "" ) .. chatOverride.text )
+		
+		hook.Run( "ChatPosted", chatOverride )
 	end
 	
 	function catherine.chat.Send( pl, classTable, text, forceTarget, ... )
@@ -420,10 +427,17 @@ if ( SERVER ) then
 			target = target
 		}
 		
-		chatInformation = hook.Run( "OnChatControl", chatInformation ) or chatInformation
-		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, classTable ) or "" ) .. chatInformation.text, target, ... )
+		local chatOverride = hook.Run( "OnChatControl", chatInformation ) or chatInformation
+
+		if ( chatOverride == false ) then
+			return
+		elseif ( chatOverride == nil ) then
+			chatOverride = chatInformation
+		end
 		
-		hook.Run( "ChatPosted", chatInformation )
+		catherine.chat.Send( pl, classTable, ( hook.Run( "ChatPrefix", pl, classTable ) or "" ) .. chatOverride.text, target, ... )
+		
+		hook.Run( "ChatPosted", chatOverride )
 	end
 	
 	netstream.Hook( "catherine.chat.Run", function( pl, data )

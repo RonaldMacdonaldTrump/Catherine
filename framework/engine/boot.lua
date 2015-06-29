@@ -26,7 +26,7 @@ DeriveGamemode( "sandbox" )
 GM.Name = "Catherine"
 GM.Desc = "A free role-playing framework for Garry's Mod."
 GM.Author = "L7D"
-GM.Version = "2015/06/28"
+GM.Version = "2015/06/29"
 
 catherine.FolderName = GM.FolderName
 
@@ -39,9 +39,14 @@ function catherine.Initialize( )
 	AddCSLuaFile( baseDir .. "/config/framework_config.lua" )
 	include( baseDir .. "/config/framework_config.lua" )
 	
+	--[[ Load character file ... ]]--
+	AddCSLuaFile( baseDir .. "/engine/character.lua" )
+	include( baseDir .. "/engine/character.lua" )
+	
 	--[[ Load library files ... ]]--
 	catherine.util.IncludeInDir( "library" )
 	
+	--[[ Load schema file ... ]]--
 	AddCSLuaFile( baseDir .. "/engine/schema.lua" )
 	include( baseDir .. "/engine/schema.lua" )
 	
@@ -54,6 +59,7 @@ function catherine.Initialize( )
 		include( baseDir .. "/engine/crypto.lua" )
 		include( baseDir .. "/engine/data.lua" )
 		include( baseDir .. "/engine/database.lua" )
+		include( baseDir .. "/engine/resource.lua" )
 	else
 		include( baseDir .. "/engine/client.lua" )
 		include( baseDir .. "/engine/shared.lua" )
@@ -80,18 +86,3 @@ function catherine.Initialize( )
 end
 
 catherine.Initialize( )
-
-if ( SERVER ) then
-	catherine.util.AddResourceInFolder( "materials/CAT" )
-	catherine.util.AddResourceInFolder( "sound/CAT" )
-
-	if ( game.IsDedicated( ) ) then
-		concommand.Remove( "gm_save" )
-		
-		concommand.Add( "gm_save", function( pl )
-			if ( IsValid( pl ) ) then
-				catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
-			end
-		end )
-	end
-end
