@@ -30,11 +30,13 @@ function catherine.entity.IsProp( ent )
 end
 
 function META:IsDoor( )
-	return catherine.entity.IsDoor( self )
+	local class = ent:GetClass( )
+	
+	return class == "func_door" or class == "func_door_rotating" or class == "prop_door_rotating"
 end
 
 function META:IsProp( )
-	return catherine.entity.IsProp( self )
+	return ent:GetClass( ):find( "prop_" )
 end
 
 if ( SERVER ) then
