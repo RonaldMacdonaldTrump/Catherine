@@ -143,21 +143,38 @@ if ( SERVER ) then
 				tr.endpos = tr.start + pl:GetAimVector( ) * 60
 				tr.filter = pl
 				
-				target = util.TraceLine( tr ).Entity
+				local newTarget = util.TraceLine( tr ).Entity
 				
-				if ( !IsValid( target ) ) then return end
+				if ( !IsValid( target ) or !IsValid( newTarget ) or target != newTarget ) then return end
 				
-				if ( target:GetClass( ) == "prop_ragdoll" ) then
-					target = catherine.entity.GetPlayer( target )
+				if ( newTarget:GetClass( ) == "prop_ragdoll" ) then
+					newTarget = catherine.entity.GetPlayer( newTarget )
 				end
 				
-				if ( IsValid( target ) ) then
-					catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, {
-						uniqueID = "zip_tie"
-					} )
+				if ( IsValid( newTarget ) and newTarget:IsPlayer( ) ) then
+					if ( pl:IsTied( ) and !force ) then
+						catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
+						return
+					end
 				
-					target:SetWeaponRaised( false )
-					target:SetNetVar( "isTied", true )
+					if ( newTarget:IsTied( ) ) then
+						catherine.util.NotifyLang( pl, "Item_Notify01_ZT" )
+						return
+					end
+					
+					if ( !catherine.inventory.HasItem( pl, "zip_tie" ) ) then
+						catherine.util.NotifyLang( pl, "Item_Notify02_ZT" )
+						return
+					end
+					
+					if ( removeItem ) then
+						catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, {
+							uniqueID = "zip_tie"
+						} )
+					end
+				
+					newTarget:SetWeaponRaised( false )
+					newTarget:SetNetVar( "isTied", true )
 					
 					return true
 				end
@@ -179,16 +196,26 @@ if ( SERVER ) then
 				tr.endpos = tr.start + pl:GetAimVector( ) * 60
 				tr.filter = pl
 				
-				target = util.TraceLine( tr ).Entity
+				local newTarget = util.TraceLine( tr ).Entity
 				
-				if ( !IsValid( target ) ) then return end
-				
-				if ( target:GetClass( ) == "prop_ragdoll" ) then
-					target = catherine.entity.GetPlayer( target )
+				if ( !IsValid( target ) or !IsValid( newTarget ) or target != newTarget ) then return end
+
+				if ( newTarget:GetClass( ) == "prop_ragdoll" ) then
+					newTarget = catherine.entity.GetPlayer( newTarget )
 				end
 		
-				if ( IsValid( target ) ) then
-					target:SetNetVar( "isTied", false )
+				if ( IsValid( newTarget ) and newTarget:IsPlayer( ) ) then
+					if ( pl:IsTied( ) and !force ) then
+						catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
+						return
+					end
+					
+					if ( !newTarget:IsTied( ) ) then
+						catherine.util.NotifyLang( pl, "Item_Notify04_ZT" )
+						return
+					end
+				
+					newTarget:SetNetVar( "isTied", false )
 					
 					return true
 				end
