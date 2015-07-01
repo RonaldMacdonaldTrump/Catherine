@@ -23,21 +23,54 @@ local velo = FindMetaTable( "Entity" ).GetVelocity
 local twoD = FindMetaTable( "Vector" ).Length2D
 
 if ( SERVER ) then
+	local functions = {
+		{ libName = "player", funcName = "PlayerInformationUpdate" },
+		{ libName = "net", funcName = "SendAllNetworkRegistries" },
+		{ libName = "character", funcName = "SendAllNetworkRegistries" },
+		{ libName = "environment", funcName = "SendAllEnvironmentConfig" },
+		{ libName = "character", funcName = "SendPlayerCharacterList" },
+		{ libName = "catData", funcName = "SendAllNetworkRegistries" }
+	}
+			
 	function catherine.player.Initialize( pl, func )
 		if ( !IsValid( pl ) ) then return end
 		
 		local function Initializing( )
 			if ( !IsValid( pl ) ) then return end
+			
+			if ( !Schema ) then
+				netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_NoSchema" ) )
+				return
+			end
+
+			if ( !catherine.database.Connected ) then
+				netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_NoDatabase", catherine.database.ErrorMsg ) )
+				return
+			end
+			
 			--[[ Initializing a Catherine ... :> ]]--
 			
-			catherine.net.ScanErrorInNetworkRegistry( ) // Need this.
+			catherine.net.ScanErrorInNetworkRegistry( )
+
+			for i = 1, #functions do
+				local libName, funcName = functions[ i ].libName, functions[ i ].funcName
+				local success, result = pcall( catherine[ libName ][ funcName ], pl )
+				
+				if ( !success ) then
+					netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_LibraryLoad", "catherine." .. libName .. "." .. funcName ) )
+					MsgC( Color( 255, 0, 0 ), "[CAT ERROR] Failed to initialize Catherine ( Player : " .. pl:Name( ) .. "/" .. pl:SteamID( ) .. " ) ( Function : catherine." .. libName .. "." .. funcName .. " )\n" .. result .. "\n" )
+					return
+				end
+			end
 			
+			--[[
 			catherine.player.PlayerInformationUpdate( pl )
 			catherine.net.SendAllNetworkRegistries( pl ) // Send ALL entity, player network registries.
 			catherine.character.SendAllNetworkRegistries( pl ) // Send ALL character network registries.
 			catherine.environment.SendAllEnvironmentConfig( pl ) // Send ALL enviroment configs.
 			catherine.character.SendPlayerCharacterList( pl )
 			catherine.catData.SendAllNetworkRegistries( pl ) // Send ALL CAT DATA network registries.
+			]]--
 			
 			if ( !catherine.catData.GetVar( pl, "language" ) ) then
 				catherine.player.UpdateLanguageSetting( pl )

@@ -80,7 +80,7 @@ local DROP_TABLES = [[
 catherine.database = catherine.database or { modules = { } }
 include( "catherine/framework/config/database_config.lua" )
 catherine.database.Connected = catherine.database.Connected or false
-catherine.database.ErrorMsg = catherine.database.ErrorMsg or "Server has not connected to Database."
+catherine.database.ErrorMsg = catherine.database.ErrorMsg or "Connection Error"
 catherine.database.object = catherine.database.object or nil
 catherine.database.modules[ "mysqloo" ] = {
 	connect = function( func )

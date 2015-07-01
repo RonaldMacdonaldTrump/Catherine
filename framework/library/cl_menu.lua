@@ -16,7 +16,11 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.menu = catherine.menu or { activeButtonData = { }, activePanel = nil, activePanelName = nil }
+catherine.menu = catherine.menu or {
+	activeButtonData = { },
+	activePanel = nil,
+	activePanelName = nil
+}
 catherine.menu.lists = { }
 CAT_MENU_STATUS_SAMEMENU = 1
 CAT_MENU_STATUS_SAMEMENU_NO = 2

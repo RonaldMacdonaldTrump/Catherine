@@ -29,15 +29,16 @@ end
 function GM:ShowHelp( pl )
 	if ( !pl:IsCharacterLoaded( ) or catherine.character.GetCharVar( pl, "charBanned" ) ) then return end
 	local status = hook.Run( "CantLookF1", pl )
-	
-	if ( !status ) then
-		netstream.Start( pl, "catherine.ShowHelp" )
-	end
+
+	if ( status ) then return end
+
+	netstream.Start( pl, "catherine.ShowHelp" )
 end
 
 function GM:ShowTeam( pl )
 	if ( !pl:IsCharacterLoaded( ) or catherine.character.GetCharVar( pl, "charBanned" ) ) then return end
 	local status = hook.Run( "CantLookF2", pl )
+
 	if ( status ) then return end
 
 	local data = { }
@@ -58,6 +59,7 @@ function GM:ShowTeam( pl )
 			} )
 		else
 			local isBuyable = catherine.door.IsBuyableDoor( ent )
+			
 			if ( !isBuyable ) then return end
 			
 			catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )
@@ -82,6 +84,7 @@ function GM:CharacterVarChanged( pl, key, value )
 		pl:SetModel( value )
 		pl:SetupHands( )
 		catherine.character.SetCharVar( pl, "originalModel", value )
+		hook.Run( "CharacterModelChanged", pl, value )
 	end
 end
 
@@ -146,6 +149,16 @@ function GM:PlayerSpawn( pl )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	pl:SetNetVar( "isTied", false )
 	pl:SetCanZoom( false )
+	pl:RemoveAllDecals( )
+	pl:Extinguish( )
+	pl:SetupHands( )
+	pl:CrosshairDisable( )
+	pl:SetMaterial( "" )
+	pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
+	
+	if ( pl:FlashlightIsOn( ) ) then
+		pl:Flashlight( false )
+	end
 
 	catherine.limb.HealBody( pl, 100 )
 
@@ -208,26 +221,32 @@ function GM:PlayerInfoTable( pl, infoTable )
 	local defJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
 	local defRunSpeed = catherine.player.GetPlayerDefaultRunSpeed( pl )
 
-	if ( ( leftLegLimbDmg and leftLegLimbDmg != 0 ) or ( rightLegLimbDmg and rightLegLimbDmg != 0 ) ) then
-		local per = ( math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ) * defJumpPower / defJumpPower
-		local per2 = ( math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ) * defRunSpeed / defRunSpeed
-
+	if ( pl.CAT_bulletHurtSpeedDown ) then
 		return {
-			jumpPower = defJumpPower * per,
-			runSpeed = math.max( defRunSpeed * per2, walkSpeed )
+			runSpeed = walkSpeed
 		}
 	else
-		return {
-			jumpPower = defJumpPower,
-			runSpeed = defRunSpeed
-		}
+		if ( ( leftLegLimbDmg and leftLegLimbDmg != 0 ) or ( rightLegLimbDmg and rightLegLimbDmg != 0 ) ) then
+			local per = ( math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ) * defJumpPower / defJumpPower
+			local per2 = ( math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ) * defRunSpeed / defRunSpeed
+
+			return {
+				jumpPower = defJumpPower * per,
+				runSpeed = math.max( defRunSpeed * per2, walkSpeed )
+			}
+		else
+			return {
+				jumpPower = defJumpPower,
+				runSpeed = defRunSpeed
+			}
+		end
 	end
 end
 
 function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
 	if ( !pl:IsPlayer( ) ) then return end
 	
-	if ( !pl.CAT_ignoreScreenColor ) then
+	if ( !catherine.player.GetIgnoreScreenColor( pl ) ) then
 		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 		
 		if ( hitGroup == CAT_BODY_ID_HEAD ) then
@@ -300,7 +319,6 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 			if ( amount >= 20 or dmgInfo:IsBulletDamage( ) ) then
 				catherine.player.SetIgnoreHurtSound( pl, true )
 
-				// Uh....
 				pl:TakeDamage( amount, attacker, inflictor )
 				
 				catherine.effect.Create( "BLOOD", {
@@ -369,15 +387,15 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 	end
 	
 	if ( ent:IsPlayer( ) and dmgInfo:IsBulletDamage( ) ) then
-		local steamID = ent:SteamID( )
+		local timerID = "Catherine.timer.RunSpamProtection_" .. ent:SteamID( )
 		
-		ent:SetRunSpeed( ent:GetWalkSpeed( ) )
+		ent.CAT_bulletHurtSpeedDown = true
 
-		timer.Remove( "Catherine.timer.RunSpamProtection_" .. steamID )
-		timer.Create( "Catherine.timer.RunSpamProtection_" .. steamID, 2, 1, function( )
-			if ( !IsValid( ent ) ) then return end
-			
-			ent:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( ent ) )
+		timer.Remove( timerID )
+		timer.Create( timerID, math.random( 1, 4 ), 1, function( )
+			if ( IsValid( ent ) ) then
+				ent.CAT_bulletHurtSpeedDown = nil
+			end
 		end )
 	end
 end
@@ -440,7 +458,7 @@ function GM:PlayerUse( pl, ent )
 	if ( pl:IsTied( ) ) then
 		if ( ( pl.CAT_tiedMSG or 0 ) <= CurTime( ) ) then
 			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
-			pl.CAT_tiedMSG = CurTime( ) + 5
+			pl.CAT_tiedMSG = CurTime( ) + 3
 		end
 		
 		return false
@@ -533,7 +551,9 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 		catherine.limb.TakeDamage( pl, hitGroup, dmgInfo:GetDamage( ) )
 	end
 
-	if ( !catherine.player.GetIgnoreHurtSound( pl ) ) then
+	if ( !catherine.player.GetIgnoreHurtSound( pl ) and ( pl.CAT_nextHurtDelay or 0 ) <= CurTime( ) ) then
+		pl.CAT_nextHurtDelay = CurTime( ) + 2
+		
 		local sound = hook.Run( "GetPlayerPainSound", pl )
 		local gender = pl:GetGender( )
 	
