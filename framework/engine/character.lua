@@ -188,14 +188,14 @@ if ( SERVER ) then
 			return false, "^Character_Notify_CantSwitchUsing"
 		end
 		
-		if ( !prevID ) then
-			pl:GodDisable( )
-		end
-		
 		if ( character._charVar and character._charVar[ "charBanned" ] ) then
 			return false, "^Character_Notify_CharBanned"
 		end
 		
+		if ( !prevID ) then
+			pl:GodDisable( )
+		end
+
 		local factionTable = catherine.faction.FindByID( character._faction )
 
 		if ( !factionTable ) then
