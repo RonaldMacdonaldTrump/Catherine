@@ -19,6 +19,9 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.intro = catherine.intro or {
 	status = true,
 	loading = true,
+	noError = true,
+	errorMessage = nil,
+	loadingColor = Color( 90, 90, 90 ),
 	backAlpha = 255,
 	loadingAlpha = 0,
 	rotate = 0,
@@ -155,10 +158,18 @@ function GM:HUDDrawScoreBoard( )
 		catherine.intro.backAlpha = Lerp( 0.03, catherine.intro.backAlpha, 0 )
 	end
 
-	if ( catherine.intro.loading ) then
-		catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 255 )
+	if ( catherine.intro.noError ) then
+		if ( catherine.intro.loading ) then
+			catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 255 )
+		else
+			catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 0 )
+		end
 	else
-		catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 0 )
+		catherine.intro.backAlpha = 255
+		catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 255 )
+		catherine.intro.loadingColor.r = Lerp( 0.05, catherine.intro.loadingColor.r, 255 )
+		catherine.intro.loadingColor.g = Lerp( 0.05, catherine.intro.loadingColor.g, 0 )
+		catherine.intro.loadingColor.b = Lerp( 0.05, catherine.intro.loadingColor.b, 0 )
 	end
 	
 	// Intro codes
@@ -219,7 +230,7 @@ function GM:HUDDrawScoreBoard( )
 						catherine.intro.introDone = true
 						catherine.intro.status = false
 						
-						if ( !catherine.intro.loading and catherine.intro.introDone ) then
+						if ( !catherine.intro.loading and catherine.intro.noError and catherine.intro.introDone ) then
 							if ( catherine.question.CanQuestion( ) ) then
 								catherine.question.Start( )
 							else
@@ -240,7 +251,7 @@ function GM:HUDDrawScoreBoard( )
 		catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 4, 4 )
 		
 		draw.NoTexture( )
-		surface.SetDrawColor( 90, 90, 90, catherine.intro.loadingAlpha )
+		surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
 		catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 250, 100 )
 	end
 
@@ -256,6 +267,12 @@ function GM:HUDDrawScoreBoard( )
 
 	// Catherine version
 	draw.SimpleText( LANG( "Version_UI_YourVer_AV", self.Version ), "catherine_normal15", scrW - 20, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_RIGHT, 1 )
+	
+	// Error message
+	if ( !catherine.intro.noError and catherine.intro.errorMessage ) then
+		draw.SimpleText( LANG( "Basic_IDK" ), "catherine_normal35", 60, scrH - 35, Color( 0, 0, 0, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( catherine.intro.errorMessage, "catherine_normal20", 60, scrH - 15, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
+	end
 	
 	// Whitescreen
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, introBooA ) )
@@ -660,4 +677,12 @@ end )
 
 netstream.Hook( "catherine.loadingFinished", function( )
 	catherine.intro.loading = false
+end )
+
+netstream.Hook( "catherine.loadingError", function( data )
+	catherine.intro.loading = false
+	catherine.intro.noError = false
+	catherine.intro.errorMessage = data
+	
+	MsgC( Color( 255, 0, 0 ), "[CAT ERROR] " .. data .. "\n" )
 end )

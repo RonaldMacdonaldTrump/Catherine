@@ -246,7 +246,7 @@ end
 function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
 	if ( !pl:IsPlayer( ) ) then return end
 	
-	if ( !pl.CAT_ignoreScreenColor ) then
+	if ( !catherine.player.GetIgnoreScreenColor( pl ) ) then
 		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 		
 		if ( hitGroup == CAT_BODY_ID_HEAD ) then
@@ -319,7 +319,6 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 			if ( amount >= 20 or dmgInfo:IsBulletDamage( ) ) then
 				catherine.player.SetIgnoreHurtSound( pl, true )
 
-				// Uh....
 				pl:TakeDamage( amount, attacker, inflictor )
 				
 				catherine.effect.Create( "BLOOD", {

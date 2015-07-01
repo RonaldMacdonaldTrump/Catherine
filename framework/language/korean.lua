@@ -364,6 +364,10 @@ LANGUAGE.data = {
 	[ "Basic_UI_YES" ] = "네",
 	[ "Basic_UI_NO" ] = "아니오",
 	[ "Basic_UI_Count" ] = "%s개",
+	[ "Basic_IDK" ] = "...?",
+	[ "Basic_Error_NoSchema" ] = "스키마(Schema) 게임모드를 초기화 하는데에 실패했습니다. (CAT_ERR 0x1)",
+	[ "Basic_Error_NoDatabase" ] = "데이터베이스에 연결되어 있지 않습니다. (CAT_ERR 0x2) : %s",
+	[ "Basic_Error_LibraryLoad" ] = "라이브러리를 불러오는 중 오류가 발생했습니다. (CAT_ERR 0x3) ( 함수 : %s )",
 	[ "Basic_Framework_Author" ] = "%s 에 의해 개발 및 디자인.",
 	[ "Basic_Notify_BunnyHop" ] = "버니합을 하지 마십시오!",
 	
