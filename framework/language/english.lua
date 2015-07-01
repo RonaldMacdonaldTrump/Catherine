@@ -368,6 +368,7 @@ LANGUAGE.data = {
 	[ "Basic_UI_NO" ] = "NO",
 	[ "Basic_UI_Count" ] = "%s's",
 	[ "Basic_IDK" ] = "...?",
+	[ "Basic_Sorry" ] = "SORRY ...",
 	[ "Basic_Error_NoSchema" ] = "Failed to initialize Schema gamemode. (CAT_ERR 0x1)",
 	[ "Basic_Error_NoDatabase" ] = "Catherine has not connected to Database. (CAT_ERR 0x2) : %s",
 	[ "Basic_Error_LibraryLoad" ] = "Failed to load Library. (CAT_ERR 0x3) ( Function : %s )",

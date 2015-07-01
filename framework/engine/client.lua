@@ -248,11 +248,17 @@ function GM:HUDDrawScoreBoard( )
 
 	if ( catherine.intro.loadingAlpha > 0 ) then
 		// Loading circle
-		catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 4, 4 )
-		
-		draw.NoTexture( )
-		surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
-		catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 250, 100 )
+		if ( catherine.intro.noError ) then
+			catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 4, 4 )
+			
+			draw.NoTexture( )
+			surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
+			catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 250, 100 )
+		else
+			draw.NoTexture( )
+			surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
+			catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 360, 100 )
+		end
 	end
 
 	// Framework logo
@@ -270,8 +276,8 @@ function GM:HUDDrawScoreBoard( )
 	
 	// Error message
 	if ( !catherine.intro.noError and catherine.intro.errorMessage ) then
-		draw.SimpleText( LANG( "Basic_IDK" ), "catherine_normal35", 60, scrH - 35, Color( 0, 0, 0, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
-		draw.SimpleText( catherine.intro.errorMessage, "catherine_normal20", 60, scrH - 15, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( LANG( "Basic_Sorry" ), "catherine_normal25", 85, scrH - 55, Color( 0, 0, 0, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( catherine.intro.errorMessage, "catherine_normal15", 85, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
 	end
 	
 	// Whitescreen
