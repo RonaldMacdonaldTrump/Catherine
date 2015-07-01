@@ -570,7 +570,6 @@ end
 
 function PANEL:PrintErrorMessage( msg )
 	Derma_Message( msg, LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
-	surface.PlaySound( "buttons/button2.wav" )
 end
 
 function PANEL:GetFactionList( )
@@ -761,7 +760,6 @@ end
 
 function PANEL:PrintErrorMessage( msg )
 	Derma_Message( msg, LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
-	surface.PlaySound( "buttons/button2.wav" )
 end
 
 function PANEL:Paint( w, h )
