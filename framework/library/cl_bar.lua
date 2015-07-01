@@ -93,7 +93,7 @@ function catherine.bar.Draw( )
 		v.w = math.Approach( v.w, barW * per, 1 )
 		v.y = Lerp( 0.09, v.y, -barH + i * barH * 2 )
 		
-		if ( v.a > 0 ) then
+		if ( math.Round( v.a ) > 0 ) then
 			local col = v.col
 			
 			draw.RoundedBox( 0, 5, v.y, barW, barH, Color( 255, 255, 255, v.a / 1.5 ) )

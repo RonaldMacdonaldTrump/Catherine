@@ -47,6 +47,7 @@ end
 
 function catherine.option.Set( uniqueID, val )
 	local optionTable = catherine.option.FindByID( uniqueID )
+	
 	if ( !optionTable or !optionTable.onSet ) then return end
 	
 	optionTable.onSet( optionTable.conVar, val )
@@ -54,6 +55,7 @@ end
 
 function catherine.option.Toggle( uniqueID )
 	local optionTable = catherine.option.FindByID( uniqueID )
+	
 	if ( !optionTable or optionTable.typ != CAT_OPTION_SWITCH or !optionTable.conVar ) then return end
 	
 	RunConsoleCommand( optionTable.conVar, tostring( tobool( GetConVarString( optionTable.conVar ) ) == true and 0 or 1 ) )
@@ -61,7 +63,8 @@ end
 
 function catherine.option.Get( uniqueID )
 	local optionTable = catherine.option.FindByID( uniqueID )
-	if ( !optionTable ) then return nil end
+	
+	if ( !optionTable ) then return end
 	
 	return optionTable.onGet and optionTable.onGet( optionTable ) or GetConVarString( optionTable.conVar )
 end
