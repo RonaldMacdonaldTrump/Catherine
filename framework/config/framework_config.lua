@@ -20,7 +20,7 @@ catherine.configs = catherine.configs or { }
 catherine.configs.buildVer = "BETA"
 
 catherine.configs.OWNER = "" 
-catherine.configs.defaultLanguage = "english"
+catherine.configs.defaultLanguage = "english" --[[ Setting a default Language (english, korean). ]]--
 
 catherine.configs.doorCost = 50
 catherine.configs.doorSellCost = 25
@@ -28,7 +28,6 @@ catherine.configs.playerDefaultRunSpeed = 275
 catherine.configs.playerDefaultWalkSpeed = 90
 catherine.configs.playerDefaultJumpPower = 120
 catherine.configs.defaultCash = 0
-catherine.configs.cashName = "Dollars"
 catherine.configs.cashModel = "models/props_lab/box01a.mdl"
 catherine.configs.characterMenuMusic = "music/hl2_song19.mp3"
 catherine.configs.baseInventoryWeight = 10
@@ -72,7 +71,7 @@ if ( SERVER ) then
 	catherine.configs.voice3D = true
 	catherine.configs.giveHand = true
 	catherine.configs.giveKey = true
-	catherine.configs.spawnTime = 60 --[[ Setting a Spawn time. ]]--
+	catherine.configs.spawnTime = 5 --[[ Setting a Spawn time. ]]--
 	catherine.configs.clearMap = true
 	catherine.configs.doorBreach = true
 	

@@ -32,6 +32,7 @@ BASE.bodyGroupSubModelIndex = 0
 BASE.func = { }
 BASE.func.wear = {
 	text = "^Item_FuncStr01_BodygroupClothing",
+	icon = "icon16/asterisk_orange.png",
 	canShowIsWorld = true,
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
@@ -70,6 +71,7 @@ BASE.func.wear = {
 }
 BASE.func.takeoff = {
 	text = "^Item_FuncStr02_BodygroupClothing",
+	icon = "icon16/asterisk_yellow.png",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
 		local bodygroups = catherine.character.GetCharVar( pl, "bodygroups", { } )

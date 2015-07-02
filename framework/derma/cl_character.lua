@@ -223,6 +223,7 @@ function PANEL:UseCharacterPanel( )
 	self.loadCharacter = { Lists = { }, curr = 1 }
 
 	local baseW, baseH, errMsg = 300, self.h * 0.85, nil
+	
 	for k, v in pairs( catherine.character.localCharacters ) do
 		self.loadCharacter.Lists[ #self.loadCharacter.Lists + 1 ] = { characterDatas = v, panel = nil }
 	end
@@ -262,7 +263,9 @@ function PANEL:UseCharacterPanel( )
 	for k, v in pairs( self.loadCharacter.Lists ) do
 		local factionData = catherine.faction.FindByID( v.characterDatas._faction )
 		if ( !factionData ) then return end
+		
 		local factionName = catherine.util.StuffLanguage( factionData.name )
+		local overrideModel = hook.Run( "GetCharacterPanelLoadModel", v.characterDatas )
 		
 		v.panel = vgui.Create( "DPanel", self.CharacterPanel )
 		v.panel:SetSize( baseW, baseH )
@@ -322,7 +325,7 @@ function PANEL:UseCharacterPanel( )
 		v.panel.model:SetSize( v.panel:GetWide( ) / 1.5, v.panel:GetTall( ) / 1.5 )
 		v.panel.model:SetPos( v.panel:GetWide( ) / 2 - v.panel.model:GetWide( ) / 2, 60 )
 		v.panel.model:MoveToBack( )
-		v.panel.model:SetModel( v.characterDatas._model )
+		v.panel.model:SetModel( overrideModel )
 		v.panel.model:SetDrawBackground( false )
 		v.panel.model:SetDisabled( true )
 		v.panel.model:SetFOV( 30 )

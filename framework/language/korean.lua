@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+local cashName = catherine.cash.GetOnlyName( )
+
 local LANGUAGE = catherine.language.New( "korean" )
 LANGUAGE.name = "Korean (한국어)"
 LANGUAGE.data = {
@@ -25,6 +27,11 @@ LANGUAGE.data = {
 	[ "Class_UI_SalaryStr" ] = "한 시간에 %s",
 	[ "Class_UI_Unlimited" ] = "무제한",
 	[ "Class_UI_NoJoinable" ] = "당신이 가입할 수 있는 클래스가 없습니다.",
+	[ "Class_UI_CantJoinable" ] = "당신은 이 클래스에 가입 할 수 없습니다!",
+	[ "Class_UI_NotValid" ] = "클래스가 올바르지 않습니다!",
+	[ "Class_UI_TeamError" ] = "당신은 이 클래스에 가입할 수 없습니다!",
+	[ "Class_UI_AlreadyJoined" ] = "당신은 이미 이 클래스에 가입되어 있습니다!",
+	[ "Class_UI_HitLimit" ] = "이 클래스는 인원 제한에 도달했습니다!",
 	
 	// GlobalBan
 	[ "GlobalBan_UI_Title" ] = "공식밴",
@@ -33,15 +40,15 @@ LANGUAGE.data = {
 	[ "GlobalBan_UI_Users" ] = "%s명의 사용자가 차단되었습니다.",
 	
 	// Cash
-	[ "Cash_UI_HasStr" ] = "당신은 %s " .. catherine.configs.cashName .. " 를 가지고 있습니다.",
-	[ "Cash_UI_TargetHasStr" ] = "이 사람은 %s " .. catherine.configs.cashName .. " 를 가지고 있습니다.",
+	[ "Cash_UI_HasStr" ] = "당신은 %s " .. cashName .. " 를 가지고 있습니다.",
+	[ "Cash_UI_TargetHasStr" ] = "이 사람은 %s " .. cashName .. " 를 가지고 있습니다.",
 	[ "Cash_Notify_Set" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 설정하셨습니다.",
 	[ "Cash_Notify_Give" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 주셨습니다.",
 	[ "Cash_Notify_Take" ] = "%s 님이 %s 만큼의 돈을 %s 님에게서 빼았었습니다.",
-	[ "Cash_Notify_HasNot" ] = "당신은 충분한 " .. catherine.configs.cashName .. " 가 없습니다!",
+	[ "Cash_Notify_HasNot" ] = "당신은 충분한 " .. cashName .. " 가 없습니다!",
 	[ "Cash_Notify_NotValidAmount" ] = "올바른 금액을 입력하세요!",
-	[ "Cash_Notify_Salary" ] = "당신은 %s " .. catherine.configs.cashName .. " 을 월급으로 받았습니다.",
-	[ "Cash_Notify_Get" ] = "당신은 %s " .. catherine.configs.cashName .. " 를 찾으셨습니다.",
+	[ "Cash_Notify_Salary" ] = "당신은 %s " .. cashName .. " 을 월급으로 받았습니다.",
+	[ "Cash_Notify_Get" ] = "당신은 %s " .. cashName .. " 를 찾으셨습니다.",
 	
 	// Character
 	[ "Character_UI_Title" ] = "캐릭터",
@@ -194,29 +201,29 @@ LANGUAGE.data = {
 	[ "Item_Category_Other" ] = "기타",
 	[ "Item_Category_Weapon" ] = "무기",
 	[ "Item_Category_Storage" ] = "공간",
-	[ "Item_Category_Clothing" ] = "옷",
-	[ "Item_Category_BodygroupClothing" ] = "옷",
-	[ "Item_FuncStr01_BodygroupClothing" ] = "입기",
+	[ "Item_Category_Clothing" ] = "의류",
+	[ "Item_Category_BodygroupClothing" ] = "의류",
+	[ "Item_FuncStr01_BodygroupClothing" ] = "옷 입기",
 	[ "Item_Func01Notify01_BodygroupClothing" ] = "당신은 이 옷을 입을 수 없습니다!",
 	[ "Item_Func01Notify02_BodygroupClothing" ] = "당신은 이미 이 부위에 옷을 입고 있습니다!",
 	[ "Item_Func02Notify01_BodygroupClothing" ] = "당신은 이 옷을 벗을 수 없습니다!",
 	[ "Item_Func02Notify02_BodygroupClothing" ] = "당신은 이 부위에 옷을 입고 있지 않습니다!",
-	[ "Item_FuncStr02_BodygroupClothing" ] = "벗기",
-	[ "Item_FuncStr01_Clothing" ] = "입기",
-	[ "Item_FuncStr02_Clothing" ] = "벗기",
+	[ "Item_FuncStr02_BodygroupClothing" ] = "옷 벗기",
+	[ "Item_FuncStr01_Clothing" ] = "옷 입기",
+	[ "Item_FuncStr02_Clothing" ] = "옷 벗기",
 	[ "Item_Category_Accessory" ] = "악세서리",
-	[ "Item_FuncStr01_Accessory" ] = "입기",
+	[ "Item_FuncStr01_Accessory" ] = "착용",
 	[ "Item_FuncStr02_Accessory" ] = "벗기",
 	[ "Item_Category_Ammo" ] = "탄약",
 	[ "Item_FuncStr01_Ammo" ] = "사용",
 	
 	[ "Item_Category_Wallet" ] = "지갑",
 	[ "Item_Name_Wallet" ] = "지갑",
-	[ "Item_Desc_Wallet" ] = catherine.configs.cashName .. " 가 쌓여있습니다.",
+	[ "Item_Desc_Wallet" ] = cashName .. " 가 쌓여있습니다.",
 	[ "Item_Desc_World_Wallet" ] = "%s 가 쌓여있습니다.",
-	[ "Item_FuncStr01_Wallet" ] = catherine.configs.cashName .. " 가지기",
-	[ "Item_FuncStr02_Wallet" ] = catherine.configs.cashName .. " 떨어트리기",
-	[ "Item_DropQ_Wallet" ] = "떨어트릴 " .. catherine.configs.cashName .. " 의 금액을 입력하세요.",
+	[ "Item_FuncStr01_Wallet" ] = cashName .. " 가지기",
+	[ "Item_FuncStr02_Wallet" ] = cashName .. " 떨어트리기",
+	[ "Item_DropQ_Wallet" ] = "떨어트릴 " .. cashName .. " 의 금액을 입력하세요.",
 	
 	[ "Item_Notify01_ZT" ] = "이 사람은 이미 묶여있습니다!",
 	[ "Item_Notify02_ZT" ] = "당신은 수갑이 없습니다!",
@@ -366,7 +373,7 @@ LANGUAGE.data = {
 	[ "Basic_UI_Count" ] = "%s개",
 	[ "Basic_IDK" ] = "...?",
 	[ "Basic_Sorry" ] = "죄송합니다 ...",
-	[ "Basic_Error_NoSchema" ] = "스키마(Schema) 게임모드를 초기화 하는데에 실패했습니다. (CAT_ERR 0x1)",
+	[ "Basic_Error_NoSchema" ] = "스키마(Schema) 게임모드가 불러와져 있지 않습니다. (CAT_ERR 0x1)",
 	[ "Basic_Error_NoDatabase" ] = "데이터베이스에 연결되어 있지 않습니다. (CAT_ERR 0x2) : %s",
 	[ "Basic_Error_LibraryLoad" ] = "라이브러리를 불러오는 중 오류가 발생했습니다. (CAT_ERR 0x3) ( 함수 : %s )",
 	[ "Basic_Framework_Author" ] = "%s 에 의해 개발 및 디자인.",

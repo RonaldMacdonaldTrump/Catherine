@@ -450,10 +450,16 @@ else
 	catherine.chat.msg = catherine.chat.msg or { }
 	catherine.chat.history = catherine.chat.history or { }
 	catherine.chat.overrideFont = catherine.chat.overrideFont or nil
+	catherine.chat.posSizeData = {
+		w = ScrW( ) * 0.5,
+		h = ScrH( ) * 0.3,
+		x = 5,
+		y = ScrH( ) - ( ScrH( ) * 0.3 ) - 5
+	}
 	
 	local typingText = ""
-	local CHATBox_w, CHATBox_h = ScrW( ) * 0.5, ScrH( ) * 0.3
-	local CHATBox_x, CHATBox_y = 5, ScrH( ) - CHATBox_h - 5
+	local CHATBox_w, CHATBox_h = catherine.chat.posSizeData.w, catherine.chat.posSizeData.h
+	local CHATBox_x, CHATBox_y = catherine.chat.posSizeData.x, catherine.chat.posSizeData.y
 	local maxchatLine = catherine.configs.maxChatboxLine
 	
 	CAT_CONVAR_CHAT_TIMESTAMP = CreateClientConVar( "cat_convar_chat_timestamp", "1", true, true )
@@ -516,7 +522,7 @@ else
 		local msg = vgui.Create( "catherine.vgui.chatmarkup" )
 		msg:Dock( TOP )
 		msg:SetFont( catherine.chat.overrideFont or "catherine_chat" )
-		msg:SetMaxWidth( CHATBox_w - 16 )
+		msg:SetMaxWidth( catherine.chat.posSizeData.w - 16 )
 		msg:Run( ... )
 		
 		catherine.chat.msg[ #catherine.chat.msg + 1 ] = msg
@@ -547,8 +553,8 @@ else
 		if ( IsValid( catherine.chat.backpanel ) ) then return end
 		
 		catherine.chat.backpanel = vgui.Create( "DPanel" )
-		catherine.chat.backpanel:SetPos( CHATBox_x, CHATBox_y )
-		catherine.chat.backpanel:SetSize( CHATBox_w, CHATBox_h - 25 )
+		catherine.chat.backpanel:SetPos( catherine.chat.posSizeData.x, catherine.chat.posSizeData.y )
+		catherine.chat.backpanel:SetSize( catherine.chat.posSizeData.w, catherine.chat.posSizeData.h - 25 )
 		catherine.chat.backpanel.Paint = function( ) end
 
 		catherine.chat.backpanel.history = vgui.Create( "DScrollPanel", catherine.chat.backpanel )
@@ -559,6 +565,8 @@ else
 	
 	function catherine.chat.SetStatus( bool )
 		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+		local chatBoxW, chatBoxH = catherine.chat.posSizeData.w, catherine.chat.posSizeData.h
+		local chatBoxX, chatBoxY = catherine.chat.posSizeData.x, catherine.chat.posSizeData.y
 		
 		catherine.chat.CreateBase( )
 		catherine.chat.isOpened = bool
@@ -594,7 +602,7 @@ else
 				surface.DrawTexturedRect( 0, 0, w, h )
 				
 				local commands, sub = catherine.command.GetMatchCommands( typingText )
-				local chatY = CHATBox_h - 25
+				local chatY = chatBoxH - 25
 
 				if ( #commands == 1 ) then
 					local commandTable = commands[ 1 ]
@@ -627,10 +635,10 @@ else
 				end
 			end
 		end
-		
+
 		self = vgui.Create( "EditablePanel", self )
-		self:SetPos( CHATBox_x, CHATBox_y + CHATBox_h - 25 )
-		self:SetSize( CHATBox_w, 25 )
+		self:SetPos( chatBoxX, chatBoxY + chatBoxH - 25 )
+		self:SetSize( chatBoxW, 25 )
 		self.Paint = function( ) end
 		
 		self.textEnt = vgui.Create( "DTextEntry", self )

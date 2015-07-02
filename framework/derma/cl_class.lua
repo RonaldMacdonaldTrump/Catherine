@@ -76,7 +76,7 @@ function PANEL:BuildClasses( )
 		button:SetText( "" )
 		button:SetDrawBackground( false )
 		button.DoClick = function( )
-			netstream.Start( "catherine.class.Set", v.index )
+			netstream.Start( "catherine.class.Set", { v.index, true } )
 		end
 		
 		local spawnIcon = vgui.Create( "SpawnIcon", panel )

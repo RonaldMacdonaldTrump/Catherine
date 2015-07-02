@@ -21,6 +21,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 	( http://steamcommunity.com/profiles/76561198052257272/ )
 ]]--
 
+local cashName = catherine.cash.GetOnlyName( )
+
 local LANGUAGE = catherine.language.New( "english" )
 LANGUAGE.name = "English"
 LANGUAGE.data = {
@@ -29,7 +31,12 @@ LANGUAGE.data = {
 	[ "Class_UI_LimitStr" ] = "%s / %s",
 	[ "Class_UI_SalaryStr" ] = "%s per hour",
 	[ "Class_UI_Unlimited" ] = "Unlimited",
-	[ "Class_UI_NoJoinable" ] = "You can not join this!",
+	[ "Class_UI_NoJoinable" ] = "You can not join this class!",
+	[ "Class_UI_CantJoinable" ] = "You can not join this class!",
+	[ "Class_UI_NotValid" ] = "This class is not valid!",
+	[ "Class_UI_TeamError" ] = "You can not join this class!",
+	[ "Class_UI_AlreadyJoined" ] = "You are already joined this class!",
+	[ "Class_UI_HitLimit" ] = "This class hit a limit!",
 	
 	// GlobalBan
 	[ "GlobalBan_UI_Title" ] = "Global Ban",
@@ -38,15 +45,15 @@ LANGUAGE.data = {
 	[ "GlobalBan_UI_Users" ] = "%s's users are blocked.",
 	
 	// Cash
-	[ "Cash_UI_HasStr" ] = "You have %s " .. catherine.configs.cashName ..".",
-	[ "Cash_UI_TargetHasStr" ] = "This player has %s " .. catherine.configs.cashName ..".",
+	[ "Cash_UI_HasStr" ] = "You have %s " .. cashName ..".",
+	[ "Cash_UI_TargetHasStr" ] = "This player has %s " .. cashName ..".",
 	[ "Cash_Notify_Set" ] = "%s has set %s to %s",
 	[ "Cash_Notify_Give" ] = "%s has given %s to %s",
 	[ "Cash_Notify_Take" ] = "%s has taken %s from %s",
-	[ "Cash_Notify_HasNot" ] = "You do not have a enough " .. catherine.configs.cashName .. "!",
+	[ "Cash_Notify_HasNot" ] = "You do not have a enough " .. cashName .. "!",
 	[ "Cash_Notify_NotValidAmount" ] = "Please enter a valid amount!",
-	[ "Cash_Notify_Salary" ] = "You have received %s " .. catherine.configs.cashName .. " from your salary.",
-	[ "Cash_Notify_Get" ] = "You are found %s " .. catherine.configs.cashName .. ".",
+	[ "Cash_Notify_Salary" ] = "You have received %s " .. cashName .. " from your salary.",
+	[ "Cash_Notify_Get" ] = "You are found %s " .. cashName .. ".",
 	
 	// Character
 	[ "Character_UI_Title" ] = "Character",
@@ -215,10 +222,10 @@ LANGUAGE.data = {
 	
 	[ "Item_Category_Wallet" ] = "Wallet",
 	[ "Item_Name_Wallet" ] = "Wallet",
-	[ "Item_Desc_Wallet" ] = catherine.configs.cashName .. " in a small stack.",
+	[ "Item_Desc_Wallet" ] = cashName .. " in a small stack.",
 	[ "Item_Desc_World_Wallet" ] = "%s in a small stack.",
-	[ "Item_FuncStr01_Wallet" ] = "Take " .. catherine.configs.cashName,
-	[ "Item_FuncStr02_Wallet" ] = "Drop " .. catherine.configs.cashName,
+	[ "Item_FuncStr01_Wallet" ] = "Take " .. cashName,
+	[ "Item_FuncStr02_Wallet" ] = "Drop " .. cashName,
 	[ "Item_DropQ_Wallet" ] = "How much money would you like to drop?",
 	
 	[ "Item_Notify01_ZT" ] = "This player is already tied!",
@@ -369,7 +376,7 @@ LANGUAGE.data = {
 	[ "Basic_UI_Count" ] = "%s's",
 	[ "Basic_IDK" ] = "...?",
 	[ "Basic_Sorry" ] = "SORRY ...",
-	[ "Basic_Error_NoSchema" ] = "Failed to initialize Schema gamemode. (CAT_ERR 0x1)",
+	[ "Basic_Error_NoSchema" ] = "Can't find Schema table. (CAT_ERR 0x1)",
 	[ "Basic_Error_NoDatabase" ] = "Catherine has not connected to Database. (CAT_ERR 0x2) : %s",
 	[ "Basic_Error_LibraryLoad" ] = "Failed to load Library. (CAT_ERR 0x3) ( Function : %s )",
 	[ "Basic_Framework_Author" ] = "Development and design by %s.",

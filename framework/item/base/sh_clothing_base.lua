@@ -30,6 +30,7 @@ BASE.useDynamicItemData = false
 BASE.func = { }
 BASE.func.wear = {
 	text = "^Item_FuncStr01_Clothing",
+	icon = "icon16/asterisk_orange.png",
 	canShowIsWorld = true,
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
@@ -63,6 +64,7 @@ BASE.func.wear = {
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 100 )
 		pl:SetModel( newModel )
 		pl:SetupHands( )
+		
 		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "wearing", true )
 		catherine.character.SetCharVar( pl, "clothWearing", true )
 	end,
@@ -72,13 +74,10 @@ BASE.func.wear = {
 }
 BASE.func.takeoff = {
 	text = "^Item_FuncStr02_Clothing",
+	icon = "icon16/asterisk_yellow.png",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
-		local originalModel = catherine.character.GetCharVar( pl, "originalModel" )
-		
-		if ( !originalModel ) then
-			return
-		end
+		local originalModel = catherine.character.GetCharVar( pl, "originalModel", pl:GetModel( ) )
 		
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 100 )
 		pl:SetModel( originalModel )
@@ -97,15 +96,21 @@ function BASE:GetDropModel( )
 end
 
 if ( SERVER ) then
-	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.hooks.clothing_base.PlayerSpawnedInCharacter", function( pl )
+	hook.Add( "PlayerCharacterLoaded", "catherine.item.hooks.clothing_base.PlayerCharacterLoaded", function( pl )
 		timer.Simple( 1, function( )
 			for k, v in pairs( catherine.inventory.Get( pl ) ) do
 				local itemTable = catherine.item.FindByID( k )
 				if ( !itemTable.isCloth or !catherine.inventory.GetItemData( pl, k, "wearing" ) ) then continue end
 				
-				catherine.item.Work( pl, k, "wear" )
+				if ( catherine.character.GetCharVar( pl, "clothWearing" ) == nil and catherine.inventory.GetItemData( pl, k, "wearing" ) == true ) then
+					catherine.item.Work( pl, k, "wear" )
+				end
 			end
 		end )
+	end )
+	
+	hook.Add( "CharacterLoadingStart", "catherine.item.hooks.clothing_base.CharacterLoadingStart", function( pl )
+		catherine.character.SetCharVar( pl, "clothWearing", nil )
 	end )
 
 	hook.Add( "OnItemDrop", "catherine.item.hooks.clothing_base.OnItemDrop", function( pl, itemTable )

@@ -294,6 +294,10 @@ function GM:PostDrawTranslucentRenderables( depth, skybox )
 	end
 end
 
+function GM:GetCharacterPanelLoadModel( characterDatas )
+	return characterDatas._model
+end
+
 function GM:PlayerBindPress( pl, code, pressed )
 	if ( code:find( "messagemode" ) and pressed ) then
 		catherine.chat.SetStatus( true )
@@ -634,6 +638,7 @@ function GM:RenderScreenspaceEffects( )
 
 			if ( math.Round( motionBlurData.drawAlpha ) <= 0 ) then
 				catherine.util.motionBlur = nil
+				return
 			end
 		end
 		
@@ -653,8 +658,25 @@ function GM:CharacterMenuExited( pl )
 	end
 end
 
+function GM:AddRPInformation( pnl, data, pl )
+	data[ #data + 1 ] = LANG( "Cash_UI_HasStr", catherine.cash.Get( pl ) )
+end
+
 function GM:ScreenResolutionChanged( oldW, oldH )
 	catherine.hud.WelcomeIntroInitialize( true )
+	
+	catherine.chat.posSizeData = {
+		w = ScrW( ) * 0.5,
+		h = ScrH( ) * 0.3,
+		x = 5,
+		y = ScrH( ) - ( ScrH( ) * 0.3 ) - 5
+	}
+	
+	if ( IsValid( catherine.chat.backpanel ) ) then
+		catherine.chat.backpanel:Remove( )
+	end
+
+	catherine.chat.CreateBase( )
 end
 
 netstream.Hook( "catherine.ShowHelp", function( )
@@ -670,6 +692,10 @@ CAT_CONVAR_ALWAYS_ADMIN_ESP = CreateClientConVar( "cat_convar_alwaysadminesp", "
 
 catherine.option.Register( "CONVAR_ADMIN_ESP", "cat_convar_adminesp", "^Option_Str_ADMIN_ESP_Name", "^Option_Str_ADMIN_ESP_Desc", "^Option_Category_03", CAT_OPTION_SWITCH )
 catherine.option.Register( "CONVAR_ALWAYS_ADMIN_ESP", "cat_convar_alwaysadminesp", "^Option_Str_Always_ADMIN_ESP_Name", "^Option_Str_Always_ADMIN_ESP_Desc", "^Option_Category_03", CAT_OPTION_SWITCH )
+
+netstream.Hook( "catherine.SetModel", function( data )
+	LocalPlayer( ):SetModel( data )
+end )
 
 netstream.Hook( "catherine.introStart", function( )
 	catherine.intro.loading = true

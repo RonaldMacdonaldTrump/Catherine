@@ -25,7 +25,6 @@ function PANEL:Init( )
 	self.w, self.h = ScrW( ), ScrH( )
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
 	self.blurAmount = 0
-	self.backAlpha = 50
 	
 	self:SetSize( self.w, self.h )
 	self:SetPos( self.x, self.y )
@@ -37,10 +36,11 @@ function PANEL:Init( )
 	self:AlphaTo( 255, 0.1, 0 )
 	
 	local pl = self.player
+	local maxDescLen = catherine.configs.characterDescMaxLen
 	
 	self.TopPanel = vgui.Create( "DPanel", self )
 	
-	self.TopPanel.w, self.TopPanel.h = self.w * 0.6, self.h * 0.3
+	self.TopPanel.w, self.TopPanel.h = self.w - 40, self.h * 0.3
 	self.TopPanel.x, self.TopPanel.y = self.w / 2 - self.TopPanel.w / 2, 0 - self.TopPanel.h
 	
 	self.TopPanel:SetSize( self.TopPanel.w, self.TopPanel.h )
@@ -60,12 +60,12 @@ function PANEL:Init( )
 		draw.SimpleText( pl:Name( ), "catherine_normal30", 90, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 		draw.SimpleText( pl:FactionName( ), "catherine_normal20", 15, 80, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 
-		draw.SimpleText( self.TopPanel.descEnt:GetText( ):utf8len( ) .. "/" .. catherine.configs.characterDescMaxLen, "catherine_normal15", w - 10, 60, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		draw.SimpleText( self.TopPanel.descEnt:GetText( ):utf8len( ) .. "/" .. maxDescLen, "catherine_normal15", w - 10, 60, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		
 		local icon = Material( "icon16/user.png" )
 		
 		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
-			icon = Material( "icon16/bug.png" )
+			icon = Material( "icon16/thumb_up.png" )
 		elseif ( pl:IsSuperAdmin( ) ) then
 			icon = Material( "icon16/shield.png" )
 		elseif ( pl:IsAdmin( ) ) then
@@ -174,7 +174,7 @@ function PANEL:Init( )
 	self.RightPanel:MoveTo( self.w - self.RightPanel.w - 20, self.RightPanel.y, 0.1, 0 )
 	
 	local data = { }
-	local rpInformation = hook.Run( "AddRPInformation", self, data )
+	local rpInformation = hook.Run( "AddRPInformation", self, data, pl )
 	
 	for k, v in pairs( data ) do
 		self:AddRPInformation( v )
@@ -193,13 +193,10 @@ end
 
 function PANEL:Paint( w, h )
 	if ( !self.closing ) then
-		self.blurAmount = Lerp( 0.03, self.blurAmount, 7 )
-	else
-		self.backAlpha = Lerp( 0.03, self.backAlpha, 0 )
+		self.blurAmount = Lerp( 0.03, self.blurAmount, 3 )
 	end
 
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
-	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, self.backAlpha ) )
 end
 
 function PANEL:OnKeyCodePressed( key )

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+local cashName = catherine.cash.GetOnlyName( )
+
 local LANGUAGE = catherine.language.New( "example" ) --[[ Create language object( Change to language unique ID ) ]]--
 LANGUAGE.name = "Example Language" --[[ Setting language name. ]]--
 LANGUAGE.data = {
@@ -33,15 +35,15 @@ LANGUAGE.data = {
 	[ "GlobalBan_UI_Users" ] = "%s's users are blocked.",
 	
 	// Cash
-	[ "Cash_UI_HasStr" ] = "You have %s " .. catherine.configs.cashName ..".",
-	[ "Cash_UI_TargetHasStr" ] = "This player has %s " .. catherine.configs.cashName ..".",
+	[ "Cash_UI_HasStr" ] = "You have %s " .. cashName ..".",
+	[ "Cash_UI_TargetHasStr" ] = "This player has %s " .. cashName ..".",
 	[ "Cash_Notify_Set" ] = "%s has set %s to %s",
 	[ "Cash_Notify_Give" ] = "%s has given %s to %s",
 	[ "Cash_Notify_Take" ] = "%s has taken %s from %s",
-	[ "Cash_Notify_HasNot" ] = "You do not have a enough " .. catherine.configs.cashName .. "!",
+	[ "Cash_Notify_HasNot" ] = "You do not have a enough " .. cashName .. "!",
 	[ "Cash_Notify_NotValidAmount" ] = "Please enter a valid amount!",
-	[ "Cash_Notify_Salary" ] = "You have received %s " .. catherine.configs.cashName .. " from your salary.",
-	[ "Cash_Notify_Get" ] = "You are found %s " .. catherine.configs.cashName .. ".",
+	[ "Cash_Notify_Salary" ] = "You have received %s " .. cashName .. " from your salary.",
+	[ "Cash_Notify_Get" ] = "You are found %s " .. cashName .. ".",
 	
 	// Character
 	[ "Character_UI_Title" ] = "Character",
@@ -210,10 +212,10 @@ LANGUAGE.data = {
 	
 	[ "Item_Category_Wallet" ] = "Wallet",
 	[ "Item_Name_Wallet" ] = "Wallet",
-	[ "Item_Desc_Wallet" ] = catherine.configs.cashName .. " in a small stack.",
+	[ "Item_Desc_Wallet" ] = cashName .. " in a small stack.",
 	[ "Item_Desc_World_Wallet" ] = "%s in a small stack.",
-	[ "Item_FuncStr01_Wallet" ] = "Take " .. catherine.configs.cashName,
-	[ "Item_FuncStr02_Wallet" ] = "Drop " .. catherine.configs.cashName,
+	[ "Item_FuncStr01_Wallet" ] = "Take " .. cashName,
+	[ "Item_FuncStr02_Wallet" ] = "Drop " .. cashName,
 	[ "Item_DropQ_Wallet" ] = "How much money would you like to drop?",
 	
 	[ "Item_Notify01_ZT" ] = "This player is already tied!",

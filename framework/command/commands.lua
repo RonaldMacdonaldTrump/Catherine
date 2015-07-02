@@ -71,7 +71,8 @@ catherine.command.Register( {
 					local localBuffer = pl:Name( )
 					local targetBuffer = target:Name( )
 					
-					catherine.character.SetVar( target, "_name", args[ 2 ] )
+					catherine.character.SetVar( target, "_name", args[ 2 ], nil, true )
+					catherine.character.SendPlayerCharacterList( target )
 					catherine.util.NotifyAllLang( "Character_Notify_SetName", localBuffer, args[ 2 ], targetBuffer )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
@@ -135,7 +136,8 @@ catherine.command.Register( {
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					catherine.character.SetVar( target, "_desc", args[ 2 ] )
+					catherine.character.SetVar( target, "_desc", args[ 2 ], nil, true )
+					catherine.character.SendPlayerCharacterList( target )
 					catherine.util.NotifyLang( "Character_Notify_SetDesc", pl:Name( ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
@@ -158,7 +160,8 @@ catherine.command.Register( {
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					catherine.character.SetVar( target, "_model", args[ 2 ] )
+					catherine.character.SetVar( target, "_model", args[ 2 ], nil, true )
+					catherine.character.SendPlayerCharacterList( target )
 					catherine.util.NotifyAllLang( "Character_Notify_SetModel", pl:Name( ), args[ 2 ], target:Name( ) )
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
@@ -179,7 +182,8 @@ catherine.command.Register( {
 			local newDesc = args[ 1 ]
 			
 			if ( newDesc:utf8len( ) >= catherine.configs.characterDescMinLen and newDesc:utf8len( ) < catherine.configs.characterDescMaxLen ) then
-				catherine.character.SetVar( pl, "_desc", newDesc )
+				catherine.character.SetVar( pl, "_desc", newDesc, nil, true )
+				catherine.character.SendPlayerCharacterList( pl )
 				catherine.util.NotifyLang( pl, "Character_Notify_SetDescLC", newDesc )
 			else
 				catherine.util.NotifyLang( pl, "Character_Notify_DescLimitHit" )

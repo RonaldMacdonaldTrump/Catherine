@@ -55,23 +55,27 @@ function catherine.class.FindByIndex( index )
 	return catherine.class.lists[ index ]
 end
 
-function catherine.class.CanJoin( pl, index )
+function catherine.class.CanJoin( pl, index, isMenu )
 	local classTable = catherine.class.FindByIndex( index )
 	
 	if ( !classTable ) then
-		return false, "Class error"
+		return false, "Class_UI_NotValid"
+	end
+	
+	if ( classTable.cantJoinUsingMenu and isMenu ) then
+		return false, "Class_UI_CantJoinable"
 	end
 
 	if ( pl:Team( ) != classTable.faction ) then
-		return false, "Team error"
+		return false, "Class_UI_TeamError"
 	end
 
 	if ( catherine.character.GetCharVar( pl, "class", "" ) == index ) then
-		return false, "Same class"
+		return false, "Class_UI_AlreadyJoined"
 	end
 	
 	if ( classTable.limit and ( #catherine.class.GetPlayers( index ) >= classTable.limit ) ) then
-		return false, "Hit limit"
+		return false, "Class_UI_HitLimit"
 	end
 
 	return classTable:onCanJoin( pl )
@@ -96,11 +100,14 @@ function catherine.class.Include( dir )
 end
 
 if ( SERVER ) then
-	function catherine.class.Set( pl, index )
+	function catherine.class.Set( pl, index, isMenu )
 		if ( !index ) then
 			local defaultClass = catherine.class.GetDefaultClass( pl:Team( ) )
+			
 			if ( !defaultClass ) then return end
+			
 			local defaultModel = catherine.character.GetCharVar( pl, "originalModel" )
+			
 			if ( !defaultModel ) then return end
 			
 			catherine.character.SetCharVar( pl, "class", defaultClass.index )
@@ -109,7 +116,7 @@ if ( SERVER ) then
 			return
 		end
 		
-		local success, reason = catherine.class.CanJoin( pl, index )
+		local success, reason = catherine.class.CanJoin( pl, index, isMenu )
 
 		if ( !success ) then
 			catherine.util.NotifyLang( pl, reason )
@@ -134,7 +141,7 @@ if ( SERVER ) then
 	end
 
 	netstream.Hook( "catherine.class.Set", function( pl, data )
-		catherine.class.Set( pl, data )
+		catherine.class.Set( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
 	function catherine.class.GetJoinable( )
@@ -146,7 +153,7 @@ else
 		for k, v in pairs( catherine.class.GetAll( ) ) do
 			local classTable = catherine.class.FindByIndex( k )
 
-			if ( ( v.faction == team and class != k and !v.cantJoinUsingMenu ) or ( class != nil and v.isDefault and k != class ) ) then
+			if ( !v.cantJoinUsingMenu and ( ( v.faction == team and class != k ) or ( class != nil and v.isDefault and k != class ) ) ) then
 				classes[ #classes + 1 ] = v
 			end
 		end

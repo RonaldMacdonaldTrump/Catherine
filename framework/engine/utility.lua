@@ -171,7 +171,7 @@ end
 
 function catherine.util.GetDoorPartner( ent )
 	for k, v in pairs( ents.FindInSphere( ent:GetPos( ), 128 ) ) do
-		if ( v:GetModel( ) == ent:GetModel( ) and v:GetClass( ) == "prop_door_rotating" and ent != v ) then
+		if ( v:GetClass( ) == "prop_door_rotating" and ent:GetModel( ) == v:GetModel( ) and ent != v ) then
 			return v
 		end
 	end
@@ -543,6 +543,7 @@ else
 	netstream.Hook( "catherine.util.StartMotionBlur", function( data )
 		catherine.util.motionBlur = {
 			status = true,
+			fadeTime = 0.1,
 			addAlpha = data[ 1 ],
 			drawAlpha = data[ 2 ],
 			delay = data[ 3 ]
@@ -552,15 +553,19 @@ else
 	netstream.Hook( "catherine.util.StopMotionBlur", function( data )
 		local motionBlurData = catherine.util.motionBlur
 		
-		motionBlurData = {
-			status = false,
-			fadeTime = data,
-			addAlpha = motionBlurData.addAlpha,
-			drawAlpha = motionBlurData.drawAlpha,
-			delay = motionBlurData.delay
-		}
+		if ( motionBlurData ) then
+			motionBlurData = {
+				status = false,
+				fadeTime = data or 0.1,
+				addAlpha = motionBlurData.addAlpha,
+				drawAlpha = motionBlurData.drawAlpha,
+				delay = motionBlurData.delay
+			}
+			
+			catherine.util.motionBlur = motionBlurData
+		end
 	end )
-	
+
 	netstream.Hook( "catherine.util.ScreenColorEffect", function( data )
 		local col = data[ 1 ]
 		local time = CurTime( ) + ( data[ 2 ] or 0.1 )
@@ -685,7 +690,7 @@ else
 		
 		return catherine.util.materials[ key ]
 	end
-	
+
 	function catherine.util.BlurDraw( x, y, w, h, amount )
 		surface.SetMaterial( blurMat )
 		surface.SetDrawColor( 255, 255, 255 )

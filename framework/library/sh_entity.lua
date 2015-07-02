@@ -121,7 +121,16 @@ function catherine.entity.GetPlayer( ent )
 	return ent:GetNetVar( "player" )
 end
 
+META.CATSetModel = META.CATSetModel or META.SetModel
 META.CATGetModel = META.CATGetModel or META.GetModel
+
+function META:SetModel( model )
+	if ( self:IsPlayer( ) and SERVER ) then
+		netstream.Start( self, "catherine.SetModel", model )
+	end
+	
+	self:CATSetModel( model )
+end
 
 function META:GetModel( )
 	local originalModel = self:CATGetModel( )

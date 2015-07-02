@@ -47,13 +47,14 @@ end
 
 function catherine.environment.GetTimeString( )
 	local d = table.Copy( catherine.environment.buffer )
-	local t = d.hour >= 12 and "PM" or "AM"
+	local hour = d.hour
+	local t = hour >= 12 and "PM" or "AM"
 	
 	if ( #tostring( d.minute ) == 1 ) then
 		d.minute = "0" .. d.minute
 	end
 	
-	return Format( "%s %s:%s", t, d.hour, d.minute )
+	return Format( "%s %s:%s", t, hour > 12 and hour - 12 or hour, d.minute )
 end
 
 if ( SERVER ) then

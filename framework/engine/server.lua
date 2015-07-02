@@ -256,6 +256,7 @@ function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
 end
 
 function GM:PlayerSpawnedInCharacter( pl )
+	catherine.util.StopMotionBlur( pl )
 	catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 
 	hook.Run( "OnSpawnedInCharacter", pl )

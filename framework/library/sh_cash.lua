@@ -16,17 +16,18 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-if ( !catherine.command ) then
-	catherine.util.Include( "sh_command.lua" )
-end
-catherine.cash = catherine.cash or { }
+catherine.cash = catherine.cash or { name = "Dollar" }
 
 function catherine.cash.GetOnlyName( )
-	return catherine.configs.cashName
+	return catherine.cash.name
+end
+
+function catherine.cash.SetName( name )
+	catherine.cash.name = name
 end
 
 function catherine.cash.GetName( amount )
-	return amount .. " " .. catherine.configs.cashName
+	return amount .. " " .. catherine.cash.name
 end
 
 function catherine.cash.Has( pl, amount )
@@ -67,8 +68,4 @@ if ( SERVER ) then
 		
 		return true
 	end
-else
-	hook.Add( "AddRPInformation", "catherine.cash.AddRPInformation", function( pnl, data )
-		data[ #data + 1 ] = LANG( "Cash_UI_HasStr", catherine.cash.Get( LocalPlayer( ) ) )
-	end )
 end

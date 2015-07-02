@@ -53,6 +53,7 @@ BASE.amount = 40
 BASE.func = { }
 BASE.func.use = {
 	text = "^Item_FuncStr01_Ammo",
+	icon = "icon16/tag_blue.png",
 	canShowIsWorld = true,
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )

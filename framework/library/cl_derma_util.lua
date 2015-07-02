@@ -18,6 +18,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 function Derma_Message( strText, strTitle, strButtonText )
 	surface.PlaySound( "CAT/notify01.wav" )
+	local imageWAni = 0
+	local imageHAni = 0
 	
 	local Window = vgui.Create( "DFrame" )
 	Window:SetTitle( "" )
@@ -26,12 +28,20 @@ function Derma_Message( strText, strTitle, strButtonText )
 	Window:SetDraggable( false )
 	Window:ShowCloseButton( false )
 	Window:MakePopup( )
+	Window:SetAlpha( 0 )
+	Window:AlphaTo( 255, 0.1, 0 )
 	Window.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
 		
+		local sin = math.sin( CurTime( ) * 5 )
+		local imageW, imageH = 64 + ( 5 * sin ), 64 + ( 5 * sin )
+		
+		imageWAni = Lerp( 0.06, imageWAni, imageW )
+		imageHAni = Lerp( 0.06, imageHAni, imageH )
+		
 		surface.SetDrawColor( 255, 255, 255, 255 )
-		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png" ) )
-		surface.DrawTexturedRect( 30, h / 2 - 64 / 2, 64, 64 )
+		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png", "smooth" ) )
+		surface.DrawTexturedRect( 50 - imageWAni / 2 / 2, ( h / 2 - imageHAni / 2 ), imageWAni, imageHAni )
 
 		draw.SimpleText( strText, "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 	end
@@ -47,8 +57,12 @@ function Derma_Message( strText, strTitle, strButtonText )
 	Okay:SetStrColor( Color( 50, 50, 50, 255 ) )
 	Okay:SetGradientColor( Color( 50, 50, 50, 255 ) )
 	Okay:SetStrFont( "catherine_normal15" )
+	Okay:SetAlpha( 0 )
+	Okay:AlphaTo( 255, 0.2, 0.2 )
 	Okay.Click = function( )
-		Window:Close( )
+		Window:AlphaTo( 0, 0.1, 0, function( )
+			Window:Close( )
+		end )
 	end
 	
 	ButtonPanel:SetWide( Okay:GetWide( ) + 10 )
@@ -60,6 +74,8 @@ end
 
 function Derma_Query( strText, strTitle, ... )
 	surface.PlaySound( "CAT/notify01.wav" )
+	local imageWAni = 0
+	local imageHAni = 0
 	
 	local Window = vgui.Create( "DFrame" )
 	Window:SetTitle( "" )
@@ -68,14 +84,22 @@ function Derma_Query( strText, strTitle, ... )
 	Window:SetDraggable( false )
 	Window:ShowCloseButton( false )
 	Window:MakePopup( )
+	Window:SetAlpha( 0 )
+	Window:AlphaTo( 255, 0.1, 0 )
 	Window.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
 		
+		local sin = math.sin( CurTime( ) * 5 )
+		local imageW, imageH = 64 + ( 5 * sin ), 64 + ( 5 * sin )
+		
+		imageWAni = Lerp( 0.06, imageWAni, imageW )
+		imageHAni = Lerp( 0.06, imageHAni, imageH )
+		
 		surface.SetDrawColor( 255, 255, 255, 255 )
-		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png" ) )
-		surface.DrawTexturedRect( 30, h / 2 - 64 / 2, 64, 64 )
+		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png", "smooth" ) )
+		surface.DrawTexturedRect( 50 - imageWAni / 2 / 2, ( h / 2 - imageHAni / 2 ), imageWAni, imageHAni )
 
-		draw.SimpleText( strText, "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+		draw.SimpleText( strText, "catherine_normal20", w / 2, h / 2, Color( 0, 0, 0, 255 ), 1, 1 )
 	end
 
 	local ButtonPanel = vgui.Create( "DPanel", Window )
@@ -84,7 +108,8 @@ function Derma_Query( strText, strTitle, ... )
 
 	local NumOptions = 0
 	local x = 5
-
+	local delta = 0.2
+	
 	for k = 1, 8, 2 do
 		local Text = select( k, ... )
 		if ( Text == nil ) then break end
@@ -97,13 +122,18 @@ function Derma_Query( strText, strTitle, ... )
 		Button:SetStrColor( Color( 50, 50, 50, 255 ) )
 		Button:SetGradientColor( Color( 50, 50, 50, 255 ) )
 		Button:SetStrFont( "catherine_normal15" )
+		Button:SetAlpha( 0 )
+		Button:AlphaTo( 255, 0.2, delta )
 		Button.Click = function( )
-			Window:Close()
-			Func( )
+			Window:AlphaTo( 0, 0.1, 0, function( )
+				Window:Close( )
+				Func( )
+			end )
 		end
 		Button:SetPos( x, 5 )
 		
 		x = x + Button:GetWide( ) + 5
+		delta = delta + 0.1
 		
 		ButtonPanel:SetWide( x ) 
 		NumOptions = NumOptions + 1
@@ -122,7 +152,10 @@ function Derma_Query( strText, strTitle, ... )
 end
 
 function Derma_StringRequest( strTitle, strText, strDefaultText, fnEnter, fnCancel, strButtonText, strButtonCancelText )
-
+	surface.PlaySound( "CAT/notify01.wav" )
+	local imageWAni = 0
+	local imageHAni = 0
+	
 	local Window = vgui.Create( "DFrame" )
 	Window:SetTitle( "" )
 	Window:SetSize( ScrW( ), ScrH( ) * 0.15 )
@@ -130,12 +163,20 @@ function Derma_StringRequest( strTitle, strText, strDefaultText, fnEnter, fnCanc
 	Window:SetDraggable( false )
 	Window:ShowCloseButton( false )
 	Window:MakePopup( )
+	Window:SetAlpha( 0 )
+	Window:AlphaTo( 255, 0.1, 0 )
 	Window.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
 		
+		local sin = math.sin( CurTime( ) * 5 )
+		local imageW, imageH = 64 + ( 5 * sin ), 64 + ( 5 * sin )
+		
+		imageWAni = Lerp( 0.06, imageWAni, imageW )
+		imageHAni = Lerp( 0.06, imageHAni, imageH )
+		
 		surface.SetDrawColor( 255, 255, 255, 255 )
-		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png" ) )
-		surface.DrawTexturedRect( 30, h / 2 - 64 / 2, 64, 64 )
+		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png", "smooth" ) )
+		surface.DrawTexturedRect( 50 - imageWAni / 2 / 2, ( h / 2 - imageHAni / 2 ), imageWAni, imageHAni )
 
 		draw.SimpleText( strText, "catherine_normal20", w / 2, h * 0.2, Color( 50, 50, 50, 255 ), 1, 1 )
 	end
@@ -164,9 +205,13 @@ function Derma_StringRequest( strTitle, strText, strDefaultText, fnEnter, fnCanc
 	Button:SetStrColor( Color( 50, 50, 50, 255 ) )
 	Button:SetGradientColor( Color( 50, 50, 50, 255 ) )
 	Button:SetStrFont( "catherine_normal15" )
+	Button:SetAlpha( 0 )
+	Button:AlphaTo( 255, 0.2, 0.2 )
 	Button.DoClick = function( )
-		Window:Close( )
-		fnEnter( TextEntry:GetText( ) )
+		Window:AlphaTo( 0, 0.1, 0, function( )
+			Window:Close( )
+			fnEnter( TextEntry:GetText( ) )
+		end )
 	end
 	
 	local ButtonCancel = vgui.Create( "catherine.vgui.button", ButtonPanel )
@@ -175,12 +220,16 @@ function Derma_StringRequest( strTitle, strText, strDefaultText, fnEnter, fnCanc
 	ButtonCancel:SetStrColor( Color( 50, 50, 50, 255 ) )
 	ButtonCancel:SetGradientColor( Color( 50, 50, 50, 255 ) )
 	ButtonCancel:SetStrFont( "catherine_normal15" )
+	ButtonCancel:SetAlpha( 0 )
+	ButtonCancel:AlphaTo( 255, 0.2, 0.4 )
 	ButtonCancel.DoClick = function( )
-		Window:Close( )
-		
-		if ( fnCancel ) then
-			fnCancel( TextEntry:GetText( ) )
-		end
+		Window:AlphaTo( 0, 0.1, 0, function( )
+			Window:Close( )
+			
+			if ( fnCancel ) then
+				fnCancel( TextEntry:GetText( ) )
+			end
+		end )
 	end
 	ButtonCancel:MoveRightOf( Button, 5 )
 

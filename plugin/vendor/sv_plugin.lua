@@ -24,7 +24,7 @@ local vars = {
 	},
 	{
 		id = "desc",
-		default = "No desc"
+		default = "No description."
 	},
 	{
 		id = "factions",

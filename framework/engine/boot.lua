@@ -26,7 +26,7 @@ DeriveGamemode( "sandbox" )
 GM.Name = "Catherine"
 GM.Desc = "A free role-playing framework for Garry's Mod."
 GM.Author = "L7D"
-GM.Version = "2015/07/01"
+GM.Version = "2015/07/02"
 
 catherine.FolderName = GM.FolderName
 

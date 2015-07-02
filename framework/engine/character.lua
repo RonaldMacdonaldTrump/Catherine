@@ -322,7 +322,7 @@ if ( SERVER ) then
 		end )
 	end
 	
-	function catherine.character.SetVar( pl, key, value, noSync )
+	function catherine.character.SetVar( pl, key, value, noSync, save )
 		local steamID = pl:SteamID( )
 		local varTable = catherine.character.FindVarByField( key )
 		if ( ( varTable and varTable.static ) or !catherine.character.networkRegistry[ steamID ] ) then return end
@@ -337,6 +337,10 @@ if ( SERVER ) then
 			end
 			
 			netstream.Start( target, "catherine.character.SetVar", { pl, key, value } )
+		end
+		
+		if ( save ) then
+			catherine.character.Save( pl )
 		end
 		
 		hook.Run( "CharacterVarChanged", pl, key, value )
