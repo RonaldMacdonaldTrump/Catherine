@@ -65,7 +65,9 @@ end
 
 function PANEL:BuildInventory( )
 	local pl = self.player
-	
+	local scrollBar = self.Lists.VBar
+	local scroll = scrollBar.Scroll
+
 	self.Lists:Clear( )
 
 	for k, v in SortedPairs( self:GetInventory( ) ) do
@@ -133,6 +135,8 @@ function PANEL:BuildInventory( )
 		
 		self.Lists:AddItem( form )
 	end
+
+	scrollBar:AnimateTo( scroll, 0, 0, 0 )
 end
 
 vgui.Register( "catherine.vgui.inventory", PANEL, "catherine.vgui.menuBase" )

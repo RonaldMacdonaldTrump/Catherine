@@ -69,6 +69,14 @@ if ( SERVER ) then
 		ent:SetNetVar( "customUseClient", forClient )
 	end
 	
+	function catherine.entity.IsRegisteredUseMenu( ent )
+		return catherine.entity.customUse[ ent:EntIndex( ) ]
+	end
+	
+	function catherine.entity.OpenUseMenu( pl, ent )
+		netstream.Start( pl, "catherine.entity.CustomUseMenu", ent:EntIndex( ) )
+	end
+	
 	function catherine.entity.RunUseMenu( pl, index, uniqueID )
 		if ( !catherine.entity.customUse[ index ] or !catherine.entity.customUse[ index ][ uniqueID ] ) then return end
 		

@@ -129,8 +129,8 @@ if ( SERVER ) then
 		timer.Simple( 1, function( )
 			for k, v in pairs( catherine.inventory.Get( pl ) ) do
 				local itemTable = catherine.item.FindByID( k )
-				if ( !itemTable.isBodygroupCloth or pl:GetBodygroup( itemTable.bodyGroup ) == itemTable.bodyGroupSubModelIndex ) then continue end
-				
+				if ( !itemTable.isBodygroupCloth or !catherine.inventory.GetItemData( pl, k, "wearing" ) or pl:GetBodygroup( itemTable.bodyGroup ) == itemTable.bodyGroupSubModelIndex ) then continue end
+
 				catherine.item.Work( pl, k, "wear" )
 			end
 		end )
@@ -143,6 +143,8 @@ if ( SERVER ) then
 			
 			pl:SetBodygroup( itemTable.bodyGroup, 0 )
 		end
+		
+		catherine.character.SetCharVar( pl, "bodygroups", nil )
 	end )
 
 	hook.Add( "OnItemDrop", "catherine.item.hooks.bodygroup_clothing_base.OnItemDrop", function( pl, itemTable )
@@ -174,6 +176,16 @@ else
 			surface.SetDrawColor( 255, 255, 255, 255 )
 			surface.SetMaterial( Material( "CAT/ui/accept.png" ) )
 			surface.DrawTexturedRect( 5, 5, 16, 16 )
+		end
+	end
+	
+	function BASE:DoRightClick( pl, itemData )
+		local uniqueID = self.uniqueID
+		
+		if ( itemData.wearing ) then
+			catherine.item.Work( uniqueID, "takeoff", true )
+		else
+			catherine.item.Work( uniqueID, "wear", true )
 		end
 	end
 end
