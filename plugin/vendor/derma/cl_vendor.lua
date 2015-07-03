@@ -387,7 +387,7 @@ function PANEL:Refresh_SettingList( id )
 					local tw, th = surface.GetTextSize( allowed )
 					
 					surface.SetDrawColor( 255, 255, 255, 255 )
-					surface.SetMaterial( Material( "icon16/accept.png" ) )
+					surface.SetMaterial( Material( "CAT/ui/accept.png" ) )
 					surface.DrawTexturedRect( w - 30 - tw, h / 2 - 16 / 2, 16, 16 )
 					
 					draw.SimpleText( allowed, "catherine_normal15", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )

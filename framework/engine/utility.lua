@@ -88,6 +88,13 @@ function catherine.util.GetUniqueName( name )
 	return name:sub( 4, -5 )
 end
 
+function catherine.util.IsStuckPos( pos )
+	return util.TraceLine( {
+		start = pos,
+		endpos = pos
+	} ).StartSolid
+end
+
 function catherine.util.GetRealTime( )
 	local one, dst, hour = os.date( "*t" ), os.date( "%p" ), os.date( "%I" )
 	

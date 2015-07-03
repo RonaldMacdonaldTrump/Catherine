@@ -71,7 +71,7 @@ if ( SERVER ) then
 	catherine.configs.voice3D = true
 	catherine.configs.giveHand = true
 	catherine.configs.giveKey = true
-	catherine.configs.spawnTime = 5 --[[ Setting a Spawn time. ]]--
+	catherine.configs.spawnTime = 60 --[[ Setting a Spawn time. ]]--
 	catherine.configs.clearMap = true
 	catherine.configs.doorBreach = true
 	

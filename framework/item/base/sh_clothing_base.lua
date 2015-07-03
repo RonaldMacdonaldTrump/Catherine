@@ -140,7 +140,7 @@ else
 	function BASE:DrawInformation( pl, itemTable, w, h, itemData )
 		if ( itemData.wearing ) then
 			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.SetMaterial( Material( "icon16/accept.png" ) )
+			surface.SetMaterial( Material( "CAT/ui/accept.png" ) )
 			surface.DrawTexturedRect( 5, 5, 16, 16 )
 		end
 	end

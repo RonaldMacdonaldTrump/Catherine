@@ -25,7 +25,7 @@ function PANEL:Init( )
 	self.needUpdate = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
 	self.status = false
 	self.mat = {
-		Material( "icon16/accept.png" ),
+		Material( "CAT/ui/accept.png" ),
 		Material( "icon16/error.png" )
 	}
 	

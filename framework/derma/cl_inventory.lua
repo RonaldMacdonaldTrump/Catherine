@@ -25,8 +25,8 @@ function PANEL:Init( )
 	self:SetMenuName( LANG( "Inventory_UI_Title" ) )
 
 	self.Lists = vgui.Create( "DPanelList", self )
-	self.Lists:SetPos( 110, 35 )
-	self.Lists:SetSize( self.w - 120, self.h - 45 )
+	self.Lists:SetPos( 10, 35 )
+	self.Lists:SetSize( self.w - 100, self.h - 45 )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
@@ -35,9 +35,9 @@ function PANEL:Init( )
 	end
 	
 	self.weight = vgui.Create( "catherine.vgui.weight", self )
-	self.weight:SetPos( 10, self.h - 100 )
+	self.weight:SetPos( self.w - 90, self.h - 90 )
 	self.weight:SetSize( 90, 90 )
-	self.weight:SetCircleSize( 40 )
+	self.weight:SetCircleSize( 30 )
 
 	self:BuildInventory( )
 end
@@ -109,7 +109,7 @@ function PANEL:BuildInventory( )
 			spawnIcon.PaintOver = function( pnl, w, h )
 				if ( catherine.inventory.IsEquipped( k1 ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
-					surface.SetMaterial( Material( "icon16/accept.png" ) )
+					surface.SetMaterial( Material( "CAT/ui/accept.png" ) )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
 				
