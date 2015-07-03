@@ -575,6 +575,8 @@ else
 		local pl = data[ 1 ]
 		local registry = data[ 2 ]
 		
+		if ( !IsValid( pl ) ) then return end
+		
 		catherine.character.networkRegistry[ pl:SteamID( ) ] = registry
 		
 		hook.Run( "CreateNetworkRegistry", pl, registry )
@@ -592,6 +594,9 @@ else
 		local pl = data[ 1 ]
 		local key = data[ 2 ]
 		local value = data[ 3 ]
+		
+		if ( !IsValid( pl ) ) then return end
+		
 		local steamID = pl:SteamID( )
 		
 		if ( !catherine.character.networkRegistry[ steamID ] ) then return end
@@ -605,6 +610,9 @@ else
 		local pl = data[ 1 ]
 		local key = data[ 2 ]
 		local value = data[ 3 ]
+		
+		if ( !IsValid( pl ) ) then return end
+		
 		local steamID = pl:SteamID( )
 		
 		if ( !catherine.character.networkRegistry[ steamID ] or !catherine.character.networkRegistry[ steamID ][ "_charVar" ] ) then return end
