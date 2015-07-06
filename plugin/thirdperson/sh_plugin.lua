@@ -62,7 +62,8 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 	if ( pl:CanOverrideView( ) and pl:GetViewEntity( ) == pl ) then
 		local tr = util.TraceLine( {
 			start = pos,
-			endpos = pos - ( ang:Forward( ) * 100 )
+			endpos = pos - ( ang:Forward( ) * 100 ),
+			filter = pl
 		} )
 		
 		return {
