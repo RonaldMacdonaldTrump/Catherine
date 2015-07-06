@@ -49,6 +49,7 @@ if ( SERVER ) then
 	
 	function catherine.storage.Work( pl, ent, workID, data )
 		ent = Entity( ent )
+		
 		if ( !IsValid( pl ) or !IsValid( ent ) or !workID or !data ) then return end
 		
 		if ( workID == CAT_STORAGE_ACTION_ADD ) then

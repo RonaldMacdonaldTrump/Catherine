@@ -183,7 +183,7 @@ function PANEL:BuildStorage( )
 				netstream.Start( "catherine.storage.Work", {
 					self.ent:EntIndex( ),
 					CAT_STORAGE_ACTION_REMOVE,
-					1
+					k1
 				} )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
