@@ -42,6 +42,8 @@ function catherine.plugin.Include( dir )
 			catherine.item.Include( pluginDir )
 			
 			catherine.plugin.IncludeEntities( pluginDir )
+			catherine.plugin.IncludeWeapons( pluginDir )
+			catherine.plugin.IncludeEffects( pluginDir )
 			
 			for k1, v1 in pairs( file.Find( pluginDir .. "/derma/*.lua", "LUA" ) ) do
 				catherine.util.Include( pluginDir .. "/derma/" .. v1 )
@@ -85,12 +87,34 @@ end
 
 function catherine.plugin.IncludeEntities( dir )
 	for k, v in pairs( file.Find( dir .. "/entities/entities/*.lua", "LUA" ) ) do
-		ENT = { Type = "anim", ClassName = v:sub( 1, #v - 4 ) }
+		ENT = { Type = "anim", Base = "base_gmodentity", ClassName = v:sub( 1, #v - 4 ) }
 		
 		catherine.util.Include( dir .. "/entities/entities/" .. v, "SHARED" )
 		scripted_ents.Register( ENT, ENT.ClassName )
 		
 		ENT = nil
+	end
+end
+
+function catherine.plugin.IncludeWeapons( dir )
+	for k, v in pairs( file.Find( dir .. "/entities/weapons/*.lua", "LUA" ) ) do
+		SWEP = { Base = "weapon_base", Primary = { }, Secondary = { }, ClassName = v:sub( 1, #v - 4 ) }
+		
+		catherine.util.Include( dir .. "/entities/weapons/" .. v, "SHARED" )
+		weapons.Register( SWEP, SWEP.ClassName )
+		
+		SWEP = nil
+	end
+end
+
+function catherine.plugin.IncludeEffects( dir )
+	for k, v in pairs( file.Find( dir .. "/entities/effects/*.lua", "LUA" ) ) do
+		EFFECT = { ClassName = v:sub( 1, #v - 4 ) }
+		
+		catherine.util.Include( dir .. "/entities/effects/" .. v, "SHARED" )
+		effects.Register( EFFECT, EFFECT.ClassName )
+		
+		EFFECT = nil
 	end
 end
 
