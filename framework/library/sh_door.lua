@@ -163,7 +163,7 @@ if ( SERVER ) then
 		if ( force ) then
 			ent:SetNetVar( "title", title != "" and title or nil )
 		else
-			local has, flag = catherine.door.IsHasDoorPermission( target, ent )
+			local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
 			
 			if ( !has or flag == CAT_DOOR_FLAG_BASIC ) then
 				return false, "Door_Notify_NoOwner"

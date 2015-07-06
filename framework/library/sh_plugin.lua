@@ -44,6 +44,7 @@ function catherine.plugin.Include( dir )
 			catherine.plugin.IncludeEntities( pluginDir )
 			catherine.plugin.IncludeWeapons( pluginDir )
 			catherine.plugin.IncludeEffects( pluginDir )
+			catherine.plugin.IncludeTools( pluginDir )
 			
 			for k1, v1 in pairs( file.Find( pluginDir .. "/derma/*.lua", "LUA" ) ) do
 				catherine.util.Include( pluginDir .. "/derma/" .. v1 )
@@ -118,6 +119,12 @@ function catherine.plugin.IncludeEffects( dir )
 	end
 end
 
+function catherine.plugin.IncludeTools( dir )
+	for k, v in pairs( file.Find( dir .. "/tools/*.lua", "LUA" ) ) do
+		catherine.util.Include( dir .. "/tools/" .. v, "SHARED" )
+	end
+end
+
 function catherine.plugin.GetAll( )
 	return catherine.plugin.lists
 end
@@ -125,6 +132,16 @@ end
 function catherine.plugin.Get( id )
 	return catherine.plugin.lists[ id ]
 end
+
+function catherine.plugin.FrameworkInitialized( )
+	local toolGun = weapons.GetStored( "gmod_tool" )
+
+	for k, v in pairs( catherine.tool.GetAll( ) ) do
+		toolGun.Tool[ v.Mode ] = v
+	end
+end
+
+hook.Add( "FrameworkInitialized", "catherine.plugin.FrameworkInitialized", catherine.plugin.FrameworkInitialized )
 
 if ( SERVER ) then return end
 

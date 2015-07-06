@@ -44,9 +44,10 @@ function catherine.schema.Initialization( )
 	catherine.plugin.Include( catherine.FolderName )
 
 	if ( !catherine.schema.loaded ) then
-		hook.Run( "SchemaInitialized" )
 		catherine.schema.loaded = true
 	end
+	
+	hook.Run( "SchemaInitialized" )
 end
 
 function catherine.schema.GetUniqueID( )

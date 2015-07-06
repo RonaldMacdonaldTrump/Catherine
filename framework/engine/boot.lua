@@ -26,7 +26,7 @@ DeriveGamemode( "sandbox" )
 GM.Name = "Catherine"
 GM.Desc = "A free role-playing framework for Garry's Mod."
 GM.Author = "L7D"
-GM.Version = "2015/07/03"
+GM.Version = "2015/07/06"
 
 catherine.FolderName = GM.FolderName
 
@@ -80,7 +80,6 @@ function catherine.Initialize( )
 	end
 	
 	--[[ Initalized. ]]--
-	hook.Run( "FrameworkInitialized" )
 
 	catherine.isInitialized = true
 end
