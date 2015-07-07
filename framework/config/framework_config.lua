@@ -17,7 +17,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.configs = catherine.configs or { }
-catherine.configs.buildVer = "BETA"
 
 catherine.configs.OWNER = "" 
 catherine.configs.defaultLanguage = "english" --[[ Setting a default Language (english, korean). ]]--

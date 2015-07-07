@@ -264,8 +264,10 @@ function PANEL:UseCharacterPanel( )
 		local factionData = catherine.faction.FindByID( v.characterDatas._faction )
 		if ( !factionData ) then return end
 		
+		local name = v.characterDatas._name
+		local desc = v.characterDatas._desc
 		local factionName = catherine.util.StuffLanguage( factionData.name )
-		local overrideModel = hook.Run( "GetCharacterPanelLoadModel", v.characterDatas )
+		local overrideModel = hook.Run( "GetCharacterPanelLoadModel", v.characterDatas ) or v.characterDatas._model
 		
 		v.panel = vgui.Create( "DPanel", self.CharacterPanel )
 		v.panel:SetSize( baseW, baseH )
@@ -277,8 +279,8 @@ function PANEL:UseCharacterPanel( )
 			surface.SetMaterial( Material( "gui/gradient_up" ) )
 			surface.DrawTexturedRect( 0, 0, w, h )
 		
-			draw.SimpleText( v.characterDatas._name, "catherine_normal20", w / 2, h - 100, Color( 0, 0, 0, 255 ), 1, 1 )
-			draw.SimpleText( v.characterDatas._desc, "catherine_normal15", w / 2, h - 70, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( name, "catherine_normal20", w / 2, h - 100, Color( 0, 0, 0, 255 ), 1, 1 )
+			draw.SimpleText( desc, "catherine_normal15", w / 2, h - 70, Color( 50, 50, 50, 255 ), 1, 1 )
 			draw.SimpleText( factionName, "catherine_normal25", w / 2, 20, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 		

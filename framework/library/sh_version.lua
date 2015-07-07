@@ -28,12 +28,12 @@ if ( SERVER ) then
 				local globalVer = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
 				local foundNew = false
 				
-				if ( body != GAMEMODE.Version ) then
+				if ( body != catherine.GetVersion( ) ) then
 					if ( globalVer == false ) then
 						catherine.net.SetNetGlobalVar( "cat_needUpdate", true )
 					end
 					
-					catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. GAMEMODE.Version .. " -> " .. body .. "]" )
+					catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. catherine.GetVersion( ) .. " -> " .. body .. "]" )
 					foundNew = true
 				else
 					foundNew = false

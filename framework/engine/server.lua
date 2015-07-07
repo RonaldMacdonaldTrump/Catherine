@@ -753,7 +753,7 @@ end
 
 function GM:Initialize( )
 	MsgC( Color( 255, 255, 0 ), "[CAT] Catherine is currently in developing. Reset the database after update, we are very sorry!\n" )
-	MsgC( Color( 0, 255, 0 ), "[CAT] You are using Catherine '" .. GAMEMODE.Version .. "' date Version, Thanks.\n" )
+	MsgC( Color( 0, 255, 0 ), "[CAT] You are using Catherine '" .. catherine.GetVersion( ) .. "' date Version, Thanks.\n" )
 	
 	hook.Run( "FrameworkInitialized" )
 end

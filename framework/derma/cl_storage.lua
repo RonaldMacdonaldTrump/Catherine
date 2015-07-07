@@ -23,7 +23,7 @@ function PANEL:Init( )
 	
 	self.ent = nil
 	self.player = LocalPlayer( )
-	self.w, self.h = ScrW( ) * 0.7, ScrH( ) * 0.6
+	self.w, self.h = ScrW( ) * 0.7, ScrH( ) * 0.8
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
 
 	self:SetSize( self.w, self.h )
@@ -60,7 +60,7 @@ function PANEL:Init( )
 			draw.SimpleText( LANG( "Storage_UI_PlayerNoHaveItem" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		end
 	end
-	
+
 	self.playerWeight = vgui.Create( "catherine.vgui.weight", self )
 	self.playerWeight:SetPos( self.w - 50, self.h - 45 )
 	self.playerWeight:SetSize( 40, 40 )
@@ -147,10 +147,16 @@ end
 function PANEL:BuildStorage( )
 	local pl = self.player
 	
+	local storageLists_scrollBar = self.storageLists.VBar
+	local storageLists_scroll = storageLists_scrollBar.Scroll
+	
+	local playerLists_scrollBar = self.playerLists.VBar
+	local playerLists_scroll = playerLists_scrollBar.Scroll
+	
 	self.storageLists:Clear( )
 	self.playerLists:Clear( )
 
-	for k, v in pairs( self.storageInventory or { } ) do
+	for k, v in SortedPairs( self.storageInventory or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.storageLists:GetWide( ), 54 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
@@ -164,14 +170,15 @@ function PANEL:BuildStorage( )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
 		lists:SetSpacing( 3 )
 		lists:EnableHorizontal( true )
-		lists:EnableVerticalScrollbar( false )	
+		lists:EnableVerticalScrollbar( false )
 		
 		form:AddItem( lists )
 
-		for k1, v1 in pairs( v ) do
+		for k1, v1 in SortedPairsByMemberValue( v, "uniqueID" ) do
 			local w, h = 54, 54
 			local itemTable = catherine.item.FindByID( k1 )
-			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, pl:GetInvItemDatas( k1 ), false ) or nil
+			local itemData = pl:GetInvItemDatas( k1 )
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, itemData, false ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, k1 )
 			
@@ -187,18 +194,24 @@ function PANEL:BuildStorage( )
 				} )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
-				if ( catherine.inventory.IsEquipped( v1.uniqueID ) ) then
+				if ( catherine.inventory.IsEquipped( k1 ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
 					surface.SetMaterial( Material( "CAT/ui/accept.png" ) )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
 				
 				if ( itemTable.DrawInformation ) then
-					itemTable:DrawInformation( self.player, itemTable, w, h, self.player:GetInvItemDatas( itemTable.uniqueID ) )
+					itemTable:DrawInformation( pl, itemTable, w, h, itemData )
 				end
 				
 				if ( !noDrawItemCount and v1.itemCount > 1 ) then
-					draw.SimpleText( v1.itemCount, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					local count = v1.itemCount
+					
+					surface.SetFont( "catherine_normal20" )
+					local tw, th = surface.GetTextSize( count )
+					
+					draw.RoundedBox( 0, 5 - tw / 2, h - 20, tw * 2, 20, Color( 50, 50, 50, 200 ) )
+					draw.SimpleText( count, "catherine_normal20", 5, h - 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
 			
@@ -208,7 +221,7 @@ function PANEL:BuildStorage( )
 		self.storageLists:AddItem( form )
 	end
 
-	for k, v in pairs( self.playerInventory or { } ) do
+	for k, v in SortedPairs( self.playerInventory or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.playerLists:GetWide( ), 54 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
@@ -222,14 +235,15 @@ function PANEL:BuildStorage( )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
 		lists:SetSpacing( 3 )
 		lists:EnableHorizontal( true )
-		lists:EnableVerticalScrollbar( false )	
+		lists:EnableVerticalScrollbar( false )
 		
 		form:AddItem( lists )
 
-		for k1, v1 in pairs( v ) do
+		for k1, v1 in SortedPairsByMemberValue( v, "uniqueID" ) do
 			local w, h = 54, 54
 			local itemTable = catherine.item.FindByID( k1 )
-			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, pl:GetInvItemDatas( k1 ), true ) or nil
+			local itemData = pl:GetInvItemDatas( k1 )
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, itemData, true ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, k1 )
 			
@@ -243,23 +257,29 @@ function PANEL:BuildStorage( )
 					CAT_STORAGE_ACTION_ADD,
 					{
 						uniqueID = k1,
-						itemData = pl:GetInvItemDatas( k1 )
+						itemData = itemData
 					}
 				} )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
-				if ( catherine.inventory.IsEquipped( v1.uniqueID ) ) then
+				if ( catherine.inventory.IsEquipped( k1 ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
 					surface.SetMaterial( Material( "CAT/ui/accept.png" ) )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
 				
 				if ( itemTable.DrawInformation ) then
-					itemTable:DrawInformation( pl, itemTable, w, h, pl:GetInvItemDatas( k1 ) )
+					itemTable:DrawInformation( pl, itemTable, w, h, itemData )
 				end
 				
 				if ( !noDrawItemCount and v1.itemCount > 1 ) then
-					draw.SimpleText( v1.itemCount, "catherine_normal20", 5, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					local count = v1.itemCount
+					
+					surface.SetFont( "catherine_normal20" )
+					local tw, th = surface.GetTextSize( count )
+					
+					draw.RoundedBox( 0, 5 - tw / 2, h - 20, tw * 2, 20, Color( 50, 50, 50, 200 ) )
+					draw.SimpleText( count, "catherine_normal20", 5, h - 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
 			
@@ -268,6 +288,9 @@ function PANEL:BuildStorage( )
 		
 		self.playerLists:AddItem( form )
 	end
+	
+	storageLists_scrollBar:AnimateTo( storageLists_scroll, 0, 0, 0 )
+	playerLists_scrollBar:AnimateTo( playerLists_scroll, 0, 0, 0 )
 end
 
 function PANEL:Close( )
@@ -276,6 +299,10 @@ function PANEL:Close( )
 	self.closing = true
 	
 	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
+		if ( IsValid( self.ent ) ) then
+			netstream.Start( "catherine.storage.ClosePanel", self.ent )
+		end
+		
 		self:Remove( )
 		self = nil
 	end )

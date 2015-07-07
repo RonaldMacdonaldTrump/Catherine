@@ -507,6 +507,24 @@ function GM:HUDPaint( )
 	if ( pl:Alive( ) ) then
 		hook_run( "EntityCacheWork", pl )
 	end
+	
+	hook_run( "HUDDrawTop" )
+end
+
+function GM:HUDDrawTop( )
+	if ( !catherine.util.dermaMenuTitle ) then return end
+	local dermaMenuData = catherine.util.dermaMenuTitle
+	
+	if ( IsValid( dermaMenuData.menuPanel ) ) then
+		local panel = dermaMenuData.menuPanel
+		local w, h = panel:GetSize( )
+		local x, y = panel:GetPos( )
+
+		draw.RoundedBox( 0, x - 5, y - 5, w + 10, h + 10, Color( 50, 50, 50, 255 ) )
+		draw.SimpleText( dermaMenuData.title or "", "catherine_outline20", x + w / 2, y - 20, Color( 255, 255, 255, 255 ), 1, 1 )
+	else
+		catherine.util.dermaMenuTitle = nil
+	end
 end
 
 function GM:PostRenderVGUI( )

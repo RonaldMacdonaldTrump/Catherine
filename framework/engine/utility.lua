@@ -517,6 +517,7 @@ else
 	catherine.util.materials = catherine.util.materials or { }
 	catherine.util.advSounds = catherine.util.advSounds or { }
 	catherine.util.motionBlur = catherine.util.motionBlur or nil
+	catherine.util.dermaMenuTitle = catherine.util.dermaMenuTitle or nil
 	CAT_UTIL_BUTTOMSOUND_1 = 1
 	CAT_UTIL_BUTTOMSOUND_2 = 2
 	CAT_UTIL_BUTTOMSOUND_3 = 3
@@ -696,6 +697,18 @@ else
 		catherine.util.materials[ key ] = catherine.util.materials[ key ] or Material( matDir, correction )
 		
 		return catherine.util.materials[ key ]
+	end
+	
+	function catherine.util.SetDermaMenuTitle( menuPanel, title )	
+		if ( !menuPanel or !title ) then
+			catherine.util.dermaMenuTitle = nil
+			return
+		end
+		
+		catherine.util.dermaMenuTitle = {
+			menuPanel = menuPanel,
+			title = title
+		}
 	end
 
 	function catherine.util.BlurDraw( x, y, w, h, amount )

@@ -79,6 +79,8 @@ end
 function PANEL:RefreshPlayerLists( )
 	if ( self.cantLook == true ) then return end
 	local pl = self.player
+	local scrollBar = self.Lists.VBar
+	local scroll = scrollBar.Scroll
 	
 	self.Lists:Clear( )
 
@@ -167,6 +169,8 @@ function PANEL:RefreshPlayerLists( )
 		
 		self.Lists:AddItem( form )
 	end
+	
+	scrollBar:AnimateTo( scroll, 0, 0, 0 )
 end
 
 vgui.Register( "catherine.vgui.scoreboard", PANEL, "catherine.vgui.menuBase" )

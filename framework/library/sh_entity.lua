@@ -101,6 +101,8 @@ else
 
 		if ( pl:GetActiveWeapon( ):GetClass( ) == "weapon_physgun" and pl:KeyDown( IN_ATTACK ) ) then return end
 		
+		local isAv = false
+		
 		for k, v in pairs( IsValid( ent ) and ent:GetNetVar( "customUseClient" ) or { } ) do
 			menu:AddOption( catherine.util.StuffLanguage( v.text ), function( )
 				netstream.Start( "catherine.entity.customUseMenu_Receive", {
@@ -108,10 +110,20 @@ else
 					v.uniqueID
 				} )
 			end ):SetImage( v.icon or "icon16/information.png" )
+			
+			isAv = true
 		end
 		
 		menu:Open( )
 		menu:Center( )
+
+		if ( isAv ) then
+			catherine.util.SetDermaMenuTitle( menu, LANG( "Basic_UI_EntityMenuOptionTitle" ) )
+			
+			menu.OnRemove = function( )
+				catherine.util.SetDermaMenuTitle( )
+			end
+		end
 	end )
 	
 	function catherine.entity.LanguageChanged( )
@@ -133,7 +145,7 @@ META.CATSetModel = META.CATSetModel or META.SetModel
 META.CATGetModel = META.CATGetModel or META.GetModel
 
 function META:SetModel( model )
-	if ( self:IsPlayer( ) and SERVER ) then
+	if ( SERVER and self:IsPlayer( ) ) then
 		netstream.Start( self, "catherine.SetModel", model )
 	end
 	
@@ -153,6 +165,7 @@ end
 local META2 = FindMetaTable( "Weapon" )
 
 META2.CATGetPrintName = META2.CATGetPrintName or META2.GetPrintName
+
 local languageStuff = catherine.util.StuffLanguage
 
 function META2:GetPrintName( )

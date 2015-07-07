@@ -383,10 +383,9 @@ else
 	end
 
 	--[[
-		This function has brought from Clockwork.
-		https://github.com/CloudSixteen/Clockwork
-	--]]
-	
+		'catherine.door.CalcDoorTextPos' function by ...
+		Nori
+	]]--
 	function catherine.door.CalcDoorTextPos( ent, rev )
 		local max = ent:OBBMaxs( )
 		local min = ent:OBBMins( )

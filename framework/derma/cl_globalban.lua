@@ -21,7 +21,7 @@ local PANEL = { }
 function PANEL:Init( )
 	catherine.vgui.globalban = self
 	
-	self.globalBan = catherine.net.GetNetGlobalVar( "cat_globalban_database" )
+	self.globalBan = catherine.net.GetNetGlobalVar( "cat_globalban_database", { } )
 	
 	self:SetMenuSize( ScrW( ) * 0.5, ScrH( ) * 0.75 )
 	self:SetMenuName( LANG( "GlobalBan_UI_Title" ) )
@@ -60,6 +60,8 @@ end
 
 function PANEL:BuildGlobalBan( )
 	if ( !catherine.configs.enable_globalBan ) then return end
+	local scrollBar = self.Lists.VBar
+	local scroll = scrollBar.Scroll
 	
 	self.Lists:Clear( )
 
@@ -99,6 +101,8 @@ function PANEL:BuildGlobalBan( )
 		
 		self.Lists:AddItem( panel )
 	end
+	
+	scrollBar:AnimateTo( scroll, 0, 0, 0 )
 end
 
 vgui.Register( "catherine.vgui.globalban", PANEL, "catherine.vgui.menuBase" )

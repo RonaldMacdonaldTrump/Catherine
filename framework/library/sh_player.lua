@@ -37,7 +37,7 @@ if ( SERVER ) then
 		
 		local function Initializing( )
 			if ( !IsValid( pl ) ) then return end
-			
+
 			if ( !Schema ) then
 				netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_NoSchema" ) )
 				return
@@ -49,7 +49,7 @@ if ( SERVER ) then
 			end
 			
 			--[[ Initializing a Catherine ... :> ]]--
-			
+
 			catherine.net.ScanErrorInNetworkRegistry( )
 
 			for i = 1, #functions do
@@ -62,7 +62,7 @@ if ( SERVER ) then
 					return
 				end
 			end
-			
+
 			--[[
 			catherine.player.PlayerInformationUpdate( pl )
 			catherine.net.SendAllNetworkRegistries( pl ) // Send ALL entity, player network registries.
@@ -88,12 +88,12 @@ if ( SERVER ) then
 			if ( !IsValid( pl ) ) then return end
 			
 			netstream.Start( pl, "catherine.introStart" )
-			
+
 			timer.Simple( 1, function( )
 				Initializing( )
 			end )
 		end )
-		
+
 		pl:Freeze( true )
 		
 		netstream.Start( pl, "catherine.player.CheckLocalPlayer" )

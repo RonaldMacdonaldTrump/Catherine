@@ -23,17 +23,22 @@ CAT_STORAGE_ACTION_REMOVE = 2
 if ( SERVER ) then
 	catherine.storage.lists = { }
 	
-	function catherine.storage.Register( name, desc, model, maxWeight )
+	function catherine.storage.Register( name, desc, model, maxWeight, openSound, closeSound )
 		catherine.storage.lists[ #catherine.storage.lists + 1 ] = {
 			name = name,
 			desc = desc,
 			model = model,
-			maxWeight = maxWeight
+			maxWeight = maxWeight,
+			openSound = openSound,
+			closeSound = closeSound
 		}
 	end
 
-	catherine.storage.Register( "Wardrobe", "The Wardrobe to put clothes.", "models/props_c17/FurnitureDresser001a.mdl", 8 )
-	catherine.storage.Register( "Desk", "A Desk.", "models/props_interiors/Furniture_Desk01a.mdl", 12 )
+	catherine.storage.Register( "Wardrobe", "The Wardrobe to put clothes.", "models/props_c17/FurnitureDresser001a.mdl", 8, "physics/wood/wood_box_impact_soft2.wav", "physics/wood/wood_box_impact_soft3.wav" )
+	catherine.storage.Register( "Desk", "A Desk.", "models/props_interiors/Furniture_Desk01a.mdl", 7, "physics/wood/wood_box_impact_soft2.wav", "physics/wood/wood_box_impact_soft3.wav" )
+	catherine.storage.Register( "Oil drum", "A Oil drum.", "models/props_c17/oildrum001.mdl", 5 )
+	catherine.storage.Register( "Lockers", "A Lockers.", "models/props_c17/Lockers001a.mdl", 12, "physics/metal/metal_sheet_impact_hard6.wav", "physics/metal/metal_sheet_impact_hard8.wav" )
+	catherine.storage.Register( "Fridge", "A Fridge.", "models/props_c17/FurnitureFridge001a.mdl", 7, "physics/plastic/plastic_box_impact_soft2.wav", "physics/plastic/plastic_box_impact_soft4.wav" )
 	
 	function catherine.storage.GetAll( )
 		return catherine.storage.lists
@@ -157,6 +162,8 @@ if ( SERVER ) then
 			
 			if ( !data ) then return end
 		end
+		
+		if ( !originalData ) then return end
 
 		ent.name = data.name or originalData.name
 		ent.desc = data.desc or originalData.desc
@@ -175,12 +182,28 @@ if ( SERVER ) then
 				uniqueID = "ID_OPEN",
 				text = "^Storage_OpenStr",
 				func = function( pl, ent )
+					if ( !ent.CAT_storageOpenSound ) then
+						local storageListData = catherine.storage.FindByModel( ent:GetModel( ) )
+						
+						if ( storageListData and storageListData.openSound ) then
+							ent.CAT_storageOpenSound = storageListData.openSound
+						else
+							ent.CAT_storageOpenSound = ""
+						end
+					end
+
+					if ( ent.CAT_storageOpenSound and ent.CAT_storageOpenSound != "" ) then
+						ent:EmitSound( ent.CAT_storageOpenSound )
+					end
+					
 					netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
 				end
 			}
 		} )
+		
+		return true
 	end
-	
+
 	function catherine.storage.SetInv( ent, data )
 		ent.inv = data
 		ent:SetNetVar( "inv", ent.inv )
@@ -211,9 +234,11 @@ if ( SERVER ) then
 		return inventory[ uniqueID ] and inventory[ uniqueID ].itemCount or 0
 	end
 
-	function catherine.storage.GetDataByIndex( index, data )
+	function catherine.storage.GetDataByIndex( ent, data )
 		for k, v in pairs( data ) do
-			if ( v.index == index ) then
+			local pos = ent:GetPos( )
+			
+			if ( v.index == ent:EntIndex( ) or ( v.isStorageCustom and ( math.floor( v.posSave.x ) == math.floor( pos.x ) and math.floor( v.posSave.y ) == math.floor( pos.y ) and math.floor( v.posSave.z ) == math.floor( pos.z ) ) ) ) then
 				return v
 			end
 		end
@@ -221,31 +246,50 @@ if ( SERVER ) then
 	
 	function catherine.storage.DataSave( )
 		local data = { }
+		local i = 1
 		
 		for k, v in pairs( ents.FindByClass( "prop_physics" ) ) do
 			if ( !v.isStorage ) then continue end
 			
-			data[ #data + 1 ] = {
+			data[ i ] = {
 				index = v:EntIndex( ),
 				inv = v.inv
 			}
+			
+			if ( v.CAT_isStorageCustom ) then
+				data[ i ].isStorageCustom = true
+				data[ i ].posSave = v:GetPos( )
+			end
+			
+			i = i + 1
 		end
 		
 		catherine.data.Set( "storage", data )
 	end
 	
 	function catherine.storage.DataLoad( )
-		local data = catherine.data.Get( "storage", { } )
+		timer.Simple( 1, function( )
+			local data = catherine.data.Get( "storage", { } )
 
-		for k, v in pairs( ents.FindByClass( "prop_physics" ) ) do
-			catherine.storage.Make( v, catherine.storage.GetDataByIndex( v:EntIndex( ), data ) )
-		end
+			for k, v in pairs( ents.FindByClass( "prop_physics" ) ) do
+				catherine.storage.Make( v, catherine.storage.GetDataByIndex( v, data ) )
+			end
+		end )
 	end
+
+	local staticPropPlugin = catherine.plugin.Get( "staticprop" )
 
 	function catherine.storage.PlayerSpawnedProp( pl, _, ent )
 		timer.Simple( 1, function( )
 			if ( IsValid( ent ) ) then
-				catherine.storage.Make( ent )
+				local success = catherine.storage.Make( ent )
+
+				if ( staticPropPlugin and success ) then
+					ent.CAT_isStorageCustom = true
+					
+					ent:SetNetVar( "isStatic", true )
+					staticPropPlugin:DataSave( )
+				end
 			end
 		end )
 	end
@@ -256,6 +300,24 @@ if ( SERVER ) then
 	
 	netstream.Hook( "catherine.storage.Work", function( pl, data )
 		catherine.storage.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ] )
+	end )
+
+	netstream.Hook( "catherine.storage.ClosePanel", function( pl, data )
+		if ( IsValid( data ) ) then
+			if ( !data.CAT_storageCloseSound ) then
+				local storageListData = catherine.storage.FindByModel( data:GetModel( ) )
+				
+				if ( storageListData and storageListData.closeSound ) then
+					data.CAT_storageCloseSound = storageListData.closeSound
+				else
+					data.CAT_storageCloseSound = ""
+				end
+			end
+
+			if ( data.CAT_storageCloseSound and data.CAT_storageCloseSound != "" ) then
+				data:EmitSound( data.CAT_storageCloseSound )
+			end
+		end
 	end )
 else
 	netstream.Hook( "catherine.storage.Use", function( data )
@@ -292,7 +354,7 @@ else
 		
 		return weight + ( customAdd or 0 ), maxWeight
 	end
-	
+
 	function catherine.storage.GetItemInt( ent, uniqueID )
 		local inventory = catherine.storage.GetInv( ent )
 		

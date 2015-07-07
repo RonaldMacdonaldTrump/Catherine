@@ -57,7 +57,7 @@ function PANEL:Init( )
 	self.buyItems:SetPos( self.w * 0.6 + 20, self.h - 40 )
 	self.buyItems:SetSize( self.w * 0.4 - 30, 30 )
 	self.buyItems:SetStr( LANG( "Business_UI_BuyButtonStr", 0 ) )
-	self.buyItems:SetStrFont( "catherine_normal25" )
+	self.buyItems:SetStrFont( "catherine_normal20" )
 	self.buyItems:SetStrColor( Color( 50, 50, 50, 255 ) )
 	self.buyItems:SetGradientColor( Color( 255, 255, 255, 150 ) )
 	self.buyItems.Click = function( )
@@ -66,15 +66,6 @@ function PANEL:Init( )
 				Derma_Query( LANG( "Business_Notify_BuyQ" ), "", LANG( "Basic_UI_YES" ), function( )
 					netstream.Start( "catherine.business.BuyItems", self.shoppingcart )
 				end, LANG( "Basic_UI_NO" ), function( ) end )
-			--[[
-				if ( self.player:GetPos( ):Distance( self.player:GetEyeTraceNoCursor( ).HitPos ) <= 150 ) then
-					Derma_Query( LANG( "Business_Notify_BuyQ" ), "", LANG( "Basic_UI_YES" ), function( )
-						netstream.Start( "catherine.business.BuyItems", self.shoppingcart )
-					end, LANG( "Basic_UI_NO" ), function( ) end )
-				else
-					catherine.notify.Add( LANG( "Inventory_Notify_CantDrop01" ), 5 )
-				end
-			--]]
 			else
 				catherine.notify.Add( LANG( "Cash_Notify_HasNot" ), 5 )
 			end
@@ -95,11 +86,11 @@ end
 
 function PANEL:RefreshShoppingCartInfo( )
 	local costs = 0
-	
+
 	for k, v in pairs( self.shoppingcart ) do
 		local itemTable = catherine.item.FindByID( k )
-		
-		costs = itemTable.cost * v
+
+		costs = costs + itemTable.cost * v
 	end
 	
 	self.shoppingcartInfo = costs
@@ -119,7 +110,7 @@ function PANEL:InitializeBusiness( )
 	local items = { }
 	
 	for k, v in pairs( catherine.item.GetAll( ) ) do
-		if ( v.showOnBusiness and v:showOnBusiness( pl ) == false ) then continue end
+		if ( v.ShowOnBusiness and v:ShowOnBusiness( pl ) == false ) then continue end
 		if ( !table.HasValue( v.onBusinessFactions or { }, team ) ) then continue end
 		local category = v.category
 		
@@ -143,20 +134,24 @@ function PANEL:GetShipmentCount( )
 end
 
 function PANEL:BuildShoppingCart( )
+	local scrollBar = self.Cart.VBar
+	local scroll = scrollBar.Scroll
+	
 	self.Cart:Clear( )
 	
 	for k, v in pairs( self.shoppingcart ) do
 		local itemTable = catherine.item.FindByID( k )
 		local costs = itemTable.cost * v
 		local name = catherine.util.StuffLanguage( itemTable.name )
-
+		local count = LANG( "Basic_UI_Count", v )
+		
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Cart:GetWide( ), 40 )
 		panel.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 			
 			draw.SimpleText( name, "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( v .. "'s / " .. catherine.cash.GetName( costs ), "catherine_normal15", w - 40, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			draw.SimpleText( count .. " / " .. catherine.cash.GetName( costs ), "catherine_normal15", w - 40, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		end
 		
 		local removeItem = vgui.Create( "catherine.vgui.button", panel )
@@ -174,6 +169,9 @@ function PANEL:BuildShoppingCart( )
 				self.Cart:RemoveItem( panel )
 			end
 			
+			self:RefreshShoppingCartInfo( )
+			self:BuildShoppingCart( )
+			
 			costs = itemTable.cost * v
 		end
 		removeItem.PaintBackground = function( pnl, w, h )
@@ -182,9 +180,15 @@ function PANEL:BuildShoppingCart( )
 		
 		self.Cart:AddItem( panel )
 	end
+	
+	scrollBar:AnimateTo( scroll, 0, 0, 0 )
 end
 
 function PANEL:BuildBusiness( )
+	local pl = self.player
+	local scrollBar = self.Lists.VBar
+	local scroll = scrollBar.Scroll
+	
 	self.Lists:Clear( )
 
 	for k, v in pairs( self.business or { } ) do
@@ -230,7 +234,7 @@ function PANEL:BuildBusiness( )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
 				if ( v1.DrawInformation ) then
-					v1:DrawInformation( self.player, v1, w, h, self.player:GetInvItemDatas( k1 ) )
+					v1:DrawInformation( pl, v1, w, h, pl:GetInvItemDatas( k1 ) )
 				end
 			end
 			
@@ -239,6 +243,8 @@ function PANEL:BuildBusiness( )
 		
 		self.Lists:AddItem( form )
 	end
+	
+	scrollBar:AnimateTo( scroll, 0, 0, 0 )
 end
 
 vgui.Register( "catherine.vgui.business", PANEL, "catherine.vgui.menuBase" )

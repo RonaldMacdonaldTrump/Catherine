@@ -57,6 +57,9 @@ function PANEL:InitializeOption( )
 end
 
 function PANEL:BuildOption( )
+	local scrollBar = self.Lists.VBar
+	local scroll = scrollBar.Scroll
+	
 	self.Lists:Clear( )
 	
 	for k, v in pairs( self.optionTable or { } ) do
@@ -80,6 +83,8 @@ function PANEL:BuildOption( )
 		
 		self.Lists:AddItem( form )
 	end
+	
+	scrollBar:AnimateTo( scroll, 0, 0, 0 )
 end
 
 vgui.Register( "catherine.vgui.option", PANEL, "catherine.vgui.menuBase" )

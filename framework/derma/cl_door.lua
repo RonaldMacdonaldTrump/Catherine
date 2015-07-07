@@ -133,6 +133,7 @@ end
 
 function PANEL:BuildPlayerList( )
 	self.playerLists:Clear( )
+	
 	if ( self.mode != CAT_DOOR_FLAG_OWNER ) then return end
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do

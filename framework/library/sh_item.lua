@@ -271,6 +271,8 @@ else
 
 		if ( !IsValid( ent ) or !IsValid( pl:GetEyeTrace( ).Entity ) or pl:GetActiveWeapon( ) == "weapon_physgun" ) then return end
 		
+		local isAv = false
+		
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local menu = DermaMenu( )
 		
@@ -280,10 +282,20 @@ else
 			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
 				catherine.item.Work( uniqueID, k, ent )
 			end ):SetImage( v.icon or "icon16/information.png" )
+			
+			isAv = true
 		end
 		
 		menu:Open( )
 		menu:Center( )
+		
+		if ( isAv ) then
+			catherine.util.SetDermaMenuTitle( menu, LANG( "Basic_UI_ItemMenuOptionTitle" ) )
+			
+			menu.OnRemove = function( )
+				catherine.util.SetDermaMenuTitle( )
+			end
+		end
 	end
 	
 	function catherine.item.GetBasicDesc( itemTable )
