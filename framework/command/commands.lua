@@ -18,13 +18,15 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.command.Register( {
 	command = "charfallover",
+	desc = "Going to stunned state.",
+	syntax = "[Getting up time]",
 	canRun = function( pl ) return pl:Alive( ) end,
 	runFunc = function( pl, args )
 		if ( pl:IsRagdolled( ) ) then
 			catherine.util.NotifyLang( pl, "Player_Message_AlreadyFallovered" )
 			return
 		end
-		
+
 		if ( args[ 1 ] ) then
 			args[ 1 ] = tonumber( args[ 1 ] )
 		end
@@ -35,6 +37,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "chargetup",
+	desc = "Takes place in a stunned state.",
 	canRun = function( pl ) return pl:Alive( ) end,
 	runFunc = function( pl, args )
 		if ( pl:GetNetVar( "isForceRagdolled" ) ) then
@@ -61,6 +64,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charsetname",
+	desc = "Setting a character name as target player.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -228,7 +232,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "flaggive",
-	syntax = "[name] [flag name]",
+	syntax = "[Name] [Flag ID]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -257,7 +261,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "flagtake",
-	syntax = "[name] [flag name]",
+	syntax = "[Name] [Flag ID]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -303,7 +307,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charsetcash",
-	syntax = "[name] [amount]",
+	syntax = "[Name] [Amount]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -332,7 +336,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "chargivecash",
-	syntax = "[name] [amount]",
+	syntax = "[Name] [Amount]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -361,7 +365,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "chartakecash",
-	syntax = "[name] [amount]",
+	syntax = "[Name] [Amount]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -416,48 +420,55 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorsettitle",
+	desc = "Setting a force door title. (Setting a 'Blank' text to initialize door title)",
 	syntax = "[Text]",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
-		if ( args[ 1 ] ) then
-			args[ 1 ] = table.concat( args, " " )
-			
-			local success, langKey, par = catherine.door.SetDoorTitle( pl, pl:GetEyeTrace( 70 ).Entity, args[ 1 ], true )
-			
-			if ( success ) then
-				catherine.util.NotifyLang( pl, "Door_Notify_SetTitle" )
-			else
-				catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
-			end
+		local text = nil
+		
+		if ( args[ 1 ] ) ) then
+			text = table.concat( args, " " )
 		else
-			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+			text = ""
+		end
+		
+		local success, langKey, par = catherine.door.SetDoorTitle( pl, pl:GetEyeTrace( 70 ).Entity, text, true )
+		
+		if ( success ) then
+			catherine.util.NotifyLang( pl, "Door_Notify_SetTitle" )
+		else
+			catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 		end
 	end
 } )
 
 catherine.command.Register( {
 	command = "doorsetdesc",
+	desc = "Setting a force door description. (Setting a 'Blank' text to initialize door description)",
 	syntax = "[Text]",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
-		if ( args[ 1 ] ) then
-			args[ 1 ] = table.concat( args, " " )
-			
-			local success, langKey, par = catherine.door.SetDoorDescription( pl, pl:GetEyeTrace( 70 ).Entity, args[ 1 ] )
-			
-			if ( success ) then
-				catherine.util.NotifyLang( pl, "Door_Notify_SetDesc" )
-			else
-				catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
-			end
+		local text = nil
+		
+		if ( args[ 1 ] ) ) then
+			text = table.concat( args, " " )
 		else
-			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+			text = ""
+		end
+		
+		local success, langKey, par = catherine.door.SetDoorDescription( pl, pl:GetEyeTrace( 70 ).Entity, text )
+		
+		if ( success ) then
+			catherine.util.NotifyLang( pl, "Door_Notify_SetDesc" )
+		else
+			catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 		end
 	end
 } )
 
 catherine.command.Register( {
 	command = "doorsetstatus",
+	desc = "Toggles a door status. (Ownable, Unownable)",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local success, langKey, par = catherine.door.SetDoorStatus( pl, pl:GetEyeTrace( 70 ).Entity )
@@ -468,6 +479,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorsetactive",
+	desc = "Toggles a door active. (Show, Hide)",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local success, langKey, par = catherine.door.SetDoorActive( pl, pl:GetEyeTrace( 70 ).Entity )
@@ -478,7 +490,8 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "plygivewhitelist",
-	syntax = "[Name] [Faction Name]",
+	desc = "Gives whitelist to the target player.",
+	syntax = "[Name] [Faction ID]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -507,7 +520,8 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "plytakewhitelist",
-	syntax = "[Name] [Faction Name]",
+	desc = "Takes a target player whitelist.",
+	syntax = "[Name] [Faction ID]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -536,7 +550,8 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "pm",
-	syntax = "[name] [text]",
+	desc = "Send PM (Private Message) to target player.",
+	syntax = "[Name] [Text]",
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
@@ -560,6 +575,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "roll",
+	desc = "Roll a dice. (for RP)",
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			args[ 1 ] = tonumber( args[ 1 ] )
@@ -571,7 +587,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "cleardecals",
-	desc = "Clear all map decals (Example : Blood).",
+	desc = "Clear all map decals. (Blood etc ..)",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		for k, v in pairs( player.GetAll( ) ) do
@@ -585,14 +601,14 @@ catherine.command.Register( {
 catherine.command.Register( {
 	command = "restartlevel",
 	desc = "Restart server as the same map.",
-	syntax = "[Time]",
+	syntax = "[Delay]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
-		local time = args[ 1 ] or 5
+		local delay = args[ 1 ] or 5
 
-		catherine.util.NotifyAllLang( "Command_RestartLevel_Fin", time )
+		catherine.util.NotifyAllLang( "Command_RestartLevel_Fin", delay )
 		
-		timer.Simple( time, function( )
+		timer.Simple( delay, function( )
 			RunConsoleCommand( "changelevel", game.GetMap( ) )
 		end )
 	end
@@ -601,16 +617,16 @@ catherine.command.Register( {
 catherine.command.Register( {
 	command = "changelevel",
 	desc = "Restart server as the typed map.",
-	syntax = "[Map] [Time]",
+	syntax = "[Map] [Delay]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		local map = args[ 1 ]
-		local time = args[ 2 ] or 5
+		local delay = args[ 2 ] or 5
 		
 		if ( file.Exists( "maps/" .. map .. ".bsp", "GAME" ) ) then
-			catherine.util.NotifyAllLang( "Command_ChangeLevel_Fin", time, map )
+			catherine.util.NotifyAllLang( "Command_ChangeLevel_Fin", delay, map )
 			
-			timer.Simple( time, function( )
+			timer.Simple( delay, function( )
 				RunConsoleCommand( "changelevel", map )
 			end )
 		else
@@ -626,13 +642,15 @@ catherine.command.Register( {
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
-			args[ 1 ] = tonumber( args[ 1 ] )
+			local newHour = tonumber( args[ 1 ] )
 			
-			catherine.environment.buffer.hour = args[ 1 ] and math.Clamp( args[ 1 ], 1, 24 ) or catherine.environment.buffer.hour
-			catherine.environment.SendAllEnvironmentConfig( )
-			catherine.environment.AutomaticDayNight( )
+			if ( newHour ) then
+				catherine.environment.buffer.hour = math.Clamp( newHour, 1, 24 )
+				catherine.environment.SendAllEnvironmentConfig( )
+				catherine.environment.AutomaticDayNight( )
+			end
 			
-			catherine.util.NotifyLang( pl, "Command_SetTimeHour_Fin", args[ 1 ] )
+			catherine.util.NotifyLang( pl, "Command_SetTimeHour_Fin", newHour or catherine.environment.buffer.hour )
 		else
 			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
 		end
