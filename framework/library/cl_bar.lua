@@ -21,7 +21,7 @@ catherine.bar.lists = { }
 local barW = ScrW( ) * catherine.configs.mainBarWideScale
 local barH = catherine.configs.mainBarTallSize
 
-function catherine.bar.Register( uniqueID, alwaysShowing, getFunc, maxFunc, col )
+function catherine.bar.Register( uniqueID, alwaysShowing, getFunc, maxFunc, col, lifeTimeFade )
 	for k, v in pairs( catherine.bar.lists ) do
 		if ( ( v.uniqueID and uniqueID ) and v.uniqueID == uniqueID ) then
 			return
@@ -40,7 +40,8 @@ function catherine.bar.Register( uniqueID, alwaysShowing, getFunc, maxFunc, col 
 		a = 0,
 		alwaysShowing = alwaysShowing,
 		lifeTime = 0,
-		prevValue = 0
+		prevValue = 0,
+		lifeTimeFade = lifeTimeFade
 	}
 end
 
@@ -65,7 +66,7 @@ function catherine.bar.Draw( )
 		local per = math.min( v.getFunc( ) / v.maxFunc( ), 1 )
 		
 		if ( v.prevValue != per ) then
-			v.lifeTime = CurTime( ) + 5
+			v.lifeTime = CurTime( ) + ( v.lifeTimeFade or 5 )
 		end
 
 		v.prevValue = per
@@ -109,13 +110,13 @@ do
 			return LocalPlayer( ):Health( )
 		end, function( )
 			return LocalPlayer( ):GetMaxHealth( )
-		end, Color( 255, 50, 50 )
+		end, Color( 255, 50, 50 ), 10
 	)
 	
 	catherine.bar.Register( "armor", true, function( )
 			return LocalPlayer( ):Armor( )
 		end, function( )
 			return 255
-		end, Color( 50, 50, 255 )
+		end, Color( 50, 50, 255 ), 10
 	)
 end

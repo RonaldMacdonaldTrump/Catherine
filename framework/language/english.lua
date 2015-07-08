@@ -385,6 +385,7 @@ LANGUAGE.data = {
 	[ "Basic_Framework_Author" ] = "Development and design by %s.",
 	[ "Basic_Notify_BunnyHop" ] = "Do not Bunny-hop!",
 	
+	// Command
 	[ "Command_ChangeLevel_Fin" ] = "%s(sec) after change map to %s.",
 	[ "Command_ChangeLevel_Error01" ] = "Map is not a valid!",
 	[ "Command_RestartLevel_Fin" ] = "%s(sec) after restart a server.",
@@ -392,6 +393,7 @@ LANGUAGE.data = {
 	[ "Command_SetTimeHour_Fin" ] = "You have set the roleplay time to %s(hour).",
 	[ "Command_PrintBodyGroup_Fin" ] = "Printed target player Body groups on the Console.",
 	
+	// AntiHaX
 	[ "AntiHaX_KickMessage" ] = "Sorry, you have been kicked for using cheats.",
 	[ "AntiHaX_KickMessage_TimeOut" ] = "Sorry, you have been kicked because the anti-cheat timed out.",
 	
