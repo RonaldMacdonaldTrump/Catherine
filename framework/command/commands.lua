@@ -332,7 +332,7 @@ catherine.command.Register( {
 					local success, errorID = catherine.item.Give( target, args[ 2 ], args[ 3 ] or 1 )
 					
 					if ( success ) then
-						catherine.util.NotifyLang( pl, "Item_GiveCommand_Fin" args[ 3 ] or 1, args[ 2 ], target:Name( ) )
+						catherine.util.NotifyLang( pl, "Item_GiveCommand_Fin", args[ 3 ] or 1, args[ 2 ], target:Name( ) )
 					else
 						if ( errorID == 1 ) then
 							catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpaceTarget" )
@@ -478,7 +478,7 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		local text = nil
 		
-		if ( args[ 1 ] ) ) then
+		if ( args[ 1 ] ) then
 			text = table.concat( args, " " )
 		else
 			text = ""
@@ -502,7 +502,7 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		local text = nil
 		
-		if ( args[ 1 ] ) ) then
+		if ( args[ 1 ] ) then
 			text = table.concat( args, " " )
 		else
 			text = ""

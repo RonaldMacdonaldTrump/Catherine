@@ -144,7 +144,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.flag.Has( pl, uniqueID )
-		return catherine.character.GetCharVar( pl, "flags", "" ):find( uniqueID )
+		return tobool( catherine.character.GetCharVar( pl, "flags", "" ):find( uniqueID ) )
 	end
 	
 	function META:HasFlag( uniqueID )
@@ -202,7 +202,7 @@ else
 	end )
 	
 	function catherine.flag.Has( uniqueID )
-		return catherine.character.GetCharVar( LocalPlayer( ), "flags", "" ):find( uniqueID )
+		return tobool( catherine.character.GetCharVar( LocalPlayer( ), "flags", "" ):find( uniqueID ) )
 	end
 	
 	function META:HasFlag( uniqueID )
