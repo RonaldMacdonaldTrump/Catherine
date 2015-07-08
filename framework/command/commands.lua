@@ -92,6 +92,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charban",
+	desc = "Toggle a banned state. (Ban, Unban)",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -133,6 +134,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charsetdesc",
+	desc = "Setting a character description as target player.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -157,6 +159,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charsetmodel",
+	desc = "Setting a character model as target player.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -181,6 +184,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charphysdesc",
+	desc = "Change a character description.",
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			local newDesc = args[ 1 ]
@@ -200,6 +204,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorlock",
+	desc = "Lock the looking door.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
@@ -216,6 +221,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorunlock",
+	desc = "Unlock the looking door.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
@@ -232,6 +238,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "flaggive",
+	desc = "Gives the flag to the target player.",
 	syntax = "[Name] [Flag ID]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
@@ -261,6 +268,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "flagtake",
+	desc = "Takes the flag to the target player.",
 	syntax = "[Name] [Flag ID]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
@@ -290,6 +298,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "itemspawn",
+	desc = "Spawn item as the looking position.",
 	syntax = "[Item ID]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
@@ -307,6 +316,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "charsetcash",
+	desc = "Setting a cash to the target player.",
 	syntax = "[Name] [Amount]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
@@ -336,6 +346,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "chargivecash",
+	desc = "Gives a cash to the target player.",
 	syntax = "[Name] [Amount]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
@@ -365,6 +376,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "chartakecash",
+	desc = "Takes a cash to the target player.",
 	syntax = "[Name] [Amount]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
@@ -394,6 +406,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorbuy",
+	desc = "Buying a door.",
 	runFunc = function( pl, args )
 		local success, langKey, par = catherine.door.Buy( pl, pl:GetEyeTrace( 70 ).Entity )
 		
@@ -407,6 +420,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorsell",
+	desc = "Selling a door.",
 	runFunc = function( pl, args )
 		local success, langKey, par = catherine.door.Sell( pl, pl:GetEyeTrace( 70 ).Entity )
 		
