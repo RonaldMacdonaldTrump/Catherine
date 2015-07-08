@@ -76,6 +76,7 @@ catherine.flag.Register( "V", "^Flag_V_Desc" )
 catherine.flag.Register( "n", "^Flag_n_Desc" )
 catherine.flag.Register( "R", "^Flag_R_Desc" )
 catherine.flag.Register( "s", "^Flag_s_Desc" )
+catherine.flag.Register( "i", "^Flag_i_Desc" )
 
 if ( SERVER ) then
 	function catherine.flag.Give( pl, flagID )

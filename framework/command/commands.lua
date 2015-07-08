@@ -300,13 +300,51 @@ catherine.command.Register( {
 	command = "itemspawn",
 	desc = "Spawn item as the looking position.",
 	syntax = "[Item ID]",
-	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
+	canRun = function( pl ) return pl:HasFlag( "i" ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			local success = catherine.item.Spawn( args[ 1 ], catherine.util.GetItemDropPos( pl ) )
 			
 			if ( !success ) then
 				catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
+			end
+		else
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+		end
+	end
+} )
+
+catherine.command.Register( {
+	command = "itemgive",
+	desc = "Gives items to the target player.",
+	syntax = "[Name] [Item ID] [Count]",
+	canRun = function( pl ) return pl:HasFlag( "i" ) end,
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			if ( args[ 2 ] ) then
+				if ( args[ 3 ] ) then
+					args[ 3 ] = tonumber( args[ 3 ] )
+				end
+				
+				local target = catherine.util.FindPlayerByName( args[ 1 ] )
+				
+				if ( IsValid( target ) and target:IsPlayer( ) ) then
+					local success, errorID = catherine.item.Give( target, args[ 2 ], args[ 3 ] or 1 )
+					
+					if ( success ) then
+						catherine.util.NotifyLang( pl, "Item_GiveCommand_Fin" args[ 3 ] or 1, args[ 2 ], target:Name( ) )
+					else
+						if ( errorID == 1 ) then
+							catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpaceTarget" )
+						elseif ( errorID == 2 ) then
+							catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
+						end
+					end
+				else
+					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
+				end
+			else
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
 			end
 		else
 			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )

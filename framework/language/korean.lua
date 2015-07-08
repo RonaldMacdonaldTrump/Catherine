@@ -117,6 +117,7 @@ LANGUAGE.data = {
 	[ "Flag_n_Desc" ] = "NPC 소환에 대한 권한.",
 	[ "Flag_R_Desc" ] = "레그돌 소환에 대한 권한.",
 	[ "Flag_s_Desc" ] = "이펙트 소환에 대한 권한.",
+	[ "Flag_i_Desc" ] = "아이템 소환, 지급에 대한 권한.",
 	
 	[ "UnknownError" ] = "알 수 없는 오류가 발생하였습니다, 죄송합니다!",
 	[ "Basic_Notify_UnknownPlayer" ] = "올바른 캐릭터의 이름을 입력하세요!",
@@ -173,6 +174,9 @@ LANGUAGE.data = {
 	[ "Scoreboard_PlayerOption05_Q" ] = "어떤 플래그를 주시겠습니까?",
 	[ "Scoreboard_PlayerOption06_Str" ] = "플래그 뺏기",
 	[ "Scoreboard_PlayerOption06_Q" ] = "어떤 플래그를 뺏으시겠습니까?",
+	[ "Scoreboard_PlayerOption07_Str" ] = "아이템 주기",
+	[ "Scoreboard_PlayerOption07_Q1" ] = "어떤 아이템을 주시겠습니까?",
+	[ "Scoreboard_PlayerOption07_Q2" ] = "해당 아이템을 몇개 주시겠습니까?",
 	
 	// Help
 	[ "Help_UI_Title" ] = "도움말",
@@ -195,7 +199,8 @@ LANGUAGE.data = {
 	[ "Storage_OpenStr" ] = "열기",
 	
 	// Item SYSTEM
-	[ "Item_Notify_NoItemData" ] = "올바르지 않은 물건 입니다!",
+	[ "Item_GiveCommand_Fin" ] = "당신은 %s개의 %s 아이템을 %s 님에게 줬습니다.",
+	[ "Item_Notify_NoItemData" ] = "올바르지 않은 아이템 입니다!",
 	
 	// Item Base
 	[ "Item_Category_Other" ] = "기타",

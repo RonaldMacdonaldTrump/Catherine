@@ -600,6 +600,18 @@ function GM:ScoreboardPlayerOption( pl, target )
 		end )
 	end
 	
+	if ( pl:HasFlag( "i" ) ) then
+		menu:AddOption( LANG( "Scoreboard_PlayerOption07_Str" ), function( )
+			Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption07_Q1" ), "", function( val )
+					Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption07_Q2" ), "1", function( val2 )
+							catherine.command.Run( "itemgive", target:Name( ), val, val2 or 1 )
+						end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
+					)
+				end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
+			)
+		end )
+	end
+	
 	menu:Open( )
 end
 

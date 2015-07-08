@@ -178,8 +178,10 @@ if ( SERVER ) then
 		if ( !force ) then
 			local itemTable = catherine.item.FindByID( uniqueID )
 
-			if ( itemTable and !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
-				return false
+			if ( itemTable and !catherine.inventory.HasSpace( pl, itemTable.weight * ( itemCount or 1 ) ) ) then
+				return false, 1
+			elseif ( !itemTable ) then
+				return false, 2
 			end
 		end
 		
