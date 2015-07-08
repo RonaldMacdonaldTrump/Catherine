@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
+
 --[[
 	This entity reference LauScript's Accessory Plugin.
 	Thanks :)
@@ -23,8 +24,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 AddCSLuaFile( )
-
-DEFINE_BASECLASS( "base_gmodentity" )
 
 ENT.Type = "anim"
 ENT.PrintName = "Catherine Accessory Base"

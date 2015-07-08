@@ -34,6 +34,7 @@ if ( SERVER ) then
 		self:SetMoveType( MOVETYPE_VPHYSICS )
 		self:SetUseType( SIMPLE_USE )
 		self:PrecacheGibs( )
+		self:SetHealth( 80 )
 		
 		local physObject = self:GetPhysicsObject( )
 		
@@ -56,7 +57,7 @@ if ( SERVER ) then
 		
 		netstream.Start( pl, "catherine.business.EntityUseMenu", self:EntIndex( ) )
 	end
-	
+
 	function ENT:OnRemove( )
 		local eff = EffectData( )
 		eff:SetStart( self:GetPos( ) )
@@ -65,6 +66,14 @@ if ( SERVER ) then
 		util.Effect( "GlassImpact", eff, true, true )
 		
 		self:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav" )
+	end
+	
+	function ENT:OnTakeDamage( dmg )
+		self:SetHealth( math.max( self:Health( ) - dmg:GetDamage( ), 0 ) )
+		
+		if ( self:Health( ) <= 0 ) then
+			self:Remove( )
+		end
 	end
 else
 	local toscreen = FindMetaTable( "Vector" ).ToScreen

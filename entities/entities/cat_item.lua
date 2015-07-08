@@ -18,8 +18,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 AddCSLuaFile( )
 
-DEFINE_BASECLASS( "base_gmodentity" )
-
 ENT.Type = "anim"
 ENT.PrintName = "Catherine Item"
 ENT.Author = "L7D"
@@ -57,7 +55,7 @@ if ( SERVER ) then
 		} )
 	end
 	
-	function ENT:Bomb( )
+	function ENT:Destroy( )
 		local eff = EffectData( )
 		eff:SetStart( self:GetPos( ) )
 		eff:SetOrigin( self:GetPos( ) )
@@ -71,7 +69,7 @@ if ( SERVER ) then
 		self:SetHealth( math.max( self:Health( ) - dmg:GetDamage( ), 0 ) )
 		
 		if ( self:Health( ) <= 0 ) then
-			self:Bomb( )
+			self:Destroy( )
 			self:Remove( )
 		end
 	end
@@ -84,7 +82,7 @@ else
 		local itemTable = self:GetItemTable( )
 
 		if ( itemTable ) then
-			local customDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, self:GetItemData( ) ) or nil
+			local customDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, self:GetItemData( ) )
 			
 			if ( !self.itemTable_name or !self.itemTable_desc ) then
 				self.itemTable_name = catherine.util.StuffLanguage( itemTable.name )

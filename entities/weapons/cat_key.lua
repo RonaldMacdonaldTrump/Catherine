@@ -30,8 +30,8 @@ SWEP.CanFireLowered = true
 SWEP.DrawHUD = false
 
 function SWEP:Deploy( )
+	if ( CLIENT or !IsValid( self.Owner ) ) then return true end
 	local pl = self.Owner
-	if ( CLIENT or !IsValid( pl ) ) then return true end
 	
 	pl:DrawWorldModel( false )
 	pl:DrawViewModel( false )
@@ -58,12 +58,15 @@ function SWEP:PrimaryAttack( )
 	
 	if ( !has or flag == 0 ) then return end
 	
+	pl.CAT_keyCallerID = pl:GetCharacterID( )
 	pl:Freeze( true )
-	
-	local time = hook.Run( "GetLockTime", pl ) or 2
 
-	catherine.util.ProgressBar( pl, LANG( pl, "Door_Message_Locking" ), time, function( )
-		if ( !IsValid( pl ) or !pl:Alive( ) ) then return end
+	catherine.util.ProgressBar( pl, "^Door_Message_Locking", hook.Run( "GetLockTime", pl ) or 2, function( )
+		if ( !IsValid( pl ) or !pl:Alive( ) or pl:IsRagdolled( ) or pl:IsTied( ) or pl.CAT_keyCallerID != pl:GetCharacterID( ) ) then
+			pl.CAT_keyCallerID = nil
+			pl:Freeze( false )
+			return
+		end
 		
 		if ( IsValid( ent ) ) then
 			ent.CAT_doorLocked = true
@@ -71,6 +74,7 @@ function SWEP:PrimaryAttack( )
 			ent:EmitSound( "doors/door_latch3.wav" )
 		end
 		
+		pl.CAT_keyCallerID = nil
 		pl:Freeze( false )
 	end )
 
@@ -92,19 +96,23 @@ function SWEP:SecondaryAttack( )
 	
 	if ( !has or flag == 0 ) then return end
 	
-	local time = hook.Run( "GetUnlockTime", pl ) or 2
-	
+	pl.CAT_keyCallerID = pl:GetCharacterID( )
 	pl:Freeze( true )
 	
-	catherine.util.ProgressBar( pl, LANG( pl, "Door_Message_UnLocking" ), time, function( )
-		if ( !IsValid( pl ) or !pl:Alive( ) ) then return end
+	catherine.util.ProgressBar( pl, "^Door_Message_UnLocking", hook.Run( "GetUnlockTime", pl ) or 2, function( )
+		if ( !IsValid( pl ) or !pl:Alive( ) or pl:IsRagdolled( ) or pl:IsTied( ) or pl.CAT_keyCallerID != pl:GetCharacterID( ) ) then
+			pl.CAT_keyCallerID = nil
+			pl:Freeze( false )
+			return
+		end
 		
 		if ( IsValid( ent ) ) then
 			ent.CAT_doorLocked = false
-			ent:Fire( "Unlock" )
+			ent:Fire( "UnLock" )
 			ent:EmitSound( "doors/door_latch3.wav" )
 		end
 		
+		pl.CAT_keyCallerID = nil
 		pl:Freeze( false )
 	end )
 	
