@@ -190,7 +190,7 @@ LANGUAGE.data = {
 	[ "Help_Category_Plugin" ] = "Plugin",
 	
 	// Plugin
-	[ "Plugin_Value_Author" ] = "Development by %s",
+	[ "Plugin_Value_Author" ] = "Development and design by %s",
 	
 	// Storage
 	[ "Storage_UI_YourInv" ] = "Your Inventory",
@@ -387,7 +387,7 @@ LANGUAGE.data = {
 	
 	[ "Command_ChangeLevel_Fin" ] = "%s(sec) after change map to %s.",
 	[ "Command_ChangeLevel_Error01" ] = "Map is not a valid!",
-	[ "Command_RestartLevel_Fin" ] = "%s(sc) after restart a server.",
+	[ "Command_RestartLevel_Fin" ] = "%s(sec) after restart a server.",
 	[ "Command_ClearDecals_Fin" ] = "You have cleared all decals on the map.",
 	[ "Command_SetTimeHour_Fin" ] = "You have set the roleplay time to %s(hour).",
 	[ "Command_PrintBodyGroup_Fin" ] = "Printed target player Body groups on the Console.",
