@@ -18,6 +18,33 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 local PLUGIN = PLUGIN
 
+local function facingWall( pl )
+	local data = { }
+	data.start = pl:GetPos( )
+	data.endpos = data.start + pl:EyePos( ) * 100
+	data.filter = pl
+	local tr = util.TraceLine( data )
+
+	if ( tr.HitWorld and pl:GetPos( ):Distance( tr.HitPos ) > 35 and pl:GetPos( ):Distance( tr.HitPos ) < 50 ) then
+		return true
+	else
+		return false, "ACT_Plugin_Notify_Cant03"
+	end
+end
+
+local function facingWallBack( pl )
+	local data = { }
+	data.start = pl:GetPos( )
+	data.endpos = data.start - pl:GetAimVector( ) * 54
+	data.filter = pl
+
+	if ( util.TraceLine( data ).HitWorld ) then
+		return true
+	else
+		return false, "ACT_Plugin_Notify_Cant04"
+	end
+end
+
 CAT_ACT_STARTANI = 1
 CAT_ACT_EXITANI = 2
 
@@ -36,6 +63,21 @@ local actionTable = {
 				noAutoExit = true,
 				doStartSeq = "Idle_to_Sit_Ground",
 				doExitSeq = "Sit_Ground_to_Idle"
+			}
+		}
+	},
+	[ "sitwall" ] = {
+		text = "Sit Wall!",
+		actions = {
+			citizen_male = {
+				seq = "plazaidle4",
+				noAutoExit = true,
+				OnCheck = facingWallBack
+			},
+			citizen_felame = {
+				seq = "plazaidle4",
+				noAutoExit = true,
+				OnCheck = facingWallBack
 			}
 		}
 	},
@@ -64,6 +106,38 @@ local actionTable = {
 			metrocop = {
 				seq = "plazathreat2",
 				noAutoExit = true
+			}
+		}
+	},
+	[ "here" ] = {
+		text = "Here!",
+		actions = {
+			citizen_male = {
+				seq = "wave"
+			},
+			citizen_felame = {
+				seq = "wave"
+			}
+		}
+	},
+	[ "comehere" ] = {
+		text = "Come here!",
+		actions = {
+			citizen_male = {
+				seq = "wave_close"
+			},
+			citizen_felame = {
+				seq = "wave_close"
+			}
+		}
+	},
+	[ "arrest" ] = {
+		text = "Arrest!",
+		actions = {
+			citizen_male = {
+				seq = "apcarrestidle",
+				noAutoExit = true,
+				OnCheck = facingWall
 			}
 		}
 	}
