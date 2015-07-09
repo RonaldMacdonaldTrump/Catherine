@@ -196,7 +196,7 @@ function catherine.database.Connect( func )
 	local modules = catherine.database.modules[ catherine.database.information.db_module ]
 	
 	if ( !modules ) then
-		catherine.util.Print( Color( 255, 255, 0 ), "Unknown MySQL module, using SQLite." )
+		catherine.util.Print( Color( 255, 255, 0 ), "Unknown Database module, so using SQLite." )
 		modules = catherine.database.modules.sqlite
 	end
 	
