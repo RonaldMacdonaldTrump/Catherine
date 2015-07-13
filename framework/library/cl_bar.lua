@@ -21,6 +21,17 @@ catherine.bar.lists = { }
 local barW = ScrW( ) * catherine.configs.mainBarWideScale
 local barH = catherine.configs.mainBarTallSize
 
+--[[ Function Optimize :> ]]--
+local math_approach = math.Approach
+local math_min = math.min
+local math_round = math.Round
+local lerp = Lerp
+local hook_run = hook.Run
+local draw_roundedBox = draw.RoundedBox
+local getconVar = GetConVarString
+local table_remove = table.remove
+local color = Color
+
 function catherine.bar.Register( uniqueID, alwaysShowing, getFunc, maxFunc, col, lifeTimeFade )
 	for k, v in pairs( catherine.bar.lists ) do
 		if ( ( v.uniqueID and uniqueID ) and v.uniqueID == uniqueID ) then
@@ -48,22 +59,22 @@ end
 function catherine.bar.Remove( uniqueID )
 	for k, v in pairs( catherine.bar.lists ) do
 		if ( v.uniqueID and v.uniqueID == uniqueID ) then
-			table.remove( catherine.bar.lists, k )
+			table_remove( catherine.bar.lists, k )
 		end
 	end
 end
 
 function catherine.bar.Draw( )
-	if ( GetConVarString( "cat_convar_bar" ) == "0" ) then return end
-	if ( hook.Run( "CantDrawBar" ) or !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) or #catherine.bar.lists == 0 ) then
-		hook.Run( "HUDDrawBarBottom", 5, 5 )
+	if ( getconVar( "cat_convar_bar" ) == "0" ) then return end
+	if ( hook_run( "CantDrawBar" ) or !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) or #catherine.bar.lists == 0 ) then
+		hook_run( "HUDDrawBarBottom", 5, 5 )
 		return
 	end
 	
 	local i = 0
 	
 	for k, v in pairs( catherine.bar.lists ) do
-		local per = math.min( v.getFunc( ) / v.maxFunc( ), 1 )
+		local per = math_min( v.getFunc( ) / v.maxFunc( ), 1 )
 		
 		if ( v.prevValue != per ) then
 			v.lifeTime = CurTime( ) + ( v.lifeTimeFade or 5 )
@@ -73,36 +84,36 @@ function catherine.bar.Draw( )
 		
 		if ( !v.alwaysShowing ) then
 			if ( v.lifeTime <= CurTime( ) ) then
-				v.a = Lerp( 0.03, v.a, 0 )
+				v.a = lerp( 0.03, v.a, 0 )
 			else
 				if ( per != 0 ) then
 					i = i + 1
-					v.a = Lerp( 0.03, v.a, 255 )
+					v.a = lerp( 0.03, v.a, 255 )
 				else
-					v.a = Lerp( 0.03, v.a, 0 )
+					v.a = lerp( 0.03, v.a, 0 )
 				end
 			end
 		else
 			if ( per != 0 ) then
 				i = i + 1
-				v.a = Lerp( 0.03, v.a, 255 )
+				v.a = lerp( 0.03, v.a, 255 )
 			else
-				v.a = Lerp( 0.03, v.a, 0 )
+				v.a = lerp( 0.03, v.a, 0 )
 			end
 		end
 
-		v.w = math.Approach( v.w, barW * per, 1 )
-		v.y = Lerp( 0.09, v.y, -barH + i * barH * 2 )
+		v.w = math_approach( v.w, barW * per, 1 )
+		v.y = lerp( 0.09, v.y, -barH + i * barH * 2 )
 		
-		if ( math.Round( v.a ) > 0 ) then
+		if ( math_round( v.a ) > 0 ) then
 			local col = v.col
 			
-			draw.RoundedBox( 0, 5, v.y, barW, barH, Color( 255, 255, 255, v.a / 1.5 ) )
-			draw.RoundedBox( 0, 5, v.y, v.w, barH, Color( col.r, col.g, col.b, v.a ) )
+			draw_roundedBox( 0, 5, v.y, barW, barH, color( 255, 255, 255, v.a / 1.5 ) )
+			draw_roundedBox( 0, 5, v.y, v.w, barH, color( col.r, col.g, col.b, v.a ) )
 		end
 	end
 	
-	hook.Run( "HUDDrawBarBottom", 5, catherine.bar.lists[ #catherine.bar.lists ].y )
+	hook_run( "HUDDrawBarBottom", 5, catherine.bar.lists[ #catherine.bar.lists ].y )
 end
 
 do
@@ -110,13 +121,13 @@ do
 			return LocalPlayer( ):Health( )
 		end, function( )
 			return LocalPlayer( ):GetMaxHealth( )
-		end, Color( 255, 50, 50 ), 10
+		end, color( 255, 50, 50 ), 10
 	)
 	
 	catherine.bar.Register( "armor", true, function( )
 			return LocalPlayer( ):Armor( )
 		end, function( )
 			return 255
-		end, Color( 50, 50, 255 ), 10
+		end, color( 50, 50, 255 ), 10
 	)
 end
