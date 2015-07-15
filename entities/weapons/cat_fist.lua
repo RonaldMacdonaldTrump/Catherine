@@ -147,7 +147,9 @@ function SWEP:PrimaryAttack( )
 end
 
 function SWEP:CanMoveable( pl, ent )
-	if ( pl:IsPlayerHolding( ) ) then
+	if ( CLIENT ) then return end
+
+	if ( ent:IsPlayerHolding( ) ) then
 		return false
 	end
 	
@@ -165,12 +167,12 @@ function SWEP:CanMoveable( pl, ent )
 end
 
 function SWEP:DoPickup( pl, ent, stamina )
-	if ( pl:IsPlayerHolding( ) ) then
+	if ( ent:IsPlayerHolding( ) ) then
 		return
 	end
 
 	timer.Simple( FrameTime( ) * 10, function( )
-		if ( !IsValid( ent ) or pl:IsPlayerHolding( ) ) then
+		if ( !IsValid( ent ) or ent:IsPlayerHolding( ) ) then
 			return
 		end
 
@@ -183,7 +185,7 @@ function SWEP:DoPickup( pl, ent, stamina )
 end
 
 function SWEP:SecondaryAttack( )
-	if ( !IsFirstTimePredicted( ) ) then return end
+	if ( CLIENT and !IsFirstTimePredicted( ) ) then return end
 	local pl = self.Owner
 	local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
 	
