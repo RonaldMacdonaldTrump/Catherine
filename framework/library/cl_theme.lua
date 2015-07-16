@@ -21,27 +21,36 @@ CAT_THEME_MENU_BACKGROUND = 1
 CAT_THEME_PNLLIST = 2
 CAT_THEME_FORM = 3
 CAT_THEME_TEXTENT = 4
-local func = {
+
+--[[ Function Optimize :> ]]--
+local color = Color
+local gradient_up = Material( "gui/gradient_up" )
+local draw_roundedBox = draw.RoundedBox
+local setDrawColor = surface.SetDrawColor
+local setMaterial = surface.SetMaterial
+local drawTexturedRect = surface.DrawTexturedRect
+
+local themes = {
 	[ CAT_THEME_MENU_BACKGROUND ] = function( w, h )
-		draw.RoundedBox( 0, 0, 25, w, h, Color( 255, 255, 255, 235 ) )
+		draw_roundedBox( 0, 0, 25, w, h, color( 255, 255, 255, 235 ) )
 		
-		surface.SetDrawColor( 200, 200, 200, 235 )
-		surface.SetMaterial( Material( "gui/gradient_up" ) )
-		surface.DrawTexturedRect( 0, 25, w, h )
+		setDrawColor( 200, 200, 200, 235 )
+		setMaterial( gradient_up )
+		drawTexturedRect( 0, 25, w, h )
 	end,
 	[ CAT_THEME_PNLLIST ] = function( w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		draw_roundedBox( 0, 0, 0, w, h, color( 235, 235, 235, 255 ) )
 	end,
 	[ CAT_THEME_FORM ] = function( w, h )
-		draw.RoundedBox( 0, 0, 0, w, 20, Color( 225, 225, 225, 255 ) )
-		draw.RoundedBox( 0, 0, 20, w, 1, Color( 50, 50, 50, 90 ) )
+		draw_roundedBox( 0, 0, 0, w, 20, color( 225, 225, 225, 255 ) )
+		draw_roundedBox( 0, 0, 20, w, 1, color( 50, 50, 50, 90 ) )
 	end,
 	[ CAT_THEME_TEXTENT ] = function( w, h )
-		draw.RoundedBox( 0, 0, 0, w, 2, Color( 50, 50, 50, 150 ) )
-		draw.RoundedBox( 0, 0, h - 2, w, 2, Color( 50, 50, 50, 150 ) )
+		draw_roundedBox( 0, 0, 0, w, 2, color( 50, 50, 50, 150 ) )
+		draw_roundedBox( 0, 0, h - 2, w, 2, color( 50, 50, 50, 150 ) )
 	end
 }
 
 function catherine.theme.Draw( typ, w, h )
-	func[ typ ]( w, h )
+	themes[ typ ]( w, h )
 end
