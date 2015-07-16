@@ -64,8 +64,8 @@ if ( SERVER ) then
 				local success, result = pcall( catherine[ libName ][ funcName ], pl )
 				
 				if ( !success ) then
-					netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_LibraryLoad", {
-						"catherine." .. libName .. "." .. funcName ),
+					netstream.Start( pl, "catherine.loadingError", {
+						LANG( pl, "Basic_Error_LibraryLoad", "catherine." .. libName .. "." .. funcName ),
 						false
 					} )
 					MsgC( Color( 255, 0, 0 ), "[CAT ERROR] Failed to initialize Catherine ( Player : " .. pl:Name( ) .. "/" .. pl:SteamID( ) .. " ) ( Function : catherine." .. libName .. "." .. funcName .. " )\n" .. result .. "\n" )

@@ -90,8 +90,8 @@ function catherine.hud.DeathScreen( pl, w, h )
 end
 
 timer.Create( "catherine.hud.VignetteCheck", 1.5, 0, function( )
-	if ( vignetteMat == "__material__error" ) then return end
-	local data = { start = pl:GetPos( ) }
+	if ( !IsValid( LocalPlayer( ) ) or vignetteMat == "__material__error" ) then return end
+	local data = { start = LocalPlayer( ):GetPos( ) }
 	data.endpos = data.start + Vector( 0, 0, 2000 )
 	local tr = traceLine( data )
 	

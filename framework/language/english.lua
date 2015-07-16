@@ -131,8 +131,8 @@ LANGUAGE.data = {
 
 	// Version
 	[ "Version_UI_Title" ] = "Version",
-	[ "Version_UI_YourVer_AV" ] = "Ver '%s'",
-	[ "Version_UI_YourVer_NO" ] = "Ver 'Error'",
+	[ "Version_UI_YourVer_AV" ] = "Version '%s'",
+	[ "Version_UI_YourVer_NO" ] = "Version 'Error'",
 	[ "Version_UI_Checking" ] = "Checking update ...",
 	[ "Version_UI_CheckButtonStr" ] = "Update Check",
 	[ "Version_Notify_FoundNew" ] = "This server should update to the latest version of Catherine!",
@@ -387,6 +387,8 @@ LANGUAGE.data = {
 	[ "Basic_Error_NoSchema" ] = "Can't find Schema table. (CAT_ERR 0x1)",
 	[ "Basic_Error_NoDatabase" ] = "Catherine has not connected to Database. (CAT_ERR 0x2) : %s",
 	[ "Basic_Error_LibraryLoad" ] = "Failed to load Library. (CAT_ERR 0x3) ( Function : %s )",
+	[ "Basic_Error_LoadTimeoutWait" ] = "Failed to at loading the Catherine, Reloading the Catherine ... (CAT_ERR 0x4) ( %s attempts. )",
+	[ "Basic_Error_Reloading" ] = "Reloading the Catherine ...",
 	[ "Basic_Framework_Author" ] = "Development and design by %s.",
 	[ "Basic_Notify_BunnyHop" ] = "Do not Bunny-hop!",
 	

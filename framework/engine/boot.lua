@@ -86,10 +86,10 @@ function catherine.Initialize( )
 	
 	--[[ Initalized. :> ]]--
 	if ( !catherine.isInitialized ) then
-		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are loaded at " .. sysTime - SysTime( ) .. "(sec).\n" )
+		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are loaded at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
 		catherine.isInitialized = true
 	else
-		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are refreshed at " .. sysTime - SysTime( ) .. "(sec).\n" )
+		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are refreshed at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
 	end
 end
 
