@@ -38,11 +38,13 @@ if ( SERVER ) then
 	end
 	
 	function catherine.recognize.RegisterKnow( pl, target )
-		local recognizeLists = catherine.character.GetCharVar( target, "recognize", { } )
+		local recognizeList = catherine.character.GetCharVar( target, "recognize", { } )
 		
-		recognizeLists[ #recognizeLists + 1 ] = pl:GetCharacterID( )
+		recognizeList[ #recognizeList + 1 ] = pl:GetCharacterID( )
 		
-		catherine.character.SetCharVar( target, "recognize", recognizeLists )
+		recognizeList = hook.Run( "AdjustRecognizeInfo", pl, target, recognizeList ) or recognizeList
+		
+		catherine.character.SetCharVar( target, "recognize", recognizeList )
 	end
 	
 	function catherine.recognize.Initialize( pl )

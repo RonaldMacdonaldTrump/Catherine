@@ -28,12 +28,14 @@ GM.Description = "A neat and beautiful role-play framework for Garry's Mod."
 GM.Author = "L7D"
 GM.Website = "https://github.com/L7D/Catherine"
 GM.Email = "smhjyh2009@gmail.com"
-GM.Version = "2015/07/15"
-GM.Build = "BETA"
+GM.Version = "2015/07/16"
+GM.Build = "DEV"
 
 catherine.FolderName = GM.FolderName
 
 function catherine.Initialize( )
+	local sysTime = SysTime( )
+	
 	--[[ Load utilities ... ]]--
 	AddCSLuaFile( baseDir .. "/engine/utility.lua" )
 	include( baseDir .. "/engine/utility.lua" )
@@ -84,7 +86,10 @@ function catherine.Initialize( )
 	
 	--[[ Initalized. :> ]]--
 	if ( !catherine.isInitialized ) then
+		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are loaded at " .. sysTime - SysTime( ) .. "(sec).\n" )
 		catherine.isInitialized = true
+	else
+		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are refreshed at " .. sysTime - SysTime( ) .. "(sec).\n" )
 	end
 end
 
