@@ -23,6 +23,7 @@ ENT.PrintName = "Catherine Item"
 ENT.Author = "L7D"
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
+ENT.RenderGroup = RENDERGROUP_BOTH
 
 if ( SERVER ) then
 	function ENT:Initialize( )
@@ -39,8 +40,6 @@ if ( SERVER ) then
 			physObject:EnableMotion( true )
 			physObject:Wake( )
 		end
-		
-		self:PhysicsInitBox( Vector( -2, -2, -2 ), Vector( 2, 2, 2 ) )
 	end
 
 	function ENT:InitializeItem( itemID, itemData )

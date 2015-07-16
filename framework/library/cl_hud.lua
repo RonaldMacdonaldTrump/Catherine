@@ -19,6 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 if ( !catherine.option ) then
 	catherine.util.Include( "cl_option.lua" )
 end
+
 catherine.hud = catherine.hud or {
 	welcomeIntroWorkingData = nil,
 	welcomeIntroAnimations = { },

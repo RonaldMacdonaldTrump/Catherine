@@ -17,6 +17,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 --[[ Catherine Anti HaX Version 2.0 : Last Update 2015-05-11 ]]--
 
+if ( !catherine.configs.enable_AntiHaX ) then return end
+
 catherine.antiHaX = catherine.antiHaX or { }
 
 if ( SERVER ) then
@@ -131,7 +133,7 @@ if ( SERVER ) then
 		if ( !catherine.configs.enable_AntiHaX or catherine.antiHaX.doing ) then return end
 		
 		if ( catherine.antiHaX.NextCheckTick <= CurTime( ) ) then
-			MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Checking ...\n" )
+			MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Checking the players ...\n" )
 			catherine.antiHaX.Work( )
 			
 			catherine.antiHaX.NextCheckTick = CurTime( ) + catherine.configs.HaXCheckInterval
