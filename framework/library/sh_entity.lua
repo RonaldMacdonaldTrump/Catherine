@@ -18,9 +18,10 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.entity = catherine.entity or { }
 local META = FindMetaTable( "Entity" )
+local getClass = META.GetClass
 
 function catherine.entity.IsDoor( ent )
-	local class = ent:GetClass( )
+	local class = getClass( ent )
 	
 	return class == "func_door" or class == "func_door_rotating" or class == "prop_door_rotating"
 end
@@ -30,13 +31,13 @@ function catherine.entity.IsProp( ent )
 end
 
 function META:IsDoor( )
-	local class = self:GetClass( )
+	local class = getClass( self )
 	
 	return class == "func_door" or class == "func_door_rotating" or class == "prop_door_rotating"
 end
 
 function META:IsProp( )
-	return self:GetClass( ):find( "prop_" )
+	return getClass( self ):find( "prop_" )
 end
 
 if ( SERVER ) then

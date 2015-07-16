@@ -25,9 +25,13 @@ function catherine.attribute.Register( attributeTable )
 	
 	attributeTable.default = attributeTable.default or 0
 	attributeTable.max = attributeTable.max or 100
-	
-	catherine.attribute.lists[ attributeTable.uniqueID ] = attributeTable
 
+	if ( SERVER and attributeTable.image ) then
+		resource.AddFile( attributeTable.image )
+	end
+
+	catherine.attribute.lists[ attributeTable.uniqueID ] = attributeTable
+	
 	return attributeTable.uniqueID
 end
 

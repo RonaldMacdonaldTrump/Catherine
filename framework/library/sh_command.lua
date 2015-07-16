@@ -21,6 +21,7 @@ catherine.command = catherine.command or { lists = { } }
 function catherine.command.Register( commandTable )
 	commandTable.syntax = commandTable.syntax or "[None]"
 	commandTable.desc = commandTable.desc or "^Command_DefDesc"
+	
 	catherine.command.lists[ commandTable.command ] = commandTable
 end
 
