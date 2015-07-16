@@ -32,19 +32,26 @@ if ( SERVER ) then
 		{ libName = "catData", funcName = "SendAllNetworkRegistries" }
 	}
 			
-	function catherine.player.Initialize( pl, func )
+	function catherine.player.Initialize( pl )
 		if ( !IsValid( pl ) ) then return end
 		
 		local function Initializing( )
 			if ( !IsValid( pl ) ) then return end
 
 			if ( !Schema ) then
-				netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_NoSchema" ) )
+				netstream.Start( pl, "catherine.loadingError", {
+					LANG( pl, "Basic_Error_NoSchema" ),
+					true
+				} )
 				return
 			end
 
 			if ( !catherine.database.Connected ) then
-				netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_NoDatabase", catherine.database.ErrorMsg ) )
+				netstream.Start( pl, "catherine.loadingError", {
+					LANG( pl, "Basic_Error_NoDatabase", catherine.database.ErrorMsg ),
+					true
+				} )
+				
 				return
 			end
 			
@@ -57,7 +64,10 @@ if ( SERVER ) then
 				local success, result = pcall( catherine[ libName ][ funcName ], pl )
 				
 				if ( !success ) then
-					netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_LibraryLoad", "catherine." .. libName .. "." .. funcName ) )
+					netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_LibraryLoad", {
+						"catherine." .. libName .. "." .. funcName ),
+						false
+					} )
 					MsgC( Color( 255, 0, 0 ), "[CAT ERROR] Failed to initialize Catherine ( Player : " .. pl:Name( ) .. "/" .. pl:SteamID( ) .. " ) ( Function : catherine." .. libName .. "." .. funcName .. " )\n" .. result .. "\n" )
 					return
 				end

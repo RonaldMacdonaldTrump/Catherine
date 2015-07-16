@@ -26,6 +26,11 @@ catherine.intro = catherine.intro or {
 	loadingAlpha = 0,
 	rotate = 0,
 	startTime = 0,
+	sysTime = 0,
+	reloadingWait = false,
+	reloadingCount = 0,
+	noReload = false,
+	onlyMessage = false,
 	
 	firstStageShowingTime = nil,
 	firstStage = false,
@@ -144,7 +149,7 @@ function GM:HUDDrawScoreBoard( )
 	if ( LocalPlayer( ):IsCharacterLoaded( ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 	local realTime = RealTime( ) // YES, this is real time, thats all.
-	
+
 	// Backgrounds
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, catherine.intro.backAlpha ) )
 	
@@ -245,10 +250,26 @@ function GM:HUDDrawScoreBoard( )
 		
 		introBooA = Lerp( 0.02, introBooA, 0 )
 	end
+	
+	if ( !catherine.intro.noReload and !catherine.intro.reloadingWait and catherine.intro.loading and catherine.intro.noError and catherine.intro.introDone and catherine.intro.sysTime + 15 <= SysTime( ) ) then
+		catherine.intro.reloadingWait = true
+		catherine.intro.reloadingCount = catherine.intro.reloadingCount + 1
+		catherine.intro.noError = false
+		catherine.intro.onlyMessage = false
+		catherine.intro.errorMessage = LANG( "Basic_Error_LoadTimeoutWait", catherine.intro.reloadingCount )
+
+		timer.Simple( 5, function( )
+			catherine.intro.onlyMessage = true
+			catherine.intro.noError = true
+			catherine.intro.errorMessage = LANG( "Basic_Error_Reloading" )
+			catherine.intro.sysTime = SysTime( )
+			catherine.intro.reloadingWait = false
+		end )
+	end
 
 	if ( catherine.intro.loadingAlpha > 0 ) then
 		// Loading circle
-		if ( catherine.intro.noError ) then
+		if ( catherine.intro.noError or catherine.intro.onlyMessage ) then
 			catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 4, 4 )
 			
 			draw.NoTexture( )
@@ -275,7 +296,7 @@ function GM:HUDDrawScoreBoard( )
 	draw.SimpleText( LANG( "Version_UI_YourVer_AV", self.Version ), "catherine_normal15", scrW - 20, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_RIGHT, 1 )
 	
 	// Error message
-	if ( !catherine.intro.noError and catherine.intro.errorMessage ) then
+	if ( ( !catherine.intro.noError or catherine.intro.onlyMessage ) and catherine.intro.errorMessage ) then
 		draw.SimpleText( LANG( "Basic_Sorry" ), "catherine_normal25", 85, scrH - 55, Color( 0, 0, 0, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
 		draw.SimpleText( catherine.intro.errorMessage, "catherine_normal15", 85, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
 	end
@@ -754,6 +775,7 @@ netstream.Hook( "catherine.introStart", function( )
 	catherine.intro.loading = true
 	catherine.intro.status = true
 	catherine.intro.startTime = RealTime( )
+	catherine.intro.sysTime = SysTime( )
 end )
 
 netstream.Hook( "catherine.introStop", function( )
@@ -765,9 +787,12 @@ netstream.Hook( "catherine.loadingFinished", function( )
 end )
 
 netstream.Hook( "catherine.loadingError", function( data )
+	local message = data[ 1 ]
+	
 	catherine.intro.loading = false
 	catherine.intro.noError = false
-	catherine.intro.errorMessage = data
+	catherine.intro.errorMessage = message
+	catherine.intro.noReload = data[ 2 ] or false
 	
-	MsgC( Color( 255, 0, 0 ), "[CAT ERROR] " .. data .. "\n" )
+	MsgC( Color( 255, 0, 0 ), "[CAT ERROR] " .. message .. "\n" )
 end )

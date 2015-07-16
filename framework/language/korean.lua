@@ -384,6 +384,8 @@ LANGUAGE.data = {
 	[ "Basic_Error_NoSchema" ] = "스키마(Schema) 게임모드가 불러와져 있지 않습니다. (CAT_ERR 0x1)",
 	[ "Basic_Error_NoDatabase" ] = "데이터베이스에 연결되어 있지 않습니다. (CAT_ERR 0x2) : %s",
 	[ "Basic_Error_LibraryLoad" ] = "라이브러리를 불러오는 중 오류가 발생했습니다. (CAT_ERR 0x3) ( 함수 : %s )",
+	[ "Basic_Error_LoadTimeoutWait" ] = "캐서린을 로딩하는 중에 문제가 있는 것 같습니다, 다시 로딩을 시도합니다 ... (CAT_ERR 0x4) ( %s번 시도중. )",
+	[ "Basic_Error_Reloading" ] = "캐서린을 다시 로딩하는 중 입니다 ...",
 	[ "Basic_Framework_Author" ] = "프레임워크 개발 및 디자인 - %s.",
 	[ "Basic_Notify_BunnyHop" ] = "버니합을 하지 마십시오!",
 	

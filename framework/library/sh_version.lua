@@ -50,7 +50,7 @@ if ( SERVER ) then
 					} )
 				end
 			end, function( err )
-				catherine.util.Print( Color( 255, 0, 0 ), "Update check error! - " .. err )
+				catherine.util.Print( Color( 255, 0, 0 ), "Failed to checking update! - " .. err )
 				
 				if ( IsValid( pl ) ) then
 					netstream.Start( pl, "catherine.version.CheckResult", {
