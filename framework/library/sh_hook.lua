@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.hook = catherine.hook or { }
 CAT_HOOK_PLUGIN_CACHES = { }
 
 hook.CallCatHooks = hook.CallCatHooks or hook.Call
@@ -24,17 +23,19 @@ hook.CallCatHooks = hook.CallCatHooks or hook.Call
 function hook.Call( hookID, gamemode, ... )
 	local cacheData = CAT_HOOK_PLUGIN_CACHES[ hookID ]
 	
-	for k, v in pairs( cacheData or { } ) do
-		local success, result = pcall( v, k, ... )
+	if ( cacheData ) then
+		for k, v in pairs( cacheData ) do
+			local success, result = pcall( v, k, ... )
 
-		if ( success ) then
-			result = { result }
-			
-			if ( #result > 0 ) then
-				return unpack( result )
+			if ( success ) then
+				result = { result }
+				
+				if ( #result > 0 ) then
+					return unpack( result )
+				end
+			else
+				ErrorNoHalt( "\n[CAT ERROR] SORRY, On the plugin <" .. k.uniqueID .. ">'s hooks <" .. hookID .. "> has a critical error :< ...\n\n" .. result .. "\n" )
 			end
-		else
-			ErrorNoHalt( "\n[CAT ERROR] SORRY, On the plugin <" .. k.uniqueID .. ">'s hooks <" .. hookID .. "> has a critical error :< ...\n\n" .. result .. "\n" )
 		end
 	end
 

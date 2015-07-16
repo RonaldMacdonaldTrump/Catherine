@@ -54,6 +54,7 @@ catherine.flag.Register( "p", "^Flag_p_Desc", {
 	end,
 	onGive = function( pl )
 		pl:Give( "weapon_physgun" )
+		pl:SelectWeapon( "weapon_physgun" )
 	end,
 	onTake = function( pl )
 		pl:StripWeapon( "weapon_physgun" )
@@ -65,6 +66,7 @@ catherine.flag.Register( "t", "^Flag_t_Desc", {
 	end,
 	onGive = function( pl )
 		pl:Give( "gmod_tool" )
+		pl:SelectWeapon( "gmod_tool" )
 	end,
 	onTake = function( pl )
 		pl:StripWeapon( "gmod_tool" )
@@ -152,7 +154,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.flag.PlayerSpawnedInCharacter( pl )
-		timer.Simple( 0.5, function( )
+		timer.Simple( 0.3, function( )
 			for k, v in pairs( catherine.flag.GetAll( ) ) do
 				if ( catherine.player.GetIgnoreGiveFlagWeapon( pl ) or !catherine.flag.Has( pl, v.uniqueID ) or !v.onSpawn ) then continue end
 

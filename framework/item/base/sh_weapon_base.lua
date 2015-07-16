@@ -127,9 +127,11 @@ if ( SERVER ) then
 			catherine.item.Work( pl, k, "equip" )
 		end
 		
-		if ( catherine.configs.giveHand and pl:HasWeapon( "cat_fist" ) ) then
-			pl:SelectWeapon( "cat_fist" )
-		end
+		timer.Simple( 0.8, function( )
+			if ( catherine.configs.giveHand and pl:HasWeapon( "cat_fist" ) ) then
+				pl:SelectWeapon( "cat_fist" )
+			end
+		end )
 	end )
 	
 	hook.Add( "CharacterLoadingStart", "catherine.item.hooks.weapon_base.CharacterLoadingStart", function( pl )
