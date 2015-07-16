@@ -19,7 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 --[[
 	This code has brought from NutScript.
 	https://github.com/Chessnut/NutScript
---]]
+]]--
 
 Weapon_HoldType = { }
 Weapon_HoldType[ "" ] = "normal"

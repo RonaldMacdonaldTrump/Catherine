@@ -24,14 +24,18 @@ local baseDir = "catherine/framework"
 DeriveGamemode( "sandbox" )
 
 GM.Name = "Catherine"
-GM.Desc = "A free role-playing framework for Garry's Mod."
+GM.Description = "A neat and beautiful role-play framework for Garry's Mod."
 GM.Author = "L7D"
-GM.Version = "2015/07/07"
-GM.Build = "BETA"
+GM.Website = "https://github.com/L7D/Catherine"
+GM.Email = "smhjyh2009@gmail.com"
+GM.Version = "2015/07/16"
+GM.Build = "DEV"
 
 catherine.FolderName = GM.FolderName
 
 function catherine.Initialize( )
+	local sysTime = SysTime( )
+	
 	--[[ Load utilities ... ]]--
 	AddCSLuaFile( baseDir .. "/engine/utility.lua" )
 	include( baseDir .. "/engine/utility.lua" )
@@ -80,17 +84,29 @@ function catherine.Initialize( )
 		end
 	end
 	
-	--[[ Initalized. ]]--
-
-	catherine.isInitialized = true
+	--[[ Initalized. :> ]]--
+	if ( !catherine.isInitialized ) then
+		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are loaded at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
+		catherine.isInitialized = true
+	else
+		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are refreshed at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
+	end
 end
 
-function catherine.GetVersion( )
-	return GAMEMODE.Version
-end
+local getInfoFunctions = {
+	{ "GetName", "Name" },
+	{ "GetAuthor", "Author" },
+	{ "GetDescription", "Description" },
+	{ "GetVersion", "Version" },
+	{ "GetBuild", "Build" },
+	{ "GetWebsite", "Website" },
+	{ "GetEmail", "Email" }
+}
 
-function catherine.GetBuild( )
-	return GAMEMODE.Build
+for i = 1, #getInfoFunctions do
+	catherine[ getInfoFunctions[ i ][ 1 ] ] = function( )
+		return GAMEMODE[ getInfoFunctions[ i ][ 2 ] ]
+	end
 end
 
 catherine.Initialize( )

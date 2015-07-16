@@ -48,7 +48,7 @@ if ( SERVER ) then
 		if ( !catherine.catData.networkRegistry[ steamID ] ) then return end
 		
 		catherine.database.UpdateDatas( "catherine_players", "_steamID = '" .. steamID .. "'", {
-			_catData = util.TableToJSON( catherine.catData.networkRegistry[ steamID ] )
+			_catData = util.TableToJSON( catherine.catData.networkRegistry[ steamID ] ) or "[]"
 		} )
 	end
 	
@@ -56,9 +56,9 @@ if ( SERVER ) then
 		local steamID = pl:SteamID( )
 		
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
-			if ( !data ) then return end
+			if ( !data or !data[ 1 ] ) then return end
 			
-			catherine.catData.networkRegistry[ steamID ] = util.JSONToTable( data[ 1 ][ "_catData" ] )
+			catherine.catData.networkRegistry[ steamID ] = util.JSONToTable( data[ 1 ][ "_catData" ] ) or { }
 			netstream.Start( pl, "catherine.catData.SendAllNetworkRegistries", catherine.catData.networkRegistry[ steamID ] )
 		end )
 	end

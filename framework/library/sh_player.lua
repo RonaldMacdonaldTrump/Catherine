@@ -32,19 +32,26 @@ if ( SERVER ) then
 		{ libName = "catData", funcName = "SendAllNetworkRegistries" }
 	}
 			
-	function catherine.player.Initialize( pl, func )
+	function catherine.player.Initialize( pl, isReloading )
 		if ( !IsValid( pl ) ) then return end
 		
 		local function Initializing( )
 			if ( !IsValid( pl ) ) then return end
 
 			if ( !Schema ) then
-				netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_NoSchema" ) )
+				netstream.Start( pl, "catherine.loadingError", {
+					LANG( pl, "Basic_Error_NoSchema" ),
+					true
+				} )
 				return
 			end
 
 			if ( !catherine.database.Connected ) then
-				netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_NoDatabase", catherine.database.ErrorMsg ) )
+				netstream.Start( pl, "catherine.loadingError", {
+					LANG( pl, "Basic_Error_NoDatabase", catherine.database.ErrorMsg ),
+					true
+				} )
+				
 				return
 			end
 			
@@ -57,7 +64,10 @@ if ( SERVER ) then
 				local success, result = pcall( catherine[ libName ][ funcName ], pl )
 				
 				if ( !success ) then
-					netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_LibraryLoad", "catherine." .. libName .. "." .. funcName ) )
+					netstream.Start( pl, "catherine.loadingError", {
+						LANG( pl, "Basic_Error_LibraryLoad", "catherine." .. libName .. "." .. funcName ),
+						false
+					} )
 					MsgC( Color( 255, 0, 0 ), "[CAT ERROR] Failed to initialize Catherine ( Player : " .. pl:Name( ) .. "/" .. pl:SteamID( ) .. " ) ( Function : catherine." .. libName .. "." .. funcName .. " )\n" .. result .. "\n" )
 					return
 				end
@@ -84,19 +94,27 @@ if ( SERVER ) then
 			end )
 		end
 		
-		netstream.Hook( "catherine.player.CheckLocalPlayer_Receive", function( )
-			if ( !IsValid( pl ) ) then return end
+		if ( isReloading ) then
+			pl:Freeze( true )
 			
-			netstream.Start( pl, "catherine.introStart" )
-
 			timer.Simple( 1, function( )
 				Initializing( )
 			end )
-		end )
+		else
+			netstream.Hook( "catherine.player.CheckLocalPlayer_Receive", function( )
+				if ( !IsValid( pl ) ) then return end
+				
+				netstream.Start( pl, "catherine.introStart" )
 
-		pl:Freeze( true )
-		
-		netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
+				timer.Simple( 1, function( )
+					Initializing( )
+				end )
+			end )
+
+			pl:Freeze( true )
+			
+			netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
+		end
 	end
 	
 	function catherine.player.UpdateLanguageSetting( pl )
@@ -551,6 +569,10 @@ if ( SERVER ) then
 	end
 	
 	hook.Add( "PlayerSwitchWeapon", "catherine.player.PlayerSwitchWeapon", catherine.player.PlayerSwitchWeapon )
+	
+	netstream.Hook( "catherine.player.Initialize_Reload", function( pl )
+		catherine.player.Initialize( pl, true )
+	end )
 else
 	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 0.05
 	

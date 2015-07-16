@@ -58,20 +58,22 @@ local languageMasterTable = catherine.language.lists
 local Format = Format
 
 if ( SERVER ) then
+	local getInfo = FindMetaTable( "Player" ).GetInfo
+	
 	function LANG( pl, key, ... )
-		local languageTable = languageMasterTable[ pl:GetInfo( "cat_convar_language" ) ] or languageMasterTable[ "english" ]
+		local languageTable = languageMasterTable[ getInfo( pl, "cat_convar_language" ) ] or languageMasterTable[ "english" ]
 		
 		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
 		
 		return Format( languageTable.data[ key ], ... )
 	end
 else
-	local GetConVarString = GetConVarString
+	local getConvarString = GetConVarString
 	
 	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", catherine.configs.defaultLanguage, true, true )
 	
 	function LANG( key, ... )
-		local languageTable = languageMasterTable[ GetConVarString( "cat_convar_language" ) ] or languageMasterTable[ "english" ]
+		local languageTable = languageMasterTable[ getConvarString( "cat_convar_language" ) ] or languageMasterTable[ "english" ]
 		
 		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
 		

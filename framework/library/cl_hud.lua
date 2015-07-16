@@ -19,6 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 if ( !catherine.option ) then
 	catherine.util.Include( "cl_option.lua" )
 end
+
 catherine.hud = catherine.hud or {
 	welcomeIntroWorkingData = nil,
 	welcomeIntroAnimations = { },
@@ -29,7 +30,6 @@ catherine.hud = catherine.hud or {
 	pre = 0,
 	vAlpha = 0,
 	vAlphaTarget = 255,
-	checkV = CurTime( ),
 	deathAlpha = 0
 }
 local blockedModules = { }
@@ -82,26 +82,28 @@ function catherine.hud.ZipTie( pl, w, h )
 end
 
 function catherine.hud.DeathScreen( pl, w, h )
+	if ( mathR( catherine.hud.deathAlpha ) <= 0 ) then return end
+	
 	catherine.hud.deathAlpha = Lerp( 0.03, catherine.hud.deathAlpha, pl:Alive( ) and 0 or 255 )
 	
 	drawBox( 0, 0, 0, w, h, Color( 0, 0, 0, catherine.hud.deathAlpha ) )
 end
 
+timer.Create( "catherine.hud.VignetteCheck", 1.5, 0, function( )
+	if ( !IsValid( LocalPlayer( ) ) or vignetteMat == "__material__error" ) then return end
+	local data = { start = LocalPlayer( ):GetPos( ) }
+	data.endpos = data.start + Vector( 0, 0, 2000 )
+	local tr = traceLine( data )
+	
+	if ( !tr.Hit or tr.HitSky ) then
+		catherine.hud.vAlphaTarget = 125
+	else
+		catherine.hud.vAlphaTarget = 255
+	end
+end )
+
 function catherine.hud.Vignette( pl, w, h )
 	if ( vignetteMat == "__material__error" ) then return end
-	if ( catherine.hud.checkV <= CurTime( ) ) then
-		local data = { start = pl:GetPos( ) }
-		data.endpos = data.start + Vector( 0, 0, 2000 )
-		local tr = traceLine( data )
-		
-		if ( !tr.Hit or tr.HitSky ) then
-			catherine.hud.vAlphaTarget = 125
-		else
-			catherine.hud.vAlphaTarget = 255
-		end
-		
-		catherine.hud.checkV = CurTime( ) + 1.5
-	end
 	
 	catherine.hud.vAlpha = animationApproach( catherine.hud.vAlpha, catherine.hud.vAlphaTarget, FrameTime( ) * 90 )
 	

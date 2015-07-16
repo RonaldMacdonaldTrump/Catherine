@@ -646,7 +646,7 @@ else
 			return
 		end
 		
-		catherine.hud.ProgressBarAdd( data[ 1 ], data[ 2 ] )
+		catherine.hud.ProgressBarAdd( catherine.util.StuffLanguage( data[ 1 ] ), data[ 2 ] )
 	end )
 	
 	netstream.Hook( "catherine.util.TopNotify", function( data )

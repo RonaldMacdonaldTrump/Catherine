@@ -19,10 +19,10 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 if ( CLIENT ) then return end
 
 catherine.database.information = {
-	db_module = "sqlite",
-	db_hostname = "127.0.0.1",
-	db_account_id = "",
-	db_account_password = "",
-	db_name = "",
-	db_port = 3306
+	db_module = "sqlite", --[[ Database module (mysqloo or sqlite) ]]--
+	db_hostname = "127.0.0.1", --[[ Database hostname (127.0.0.1) ]]--
+	db_account_id = "", --[[ Database account ID (root) ]]--
+	db_account_password = "", --[[ Database account Password ]]--
+	db_name = "", --[[ Database name ]]--
+	db_port = 3306 --[[ Database port (3306) ]]--
 }

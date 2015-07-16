@@ -44,7 +44,7 @@ function catherine.notify.Add( message, time, sound )
 	catherine.notify.lists[ index ] = {
 		message = message,
 		endTime = CurTime( ) + ( time or 5 ),
-		x = ScrW( ) / 2 - ( w ) / 2,
+		x = ScrW( ) / 2 - w / 2,
 		y = ( ScrH( ) - 10 ) - ( index * 25 ),
 		w = w,
 		h = 20,
@@ -67,7 +67,7 @@ function catherine.notify.Draw( )
 			v.a = Lerp( 0.05, v.a, 255 )
 		end
 		
-		v.y = Lerp( 0.05, v.y, ( ScrH( ) - 10 ) - ( ( k ) * 25 ) )
+		v.y = Lerp( 0.05, v.y, ( ScrH( ) - 10 ) - ( k * 25 ) )
 		
 		draw.RoundedBox( 0, v.x, v.y, v.w, v.h, Color( 235, 235, 235, v.a ) )
 		draw.SimpleText( v.message, "catherine_normal15", v.x + v.w / 2, v.y + v.h / 2, Color( 50, 50, 50, v.a ), 1, 1 )

@@ -29,10 +29,14 @@ function catherine.faction.Register( factionTable )
 	team.SetUp( factionTable.index, factionTable.name, factionTable.color )
 	
 	for k, v in pairs( factionTable.models or { } ) do
+		if ( SERVER ) then
+			resource.AddFile( v )
+		end
+		
 		util.PrecacheModel( v )
 	end
 	
-	if ( factionTable.factionImage ) then
+	if ( SERVER and factionTable.factionImage ) then
 		resource.AddFile( factionTable.factionImage )
 	end
 	

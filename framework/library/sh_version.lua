@@ -25,6 +25,19 @@ if ( SERVER ) then
 	function catherine.version.Check( pl )
 		http.Fetch( catherine.crypto.Decode( url ),
 			function( body )
+				if ( body:find( "Error 404</p>" ) ) then
+					catherine.util.Print( Color( 255, 0, 0 ), "Failed to checking version! - 404" )
+				
+					if ( IsValid( pl ) ) then
+						netstream.Start( pl, "catherine.version.CheckResult", {
+							false,
+							LANG( pl, "Version_Notify_CheckError", "404" )
+						} )
+					end
+					
+					return
+				end
+				
 				local globalVer = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
 				local foundNew = false
 				
@@ -50,7 +63,7 @@ if ( SERVER ) then
 					} )
 				end
 			end, function( err )
-				catherine.util.Print( Color( 255, 0, 0 ), "Update check error! - " .. err )
+				catherine.util.Print( Color( 255, 0, 0 ), "Failed to checking version! - " .. err )
 				
 				if ( IsValid( pl ) ) then
 					netstream.Start( pl, "catherine.version.CheckResult", {

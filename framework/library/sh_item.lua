@@ -178,8 +178,10 @@ if ( SERVER ) then
 		if ( !force ) then
 			local itemTable = catherine.item.FindByID( uniqueID )
 
-			if ( itemTable and !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
-				return false
+			if ( itemTable and !catherine.inventory.HasSpace( pl, itemTable.weight * ( itemCount or 1 ) ) ) then
+				return false, 1
+			elseif ( !itemTable ) then
+				return false, 2
 			end
 		end
 		
@@ -216,6 +218,13 @@ if ( SERVER ) then
 
 		local physObject = ent:GetPhysicsObject( )
 		
+		if ( !IsValid( physObject ) ) then
+			local min, max = Vector( -8, -8, -8 ), Vector( 8, 8, 8 )
+
+			ent:PhysicsInitBox( min, max )
+			ent:SetCollisionBounds( min, max )
+		end
+
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( true )
 			physObject:Wake( )
@@ -272,7 +281,6 @@ else
 		if ( !IsValid( ent ) or !IsValid( pl:GetEyeTrace( ).Entity ) or pl:GetActiveWeapon( ) == "weapon_physgun" ) then return end
 		
 		local isAv = false
-		
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local menu = DermaMenu( )
 		

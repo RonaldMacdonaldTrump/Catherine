@@ -77,11 +77,13 @@ local DROP_TABLES = [[
 	DROP TABLE IF EXISTS `catherine_players`;
 ]]
 
-catherine.database = catherine.database or { modules = { } }
+catherine.database = catherine.database or {
+	modules = { },
+	Connected = false,
+	ErrorMsg = "Connection Error",
+	object = nil
+}
 include( "catherine/framework/config/database_config.lua" )
-catherine.database.Connected = catherine.database.Connected or false
-catherine.database.ErrorMsg = catherine.database.ErrorMsg or "Connection Error"
-catherine.database.object = catherine.database.object or nil
 catherine.database.modules[ "mysqloo" ] = {
 	connect = function( func )
 		if ( !pcall( require, "mysqloo" ) ) then
@@ -98,7 +100,7 @@ catherine.database.modules[ "mysqloo" ] = {
 		end
 		
 		local info = catherine.database.information
-		catherine.database.object = mysqloo.connect( info.db_hostname, info.db_account_id, info.db_account_password, info.db_name, tonumber( info.db_port ) )
+		catherine.database.object = mysqloo.connect( info.db_hostname or "127.0.0.1", info.db_account_id, info.db_account_password, info.db_name, tonumber( info.db_port ) or 3306 )
 		catherine.database.object.onConnected = function( )
 			catherine.database.Connected = true
 			catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using MySQLoo." )
@@ -194,7 +196,7 @@ function catherine.database.Connect( func )
 	local modules = catherine.database.modules[ catherine.database.information.db_module ]
 	
 	if ( !modules ) then
-		catherine.util.Print( Color( 255, 255, 0 ), "Unknown MySQL module, using SQLite." )
+		catherine.util.Print( Color( 255, 255, 0 ), "Unknown Database module, so using SQLite." )
 		modules = catherine.database.modules.sqlite
 	end
 	

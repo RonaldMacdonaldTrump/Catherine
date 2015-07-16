@@ -117,6 +117,7 @@ LANGUAGE.data = {
 	[ "Flag_n_Desc" ] = "NPC 소환에 대한 권한.",
 	[ "Flag_R_Desc" ] = "레그돌 소환에 대한 권한.",
 	[ "Flag_s_Desc" ] = "이펙트 소환에 대한 권한.",
+	[ "Flag_i_Desc" ] = "아이템 소환, 지급에 대한 권한.",
 	
 	[ "UnknownError" ] = "알 수 없는 오류가 발생하였습니다, 죄송합니다!",
 	[ "Basic_Notify_UnknownPlayer" ] = "올바른 캐릭터의 이름을 입력하세요!",
@@ -159,7 +160,7 @@ LANGUAGE.data = {
 	
 	// Scoreboard
 	[ "Scoreboard_UI_Title" ] = "플레이어 목록",
-	[ "Scoreboard_UI_Author" ] = "게임모드 개발자",
+	[ "Scoreboard_UI_Author" ] = "프레임워크 개발자",
 	[ "Scoreboard_UI_UnknownDesc" ] = "당신은 이 사람을 모릅니다.",
 	[ "Scoreboard_UI_PlayerDetailStr" ] = "스팀 이름 : %s\n스팀 고유 번호 : %s\n핑 : %s\n플레이어 옵션을 보시려면 클릭하세요.",
 	[ "Scoreboard_UI_CanNotLook_Str" ] = "당신은 볼 수 없습니다.",
@@ -173,6 +174,9 @@ LANGUAGE.data = {
 	[ "Scoreboard_PlayerOption05_Q" ] = "어떤 플래그를 주시겠습니까?",
 	[ "Scoreboard_PlayerOption06_Str" ] = "플래그 뺏기",
 	[ "Scoreboard_PlayerOption06_Q" ] = "어떤 플래그를 뺏으시겠습니까?",
+	[ "Scoreboard_PlayerOption07_Str" ] = "아이템 주기",
+	[ "Scoreboard_PlayerOption07_Q1" ] = "어떤 아이템을 주시겠습니까?",
+	[ "Scoreboard_PlayerOption07_Q2" ] = "해당 아이템을 몇개 주시겠습니까?",
 	
 	// Help
 	[ "Help_UI_Title" ] = "도움말",
@@ -185,7 +189,7 @@ LANGUAGE.data = {
 	[ "Help_Category_Plugin" ] = "플러그인",
 	
 	// Plugin
-	[ "Plugin_Value_Author" ] = "%s 에 의해 개발",
+	[ "Plugin_Value_Author" ] = "개발 및 디자인 %s.",
 	
 	// Storage
 	[ "Storage_UI_YourInv" ] = "당신의 인벤토리",
@@ -195,7 +199,8 @@ LANGUAGE.data = {
 	[ "Storage_OpenStr" ] = "열기",
 	
 	// Item SYSTEM
-	[ "Item_Notify_NoItemData" ] = "올바르지 않은 물건 입니다!",
+	[ "Item_GiveCommand_Fin" ] = "당신은 %s개의 %s 아이템을 %s 님에게 줬습니다.",
+	[ "Item_Notify_NoItemData" ] = "올바르지 않은 아이템 입니다!",
 	
 	// Item Base
 	[ "Item_Category_Other" ] = "기타",
@@ -327,13 +332,13 @@ LANGUAGE.data = {
 	[ "Option_Str_BAR_Name" ] = "상단바 표시",
 	[ "Option_Str_BAR_Desc" ] = "상단에 있는 바를 표시합니다.",
 	
-	[ "Option_Str_CHAT_TIMESTAMP_Name" ] = "채팅 타임스탬프 표시",
+	[ "Option_Str_CHAT_TIMESTAMP_Name" ] = "채팅 수신 시간 표시",
 	[ "Option_Str_CHAT_TIMESTAMP_Desc" ] = "채팅이 수신된 시간을 채팅 옆에 표시합니다.",
 	
 	[ "Option_Str_ADMIN_ESP_Name" ] = "어드민 ESP 표시",
 	[ "Option_Str_ADMIN_ESP_Desc" ] = "노클립을 했을 때 플레이어의 위에 정보를 뜨게 합니다.",
 	
-	[ "Option_Str_Always_ADMIN_ESP_Name" ] = "계속 어드민 ESP 표시",
+	[ "Option_Str_Always_ADMIN_ESP_Name" ] = "항상 어드민 ESP 표시",
 	[ "Option_Str_Always_ADMIN_ESP_Desc" ] = "노클립을 안했을 때도 플레이어 위에 정보를 뜨게 합니다.",
 	
 	[ "Option_Str_MAINHUD_Name" ] = "메인 HUD 표시",
@@ -342,8 +347,8 @@ LANGUAGE.data = {
 	[ "Option_Str_MAINLANG_Name" ] = "언어",
 	[ "Option_Str_MAINLANG_Desc" ] = "캐서린의 언어를 변경할 수 있습니다.",
 	
-	[ "Option_Str_HINT_Name" ] = "RP 도움말 표시",
-	[ "Option_Str_HINT_Desc" ] = "RP 에 도움이 되는 도움말을 표시합니다.",
+	[ "Option_Str_HINT_Name" ] = "RP 힌트 표시",
+	[ "Option_Str_HINT_Desc" ] = "RP 에 도움이 되는 힌트를 표시합니다.",
 	
 	// Chat
 	[ "Chat_Str_IC" ] = "%s 님의 말 %s",
@@ -379,9 +384,12 @@ LANGUAGE.data = {
 	[ "Basic_Error_NoSchema" ] = "스키마(Schema) 게임모드가 불러와져 있지 않습니다. (CAT_ERR 0x1)",
 	[ "Basic_Error_NoDatabase" ] = "데이터베이스에 연결되어 있지 않습니다. (CAT_ERR 0x2) : %s",
 	[ "Basic_Error_LibraryLoad" ] = "라이브러리를 불러오는 중 오류가 발생했습니다. (CAT_ERR 0x3) ( 함수 : %s )",
-	[ "Basic_Framework_Author" ] = "%s 에 의해 개발 및 디자인.",
+	[ "Basic_Error_LoadTimeoutWait" ] = "캐서린을 로딩하는 중에 문제가 있는 것 같습니다, 다시 로딩을 시도합니다 ... (CAT_ERR 0x4) ( %s번 시도중. )",
+	[ "Basic_Error_Reloading" ] = "캐서린을 다시 로딩하는 중 입니다 ...",
+	[ "Basic_Framework_Author" ] = "프레임워크 개발 및 디자인 - %s.",
 	[ "Basic_Notify_BunnyHop" ] = "버니합을 하지 마십시오!",
 	
+	// Command
 	[ "Command_ChangeLevel_Fin" ] = "%s초 후 맵이 %s 로 바뀝니다.",
 	[ "Command_ChangeLevel_Error01" ] = "맵이 올바르지 않습니다!",
 	[ "Command_RestartLevel_Fin" ] = "%s초 후 서버가 리부팅 됩니다.",
@@ -389,7 +397,8 @@ LANGUAGE.data = {
 	[ "Command_SetTimeHour_Fin" ] = "당신은 RP 시간을 %s시로 설정하셨습니다.",
 	[ "Command_PrintBodyGroup_Fin" ] = "해당 사람의 바디그룹 테이블 구조가 콘솔에 표시됩니다.",
 	
-	[ "AntiHaX_KickMessage" ] = "죄송합니다, 당신은 치트 프로그램 사용으로 감지되어 킥 당하셨습니다 :(",
+	// AntiHaX
+	[ "AntiHaX_KickMessage" ] = "죄송합니다, 당신은 치트 프로그램 사용으로 감지되어 강퇴당하셨습니다 :(",
 	[ "AntiHaX_KickMessage_TimeOut" ] = "죄송합니다, 당신은 치트 프로그램 확인 작업의 제한 시간을 초과했습니다 :(",
 	
 	// Weapon
@@ -397,8 +406,8 @@ LANGUAGE.data = {
 	[ "Weapon_Purpose_Title" ] = "- 용도 -",
 	[ "Weapon_Author_Title" ] = "- 개발자 -",
 	
-	[ "Weapon_Fists_Name" ] = "주먹",
-	[ "Weapon_Fists_Instructions" ] = "왼쪽 키 : 펀치,\n오른쪽 키 : 노크.",
+	[ "Weapon_Fists_Name" ] = "손",
+	[ "Weapon_Fists_Instructions" ] = "왼쪽 키 : 때리기,\n오른쪽 키 : 노크.",
 	[ "Weapon_Fists_Purpose" ] = "사람을 떄리거나 문을 노크할 수 있습니다.",
 	
 	[ "Weapon_Key_Name" ] = "열쇠",

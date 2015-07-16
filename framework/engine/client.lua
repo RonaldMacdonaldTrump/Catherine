@@ -26,6 +26,12 @@ catherine.intro = catherine.intro or {
 	loadingAlpha = 0,
 	rotate = 0,
 	startTime = 0,
+	sysTime = 0,
+	reloadingWait = false,
+	reloadingCount = 0,
+	noReload = false,
+	onlyMessage = false,
+	alwaysFin = false,
 	
 	firstStageShowingTime = nil,
 	firstStage = false,
@@ -144,7 +150,7 @@ function GM:HUDDrawScoreBoard( )
 	if ( LocalPlayer( ):IsCharacterLoaded( ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 	local realTime = RealTime( ) // YES, this is real time, thats all.
-	
+
 	// Backgrounds
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, catherine.intro.backAlpha ) )
 	
@@ -158,18 +164,21 @@ function GM:HUDDrawScoreBoard( )
 		catherine.intro.backAlpha = Lerp( 0.03, catherine.intro.backAlpha, 0 )
 	end
 
-	if ( catherine.intro.noError ) then
-		if ( catherine.intro.loading ) then
-			catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 255 )
-		else
-			catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 0 )
-		end
+	if ( catherine.intro.noError or catherine.intro.onlyMessage ) then
+		catherine.intro.loadingColor.r = Lerp( 0.05, catherine.intro.loadingColor.r, 90 )
+		catherine.intro.loadingColor.g = Lerp( 0.05, catherine.intro.loadingColor.g, 90 )
+		catherine.intro.loadingColor.b = Lerp( 0.05, catherine.intro.loadingColor.b, 90 )
 	else
 		catherine.intro.backAlpha = 255
-		catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 255 )
 		catherine.intro.loadingColor.r = Lerp( 0.05, catherine.intro.loadingColor.r, 255 )
 		catherine.intro.loadingColor.g = Lerp( 0.05, catherine.intro.loadingColor.g, 0 )
 		catherine.intro.loadingColor.b = Lerp( 0.05, catherine.intro.loadingColor.b, 0 )
+	end
+	
+	if ( catherine.intro.loading ) then
+		catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 255 )
+	else
+		catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 0 )
 	end
 	
 	// Intro codes
@@ -228,9 +237,11 @@ function GM:HUDDrawScoreBoard( )
 
 					if ( catherine.intro.secondStageX <= 0 - 512 and !catherine.intro.introDone ) then
 						catherine.intro.introDone = true
-						catherine.intro.status = false
-						
+
 						if ( !catherine.intro.loading and catherine.intro.noError and catherine.intro.introDone ) then
+							catherine.intro.status = false
+							catherine.intro.alwaysFin = true
+							
 							if ( catherine.question.CanQuestion( ) ) then
 								catherine.question.Start( )
 							else
@@ -245,19 +256,63 @@ function GM:HUDDrawScoreBoard( )
 		
 		introBooA = Lerp( 0.02, introBooA, 0 )
 	end
+	
+	if ( !catherine.intro.alwaysFin and !catherine.intro.noReload and !catherine.intro.reloadingWait and catherine.intro.loading and catherine.intro.noError and catherine.intro.introDone and catherine.intro.sysTime + 10 <= SysTime( ) ) then
+		catherine.intro.reloadingWait = true
+		catherine.intro.reloadingCount = catherine.intro.reloadingCount + 1
+		catherine.intro.noError = false
+		catherine.intro.onlyMessage = false
+		catherine.intro.errorMessage = LANG( "Basic_Error_LoadTimeoutWait", catherine.intro.reloadingCount )
+
+		timer.Simple( 5, function( )
+			catherine.intro.introDone = false
+			catherine.intro.onlyMessage = true
+			catherine.intro.noError = true
+			catherine.intro.errorMessage = LANG( "Basic_Error_Reloading" )
+			catherine.intro.sysTime = SysTime( )
+			catherine.intro.reloadingWait = false
+			
+			netstream.Start( "catherine.player.Initialize_Reload" )
+		end )
+
+	elseif ( !catherine.intro.loading and catherine.intro.noError and catherine.intro.introDone and !catherine.intro.alwaysFin ) then
+		catherine.intro.alwaysFin = true
+		catherine.intro.noReload = true
+		catherine.intro.noError = true
+		catherine.intro.onlyMessage = false
+		catherine.intro.errorMessage = nil
+		catherine.intro.reloadingWait = false
+		catherine.intro.status = false
+
+		if ( catherine.question.CanQuestion( ) ) then
+			catherine.question.Start( )
+		else
+			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+		end
+		
+		// Call panel
+	end
 
 	if ( catherine.intro.loadingAlpha > 0 ) then
 		// Loading circle
-		if ( catherine.intro.noError ) then
+		if ( catherine.intro.noError or catherine.intro.onlyMessage ) then
 			catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 4, 4 )
 			
 			draw.NoTexture( )
 			surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
 			catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 250, 100 )
+			
+			draw.NoTexture( )
+			surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
+			catherine.geometry.DrawCircle( 40, scrH - 40, 5, 3, -catherine.intro.rotate, 250, 100 )
 		else
 			draw.NoTexture( )
 			surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
 			catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 360, 100 )
+			
+			draw.NoTexture( )
+			surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
+			catherine.geometry.DrawCircle( 40, scrH - 40, 5, 3, catherine.intro.rotate, 360, 100 )
 		end
 	end
 
@@ -272,10 +327,10 @@ function GM:HUDDrawScoreBoard( )
 	surface.DrawTexturedRect( catherine.intro.secondStageX, scrH / 2 - 256 / 2, 512, 256 )
 
 	// Catherine version
-	draw.SimpleText( LANG( "Version_UI_YourVer_AV", self.Version ), "catherine_normal15", scrW - 20, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( LANG( "Version_UI_YourVer_AV", catherine.GetVersion( ) .. " " .. catherine.GetBuild( ) ), "catherine_normal15", scrW - 20, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_RIGHT, 1 )
 	
 	// Error message
-	if ( !catherine.intro.noError and catherine.intro.errorMessage ) then
+	if ( ( !catherine.intro.noError or catherine.intro.onlyMessage ) and catherine.intro.errorMessage ) then
 		draw.SimpleText( LANG( "Basic_Sorry" ), "catherine_normal25", 85, scrH - 55, Color( 0, 0, 0, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
 		draw.SimpleText( catherine.intro.errorMessage, "catherine_normal15", 85, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
 	end
@@ -600,6 +655,18 @@ function GM:ScoreboardPlayerOption( pl, target )
 		end )
 	end
 	
+	if ( pl:HasFlag( "i" ) ) then
+		menu:AddOption( LANG( "Scoreboard_PlayerOption07_Str" ), function( )
+			Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption07_Q1" ), "", function( val )
+					Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption07_Q2" ), "1", function( val2 )
+							catherine.command.Run( "itemgive", target:Name( ), val, val2 or 1 )
+						end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
+					)
+				end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
+			)
+		end )
+	end
+	
 	menu:Open( )
 end
 
@@ -742,6 +809,7 @@ netstream.Hook( "catherine.introStart", function( )
 	catherine.intro.loading = true
 	catherine.intro.status = true
 	catherine.intro.startTime = RealTime( )
+	catherine.intro.sysTime = SysTime( )
 end )
 
 netstream.Hook( "catherine.introStop", function( )
@@ -753,9 +821,12 @@ netstream.Hook( "catherine.loadingFinished", function( )
 end )
 
 netstream.Hook( "catherine.loadingError", function( data )
+	local message = data[ 1 ]
+	
 	catherine.intro.loading = false
 	catherine.intro.noError = false
-	catherine.intro.errorMessage = data
+	catherine.intro.errorMessage = message
+	catherine.intro.noReload = data[ 2 ] or false
 	
-	MsgC( Color( 255, 0, 0 ), "[CAT ERROR] " .. data .. "\n" )
+	MsgC( Color( 255, 0, 0 ), "[CAT ERROR] " .. message .. "\n" )
 end )

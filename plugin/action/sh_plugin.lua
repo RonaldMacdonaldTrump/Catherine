@@ -26,14 +26,18 @@ catherine.language.Merge( "english", {
 	[ "ACT_Plugin_Name" ] = "Action",
 	[ "ACT_Plugin_Desc" ] = "Good stuff.",
 	[ "ACT_Plugin_Notify_Cant01" ] = "You can't do this now!",
-	[ "ACT_Plugin_Notify_Cant02" ] = "You can't do this action!"
+	[ "ACT_Plugin_Notify_Cant02" ] = "You can't do this action!",
+	[ "ACT_Plugin_Notify_Cant03" ] = "Please action at the facing the wall and little bit a back at wall!",
+	[ "ACT_Plugin_Notify_Cant04" ] = "Please action at the facing back the wall!"
 } )
 
 catherine.language.Merge( "korean", {
 	[ "ACT_Plugin_Name" ] = "액션",
 	[ "ACT_Plugin_Desc" ] = "RP 에 맞는 액션을 취할 수 있습니다.",
 	[ "ACT_Plugin_Notify_Cant01" ] = "당신은 지금 액션을 취할 수 없습니다!",
-	[ "ACT_Plugin_Notify_Cant02" ] = "당신은 이 액션을 취할 수 없습니다!"
+	[ "ACT_Plugin_Notify_Cant02" ] = "당신은 이 액션을 취할 수 없습니다!",
+	[ "ACT_Plugin_Notify_Cant03" ] = "벽을 보고 조금 벽에서 떨어진 후 액션을 다시 취하세요!",
+	[ "ACT_Plugin_Notify_Cant04" ] = "벽을 등에 대고 액션을 다시 취하세요!"
 } )
 
 catherine.util.Include( "sh_actions.lua" )
@@ -65,7 +69,17 @@ if ( SERVER ) then
 			return false
 		end
 		
+		if ( actionData.OnCheck and type( actionData.OnCheck ) == "function" ) then
+			local success, langKey = actionData.OnCheck( pl )
+			
+			if ( !success ) then
+				return false, langKey
+			end
+		end
+		
 		pl:SetNetVar( "isActioning", true )
+		pl:SetNetVar( "actionAngles", pl:GetAngles( ) )
+		pl:SetMoveType( MOVETYPE_NONE )
 
 		if ( actionData.doStartSeq ) then
 			pl:SetNetVar( "doingAction", true )
@@ -105,12 +119,16 @@ if ( SERVER ) then
 					if ( exitSeq ) then
 						catherine.animation.SetSeqAnimation( pl, exitSeq, pl:SequenceDuration( exitSeq ), nil, function( )
 							catherine.animation.ResetSeqAnimation( pl )
+							pl:SetMoveType( MOVETYPE_WALK )
 							pl:SetNetVar( "isActioning", nil )
+							pl:SetNetVar( "actionAngles", nil )
 						end )
 					end
 				else
 					catherine.animation.ResetSeqAnimation( pl )
+					pl:SetMoveType( MOVETYPE_WALK )
 					pl:SetNetVar( "isActioning", nil )
+					pl:SetNetVar( "actionAngles", nil )
 					return
 				end
 			end
@@ -123,13 +141,6 @@ if ( SERVER ) then
 	
 	function PLUGIN:PlayerSpawnedInCharacter( pl )
 		self:ExitAction( pl )
-	end
-	
-	function PLUGIN:Move( pl, moveData )
-		if ( pl:IsCharacterLoaded( ) and pl:IsActioning( ) ) then
-			moveData:SetForwardSpeed( 0 )
-			moveData:SetSideSpeed( 0 )
-		end
 	end
 
 	concommand.Add( "cat_action_exit", function( pl )
@@ -164,6 +175,7 @@ else
 
 			viewData.origin = thirdPersonLine.Fraction < 1 and ( thirdPersonLine.HitPos + thirdPersonLine.HitNormal * 5 ) or thirdPersonLine.HitPos
 			
+			--[[
 			local la = pl:LookupAttachment( "eyes" )
 			
 			if ( la == 0 ) then
@@ -178,7 +190,7 @@ else
 			} )
 
 			viewData.origin = tr.HitPos + tr.HitNormal * 4
-			viewData.angles = newAng
+			viewData.angles = newAng--]]
 			
 			return viewData
 		end
@@ -188,6 +200,14 @@ else
 		if ( pl:IsActioning( ) ) then
 			return true
 		end
+	end
+end
+
+function PLUGIN:UpdateAnimation( pl, moveData )
+	local ang = pl:GetNetVar( "actionAngles" )
+
+	if ( ang ) then
+		pl:SetRenderAngles( ang )
 	end
 end
 

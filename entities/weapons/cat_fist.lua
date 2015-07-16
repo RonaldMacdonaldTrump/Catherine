@@ -94,6 +94,8 @@ function SWEP:PrimaryAttack( )
 	viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( "fists_idle_0" .. math.random( 1, 2 ) ) )
 	
 	timer.Simple( 0.1, function( )
+		if ( !IsValid( viewMdl ) ) then return end
+		
 		viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( table.Random( { "fists_left", "fists_right" } ) ) )
 	end )
 
@@ -144,7 +146,13 @@ function SWEP:PrimaryAttack( )
 	self:SetNextPrimaryFire( CurTime( ) + self.Primary.Delay )
 end
 
-function SWEP:CanMoveable( ent )
+function SWEP:CanMoveable( pl, ent )
+	if ( CLIENT ) then return end
+
+	if ( ent:IsPlayerHolding( ) ) then
+		return false
+	end
+	
 	local physObject = ent:GetPhysicsObject( )
 
 	if ( !IsValid( physObject ) ) then
@@ -158,7 +166,7 @@ function SWEP:CanMoveable( ent )
 	return true
 end
 
-function SWEP:DoPickup( ent, stamina )
+function SWEP:DoPickup( pl, ent, stamina )
 	if ( ent:IsPlayerHolding( ) ) then
 		return
 	end
@@ -167,19 +175,17 @@ function SWEP:DoPickup( ent, stamina )
 		if ( !IsValid( ent ) or ent:IsPlayerHolding( ) ) then
 			return
 		end
-		
-		local pl = self.Owner
 
 		pl:PickupObject( ent )
 		pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 3 ) .. ".wav", 75 )
 		catherine.character.SetCharVar( pl, "stamina", stamina - 5 )
 	end )
 
-	self:SetNextSecondaryFire( CurTime( ) + 1 )
+	self:SetNextSecondaryFire( CurTime( ) + self.Secondary.Delay )
 end
 
 function SWEP:SecondaryAttack( )
-	if ( !IsFirstTimePredicted( ) ) then return end
+	if ( CLIENT and !IsFirstTimePredicted( ) ) then return end
 	local pl = self.Owner
 	local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
 	
@@ -196,11 +202,12 @@ function SWEP:SecondaryAttack( )
 	if ( IsValid( ent ) ) then
 		if ( ent:IsDoor( ) ) then
 			self:EmitSound( "physics/wood/wood_crate_impact_hard2.wav", math.random( 50, 100 ) )
-		elseif ( !ent:IsPlayer( ) and !ent:IsNPC( ) and self:CanMoveable( ent ) ) then
+		elseif ( !ent:IsPlayer( ) and !ent:IsNPC( ) and self:CanMoveable( pl, ent ) ) then
 			local physObject = ent:GetPhysicsObject( )
+			
 			physObject:Wake( )
 
-			self:DoPickup( ent, stamina )
+			self:DoPickup( pl, ent, stamina )
 		end
 	end
 	
@@ -209,13 +216,14 @@ end
 
 function SWEP:Deploy( )
 	if ( !IsValid( self.Owner ) ) then return end
-
 	local viewMdl = self.Owner:GetViewModel( )
 	
 	if ( IsValid( viewMdl ) ) then
 		viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( "fists_draw" ) )
 		
-		timer.Simple( viewMdl:SequenceDuration( ), function( ) 
+		timer.Simple( viewMdl:SequenceDuration( ), function( )
+			if ( !IsValid( viewMdl ) ) then return end
+			
 			viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( "fists_idle_0" .. math.random( 1, 2 ) ) )
 		end )
 		
