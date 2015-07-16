@@ -32,7 +32,7 @@ if ( SERVER ) then
 		{ libName = "catData", funcName = "SendAllNetworkRegistries" }
 	}
 			
-	function catherine.player.Initialize( pl )
+	function catherine.player.Initialize( pl, isReloading )
 		if ( !IsValid( pl ) ) then return end
 		
 		local function Initializing( )
@@ -94,19 +94,27 @@ if ( SERVER ) then
 			end )
 		end
 		
-		netstream.Hook( "catherine.player.CheckLocalPlayer_Receive", function( )
-			if ( !IsValid( pl ) ) then return end
+		if ( isReloading ) then
+			pl:Freeze( true )
 			
-			netstream.Start( pl, "catherine.introStart" )
-
 			timer.Simple( 1, function( )
 				Initializing( )
 			end )
-		end )
+		else
+			netstream.Hook( "catherine.player.CheckLocalPlayer_Receive", function( )
+				if ( !IsValid( pl ) ) then return end
+				
+				netstream.Start( pl, "catherine.introStart" )
 
-		pl:Freeze( true )
-		
-		netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
+				timer.Simple( 1, function( )
+					Initializing( )
+				end )
+			end )
+
+			pl:Freeze( true )
+			
+			netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
+		end
 	end
 	
 	function catherine.player.UpdateLanguageSetting( pl )
@@ -561,6 +569,10 @@ if ( SERVER ) then
 	end
 	
 	hook.Add( "PlayerSwitchWeapon", "catherine.player.PlayerSwitchWeapon", catherine.player.PlayerSwitchWeapon )
+	
+	netstream.Hook( "catherine.player.Initialize_Reload", function( pl )
+		catherine.player.Initialize( pl, true )
+	end )
 else
 	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 0.05
 	

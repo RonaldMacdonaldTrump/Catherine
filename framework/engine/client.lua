@@ -264,7 +264,15 @@ function GM:HUDDrawScoreBoard( )
 			catherine.intro.errorMessage = LANG( "Basic_Error_Reloading" )
 			catherine.intro.sysTime = SysTime( )
 			catherine.intro.reloadingWait = false
+			
+			netstream.Start( "catherine.player.Initialize_Reload" )
 		end )
+	elseif ( !catherine.intro.loading and catherine.intro.noError and catherine.intro.introDone ) then
+		catherine.intro.noReload = true
+		catherine.intro.noError = true
+		catherine.intro.onlyMessage = false
+		catherine.intro.errorMessage = nil
+		catherine.intro.reloadingWait = false
 	end
 
 	if ( catherine.intro.loadingAlpha > 0 ) then
