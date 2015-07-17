@@ -120,6 +120,7 @@ function PANEL:Init( )
 	
 	self.LeftPanel.w, self.LeftPanel.h = self.w * 0.2, 65
 	self.LeftPanel.x, self.LeftPanel.y = 0 - self.LeftPanel.w, self.h - self.LeftPanel.h - 20
+	self.LeftPanel.overrideSize = false
 	
 	self.LeftPanel:SetSize( self.LeftPanel.w, self.LeftPanel.h )
 	self.LeftPanel:SetPos( self.LeftPanel.x, self.LeftPanel.y )
@@ -130,9 +131,17 @@ function PANEL:Init( )
 		surface.SetDrawColor( 255, 255, 255, 235 )
 		surface.SetMaterial( Material( "gui/gradient" ) )
 		surface.DrawTexturedRect( 0, 0, w, h )
-	
-		draw.SimpleText( catherine.environment.GetDateString( ), "catherine_normal40", 10, h - 65, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
-		draw.SimpleText( catherine.environment.GetTimeString( ), "catherine_normal25", 10, h - 30, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+		
+		if ( catherine.configs.enable_rpTime ) then
+			draw.SimpleText( catherine.environment.GetDateString( ), "catherine_normal40", 10, h - 65, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			draw.SimpleText( catherine.environment.GetTimeString( ), "catherine_normal25", 10, h - 30, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+		else
+			if ( !pnl.overrideSize ) then
+				pnl.w, pnl.h = 65, 65
+				pnl:SetSize( pnl.w, pnl.h )
+				pnl.overrideSize = true
+			end
+		end
 		
 		draw.SimpleText( catherine.environment.GetTemperatureString( ), "catherine_normal25", w - 10, h - 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT ) // to do;
 	end
