@@ -20,7 +20,70 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 	Syntax fixed by Dremek.
 	( http://steamcommunity.com/profiles/76561198052257272/ )
 ]]--
+local credit_htmlValue = [[
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<style>
+		@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+		body {
+			font-family: "Open Sans", "나눔고딕", "NanumGothic", "맑은 고딕", "Malgun Gothic", "serif", "sans-serif"; 
+			-webkit-font-smoothing: antialiased;
+		}
+	</style>
+</head>
+<body>
+	<div class="container" style="margin-top:15px;">
+	<div class="page-header">
+		<h1>Credit&nbsp&nbsp<small>The listed of Developing the Catherine or Helpers ...</small></h1>
+	</div>
+	
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">L7D</h3>
+		</div>
+			<div class="panel-body">Framework Development and Design.</div>
+	</div>
+	
+	<div class="panel panel-warning">
+		<div class="panel-heading">
+			<h3 class="panel-title">Chessnut</h3>
+		</div>
+			<div class="panel-body">Good helper :)</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">notcake (!cake)</h3>
+		</div>
+			<div class="panel-body">Author of UTF-8 module.</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">thelastpenguin™</h3>
+		</div>
+			<div class="panel-body">Author of pON module.</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Alexander Grist-Hucker (Alex Grist)</h3>
+		</div>
+			<div class="panel-body">Author of netstream 2 module.</div>
+	</div>
 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	</body>
+</html>
+]]
 local cashName = catherine.cash.GetOnlyName( )
 
 local LANGUAGE = catherine.language.New( "english" )
@@ -189,10 +252,14 @@ LANGUAGE.data = {
 	[ "Help_UI_DefPageTitle" ] = "Welcome.",
 	[ "Help_UI_DefPageDesc" ] = "Press and look at page if you want.",
 	[ "Help_Category_Flag" ] = "Flag",
+	[ "Help_Desc_Flag" ] = "The listed of Flags ...",
 	[ "Help_Category_Credit" ] = "Credit",
+	[ "Help_HTMLValue_Credit" ] = credit_htmlValue,
 	[ "Help_Category_Changelog" ] = "Change log",
 	[ "Help_Category_Command" ] = "Command",
+	[ "Help_Desc_Command" ] = "The listed of Commands ...",
 	[ "Help_Category_Plugin" ] = "Plugin",
+	[ "Help_Desc_Plugin" ] = "The listed of Plugins ...",
 	
 	// Plugin
 	[ "Plugin_Value_Author" ] = "Development and design by %s",

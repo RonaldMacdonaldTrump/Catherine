@@ -112,24 +112,77 @@ if ( SERVER ) then
 		end
 	end
 	
+	function catherine.command.PlayerUserGroupChanged( pl )
+		timer.Simple( 1, function( )
+			netstream.Start( pl, "catherine.command.BuildHelp" )
+		end )
+	end
+	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.command.PlayerSpawnedInCharacter", catherine.command.PlayerSpawnedInCharacter )
+	hook.Add( "PlayerUserGroupChanged", "catherine.command.PlayerUserGroupChanged", catherine.command.PlayerUserGroupChanged )
 	
 	netstream.Hook( "catherine.command.Run", function( pl, data )
 		catherine.command.Run( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
+	local command_htmlValue = [[
+	<!DOCTYPE html>
+	<html lang="ko">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title></title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+		<style>
+			@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+			body {
+				font-family: "Open Sans", "나눔고딕", "NanumGothic", "맑은 고딕", "Malgun Gothic", "serif", "sans-serif"; 
+				-webkit-font-smoothing: antialiased;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container" style="margin-top:15px;">
+		<div class="page-header">
+			<h1>%s&nbsp&nbsp<small>%s</small></h1>
+		</div>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	]]
+
 	local function rebuildCommand( )
 		local title_command = LANG( "Help_Category_Command" )
-		local html = [[<b>]] .. title_command .. [[</b><br>]]
+		local html = Format( command_htmlValue, title_command, LANG( "Help_Desc_Command" ) )
 		local pl = LocalPlayer( )
 		
 		for k, v in pairs( catherine.command.GetAll( ) ) do
-			if ( v.canRun and v.canRun( pl, k ) == false ) then continue end
+			local havePermission = nil
 			
-			html = html .. "<p><b>&#10022; " .. k .. "</b><br>" .. v.syntax .. "<br>" .. catherine.util.StuffLanguage( v.desc ) .. "<br>"
+			if ( v.canRun and v.canRun( pl, k ) == true ) then
+				havePermission = true
+			elseif ( !v.canRun ) then
+				havePermission = true
+			else
+				havePermission = false
+			end
+			
+			html = html .. [[
+				<div class="]] .. ( havePermission and "panel panel-default" or "panel panel-danger" ) .. [[">
+					<div class="panel-heading">
+						<h3 class="panel-title">]] .. k .. [[</h3>
+					</div>
+						<div class="panel-body">]] .. v.syntax .. [[<br>]] .. catherine.util.StuffLanguage( v.desc ) .. [[
+						</div>
+				</div>
+			]]
 		end
 		
-		catherine.help.Register( CAT_HELP_HTML, title_command, html )
+		html = html .. [[</body></html>]]
+		
+		catherine.help.Register( CAT_HELP_HTML, title_command, html, true )
 	end
 	
 	netstream.Hook( "catherine.command.BuildHelp", function( data )

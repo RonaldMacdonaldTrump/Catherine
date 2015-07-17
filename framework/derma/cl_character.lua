@@ -90,8 +90,11 @@ function PANEL:Init( )
 		for k, v in pairs( catherine.language.GetAll( ) ) do
 			menu:AddOption( v.name, function( )
 				RunConsoleCommand( "cat_convar_language", k )
+				catherine.help.lists = { }
+				RunConsoleCommand( "cat_menu_rebuild" )
 
 				timer.Simple( 0, function( )
+					hook.Run( "LanguageChanged" )
 					schemaTitle = catherine.util.StuffLanguage( Schema and Schema.Title or "Example" )
 					schemaDesc = catherine.util.StuffLanguage( Schema and Schema.Desc or "Test" )
 					

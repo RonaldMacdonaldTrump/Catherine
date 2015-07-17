@@ -16,6 +16,70 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+local credit_htmlValue = [[
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<style>
+		@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+		body {
+			font-family: "Open Sans", "나눔고딕", "NanumGothic", "맑은 고딕", "Malgun Gothic", "serif", "sans-serif"; 
+			-webkit-font-smoothing: antialiased;
+		}
+	</style>
+</head>
+<body>
+	<div class="container" style="margin-top:15px;">
+	<div class="page-header">
+		<h1>제작자&nbsp&nbsp<small>캐서린을 제작하거나 도움을 주신 분들 ...</small></h1>
+	</div>
+	
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">L7D</h3>
+		</div>
+			<div class="panel-body">프레임워크 개발 및 디자인.</div>
+	</div>
+	
+	<div class="panel panel-warning">
+		<div class="panel-heading">
+			<h3 class="panel-title">Chessnut</h3>
+		</div>
+			<div class="panel-body">좋은 서포터 :)</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">notcake (!cake)</h3>
+		</div>
+			<div class="panel-body">UTF-8 모듈을 개발.</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">thelastpenguin™</h3>
+		</div>
+			<div class="panel-body">pON 모듈을 개발.</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Alexander Grist-Hucker (Alex Grist)</h3>
+		</div>
+			<div class="panel-body">netstream 2 모듈을 개발.</div>
+	</div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	</body>
+</html>
+]]
 local cashName = catherine.cash.GetOnlyName( )
 
 local LANGUAGE = catherine.language.New( "korean" )
@@ -184,10 +248,14 @@ LANGUAGE.data = {
 	[ "Help_UI_DefPageTitle" ] = "도움말에 오신 것을 환영합니다.",
 	[ "Help_UI_DefPageDesc" ] = "왼쪽의 메뉴에서 도움말을 선택하세요.",
 	[ "Help_Category_Flag" ] = "플래그",
+	[ "Help_Desc_Flag" ] = "플래그들을 나열합니다 ...",
 	[ "Help_Category_Credit" ] = "제작자",
+	[ "Help_HTMLValue_Credit" ] = credit_htmlValue,
 	[ "Help_Category_Changelog" ] = "업데이트 로그",
 	[ "Help_Category_Command" ] = "명령어",
+	[ "Help_Desc_Command" ] = "명령어들을 나열합니다 ...",
 	[ "Help_Category_Plugin" ] = "플러그인",
+	[ "Help_Desc_Plugin" ] = "플러그인들을 나열합니다 ...",
 	
 	// Plugin
 	[ "Plugin_Value_Author" ] = "개발 및 디자인 %s.",

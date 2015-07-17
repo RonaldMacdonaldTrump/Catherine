@@ -69,6 +69,8 @@ function PANEL:Init( )
 		for k, v in pairs( catherine.language.GetAll( ) ) do
 			menu:AddOption( v.name, function( )
 				RunConsoleCommand( "cat_convar_language", k )
+				catherine.help.lists = { }
+				RunConsoleCommand( "cat_menu_rebuild" )
 				
 				timer.Simple( 0, function( )
 					self.start:SetStr( LANG( "Question_UI_Continue" ) )
@@ -77,6 +79,8 @@ function PANEL:Init( )
 					
 					self.answers = { }
 					self:RebuildQuestion( )
+					
+					hook.Run( "LanguageChanged" )
 				end )
 			end )
 		end
