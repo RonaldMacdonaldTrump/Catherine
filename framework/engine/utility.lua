@@ -261,11 +261,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.util.StuffLanguage( pl, key, ... )
-		if ( key:Left( 1 ) == "^" ) then
-			return LANG( pl, key:sub( 2 ), ... )
-		else
-			return key
-		end
+		return key:Left( 1 ) == "^" and LANG( pl, key:sub( 2 ), ... ) or key
 	end
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
@@ -518,9 +514,6 @@ else
 	catherine.util.advSounds = catherine.util.advSounds or { }
 	catherine.util.motionBlur = catherine.util.motionBlur or nil
 	catherine.util.dermaMenuTitle = catherine.util.dermaMenuTitle or nil
-	CAT_UTIL_BUTTOMSOUND_1 = 1
-	CAT_UTIL_BUTTOMSOUND_2 = 2
-	CAT_UTIL_BUTTOMSOUND_3 = 3
 	local blurMat = Material( "pp/blurscreen" )
 	
 	netstream.Hook( "catherine.util.StringReceiver", function( data )
@@ -659,23 +652,11 @@ else
 	end )
 
 	function catherine.util.PlayButtonSound( typ )
-	--[[
-		if ( typ == CAT_UTIL_BUTTOMSOUND_1 ) then
-
-		elseif ( typ == CAT_UTIL_BUTTOMSOUND_2 ) then
-
-		elseif ( typ == CAT_UTIL_BUTTOMSOUND_3 ) then
-
-		end
-	--]]
+	
 	end
 	
 	function catherine.util.StuffLanguage( key, ... )
-		if ( key:Left( 1 ) == "^" ) then
-			return LANG( key:sub( 2 ), ... )
-		else
-			return key
-		end
+		return key:Left( 1 ) == "^" and LANG( key:sub( 2 ), ... ) or key
 	end
 	
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )

@@ -122,7 +122,6 @@ function PANEL:Click( ) end
 
 function PANEL:DoClick( )
 	if ( !self.Status ) then return end
-	catherine.util.PlayButtonSound( math.random( 1, 3 ) )
 	self:Click( func )
 end
 
