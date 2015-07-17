@@ -78,6 +78,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_CantUseThisFaction" ] = "You can't use this faction!",
 	[ "Character_Notify_IsNotValidFaction" ] = "This character's faction is not valid!",
 	[ "Character_Notify_CharBanned" ] = "This character is banned!",
+	[ "Character_Notify_CantSwitch" ] = "You can't switch character now!",
 	[ "Character_Notify_CantSwitchUsing" ] = "You are already using this character!",
 	[ "Character_Notify_CantSwitchDeath" ] = "You can not switch character while dead!",
 	[ "Character_Notify_CantSwitchTied" ] = "You can not switch characters while tied!",

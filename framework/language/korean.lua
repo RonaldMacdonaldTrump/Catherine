@@ -73,6 +73,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_CantUseThisFaction" ] = "당신은 이 팩션을 사용할 수 없습니다!",
 	[ "Character_Notify_IsNotValidFaction" ] = "이 캐릭터의 팩션이 올바르지 않습니다!",
 	[ "Character_Notify_CharBanned" ] = "이 캐릭터는 밴 되었습니다!",
+	[ "Character_Notify_CantSwitch" ] = "지금 캐릭터를 바꿀 수 없습니다!",
 	[ "Character_Notify_CantSwitchUsing" ] = "같은 캐릭터를 또 사용할 수 없습니다!",
 	[ "Character_Notify_CantSwitchDeath" ] = "죽은 상태에서는 캐릭터를 바꿀 수 없습니다!",
 	[ "Character_Notify_CantSwitchTied" ] = "수갑에 묶인 상태에서는 캐릭터를 바꿀 수 없습니다!",

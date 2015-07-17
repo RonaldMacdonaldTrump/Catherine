@@ -176,6 +176,10 @@ if ( SERVER ) then
 			return false, "^Character_Notify_CantSwitchRagdolled"
 		end
 		
+		if ( hook.Run( "CantLoadCharacter", pl ) ) then
+			return false, "^Character_Notify_CantSwitch"
+		end
+		
 		local character = catherine.character.GetTargetCharacterByID( pl, id )
 		
 		if ( !character ) then
