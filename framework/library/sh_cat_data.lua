@@ -69,6 +69,10 @@ if ( SERVER ) then
 	end
 	
 	hook.Add( "PlayerDisconnected", "catherine.catData.PlayerDisconnected", catherine.catData.PlayerDisconnected )
+	
+	netstream.Hook( "catherine.catData.SetVar", function( pl, data )
+		catherine.catData.SetVar( pl, data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ] )
+	end )
 else
 	netstream.Hook( "catherine.catData.SetVar", function( data )
 		catherine.catData.networkRegistry[ data[ 1 ] ] = data[ 2 ]
@@ -81,6 +85,15 @@ else
 	netstream.Hook( "catherine.catData.SendAllNetworkRegistries", function( data )
 		catherine.catData.networkRegistry = data
 	end )
+	
+	function catherine.catData.SetVar( key, value, noSync, save )
+		netstream.Start( "catherine.catData.SetVar", {
+			key,
+			value,
+			noSync,
+			save
+		} )
+	end
 	
 	function catherine.catData.GetVar( key, default )
 		return catherine.catData.networkRegistry[ key ] or default

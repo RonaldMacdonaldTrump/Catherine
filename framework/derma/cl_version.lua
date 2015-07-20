@@ -50,8 +50,19 @@ function PANEL:Init( )
 	self.check:SetStrColor( Color( 50, 50, 50, 255 ) )
 	self.check.Click = function( pnl )
 		if ( pnl.Cant ) then return end
+		
 		self.status = true
 		netstream.Start( "catherine.version.Check" )
+	end
+	
+	self.updateLog = vgui.Create( "catherine.vgui.button", self )
+	self.updateLog:SetPos( 10, 30 )
+	self.updateLog:SetSize( self.w * 0.4, 30 )
+	self.updateLog:SetStr( LANG( "Version_UI_OpenUpdateLogStr" ) )
+	self.updateLog:SetGradientColor( Color( 50, 50, 50, 150 ) )
+	self.updateLog:SetStrColor( Color( 50, 50, 50, 255 ) )
+	self.updateLog.Click = function( pnl )
+		gui.OpenURL( "http://github.com/L7D/Catherine/commits" )
 	end
 end
 
@@ -78,7 +89,7 @@ function PANEL:MenuPaint( w, h )
 	surface.DrawTexturedRect( 10, h - 25, 16, 16 )
 
 	draw.SimpleText( txt, "catherine_normal15", 35, h - 18, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( LANG( "Version_UI_YourVer_AV", self.version ), "catherine_normal15", w - 10, h - 18, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( LANG( "Version_UI_YourVer_AV", self.version ) .. " " .. catherine.GetBuild( ), "catherine_normal20", w - 10, h - 18, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 vgui.Register( "catherine.vgui.version", PANEL, "catherine.vgui.menuBase" )

@@ -128,6 +128,8 @@ LANGUAGE.data = {
 	[ "Character_UI_CharInfo" ] = "캐릭터 정보",
 	[ "Character_UI_CharName" ] = "캐릭터 이름",
 	[ "Character_UI_CharDesc" ] = "캐릭터 설명",
+	[ "Character_UI_MusicError" ] = "백그라운드 음악을 재생하는데에 문제가 있습니다! ( 오류 : %s )",
+	[ "Character_UI_Hint01" ] = "캐서린은 다국어를 지원합니다, 오른쪽 하단에 있는 버튼을 눌러 자신이 원하는 언어로 바꾸세요.",
 	[ "Character_UI_SelectFaction" ] = "> 팩션을 선택하세요.",
 	[ "Character_Notify_DeleteQ" ] = "이 캐릭터를 정말로 삭제하시겠습니까?",
 	[ "Character_Notify_ExitQ" ] = "이 서버에서 정말로 나가시겠습니까?",
@@ -190,14 +192,16 @@ LANGUAGE.data = {
 	[ "Basic_Notify_InputText" ] = "문자를 입력하세요!",
 
 	// Version
-	[ "Version_UI_Title" ] = "버전",
+	[ "Version_UI_Title" ] = "정보",
 	[ "Version_UI_YourVer_AV" ] = "버전 '%s'",
 	[ "Version_UI_YourVer_NO" ] = "버전 '올바르지 않음'",
 	[ "Version_UI_Checking" ] = "버전을 확인하는 중 ...",
 	[ "Version_UI_CheckButtonStr" ] = "버전 확인",
+	[ "Version_UI_OpenUpdateLogStr" ] = "업데이트 내역",
 	[ "Version_Notify_FoundNew" ] = "이 서버는 최신 버전으로 업데이트가 필요합니다!",
 	[ "Version_Notify_AlreadyNew" ] = "이 서버는 최신 버전을 사용하고 있습니다, 감사합니다.",
 	[ "Version_Notify_CheckError" ] = "버전을 확인하는 중 오류가 발생하였습니다. - %s",
+	[ "Version_Notify_NextTime" ] = "너무 자주 버전을 확인할 수 없습니다, 나중에 다시 시도하세요!",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "능력치",

@@ -29,6 +29,7 @@ catherine.configs.playerDefaultJumpPower = 120 --[[ Setting a default Jump power
 catherine.configs.defaultCash = 0 --[[ Setting a default Cash. ]]--
 catherine.configs.cashModel = "models/props_lab/box01a.mdl" --[[ Setting a Cash model. ]]--
 catherine.configs.characterMenuMusic = "music/hl2_song19.mp3" --[[ Setting a Character menu music. ]]--
+catherine.configs.enabledCharacterMenuMusicLooping = true
 catherine.configs.baseInventoryWeight = 10
 catherine.configs.characterNameMinLen = 4
 catherine.configs.characterNameMaxLen = 25

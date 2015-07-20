@@ -47,11 +47,9 @@ function PANEL:Init( )
 		end
 		
 		if ( !catherine.character.customBackgroundEnabled ) then
-			draw.RoundedBox( 0, 0, 0, w, h, Color( 0, 0, 0, 255 ) )
-			
-			local sin = math.sin( CurTime( ) / 2 )
-			
-			surface.SetDrawColor( 0, 0, 0, math.max( sin * 255, 200 ) )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 30, 30, 30, 255 ) )
+
+			surface.SetDrawColor( 50, 50, 50, math.max( math.sin( CurTime( ) / 2 ) * 255, 200 ) )
 			surface.SetMaterial( Material( "gui/gradient_up" ) )
 			surface.DrawTexturedRect( 0, 0, w, h )
 		end
@@ -64,16 +62,16 @@ function PANEL:Init( )
 		surface.SetMaterial( Material( "gui/gradient" ) )
 		surface.DrawTexturedRect( 0, h * 0.75 - 10, w * 0.3, 170 )
 		
-		surface.SetDrawColor( 110, 110, 110, self.mainAlpha )
+		surface.SetDrawColor( 90, 90, 90, self.mainAlpha )
 		surface.SetMaterial( Material( "vgui/gradient-r" ) )
-		surface.DrawTexturedRect( w - ( w * 0.3 ), 15, w * 0.3, 40 )
+		surface.DrawTexturedRect( w - ( w * 0.3 ), h - 55, w * 0.3, 40 )
 		
 		draw.SimpleText( schemaTitle, "catherine_normal25", 30, h * 0.75 - 70, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 		draw.SimpleText( schemaDesc, "catherine_normal15", 30, h * 0.75 - 35, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 	end
 	
 	self.changeLanguage = vgui.Create( "catherine.vgui.button", self )
-	self.changeLanguage:SetPos( self.w - ( self.w * 0.2 ) - 20, 20 )
+	self.changeLanguage:SetPos( self.w - ( self.w * 0.2 ) - 20, self.h - 50 )
 	self.changeLanguage:SetSize( self.w * 0.2, 30 )
 	self.changeLanguage:SetStr( "" )
 	self.changeLanguage:SetStrColor( Color( 255, 255, 255, 255 ) )
@@ -190,29 +188,52 @@ function PANEL:Init( )
 	end
 	
 	self:PlayMusic( )
+	self:ShowHint( )
+end
+
+function PANEL:ShowHint( )
+	if ( catherine.catData.GetVar( "charHintShowed", "0" ) == "0" ) then
+		Derma_Message( LANG( "Character_UI_Hint01" ), "", LANG( "Basic_UI_OK" ) )
+		
+		catherine.catData.SetVar( "charHintShowed", "1", false, true )
+	end
 end
 
 function PANEL:PlayMusic( )
 	local musicDir = catherine.configs.characterMenuMusic
 	musicDir = type( musicDir ) == "table" and table.Random( musicDir ) or musicDir
-	
-	local music = CreateSound( self.player, musicDir )
-	
-	music:Play( )
-	
-	if ( musicDir:find( ".wav" ) ) then
-		timer.Create( "Catherine.timer.character.RepeatMusic", SoundDuration( musicDir ) + 2, 0, function( )
-			if ( !IsValid( self ) or !music ) then
-				timer.Remove( "Catherine.timer.character.RepeatMusic" )
-				return
-			end
-			
-			music:Stop( )
-			music:Play( )
-		end )
+
+	if ( musicDir and type( musicDir ) == "string" ) then
+		if ( musicDir:find( "http://" ) or musicDir:find( "https://" ) ) then
+			sound.PlayURL( musicDir, "noblock", function( musicEnt, errorID, errorCode )
+				if ( IsValid( musicEnt ) ) then
+					musicEnt:Play( )
+					
+					if ( catherine.configs.enabledCharacterMenuMusicLooping ) then
+						musicEnt:EnableLooping( true )
+					end
+					
+					catherine.character.panelMusic = musicEnt
+				else
+					Derma_Message( LANG( "Character_UI_MusicError", errorCode ), "", LANG( "Basic_UI_OK" ) )
+				end
+			end )
+		else
+			sound.PlayFile( musicDir, "", function( musicEnt, errorID, errorCode )
+				if ( IsValid( musicEnt ) ) then
+					musicEnt:Play( )
+					
+					if ( catherine.configs.enabledCharacterMenuMusicLooping ) then
+						musicEnt:EnableLooping( true )
+					end
+					
+					catherine.character.panelMusic = musicEnt
+				else
+					Derma_Message( LANG( "Character_UI_MusicError", errorCode ), "", LANG( "Basic_UI_OK" ) )
+				end
+			end )
+		end
 	end
-	
-	catherine.character.panelMusic = music
 end
 
 function PANEL:CreateCharacterPanel( )
@@ -477,13 +498,22 @@ function PANEL:Close( )
 	self.closing = true
 	
 	if ( music ) then
-		music:FadeOut( 3 )
+		local vol = 1
 		
-		timer.Simple( 3, function( )
-			catherine.character.panelMusic = nil
+		hook.Remove( "Think", "catherine.character.FadeOutBackgroundMusic" )
+		
+		hook.Add( "Think", "catherine.character.FadeOutBackgroundMusic", function( )
+			if ( vol > 0 ) then
+				vol = vol - 0.005
+			else
+				hook.Remove( "Think", "catherine.character.FadeOutBackgroundMusic" )
+				music:Stop( )
+				catherine.character.panelMusic = nil
+				return
+			end
+			
+			music:SetVolume( vol )
 		end )
-		
-		timer.Remove( "Catherine.timer.character.RepeatMusic" )
 	end
 	
 	self:AlphaTo( 0, 0.3, 0, function( )

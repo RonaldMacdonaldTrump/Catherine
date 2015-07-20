@@ -132,6 +132,8 @@ LANGUAGE.data = {
 	[ "Character_UI_CharInfo" ] = "Character Information",
 	[ "Character_UI_CharName" ] = "Character Name",
 	[ "Character_UI_CharDesc" ] = "Character Description",
+	[ "Character_UI_MusicError" ] = "Failed to play background music! ( ERROR : %s )",
+	[ "Character_UI_Hint01" ] = "Catherine are supported multi-language system, Click the bottom right button for change the whatever language you can speak.",
 	[ "Character_UI_SelectFaction" ] = "> Select faction.",
 	[ "Character_Notify_DeleteQ" ] = "Are you sure you want to delete this character?",
 	[ "Character_Notify_ExitQ" ] = "Are you sure you want to disconnect from the server?",
@@ -194,14 +196,16 @@ LANGUAGE.data = {
 	[ "Basic_Notify_InputText" ] = "Please enter the text!",
 
 	// Version
-	[ "Version_UI_Title" ] = "Version",
+	[ "Version_UI_Title" ] = "Information",
 	[ "Version_UI_YourVer_AV" ] = "Version '%s'",
 	[ "Version_UI_YourVer_NO" ] = "Version 'Error'",
 	[ "Version_UI_Checking" ] = "Checking update ...",
 	[ "Version_UI_CheckButtonStr" ] = "Update Check",
+	[ "Version_UI_OpenUpdateLogStr" ] = "Update Log",
 	[ "Version_Notify_FoundNew" ] = "This server should update to the latest version of Catherine!",
 	[ "Version_Notify_AlreadyNew" ] = "This server is using the latest version of Catherine.",
 	[ "Version_Notify_CheckError" ] = "Update check error! - %s",
+	[ "Version_Notify_NextTime" ] = "Too often unable to check the version, try again later!",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",

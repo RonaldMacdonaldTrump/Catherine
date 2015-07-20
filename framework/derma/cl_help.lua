@@ -112,7 +112,7 @@ end
 function PANEL:BuildHelps( )
 	self.categorys:Clear( )
 	
-	for k, v in pairs( self.helps ) do
+	for k, v in SortedPairs( self.helps ) do
 		local panel = vgui.Create( "catherine.vgui.button", self )
 		panel:SetSize( self.categorys:GetWide( ), 30 )
 		panel:SetStr( k )

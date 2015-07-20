@@ -96,9 +96,9 @@ function catherine.util.IsStuckPos( pos )
 end
 
 function catherine.util.GetRealTime( )
-	local one, dst, hour = os.date( "*t" ), os.date( "%p" ), os.date( "%I" )
+	local one = os.date( "*t" )
 	
-	return one.year .. "-" .. one.month .. "-" .. one.day .. " | " .. dst .. " " .. hour .. ":" .. os.date( "%M" )
+	return one.year .. "-" .. one.month .. "-" .. one.day .. " | " .. os.date( "%p" ) .. " " .. os.date( "%I" ) .. ":" .. os.date( "%M" )
 end
 
 function catherine.util.GetChatTimeStamp( )
@@ -255,8 +255,9 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.NotifyLang( pl, key, ... )
-		netstream.Start( pl, "catherine.util.Notify", {
-			LANG( pl, key, ... )
+		netstream.Start( pl, "catherine.util.NotifyLang", {
+			key,
+			{ ... }
 		} )
 	end
 
@@ -443,7 +444,6 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.StartMotionBlur( pl, addAlpha, drawAlpha, delay )
-		
 		netstream.Start( pl, "catherine.util.StartMotionBlur", {
 			addAlpha,
 			drawAlpha,
@@ -629,6 +629,10 @@ else
 		catherine.notify.Add( data[ 1 ], data[ 2 ] )
 	end )
 	
+	netstream.Hook( "catherine.util.NotifyLang", function( data )
+		catherine.notify.Add( LANG( data[ 1 ], unpack( data[ 2 ] ) ) )
+	end )
+	
 	netstream.Hook( "catherine.util.NotifyAllLang", function( data )
 		catherine.notify.Add( LANG( data[ 1 ], unpack( data[ 2 ] ) ) )
 	end )
@@ -691,7 +695,7 @@ else
 			title = title
 		}
 	end
-
+	
 	function catherine.util.BlurDraw( x, y, w, h, amount )
 		surface.SetMaterial( blurMat )
 		surface.SetDrawColor( 255, 255, 255 )
@@ -702,5 +706,38 @@ else
 			render.UpdateScreenEffectTexture( )
 			surface.DrawTexturedRectUV( x, y, w, h, x / ScrW( ), y / ScrH( ), ( x + w ) / ScrW( ), ( y + h ) / ScrH( ) )
 		end
+	end
+
+	function catherine.util.GetWrapTextData( text, width, font )
+		font = font or "catherine_normal15"
+		surface.SetFont( font )
+		
+		local line = ""
+		local wrapData = { }
+		local tw = surface.GetTextSize( text )
+		local ex = string.Explode( "%s", text, true )
+		local topW = 0
+		
+		if ( tw <= width ) then
+			return { ( text:gsub( "%s", " " ) ) }, tw
+		end
+
+		for i = 1, #ex do
+			line = line .. " " .. ex[ i ]
+			tw = surface.GetTextSize( line )
+			
+			if ( tw > width ) then
+				wrapData[ #wrapData + 1 ] = line
+				line = ""
+				
+				topW = math.max( topW, tw )
+			end
+		end
+		
+		if ( line != "" ) then
+			wrapData[ #wrapData + 1 ] = line
+		end
+		
+		return wrapData, topW
 	end
 end
