@@ -218,8 +218,6 @@ function GM:PlayerInfoTable( pl, infoTable )
 	local walkSpeed = infoTable.walkSpeed
 	local leftLegLimbDmg = catherine.limb.GetDamage( pl, HITGROUP_LEFTLEG )
 	local rightLegLimbDmg = catherine.limb.GetDamage( pl, HITGROUP_RIGHTLEG )
-	local defJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
-	local defRunSpeed = catherine.player.GetPlayerDefaultRunSpeed( pl )
 
 	if ( pl.CAT_bulletHurtSpeedDown ) then
 		return {
@@ -227,6 +225,8 @@ function GM:PlayerInfoTable( pl, infoTable )
 		}
 	else
 		if ( ( leftLegLimbDmg and leftLegLimbDmg != 0 ) or ( rightLegLimbDmg and rightLegLimbDmg != 0 ) ) then
+			local defJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
+			local defRunSpeed = catherine.player.GetPlayerDefaultRunSpeed( pl )
 			local per = ( math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ) * defJumpPower / defJumpPower
 			local per2 = ( math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ) * defRunSpeed / defRunSpeed
 
