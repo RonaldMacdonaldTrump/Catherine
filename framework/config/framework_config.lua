@@ -21,21 +21,22 @@ catherine.configs = catherine.configs or { }
 catherine.configs.OWNER = "" 
 catherine.configs.defaultLanguage = "english" --[[ Setting a default Language (english, korean). ]]--
 
-catherine.configs.doorCost = 50
-catherine.configs.doorSellCost = 25
-catherine.configs.playerDefaultRunSpeed = 275
-catherine.configs.playerDefaultWalkSpeed = 90
-catherine.configs.playerDefaultJumpPower = 120
-catherine.configs.defaultCash = 0
-catherine.configs.cashModel = "models/props_lab/box01a.mdl"
-catherine.configs.characterMenuMusic = "music/hl2_song19.mp3"
+catherine.configs.doorCost = 50 --[[ Setting a Door cost. ]]--
+catherine.configs.doorSellCost = 25 --[[ Setting a Door sell cost. ]]--
+catherine.configs.playerDefaultRunSpeed = 275 --[[ Setting a default Run speed. ]]--
+catherine.configs.playerDefaultWalkSpeed = 90 --[[ Setting a default Walk speed. ]]--
+catherine.configs.playerDefaultJumpPower = 120 --[[ Setting a default Jump power. ]]--
+catherine.configs.defaultCash = 0 --[[ Setting a default Cash. ]]--
+catherine.configs.cashModel = "models/props_lab/box01a.mdl" --[[ Setting a Cash model. ]]--
+catherine.configs.characterMenuMusic = "music/hl2_song19.mp3" --[[ Setting a Character menu music. ]]--
+catherine.configs.enabledCharacterMenuMusicLooping = true
 catherine.configs.baseInventoryWeight = 10
 catherine.configs.characterNameMinLen = 4
 catherine.configs.characterNameMaxLen = 25
 catherine.configs.characterDescMinLen = 10
 catherine.configs.characterDescMaxLen = 36
 catherine.configs.doorDescMaxLen = 30
-catherine.configs.Font = "Segoe UI"
+catherine.configs.Font = "Segoe UI" --[[ Setting a default UI font. ]]--
 catherine.configs.enableQuiz = true --[[ Enabled a Quiz system. ]]--
 catherine.configs.rpTimeInterval = 0.2 --[[ Setting a one second Interval. ]]--
 catherine.configs.alwaysRaised = {
@@ -52,6 +53,7 @@ catherine.configs.defaultRPInformation = {
 	second = 1,
 	temperature = 25
 }
+catherine.configs.enable_rpTime = true --[[ Enabled a RP time system. ]]--
 catherine.configs.enable_globalBan = true --[[ Enabled a GlobalBan system. ]]--
 
 if ( SERVER ) then
@@ -67,15 +69,15 @@ if ( SERVER ) then
 	catherine.configs.netRegistryOptimizeInterval = 350
 	catherine.configs.saveInterval = 300
 	catherine.configs.voiceAllow = false --[[ Allow a Voice chat. ]]--
-	catherine.configs.voice3D = true
-	catherine.configs.giveHand = true
-	catherine.configs.giveKey = true
+	catherine.configs.voice3D = true --[[ Enabled the Voice 3D system. ]]--
+	catherine.configs.giveHand = true --[[ Enabled the Given hand weapon as spawn. ]]--
+	catherine.configs.giveKey = true --[[ Enabled the Given key weapon as spawn. ]]--
 	catherine.configs.spawnTime = 60 --[[ Setting a Spawn time. ]]--
-	catherine.configs.clearMap = true
-	catherine.configs.doorBreach = true
+	catherine.configs.clearMap = true --[[ Enabled a Map Clear system. (Remove a map HL2 HP, Armor station and Vehicles(Chair) ) ]]--
+	catherine.configs.doorBreach = true --[[ Enabled a Door Breach system. (Shoot the door handle to open) ]]--
 	
-	catherine.configs.enable_oocDelay = true
-	catherine.configs.enable_loocDelay = false
+	catherine.configs.enable_oocDelay = true --[[ Enabled a OOC delay. ]]--
+	catherine.configs.enable_loocDelay = false --[[ Enabled a LOOC delay. ]]--
 	catherine.configs.forceAllowOOC = function( pl )
 		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
 			return true
@@ -88,13 +90,14 @@ if ( SERVER ) then
 	catherine.configs.forceAllowLOOC = function( pl )
 	
 	end
-	catherine.configs.oocDelay = 60
-	catherine.configs.loocDelay = 2
+	catherine.configs.oocDelay = 60 --[[ Setting a OOC delay. ]]--
+	catherine.configs.loocDelay = 2 --[[ Setting a LOOC delay. ]]--
 	
 	catherine.configs.limbDamageAutoRecover = 5
 	
-	catherine.configs.enable_Log = true
-	catherine.configs.enable_AntiHaX = true
+	catherine.configs.enable_Log = true --[[ Enabled a Log system. ]]--
+	catherine.configs.enable_AntiHaX = true --[[ Enabled a AntiHaX system. (Anti Hack) ]]--
+	catherine.configs.enable_Environment = true --[[ Enabled a Environment system. (Day, Night, Skycolor) ]]--
 else
 	catherine.configs.frameworkLogo = "CAT/logos/main02.png"
 	catherine.configs.schemaLogo = catherine.configs.frameworkLogo

@@ -16,6 +16,70 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+local credit_htmlValue = [[
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<style>
+		@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+		body {
+			font-family: "Open Sans", "나눔고딕", "NanumGothic", "맑은 고딕", "Malgun Gothic", "serif", "sans-serif"; 
+			-webkit-font-smoothing: antialiased;
+		}
+	</style>
+</head>
+<body>
+	<div class="container" style="margin-top:15px;">
+	<div class="page-header">
+		<h1>제작자&nbsp&nbsp<small>캐서린을 제작하거나 도움을 주신 분들 ...</small></h1>
+	</div>
+	
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">L7D</h3>
+		</div>
+			<div class="panel-body">프레임워크 개발 및 디자인.</div>
+	</div>
+	
+	<div class="panel panel-warning">
+		<div class="panel-heading">
+			<h3 class="panel-title">Chessnut</h3>
+		</div>
+			<div class="panel-body">좋은 서포터 :)</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">notcake (!cake)</h3>
+		</div>
+			<div class="panel-body">UTF-8 모듈을 개발.</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">thelastpenguin™</h3>
+		</div>
+			<div class="panel-body">pON 모듈을 개발.</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Alexander Grist-Hucker (Alex Grist)</h3>
+		</div>
+			<div class="panel-body">netstream 2 모듈을 개발.</div>
+	</div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	</body>
+</html>
+]]
 local cashName = catherine.cash.GetOnlyName( )
 
 local LANGUAGE = catherine.language.New( "korean" )
@@ -64,6 +128,8 @@ LANGUAGE.data = {
 	[ "Character_UI_CharInfo" ] = "캐릭터 정보",
 	[ "Character_UI_CharName" ] = "캐릭터 이름",
 	[ "Character_UI_CharDesc" ] = "캐릭터 설명",
+	[ "Character_UI_MusicError" ] = "백그라운드 음악을 재생하는데에 문제가 있습니다! ( 오류 : %s )",
+	[ "Character_UI_Hint01" ] = "캐서린은 다국어를 지원합니다, 오른쪽 하단에 있는 버튼을 눌러 자신이 원하는 언어로 바꾸세요.",
 	[ "Character_UI_SelectFaction" ] = "> 팩션을 선택하세요.",
 	[ "Character_Notify_DeleteQ" ] = "이 캐릭터를 정말로 삭제하시겠습니까?",
 	[ "Character_Notify_ExitQ" ] = "이 서버에서 정말로 나가시겠습니까?",
@@ -73,6 +139,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_CantUseThisFaction" ] = "당신은 이 팩션을 사용할 수 없습니다!",
 	[ "Character_Notify_IsNotValidFaction" ] = "이 캐릭터의 팩션이 올바르지 않습니다!",
 	[ "Character_Notify_CharBanned" ] = "이 캐릭터는 밴 되었습니다!",
+	[ "Character_Notify_CantSwitch" ] = "지금 캐릭터를 바꿀 수 없습니다!",
 	[ "Character_Notify_CantSwitchUsing" ] = "같은 캐릭터를 또 사용할 수 없습니다!",
 	[ "Character_Notify_CantSwitchDeath" ] = "죽은 상태에서는 캐릭터를 바꿀 수 없습니다!",
 	[ "Character_Notify_CantSwitchTied" ] = "수갑에 묶인 상태에서는 캐릭터를 바꿀 수 없습니다!",
@@ -125,14 +192,16 @@ LANGUAGE.data = {
 	[ "Basic_Notify_InputText" ] = "문자를 입력하세요!",
 
 	// Version
-	[ "Version_UI_Title" ] = "버전",
+	[ "Version_UI_Title" ] = "정보",
 	[ "Version_UI_YourVer_AV" ] = "버전 '%s'",
 	[ "Version_UI_YourVer_NO" ] = "버전 '올바르지 않음'",
 	[ "Version_UI_Checking" ] = "버전을 확인하는 중 ...",
 	[ "Version_UI_CheckButtonStr" ] = "버전 확인",
+	[ "Version_UI_OpenUpdateLogStr" ] = "업데이트 내역",
 	[ "Version_Notify_FoundNew" ] = "이 서버는 최신 버전으로 업데이트가 필요합니다!",
 	[ "Version_Notify_AlreadyNew" ] = "이 서버는 최신 버전을 사용하고 있습니다, 감사합니다.",
 	[ "Version_Notify_CheckError" ] = "버전을 확인하는 중 오류가 발생하였습니다. - %s",
+	[ "Version_Notify_NextTime" ] = "너무 자주 버전을 확인할 수 없습니다, 나중에 다시 시도하세요!",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "능력치",
@@ -183,10 +252,14 @@ LANGUAGE.data = {
 	[ "Help_UI_DefPageTitle" ] = "도움말에 오신 것을 환영합니다.",
 	[ "Help_UI_DefPageDesc" ] = "왼쪽의 메뉴에서 도움말을 선택하세요.",
 	[ "Help_Category_Flag" ] = "플래그",
+	[ "Help_Desc_Flag" ] = "플래그들을 나열합니다 ...",
 	[ "Help_Category_Credit" ] = "제작자",
+	[ "Help_HTMLValue_Credit" ] = credit_htmlValue,
 	[ "Help_Category_Changelog" ] = "업데이트 로그",
 	[ "Help_Category_Command" ] = "명령어",
+	[ "Help_Desc_Command" ] = "명령어들을 나열합니다 ...",
 	[ "Help_Category_Plugin" ] = "플러그인",
+	[ "Help_Desc_Plugin" ] = "플러그인들을 나열합니다 ...",
 	
 	// Plugin
 	[ "Plugin_Value_Author" ] = "개발 및 디자인 %s.",
@@ -196,6 +269,10 @@ LANGUAGE.data = {
 	[ "Storage_UI_StorageNoHaveItem" ] = "이 저장소는 비어있습니다.",
 	[ "Storage_UI_PlayerNoHaveItem" ] = "당신은 아무것도 가지고 있지 않습니다.",
 	[ "Storage_Notify_HasNotSpace" ] = "이 저장소에는 공간이 없습니다!",
+	[ "Storage_Notify_NoStorage" ] = "이 물체는 올바른 저장소가 아닙니다!",
+	[ "Storage_CMD_SetPWD" ] = "당신은 이 저장소의 암호를 %s 로 설정하셨습니다.",
+	[ "Storage_PWDQ" ] = "이 저장소의 암호가 무엇입니까?",
+	[ "Storage_Notify_PWDError" ] = "암호가 올바르지 않습니다!",
 	[ "Storage_OpenStr" ] = "열기",
 	
 	// Item SYSTEM

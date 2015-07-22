@@ -75,7 +75,7 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 end
 
 function PLUGIN:ShouldDrawLocalPlayer( pl )
-	if ( pl:GetViewEntity( ) == pl and !IsValid( pl:GetVehicle( ) ) ) then
-		return pl:CanOverrideView( )
+	if ( pl:GetViewEntity( ) == pl and !IsValid( pl:GetVehicle( ) ) and pl:CanOverrideView( ) ) then
+		return true
 	end
 end

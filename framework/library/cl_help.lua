@@ -24,11 +24,12 @@ catherine.help.lists = { }
 CAT_HELP_HTML = 1
 CAT_HELP_WEBPAGE = 2
 
-function catherine.help.Register( types, category, codes )
+function catherine.help.Register( types, category, codes, noPrefix )
 	catherine.help.lists[ category ] = {
 		types = types,
 		category = category,
-		codes = codes
+		codes = codes,
+		noPrefix = noPrefix
 	}
 end
 
@@ -37,16 +38,7 @@ function catherine.help.GetAll( )
 end
 
 local function rebuildHelp( )
-	local title_creadit = LANG( "Help_Category_Credit" )
-	
-	catherine.help.Register( CAT_HELP_HTML, title_creadit, [[
-		<b>]] .. title_creadit .. [[</b><br><br>
-		<b>L7D</b><br>Development and Design.<br>(http://steamcommunity.com/id/L7D/)<br><br>
-		<b>Chessnut</b><br>Good helper.<br>(http://steamcommunity.com/profiles/76561198030127257/)<br><br>
-		<b>Kyle Smith</b><br>UTF-8 module.<br><br>
-		<b>thelastpenguin™</b><br>pON module.<br><br>
-		<b>Alexander Grist-Hucker</b><br>netstream 2 module.<br><br><br>
-	]] )
+	catherine.help.Register( CAT_HELP_HTML, LANG( "Help_Category_Credit" ), LANG( "Help_HTMLValue_Credit" ), true )
 	catherine.help.Register( CAT_HELP_WEBPAGE, LANG( "Help_Category_Changelog" ), "http://github.com/L7D/Catherine/commits/master" )
 end
 

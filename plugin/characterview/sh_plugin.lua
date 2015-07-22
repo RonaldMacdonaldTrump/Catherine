@@ -81,15 +81,11 @@ PLUGIN.nextViewChange = PLUGIN.nextViewChange or RealTime( ) + 5
 netstream.Hook( "catherine.plugin.characterview.SyncViews", function( data )
 	PLUGIN.charViews = data
 	
-	if ( #data > 0 ) then
-		catherine.character.SetCustomBackground( true )
-	else
-		catherine.character.SetCustomBackground( false )
-	end
+	catherine.character.SetCustomBackground( #data > 0 and true or false )
 end )
 
 function PLUGIN:ShouldDrawLocalPlayer( pl )
-	if ( GetConVarString( "cat_convar_thirdperson" ) == "1" ) then return end
+	if ( pl:IsActioning( ) or GetConVarString( "cat_convar_thirdperson" ) == "1" ) then return end
 	
 	return ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and catherine.character.customBackgroundEnabled
 end
@@ -106,11 +102,10 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 		end
 
 		local angSin = math.sin( CurTime( ) / 6 )
-		local angSin2 = math.sin( CurTime( ) / 4 )
 
 		if ( !self.lastPos or !self.lastAng ) then
 			self.lastPos = self.lastView.pos
-			self.lastAng = self.lastView.ang + Angle( 2 * angSin2, 4 * angSin, 0 )
+			self.lastAng = self.lastView.ang + Angle( 2 * math.sin( CurTime( ) / 4 ), 4 * angSin, 0 )
 		end
 		
 		self.lastPos = LerpVector( 0.01, self.lastPos, self.lastView.pos )

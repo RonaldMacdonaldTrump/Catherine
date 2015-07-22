@@ -96,9 +96,9 @@ function catherine.util.IsStuckPos( pos )
 end
 
 function catherine.util.GetRealTime( )
-	local one, dst, hour = os.date( "*t" ), os.date( "%p" ), os.date( "%I" )
+	local one = os.date( "*t" )
 	
-	return one.year .. "-" .. one.month .. "-" .. one.day .. " | " .. dst .. " " .. hour .. ":" .. os.date( "%M" )
+	return one.year .. "-" .. one.month .. "-" .. one.day .. " | " .. os.date( "%p" ) .. " " .. os.date( "%I" ) .. ":" .. os.date( "%M" )
 end
 
 function catherine.util.GetChatTimeStamp( )
@@ -255,17 +255,14 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.NotifyLang( pl, key, ... )
-		netstream.Start( pl, "catherine.util.Notify", {
-			LANG( pl, key, ... )
+		netstream.Start( pl, "catherine.util.NotifyLang", {
+			key,
+			{ ... }
 		} )
 	end
 
 	function catherine.util.StuffLanguage( pl, key, ... )
-		if ( key:Left( 1 ) == "^" ) then
-			return LANG( pl, key:sub( 2 ), ... )
-		else
-			return key
-		end
+		return key:Left( 1 ) == "^" and LANG( pl, key:sub( 2 ), ... ) or key
 	end
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
@@ -447,7 +444,6 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.StartMotionBlur( pl, addAlpha, drawAlpha, delay )
-		
 		netstream.Start( pl, "catherine.util.StartMotionBlur", {
 			addAlpha,
 			drawAlpha,
@@ -518,9 +514,6 @@ else
 	catherine.util.advSounds = catherine.util.advSounds or { }
 	catherine.util.motionBlur = catherine.util.motionBlur or nil
 	catherine.util.dermaMenuTitle = catherine.util.dermaMenuTitle or nil
-	CAT_UTIL_BUTTOMSOUND_1 = 1
-	CAT_UTIL_BUTTOMSOUND_2 = 2
-	CAT_UTIL_BUTTOMSOUND_3 = 3
 	local blurMat = Material( "pp/blurscreen" )
 	
 	netstream.Hook( "catherine.util.StringReceiver", function( data )
@@ -636,6 +629,10 @@ else
 		catherine.notify.Add( data[ 1 ], data[ 2 ] )
 	end )
 	
+	netstream.Hook( "catherine.util.NotifyLang", function( data )
+		catherine.notify.Add( LANG( data[ 1 ], unpack( data[ 2 ] ) ) )
+	end )
+	
 	netstream.Hook( "catherine.util.NotifyAllLang", function( data )
 		catherine.notify.Add( LANG( data[ 1 ], unpack( data[ 2 ] ) ) )
 	end )
@@ -659,23 +656,11 @@ else
 	end )
 
 	function catherine.util.PlayButtonSound( typ )
-	--[[
-		if ( typ == CAT_UTIL_BUTTOMSOUND_1 ) then
-
-		elseif ( typ == CAT_UTIL_BUTTOMSOUND_2 ) then
-
-		elseif ( typ == CAT_UTIL_BUTTOMSOUND_3 ) then
-
-		end
-	--]]
+	
 	end
 	
 	function catherine.util.StuffLanguage( key, ... )
-		if ( key:Left( 1 ) == "^" ) then
-			return LANG( key:sub( 2 ), ... )
-		else
-			return key
-		end
+		return key:Left( 1 ) == "^" and LANG( key:sub( 2 ), ... ) or key
 	end
 	
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )
@@ -710,7 +695,7 @@ else
 			title = title
 		}
 	end
-
+	
 	function catherine.util.BlurDraw( x, y, w, h, amount )
 		surface.SetMaterial( blurMat )
 		surface.SetDrawColor( 255, 255, 255 )
@@ -721,5 +706,38 @@ else
 			render.UpdateScreenEffectTexture( )
 			surface.DrawTexturedRectUV( x, y, w, h, x / ScrW( ), y / ScrH( ), ( x + w ) / ScrW( ), ( y + h ) / ScrH( ) )
 		end
+	end
+
+	function catherine.util.GetWrapTextData( text, width, font )
+		font = font or "catherine_normal15"
+		surface.SetFont( font )
+		
+		local line = ""
+		local wrapData = { }
+		local tw = surface.GetTextSize( text )
+		local ex = string.Explode( "%s", text, true )
+		local topW = 0
+		
+		if ( tw <= width ) then
+			return { ( text:gsub( "%s", " " ) ) }, tw
+		end
+
+		for i = 1, #ex do
+			line = line .. " " .. ex[ i ]
+			tw = surface.GetTextSize( line )
+			
+			if ( tw > width ) then
+				wrapData[ #wrapData + 1 ] = line
+				line = ""
+				
+				topW = math.max( topW, tw )
+			end
+		end
+		
+		if ( line != "" ) then
+			wrapData[ #wrapData + 1 ] = line
+		end
+		
+		return wrapData, topW
 	end
 end

@@ -730,6 +730,34 @@ catherine.command.Register( {
 	end
 } )
 
+catherine.command.Register( {
+	command = "storagesetpwd",
+	desc = "Setting a Storage Password.",
+	syntax = "[Password]",
+	canRun = function( pl ) return pl:IsAdmin( ) end,
+	runFunc = function( pl, args )
+		local data = { }
+		data.start = pl:GetShootPos( )
+		data.endpos = data.start + pl:GetAimVector( ) * 70
+		data.filter = pl
+		local ent = util.TraceLine( data ).Entity
+	
+		if ( IsValid( ent ) and ent:GetNetVar( "isStorage" ) ) then
+			if ( args[ 1 ] ) then
+				local pwd = table.concat( args, "" )
+
+				catherine.storage.Work( pl, ent:EntIndex( ), CAT_STORAGE_ACTION_SETPASSWORD, pwd )
+
+				catherine.util.NotifyLang( pl, "Storage_CMD_SetPWD", pwd == "" and "NONE" or pwd )
+			else
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+			end
+		else
+			catherine.util.NotifyLang( pl, "Storage_Notify_NoStorage" )
+		end
+	end
+} )
+
 if ( CLIENT ) then
 	netstream.Hook( "catherine.command.printplayerbodygroups", function( data )
 		PrintTable( data )

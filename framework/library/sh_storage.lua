@@ -19,10 +19,11 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.storage = catherine.storage or { }
 CAT_STORAGE_ACTION_ADD = 1
 CAT_STORAGE_ACTION_REMOVE = 2
+CAT_STORAGE_ACTION_SETPASSWORD = 3
 
 if ( SERVER ) then
 	catherine.storage.lists = { }
-	
+
 	function catherine.storage.Register( name, desc, model, maxWeight, openSound, closeSound )
 		catherine.storage.lists[ #catherine.storage.lists + 1 ] = {
 			name = name,
@@ -70,7 +71,7 @@ if ( SERVER ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_DontHave" )
 				return
 			end
-			
+
 			if ( itemTable.IsPersistent ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_IsPersistent" )
 				return
@@ -149,6 +150,8 @@ if ( SERVER ) then
 			catherine.storage.SetInv( ent, inventory )
 			
 			hook.Run( "ItemStorageTaked", pl, itemTable )
+		elseif ( workID == CAT_STORAGE_ACTION_SETPASSWORD ) then
+			ent.password = data != "" and data or nil
 		end
 		
 		netstream.Start( pl, "catherine.storage.RefreshPanel", ent:EntIndex( ) )
@@ -170,6 +173,7 @@ if ( SERVER ) then
 		ent.inv = data.inv or { }
 		ent.isStorage = true
 		ent.maxWeight = data.maxWeight or originalData.maxWeight
+		ent.password = data.password
 
 		ent:SetNetVar( "name", ent.name )
 		ent:SetNetVar( "desc", ent.desc )
@@ -195,8 +199,18 @@ if ( SERVER ) then
 					if ( ent.CAT_storageOpenSound and ent.CAT_storageOpenSound != "" ) then
 						ent:EmitSound( ent.CAT_storageOpenSound )
 					end
-					
-					netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
+
+					if ( ent.password ) then
+						catherine.util.StringReceiver( pl, "Storage_Open_PWD", "^Storage_PWDQ", "", function( _, pwd )
+							if ( ent.password == pwd ) then
+								netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
+							else
+								catherine.util.NotifyLang( pl, "Storage_Notify_PWDError" )
+							end
+						end )
+					else
+						netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
+					end
 				end
 			}
 		} )
@@ -237,8 +251,20 @@ if ( SERVER ) then
 	function catherine.storage.GetDataByIndex( ent, data )
 		for k, v in pairs( data ) do
 			local pos = ent:GetPos( )
+			local customEnt = nil
 			
-			if ( v.index == ent:EntIndex( ) or ( v.isStorageCustom and ( math.floor( v.posSave.x ) == math.floor( pos.x ) and math.floor( v.posSave.y ) == math.floor( pos.y ) and math.floor( v.posSave.z ) == math.floor( pos.z ) ) ) ) then
+			if ( !ent:IsMapEntity( ) and v.pos ) then
+				customEnt = ents.FindInSphere( v.pos, 16 )
+				
+				for k1, v1 in pairs( customEnt ) do
+					if ( v1:GetClass( ) == "prop_physics" and v.model == v1:GetModel( ) and ent.CAT_staticIndex == v1.CAT_staticIndex ) then
+						customEnt = v1
+						break
+					end
+				end
+			end
+
+			if ( ( v.index and v.index == ent:EntIndex( ) ) or ( customEnt and IsValid( customEnt ) and !customEnt:IsMapEntity( ) ) ) then
 				return v
 			end
 		end
@@ -250,15 +276,18 @@ if ( SERVER ) then
 		
 		for k, v in pairs( ents.FindByClass( "prop_physics" ) ) do
 			if ( !v.isStorage ) then continue end
-			
+
 			data[ i ] = {
-				index = v:EntIndex( ),
-				inv = v.inv
+				inv = v.inv,
+				password = v.password
 			}
 			
-			if ( v.CAT_isStorageCustom ) then
-				data[ i ].isStorageCustom = true
-				data[ i ].posSave = v:GetPos( )
+			if ( v:IsMapEntity( ) ) then
+				data[ i ].index = v:EntIndex( )
+			else
+				data[ i ].pos = v:GetPos( )
+				data[ i ].model = v:GetModel( )
+				data[ i ].staticIndex = v.CAT_staticIndex
 			end
 			
 			i = i + 1
@@ -266,7 +295,7 @@ if ( SERVER ) then
 		
 		catherine.data.Set( "storage", data )
 	end
-	
+
 	function catherine.storage.DataLoad( )
 		timer.Simple( 1, function( )
 			local data = catherine.data.Get( "storage", { } )

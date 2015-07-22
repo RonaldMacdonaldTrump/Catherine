@@ -23,56 +23,67 @@ if ( SERVER ) then
 	local url = "htctJcpnyz:vaRG/OCENq/nTJXeTtbetsLVkeBvHRYubixWGCFWvJnKtfUgtsexJYWuOgatlvnmXOkpBJizmfJOuokrlUfjebtCkOsHPCoeSclMFWQetsMamafQnflUWyTrFtbGydUbFylJiyJeNrafFheVoNmAPznLpRfXlXjLrtWlsgicLflmRWPzcOk.bMzNsvPCazHQZIhIhqFcMRShzunPpypzLJFzWpnooGYxVGDOmxMvdSDVQnTAWOmpVBxCWssVGZpelFewnIcRN/MEoODmvPIgeWWVymkjfYmoDmNXRiOjQctjjAMHYiZIUpmuwr7yAPXjBJsZValiVzWGrNuqWkFD6fRgfMiZogfqfoJDyqiICzYzIVcjbJnfEbiVZqIZYjHGaGqyDWEmwLH/DUtKaghOZCwSkDwqhzVszkRDIuVfrlCexMtUZtgvlELiBwEoVzsbAaBWFoaaiLbLCbROUhcjtOHMxwOaDjGqNevYQwXnKXwCuwPcNBlOiztOybBPbesblgIjK"
 
 	function catherine.version.Check( pl )
-		http.Fetch( catherine.crypto.Decode( url ),
-			function( body )
-				if ( body:find( "Error 404</p>" ) ) then
-					catherine.util.Print( Color( 255, 0, 0 ), "Failed to checking version! - 404" )
-				
+		if ( ( catherine.version.nextCheckable or 0 ) <= CurTime( ) ) then
+			http.Fetch( catherine.crypto.Decode( url ),
+				function( body )
+					if ( body:find( "Error 404</p>" ) ) then
+						catherine.util.Print( Color( 255, 0, 0 ), "Failed to checking version! - 404" )
+					
+						if ( IsValid( pl ) ) then
+							netstream.Start( pl, "catherine.version.CheckResult", {
+								false,
+								LANG( pl, "Version_Notify_CheckError", "404" )
+							} )
+						end
+						
+						return
+					end
+					
+					local globalVer = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
+					local foundNew = false
+					
+					if ( body != catherine.GetVersion( ) ) then
+						if ( globalVer == false ) then
+							catherine.net.SetNetGlobalVar( "cat_needUpdate", true )
+						end
+						
+						catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. catherine.GetVersion( ) .. " -> " .. body .. "]" )
+						foundNew = true
+					else
+						foundNew = false
+						
+						if ( globalVer == true ) then
+							catherine.net.SetNetGlobalVar( "cat_needUpdate", false )
+						end
+					end
+					
 					if ( IsValid( pl ) ) then
 						netstream.Start( pl, "catherine.version.CheckResult", {
 							false,
-							LANG( pl, "Version_Notify_CheckError", "404" )
+							foundNew and LANG( pl, "Version_Notify_FoundNew" ) or LANG( pl, "Version_Notify_AlreadyNew" )
 						} )
 					end
+				end, function( err )
+					catherine.util.Print( Color( 255, 0, 0 ), "Failed to checking version! - " .. err )
 					
-					return
-				end
-				
-				local globalVer = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
-				local foundNew = false
-				
-				if ( body != catherine.GetVersion( ) ) then
-					if ( globalVer == false ) then
-						catherine.net.SetNetGlobalVar( "cat_needUpdate", true )
-					end
-					
-					catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. catherine.GetVersion( ) .. " -> " .. body .. "]" )
-					foundNew = true
-				else
-					foundNew = false
-					
-					if ( globalVer == true ) then
-						catherine.net.SetNetGlobalVar( "cat_needUpdate", false )
+					if ( IsValid( pl ) ) then
+						netstream.Start( pl, "catherine.version.CheckResult", {
+							false,
+							LANG( pl, "Version_Notify_CheckError", err )
+						} )
 					end
 				end
-				
-				if ( IsValid( pl ) ) then
-					netstream.Start( pl, "catherine.version.CheckResult", {
-						false,
-						foundNew and LANG( pl, "Version_Notify_FoundNew" ) or LANG( pl, "Version_Notify_AlreadyNew" )
-					} )
-				end
-			end, function( err )
-				catherine.util.Print( Color( 255, 0, 0 ), "Failed to checking version! - " .. err )
-				
-				if ( IsValid( pl ) ) then
-					netstream.Start( pl, "catherine.version.CheckResult", {
-						false,
-						LANG( pl, "Version_Notify_CheckError", err )
-					} )
-				end
+			)
+			
+			catherine.version.nextCheckable = CurTime( ) + 300
+		else
+			if ( IsValid( pl ) ) then
+				netstream.Start( pl, "catherine.version.CheckResult", {
+					false,
+					LANG( pl, "Version_Notify_NextTime" )
+				} )
 			end
-		)
+		end
 	end
 	
 	function catherine.version.PlayerLoadFinished( )

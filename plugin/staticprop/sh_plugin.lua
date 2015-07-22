@@ -85,8 +85,11 @@ function PLUGIN:DataLoad( )
 	if ( !data ) then return end
 	
 	local ents, consts = duplicator.Paste( nil, data.Entities or { }, data.Contraints or { } )
+	local i = 1
 	
 	for k, v in pairs( ents ) do
 		v:SetNetVar( "isStatic", true )
+		v.CAT_staticIndex = i
+		i = i + 1
 	end
 end

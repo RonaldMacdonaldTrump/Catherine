@@ -18,15 +18,53 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.plugin = catherine.plugin or { lists = { } }
 
+local plugin_htmlValue = [[
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<style>
+		@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+		body {
+			font-family: "Open Sans", "나눔고딕", "NanumGothic", "맑은 고딕", "Malgun Gothic", "serif", "sans-serif"; 
+			-webkit-font-smoothing: antialiased;
+		}
+	</style>
+</head>
+<body>
+	<div class="container" style="margin-top:15px;">
+	<div class="page-header">
+		<h1>%s&nbsp&nbsp<small>%s</small></h1>
+	</div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+]]
+
 local function rebuildPlugin( )
 	local title_plugin = LANG( "Help_Category_Plugin" )
-	local html = [[<b>]] .. title_plugin .. [[</b><br>]]
+	local html = Format( plugin_htmlValue, title_plugin, LANG( "Help_Desc_Plugin" ) )
 			
 	for k, v in pairs( catherine.plugin.GetAll( ) ) do
-		html = html .. "<p><b>&#10022; " .. catherine.util.StuffLanguage( v.name ) .. "</b><br>" .. catherine.util.StuffLanguage( v.desc ) .. "<br>" .. LANG( "Plugin_Value_Author", v.author ) .. "<br>"
+		html = html .. [[
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">]] .. catherine.util.StuffLanguage( v.name ) .. [[</h3>
+				</div>
+					<div class="panel-body">]] .. catherine.util.StuffLanguage( v.desc ) .. [[<br>]] .. LANG( "Plugin_Value_Author", v.author ) .. [[
+					</div>
+			</div>
+		]]
 	end
+	
+	html = html .. [[</body></html>]]
 		
-	catherine.help.Register( CAT_HELP_HTML, title_plugin, html )
+	catherine.help.Register( CAT_HELP_HTML, title_plugin, html, true )
 end
 
 function catherine.plugin.Include( dir )

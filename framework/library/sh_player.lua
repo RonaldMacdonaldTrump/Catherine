@@ -509,7 +509,16 @@ if ( SERVER ) then
 	META.CATGodDisable = META.CATGodDisable or META.GodDisable
 	META2.CATSetHealth = META2.CATSetHealth or META2.SetHealth
 	META.CATSetArmor = META.CATSetArmor or META.SetArmor
-
+	META.CATSetUserGroup = META.CATSetUserGroup or META.SetUserGroup
+	
+	function META:SetUserGroup( userGroup )
+		local oldGroup = self:GetUserGroup( )
+		
+		self:CATSetUserGroup( userGroup )
+		
+		hook.Run( "PlayerUserGroupChanged", self, oldGroup, userGroup )
+	end
+	
 	function META:SetHealth( health )
 		local oldHealth = self:Health( )
 		

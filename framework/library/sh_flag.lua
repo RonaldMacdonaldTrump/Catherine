@@ -54,7 +54,6 @@ catherine.flag.Register( "p", "^Flag_p_Desc", {
 	end,
 	onGive = function( pl )
 		pl:Give( "weapon_physgun" )
-		pl:SelectWeapon( "weapon_physgun" )
 	end,
 	onTake = function( pl )
 		pl:StripWeapon( "weapon_physgun" )
@@ -66,7 +65,6 @@ catherine.flag.Register( "t", "^Flag_t_Desc", {
 	end,
 	onGive = function( pl )
 		pl:Give( "gmod_tool" )
-		pl:SelectWeapon( "gmod_tool" )
 	end,
 	onTake = function( pl )
 		pl:StripWeapon( "gmod_tool" )
@@ -107,6 +105,7 @@ if ( SERVER ) then
 			end
 		end
 		
+		hook.Run( "PlayerFlagGived", pl, ex )
 		catherine.character.SetCharVar( pl, "flags", flags )
 		netstream.Start( pl, "catherine.flag.BuildHelp" )
 		
@@ -139,7 +138,8 @@ if ( SERVER ) then
 			end
 		end
 		
-		catherine.character.SetCharVar( pl, "flags", result )
+		hook.Run( "PlayerFlagTaked", pl, ex )
+		catherine.character.SetCharVar( pl, "flags", flags )
 		netstream.Start( pl, "catherine.flag.BuildHelp" )
 		
 		return true
@@ -168,7 +168,17 @@ if ( SERVER ) then
 		end
 	end
 	
+	function catherine.flag.PlayerFlagGived( pl, flag )
+		netstream.Start( pl, "catherine.flag.BuildHelp" )
+	end
+	
+	function catherine.flag.PlayerFlagTaked( pl, flag )
+		netstream.Start( pl, "catherine.flag.BuildHelp" )
+	end
+	
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.flag.PlayerSpawnedInCharacter", catherine.flag.PlayerSpawnedInCharacter )
+	hook.Add( "PlayerFlagGived", "catherine.flag.PlayerFlagGived", catherine.flag.PlayerFlagGived )
+	hook.Add( "PlayerFlagTaked", "catherine.flag.PlayerFlagTaked", catherine.flag.PlayerFlagTaked )
 	
 	netstream.Hook( "catherine.flag.Scoreboard_PlayerOption06", function( pl, data )
 		if ( !IsValid( data ) ) then return end
@@ -179,15 +189,52 @@ if ( SERVER ) then
 		} )
 	end )
 else
+	local flag_htmlValue = [[
+	<!DOCTYPE html>
+	<html lang="ko">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title></title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+		<style>
+			@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+			body {
+				font-family: "Open Sans", "나눔고딕", "NanumGothic", "맑은 고딕", "Malgun Gothic", "serif", "sans-serif"; 
+				-webkit-font-smoothing: antialiased;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container" style="margin-top:15px;">
+		<div class="page-header">
+			<h1>%s&nbsp&nbsp<small>%s</small></h1>
+		</div>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	]]
+
 	local function rebuildFlag( )
 		local title_flag = LANG( "Help_Category_Flag" )
-		local html = [[<b>]] .. title_flag .. [[</b><br>]]
+		local html = Format( flag_htmlValue, title_flag, LANG( "Help_Desc_Flag" ) )
 		
 		for k, v in pairs( catherine.flag.GetAll( ) ) do
-			html = html .. "<p>" .. ( catherine.flag.Has( k ) and "<font color=\"green\">&#10004;</font>" or "<font color=\"red\">&#10005;</font>" ) .. "<b> " .. k .. "</b><br>" .. catherine.util.StuffLanguage( v.desc ) .. "<br>"
+			html = html .. [[
+				<div class="]] .. ( catherine.flag.Has( k ) and "panel panel-primary" or "panel panel-default" ) .. [[">
+					<div class="panel-heading">
+						<h3 class="panel-title">]] .. k .. [[</h3>
+					</div>
+						<div class="panel-body">]] .. catherine.util.StuffLanguage( v.desc ) .. [[</div>
+				</div>
+			]]
 		end
 
-		catherine.help.Register( CAT_HELP_HTML, title_flag, html )
+		html = html .. [[</body></html>]]
+		
+		catherine.help.Register( CAT_HELP_HTML, title_flag, html, true )
 	end
 	
 	netstream.Hook( "catherine.flag.BuildHelp", function( data )

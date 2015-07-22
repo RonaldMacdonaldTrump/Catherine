@@ -165,34 +165,19 @@ else
 	end
 	
 	function PLUGIN:CalcView( pl, pos, ang, fov )
-		if ( pl:IsActioning( ) and pl:GetViewEntity( ) == pl ) then
-			local viewData = { }
-			
-			local thirdPersonLine = util.TraceLine( {
-				start = pos,
-				endpos = pos - ( ang:Forward( ) * 100 )
-			} )
-
-			viewData.origin = thirdPersonLine.Fraction < 1 and ( thirdPersonLine.HitPos + thirdPersonLine.HitNormal * 5 ) or thirdPersonLine.HitPos
-			
-			--[[
-			local la = pl:LookupAttachment( "eyes" )
-			
-			if ( la == 0 ) then
-				la = pl:LookupAttachment( "eyes" )
-			end
-			
-			local ga = pl:GetAttachment( la ) 
-			local newAng = Angle( 0, pl:GetAngles( ).y, 0 )
+		if ( pl:IsActioning( ) ) then
+			print("THIS2")
 			local tr = util.TraceLine( {
-				start = ga.Pos,
-				endpos = ga.Pos + newAng:Forward( ) * -80 + newAng:Up( ) * 20 + newAng:Right( ) * 0
+				start = pos,
+				endpos = pos - ( ang:Forward( ) * 100 ),
+				filter = pl
 			} )
-
-			viewData.origin = tr.HitPos + tr.HitNormal * 4
-			viewData.angles = newAng--]]
-			
-			return viewData
+		
+			return {
+				origin = tr.Fraction < 1 and ( tr.HitPos + tr.HitNormal * 5 ) or tr.HitPos,
+				angles = ang,
+				fov = fov
+			}
 		end
 	end
 

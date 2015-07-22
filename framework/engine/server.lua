@@ -218,8 +218,6 @@ function GM:PlayerInfoTable( pl, infoTable )
 	local walkSpeed = infoTable.walkSpeed
 	local leftLegLimbDmg = catherine.limb.GetDamage( pl, HITGROUP_LEFTLEG )
 	local rightLegLimbDmg = catherine.limb.GetDamage( pl, HITGROUP_RIGHTLEG )
-	local defJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
-	local defRunSpeed = catherine.player.GetPlayerDefaultRunSpeed( pl )
 
 	if ( pl.CAT_bulletHurtSpeedDown ) then
 		return {
@@ -227,6 +225,8 @@ function GM:PlayerInfoTable( pl, infoTable )
 		}
 	else
 		if ( ( leftLegLimbDmg and leftLegLimbDmg != 0 ) or ( rightLegLimbDmg and rightLegLimbDmg != 0 ) ) then
+			local defJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
+			local defRunSpeed = catherine.player.GetPlayerDefaultRunSpeed( pl )
 			local per = ( math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ) * defJumpPower / defJumpPower
 			local per2 = ( math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ) * defRunSpeed / defRunSpeed
 
@@ -728,15 +728,21 @@ function GM:GetFallDamage( pl, speed )
 end
 
 function GM:InitPostEntity( )
-	hook.Run( "DataLoad" )
-	hook.Run( "SchemaDataLoad" )
-	
 	if ( catherine.configs.clearMap ) then
 		catherine.util.RemoveEntityByClass( "item_healthcharger" )
 		catherine.util.RemoveEntityByClass( "item_suitcharger" )
 		catherine.util.RemoveEntityByClass( "prop_vehicle*" )
 		catherine.util.RemoveEntityByClass( "weapon_*" )
 	end
+	
+	for k, v in pairs( ents.GetAll( ) ) do
+		if ( IsValid( v ) and v:GetModel( ) ) then
+			catherine.entity.SetMapEntity( v, true )
+		end
+	end
+	
+	hook.Run( "DataLoad" )
+	hook.Run( "SchemaDataLoad" )
 	
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has loaded." )
 end

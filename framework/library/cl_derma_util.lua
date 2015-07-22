@@ -42,8 +42,18 @@ function Derma_Message( strText, strTitle, strButtonText )
 		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png", "smooth" ) )
 		surface.DrawTexturedRect( 50 - imageWAni / 2 / 2, ( h / 2 - imageHAni / 2 ), imageWAni, imageHAni )
+		
+		local wrapTexts = catherine.util.GetWrapTextData( strText, w / 3, "catherine_normal20" )
 
-		draw.SimpleText( strText, "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+		if ( #wrapTexts == 1 ) then
+			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+		else
+			local textY = ( ( h / 2 ) - ( #wrapTexts * 25 ) / 2 / 2 ) / 2
+			
+			for k, v in pairs( wrapTexts ) do
+				draw.SimpleText( v, "catherine_normal20", w / 2, textY + k * 25, Color( 50, 50, 50, 255 ), 1, 1 )
+			end
+		end
 	end
 
 	local ButtonPanel = vgui.Create( "DPanel", Window )
@@ -99,7 +109,17 @@ function Derma_Query( strText, strTitle, ... )
 		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png", "smooth" ) )
 		surface.DrawTexturedRect( 50 - imageWAni / 2 / 2, ( h / 2 - imageHAni / 2 ), imageWAni, imageHAni )
 
-		draw.SimpleText( strText, "catherine_normal20", w / 2, h / 2, Color( 0, 0, 0, 255 ), 1, 1 )
+		local wrapTexts = catherine.util.GetWrapTextData( strText, w / 3, "catherine_normal20" )
+
+		if ( #wrapTexts == 1 ) then
+			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+		else
+			local textY = ( ( h / 2 ) - ( #wrapTexts * 25 ) / 2 / 2 ) / 2
+			
+			for k, v in pairs( wrapTexts ) do
+				draw.SimpleText( v, "catherine_normal20", w / 2, textY + k * 25, Color( 50, 50, 50, 255 ), 1, 1 )
+			end
+		end
 	end
 
 	local ButtonPanel = vgui.Create( "DPanel", Window )

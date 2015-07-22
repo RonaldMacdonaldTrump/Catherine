@@ -16,8 +16,10 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.environment = catherine.environment or { buffer = catherine.configs.defaultRPInformation }
-catherine.environment.NextTimeTick = catherine.environment.NextTimeTick or CurTime( ) + catherine.configs.rpTimeInterval
+catherine.environment = catherine.environment or {
+	buffer = catherine.configs.defaultRPInformation,
+	NextTimeTick = CurTime( ) + catherine.configs.rpTimeInterval
+}
 local rpTimeInterval = catherine.configs.rpTimeInterval
 local monthLen = {
 	31,
@@ -63,42 +65,44 @@ if ( SERVER ) then
 	local enviromentSendInterval = catherine.configs.environmentSendInterval
 	
 	function catherine.environment.Work( )
-		if ( catherine.environment.NextTimeTick <= CurTime( ) ) then
-			local d = catherine.environment.buffer
-			
-			if ( !d.second ) then
-				return
-			end
-			
-			d.second = d.second + 1
-			
-			if ( d.second >= 60 ) then
-				d.minute = d.minute + 1
-				d.second = 0
-			end
-			
-			if ( d.minute >= 60 ) then
-				d.hour = d.hour + 1
-				d.minute = 0
-				catherine.environment.AutomaticDayNight( )
-			end
-			
-			if ( d.hour >= 25 ) then
-				d.day = d.day + 1
-				d.hour = 1
-			end
-			
-			if ( d.day >= monthLen[ d.month ] ) then
-				d.month = d.month + 1
-				d.day = 1
-			end
-			
-			if ( d.month > 12 ) then
-				d.year = d.year + 1
-				d.month = 1
-			end
+		if ( catherine.configs.enable_rpTime ) then
+			if ( catherine.environment.NextTimeTick <= CurTime( ) ) then
+				local d = catherine.environment.buffer
+				
+				if ( !d.second ) then
+					return
+				end
+				
+				d.second = d.second + 1
+				
+				if ( d.second >= 60 ) then
+					d.minute = d.minute + 1
+					d.second = 0
+				end
+				
+				if ( d.minute >= 60 ) then
+					d.hour = d.hour + 1
+					d.minute = 0
+					catherine.environment.AutomaticDayNight( )
+				end
+				
+				if ( d.hour >= 25 ) then
+					d.day = d.day + 1
+					d.hour = 1
+				end
+				
+				if ( d.day >= monthLen[ d.month ] ) then
+					d.month = d.month + 1
+					d.day = 1
+				end
+				
+				if ( d.month > 12 ) then
+					d.year = d.year + 1
+					d.month = 1
+				end
 
-			catherine.environment.NextTimeTick = CurTime( ) + rpTimeInterval
+				catherine.environment.NextTimeTick = CurTime( ) + rpTimeInterval
+			end
 		end
 		
 		if ( catherine.environment.NextTemperatureTick <= CurTime( ) ) then
@@ -320,6 +324,8 @@ if ( SERVER ) then
 	end
 
 	function catherine.environment.AutomaticDayNight( )
+		if ( !catherine.configs.enable_Environment ) then return end
+		
 		local dayNightData = catherine.environment.GetLightDataByHour( )
 		if ( !dayNightData ) then return end
 		
@@ -401,7 +407,7 @@ else
 	end )
 
 	function catherine.environment.WorkClient( )
-		if ( table.Count( catherine.environment.buffer ) != 7 ) then return end
+		if ( !catherine.configs.enable_rpTime or table.Count( catherine.environment.buffer ) != 7 ) then return end
 		if ( catherine.environment.NextTimeTick <= CurTime( ) ) then
 			local d = catherine.environment.buffer
 			

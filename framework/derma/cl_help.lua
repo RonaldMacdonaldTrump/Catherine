@@ -100,19 +100,19 @@ function PANEL:DoWork( data )
 			body {
 				background-color: #fbfcfc;
 				color: #2c3e50;
-				font-family: 맑은 고딕, Geneva, sans-serif;
+				font-family: "나눔고딕", "NanumGothic", "맑은 고딕", "Malgun Gothic", "함초롬돋움", "HCR Dotum", "굴림", "Gulim", "sans-serif";
 			}
 		</style>
 		</head>
 	]]
 	
-	self.html:SetHTML( prefix .. data.codes )
+	self.html:SetHTML( data.noPrefix and data.codes or ( prefix .. data.codes ) )
 end
 
 function PANEL:BuildHelps( )
 	self.categorys:Clear( )
 	
-	for k, v in pairs( self.helps ) do
+	for k, v in SortedPairs( self.helps ) do
 		local panel = vgui.Create( "catherine.vgui.button", self )
 		panel:SetSize( self.categorys:GetWide( ), 30 )
 		panel:SetStr( k )

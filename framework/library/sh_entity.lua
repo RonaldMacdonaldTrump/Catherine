@@ -41,7 +41,20 @@ function META:IsProp( )
 end
 
 if ( SERVER ) then
+	catherine.entity.mapEntities = catherine.entity.mapEntities or { }
 	catherine.entity.customUse = catherine.entity.customUse or { }
+	
+	function catherine.entity.SetMapEntity( ent, bool )
+		catherine.entity.mapEntities[ ent ] = bool
+	end
+	
+	function catherine.entity.IsMapEntity( ent )
+		return catherine.entity.mapEntities[ ent ] != nil
+	end
+	
+	function META:IsMapEntity( )
+		return catherine.entity.mapEntities[ self ] != nil
+	end
 	
 	function catherine.entity.SetIgnoreUse( ent, bool )
 		ent.CAT_ignoreUse = bool

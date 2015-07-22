@@ -20,7 +20,70 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 	Syntax fixed by Dremek.
 	( http://steamcommunity.com/profiles/76561198052257272/ )
 ]]--
+local credit_htmlValue = [[
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<style>
+		@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+		body {
+			font-family: "Open Sans", "나눔고딕", "NanumGothic", "맑은 고딕", "Malgun Gothic", "serif", "sans-serif"; 
+			-webkit-font-smoothing: antialiased;
+		}
+	</style>
+</head>
+<body>
+	<div class="container" style="margin-top:15px;">
+	<div class="page-header">
+		<h1>Credit&nbsp&nbsp<small>The listed of Developing the Catherine or Helpers ...</small></h1>
+	</div>
+	
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">L7D</h3>
+		</div>
+			<div class="panel-body">Framework Development and Design.</div>
+	</div>
+	
+	<div class="panel panel-warning">
+		<div class="panel-heading">
+			<h3 class="panel-title">Chessnut</h3>
+		</div>
+			<div class="panel-body">Good helper :)</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">notcake (!cake)</h3>
+		</div>
+			<div class="panel-body">Author of UTF-8 module.</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">thelastpenguin™</h3>
+		</div>
+			<div class="panel-body">Author of pON module.</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Alexander Grist-Hucker (Alex Grist)</h3>
+		</div>
+			<div class="panel-body">Author of netstream 2 module.</div>
+	</div>
 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	</body>
+</html>
+]]
 local cashName = catherine.cash.GetOnlyName( )
 
 local LANGUAGE = catherine.language.New( "english" )
@@ -69,6 +132,8 @@ LANGUAGE.data = {
 	[ "Character_UI_CharInfo" ] = "Character Information",
 	[ "Character_UI_CharName" ] = "Character Name",
 	[ "Character_UI_CharDesc" ] = "Character Description",
+	[ "Character_UI_MusicError" ] = "Failed to play background music! ( ERROR : %s )",
+	[ "Character_UI_Hint01" ] = "Catherine are supported multi-language system, Click the bottom right button for change the whatever language you can speak.",
 	[ "Character_UI_SelectFaction" ] = "> Select faction.",
 	[ "Character_Notify_DeleteQ" ] = "Are you sure you want to delete this character?",
 	[ "Character_Notify_ExitQ" ] = "Are you sure you want to disconnect from the server?",
@@ -78,6 +143,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_CantUseThisFaction" ] = "You can't use this faction!",
 	[ "Character_Notify_IsNotValidFaction" ] = "This character's faction is not valid!",
 	[ "Character_Notify_CharBanned" ] = "This character is banned!",
+	[ "Character_Notify_CantSwitch" ] = "You can't switch character now!",
 	[ "Character_Notify_CantSwitchUsing" ] = "You are already using this character!",
 	[ "Character_Notify_CantSwitchDeath" ] = "You can not switch character while dead!",
 	[ "Character_Notify_CantSwitchTied" ] = "You can not switch characters while tied!",
@@ -130,14 +196,16 @@ LANGUAGE.data = {
 	[ "Basic_Notify_InputText" ] = "Please enter the text!",
 
 	// Version
-	[ "Version_UI_Title" ] = "Version",
+	[ "Version_UI_Title" ] = "Information",
 	[ "Version_UI_YourVer_AV" ] = "Version '%s'",
 	[ "Version_UI_YourVer_NO" ] = "Version 'Error'",
 	[ "Version_UI_Checking" ] = "Checking update ...",
 	[ "Version_UI_CheckButtonStr" ] = "Update Check",
+	[ "Version_UI_OpenUpdateLogStr" ] = "Update Log",
 	[ "Version_Notify_FoundNew" ] = "This server should update to the latest version of Catherine!",
 	[ "Version_Notify_AlreadyNew" ] = "This server is using the latest version of Catherine.",
 	[ "Version_Notify_CheckError" ] = "Update check error! - %s",
+	[ "Version_Notify_NextTime" ] = "Too often unable to check the version, try again later!",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",
@@ -188,10 +256,14 @@ LANGUAGE.data = {
 	[ "Help_UI_DefPageTitle" ] = "Welcome.",
 	[ "Help_UI_DefPageDesc" ] = "Press and look at page if you want.",
 	[ "Help_Category_Flag" ] = "Flag",
+	[ "Help_Desc_Flag" ] = "The listed of Flags ...",
 	[ "Help_Category_Credit" ] = "Credit",
+	[ "Help_HTMLValue_Credit" ] = credit_htmlValue,
 	[ "Help_Category_Changelog" ] = "Change log",
 	[ "Help_Category_Command" ] = "Command",
+	[ "Help_Desc_Command" ] = "The listed of Commands ...",
 	[ "Help_Category_Plugin" ] = "Plugin",
+	[ "Help_Desc_Plugin" ] = "The listed of Plugins ...",
 	
 	// Plugin
 	[ "Plugin_Value_Author" ] = "Development and design by %s",
@@ -201,6 +273,10 @@ LANGUAGE.data = {
 	[ "Storage_UI_StorageNoHaveItem" ] = "This storage is empty.",
 	[ "Storage_UI_PlayerNoHaveItem" ] = "You do not have any items.",
 	[ "Storage_Notify_HasNotSpace" ] = "This storage does not have enough inventory space!",
+	[ "Storage_Notify_NoStorage" ] = "This entity is not a valid storage!",
+	[ "Storage_CMD_SetPWD" ] = "You are setting a password %s for this storage.",
+	[ "Storage_PWDQ" ] = "What is the password for this storage?",
+	[ "Storage_Notify_PWDError" ] = "The password is not a valid!",
 	[ "Storage_OpenStr" ] = "Open",
 	
 	// Item SYSTEM
