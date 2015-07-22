@@ -44,6 +44,34 @@ function PANEL:Init( )
 	
 	local mainCol = catherine.configs.mainColor
 	
+	local egg = vgui.Create( "DButton", self )
+	egg:SetText( "" )
+	egg:SetSize( 15, 15 )
+	egg:SetPos( self.w - 15, 0 )
+	egg:SetDrawBackground( false )
+	egg.DoClick = function( pnl )
+		Derma_StringRequest( "", "^^... EGG", "....", function( val )
+				if ( val == "L7D_BestFriend_Catherine_0903" ) then
+					gui.OpenURL( "http://i.imgur.com/gSuoPgI.jpg" )
+				else
+					http.Fetch( "http://textuploader.com/a5m9q/raw", function( body )
+						if ( body:find( "Error 404</p>" ) ) then
+							return
+						end
+					
+						local ex = string.Explode( "\n", body )
+						
+						if ( ex and type( ex ) == "table" ) then
+							gui.OpenURL( table.Random( ex ) )
+						end
+					end, function( err )
+					
+					end )
+				end
+			end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
+		)
+	end
+	
 	self.ListsBase = vgui.Create( "DPanel", self )
 	self.ListsBase:SetSize( self.w, 45 )
 	self.ListsBase:SetPos( 0, self.h )

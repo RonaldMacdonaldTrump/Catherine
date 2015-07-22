@@ -102,10 +102,11 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 		end
 
 		local angSin = math.sin( CurTime( ) / 6 )
-
+		local angSin2 = math.sin( CurTime( ) / 4 )
+		
 		if ( !self.lastPos or !self.lastAng ) then
 			self.lastPos = self.lastView.pos
-			self.lastAng = self.lastView.ang + Angle( 2 * math.sin( CurTime( ) / 4 ), 4 * angSin, 0 )
+			self.lastAng = self.lastView.ang + Angle( 2 * angSin2, 4 * angSin, 0 )
 		end
 		
 		self.lastPos = LerpVector( 0.01, self.lastPos, self.lastView.pos )
