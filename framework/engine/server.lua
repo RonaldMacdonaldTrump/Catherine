@@ -728,15 +728,21 @@ function GM:GetFallDamage( pl, speed )
 end
 
 function GM:InitPostEntity( )
-	hook.Run( "DataLoad" )
-	hook.Run( "SchemaDataLoad" )
-	
 	if ( catherine.configs.clearMap ) then
 		catherine.util.RemoveEntityByClass( "item_healthcharger" )
 		catherine.util.RemoveEntityByClass( "item_suitcharger" )
 		catherine.util.RemoveEntityByClass( "prop_vehicle*" )
 		catherine.util.RemoveEntityByClass( "weapon_*" )
 	end
+	
+	for k, v in pairs( ents.GetAll( ) ) do
+		if ( IsValid( v ) and v:GetModel( ) ) then
+			catherine.entity.SetMapEntity( v, true )
+		end
+	end
+	
+	hook.Run( "DataLoad" )
+	hook.Run( "SchemaDataLoad" )
 	
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has loaded." )
 end

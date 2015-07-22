@@ -23,7 +23,7 @@ CAT_STORAGE_ACTION_SETPASSWORD = 3
 
 if ( SERVER ) then
 	catherine.storage.lists = { }
-	
+
 	function catherine.storage.Register( name, desc, model, maxWeight, openSound, closeSound )
 		catherine.storage.lists[ #catherine.storage.lists + 1 ] = {
 			name = name,
@@ -71,7 +71,7 @@ if ( SERVER ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_DontHave" )
 				return
 			end
-			
+
 			if ( itemTable.IsPersistent ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_IsPersistent" )
 				return
@@ -251,8 +251,20 @@ if ( SERVER ) then
 	function catherine.storage.GetDataByIndex( ent, data )
 		for k, v in pairs( data ) do
 			local pos = ent:GetPos( )
+			local customEnt = nil
 			
-			if ( v.index == ent:EntIndex( ) or ( v.isStorageCustom and ( math.floor( v.posSave.x ) == math.floor( pos.x ) and math.floor( v.posSave.y ) == math.floor( pos.y ) ) ) ) then
+			if ( !ent:IsMapEntity( ) and v.pos ) then
+				customEnt = ents.FindInSphere( v.pos, 16 )
+				
+				for k1, v1 in pairs( customEnt ) do
+					if ( v1:GetClass( ) == "prop_physics" and v.model == v1:GetModel( ) and ent.CAT_staticIndex == v1.CAT_staticIndex ) then
+						customEnt = v1
+						break
+					end
+				end
+			end
+
+			if ( ( v.index and v.index == ent:EntIndex( ) ) or ( customEnt and IsValid( customEnt ) and !customEnt:IsMapEntity( ) ) ) then
 				return v
 			end
 		end
@@ -266,14 +278,16 @@ if ( SERVER ) then
 			if ( !v.isStorage ) then continue end
 
 			data[ i ] = {
-				index = v:EntIndex( ),
 				inv = v.inv,
 				password = v.password
 			}
 			
-			if ( v.CAT_isStorageCustom ) then
-				data[ i ].isStorageCustom = true
-				data[ i ].posSave = v:GetPos( )
+			if ( v:IsMapEntity( ) ) then
+				data[ i ].index = v:EntIndex( )
+			else
+				data[ i ].pos = v:GetPos( )
+				data[ i ].model = v:GetModel( )
+				data[ i ].staticIndex = v.CAT_staticIndex
 			end
 			
 			i = i + 1
@@ -281,7 +295,7 @@ if ( SERVER ) then
 		
 		catherine.data.Set( "storage", data )
 	end
-	
+
 	function catherine.storage.DataLoad( )
 		timer.Simple( 1, function( )
 			local data = catherine.data.Get( "storage", { } )
