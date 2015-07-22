@@ -19,6 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.storage = catherine.storage or { }
 CAT_STORAGE_ACTION_ADD = 1
 CAT_STORAGE_ACTION_REMOVE = 2
+CAT_STORAGE_ACTION_SETPASSWORD = 3
 
 if ( SERVER ) then
 	catherine.storage.lists = { }
@@ -149,6 +150,8 @@ if ( SERVER ) then
 			catherine.storage.SetInv( ent, inventory )
 			
 			hook.Run( "ItemStorageTaked", pl, itemTable )
+		elseif ( workID == CAT_STORAGE_ACTION_SETPASSWORD ) then
+			ent.password = data != "" and data or nil
 		end
 		
 		netstream.Start( pl, "catherine.storage.RefreshPanel", ent:EntIndex( ) )
@@ -170,6 +173,7 @@ if ( SERVER ) then
 		ent.inv = data.inv or { }
 		ent.isStorage = true
 		ent.maxWeight = data.maxWeight or originalData.maxWeight
+		ent.password = data.password
 
 		ent:SetNetVar( "name", ent.name )
 		ent:SetNetVar( "desc", ent.desc )
@@ -195,8 +199,18 @@ if ( SERVER ) then
 					if ( ent.CAT_storageOpenSound and ent.CAT_storageOpenSound != "" ) then
 						ent:EmitSound( ent.CAT_storageOpenSound )
 					end
-					
-					netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
+
+					if ( ent.password ) then
+						catherine.util.StringReceiver( pl, "Storage_Open_PWD", "^Storage_PWDQ", "", function( _, pwd )
+							if ( ent.password == pwd ) then
+								netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
+							else
+								catherine.util.NotifyLang( pl, "Storage_Notify_PWDError" )
+							end
+						end )
+					else
+						netstream.Start( pl, "catherine.storage.Use", ent:EntIndex( ) )
+					end
 				end
 			}
 		} )
@@ -238,7 +252,7 @@ if ( SERVER ) then
 		for k, v in pairs( data ) do
 			local pos = ent:GetPos( )
 			
-			if ( v.index == ent:EntIndex( ) or ( v.isStorageCustom and ( math.floor( v.posSave.x ) == math.floor( pos.x ) and math.floor( v.posSave.y ) == math.floor( pos.y ) and math.floor( v.posSave.z ) == math.floor( pos.z ) ) ) ) then
+			if ( v.index == ent:EntIndex( ) or ( v.isStorageCustom and ( math.floor( v.posSave.x ) == math.floor( pos.x ) and math.floor( v.posSave.y ) == math.floor( pos.y ) ) ) ) then
 				return v
 			end
 		end
@@ -250,10 +264,11 @@ if ( SERVER ) then
 		
 		for k, v in pairs( ents.FindByClass( "prop_physics" ) ) do
 			if ( !v.isStorage ) then continue end
-			
+
 			data[ i ] = {
 				index = v:EntIndex( ),
-				inv = v.inv
+				inv = v.inv,
+				password = v.password
 			}
 			
 			if ( v.CAT_isStorageCustom ) then

@@ -273,6 +273,10 @@ LANGUAGE.data = {
 	[ "Storage_UI_StorageNoHaveItem" ] = "This storage is empty.",
 	[ "Storage_UI_PlayerNoHaveItem" ] = "You do not have any items.",
 	[ "Storage_Notify_HasNotSpace" ] = "This storage does not have enough inventory space!",
+	[ "Storage_Notify_NoStorage" ] = "This entity is not a valid storage!",
+	[ "Storage_CMD_SetPWD" ] = "You are setting a password %s for this storage.",
+	[ "Storage_PWDQ" ] = "What is the password for this storage?",
+	[ "Storage_Notify_PWDError" ] = "The password is not a valid!",
 	[ "Storage_OpenStr" ] = "Open",
 	
 	// Item SYSTEM

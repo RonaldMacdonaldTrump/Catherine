@@ -269,6 +269,10 @@ LANGUAGE.data = {
 	[ "Storage_UI_StorageNoHaveItem" ] = "이 저장소는 비어있습니다.",
 	[ "Storage_UI_PlayerNoHaveItem" ] = "당신은 아무것도 가지고 있지 않습니다.",
 	[ "Storage_Notify_HasNotSpace" ] = "이 저장소에는 공간이 없습니다!",
+	[ "Storage_Notify_NoStorage" ] = "이 물체는 올바른 저장소가 아닙니다!",
+	[ "Storage_CMD_SetPWD" ] = "당신은 이 저장소의 암호를 %s 로 설정하셨습니다.",
+	[ "Storage_PWDQ" ] = "이 저장소의 암호가 무엇입니까?",
+	[ "Storage_Notify_PWDError" ] = "암호가 올바르지 않습니다!",
 	[ "Storage_OpenStr" ] = "열기",
 	
 	// Item SYSTEM
