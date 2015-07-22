@@ -77,10 +77,6 @@ function GM:ContextMenuOpen( )
 	return false
 end
 
-function GM:ShouldDrawLocalPlayer( pl, bool )
-
-end
-
 function GM:HUDPaintBackground( )
 	local lp = LocalPlayer( )
 	if ( !lp:IsAdmin( ) or ( GetConVarString( "cat_convar_alwaysadminesp" ) == "0" and !lp:IsNoclipping( ) ) or GetConVarString( "cat_convar_adminesp" ) == "0" ) then return end
