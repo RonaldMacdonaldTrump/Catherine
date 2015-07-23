@@ -191,17 +191,17 @@ if ( SERVER ) then
 			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message01_ZT" ), 2, function( )
 				local tr = { }
 				tr.start = pl:GetShootPos( )
-				tr.endpos = tr.start + pl:GetAimVector( ) * 60
+				tr.endpos = tr.start + pl:GetAimVector( ) * 160
 				tr.filter = pl
 				
 				local newTarget = util.TraceLine( tr ).Entity
-				
-				if ( !IsValid( target ) or !IsValid( newTarget ) or target != newTarget ) then return end
+
+				if ( !IsValid( target ) or !IsValid( newTarget ) ) then return end
 				
 				if ( newTarget:GetClass( ) == "prop_ragdoll" ) then
 					newTarget = catherine.entity.GetPlayer( newTarget )
 				end
-				
+
 				if ( IsValid( newTarget ) and newTarget:IsPlayer( ) ) then
 					if ( pl:IsTied( ) and !force ) then
 						catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
@@ -244,12 +244,12 @@ if ( SERVER ) then
 			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message02_ZT" ), 2, function( )
 				local tr = { }
 				tr.start = pl:GetShootPos( )
-				tr.endpos = tr.start + pl:GetAimVector( ) * 60
+				tr.endpos = tr.start + pl:GetAimVector( ) * 160
 				tr.filter = pl
 				
 				local newTarget = util.TraceLine( tr ).Entity
 				
-				if ( !IsValid( target ) or !IsValid( newTarget ) or target != newTarget ) then return end
+				if ( !IsValid( target ) or !IsValid( newTarget ) ) then return end
 
 				if ( newTarget:GetClass( ) == "prop_ragdoll" ) then
 					newTarget = catherine.entity.GetPlayer( newTarget )

@@ -85,7 +85,9 @@ if ( SERVER ) then
 	end )
 else
 	function ITEM:GetDesc( pl, itemTable, itemData, isInv )
-		return isInv and LANG( "Cash_UI_HasStr", catherine.cash.Get( pl ) ) or LANG( "Item_Desc_World_Wallet", catherine.cash.GetName( itemData.amount ) )
+		if ( itemData.amount ) then
+			return isInv and LANG( "Cash_UI_HasStr", catherine.cash.Get( pl ) ) or LANG( "Item_Desc_World_Wallet", catherine.cash.GetName( itemData.amount ) )
+		end
 	end
 end
 

@@ -69,19 +69,22 @@ if ( SERVER ) then
 			local inventory = catherine.inventory.Get( pl )
 			local uniqueID = data.uniqueID
 			local invData = inventory[ uniqueID ]
-			local itemCount = invData.itemCount - ( data.count or 1 )
-
-			if ( itemCount > 0 ) then
-				inventory[ uniqueID ] = {
-					uniqueID = uniqueID,
-					itemCount = itemCount,
-					itemData = invData.itemData
-				}
-			else
-				inventory[ uniqueID ] = nil
-			end
 			
-			setVar( pl, "_inv", inventory )
+			if ( invData ) then
+				local itemCount = invData.itemCount - ( data.count or 1 )
+
+				if ( itemCount > 0 ) then
+					inventory[ uniqueID ] = {
+						uniqueID = uniqueID,
+						itemCount = itemCount,
+						itemData = invData.itemData
+					}
+				else
+					inventory[ uniqueID ] = nil
+				end
+				
+				setVar( pl, "_inv", inventory )
+			end
 		elseif ( workID == CAT_INV_ACTION_UPDATE ) then
 			local inventory = catherine.inventory.Get( pl )
 			local uniqueID = data.uniqueID

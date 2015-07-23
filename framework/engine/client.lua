@@ -449,10 +449,10 @@ function GM:DrawEntityTargetID( pl, ent, a )
 		local name, desc = hook.Run( "GetPlayerInformation", pl, entPlayer, true )
 		local col = team.GetColor( entPlayer:Team( ) )
 		
-		draw.SimpleText( name, "catherine_normal20", x, y, Color( col.r, col.g, col.b, a ), 1, 1 )
+		draw.SimpleText( name, "catherine_outline20", x, y, Color( col.r, col.g, col.b, a ), 1, 1 )
 		y = y + 20
 		
-		draw.SimpleText( desc, "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( desc, "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		y = y + 20
 
 		hook.Run( "PlayerInformationDraw", pl, entPlayer, x, y, a )
@@ -461,17 +461,17 @@ end
 
 function GM:PlayerInformationDraw( pl, target, x, y, a )
 	if ( target:IsRagdolled( ) ) then
-		draw.SimpleText( LANG( "Player_Message_Ragdolled_HUD" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( LANG( "Player_Message_Ragdolled_HUD" ), "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		y = y + 20
 	end
 	
 	if ( target:IsTied( ) ) then
-		draw.SimpleText( LANG( "Player_Message_UnTie" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( LANG( "Player_Message_UnTie" ), "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		y = y + 20
 	end
 	
 	if ( !target:Alive( ) ) then
-		draw.SimpleText( LANG( "Player_Message_Dead_HUD" ), "catherine_normal15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( LANG( "Player_Message_Dead_HUD" ), "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		y = y + 20
 	end
 end
