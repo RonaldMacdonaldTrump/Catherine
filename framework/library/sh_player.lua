@@ -57,8 +57,9 @@ if ( SERVER ) then
 			
 			--[[ Initializing a Catherine ... :> ]]--
 
-			catherine.net.ScanErrorInNetworkRegistry( )
-
+			catherine.net.ScanErrorInNetworkRegistry( true, pl )
+			catherine.character.ScanErrorInNetworkRegistry( true, pl )
+			
 			for i = 1, #functions do
 				local libName, funcName = functions[ i ].libName, functions[ i ].funcName
 				local success, result = pcall( catherine[ libName ][ funcName ], pl )

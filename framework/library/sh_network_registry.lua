@@ -85,7 +85,7 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.net.ScanErrorInNetworkRegistry( )
+	function catherine.net.ScanErrorInNetworkRegistry( send, pl )
 		for k, v in pairs( catherine.net.entityRegistry ) do
 			local keyType = type( k )
 			
@@ -98,7 +98,9 @@ if ( SERVER ) then
 			end
 		end
 		
-		catherine.net.SendAllNetworkRegistries( )
+		if ( send ) then
+			catherine.net.SendAllNetworkRegistries( pl )
+		end
 	end
 
 	function META:SetNetVar( key, value, noSync )

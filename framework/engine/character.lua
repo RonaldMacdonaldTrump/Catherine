@@ -407,10 +407,15 @@ if ( SERVER ) then
 	end
 	
 	function catherine.character.RefreshCharacterBuffer( pl )
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
+			return
+		end
+		
 		local steamID = pl:SteamID( )
 		
 		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data ) then return end
+			
 			catherine.character.buffers[ steamID ] = data
 		end )
 	end
@@ -437,6 +442,10 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.CreateNetworkRegistry( pl, id, data )
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
+			return
+		end
+		
 		local steamID = pl:SteamID( )
 		
 		catherine.character.networkRegistry[ steamID ] = { }
@@ -463,10 +472,51 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.DeleteNetworkRegistry( pl )
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
+			return
+		end
+		
 		local steamID = pl:SteamID( )
 		
 		catherine.character.networkRegistry[ steamID ] = nil
 		netstream.Start( nil, "catherine.character.DeleteNetworkRegistry", steamID )
+	end
+	
+	local function scanErrorInTable( tab )
+		for k, v in pairs( tab ) do
+			local keyType = type( k )
+			local valueType = type( v )
+			
+			if ( ( keyType == "Entity" or keyType == "Player" ) and !IsValid( k ) ) then
+				tab[ k ] = nil
+			end
+
+			if ( type( v ) == "table" ) then
+				scanErrorInTable( v )
+			else
+				if ( ( valueType == "Entity" or valueType == "Player" ) and !IsValid( v ) ) then
+					tab[ k ] = nil
+				end
+			end
+		end
+	end
+	
+	function catherine.character.ScanErrorInNetworkRegistry( send, pl )
+		for k, v in pairs( catherine.character.networkRegistry ) do
+			local keyType = type( k )
+			
+			if ( ( keyType == "Entity" or keyType == "Player" ) and !IsValid( k ) ) then
+				catherine.character.networkRegistry[ k ] = nil
+			end
+			
+			if ( type( v ) == "table" ) then
+				scanErrorInTable( v )
+			end
+		end
+		
+		if ( send ) then
+			catherine.character.SendAllNetworkRegistries( pl )
+		end
 	end
 
 	function catherine.character.Save( pl )
@@ -490,6 +540,10 @@ if ( SERVER ) then
 		local id = pl:GetCharacterID( )
 
 		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. steamID .. "'", networkRegistry, function( )
+			if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
+				return
+			end
+		
 			catherine.character.RefreshCharacterBuffer( pl )
 			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl:SteamName( ) .. "'s [" .. id .. "] character." )
 		end )
