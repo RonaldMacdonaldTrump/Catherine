@@ -494,6 +494,20 @@ function GM:PlayerInitialSpawn( pl )
 		
 		catherine.player.Initialize( pl )
 	end )
+	
+	timer.Create( "Catherine.player.Initialize.Reload", 10, 0, function( )
+		if ( !IsValid( pl ) ) then
+			timer.Remove( "Catherine.player.Initialize.Reload" )
+			return
+		end
+		
+		pl:SetNoDraw( true )
+		pl:SetNotSolid( true )
+		pl:GodEnable( )
+		pl:SetPos( Vector( 0, 0, 10000 ) )
+		
+		catherine.player.Initialize( pl )
+	end )
 end
 
 function GM:PlayerGiveSWEP( pl )

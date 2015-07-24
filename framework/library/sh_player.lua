@@ -39,6 +39,7 @@ if ( SERVER ) then
 			if ( !IsValid( pl ) ) then return end
 
 			if ( !Schema ) then
+				timer.Remove( "Catherine.player.Initialize.Reload" )
 				netstream.Start( pl, "catherine.loadingError", {
 					LANG( pl, "Basic_Error_NoSchema" ),
 					true
@@ -47,6 +48,7 @@ if ( SERVER ) then
 			end
 
 			if ( !catherine.database.Connected ) then
+				timer.Remove( "Catherine.player.Initialize.Reload" )
 				netstream.Start( pl, "catherine.loadingError", {
 					LANG( pl, "Basic_Error_NoDatabase", catherine.database.ErrorMsg ),
 					true
@@ -57,8 +59,8 @@ if ( SERVER ) then
 			
 			--[[ Initializing a Catherine ... :> ]]--
 
-			catherine.net.ScanErrorInNetworkRegistry( true, pl )
-			catherine.character.ScanErrorInNetworkRegistry( true, pl )
+			catherine.net.ScanErrorInNetworkRegistry( )
+			catherine.character.ScanErrorInNetworkRegistry( )
 			
 			for i = 1, #functions do
 				local libName, funcName = functions[ i ].libName, functions[ i ].funcName
@@ -73,6 +75,8 @@ if ( SERVER ) then
 					return
 				end
 			end
+			
+			timer.Remove( "Catherine.player.Initialize.Reload" )
 
 			--[[
 			catherine.player.PlayerInformationUpdate( pl )
