@@ -591,14 +591,16 @@ else
 	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 0.05
 	
 	netstream.Hook( "catherine.player.CheckLocalPlayer", function( )
+		hook.Remove( "Tick", "catherine.player.CheckLocalPlayer.Tick" )
 		hook.Add( "Tick", "catherine.player.CheckLocalPlayer.Tick", function( )
-			if ( catherine.player.nextLocalPlayerCheck <= CurTime( ) ) then
+			if ( ( catherine.player.nextLocalPlayerCheck or 0 ) <= CurTime( ) ) then
 				if ( IsValid( LocalPlayer( ) ) ) then
 					netstream.Start( "catherine.player.CheckLocalPlayer_Receive" )
 					hook.Remove( "Tick", "catherine.player.CheckLocalPlayer.Tick" )
 					catherine.player.nextLocalPlayerCheck = nil
 					return
 				end
+				
 				catherine.player.nextLocalPlayerCheck = CurTime( ) + 0.05
 			end
 		end )
