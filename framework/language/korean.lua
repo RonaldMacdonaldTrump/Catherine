@@ -477,6 +477,7 @@ LANGUAGE.data = {
 	[ "Command_PrintBodyGroup_Fin" ] = "해당 사람의 바디그룹 테이블 구조가 콘솔에 표시됩니다.",
 	
 	// AntiHaX
+	[ "AntiHaX_KickMessageNotifyAdmin" ] = "%s/%s 유저가 치트 프로그램을 사용하였습니다, 그래서 킥 처리를 하였습니다.",
 	[ "AntiHaX_KickMessage" ] = "죄송합니다, 당신은 치트 프로그램 사용으로 감지되어 강퇴당하셨습니다 :(",
 	[ "AntiHaX_KickMessage_TimeOut" ] = "죄송합니다, 당신은 치트 프로그램 확인 작업의 제한 시간을 초과했습니다 :(",
 	

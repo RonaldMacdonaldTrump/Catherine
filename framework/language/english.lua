@@ -479,6 +479,7 @@ LANGUAGE.data = {
 	[ "Command_PrintBodyGroup_Fin" ] = "Printed target player Body groups on the Console.",
 	
 	// AntiHaX
+	[ "AntiHaX_KickMessageNotifyAdmin" ] = "%s/%s user are using the Cheat programes, So kicked the player.",
 	[ "AntiHaX_KickMessage" ] = "Sorry, you have been kicked for using cheats.",
 	[ "AntiHaX_KickMessage_TimeOut" ] = "Sorry, you have been kicked because the anti-cheat timed out.",
 	
