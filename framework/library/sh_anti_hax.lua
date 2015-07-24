@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
---[[ Catherine Anti HaX Version 2.0 : Last Update 2015-05-11 ]]--
+--[[ Catherine Anti HaX Version 3.0 : Last Update 2015-07-24 ]]--
 
 if ( !catherine.configs.enable_AntiHaX ) then return end
 
@@ -25,7 +25,7 @@ if ( SERVER ) then
 	catherine.antiHaX.masterData = catherine.antiHaX.masterData or { }
 	catherine.antiHaX.doing = catherine.antiHaX.doing or false
 	catherine.antiHaX.NextCheckTick = catherine.antiHaX.NextCheckTick or CurTime( ) + catherine.configs.HaXCheckInterval
-	
+
 	function catherine.antiHaX.Work( )
 		if ( catherine.antiHaX.doing ) then return end
 		local masterData = {
@@ -40,7 +40,7 @@ if ( SERVER ) then
 		local serverCSLua = masterData.serverConfig.csLua
 		local receiveData = masterData.receiveData
 		local startTimeOutChecker = false
-		local playerAll = player.GetAllByLoaded( )
+		local playerAll = player.GetAll( )
 		local playerAllCount = #playerAll
 		local i = 0
 		local nextCheck = CurTime( ) + 0.05
@@ -63,48 +63,50 @@ if ( SERVER ) then
 				startTimeOutChecker = true
 			end
 		end
-		
+
 		catherine.antiHaX.masterData = masterData
 		catherine.antiHaX.doing = true
-		netstream.Start( playerAll, "catherine.antiHaX.CheckRequest" )
-		
+		netstream.Start( nil, "catherine.antiHaX.CheckRequest" )
+
 		hook.Remove( "Think", "catherine.antiHaX.Work.TimeOutChecker" )
 		hook.Add( "Think", "catherine.antiHaX.Work.TimeOutChecker", function( )
 			if ( !startTimeOutChecker or !catherine.antiHaX.doing ) then return end
 			
 			if ( nextCheck <= CurTime( ) ) then
 				for k, v in pairs( playerAll ) do
-					if ( receiveData[ v ] and receiveData[ v ].fin == true ) then
+					if ( IsValid( v ) and receiveData[ v ] and receiveData[ v ].fin == true ) then
 						local isHack = false
-						
+						local steamName, steamID = v:SteamName( ), v:SteamID( )
+
 						if ( receiveData[ v ].sendTime - SysTime( ) >= 15 ) then
 							local kickMessage = LANG( v, "AntiHaX_KickMessage_TimeOut" )
 							
-							MsgC( Color( 255, 255, 0 ), "[CAT AntiHaX] Kicked time out player.[" .. v:SteamName( ) .. "/" .. v:SteamID( )	.. "]\n" )
-							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked time out player.[" .. v:SteamName( ) .. "/" .. v:SteamID( )	.. "]", true )
+							MsgC( Color( 255, 255, 0 ), "[CAT AntiHaX] Kicked time out player.[" .. steamName .. "/" .. steamID	.. "]\n" )
+							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked time out player.[" .. steamName .. "/" .. steamID	.. "]", true )
 							v:Kick( kickMessage )
 							receiveData[ v ] = nil
 							continue
 						end
 						
 						if ( serverCheat != receiveData[ v ].clientFetch.cheat ) then
-							MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_cheats mismatch found !!![" .. v:SteamName( ) .. "/" .. v:SteamID( ) .. "]\n" )
-							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_cheats mismatch found !!![" .. v:SteamName( ) .. "/" .. v:SteamID( ) .. "]", true )
+							MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_cheats mismatch found !!![" .. steamName .. "/" .. steamID .. "]\n" )
+							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_cheats mismatch found !!![" .. steamName .. "/" .. steamID .. "]", true )
 							isHack = true
 						end
 						
 						if ( serverCSLua != receiveData[ v ].clientFetch.csLua ) then
-							MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_allowcslua mismatch found !!![" .. v:SteamName( ) .. "/" .. v:SteamID( ) .. "]\n" )
-							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_allowcslua mismatch found !!![" .. v:SteamName( ) .. "/" .. v:SteamID( ) .. "]", true )
+							MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] WARNING !!! : sv_allowcslua mismatch found !!![" .. steamName .. "/" .. steamID .. "]\n" )
+							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING !!! : sv_allowcslua mismatch found !!![" .. steamName .. "/" .. steamID .. "]", true )
 							isHack = true
 						end
 						
 						if ( isHack ) then
 							local kickMessage = LANG( v, "AntiHaX_KickMessage" )
 							
-							MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Kicked hack player.[" .. v:SteamName( ) .. "/" .. v:SteamID( )	.. "]\n" )
-							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked hack player.[" .. v:SteamName( ) .. "/" .. v:SteamID( )	.. "]", true )
+							MsgC( Color( 255, 0, 0 ), "[CAT AntiHaX] Kicked hack player.[" .. steamName .. "/" .. steamID	.. "]\n" )
+							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked hack player.[" .. steamName .. "/" .. steamID	.. "]", true )
 							v:Kick( kickMessage )
+							receiveData[ v ] = nil
 							continue
 						else
 							receiveData[ v ] = nil
@@ -141,7 +143,7 @@ if ( SERVER ) then
 	end
 	
 	hook.Add( "Think", "catherine.antiHaX.Think", catherine.antiHaX.Think )
-	
+
 	netstream.Hook( "catherine.antiHaX.CheckRequest_Receive", function( pl, data )
 		if ( !catherine.antiHaX.doing ) then return end
 		local masterData = catherine.antiHaX.masterData
@@ -151,7 +153,7 @@ if ( SERVER ) then
 			csLua = data[ 2 ]
 		}
 		masterData.receiveData[ pl ].fin = true
-		
+
 		catherine.antiHaX.masterData = masterData
 	end )
 else

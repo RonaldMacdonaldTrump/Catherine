@@ -55,6 +55,7 @@ catherine.configs.defaultRPInformation = {
 }
 catherine.configs.enable_rpTime = true --[[ Enabled a RP time system. ]]--
 catherine.configs.enable_globalBan = true --[[ Enabled a GlobalBan system. ]]--
+catherine.configs.enable_AntiHaX = true --[[ Enabled a AntiHaX system. (Anti Hack) ]]--
 
 if ( SERVER ) then
 	catherine.configs.attachmentBlacklist = {
@@ -96,7 +97,6 @@ if ( SERVER ) then
 	catherine.configs.limbDamageAutoRecover = 5
 	
 	catherine.configs.enable_Log = true --[[ Enabled a Log system. ]]--
-	catherine.configs.enable_AntiHaX = true --[[ Enabled a AntiHaX system. (Anti Hack) ]]--
 	catherine.configs.enable_Environment = true --[[ Enabled a Environment system. (Day, Night, Skycolor) ]]--
 else
 	catherine.configs.frameworkLogo = "CAT/logos/main02.png"

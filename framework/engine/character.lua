@@ -57,6 +57,10 @@ catherine.character.NewVar( "name", {
 	doNetworking = true,
 	default = "Johnson",
 	checkValid = function( pl, data )
+		if ( data:find( "#" ) ) then
+			return false, "^Character_Notify_SetNameError"
+		end
+		
 		if ( data:utf8len( ) >= catherine.configs.characterNameMinLen and data:utf8len( ) <= catherine.configs.characterNameMaxLen ) then
 			return true
 		end
@@ -70,6 +74,10 @@ catherine.character.NewVar( "desc", {
 	doNetworking = true,
 	default = "No desc.",
 	checkValid = function( pl, data )
+		if ( data:find( "#" ) ) then
+			return false, "^Character_Notify_SetDescError"
+		end
+		
 		if ( data:utf8len( ) >= catherine.configs.characterDescMinLen and data:utf8len( ) <= catherine.configs.characterDescMaxLen ) then
 			return true
 		end

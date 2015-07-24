@@ -72,12 +72,16 @@ catherine.command.Register( {
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					local localBuffer = pl:Name( )
-					local targetBuffer = target:Name( )
-					
-					catherine.character.SetVar( target, "_name", args[ 2 ], nil, true )
-					catherine.character.SendPlayerCharacterList( target )
-					catherine.util.NotifyAllLang( "Character_Notify_SetName", localBuffer, args[ 2 ], targetBuffer )
+					if ( !args[ 2 ]:find( "#" ) ) then
+						local localBuffer = pl:Name( )
+						local targetBuffer = target:Name( )
+						
+						catherine.character.SetVar( target, "_name", args[ 2 ], nil, true )
+						catherine.character.SendPlayerCharacterList( target )
+						catherine.util.NotifyAllLang( "Character_Notify_SetName", localBuffer, args[ 2 ], targetBuffer )
+					else
+						catherine.util.NotifyLang( pl, "Character_Notify_SetNameError" )
+					end
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -139,14 +143,18 @@ catherine.command.Register( {
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			if ( args[ 2 ] ) then
-				local target = catherine.util.FindPlayerByName( args[ 1 ] )
-				
-				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					catherine.character.SetVar( target, "_desc", args[ 2 ], nil, true )
-					catherine.character.SendPlayerCharacterList( target )
-					catherine.util.NotifyLang( "Character_Notify_SetDesc", pl:Name( ), args[ 2 ], target:Name( ) )
+				if ( !args[ 2 ]:find( "#" ) ) then
+					local target = catherine.util.FindPlayerByName( args[ 1 ] )
+					
+					if ( IsValid( target ) and target:IsPlayer( ) ) then
+						catherine.character.SetVar( target, "_desc", args[ 2 ], nil, true )
+						catherine.character.SendPlayerCharacterList( target )
+						catherine.util.NotifyLang( "Character_Notify_SetDesc", pl:Name( ), args[ 2 ], target:Name( ) )
+					else
+						catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
+					end
 				else
-					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
+					catherine.util.NotifyLang( pl, "Character_Notify_SetDescError" )
 				end
 			else
 				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
@@ -187,14 +195,18 @@ catherine.command.Register( {
 	desc = "Change a character description.",
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
-			local newDesc = args[ 1 ]
-			
-			if ( newDesc:utf8len( ) >= catherine.configs.characterDescMinLen and newDesc:utf8len( ) < catherine.configs.characterDescMaxLen ) then
-				catherine.character.SetVar( pl, "_desc", newDesc, nil, true )
-				catherine.character.SendPlayerCharacterList( pl )
-				catherine.util.NotifyLang( pl, "Character_Notify_SetDescLC", newDesc )
+			if ( !args[ 1 ]:find( "#" ) ) then
+				local newDesc = args[ 1 ]
+				
+				if ( newDesc:utf8len( ) >= catherine.configs.characterDescMinLen and newDesc:utf8len( ) < catherine.configs.characterDescMaxLen ) then
+					catherine.character.SetVar( pl, "_desc", newDesc, nil, true )
+					catherine.character.SendPlayerCharacterList( pl )
+					catherine.util.NotifyLang( pl, "Character_Notify_SetDescLC", newDesc )
+				else
+					catherine.util.NotifyLang( pl, "Character_Notify_DescLimitHit" )
+				end
 			else
-				catherine.util.NotifyLang( pl, "Character_Notify_DescLimitHit" )
+				catherine.util.NotifyLang( pl, "Character_Notify_SetDescError" )
 			end
 		else
 			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
