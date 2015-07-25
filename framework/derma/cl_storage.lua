@@ -177,7 +177,7 @@ function PANEL:BuildStorage( )
 		for k1, v1 in SortedPairsByMemberValue( v, "uniqueID" ) do
 			local w, h = 54, 54
 			local itemTable = catherine.item.FindByID( k1 )
-			local itemData = pl:GetInvItemDatas( k1 )
+			local itemData = v1.itemData
 			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, itemData, false ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, k1 )

@@ -224,15 +224,13 @@ function GM:PlayerInfoTable( pl, infoTable )
 			runSpeed = walkSpeed
 		}
 	else
+		local defJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
+		local defRunSpeed = catherine.player.GetPlayerDefaultRunSpeed( pl )
+	
 		if ( ( leftLegLimbDmg and leftLegLimbDmg != 0 ) or ( rightLegLimbDmg and rightLegLimbDmg != 0 ) ) then
-			local defJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
-			local defRunSpeed = catherine.player.GetPlayerDefaultRunSpeed( pl )
-			local per = ( math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ) * defJumpPower / defJumpPower
-			local per2 = ( math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ) * defRunSpeed / defRunSpeed
-
 			return {
-				jumpPower = defJumpPower * per,
-				runSpeed = math.max( defRunSpeed * per2, walkSpeed )
+				jumpPower = defJumpPower * ( 1 - math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ),
+				runSpeed = math.max( defRunSpeed * ( 1 - math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ), walkSpeed )
 			}
 		else
 			return {
@@ -546,6 +544,10 @@ function GM:PlayerSpawnProp( pl )
 	return pl:HasFlag( "e" )
 end
 
+--[[
+catherine.limb.TakeDamage( player.GetByID(1), HITGROUP_LEFTLEG, 10 )
+		catherine.limb.TakeDamage( player.GetByID(1), HITGROUP_RIGHTLEG, 10 )
+	--]]	
 function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 	if ( pl:Health( ) <= 0 ) then
 		return true

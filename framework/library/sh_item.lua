@@ -48,6 +48,11 @@ function catherine.item.Register( itemTable )
 			icon = "icon16/basket_put.png",
 			canShowIsWorld = true,
 			func = function( pl, itemTable, ent )
+				if ( hook.Run( "CantTakeItem", pl, itemTable ) == true ) then
+					catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
+					return
+				end
+				
 				if ( !pl:Alive( ) ) then
 					catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 					return
@@ -77,7 +82,8 @@ function catherine.item.Register( itemTable )
 				end
 
 				catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
-					uniqueID = itemTable.uniqueID
+					uniqueID = itemTable.uniqueID,
+					itemData = itemData
 				} )
 				
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )
@@ -91,6 +97,11 @@ function catherine.item.Register( itemTable )
 			icon = "icon16/basket_remove.png",
 			canShowIsMenu = true,
 			func = function( pl, itemTable )
+				if ( hook.Run( "CantDropItem", pl, itemTable ) == true ) then
+					catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
+					return
+				end
+				
 				if ( !pl:Alive( ) ) then
 					catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 					return
