@@ -432,9 +432,9 @@ function GM:KeyPress( pl, key )
 		if ( !IsValid( ent ) ) then return end
 
 		if ( ent:IsDoor( ) ) then
-			catherine.door.DoorSpamProtection( pl, ent )
-
-			hook.Run( "PlayerUse", pl, ent )
+			if ( GAMEMODE:PlayerUse( pl, ent ) ) then
+				catherine.door.DoorSpamProtection( pl, ent )
+			end
 		elseif ( ent:IsPlayer( ) ) then
 			return hook.Run( "PlayerInteract", pl, ent )
 		elseif ( ent.IsCustomUse ) then
@@ -467,14 +467,14 @@ function GM:PlayerUse( pl, ent )
 	
 	if ( isDoor ) then
 		local result = hook.Run( "PlayerCanUseDoor", pl, ent )
-
+		
 		if ( result == false or catherine.entity.GetIgnoreUse( ent ) ) then
 			return false
 		else
 			hook.Run( "PlayerUseDoor", pl, ent )
 		end
 	end
-	
+
 	return true
 end
 
@@ -774,7 +774,6 @@ function GM:ShutDown( )
 end
 
 function GM:Initialize( )
-	MsgC( Color( 255, 255, 0 ), "[CAT] Catherine is currently in developing. Reset the database after update, we are very sorry!\n" )
 	MsgC( Color( 0, 255, 0 ), "[CAT] You are using Catherine '" .. catherine.GetVersion( ) .. "' date Version, Thanks.\n" )
 	
 	hook.Run( "FrameworkInitialized" )

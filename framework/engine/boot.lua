@@ -65,6 +65,7 @@ function catherine.Initialize( )
 		include( baseDir .. "/engine/data.lua" )
 		include( baseDir .. "/engine/database.lua" )
 		include( baseDir .. "/engine/resource.lua" )
+		include( baseDir .. "/engine/external_x.lua" )
 	else
 		include( baseDir .. "/engine/client.lua" )
 		include( baseDir .. "/engine/shared.lua" )
