@@ -453,6 +453,7 @@ if ( SERVER ) then
 							catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
 								catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 								catherine.player.RagdollWork( pl )
+								pl:SetNetVar( "isForceRagdolled", nil )
 								timer.Remove( uniqueID )
 							end )
 							
