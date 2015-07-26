@@ -52,6 +52,16 @@ function PANEL:Init( )
 			surface.SetDrawColor( 50, 50, 50, math.max( math.sin( CurTime( ) / 2 ) * 255, 200 ) )
 			surface.SetMaterial( Material( "gui/gradient_up" ) )
 			surface.DrawTexturedRect( 0, 0, w, h )
+		else
+			if ( catherine.configs.enableCharacterPanelBlur ) then
+				if ( self.closing ) then
+					self.blurAmount = Lerp( 0.03, self.blurAmount, 0 )
+				else
+					self.blurAmount = Lerp( 0.03, self.blurAmount, 3 )
+				end
+				
+				catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
+			end
 		end
 
 		surface.SetDrawColor( 110, 110, 110, self.mainAlpha / 3 )

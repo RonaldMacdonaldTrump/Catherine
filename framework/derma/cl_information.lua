@@ -60,7 +60,7 @@ function PANEL:Init( )
 		draw.SimpleText( pl:Name( ), "catherine_normal30", 90, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 		draw.SimpleText( pl:FactionName( ), "catherine_normal20", 15, 80, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 
-		draw.SimpleText( self.TopPanel.descEnt:GetText( ):utf8len( ) .. "/" .. maxDescLen, "catherine_normal15", w - 10, 60, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		draw.SimpleText( pnl.descEnt:GetText( ):utf8len( ) .. "/" .. maxDescLen, "catherine_normal15", w - 10, 60, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		
 		local icon = Material( "icon16/user.png" )
 		
@@ -132,18 +132,24 @@ function PANEL:Init( )
 		surface.SetMaterial( Material( "gui/gradient" ) )
 		surface.DrawTexturedRect( 0, 0, w, h )
 		
+		local temp = catherine.environment.GetTemperatureString( )
+		
+		surface.SetFont( "catherine_normal25" )
+		local tw, th = surface.GetTextSize( temp )
+
 		if ( catherine.configs.enable_rpTime ) then
 			draw.SimpleText( catherine.environment.GetDateString( ), "catherine_normal40", 10, h - 65, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 			draw.SimpleText( catherine.environment.GetTimeString( ), "catherine_normal25", 10, h - 30, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			draw.SimpleText( temp, "catherine_normal25", w - 10, h - 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
 		else
 			if ( !pnl.overrideSize ) then
-				pnl.w, pnl.h = 65, 65
+				pnl.w, pnl.h = tw * 2 - 10, 35
 				pnl:SetSize( pnl.w, pnl.h )
 				pnl.overrideSize = true
 			end
+			
+			draw.SimpleText( temp, "catherine_normal25", w / 2, h - 30, Color( 50, 50, 50, 255 ), 1, TEXT_ALIGN_LEFT )
 		end
-		
-		draw.SimpleText( catherine.environment.GetTemperatureString( ), "catherine_normal25", w - 10, h - 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT ) // to do;
 	end
 	
 	self.RightPanel = vgui.Create( "DPanel", self )
