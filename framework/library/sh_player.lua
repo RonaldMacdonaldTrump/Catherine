@@ -436,6 +436,7 @@ if ( SERVER ) then
 
 					if ( !pl:Alive( ) ) then
 						timer.Remove( uniqueID )
+						pl:SetNetVar( "isForceRagdolled", nil )
 						return
 					end
 					
