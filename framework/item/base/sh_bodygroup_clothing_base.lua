@@ -40,6 +40,8 @@ BASE.func.wear = {
 		local bodygroupID = itemTable.bodyGroup
 
 		if ( bodygroupID < pl:GetNumBodyGroups( ) ) then
+			local wearingBodyGroups = catherine.character.GetCharVar( pl, "wearing_bodyGroups", { } )
+			
 			if ( type( ent ) == "Entity" ) then
 				catherine.item.Give( pl, itemTable.uniqueID )
 				ent:Remove( )
@@ -48,11 +50,16 @@ BASE.func.wear = {
 			if ( !bodygroups[ bodygroupID ] and pl:GetBodygroup( bodygroupID ) == 0 ) then
 				bodygroups[ bodygroupID ] = itemTable.bodyGroupSubModelIndex
 				
+				wearingBodyGroups[ itemTable.uniqueID ] = true
+				
 				pl:SetBodygroup( bodygroupID, itemTable.bodyGroupSubModelIndex )
 				
 				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "wearing", true )
 				catherine.character.SetCharVar( pl, "bodygroups", bodygroups )
+				catherine.character.SetCharVar( pl, "wearing_bodyGroups", wearingBodyGroups )
 			elseif ( bodygroups[ bodygroupID ] and pl:GetBodygroup( bodygroupID ) == 0 ) then
+				wearingBodyGroups[ itemTable.uniqueID ] = true
+				
 				pl:SetBodygroup( bodygroupID, itemTable.bodyGroupSubModelIndex )
 				
 				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "wearing", true )
@@ -78,18 +85,24 @@ BASE.func.takeoff = {
 		local bodygroupID = itemTable.bodyGroup
 		
 		if ( bodygroupID < pl:GetNumBodyGroups( ) ) then
+			local wearingBodyGroups = catherine.character.GetCharVar( pl, "wearing_bodyGroups", { } )
+			
 			if ( bodygroups[ bodygroupID ] and pl:GetBodygroup( bodygroupID ) == itemTable.bodyGroupSubModelIndex ) then
+				wearingBodyGroups[ itemTable.uniqueID ] = nil
 				bodygroups[ bodygroupID ] = nil
 				
 				pl:SetBodygroup( bodygroupID, 0 )
 				
 				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "wearing", false )
 				catherine.character.SetCharVar( pl, "bodygroups", bodygroups )
+				catherine.character.SetCharVar( pl, "wearing_bodyGroups", wearingBodyGroups )
 			elseif ( bodygroups[ bodygroupID ] and pl:GetBodygroup( bodygroupID ) == 0 ) then
+				wearingBodyGroups[ itemTable.uniqueID ] = nil
 				bodygroups[ bodygroupID ] = nil
 				
 				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "wearing", false )
 				catherine.character.SetCharVar( pl, "bodygroups", bodygroups )
+				catherine.character.SetCharVar( pl, "wearing_bodyGroups", wearingBodyGroups )
 			else
 				catherine.util.NotifyLang( pl, "Item_Func02Notify02_BodygroupClothing" )
 				return

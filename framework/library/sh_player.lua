@@ -461,7 +461,6 @@ if ( SERVER ) then
 							ragdoll.CAT_paused = nil
 						end
 					else
-						//catherine.player.RagdollWork( pl )
 						timer.Remove( uniqueID )
 					end
 				end )
@@ -517,6 +516,11 @@ if ( SERVER ) then
 	META2.CATSetHealth = META2.CATSetHealth or META2.SetHealth
 	META.CATSetArmor = META.CATSetArmor or META.SetArmor
 	META.CATSetUserGroup = META.CATSetUserGroup or META.SetUserGroup
+	META.CATLastHitGroup = META.CATLastHitGroup or META.LastHitGroup
+
+	function META:LastHitGroup( )
+		return pl.CAT_lastHitGroup or self:CATLastHitGroup( )
+	end
 	
 	function META:SetUserGroup( userGroup )
 		local oldGroup = self:GetUserGroup( )
@@ -607,6 +611,30 @@ else
 			end
 		end )
 	end )
+end
+
+function catherine.player.GetHitGroup( pl, pos )
+	local lastDis = nil
+	local hitGroup = HITGROUP_GENERIC
+	
+	for k, v in pairs( catherine.limb.bones ) do
+		local bone = pl:LookupBone( k )
+		
+		if ( bone ) then
+			local bonePos = pl:GetBonePosition( bone )
+			
+			if ( bonePos ) then
+				local distance = bonePos:Distance( pos )
+				
+				if ( !lastDis or distance < lastDis ) then
+					lastDis = distance
+					hitGroup = v
+				end
+			end
+		end
+	end
+
+	return hitGroup
 end
 
 function META:GetWeaponRaised( )

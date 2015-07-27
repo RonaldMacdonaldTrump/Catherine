@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.limb = catherine.limb or { }
-local limbBones = {
+catherine.limb.bones = {
 	[ "ValveBiped.Bip01_Head1" ] = HITGROUP_HEAD,
 	[ "ValveBiped.Bip01_Neck1" ] = HITGROUP_HEAD,
 	[ "ValveBiped.Bip01_R_UpperArm" ] = HITGROUP_RIGHTARM,
@@ -47,7 +47,7 @@ local healAmount = {
 }
 
 function catherine.limb.BoneToHitGroup( boneID )
-	return limbBones[ boneID ] or HITGROUP_CHEST
+	return catherine.limb.bones[ boneID ] or HITGROUP_CHEST
 end
 
 if ( SERVER ) then

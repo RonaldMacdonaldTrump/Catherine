@@ -544,10 +544,6 @@ function GM:PlayerSpawnProp( pl )
 	return pl:HasFlag( "e" )
 end
 
---[[
-catherine.limb.TakeDamage( player.GetByID(1), HITGROUP_LEFTLEG, 10 )
-		catherine.limb.TakeDamage( player.GetByID(1), HITGROUP_RIGHTLEG, 10 )
-	--]]	
 function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 	if ( pl:Health( ) <= 0 ) then
 		return true
@@ -559,16 +555,20 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 	end
 	
-	local hitGroup = pl:LastHitGroup( )
+	local hitGroup = catherine.player.GetHitGroup( pl, dmgInfo:GetDamagePosition( ) )
+	pl.CAT_lastHitGroup = hitGroup
+	local dataTable = hook.Run( "PlayerScaleDamage", pl, attacker, dmgInfo, hitGroup ) or { false, false }
 
 	if ( dmgInfo:IsDamageType( DMG_FALL ) ) then
 		catherine.limb.TakeDamage( pl, HITGROUP_LEFTLEG, dmgInfo:GetDamage( ) )
 		catherine.limb.TakeDamage( pl, HITGROUP_RIGHTLEG, dmgInfo:GetDamage( ) )
 	else
-		catherine.limb.TakeDamage( pl, hitGroup, dmgInfo:GetDamage( ) )
+		if ( !dataTable[ 1 ] ) then
+			catherine.limb.TakeDamage( pl, hitGroup, dmgInfo:GetDamage( ) )
+		end
 	end
 
-	if ( !catherine.player.GetIgnoreHurtSound( pl ) and ( pl.CAT_nextHurtDelay or 0 ) <= CurTime( ) ) then
+	if ( !catherine.player.GetIgnoreHurtSound( pl ) and !dataTable[ 2 ] and ( pl.CAT_nextHurtDelay or 0 ) <= CurTime( ) ) then
 		pl.CAT_nextHurtDelay = CurTime( ) + 2
 		
 		local sound = hook.Run( "GetPlayerPainSound", pl )
