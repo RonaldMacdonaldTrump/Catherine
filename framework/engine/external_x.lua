@@ -26,8 +26,19 @@ function catherine.externalX.CheckFunctionVersion( )
 	http.Fetch( catherine.crypto.Decode( checkURL ),
 		function( body )
 			if ( body:find( "Error 404</p>" ) ) then
-				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - 404\n" )
+				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - 404 ERROR\n" )
 				timer.Remove( "Catherine.externalX.timer.ReCheck" )
+				return
+			end
+
+			if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
+				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - Unknown Error\n" )
+				
+				timer.Remove( "Catherine.externalX.timer.ReCheck" )
+				timer.Create( "Catherine.externalX.timer.ReCheck", 15, 0, function( )
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Re checking version ...\n" )
+					catherine.externalX.CheckFunctionVersion( )
+				end )
 				return
 			end
 			
@@ -73,8 +84,19 @@ function catherine.externalX.UpdateFunction( )
 	http.Fetch( catherine.crypto.Decode( funcURL ),
 		function( body )
 			if ( body:find( "Error 404</p>" ) ) then
-				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X function update error! - 404\n" )
+				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - 404 ERROR\n" )
 				timer.Remove( "Catherine.externalX.timer.ReUpdate" )
+				return
+			end
+
+			if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
+				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - Unknown Error\n" )
+				
+				timer.Remove( "Catherine.externalX.timer.ReUpdate" )
+				timer.Create( "Catherine.externalX.timer.ReUpdate", 15, 0, function( )
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Re updating version ...\n" )
+					catherine.externalX.UpdateFunction( )
+				end )
 				return
 			end
 

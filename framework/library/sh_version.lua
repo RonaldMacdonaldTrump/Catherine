@@ -27,12 +27,17 @@ if ( SERVER ) then
 			http.Fetch( catherine.crypto.Decode( url ),
 				function( body )
 					if ( body:find( "Error 404</p>" ) ) then
-						catherine.util.Print( Color( 255, 0, 0 ), "Failed to checking version! - 404" )
+						catherine.util.Print( Color( 255, 0, 0 ), "Failed to checking version! - 404 ERROR" )
+						return
+					end
+					
+					if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
+						catherine.util.Print( Color( 255, 0, 0 ), "Failed to checking version! - Unknown Error" )
 					
 						if ( IsValid( pl ) ) then
 							netstream.Start( pl, "catherine.version.CheckResult", {
 								false,
-								LANG( pl, "Version_Notify_CheckError", "404" )
+								LANG( pl, "Version_Notify_CheckError", "Unknown Error" )
 							} )
 						end
 						
