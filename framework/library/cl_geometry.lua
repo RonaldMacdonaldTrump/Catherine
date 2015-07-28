@@ -190,8 +190,10 @@ end
 // http://facepunch.com/showthread.php?t=1148261
 function catherine.geometry.SlickBackground( x, y, w, h, nograd, gridColor, backColor )
 	if ( !nograd ) then
+		gridColor = gridColor or Color( 100, 100, 100 )
+		
 		for i = 0, math.min( h, 32 ) do
-			surface.SetDrawColor( gridColor.r or 100, gridColor.g or 100, gridColor.b or 100, math.min( h, 32 ) - i )
+			surface.SetDrawColor( gridColor.r, gridColor.g, gridColor.b, math.min( h, 32 ) - i )
 			surface.DrawLine( x, y + i, x + w, y + i )
 		end
 	end
