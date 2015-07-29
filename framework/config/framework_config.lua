@@ -55,7 +55,7 @@ catherine.configs.defaultRPInformation = {
 }
 catherine.configs.enable_rpTime = true --[[ Enabled a RP time system. ]]--
 catherine.configs.enable_globalBan = true --[[ Enabled a GlobalBan system. ]]--
-catherine.configs.enable_AntiHaX = true --[[ Enabled a AntiHaX system. (Anti Hack) ]]--
+catherine.configs.enable_Lime = true --[[ Enabled a Lime system. (Anti Hack) ]]--
 
 if ( SERVER ) then
 	catherine.configs.attachmentBlacklist = {
@@ -64,7 +64,7 @@ if ( SERVER ) then
 		"gmod_tool",
 		"gmod_camera"
 	}
-	catherine.configs.HaXCheckInterval = 600
+	catherine.configs.limeCheckInterval = 300
 	catherine.configs.hintInterval = 30
 	catherine.configs.environmentSendInterval = 60
 	catherine.configs.netRegistryOptimizeInterval = 350

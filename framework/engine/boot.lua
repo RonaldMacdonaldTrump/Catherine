@@ -59,6 +59,7 @@ function catherine.Initialize( )
 	if ( SERVER ) then
 		AddCSLuaFile( baseDir .. "/engine/client.lua" )
 		AddCSLuaFile( baseDir .. "/engine/shared.lua" )
+		AddCSLuaFile( baseDir .. "/engine/lime.lua" )
 		include( baseDir .. "/engine/server.lua" )
 		include( baseDir .. "/engine/shared.lua" )
 		include( baseDir .. "/engine/crypto.lua" )
@@ -66,9 +67,11 @@ function catherine.Initialize( )
 		include( baseDir .. "/engine/database.lua" )
 		include( baseDir .. "/engine/resource.lua" )
 		include( baseDir .. "/engine/external_x.lua" )
+		include( baseDir .. "/engine/lime.lua" )
 	else
 		include( baseDir .. "/engine/client.lua" )
 		include( baseDir .. "/engine/shared.lua" )
+		include( baseDir .. "/engine/lime.lua" )
 	end
 
 	--[[ Load derma(UI) files ... ]]--
