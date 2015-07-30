@@ -341,10 +341,11 @@ function PANEL:Build_Setting( )
 	
 	parentPanel.factionLists = vgui.Create( "DPanelList", parentPanel )
 	parentPanel.factionLists:SetPos( 10, 190 )
-	parentPanel.factionLists:SetSize( w - 30, 120 )
+	parentPanel.factionLists:SetWide( w - 30 )
 	parentPanel.factionLists:SetSpacing( 0 )
 	parentPanel.factionLists:EnableHorizontal( false )
-	parentPanel.factionLists:EnableVerticalScrollbar( true )	
+	parentPanel.factionLists:EnableVerticalScrollbar( true )
+	parentPanel.factionLists:SetAutoSize( true )
 	parentPanel.factionLists.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, 1, Color( 50, 50, 50, 255 ) )
 	end
@@ -365,12 +366,8 @@ function PANEL:Refresh_SettingList( id )
 		parentPanel.factionLists:Clear( )
 		
 		local factionData = self.vendorData.factions
-		local notyetPermission = false
+		local notyetPermission = table.Count( factionData ) == 0 and true or false
 
-		if ( table.Count( factionData ) == 0 ) then
-			notyetPermission = true
-		end
-		
 		for k, v in pairs( catherine.faction.GetAll( ) ) do
 			local has = table.HasValue( factionData, v.uniqueID )
 			local name = catherine.util.StuffLanguage( v.name )
@@ -576,9 +573,7 @@ function PANEL:Refresh_List( id )
 				button:SetText( "" )
 				button:SetDrawBackground( false )
 				button.DoClick = function( )
-					if ( !newData.stock ) then
-						return
-					end
+					if ( !newData.stock ) then return end
 					
 					netstream.Start( "catherine.plugin.vendor.VendorWork", {
 						self.ent,
@@ -910,7 +905,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 		if ( newCost > 999999999 ) then
 			newCost = 999999999
 		end
-
+		
 		newData.cost = math.Round( newCost )
 		pnl:SetText( newCost )
 		pnl:SetCaretPos( #tostring( newCost ) )
@@ -975,8 +970,6 @@ end
 function PANEL:InitializeVendor( ent )
 	self.ent = ent
 	self.vendorData = PLUGIN:GetVendorDatas( ent )
-	self.vendorData.inv = ent:GetNetVar( "inv", { } )
-	self.vendorData.cash = ent:GetNetVar( "cash", 0 )
 end
 
 function PANEL:Think( )

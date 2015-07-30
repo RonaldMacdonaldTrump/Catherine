@@ -403,6 +403,7 @@ LANGUAGE.data = {
 	[ "Hint_Message_02" ] = "Type .// or [[ before your message to talk out-of-character locally.",
 	[ "Hint_Message_03" ] = "Press 'F1 key' to view your character and roleplay information.",
 	[ "Hint_Message_04" ] = "Press 'Tab key' to view the main menu.",
+	[ "Hint_Message_05" ] = "Press 'F2 key' to Recognize to other person.",
 	
 	// Option
 	[ "Option_UI_Title" ] = "Option",

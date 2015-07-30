@@ -25,14 +25,16 @@ catherine.language.Merge( "english", {
 	[ "FPS_Plugin_Name" ] = "FPS",
 	[ "FPS_Plugin_Desc" ] = "Good stuff.",
 	[ "Option_Str_FPS_Name" ] = "Show FPS",
-	[ "Option_Str_FPS_Desc" ] = "Displays the FPS."
+	[ "Option_Str_FPS_Desc" ] = "Displays the FPS.",
+	[ "Hint_FPS_01" ] = "If you want look FPS?, go to the Setting!"
 } )
 
 catherine.language.Merge( "korean", {
 	[ "FPS_Plugin_Name" ] = "FPS",
 	[ "FPS_Plugin_Desc" ] = "FPS 를 표시합니다.",
 	[ "Option_Str_FPS_Name" ] = "FPS 표시",
-	[ "Option_Str_FPS_Desc" ] = "FPS 를 표시합니다."
+	[ "Option_Str_FPS_Desc" ] = "FPS 를 표시합니다.",
+	[ "Hint_FPS_01" ] = "현재 FPS 를 보고 싶으신가요?, 설정에 가세요!"
 } )
 
 if ( SERVER ) then return end
@@ -73,3 +75,5 @@ catherine.font.Register( "catherine_fps", {
 	size = 15,
 	weight = 1000
 } )
+
+catherine.hint.Register( "^Hint_FPS_01" )

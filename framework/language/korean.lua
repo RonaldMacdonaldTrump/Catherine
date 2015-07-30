@@ -401,6 +401,7 @@ LANGUAGE.data = {
 	[ "Hint_Message_02" ] = ".// 또는 [[ 를 채팅창에 쳐서 LOOC 채팅을 하십시오.",
 	[ "Hint_Message_03" ] = "F1 버튼을 눌러 RP 정보를 보십시오.",
 	[ "Hint_Message_04" ] = "탭(Tab) 버튼을 눌러 메인 메뉴를 열 수 있습니다.",
+	[ "Hint_Message_05" ] = "F2 버튼을 눌러 다른 사람에게 자신을 알리세요.",
 	
 	// Option
 	[ "Option_UI_Title" ] = "설정",

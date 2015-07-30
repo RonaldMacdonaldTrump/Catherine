@@ -87,6 +87,6 @@ else
 	end
 end
 
-for i = 1, 4 do
+for i = 1, 5 do
 	catherine.hint.Register( "^Hint_Message_0" .. i )
 end
