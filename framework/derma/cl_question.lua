@@ -33,10 +33,13 @@ function PANEL:Init( )
 	self:ShowCloseButton( false )
 	
 	self.List = vgui.Create( "DPanelList", self )
-	self.List:SetSpacing( 5 )
+	self.List:SetSpacing( 0 )
 	self.List:EnableHorizontal( false )
 	self.List:EnableVerticalScrollbar( true )
 	self.List:SetDrawBackground( false )
+	self.List.Paint = function( pnl, w, h )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
+	end
 	
 	self.start = vgui.Create( "catherine.vgui.button", self )
 	self.start:SetPos( self.w * 0.7, self.h * 0.9 )
@@ -52,7 +55,7 @@ function PANEL:Init( )
 	end
 	
 	self.changeLanguage = vgui.Create( "catherine.vgui.button", self )
-	self.changeLanguage:SetPos( 50, 20 )
+	self.changeLanguage:SetPos( self.w - ( self.w * 0.2 ) - 50, 20 )
 	self.changeLanguage:SetSize( self.w * 0.2, 30 )
 	self.changeLanguage:SetStr( "" )
 	self.changeLanguage:SetStrColor( Color( 255, 255, 255, 255 ) )
@@ -105,7 +108,7 @@ end
 function PANEL:RebuildQuestion( )
 	local questionTable = catherine.question.GetAll( )
 		
-	self.List:SetSize( self.w * 0.7, 60 * #questionTable + ( 5 * #questionTable ) )
+	self.List:SetSize( self.w * 0.7, 60 * #questionTable )
 	self.List:SetPos( self.w / 2 - self.List:GetWide( ) / 2, self.h * 0.45 - self.List:GetTall( ) / 2 )
 		
 	self.List:Clear( )
@@ -116,8 +119,10 @@ function PANEL:RebuildQuestion( )
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.List:GetWide( ), 60 )
 		panel.Paint = function( pnl, w, h )
-			draw.SimpleText( k .. ".", "catherine_normal30", 5, 0, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
-			draw.SimpleText( title, "catherine_normal20", 30, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			draw.SimpleText( k .. ".", "catherine_normal30", 10, 5, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			draw.SimpleText( title, "catherine_normal20", 40, 10, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			
+			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
 		end
 		
 		local button = vgui.Create( "DButton", panel )
@@ -125,9 +130,9 @@ function PANEL:RebuildQuestion( )
 		button:SetPos( panel:GetWide( ) * 0.5, panel:GetTall( ) - 30 )
 		button:SetFont( "catherine_normal15" )
 		button:SetText( "" )
-		button:SetTextColor( Color( 255, 255, 255 ) )
+		button:SetTextColor( Color( 0, 0, 0 ) )
 		button.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
+			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
 		end
 		button.DoClick = function( )
 			local menu = DermaMenu( )
@@ -159,7 +164,13 @@ function PANEL:Paint( w, h )
 	surface.SetMaterial( Material( "gui/gradient_up" ) )
 	surface.DrawTexturedRect( 0, 0, w, h )
 	
-	draw.SimpleText( self.questionTitle, "catherine_normal25", w * 0.15, h * 0.35 - 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+	surface.SetDrawColor( 80, 80, 80, 255 )
+	surface.SetMaterial( Material( "vgui/gradient-r" ) )
+	surface.DrawTexturedRect( w - ( w * 0.3 ), 15, w * 0.3, 40 )
+	
+	local x, y = self.List:GetPos( )
+	
+	draw.SimpleText( self.questionTitle, "catherine_normal25", w * 0.15, y - 25, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 end
 
 function PANEL:Close( )
