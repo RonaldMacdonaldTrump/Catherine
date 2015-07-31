@@ -103,6 +103,11 @@ LANGUAGE.data = {
 	[ "GlobalBan_UI_NotUsing" ] = "이 서버는 공식밴 서비스를 사용하고 있지 않습니다.",
 	[ "GlobalBan_UI_Users" ] = "%s명의 사용자가 차단되었습니다.",
 	
+	// News
+	[ "News_UI_Title" ] = "뉴스",
+	[ "News_UI_Back" ] = "뒤로 가기",
+	[ "News_UI_SelectPage" ] = "페이지를 선택하세요.",
+	
 	// Cash
 	[ "Cash_UI_HasStr" ] = "당신은 %s " .. cashName .. " 를 가지고 있습니다.",
 	[ "Cash_UI_TargetHasStr" ] = "이 사람은 %s " .. cashName .. " 를 가지고 있습니다.",

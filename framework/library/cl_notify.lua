@@ -28,7 +28,7 @@ function catherine.notify.Add( message, time, sound )
 	
 	message = message or "Error"
 	
-	MsgC( Color( 0, 255, 0 ), "[CAT Notify] " .. message .. "\n" )
+	MsgN( "[CAT Notify] " .. message )
 	
 	surface.SetFont( "catherine_normal15" )
 	local tw, th = surface.GetTextSize( message )

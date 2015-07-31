@@ -107,6 +107,11 @@ LANGUAGE.data = {
 	[ "GlobalBan_UI_NotUsing" ] = "This server doesn't using Global Ban service.",
 	[ "GlobalBan_UI_Users" ] = "%s's users are blocked.",
 	
+	// News
+	[ "News_UI_Title" ] = "News",
+	[ "News_UI_Back" ] = "Back",
+	[ "News_UI_SelectPage" ] = "Please select a page.",
+	
 	// Cash
 	[ "Cash_UI_HasStr" ] = "You have %s " .. cashName ..".",
 	[ "Cash_UI_TargetHasStr" ] = "This player has %s " .. cashName ..".",

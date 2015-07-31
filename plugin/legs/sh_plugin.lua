@@ -159,8 +159,17 @@ function PLUGIN:PostDrawViewModel( )
 		ang.r = 0
 
 		legEnt:SetPos( pl:GetPos( ) + pl:GetForward( ) * 15 + pl:GetUp( ) * -17 )
-		legEnt:SetSequence( pl:GetSequence( ) )
+		
+		local seq = pl:GetSequence( )
+		
+		if ( self.anim != seq ) then
+			self.anim = seq
+			
+			legEnt:ResetSequence( seq )
+		end
+		
 		legEnt:SetAngles( ang )
+		legEnt:SetSkin( pl:GetSkin( ) or 0 )
 		legEnt:SetPoseParameter( "move_yaw", 360 * pl:GetPoseParameter( "move_yaw" ) - 180 )
 		legEnt:SetPoseParameter( "move_x", pl:GetPoseParameter( "move_x" ) * 2 - 1 )
 		legEnt:SetPoseParameter( "move_y", pl:GetPoseParameter( "move_y" ) * 2 - 1 )
