@@ -166,7 +166,6 @@ else
 	
 	function PLUGIN:CalcView( pl, pos, ang, fov )
 		if ( pl:IsActioning( ) ) then
-			print("THIS2")
 			local tr = util.TraceLine( {
 				start = pos,
 				endpos = pos - ( ang:Forward( ) * 100 ),

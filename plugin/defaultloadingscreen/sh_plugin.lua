@@ -16,4 +16,23 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-resource.AddWorkshop( "491904294" ) -- Catherine Framework Content <http://steamcommunity.com/sharedfiles/filedetails/?id=491904294>
+local PLUGIN = PLUGIN
+PLUGIN.name = "^DFLS_Plugin_Name"
+PLUGIN.author = "L7D"
+PLUGIN.desc = "^DFLS_Plugin_Desc"
+
+catherine.language.Merge( "english", {
+	[ "DFLS_Plugin_Name" ] = "Default Loading Screen",
+	[ "DFLS_Plugin_Desc" ] = "Good stuff."
+} )
+
+catherine.language.Merge( "korean", {
+	[ "DFLS_Plugin_Name" ] = "기본 로딩 화면",
+	[ "DFLS_Plugin_Desc" ] = "캐서린 프레임워크의 기본 로딩 화면을 설정합니다."
+} )
+
+if ( CLIENT ) then return end
+
+function PLUGIN:Initialize( )
+	if ( GetConVarString( "sv_loadingurl" ) == "" ) then end
+end
