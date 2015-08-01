@@ -227,7 +227,7 @@ function GM:HUDDrawScoreBoard( )
 					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, 0 - 512, 25 )
 
 					if ( !catherine.intro.secondStageEnding ) then
-						surface.PlaySound( "CAT/UI/intro_done.wav" ) // Sike!
+						surface.PlaySound( "CAT/intro_done.wav" ) // Sike!
 						catherine.intro.secondStageEnding = true
 					end
 
