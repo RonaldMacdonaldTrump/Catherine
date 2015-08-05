@@ -60,9 +60,13 @@ BASE.func.use = {
 		pl:GiveAmmo( itemTable.amount, itemTable.ammoType, true )
 		pl:EmitSound( "items/ammo_pickup.wav" )
 		
-		catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, {
-			uniqueID = itemTable.uniqueID
-		} )
+		if ( type( ent ) == "Entity" ) then
+			ent:Remove( )
+		else
+			catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, {
+				uniqueID = itemTable.uniqueID
+			} )
+		end
 	end
 }
 
