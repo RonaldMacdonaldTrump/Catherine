@@ -91,6 +91,7 @@ function PANEL:Init( )
 end
 
 function PANEL:OnMenuRecovered( )
+	self.pages = { }
 	self:InitializeNews( )
 end
 
@@ -138,7 +139,6 @@ function PANEL:InitializeNews( )
 		end
 	end
 	
-	self.currPage = 0
 	self:BuildPages( )
 end
 

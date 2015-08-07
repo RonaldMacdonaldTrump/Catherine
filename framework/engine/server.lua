@@ -306,7 +306,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 	if ( ent:GetClass( ) == "prop_ragdoll" ) then
 		local pl = catherine.entity.GetPlayer( ent )
 		
-		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
+		if ( IsValid( pl ) and pl:IsPlayer( ) and !pl:HasGodMode( ) ) then
 			local inflictor = dmgInfo:GetInflictor( )
 			local attacker = dmgInfo:GetAttacker( )
 			local amount = dmgInfo:GetDamage( )
@@ -545,6 +545,10 @@ function GM:PlayerSpawnProp( pl )
 end
 
 function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
+	if ( pl:HasGodMode( ) ) then
+		return true
+	end
+	
 	if ( pl:Health( ) <= 0 ) then
 		return true
 	end

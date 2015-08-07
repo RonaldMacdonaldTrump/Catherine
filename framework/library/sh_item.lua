@@ -75,17 +75,17 @@ function catherine.item.Register( itemTable )
 				
 				hook.Run( "OnItemTake", pl, itemTable )
 
-				local itemData = itemTable.itemData
-
 				if ( IsValid( ent ) and itemTable.useDynamicItemData ) then
-					itemData = table.Count( ent:GetItemData( ) ) == table.Count( itemTable.itemData ) and ent:GetItemData( ) or itemTable.itemData
+					catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
+						uniqueID = itemTable.uniqueID,
+						itemData = table.Count( ent:GetItemData( ) ) == table.Count( itemTable.itemData ) and ent:GetItemData( ) or itemTable.itemData
+					} )
+				else
+					catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
+						uniqueID = itemTable.uniqueID
+					} )
 				end
 
-				catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
-					uniqueID = itemTable.uniqueID,
-					itemData = itemData
-				} )
-				
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )
 				ent:Remove( )
 				
@@ -310,10 +310,6 @@ else
 		
 		if ( isAv ) then
 			catherine.util.SetDermaMenuTitle( menu, LANG( "Basic_UI_ItemMenuOptionTitle" ) )
-			
-			menu.OnRemove = function( )
-				catherine.util.SetDermaMenuTitle( )
-			end
 		end
 	end
 	

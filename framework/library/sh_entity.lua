@@ -133,10 +133,6 @@ else
 
 		if ( isAv ) then
 			catherine.util.SetDermaMenuTitle( menu, LANG( "Basic_UI_EntityMenuOptionTitle" ) )
-			
-			menu.OnRemove = function( )
-				catherine.util.SetDermaMenuTitle( )
-			end
 		end
 	end )
 	

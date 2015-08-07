@@ -71,7 +71,7 @@ function catherine.attachment.Refresh( pl )
 	for k, v in pairs( pl.CAT_weaponAttachments ) do
 		local wep = pl:GetWeapon( k )
 
-		if ( !IsValid( wep ) ) then
+		if ( !IsValid( wep ) and IsValid( v ) ) then
 			v:Remove( )
 			pl.CAT_weaponAttachments[ k ] = nil
 		end
