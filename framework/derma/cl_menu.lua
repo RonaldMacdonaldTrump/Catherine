@@ -225,6 +225,7 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:Show( )
+	self.closing = false
 	self:SetVisible( true )
 	
 	self.blurAmount = 0
@@ -282,8 +283,6 @@ function PANEL:Show( )
 	
 	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
 	self.ListsBase.Lists:SetSize( 0, self.ListsBase:GetTall( ) )
-	
-	self.closing = false
 end
 
 function PANEL:OnRemove( )
@@ -299,7 +298,16 @@ function PANEL:OnRemove( )
 end
 
 function PANEL:Close( )
-	if ( self.closing ) then return end
+	if ( self.closing ) then
+		timer.Remove( "Catherine.timer.MainMenuFix" )
+		timer.Create( "Catherine.timer.MainMenuFix", 0.2, 1, function( )
+			if ( IsValid( self ) and self:IsVisible( ) ) then
+				self:SetVisible( false )
+			end
+		end )
+		
+		return
+	end
 	
 	CloseDermaMenus( )
 	gui.EnableScreenClicker( false )

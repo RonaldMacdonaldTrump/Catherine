@@ -221,7 +221,17 @@ function PANEL:OnKeyCodePressed( key )
 end
 
 function PANEL:Close( )
-	if ( self.closing ) then return end
+	if ( self.closing ) then
+		timer.Remove( "Catherine.timer.F1MenuFix" )
+		timer.Create( "Catherine.timer.F1MenuFix", 0.2, 1, function( )
+			if ( IsValid( self ) ) then
+				self:Remove( )
+				self = nil
+			end
+		end )
+		
+		return
+	end
 	
 	self.closing = true
 	

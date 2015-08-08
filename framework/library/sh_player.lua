@@ -420,6 +420,8 @@ if ( SERVER ) then
 			pl:SetNetVar( "isRagdolled", true )
 			
 			if ( time ) then
+				local time2 = time
+				
 				pl:SetNetVar( "isForceRagdolled", true )
 				
 				local uniqueID = "Catherine.timer.RagdollWork_" .. ent:EntIndex( )
@@ -443,6 +445,8 @@ if ( SERVER ) then
 					local ragdoll = pl.CAT_ragdoll
 
 					if ( IsValid( ragdoll ) ) then
+						time2 = time2 - 1
+						
 						if ( ragdoll:GetVelocity( ):Length2D( ) >= 4 ) then
 							if ( !ragdoll.CAT_paused ) then
 								ragdoll.CAT_paused = true
@@ -451,14 +455,24 @@ if ( SERVER ) then
 
 							return
 						elseif ( ragdoll.CAT_paused ) then
-							catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
+							if ( time2 > 0 ) then
+								catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time2, function( )
+									catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
+									catherine.player.RagdollWork( pl )
+									pl:SetNetVar( "isForceRagdolled", nil )
+									timer.Remove( uniqueID )
+								end )
+								
+								ragdoll.CAT_paused = nil
+							else
+								ragdoll.CAT_paused = nil
+								
+								catherine.util.ProgressBar( pl, false )
 								catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 								catherine.player.RagdollWork( pl )
 								pl:SetNetVar( "isForceRagdolled", nil )
 								timer.Remove( uniqueID )
-							end )
-							
-							ragdoll.CAT_paused = nil
+							end
 						end
 					else
 						timer.Remove( uniqueID )
