@@ -452,8 +452,12 @@ function GM:DrawEntityTargetID( pl, ent, a )
 		draw.SimpleText( name, "catherine_outline20", x, y, Color( col.r, col.g, col.b, a ), 1, 1 )
 		y = y + 20
 		
-		draw.SimpleText( desc, "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		y = y + 20
+		local descTexts = catherine.util.GetWrapTextData( desc, ScrW( ) / 2, "catherine_outline15" )
+		
+		for k, v in pairs( descTexts ) do
+			draw.SimpleText( v, "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+			y = y + 20
+		end
 
 		hook.Run( "PlayerInformationDraw", pl, entPlayer, x, y, a )
 	end
