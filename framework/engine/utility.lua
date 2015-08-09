@@ -228,6 +228,34 @@ function catherine.util.GetHoldType( wep )
 	end
 end
 
+function catherine.util.GetDivideTextData( text, width )
+	local line = ""
+	local wrapData = { }
+	local ex = string.Explode( "%s", text, true )
+	local topW = 0
+	local tw = text:utf8len( )
+	
+	if ( tw <= width ) then
+		return { ( text:gsub( "%s", " " ) ) }, tw
+	end
+
+	for i = 1, #ex do
+		line = line .. " " .. ex[ i ]
+		tw = line:utf8len( )
+
+		if ( tw > width ) then
+			wrapData[ #wrapData + 1 ] = line
+			line = ""
+		end
+	end
+	
+	if ( line != "" ) then
+		wrapData[ #wrapData + 1 ] = line
+	end
+	
+	return wrapData
+end
+
 catherine.util.IncludeInDir( "engine/external" )
 
 if ( SERVER ) then

@@ -28,7 +28,7 @@ GM.Description = "A neat and beautiful role-play framework for Garry's Mod."
 GM.Author = "L7D"
 GM.Website = "https://github.com/L7D/Catherine"
 GM.Email = "smhjyh2009@gmail.com"
-GM.Version = "2015/08/08"
+GM.Version = "2015/08/09"
 GM.Build = "BETA"
 
 catherine.FolderName = GM.FolderName
@@ -60,6 +60,7 @@ function catherine.Initialize( )
 		AddCSLuaFile( baseDir .. "/engine/client.lua" )
 		AddCSLuaFile( baseDir .. "/engine/shared.lua" )
 		AddCSLuaFile( baseDir .. "/engine/lime.lua" )
+		AddCSLuaFile( baseDir .. "/engine/external_x.lua" )
 		include( baseDir .. "/engine/server.lua" )
 		include( baseDir .. "/engine/shared.lua" )
 		include( baseDir .. "/engine/crypto.lua" )
@@ -72,6 +73,7 @@ function catherine.Initialize( )
 		include( baseDir .. "/engine/client.lua" )
 		include( baseDir .. "/engine/shared.lua" )
 		include( baseDir .. "/engine/lime.lua" )
+		include( baseDir .. "/engine/external_x.lua" )
 	end
 
 	--[[ Load derma(UI) files ... ]]--

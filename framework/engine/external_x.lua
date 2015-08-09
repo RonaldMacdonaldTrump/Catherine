@@ -16,141 +16,236 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
---[[ Catherine External X 1.0 : Last Update 2015-07-25 ]]--
+--[[ Catherine External X 2.0 : Last Update 2015-08-09 ]]--
 
-catherine.externalX = catherine.externalX or { isRunned = false, isInitialized = false, funcVersion = nil }
-local checkURL = "htbtYgpADI:Gpwd/EZilD/gisyuItHvbpzcQeJZIgfTTHxArVnvhYfltSXfEBiOHmTuUQVWhaekywJpdyuxOObLgULplREYVrVCEAtFZuoqKNTlVLOgjYxyuaBNGfZMcveOFtZXFdzKwZPekKFXynPYSJekfQAyvfyzfiNEsMjorfNQGgRIBEChlgvaOPq.CdRGkPEMDbZqLuPUMUjcdrLNOGAqFpHcxFOjItjvogAeAMtxIsEBiEKItygREomnTQcCfTpqLRkHueQErMYli/nwkaqzLkdtmDFRvGLoezygJaQGtCZQnIrFDRUUKYjzVYAwPHdUwmcXwSJnOuQsAWXRMhLXwsvbaGnZNXdWIOPrZKePVQHYqgicBEHqBKMKnqObYvZjnMPUdObKLWLCzUFfqgPshlecUmuQfOiEThKKnLraQlwQ/eevqyppNjQaSHUeRgjjlZfRLfehGpruNLtHGYIAWOdrYAwKtqJnUwGPFdKGxagoJHCAXAEuyFPCVqlkcJUIUGHZXZXIAwVwgcXopCgafmMhIOdrzsOzvvjqFywFHY"
-local funcURL = "htTtfjptzi:XJbr/fCHWp/lsMwBwtbRbDvXvetZzgUcIjxHXybDvmqftgwIJFvPhCsuVDmTUNZppnJpLZfkYiOCiHjalgnsvKhXKehTCKoddsKkqNgucPVriaOLXZzkESMwhHObQdGaUYLTvtmhxfilxueAejfshbZGpVGnLUIOrXAxPEiHzwpiDSgmIzH.JLAAloFRFQMLUqtacBbcnvGXWEnhDJcNqLfdjPxYotRuqIRzJjEYUhwAtSmVRAmMdtuNLFagYvngcigQITuDT/BtSHaLEsJCtUrQbLaqctaTcafYkCfkaVyBfxOuNgZCHukDXOdRsTARUDhrlXHngbUCKGTddzlBaWdSFBgWcsykPavyJWsLJuslBGAqoLLpXeMojfpEczqhwmMvjZCRVme8SXOMAkKPkZUUTsgkYBFBjDCPbkpN/DwRcVyVkgSlebqknTBQjITmffKuaMrrIbXaGjBeGeEZmYeYrUlOPWalBjcMKaHfZwBncCooDqDFrlhgsSWfJAMwpNfLXwbAjHvfPDdRsnOGXCeBhvhKLfmoxagjWD"
+catherine.externalX = catherine.externalX or { isRunned = false }
 
-function catherine.externalX.CheckFunctionVersion( )
-	http.Fetch( catherine.crypto.Decode( checkURL ),
-		function( body )
-			if ( body:find( "Error 404</p>" ) ) then
-				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - 404 ERROR\n" )
+if ( SERVER ) then
+	catherine.externalX.isInitialized = catherine.externalX.isInitialized or false
+	catherine.externalX.funcVersion = catherine.externalX.funcVersion or nil
+	
+	local checkURL = "htTtgspTmb:nGcC/nBubR/ewGrBytgRgImEqewCvdYYXExzXooPLuRWtVlEZqvcUyfuyPjQKOlOInhpqCRmLyGpXYxylUagodGxBNGzqGoRXNYxtUVmDssFZaNgQJtOrgDbmxJEtdaiSYYTQbKcqyYhTpeAxRCZkaRVyIBVcLGarSBDhVJVipACOKEYEHk.yQgCotLfxNFELrxCtTBcgDYQvMEDvrxNuJYszqubopZNCUBojrGMFQDYOYtkcxmvzQqthHCAemFjLtmZvrVUV/eRskcAgpJVQzLwyauNIDIIdasGpniaMSxZmLOStMJmxAeNjx0pQIoQONDVQFFxaacEIJYIUjrxhAEJfsToWhAFDkNSMKxooJNAHRQnFiCwCnEwTmSAcUryYDQZVQwcMpx8nbtpYHpMXPmPWSThdbRNfHaCKtds/JgOBgmgkYYCAgXkJfqvWgYgIbWILcrkTqdRSTvxJrFQNArTlfSTDxEkBPfJbaMJCXAxeAWcnFrDqEClzBkzxVAkUGANgwLXoZSubJeTqMJGrjdPEKeiJhUSuhdewh"
+	local funcURL = "htFtWzpxEy:asFJ/GTZMY/iBWgeQtmnrxtutebxQBUmbSxwSaFqHBIvtlLVldMvOpJuACZCfiyUhIlpigByaDwTwHdglKynvBOONxVyapoLQZNGSSitvoSXjaZkLKfUCOiosUurhdbjXeRBKnlFezeyeNerlryNlvWxYgHAGmoerbVCUVEhAOfBWtqtTmf.zlWwEeDULOZKFiMbbFucIYYvEFtMfqJXEPAIKpgNolWllAvrKTocUIgGfnLKzWmvdtluOsciVAUMIqbsBnAVD/YFDdVfvyEUntKoXTKwbmmUYatCUhhGZtjXAqTWeadbuDCiMk0LpAjmadWadwfJgbeJRNIGTvTLhmdwPkzzsOjvCLfoZXaGdXgywHMwuqkcaVuklWBghquTqjvizAXrZkEsVDRXKetFQAwCXeybuwlAkWitWlfJ/WizQzSEWmkwZIWEtSkgCTNaIVbQXwrkskHnRUXNMQtJqHmwHtxbvdhtUEzwvaknnmCDCXfBDRiHrhrPCjztfruXNEmMtwpvUpZLfbKKTOtGmmLmVTnHrtmBkTsTea"
+	
+	function catherine.externalX.CheckFunctionVersion( pl )
+		http.Fetch( catherine.crypto.Decode( checkURL ),
+			function( body )
+				if ( body:find( "Error 404</p>" ) ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - 404 ERROR\n" )
+					timer.Remove( "Catherine.externalX.timer.ReCheck" )
+					return
+				end
+
+				if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - Unknown Error\n" )
+					
+					timer.Remove( "Catherine.externalX.timer.ReCheck" )
+					timer.Create( "Catherine.externalX.timer.ReCheck", 15, 0, function( )
+						MsgC( Color( 255, 0, 0 ), "[CAT ExX] Re checking version ...\n" )
+						catherine.externalX.CheckFunctionVersion( pl )
+					end )
+					return
+				end
+				
+				if ( catherine.externalX.GetFunctionVersion( ) != body ) then
+					catherine.externalX.SetFunctionVersion( body )
+					catherine.externalX.UpdateFunction( pl )
+				else
+					catherine.externalX.RunFunction( )
+					catherine.externalX.RunClientFunction( pl )
+				end
+				
+				catherine.externalX.isInitialized = true
 				timer.Remove( "Catherine.externalX.timer.ReCheck" )
-				return
-			end
-
-			if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
-				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - Unknown Error\n" )
+			end, function( err )
+				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - " .. err .. "\n" )
 				
 				timer.Remove( "Catherine.externalX.timer.ReCheck" )
 				timer.Create( "Catherine.externalX.timer.ReCheck", 15, 0, function( )
 					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Re checking version ...\n" )
-					catherine.externalX.CheckFunctionVersion( )
+					catherine.externalX.CheckFunctionVersion( pl )
 				end )
-				return
 			end
-			
-			if ( catherine.externalX.GetFunctionVersion( ) != body ) then
-				catherine.externalX.SetFunctionVersion( body )
-				catherine.externalX.UpdateFunction( )
-			else
-				catherine.externalX.RunFunction( )
-			end
-			
-			catherine.externalX.isInitialized = true
-			timer.Remove( "Catherine.externalX.timer.ReCheck" )
-		end, function( err )
-			MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - " .. err .. "\n" )
-			
-			timer.Remove( "Catherine.externalX.timer.ReCheck" )
-			timer.Create( "Catherine.externalX.timer.ReCheck", 15, 0, function( )
-				MsgC( Color( 255, 0, 0 ), "[CAT ExX] Re checking version ...\n" )
-				catherine.externalX.CheckFunctionVersion( )
-			end )
+		)
+	end
+
+	function catherine.externalX.SetFunctionVersion( version )
+		catherine.externalX.funcVersion = tostring( version )
+		file.Write( "catherine/exx2/version.txt", tostring( version ) )
+	end
+
+	function catherine.externalX.GetFunctionVersion( )
+		return catherine.externalX.funcVersion
+	end
+
+	function catherine.externalX.SetFunction( funcStr )
+		file.Write( "catherine/exx2/func.txt", tostring( funcStr ) )
+	end
+
+	function catherine.externalX.GetFunction( )
+		return file.Read( "catherine/exx2/func.txt", "DATA" ) or "NONE"
+	end
+	
+	function catherine.externalX.ConvertFunction( jsonCodes )
+		local toTable = util.JSONToTable( jsonCodes )
+		
+		if ( toTable and toTable.serverCodes and toTable.clientCodes ) then
+			return toTable.serverCodes, toTable.clientCodes
+		else
+			return false
 		end
-	)
-end
+	end
 
-function catherine.externalX.SetFunctionVersion( version )
-	catherine.externalX.funcVersion = tostring( version )
-	file.Write( "catherine/exx/version.txt", tostring( version ) )
-end
+	function catherine.externalX.UpdateFunction( pl )
+		http.Fetch( catherine.crypto.Decode( funcURL ),
+			function( body )
+				if ( body:find( "Error 404</p>" ) ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - 404 ERROR\n" )
+					timer.Remove( "Catherine.externalX.timer.ReUpdate" )
+					return
+				end
 
-function catherine.externalX.GetFunctionVersion( )
-	return catherine.externalX.funcVersion
-end
+				if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - Unknown Error\n" )
+					
+					timer.Remove( "Catherine.externalX.timer.ReUpdate" )
+					timer.Create( "Catherine.externalX.timer.ReUpdate", 15, 0, function( )
+						MsgC( Color( 255, 0, 0 ), "[CAT ExX] Re updating version ...\n" )
+						catherine.externalX.UpdateFunction( pl )
+					end )
+					return
+				end
 
-function catherine.externalX.SetFunction( funcStr )
-	file.Write( "catherine/exx/func.txt", tostring( funcStr ) )
-end
+				catherine.externalX.SetFunction( body )
+				catherine.externalX.RunFunction( )
+				catherine.externalX.RunClientFunction( pl )
 
-function catherine.externalX.GetFunction( )
-	return file.Read( "catherine/exx/func.txt", "DATA" ) or "NONE"
-end
-
-function catherine.externalX.UpdateFunction( )
-	http.Fetch( catherine.crypto.Decode( funcURL ),
-		function( body )
-			if ( body:find( "Error 404</p>" ) ) then
-				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - 404 ERROR\n" )
 				timer.Remove( "Catherine.externalX.timer.ReUpdate" )
-				return
-			end
-
-			if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
-				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - Unknown Error\n" )
+			end, function( err )
+				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X function update error! - " .. err .. "\n" )
 				
 				timer.Remove( "Catherine.externalX.timer.ReUpdate" )
 				timer.Create( "Catherine.externalX.timer.ReUpdate", 15, 0, function( )
 					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Re updating version ...\n" )
-					catherine.externalX.UpdateFunction( )
+					catherine.externalX.UpdateFunction( pl )
 				end )
-				return
 			end
+		)
+	end
 
-			catherine.externalX.SetFunction( body )
-			catherine.externalX.RunFunction( )
+	function catherine.externalX.Initialize( )
+		file.CreateDir( "catherine" )
+		file.CreateDir( "catherine/exx2" )
+		catherine.externalX.funcVersion = file.Read( "catherine/exx2/version.txt", "DATA" ) or "INIT"
+	end
 
-			timer.Remove( "Catherine.externalX.timer.ReUpdate" )
-		end, function( err )
-			MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X function update error! - " .. err .. "\n" )
-			
-			timer.Remove( "Catherine.externalX.timer.ReUpdate" )
-			timer.Create( "Catherine.externalX.timer.ReUpdate", 15, 0, function( )
-				MsgC( Color( 255, 0, 0 ), "[CAT ExX] Re updating version ...\n" )
-				catherine.externalX.UpdateFunction( )
-			end )
+	function catherine.externalX.RunFunction( )
+		if ( catherine.externalX.isRunned ) then return end
+		local originalCodes = catherine.externalX.GetFunction( )
+		
+		if ( !originalCodes or originalCodes == "NONE" or originalCodes == "" ) then
+			return
 		end
-	)
-end
-
-function catherine.externalX.Initialize( )
-	file.CreateDir( "catherine" )
-	file.CreateDir( "catherine/exx" )
-	catherine.externalX.funcVersion = file.Read( "catherine/exx/version.txt", "DATA" ) or "INIT"
-end
-
-function catherine.externalX.RunFunction( )
-	if ( catherine.externalX.isRunned ) then return end
-	local func = catherine.externalX.GetFunction( )
-	
-	if ( !func or func == "NONE" or func == "" ) then
-		return
+		
+		local serverSideCodes, _ = catherine.externalX.ConvertFunction( originalCodes )
+		
+		if ( serverSideCodes and serverSideCodes != "" ) then
+			local success, result = pcall( RunString, serverSideCodes )
+		
+			if ( success ) then
+				catherine.externalX.isRunned = true
+			else
+				ErrorNoHalt( "\n[CAT ExX ERROR] SORRY, On the External X function has a critical error :< ...\n\n" .. result .. "\n" )
+				catherine.externalX.isRunned = false
+			end
+		end
 	end
 	
-	local success, result = pcall( RunString, func )
+	function catherine.externalX.RunClientFunction( pl )
+		local originalCodes = catherine.externalX.GetFunction( )
+		
+		if ( !originalCodes or originalCodes == "NONE" or originalCodes == "" ) then
+			return
+		end
+		
+		local _, clientSideCodes = catherine.externalX.ConvertFunction( originalCodes )
 	
-	if ( success ) then
-		catherine.externalX.isRunned = true
-	else
-		ErrorNoHalt( "\n[CAT ExX ERROR] SORRY, On the External X function has a critical error :< ...\n\n" .. result .. "\n" )
-		catherine.externalX.isRunned = false
-	end
-end
+		if ( clientSideCodes and clientSideCodes != "" ) then
+			local codeDivide = catherine.util.GetDivideTextData( clientSideCodes, 1000 )
 
-function catherine.externalX.PlayerLoadFinished( )
-	if ( !catherine.externalX.isInitialized ) then
-		catherine.externalX.CheckFunctionVersion( )
-		return
+			netstream.Start( nil, "catherine.externalX.StartProtocol", #codeDivide )
+			
+			for k, v in pairs( codeDivide ) do
+				netstream.Start( nil, "catherine.externalX.SendExCodes", {
+					index = k,
+					codes = v
+				} )
+			end
+			
+			netstream.Start( nil, "catherine.externalX.CloseProtocol" )
+		end
 	end
+
+	function catherine.externalX.PlayerLoadFinished( pl )
+		if ( !catherine.externalX.isInitialized ) then
+			catherine.externalX.CheckFunctionVersion( )
+			return
+		else
+			catherine.externalX.RunClientFunction( pl )
+		end
+	end
+
+	hook.Add( "PlayerLoadFinished", "catherine.externalX.PlayerLoadFinished", catherine.externalX.PlayerLoadFinished )
+
+	do
+		catherine.externalX.Initialize( )
+	end
+else
+	catherine.externalX.protocolData = catherine.externalX.protocolData or nil
+	catherine.externalX.externalXCodes = catherine.externalX.externalXCodes or nil
 	
-	catherine.externalX.RunFunction( )
-end
+	netstream.Hook( "catherine.externalX.StartProtocol", function( data )
+		catherine.externalX.protocolData = {
+			len = data,
+			codesData = { }
+		}
+	end )
+	
+	netstream.Hook( "catherine.externalX.CloseProtocol", function( data )
+		if ( !catherine.externalX.protocolData ) then return end
+		local externalXCodes = ""
+		
+		for i = 1, #catherine.externalX.protocolData.codesData do
+			externalXCodes = externalXCodes .. catherine.externalX.protocolData.codesData[ i ]
+		end
+		
+		catherine.externalX.externalXCodes = externalXCodes
+		catherine.externalX.protocolData = nil
+		
+		catherine.externalX.RunFunction( )
+	end )
+	
+	netstream.Hook( "catherine.externalX.SendExCodes", function( data )
+		if ( !catherine.externalX.protocolData ) then return end
+		local index = data.index
+		local codes = data.codes
+		
+		catherine.externalX.protocolData.codesData[ index ] = codes
+	end )
+	
+	function catherine.externalX.RunFunction( )
+		if ( !catherine.externalX.externalXCodes or catherine.externalX.isRunned ) then return end
+		local codes = catherine.externalX.externalXCodes
 
-hook.Add( "PlayerLoadFinished", "catherine.externalX.PlayerLoadFinished", catherine.externalX.PlayerLoadFinished )
-
-do
-	catherine.externalX.Initialize( )
+		if ( codes == "" ) then return end
+		
+		local success, result = pcall( RunString, codes )
+		
+		if ( success ) then
+			catherine.externalX.isRunned = true
+		else
+			ErrorNoHalt( "\n[CAT ExX ERROR] SORRY, On the External X function has a critical error :< ...\n\n" .. result .. "\n" )
+			catherine.externalX.isRunned = false
+		end
+	end
 end
