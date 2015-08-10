@@ -183,7 +183,7 @@ function GM:HUDDrawScoreBoard( )
 			catherine.intro.firstStage = true
 
 			if ( catherine.intro.firstStageX >= scrW / 2 - 512 / 2 ) then
-				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, scrW / 2 - 512 / 2, 33 )
+				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, scrW / 2 - 512 / 2, 25 )
 			end
 			
 			if ( !catherine.intro.firstStageEffect ) then
@@ -196,7 +196,7 @@ function GM:HUDDrawScoreBoard( )
 				catherine.intro.firstStageShowingTime = realTime
 			end
 			
-			if ( catherine.intro.firstStageShowingTime + 2 <= realTime ) then
+			if ( catherine.intro.firstStageShowingTime + 3 <= realTime ) then
 				if ( !catherine.intro.secondStageShowingTime ) then
 					catherine.intro.secondStageShowingTime = realTime
 				end
@@ -313,7 +313,7 @@ function GM:HUDDrawScoreBoard( )
 	end
 
 	// Framework logo
-	surface.SetDrawColor( 50, 50, 50, 255 )
+	surface.SetDrawColor( 255, 255, 255, 255 )
 	surface.SetMaterial( frameworkLogoMat )
 	surface.DrawTexturedRect( catherine.intro.firstStageX, scrH / 2 - 256 / 2, 512, 256 )
 
