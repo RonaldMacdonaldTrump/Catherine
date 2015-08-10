@@ -15,11 +15,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
---[[ Catherine Lime Version 3.0 : Last Update 2015-07-29 ]]--
+
+--[[ Catherine Lime 3.0 : Last Update 2015-08-10 ]]--
 
 if ( !catherine.configs.enable_Lime ) then return end
 
-catherine.lime = catherine.lime or { }
+catherine.lime = catherine.lime or { libVersion = "2015-08-10" }
 
 if ( SERVER ) then
 	catherine.lime.masterData = catherine.lime.masterData or { }
@@ -146,7 +147,7 @@ if ( SERVER ) then
 		if ( !catherine.configs.enable_Lime or catherine.lime.doing ) then return end
 		
 		if ( catherine.lime.NextCheckTick <= CurTime( ) ) then
-			MsgC( Color( 255, 0, 0 ), "[CAT Lime] Checking the players ...\n" )
+			MsgC( Color( 255, 255, 0 ), "[CAT Lime] Checking the players ...\n" )
 			catherine.lime.Work( )
 			
 			catherine.lime.NextCheckTick = CurTime( ) + catherine.configs.limeCheckInterval

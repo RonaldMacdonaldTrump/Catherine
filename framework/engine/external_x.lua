@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
---[[ Catherine External X 2.0 : Last Update 2015-08-09 ]]--
+--[[ Catherine External X 2.0 : Last Update 2015-08-10 ]]--
 
-catherine.externalX = catherine.externalX or { isRunned = false }
+catherine.externalX = catherine.externalX or { isRunned = false, libVersion = "2015-08-10" }
 
 if ( SERVER ) then
 	catherine.externalX.isInitialized = catherine.externalX.isInitialized or false
@@ -213,13 +213,7 @@ else
 	
 	netstream.Hook( "catherine.externalX.CloseProtocol", function( data )
 		if ( !catherine.externalX.protocolData ) then return end
-		local externalXCodes = ""
-		
-		for i = 1, #catherine.externalX.protocolData.codesData do
-			externalXCodes = externalXCodes .. catherine.externalX.protocolData.codesData[ i ]
-		end
-		
-		catherine.externalX.externalXCodes = externalXCodes
+		catherine.externalX.externalXCodes = table.concat( catherine.externalX.protocolData.codesData, "" )
 		catherine.externalX.protocolData = nil
 		
 		catherine.externalX.RunFunction( )
@@ -227,10 +221,8 @@ else
 	
 	netstream.Hook( "catherine.externalX.SendExCodes", function( data )
 		if ( !catherine.externalX.protocolData ) then return end
-		local index = data.index
-		local codes = data.codes
 		
-		catherine.externalX.protocolData.codesData[ index ] = codes
+		catherine.externalX.protocolData.codesData[ data.index ] = data.codes
 	end )
 	
 	function catherine.externalX.RunFunction( )

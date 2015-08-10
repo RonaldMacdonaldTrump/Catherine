@@ -18,7 +18,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 if ( CLIENT ) then return end
 
-catherine.crypto = catherine.crypto or { }
+catherine.crypto = catherine.crypto or { libVersion = "2015-08-10" }
 local se = string.Explode
 local sc = string.char
 local mr = math.random
