@@ -427,11 +427,11 @@ function PANEL:UpdateLogPanel( )
 		end
 		
 		if ( math.Round( pnl.loadingAlpha ) > 0 ) then
-			pnl.loadingAni = math.Approach( pnl.loadingAni, pnl.loadingAni - 8, 8 )
+			pnl.loadingAni = math.Approach( pnl.loadingAni, pnl.loadingAni - 9, 9 )
 			
 			draw.NoTexture( )
 			surface.SetDrawColor( 255, 255, 255, pnl.loadingAlpha )
-			catherine.geometry.DrawCircle( w / 2, h / 2, 25, 5, pnl.loadingAni, 70, 100 )
+			catherine.geometry.DrawCircle( w / 2, h / 2, 20, 5, pnl.loadingAni, 50, 100 )
 		end
 	end
 	

@@ -295,20 +295,16 @@ function GM:HUDDrawScoreBoard( )
 			catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 4, 4 )
 			
 			draw.NoTexture( )
-			surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
-			catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 250, 100 )
+			surface.SetDrawColor( catherine.intro.loadingColor.r / 2, catherine.intro.loadingColor.g / 2, catherine.intro.loadingColor.b / 2, catherine.intro.loadingAlpha / 3 )
+			catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, 90, 360, 100 )
 			
 			draw.NoTexture( )
 			surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
-			catherine.geometry.DrawCircle( 40, scrH - 40, 5, 3, -catherine.intro.rotate, 250, 100 )
+			catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 70, 100 )
 		else
 			draw.NoTexture( )
 			surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
 			catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 360, 100 )
-			
-			draw.NoTexture( )
-			surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
-			catherine.geometry.DrawCircle( 40, scrH - 40, 5, 3, catherine.intro.rotate, 360, 100 )
 		end
 	end
 
@@ -323,11 +319,11 @@ function GM:HUDDrawScoreBoard( )
 	surface.DrawTexturedRect( catherine.intro.secondStageX, scrH / 2 - 256 / 2, 512, 256 )
 
 	// Catherine version
-	draw.SimpleText( LANG( "Version_UI_YourVer_AV", catherine.GetVersion( ) .. " " .. catherine.GetBuild( ) ), "catherine_normal15", scrW - 20, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( LANG( "Version_UI_YourVer_AV", catherine.GetVersion( ) .. " " .. catherine.GetBuild( ) ), "catherine_normal15", 15, 20, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
 	
 	// Error message
 	if ( ( !catherine.intro.noError or catherine.intro.onlyMessage ) and catherine.intro.errorMessage ) then
-		draw.SimpleText( LANG( "Basic_Sorry" ), "catherine_normal25", 85, scrH - 55, Color( 0, 0, 0, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( LANG( "Basic_Sorry" ), "catherine_normal20", 85, scrH - 55, Color( 0, 0, 0, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
 		draw.SimpleText( catherine.intro.errorMessage, "catherine_normal15", 85, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
 	end
 	
