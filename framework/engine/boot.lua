@@ -28,34 +28,28 @@ GM.Description = "A neat and beautiful role-play framework for Garry's Mod."
 GM.Author = "L7D"
 GM.Website = "https://github.com/L7D/Catherine"
 GM.Email = "smhjyh2009@gmail.com"
-GM.Version = "2015/08/13"
-GM.Build = "BETA"
+GM.Version = "2015/08/17"
+GM.Build = "DEV"
 
 catherine.FolderName = GM.FolderName
 
 function catherine.Initialize( )
 	local sysTime = SysTime( )
 	
-	--[[ Load utilities ... ]]--
 	AddCSLuaFile( baseDir .. "/engine/utility.lua" )
 	include( baseDir .. "/engine/utility.lua" )
 	
-	--[[ Load framework configs ... ]]--
 	AddCSLuaFile( baseDir .. "/config/framework_config.lua" )
 	include( baseDir .. "/config/framework_config.lua" )
 	
-	--[[ Load character file ... ]]--
 	AddCSLuaFile( baseDir .. "/engine/character.lua" )
 	include( baseDir .. "/engine/character.lua" )
 	
-	--[[ Load library files ... ]]--
 	catherine.util.IncludeInDir( "library" )
 	
-	--[[ Load schema file ... ]]--
 	AddCSLuaFile( baseDir .. "/engine/schema.lua" )
 	include( baseDir .. "/engine/schema.lua" )
 	
-	--[[ Load engine files ... ]]--
 	if ( SERVER ) then
 		AddCSLuaFile( baseDir .. "/engine/client.lua" )
 		AddCSLuaFile( baseDir .. "/engine/shared.lua" )
@@ -75,22 +69,16 @@ function catherine.Initialize( )
 		include( baseDir .. "/engine/lime.lua" )
 		include( baseDir .. "/engine/external_x.lua" )
 	end
-
-	--[[ Load derma(UI) files ... ]]--
+	
 	catherine.util.IncludeInDir( "derma" )
-
-	--[[ Load commands ... ]]--
+	
 	AddCSLuaFile( baseDir .. "/command/commands.lua" )
 	include( baseDir .. "/command/commands.lua" )
-
-	if ( SERVER ) then
-		--[[ Connect to database ... ]]--
-		if ( !catherine.database.Connected ) then
-			catherine.database.Connect( )
-		end
+	
+	if ( SERVER and !catherine.database.Connected ) then
+		catherine.database.Connect( )
 	end
 	
-	--[[ Initalized. :> ]]--
 	if ( !catherine.isInitialized ) then
 		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are loaded at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
 		catherine.isInitialized = true
@@ -99,7 +87,7 @@ function catherine.Initialize( )
 	end
 end
 
-local getInfoFunctions = {
+local getFunctionsData = {
 	{ "GetName", "Name" },
 	{ "GetAuthor", "Author" },
 	{ "GetDescription", "Description" },
@@ -109,9 +97,9 @@ local getInfoFunctions = {
 	{ "GetEmail", "Email" }
 }
 
-for i = 1, #getInfoFunctions do
-	catherine[ getInfoFunctions[ i ][ 1 ] ] = function( )
-		return GAMEMODE[ getInfoFunctions[ i ][ 2 ] ]
+for i = 1, #getFunctionsData do
+	catherine[ getFunctionsData[ i ][ 1 ] ] = function( )
+		return GAMEMODE[ getFunctionsData[ i ][ 2 ] ]
 	end
 end
 

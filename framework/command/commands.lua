@@ -103,10 +103,8 @@ catherine.command.Register( {
 			local target = catherine.util.FindPlayerByName( args[ 1 ] )
 			
 			if ( IsValid( target ) and target:IsPlayer( ) ) then
-				local status = catherine.player.IsCharacterBanned( target )
-				
-				if ( status ) then
-					catherine.player.SetCharacterBan( target, false, function( )
+				if ( catherine.player.IsCharacterBanned( target ) ) then
+					local success, langKey, par = catherine.player.SetCharacterBan( target, false, function( )
 						target:Freeze( false )
 						
 						if ( target.CAT_charBanLatestPos ) then
@@ -116,16 +114,24 @@ catherine.command.Register( {
 						end
 					end )
 					
-					catherine.util.NotifyAllLang( "Character_Notify_CharUnBan", pl:Name( ), target:Name( ) )
+					if ( success ) then
+						catherine.util.NotifyAllLang( "Character_Notify_CharUnBan", pl:Name( ), target:Name( ) )
+					else
+						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
+					end
 				else
-					catherine.player.SetCharacterBan( target, true, function( )
+					local success, langKey, par = catherine.player.SetCharacterBan( target, true, function( )
 						target.CAT_charBanLatestPos = target:GetPos( )
 						
 						target:SetPos( Vector( 0, 0, 10000 ) )
 						target:Freeze( true )
 					end )
 					
-					catherine.util.NotifyAllLang( "Character_Notify_CharBan", pl:Name( ), target:Name( ) )
+					if ( success ) then
+						catherine.util.NotifyAllLang( "Character_Notify_CharBan", pl:Name( ), target:Name( ) )
+					else
+						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
+					end
 				end
 			else
 				catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )

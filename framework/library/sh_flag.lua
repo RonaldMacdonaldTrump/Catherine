@@ -156,7 +156,7 @@ if ( SERVER ) then
 	function catherine.flag.PlayerSpawnedInCharacter( pl )
 		timer.Simple( 0.3, function( )
 			for k, v in pairs( catherine.flag.GetAll( ) ) do
-				if ( catherine.player.GetIgnoreGiveFlagWeapon( pl ) or !catherine.flag.Has( pl, v.uniqueID ) or !v.onSpawn ) then continue end
+				if ( catherine.player.IsIgnoreGiveFlagWeapon( pl ) or !catherine.flag.Has( pl, v.uniqueID ) or !v.onSpawn ) then continue end
 
 				v.onSpawn( pl )
 			end

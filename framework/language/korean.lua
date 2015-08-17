@@ -151,6 +151,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_MaxLimitHit" ] = "당신은 더 이상 캐릭터를 만드실 수 없습니다!",
 	[ "Character_Notify_CharBan" ] = "%s 님이 %s 님의 캐릭터 를 밴하셨습니다.",
 	[ "Character_Notify_CharUnBan" ] = "%s 님이 %s 님의 캐릭터 밴을 푸셨습니다.",
+	[ "Character_Notify_CantCharBan_UnBan" ] = "이 사람을 캐릭터 밴 / 해제 할 수 없습니다!",
 	[ "Character_Notify_SetName" ] = "%s 님이 %s 로 %s 의 캐릭터 이름을 바꾸셨습니다.",
 	[ "Character_Notify_SetNameError" ] = "캐릭터 이름에 # 이 들어갈 수 없습니다!",
 	[ "Character_Notify_SetDesc" ] = "%s 님이 %s 로 %s 의 캐릭터 설명을 바꾸셨습니다.",

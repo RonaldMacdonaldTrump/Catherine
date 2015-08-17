@@ -155,6 +155,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_MaxLimitHit" ] = "You can not create any more characters!",
 	[ "Character_Notify_CharBan" ] = "%s has banned the character %s.",
 	[ "Character_Notify_CharUnBan" ] = "%s has unbanned the character %s.",
+	[ "Character_Notify_CantCharBan_UnBan" ] = "You can't ban / unban this character!",
 	[ "Character_Notify_SetName" ] = "%s has set the name of %s to %s.",
 	[ "Character_Notify_SetNameError" ] = "Can't type # in the character name!",
 	[ "Character_Notify_SetDesc" ] = "%s has set the description of %s to %s.",

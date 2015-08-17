@@ -244,7 +244,7 @@ end
 function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
 	if ( !pl:IsPlayer( ) ) then return end
 	
-	if ( !catherine.player.GetIgnoreScreenColor( pl ) ) then
+	if ( !catherine.player.IsIgnoreScreenColor( pl ) ) then
 		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 		
 		if ( hitGroup == CAT_BODY_ID_HEAD ) then
@@ -555,7 +555,7 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 	
 	pl.CAT_healthRecover = true
 
-	if ( !catherine.player.GetIgnoreScreenColor( pl ) ) then
+	if ( !catherine.player.IsIgnoreScreenColor( pl ) ) then
 		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 	end
 	
@@ -572,7 +572,7 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 		end
 	end
 
-	if ( !catherine.player.GetIgnoreHurtSound( pl ) and !dataTable[ 2 ] and ( pl.CAT_nextHurtDelay or 0 ) <= CurTime( ) ) then
+	if ( !catherine.player.IsIgnoreHurtSound( pl ) and !dataTable[ 2 ] and ( pl.CAT_nextHurtDelay or 0 ) <= CurTime( ) ) then
 		pl.CAT_nextHurtDelay = CurTime( ) + 2
 		
 		local sound = hook.Run( "GetPlayerPainSound", pl )

@@ -46,7 +46,7 @@ function PANEL:Init( )
 			self.mainAlpha = Lerp( 0.08, self.mainAlpha, 0 )
 		end
 		
-		if ( !catherine.character.customBackgroundEnabled ) then
+		if ( !catherine.character.IsCustomBackground( ) ) then
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 30, 30, 30, 255 ) )
 
 			surface.SetDrawColor( 50, 50, 50, math.max( math.sin( CurTime( ) / 2 ) * 255, 200 ) )
