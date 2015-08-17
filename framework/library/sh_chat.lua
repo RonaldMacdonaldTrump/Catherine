@@ -571,6 +571,7 @@ else
 		catherine.chat.CreateBase( )
 		catherine.chat.isOpened = bool
 		
+		local init = false
 		local self = catherine.chat.chatpanel
 		local initHistoryKey = #catherine.chat.history + 1
 		local onEnterFunc = function( pnl )
@@ -590,12 +591,22 @@ else
 			
 			self:Remove( )
 			self = nil
-			typingText = ""
+			
+			if ( typingText != "" ) then
+				hook.Run( "FinishChatDelay" )
+			end
 			
 			hook.Run( "FinishChat" )
+			
+			typingText = ""
 		end
 		
 		catherine.chat.backpanel.PaintOver = function( pnl, w, h )
+			if ( !init and typingText != "" ) then
+				hook.Run( "StartChatDelay" )
+				init = true
+			end
+			
 			if ( typingText:sub( 1, 1 ) == "/" and typingText:sub( 1, 2 ) != "//" ) then
 				surface.SetDrawColor( 50, 50, 50, 255 )
 				surface.SetMaterial( Material( "gui/gradient_up" ) )

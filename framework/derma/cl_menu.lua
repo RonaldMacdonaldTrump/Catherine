@@ -19,6 +19,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local PANEL = { }
 
 function PANEL:Init( )
+	hook.Run( "MainMenuJoined", LocalPlayer( ) )
+	
 	catherine.vgui.menu = self
 	
 	self.player = LocalPlayer( )
@@ -225,6 +227,8 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:Show( )
+	hook.Run( "MainMenuJoined", self.player )
+	
 	self.closing = false
 	self:SetVisible( true )
 	
@@ -232,7 +236,9 @@ function PANEL:Show( )
 	self.activePanelButton = nil
 	self.activePanelShowW = 0
 	self.activePanelShowX = 0
+	
 	local Ww, Xx = catherine.menu.GetActiveButtonData( )
+	
 	self.activePanelShowTargetW = Ww or 0
 	self.activePanelShowTargetX = Xx or 0
 	
@@ -321,6 +327,7 @@ function PANEL:Close( )
 	end
 
 	self.ListsBase:MoveTo( self.w / 2 - self.ListsBase:GetWide( ) / 2, self.h, 0.2, 0, nil, function( anim, pnl )
+		hook.Run( "MainMenuExited", self.player )
 		self:SetVisible( false )
 	end )
 end

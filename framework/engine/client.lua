@@ -416,11 +416,11 @@ function GM:DrawDoorText( ent )
 	cam.End3D2D( )
 end
 
-function GM:StartChat( )
+function GM:StartChatDelay( )
 	netstream.Start( "catherine.IsTyping", true )
 end
 
-function GM:FinishChat( )
+function GM:FinishChatDelay( )
 	netstream.Start( "catherine.IsTyping", false )
 end
 
@@ -481,7 +481,6 @@ function GM:GetUnknownTargetName( pl, target )
 end
 
 function GM:EntityCacheWork( pl )
-	if ( !pl:IsCharacterLoaded( ) ) then return end
 	local realTime = RealTime( )
 	
 	if ( nextEntityCacheWork <= realTime ) then
@@ -512,7 +511,7 @@ function GM:EntityCacheWork( pl )
 		local targetAlpha = v and 255 or 0
 		local a = math_app( k.CAT_entityCacheAlpha or 0, targetAlpha, FrameTime( ) * 120 )
 
-		if ( a > 0 ) then
+		if ( a > 0 and hook_run( "CantDrawEntityTargetID", pl, k, a ) != true ) then
 			if ( k.DrawEntityTargetID ) then
 				k:DrawEntityTargetID( pl, k, a )
 			else
@@ -555,7 +554,7 @@ function GM:HUDPaint( )
 	catherine.hint.Draw( pl )
 	hook_run( "HUDDraw" )
 	
-	if ( pl:Alive( ) ) then
+	if ( pl:Alive( ) and pl:IsCharacterLoaded( ) ) then
 		hook_run( "EntityCacheWork", pl )
 	end
 	
@@ -579,9 +578,21 @@ function GM:HUDDrawTop( )
 end
 
 function GM:PostRenderVGUI( )
-	if ( IsValid( catherine.vgui.character ) ) then return end
+	if ( hook.Run( "CantDrawNotify" ) == true or IsValid( catherine.vgui.character ) ) then return end
 	
-	catherine.notify.Draw( )
+	if ( IsValid( catherine.vgui.menu ) and catherine.vgui.menu:IsVisible( ) ) then
+		catherine.notify.DrawMenuType( )
+	else
+		catherine.notify.Draw( )
+	end
+end
+
+function GM:MainMenuJoined( )
+	catherine.notify.ConvertType( true )
+end
+
+function GM:MainMenuExited( )
+	catherine.notify.ConvertType( )
 end
 
 function GM:CalcViewModelView( wep, viewMdl, oldEyePos, oldEyeAngles, eyePos, eyeAng )
