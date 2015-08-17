@@ -306,6 +306,8 @@ LANGUAGE.data = {
 	[ "Item_Category_Accessory" ] = "Accessory",
 	[ "Item_FuncStr01_Accessory" ] = "Wear",
 	[ "Item_FuncStr02_Accessory" ] = "Take off",
+	[ "Item_Category_Alcohol" ] = "Alcohol",
+	[ "Item_FuncStr01_Alcohol" ] = "Drink",
 	[ "Item_Category_Ammo" ] = "Ammunition",
 	[ "Item_FuncStr01_Ammo" ] = "Use",
 	

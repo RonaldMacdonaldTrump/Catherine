@@ -191,8 +191,8 @@ function GM:PlayerLimbDamageHealed( pl, hitGroup, amount )
 		local visibility = 1 - ( amount / 100 )
 		
 		catherine.util.StartMotionBlur( pl, visibility, 1, 0.02 )
-		
-		if ( visibility == 0 ) then
+
+		if ( visibility == 1 ) then
 			catherine.util.StopMotionBlur( pl )
 		end
 	end
@@ -682,6 +682,8 @@ function GM:PlayerDeath( pl )
 	end )
 
 	catherine.util.TopNotify( pl, false )
+	
+	catherine.attribute.ClearBoost( pl )
 	
 	pl:SetNetVar( "nextSpawnTime", CurTime( ) + respawnTime )
 	pl:SetNetVar( "deathTime", CurTime( ) )

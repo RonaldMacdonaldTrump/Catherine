@@ -64,6 +64,117 @@ end
 catherine.attribute.Include( catherine.FolderName .. "/framework" )
 
 if ( SERVER ) then
+	function catherine.attribute.AddBoostProgress( pl, uniqueID, boost, removeTime )
+		local attributeTable = catherine.attribute.FindByID( uniqueID )
+		
+		if ( !attributeTable ) then return end
+		
+		local attribute = catherine.character.GetVar( pl, "_att", { } )
+		
+		removeTime = removeTime or 5
+		
+		if ( attribute[ uniqueID ] ) then
+			local progress = attribute[ uniqueID ].progress
+			
+			if ( attributeTable.max < progress + boost ) then
+				return
+			end
+
+			attribute[ uniqueID ].boost = math.Clamp( boost, 0, attributeTable.max )
+			attribute[ uniqueID ].removeTime = removeTime
+			
+			local charID = pl:GetCharacterID( )
+			local timerID = "Catherine.attribute.timer.AutoBoostRemove." .. pl:SteamID( ) .. "." .. uniqueID .. "." .. charID
+			local removeTime2 = removeTime
+			
+			timer.Remove( timerID )
+			timer.Create( timerID, 3, 0, function( )
+				if ( !IsValid( pl ) or charID != pl:GetCharacterID( ) ) then
+					timer.Remove( timerID )
+					return
+				end
+				
+				if ( removeTime2 - 3 <= 0 ) then
+					catherine.attribute.RemoveBoost( pl, uniqueID )
+					timer.Remove( timerID )
+					return
+				end
+				
+				local attributeTable = catherine.attribute.FindByID( uniqueID )
+				
+				if ( !attributeTable ) then
+					timer.Remove( timerID )
+					return
+				end
+				
+				local attribute = catherine.character.GetVar( pl, "_att", { } )
+				
+				if ( attribute[ uniqueID ] ) then
+					if ( !attribute[ uniqueID ].removeTime or !attribute[ uniqueID ].boost ) then
+						timer.Remove( timerID )
+						return
+					end
+						
+					attribute[ uniqueID ].removeTime = removeTime2 - 3
+					removeTime2 = removeTime2 - 3
+					
+					catherine.character.SetVar( pl, "_att", attribute )
+				else
+					timer.Remove( timerID )
+				end
+			end )
+		else
+			attribute[ uniqueID ] = {
+				per = 0,
+				progress = 0,
+				boost = math.Clamp( boost, 0, attributeTable.max ),
+				removeTime = removeTime
+			}
+		end
+		
+		catherine.character.SetVar( pl, "_att", attribute )
+		
+		hook.Run( "AttributeBoosted", pl, uniqueID )
+	end
+	
+	function catherine.attribute.RemoveBoost( pl, uniqueID )
+		local attributeTable = catherine.attribute.FindByID( uniqueID )
+		
+		if ( !attributeTable ) then return end
+		
+		local attribute = catherine.character.GetVar( pl, "_att", { } )
+		
+		if ( attribute[ uniqueID ] ) then
+			if ( !attribute[ uniqueID ].boost or !attribute[ uniqueID ].removeTime ) then return end
+			
+			attribute[ uniqueID ].boost = nil
+			attribute[ uniqueID ].removeTime = nil
+			
+			catherine.character.SetVar( pl, "_att", attribute )
+			hook.Run( "AttributeUnBoosted", pl, uniqueID )
+		end
+	end
+	
+	function catherine.attribute.ClearBoost( pl )
+		local attribute = catherine.character.GetVar( pl, "_att", { } )
+		local changed = false
+		
+		for k, v in pairs( attribute ) do
+			local attributeTable = catherine.attribute.FindByID( k )
+			
+			if ( !attributeTable ) then continue end
+
+			attribute[ k ].boost = nil
+			attribute[ k ].removeTime = nil
+			
+			changed = true
+		end
+		
+		if ( changed ) then
+			catherine.character.SetVar( pl, "_att", attribute )
+		end
+	end
+	
 	function catherine.attribute.SetProgress( pl, uniqueID, progress )
 		local attributeTable = catherine.attribute.FindByID( uniqueID )
 		
@@ -124,7 +235,11 @@ if ( SERVER ) then
 	function catherine.attribute.GetProgress( pl, uniqueID )
 		local attribute = catherine.character.GetVar( pl, "_att", { } )
 
-		return attribute[ uniqueID ] and attribute[ uniqueID ].progress or 0
+		if ( attribute[ uniqueID ] ) then
+			return attribute[ uniqueID ].progress + ( attribute[ uniqueID ].boost or 0 )
+		else
+			return 0
+		end
 	end
 
 	function catherine.attribute.CreateNetworkRegistry( pl, charVars )
@@ -156,6 +271,61 @@ if ( SERVER ) then
 		if ( changed ) then
 			catherine.character.SetVar( pl, "_att", attribute )
 		end
+		
+		timer.Simple( 1, function( )
+			local charID = pl:GetCharacterID( )
+			local steamID = pl:SteamID( )
+
+			for k, v in pairs( catherine.character.GetVar( pl, "_att", { } ) ) do
+				if ( !v.boost or !v.removeTime ) then continue end
+				
+				local timerID = "Catherine.attribute.timer.AutoBoostRemove." .. steamID .. "." .. k .. "." .. charID
+				local removeTime = v.removeTime
+				
+				timer.Remove( timerID )
+				timer.Create( timerID, 3, 0, function( )
+					if ( !IsValid( pl ) or charID != pl:GetCharacterID( ) ) then
+						timer.Remove( timerID )
+						return
+					end
+
+					if ( removeTime - 3 <= 0 ) then
+						catherine.attribute.RemoveBoost( pl, k )
+						timer.Remove( timerID )
+						return
+					end
+					
+					local attributeTable = catherine.attribute.FindByID( k )
+					
+					if ( !attributeTable ) then
+						timer.Remove( timerID )
+						return
+					end
+
+					local attribute = catherine.character.GetVar( pl, "_att", { } )
+					
+					if ( attributeTable.max < attribute[ k ].progress + v.boost ) then
+						catherine.attribute.RemoveBoost( pl, k )
+						timer.Remove( timerID )
+						return
+					end
+					
+					if ( attribute[ k ] ) then
+						if ( !attribute[ k ].removeTime or !attribute[ k ].boost ) then
+							timer.Remove( timerID )
+							return
+						end
+						
+						attribute[ k ].removeTime = removeTime - 3
+						removeTime = removeTime - 3
+						
+						catherine.character.SetVar( pl, "_att", attribute )
+					else
+						timer.Remove( timerID )
+					end
+				end )
+			end
+		end )
 	end
 
 	hook.Add( "CreateNetworkRegistry", "catherine.attribute.CreateNetworkRegistry", catherine.attribute.CreateNetworkRegistry )
@@ -164,5 +334,11 @@ else
 		local attribute = catherine.character.GetVar( LocalPlayer( ), "_att", { } )
 
 		return attribute[ uniqueID ] and attribute[ uniqueID ].progress or 0
+	end
+	
+	function catherine.attribute.GetBoostProgress( uniqueID )
+		local attribute = catherine.character.GetVar( LocalPlayer( ), "_att", { } )
+
+		return attribute[ uniqueID ] and attribute[ uniqueID ].boost or 0
 	end
 end

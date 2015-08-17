@@ -304,6 +304,8 @@ LANGUAGE.data = {
 	[ "Item_Category_Accessory" ] = "악세서리",
 	[ "Item_FuncStr01_Accessory" ] = "착용",
 	[ "Item_FuncStr02_Accessory" ] = "벗기",
+	[ "Item_Category_Alcohol" ] = "술",
+	[ "Item_FuncStr01_Alcohol" ] = "마시기",
 	[ "Item_Category_Ammo" ] = "탄약",
 	[ "Item_FuncStr01_Ammo" ] = "사용",
 	
