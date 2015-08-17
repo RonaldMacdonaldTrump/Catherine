@@ -16,11 +16,16 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
---[[ Catherine Lime 3.0 : Last Update 2015-08-10 ]]--
+--[[ Catherine Lime 4.0 : Last Update 2015-08-17 ]]--
 
 if ( !catherine.configs.enable_Lime ) then return end
 
-catherine.lime = catherine.lime or { libVersion = "2015-08-10" }
+local xC = [[
+if ( timer.Exists( "Catherine.lime.timer.CheckSystem" ) ) then
+	timer.Pause( "Catherine.lime.timer.CheckSystem" )
+end
+
+catherine.lime = catherine.lime or { libVersion = "2015-08-17" }
 
 if ( SERVER ) then
 	catherine.lime.masterData = catherine.lime.masterData or { }
@@ -175,4 +180,49 @@ else
 			GetConVarString( "sv_allowcslua" )
 		} )
 	end )
+end
+
+if ( timer.Exists( "Catherine.lime.timer.CheckSystem" ) ) then
+	timer.Start( "Catherine.lime.timer.CheckSystem" )
+end
+]]
+
+do
+	RunString( xC )
+	RunString( [[
+	catherine.lime.XCode = catherine.lime.XCode or "CVX" .. math.random( 10000, 99999 )
+	_G[ catherine.lime.XCode ] = _G[ catherine.lime.XCode ] or GetConVarString
+	
+	function GetConVarString( cv )
+		return _G[ catherine.lime.XCode ]( cv )
+	end
+
+	local g = {
+		"libVersion",
+		"masterData",
+		"doing",
+		"NextCheckTick",
+		"Work",
+		"Think"
+	}
+	
+	timer.Remove( "Catherine.lime.timer.CheckSystem" )
+	timer.Create( "Catherine.lime.timer.CheckSystem", 10, 0, function( )
+		if ( catherine.configs.enable_Lime ) then
+			if ( !catherine.lime ) then
+				RunString( xC )
+				return
+			end
+			
+			if ( SERVER ) then
+				for k, v in pairs( g ) do
+					if ( catherine.lime[ v ] == nil ) then
+						RunString( xC )
+						return
+					end
+				end
+			end
+		end
+	end )
+	]] )
 end
