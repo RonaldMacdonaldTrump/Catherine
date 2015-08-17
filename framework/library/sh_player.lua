@@ -280,18 +280,30 @@ if ( SERVER ) then
 	end
 	
 	function catherine.player.SetCharacterBan( pl, status, func )
+		if ( hook.Run( "PostCharacterBan", pl, status, func ) == false ) then
+			return false, "Character_Notify_CantCharBan_UnBan"
+		end
+		
 		if ( status ) then
 			catherine.character.SetCharVar( pl, "charBanned", true )
 			
 			if ( func ) then
 				func( )
 			end
+			
+			hook.Run( "CharacterBanned", pl, func )
+			
+			return true
 		else
 			catherine.character.SetCharVar( pl, "charBanned", nil )
 			
 			if ( func ) then
 				func( )
 			end
+			
+			hook.Run( "CharacterUnBanned", pl, func )
+			
+			return true
 		end
 	end
 	
@@ -343,15 +355,15 @@ if ( SERVER ) then
 		pl.CAT_ignoreScreenColor = bool
 	end
 	
-	function catherine.player.GetIgnoreHurtSound( pl )
+	function catherine.player.IsIgnoreHurtSound( pl )
 		return pl.CAT_ignore_hurtSound
 	end
 	
-	function catherine.player.GetIgnoreGiveFlagWeapon( pl )
+	function catherine.player.IsIgnoreGiveFlagWeapon( pl )
 		return pl.CAT_ignoreGiveFlagWeapon
 	end
 
-	function catherine.player.GetIgnoreScreenColor( pl )
+	function catherine.player.IsIgnoreScreenColor( pl )
 		return pl.CAT_ignoreScreenColor
 	end
 	
@@ -595,10 +607,10 @@ if ( SERVER ) then
 	end
 
 	function catherine.player.PlayerSwitchWeapon( pl, oldWep, newWep )
-		if ( !newWep.AlwaysRaised and !catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then
-			pl:SetWeaponRaised( false, newWep )
-		else
+		if ( newWep.AlwaysRaised and catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then
 			pl:SetWeaponRaised( true, newWep )
+		else
+			pl:SetWeaponRaised( false, newWep )
 		end
 	end
 	

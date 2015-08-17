@@ -695,6 +695,10 @@ else
 	function catherine.character.SetCustomBackground( bool )
 		catherine.character.customBackgroundEnabled = bool
 	end
+	
+	function catherine.character.IsCustomBackground( )
+		return catherine.character.customBackgroundEnabled
+	end
 end
 
 function catherine.character.GetVar( pl, key, default )
@@ -738,7 +742,7 @@ do
 	end
 	
 	function META:Desc( )
-		return catherine.character.GetVar( self, "_desc", "....." )
+		return catherine.character.GetVar( self, "_desc", "A Description." )
 	end
 	
 	function META:Faction( )

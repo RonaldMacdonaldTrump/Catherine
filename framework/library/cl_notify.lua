@@ -20,7 +20,7 @@ catherine.notify = catherine.notify or { }
 catherine.notify.lists = { }
 
 function GM:AddNotify( str, _, length )
-	catherine.notify.Add( str, length )
+	catherine.notify.Add( str, length, false )
 end
 
 function catherine.notify.Add( message, time, sound )
@@ -33,12 +33,14 @@ function catherine.notify.Add( message, time, sound )
 	surface.SetFont( "catherine_normal15" )
 	local tw, th = surface.GetTextSize( message )
 	
-	surface.PlaySound( sound or "buttons/button24.wav" )
-	
+	if ( sound != false ) then
+		surface.PlaySound( sound or "buttons/button24.wav" )
+	end
+
 	local w = ScrW( ) * 0.4
 	
 	if ( tw >= ScrW( ) * 0.4 ) then
-		w = w + ( tw - w ) + 50
+		w = math.Clamp( w + ( tw - w ) + 50, 0, ScrW( ) - 10 )
 	end
 	
 	catherine.notify.lists[ index ] = {
@@ -52,6 +54,16 @@ function catherine.notify.Add( message, time, sound )
 		tw = tw,
 		th = th
 	}
+end
+
+function catherine.notify.ConvertType( isMenu )
+	for k, v in pairs( catherine.notify.lists ) do
+		if ( isMenu ) then
+			v.y = -10 + ( k * 25 )
+		else
+			v.y = ( ScrH( ) - 10 ) - ( k * 25 )
+		end
+	end
 end
 
 function catherine.notify.Draw( )
@@ -68,6 +80,26 @@ function catherine.notify.Draw( )
 		end
 		
 		v.y = Lerp( 0.05, v.y, ( ScrH( ) - 10 ) - ( k * 25 ) )
+		
+		draw.RoundedBox( 0, v.x, v.y, v.w, v.h, Color( 235, 235, 235, v.a ) )
+		draw.SimpleText( v.message, "catherine_normal15", v.x + v.w / 2, v.y + v.h / 2, Color( 50, 50, 50, v.a ), 1, 1 )
+	end
+end
+
+function catherine.notify.DrawMenuType( )
+	for k, v in pairs( catherine.notify.lists ) do
+		if ( v.endTime <= CurTime( ) ) then
+			v.a = Lerp( 0.05, v.a, 0 )
+			
+			if ( math.Round( v.a ) <= 0 ) then
+				table.remove( catherine.notify.lists, k )
+				continue
+			end
+		else
+			v.a = Lerp( 0.05, v.a, 255 )
+		end
+		
+		v.y = Lerp( 0.05, v.y, -10 + ( k * 25 ) )
 		
 		draw.RoundedBox( 0, v.x, v.y, v.w, v.h, Color( 235, 235, 235, v.a ) )
 		draw.SimpleText( v.message, "catherine_normal15", v.x + v.w / 2, v.y + v.h / 2, Color( 50, 50, 50, v.a ), 1, 1 )

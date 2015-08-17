@@ -191,10 +191,15 @@ function GM:CalcMainActivity( pl, velo )
 end
 
 function GM:PlayerNoClip( pl, bool )
+	local force = hook.Run( "PlayerCanNoClip", pl, bool )
 	local isAdmin = pl:IsAdmin( )
 	
-	if ( !isAdmin ) then
-		return isAdmin
+	if ( !isAdmin or force == false ) then
+		if ( force == false ) then
+			return false
+		else
+			return isAdmin
+		end
 	end
 	
 	if ( pl:GetMoveType( ) == MOVETYPE_WALK ) then

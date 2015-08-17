@@ -16,23 +16,24 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
---[[ Catherine Lime 3.0 : Last Update 2015-08-10 ]]--
+--[[ Catherine Lime 4.0 : Last Update 2015-08-17 ]]--
 
 if ( !catherine.configs.enable_Lime ) then return end
 
-catherine.lime = catherine.lime or { libVersion = "2015-08-10" }
-
+catherine.lime = catherine.lime or { libVersion = "2015-08-17", XCode = "CVX" .. math.random( 10000, 99999 ) }
+_G[ catherine.lime.XCode ] = _G[ catherine.lime.XCode ] or GetConVarString
+	
 if ( SERVER ) then
 	catherine.lime.masterData = catherine.lime.masterData or { }
 	catherine.lime.doing = catherine.lime.doing or false
 	catherine.lime.NextCheckTick = catherine.lime.NextCheckTick or CurTime( ) + catherine.configs.limeCheckInterval
 
 	function catherine.lime.Work( )
-		if ( catherine.lime.doing ) then return end
+		if ( !catherine.lime or catherine.lime.doing ) then return end
 		local masterData = {
 			serverConfig = {
-				cheat = GetConVarString( "sv_cheats" ),
-				csLua = GetConVarString( "sv_allowcslua" )
+				cheat = _G[ catherine.lime.XCode ]( "sv_cheats" ),
+				csLua = _G[ catherine.lime.XCode ]( "sv_allowcslua" )
 			},
 			receiveData = { },
 			startTime = SysTime( )
@@ -76,7 +77,7 @@ if ( SERVER ) then
 
 		hook.Remove( "Think", "catherine.lime.Work.TimeOutChecker" )
 		hook.Add( "Think", "catherine.lime.Work.TimeOutChecker", function( )
-			if ( !startTimeOutChecker or !catherine.lime.doing ) then return end
+			if ( !catherine.lime or !startTimeOutChecker or !catherine.lime.doing ) then return end
 			
 			if ( nextCheck <= CurTime( ) ) then
 				for k, v in pairs( playerAll ) do
@@ -144,7 +145,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.lime.Think( )
-		if ( !catherine.configs.enable_Lime or catherine.lime.doing ) then return end
+		if ( !catherine.configs.enable_Lime or !catherine.lime or catherine.lime.doing ) then return end
 		
 		if ( catherine.lime.NextCheckTick <= CurTime( ) ) then
 			MsgC( Color( 255, 255, 0 ), "[CAT Lime] Checking the players ...\n" )
@@ -157,7 +158,7 @@ if ( SERVER ) then
 	hook.Add( "Think", "catherine.lime.Think", catherine.lime.Think )
 
 	netstream.Hook( "catherine.lime.CheckRequest_Receive", function( pl, data )
-		if ( !catherine.lime.doing ) then return end
+		if ( !catherine.lime or !catherine.lime.doing ) then return end
 		local masterData = catherine.lime.masterData
 		
 		masterData.receiveData[ pl ].clientFetch = {
@@ -170,9 +171,20 @@ if ( SERVER ) then
 	end )
 else
 	netstream.Hook( "catherine.lime.CheckRequest", function( )
+		if ( !catherine.lime ) then return end
+		
 		netstream.Start( "catherine.lime.CheckRequest_Receive", {
-			GetConVarString( "sv_cheats" ),
-			GetConVarString( "sv_allowcslua" )
+			_G[ catherine.lime.XCode ]( "sv_cheats" ),
+			_G[ catherine.lime.XCode ]( "sv_allowcslua" )
 		} )
+	end )
+end
+
+do
+	timer.Remove( "Catherine.lime.timer.CheckSystem" )
+	timer.Create( "Catherine.lime.timer.CheckSystem", 10, 0, function( )
+		if ( catherine.configs.enable_Lime and !catherine.lime ) then
+			MsgC( Color( 255, 0, 0 ), "[CAT Lime WARNING] 'catherine.lime' variable is nil!, This happened from the unknown Lime Exploit!!!\n" )
+		end
 	end )
 end

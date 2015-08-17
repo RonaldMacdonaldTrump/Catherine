@@ -156,7 +156,7 @@ if ( SERVER ) then
 	function catherine.flag.PlayerSpawnedInCharacter( pl )
 		timer.Simple( 0.3, function( )
 			for k, v in pairs( catherine.flag.GetAll( ) ) do
-				if ( catherine.player.GetIgnoreGiveFlagWeapon( pl ) or !catherine.flag.Has( pl, v.uniqueID ) or !v.onSpawn ) then continue end
+				if ( catherine.player.IsIgnoreGiveFlagWeapon( pl ) or !catherine.flag.Has( pl, v.uniqueID ) or !v.onSpawn ) then continue end
 
 				v.onSpawn( pl )
 			end
@@ -221,7 +221,7 @@ else
 		local title_flag = LANG( "Help_Category_Flag" )
 		local html = Format( flag_htmlValue, title_flag, LANG( "Help_Desc_Flag" ) )
 		
-		for k, v in pairs( catherine.flag.GetAll( ) ) do
+		for k, v in SortedPairs( catherine.flag.GetAll( ) ) do
 			html = html .. [[
 				<div class="]] .. ( catherine.flag.Has( k ) and "panel panel-primary" or "panel panel-default" ) .. [[">
 					<div class="panel-heading">

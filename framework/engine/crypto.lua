@@ -34,13 +34,8 @@ function catherine.crypto.Encode( text )
 		if ( k != 0 ) then
 			for i2 = 1, k do
 				local charRand = sc( mr( 65, 90 ) )
-				local sizeRand = mr( 0, 1 )
 				
-				if ( sizeRand == 1 ) then
-					charRand = charRand:lower( )
-				end
-				
-				randStr = randStr .. charRand
+				randStr = randStr .. ( mr( 0, 1 ) == 1 and charRand:lower( ) or charRand )
 			end
 		end
 		
@@ -60,6 +55,7 @@ function catherine.crypto.Decode( text )
 	
 	for i = 1, #text do
 		local find = text:sub( a, b )
+		
 		if ( find == "" ) then break end
 		
 		ap = ap + 1

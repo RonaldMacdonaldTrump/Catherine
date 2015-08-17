@@ -47,6 +47,7 @@ end
 function catherine.data.Get( key, default, ignoreMap, isGlobal, isBuffer )
 	local dir = "catherine/" .. ( isGlobal and "globals/" or catherine.schema.GetUniqueID( ) .. "/" ) .. key .. "/" .. ( !ignoreMap and game.GetMap( ) or "" ) .. "/data.txt"
 	local data = file.Read( dir, "DATA" )
+	
 	if ( !data ) then return default end
 
 	return isBuffer and catherine.data.buffer[ key ] or util.JSONToTable( data )
