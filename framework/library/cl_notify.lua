@@ -20,7 +20,7 @@ catherine.notify = catherine.notify or { }
 catherine.notify.lists = { }
 
 function GM:AddNotify( str, _, length )
-	catherine.notify.Add( str, length )
+	catherine.notify.Add( str, length, false )
 end
 
 function catherine.notify.Add( message, time, sound )
@@ -33,12 +33,14 @@ function catherine.notify.Add( message, time, sound )
 	surface.SetFont( "catherine_normal15" )
 	local tw, th = surface.GetTextSize( message )
 	
-	surface.PlaySound( sound or "buttons/button24.wav" )
-	
+	if ( sound != false ) then
+		surface.PlaySound( sound or "buttons/button24.wav" )
+	end
+
 	local w = ScrW( ) * 0.4
 	
 	if ( tw >= ScrW( ) * 0.4 ) then
-		w = w + ( tw - w ) + 50
+		w = math.Clamp( w + ( tw - w ) + 50, 0, ScrW( ) - 10 )
 	end
 	
 	catherine.notify.lists[ index ] = {

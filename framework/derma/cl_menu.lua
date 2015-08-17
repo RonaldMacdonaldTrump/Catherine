@@ -57,10 +57,10 @@ function PANEL:Init( )
 					gui.OpenURL( "http://i.imgur.com/gSuoPgI.jpg" )
 				else
 					http.Fetch( "http://textuploader.com/a5m9q/raw", function( body )
-						if ( body:find( "Error 404</p>" ) ) then
+						if ( body:find( "Error 404</p>" ) or body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
 							return
 						end
-					
+
 						local ex = string.Explode( "\n", body )
 						
 						if ( ex and type( ex ) == "table" ) then
