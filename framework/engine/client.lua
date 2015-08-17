@@ -424,6 +424,12 @@ function GM:FinishChatDelay( )
 	netstream.Start( "catherine.IsTyping", false )
 end
 
+function GM:FinishChat( )
+	if ( LocalPlayer( ):IsChatTyping( ) ) then
+		netstream.Start( "catherine.IsTyping", false )
+	end
+end
+
 function GM:DrawEntityTargetID( pl, ent, a )
 	if ( ent:GetNetVar( "noDrawOriginal" ) == true or ( ent:IsPlayer( ) and ent:IsRagdolled( ) ) ) then
 		return

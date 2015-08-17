@@ -50,7 +50,7 @@ local function rebuildPlugin( )
 	local title_plugin = LANG( "Help_Category_Plugin" )
 	local html = Format( plugin_htmlValue, title_plugin, LANG( "Help_Desc_Plugin" ) )
 			
-	for k, v in pairs( catherine.plugin.GetAll( ) ) do
+	for k, v in SortedPairs( catherine.plugin.GetAll( ) ) do
 		html = html .. [[
 			<div class="panel panel-default">
 				<div class="panel-heading">

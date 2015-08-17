@@ -158,7 +158,7 @@ else
 		local html = Format( command_htmlValue, title_command, LANG( "Help_Desc_Command" ) )
 		local pl = LocalPlayer( )
 		
-		for k, v in pairs( catherine.command.GetAll( ) ) do
+		for k, v in SortedPairs( catherine.command.GetAll( ) ) do
 			local havePermission = nil
 			
 			if ( v.canRun and v.canRun( pl, k ) == true ) then
