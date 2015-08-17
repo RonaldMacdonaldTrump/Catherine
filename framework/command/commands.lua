@@ -715,7 +715,9 @@ catherine.command.Register( {
 			local newHour = tonumber( args[ 1 ] )
 			
 			if ( newHour ) then
-				catherine.environment.buffer.hour = math.Clamp( newHour, 1, 24 )
+				newHour = math.Clamp( newHour, 1, 24 )
+				
+				catherine.environment.SetHour( newHour )
 				catherine.environment.SendAllEnvironmentConfig( )
 				catherine.environment.AutomaticDayNight( )
 			end

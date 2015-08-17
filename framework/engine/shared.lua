@@ -195,7 +195,11 @@ function GM:PlayerNoClip( pl, bool )
 	local isAdmin = pl:IsAdmin( )
 	
 	if ( !isAdmin or force == false ) then
-		return isAdmin or force
+		if ( force == false ) then
+			return false
+		else
+			return isAdmin
+		end
 	end
 	
 	if ( pl:GetMoveType( ) == MOVETYPE_WALK ) then

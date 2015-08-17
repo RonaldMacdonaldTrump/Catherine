@@ -315,6 +315,12 @@ if ( SERVER ) then
 		return lightDatas[ catherine.environment.GetHour( ) ]
 	end
 	
+	function catherine.environment.SetHour( hour )
+		if ( hour and type( hour ) == "number" ) then
+			catherine.environment.buffer.hour = math.Clamp( hour, 1, 24 )
+		end
+	end
+	
 	function catherine.environment.GetHour( )
 		return catherine.environment.buffer.hour or 1
 	end
