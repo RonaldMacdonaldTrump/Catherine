@@ -335,8 +335,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.character.SetVar( pl, key, value, noSync, save )
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then return end
 		local steamID = pl:SteamID( )
 		local varTable = catherine.character.FindVarByField( key )
+		
 		if ( ( varTable and varTable.static ) or !catherine.character.networkRegistry[ steamID ] ) then return end
 		
 		catherine.character.networkRegistry[ steamID ][ key ] = value
@@ -359,7 +361,9 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.SetCharVar( pl, key, value, noSync )
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then return end
 		local steamID = pl:SteamID( )
+		
 		if ( !catherine.character.networkRegistry[ steamID ] or !catherine.character.networkRegistry[ steamID ][ "_charVar" ] ) then return end
 		
 		catherine.character.networkRegistry[ steamID ][ "_charVar" ][ key ] = value

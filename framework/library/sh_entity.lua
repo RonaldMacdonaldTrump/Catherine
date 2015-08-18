@@ -112,8 +112,9 @@ else
 		local index = data
 		local ent = Entity( index )
 		local menu = DermaMenu( )
-
-		if ( pl:GetActiveWeapon( ):GetClass( ) == "weapon_physgun" and pl:KeyDown( IN_ATTACK ) ) then return end
+		local activeWep = pl:GetActiveWeapon( )
+		
+		if ( IsValid( activeWep ) and activeWep:GetClass( ) == "weapon_physgun" and pl:KeyDown( IN_ATTACK ) ) then return end
 		
 		local isAv = false
 		

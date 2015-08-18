@@ -232,6 +232,8 @@ if ( SERVER ) then
 					newTarget:SetWeaponRaised( false )
 					newTarget:SetNetVar( "isTied", true )
 					
+					hook.Run( "PlayerTied", pl, newTarget )
+					
 					return true
 				end
 			end )
@@ -272,6 +274,8 @@ if ( SERVER ) then
 					end
 				
 					newTarget:SetNetVar( "isTied", false )
+					
+					hook.Run( "PlayerUnTied", pl, newTarget )
 					
 					return true
 				end
@@ -573,7 +577,11 @@ if ( SERVER ) then
 	end
 
 	function META:Give( uniqueID )
+		self.CAT_isForceGiveWeapon = true
+		
 		local wep = self:CATGiveWeapon( uniqueID )
+		
+		self.CAT_isForceGiveWeapon = nil
 		
 		hook.Run( "PlayerGiveWeapon", self, uniqueID )
 		

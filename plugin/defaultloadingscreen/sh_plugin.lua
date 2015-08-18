@@ -32,7 +32,3 @@ catherine.language.Merge( "korean", {
 } )
 
 if ( CLIENT ) then return end
-
-function PLUGIN:Initialize( )
-	if ( GetConVarString( "sv_loadingurl" ) == "" ) then end
-end

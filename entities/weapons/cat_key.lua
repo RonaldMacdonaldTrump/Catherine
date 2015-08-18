@@ -76,6 +76,8 @@ function SWEP:PrimaryAttack( )
 		
 		pl.CAT_keyCallerID = nil
 		pl:Freeze( false )
+		
+		hook.Run( "DoorLocked", pl, ent )
 	end )
 
 	self:SetNextPrimaryFire( CurTime( ) + 4 )
@@ -114,6 +116,8 @@ function SWEP:SecondaryAttack( )
 		
 		pl.CAT_keyCallerID = nil
 		pl:Freeze( false )
+		
+		hook.Run( "DoorUnLocked", pl, ent )
 	end )
 	
 	self:SetNextSecondaryFire( CurTime( ) + 4 )

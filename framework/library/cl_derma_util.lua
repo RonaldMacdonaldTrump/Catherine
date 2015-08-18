@@ -17,7 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 function Derma_Message( strText, strTitle, strButtonText )
-	surface.PlaySound( "CAT/notify01.wav" )
+	surface.PlaySound( "CAT/notify02.wav" )
 	local imageWAni = 0
 	local imageHAni = 0
 	
@@ -83,7 +83,7 @@ function Derma_Message( strText, strTitle, strButtonText )
 end
 
 function Derma_Query( strText, strTitle, ... )
-	surface.PlaySound( "CAT/notify01.wav" )
+	surface.PlaySound( "CAT/notify02.wav" )
 	local imageWAni = 0
 	local imageHAni = 0
 	
@@ -172,7 +172,7 @@ function Derma_Query( strText, strTitle, ... )
 end
 
 function Derma_StringRequest( strTitle, strText, strDefaultText, fnEnter, fnCancel, strButtonText, strButtonCancelText )
-	surface.PlaySound( "CAT/notify01.wav" )
+	surface.PlaySound( "CAT/notify02.wav" )
 	local imageWAni = 0
 	local imageHAni = 0
 	

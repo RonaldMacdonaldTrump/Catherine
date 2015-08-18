@@ -19,6 +19,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local ATTRIBUTE = catherine.attribute.New( "stamina" )
 ATTRIBUTE.name = "^Stamina_Title"
 ATTRIBUTE.desc = "^Stamina_Desc"
-ATTRIBUTE.image = "CAT/attribute/stamina.png"
+ATTRIBUTE.image = "CAT/attribute/stamina2.png"
 
 CAT_ATT_STAMINA = catherine.attribute.Register( ATTRIBUTE )

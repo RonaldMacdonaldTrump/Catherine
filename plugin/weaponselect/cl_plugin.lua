@@ -187,10 +187,17 @@ function PLUGIN:LanguageChanged( )
 end
 
 netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
+	if ( !IsValid( LocalPlayer( ) ) ) then return end
 	local id = data[ 1 ]
 	local uniqueID = data[ 2 ]
 	
 	if ( id == 1 ) then
+		for k, v in pairs( PLUGIN.weapons ) do
+			if ( v.uniqueID == uniqueID ) then
+				return
+			end
+		end
+		
 		local wep = LocalPlayer( ):GetWeapon( uniqueID )
 		
 		if ( !wep or !IsValid( wep ) ) then return end

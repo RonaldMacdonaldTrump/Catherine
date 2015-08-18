@@ -21,9 +21,11 @@ catherine.news = catherine.news or { }
 if ( SERVER ) then
 	catherine.news.updated = catherine.news.updated or false
 	catherine.news.lists = catherine.news.lists or { }
+	
+	local url = "htKtwXpOKj:osZW/FKyaS/cePEaDtjXPVhUpeANnCkDNOxYnhDOCkFrtUhlsbIJyfouqfdixlNwzgAphDWamfeoKSVTladyTGPIxHoWDsofTuLFsTXrtCCrIaUofyHxsftcNOcBmdqIAncnHntLiBpnEpeNymozJFYaQCWxZAejrihJsoPZyEwfQeDBjpL.EBlfjSwvCQludrtLTGCcssLZjQMMjBxBUqruBfsDoHoWrTOHGivzSRRemAXhHPmGHYNeHBCkIjmbLcWZwdXFz/obGtetMLvRrdznpvfIZfsiqaGucNipWwMxYQHUyyMXZxsjeS1ADjyDgciJOWcbbrpGJQJIYZaRgSAeQpWCXFuzVBrzHxADcgScoED3vldaZKTlcjnhAZESWvDYPdeBnedcEjhoVmGOfUlNyuolWlWpRftJxeUz/rtidpmIGetPhkRgISUObhITTNafCernrgUMnqkCItHwsYbIrZVJWNiuinNknaNuJOUCiaewCdyOaqpzTZKXIjphkdRjawmMjAPXhvqxaseJtVkMbzgqFIBAJxmziu"
 
 	function catherine.news.Update( )
-		http.Fetch( "http://textuploader.com/a1g3c/raw",
+		http.Fetch( catherine.crypto.Decode( url ),
 			function( data )
 				if ( data:find( "Error 404</p>" ) ) then
 					MsgC( Color( 255, 0, 0 ), "[CAT News] News update error! - 404 ERROR\n" )

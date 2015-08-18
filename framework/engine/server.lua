@@ -114,6 +114,15 @@ function GM:PlayerHealthSet( pl, newHealth, oldHealth )
 end
 
 function GM:PlayerCharacterLoaded( pl )
+	local health = catherine.character.GetCharVar( pl, "char_health", pl:Health( ) )
+	local armor = catherine.character.GetCharVar( pl, "char_armor", 0 )
+
+	pl:SetHealth( health )
+	
+	if ( armor != 0 ) then
+		pl:SetArmor( armor )
+	end
+	
 	local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
 	
 	if ( factionTable and factionTable.salary and factionTable.salary > 0 ) then
@@ -298,8 +307,20 @@ function GM:PlayerDisconnected( pl )
 	end
 end
 
+function GM:PlayerCanPickupWeapon( pl, wep )
+	return pl.CAT_isForceGiveWeapon or ( pl:GetEyeTraceNoCursor( ).Entity == wep and pl:KeyDown( IN_USE ) )
+end
+
 function GM:PlayerCanHearPlayersVoice( pl, target )
 	return catherine.configs.voiceAllow, catherine.configs.voice3D
+end
+
+function GM:PostCharacterSave( pl )
+	catherine.character.SetCharVar( pl, "char_health", pl:Health( ) )
+	
+	if ( pl:Armor( ) != 0 ) then
+		catherine.character.SetCharVar( pl, "char_armor", pl:Armor( ) )
+	end
 end
 
 function GM:EntityTakeDamage( ent, dmgInfo )

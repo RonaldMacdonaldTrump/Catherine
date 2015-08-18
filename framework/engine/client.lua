@@ -425,7 +425,7 @@ function GM:FinishChatDelay( )
 end
 
 function GM:FinishChat( )
-	if ( LocalPlayer( ):IsChatTyping( ) ) then
+	if ( IsValid( LocalPlayer( ) ) and LocalPlayer( ):IsChatTyping( ) ) then
 		netstream.Start( "catherine.IsTyping", false )
 	end
 end
