@@ -18,8 +18,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 AddCSLuaFile( )
 
-DEFINE_BASECLASS( "base_gmodentity" )
-
 ENT.Type = "anim"
 ENT.PrintName = "Catherine Shipment"
 ENT.Author = "L7D"

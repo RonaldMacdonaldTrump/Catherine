@@ -40,7 +40,7 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 			local selectWeapon = self.weapons[ self.curSlot ]
 			
 			if ( selectWeapon and pl:HasWeapon( selectWeapon.uniqueID ) ) then
-				RunConsoleCommand( "cat_ws_selectWeapon", selectWeapon.uniqueID )
+				RunConsoleCommand( "cat_plugin_ws_select", selectWeapon.uniqueID )
 				
 				surface.PlaySound( "ui/buttonclickrelease.wav" )
 				
@@ -62,7 +62,7 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 			
 			surface.PlaySound( "common/talk.wav" )
 			
-			self.nextBind = CurTime( ) + 0.08
+			self.nextBind = CurTime( ) + 0.1
 			self.showTime = CurTime( )
 			self.fadeTime = CurTime( ) + 3
 			
@@ -78,7 +78,7 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 			
 			surface.PlaySound( "common/talk.wav" )
 			
-			self.nextBind = CurTime( ) + 0.08
+			self.nextBind = CurTime( ) + 0.1
 			self.showTime = CurTime( )
 			self.fadeTime = CurTime( ) + 3
 			
@@ -91,7 +91,6 @@ end
 
 function PLUGIN:HUDDraw( )
 	if ( !LocalPlayer( ):IsCharacterLoaded( ) or !LocalPlayer( ):Alive( ) ) then return end
-	
 	local scrW, scrH = ScrW( ), ScrH( )
 	
 	for k, v in pairs( self.weapons ) do
@@ -188,10 +187,17 @@ function PLUGIN:LanguageChanged( )
 end
 
 netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
+	if ( !IsValid( LocalPlayer( ) ) ) then return end
 	local id = data[ 1 ]
 	local uniqueID = data[ 2 ]
 	
 	if ( id == 1 ) then
+		for k, v in pairs( PLUGIN.weapons ) do
+			if ( v.uniqueID == uniqueID ) then
+				return
+			end
+		end
+		
 		local wep = LocalPlayer( ):GetWeapon( uniqueID )
 		
 		if ( !wep or !IsValid( wep ) ) then return end

@@ -493,6 +493,7 @@ LANGUAGE.data = {
 	[ "AntiHaX_KickMessage_TimeOut" ] = "Sorry, you have been kicked because the anti-cheat timed out.",
 	
 	// Weapon
+	[ "Weapon_MapEntity_Desc" ] = "Press 'Use' to equip.",
 	[ "Weapon_Instructions_Title" ] = "- Instructions -",
 	[ "Weapon_Purpose_Title" ] = "- Purpose -",
 	[ "Weapon_Author_Title" ] = "- Author -",

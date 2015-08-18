@@ -48,6 +48,7 @@ catherine.intro = catherine.intro or {
 	
 	introDone = false
 }
+catherine.screenResolution = catherine.screenResolution or { w = ScrW( ), h = ScrH( ) }
 local entityCaches = { }
 local nextEntityCacheWork = RealTime( )
 local lastEntity = nil
@@ -425,43 +426,47 @@ function GM:FinishChatDelay( )
 end
 
 function GM:FinishChat( )
-	if ( LocalPlayer( ):IsChatTyping( ) ) then
+	if ( IsValid( LocalPlayer( ) ) and LocalPlayer( ):IsChatTyping( ) ) then
 		netstream.Start( "catherine.IsTyping", false )
 	end
 end
 
 function GM:DrawEntityTargetID( pl, ent, a )
-	if ( ent:GetNetVar( "noDrawOriginal" ) == true or ( ent:IsPlayer( ) and ent:IsRagdolled( ) ) ) then
-		return
-	end
-	
-	local entPlayer = ent
-	
-	if ( ent:GetClass( ) == "prop_ragdoll" ) then
-		entPlayer = ent:GetNetVar( "player" )
-	end
-	
-	if ( !IsValid( entPlayer ) or !entPlayer:IsPlayer( ) ) then return end
+	if ( ent:IsPlayer( ) or ent:GetClass( ) == "prop_ragdoll" ) then
+		if ( ent:GetNetVar( "noDrawOriginal" ) == true or ( ent:IsPlayer( ) and ent:IsRagdolled( ) ) ) then return end
+		
+		local entPlayer = ent:GetClass( ) == "prop_ragdoll" and ent:GetNetVar( "player" ) or ent
+		
+		if ( !IsValid( entPlayer ) or !entPlayer:IsPlayer( ) ) then return end
 
-	local index = ent:LookupBone( "ValveBiped.Bip01_Head1" )
+		local index = ent:LookupBone( "ValveBiped.Bip01_Head1" )
 
-	if ( index ) then
-		local pos = toscreen( ent:GetBonePosition( index ) )
-		local x, y = pos.x, pos.y - 100
-		local name, desc = hook.Run( "GetPlayerInformation", pl, entPlayer, true )
-		local col = team.GetColor( entPlayer:Team( ) )
-		
-		draw.SimpleText( name, "catherine_outline20", x, y, Color( col.r, col.g, col.b, a ), 1, 1 )
-		y = y + 20
-		
-		local descTexts = catherine.util.GetWrapTextData( desc, ScrW( ) / 2, "catherine_outline15" )
-		
-		for k, v in pairs( descTexts ) do
-			draw.SimpleText( v, "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
-			y = y + 20
+		if ( index ) then
+			local pos = toscreen( ent:GetBonePosition( index ) )
+			local x, y = pos.x, pos.y - 100
+			local name, desc = hook.Run( "GetPlayerInformation", pl, entPlayer, true )
+			local col = team.GetColor( entPlayer:Team( ) )
+			
+			draw.SimpleText( name, "catherine_outline25", x, y, Color( col.r, col.g, col.b, a ), 1, 1 )
+			y = y + 25
+			
+			local descTexts = catherine.util.GetWrapTextData( desc, ScrW( ) / 2, "catherine_outline15" )
+			
+			for k, v in pairs( descTexts ) do
+				draw.SimpleText( v, "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+				y = y + 20
+			end
+
+			hook.Run( "PlayerInformationDraw", pl, entPlayer, x, y, a )
 		end
-
-		hook.Run( "PlayerInformationDraw", pl, entPlayer, x, y, a )
+	elseif ( ent:IsWeapon( ) ) then
+		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
+		local x, y = pos.x, pos.y
+		
+		draw.SimpleText( ent:GetPrintName( ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		y = y + 25
+		
+		draw.SimpleText( LANG( "Weapon_MapEntity_Desc" ), "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 	end
 end
 
@@ -760,7 +765,7 @@ function GM:AddRPInformation( pnl, data, pl )
 	data[ #data + 1 ] = LANG( "Cash_UI_HasStr", catherine.cash.Get( pl ) )
 end
 
-function GM:ScreenResolutionChanged( oldW, oldH )
+function GM:ScreenResolutionFix( )
 	catherine.hud.WelcomeIntroInitialize( true )
 	
 	catherine.chat.posSizeData = {
@@ -775,6 +780,8 @@ function GM:ScreenResolutionChanged( oldW, oldH )
 	end
 
 	catherine.chat.CreateBase( )
+	
+	RunConsoleCommand( "cat_menu_rebuild" )
 end
 
 function GM:PopulateToolMenu( )
@@ -799,6 +806,17 @@ function GM:PopulateToolMenu( )
 		language.Add( "tool." .. v.UniqueID .. ".0", v.HelpText )
 	end
 end
+
+timer.Create( "Catherine.timer.ScreenResolutionCheck", 3, 0, function( )
+	if ( catherine.screenResolution.w != ScrW( ) or catherine.screenResolution.h != ScrH( ) ) then
+		hook.Run( "ScreenResolutionFix" )
+		
+		catherine.screenResolution = {
+			w = ScrW( ),
+			h = ScrH( )
+		}
+	end
+end )
 
 netstream.Hook( "catherine.ShowHelp", function( )
 	if ( IsValid( catherine.vgui.information ) ) then

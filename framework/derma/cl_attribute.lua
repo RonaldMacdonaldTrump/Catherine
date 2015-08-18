@@ -107,7 +107,12 @@ function PANEL:Paint( w, h )
 		surface.SetDrawColor( 50, 50, 50, 255 )
 		surface.DrawOutlinedRect( 10, 10, 70, 70 )
 	else
-		draw.RoundedBox( 0, 10, 10, 70, 70, Color( 50, 50, 50, 100 ) )
+		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.SetMaterial( Material( "CAT/ui/icon_idk.png", "smooth" ) )
+		surface.DrawTexturedRect( 15, 15, 60, 60 )
+		
+		surface.SetDrawColor( 50, 50, 50, 255 )
+		surface.DrawOutlinedRect( 10, 10, 70, 70 )
 	end
 	
 	draw.SimpleText( self.attribute_name, "catherine_normal25", 100, 30, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )

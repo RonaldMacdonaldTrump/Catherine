@@ -31,7 +31,7 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
 	end
 	
 	self:InitializeOption( )
@@ -62,7 +62,7 @@ function PANEL:BuildOption( )
 	
 	self.Lists:Clear( )
 	
-	for k, v in pairs( self.optionTable or { } ) do
+	for k, v in SortedPairs( self.optionTable or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetName( catherine.util.StuffLanguage( k ) )
 		form:SetSpacing( 0 )
@@ -73,7 +73,7 @@ function PANEL:BuildOption( )
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
 		
-		for k1, v1 in pairs( v ) do
+		for k1, v1 in SortedPairs( v ) do
 			local item = vgui.Create( "catherine.vgui.optionItem" )
 			item:SetSize( self.Lists:GetWide( ), 60 )
 			item:SetOption( v1 )
@@ -139,7 +139,7 @@ function PANEL:Paint( w, h )
 	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 	
 	draw.SimpleText( self.name, "catherine_normal20", 15, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( self.desc, "catherine_normal15", 15, 40, Color( 80, 80, 80, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.desc, "catherine_normal15", 15, 40, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
 end
 
 function PANEL:PerformLayout( w, h )

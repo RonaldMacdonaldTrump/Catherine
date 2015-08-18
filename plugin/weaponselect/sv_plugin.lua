@@ -18,8 +18,12 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 local PLUGIN = PLUGIN
 
-concommand.Add( "cat_ws_selectWeapon", function( pl, _, args )
-	pl:SelectWeapon( args[ 1 ] )
+concommand.Add( "cat_plugin_ws_select", function( pl, _, args )
+	local uniqueID = args[ 1 ]
+	
+	if ( uniqueID and pl:HasWeapon( uniqueID ) ) then
+		pl:SelectWeapon( uniqueID )
+	end
 end )
 
 function PLUGIN:PlayerSpawnedInCharacter( pl )
@@ -34,6 +38,19 @@ function PLUGIN:PlayerRagdollJoined( pl )
 	netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
 		3
 	} )
+end
+
+function PLUGIN:WeaponEquip( wep )
+	timer.Simple( 0.05, function( )
+		local pl = IsValid( wep ) and wep:GetOwner( )
+		
+		if ( IsValid( wep ) and IsValid( pl ) ) then
+			netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
+				1,
+				wep:GetClass( )
+			} )
+		end
+	end )
 end
 
 function PLUGIN:PlayerGiveWeapon( pl, uniqueID )

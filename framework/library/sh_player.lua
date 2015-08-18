@@ -176,7 +176,7 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.player.SetTie( pl, target, bool, force, removeItem )
+	function catherine.player.SetTie( pl, target, bool, force, removeItem, time )
 		if ( bool ) then
 			if ( pl:IsTied( ) and !force ) then
 				catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
@@ -192,8 +192,8 @@ if ( SERVER ) then
 				catherine.util.NotifyLang( pl, "Item_Notify02_ZT" )
 				return
 			end
-			
-			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message01_ZT" ), 2, function( )
+
+			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message01_ZT" ), hook.Run( "GetTieingTime", pl, target, bool ) or time or 2, function( )
 				local tr = { }
 				tr.start = pl:GetShootPos( )
 				tr.endpos = tr.start + pl:GetAimVector( ) * 160
@@ -232,6 +232,8 @@ if ( SERVER ) then
 					newTarget:SetWeaponRaised( false )
 					newTarget:SetNetVar( "isTied", true )
 					
+					hook.Run( "PlayerTied", pl, newTarget )
+					
 					return true
 				end
 			end )
@@ -246,7 +248,7 @@ if ( SERVER ) then
 				return
 			end
 			
-			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message02_ZT" ), 2, function( )
+			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message02_ZT" ), hook.Run( "GetTieingTime", pl, target, bool ) or time or 2, function( )
 				local tr = { }
 				tr.start = pl:GetShootPos( )
 				tr.endpos = tr.start + pl:GetAimVector( ) * 160
@@ -272,6 +274,8 @@ if ( SERVER ) then
 					end
 				
 					newTarget:SetNetVar( "isTied", false )
+					
+					hook.Run( "PlayerUnTied", pl, newTarget )
 					
 					return true
 				end
@@ -573,7 +577,11 @@ if ( SERVER ) then
 	end
 
 	function META:Give( uniqueID )
+		self.CAT_isForceGiveWeapon = true
+		
 		local wep = self:CATGiveWeapon( uniqueID )
+		
+		self.CAT_isForceGiveWeapon = nil
 		
 		hook.Run( "PlayerGiveWeapon", self, uniqueID )
 		

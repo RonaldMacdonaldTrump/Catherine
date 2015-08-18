@@ -121,15 +121,19 @@ catherine.chat.Register( "pm", {
 			else
 				chat.AddText( Color( 142, 229, 238 ), "[PM] " .. pl:Name( ) .. " : " .. text )
 			end
+			
+			surface.PlaySound( "CAT/notify03.wav" )
 		else
 			if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
 				chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", Color( 132, 112, 255 ), "[PM] " .. pl:Name( ) .. " : " .. text )
 			else
 				chat.AddText( Color( 132, 112, 255 ), "[PM] " .. pl:Name( ) .. " : " .. text )
 			end
+			
+			surface.PlaySound( "CAT/notify03.wav" )
 		end
 	end,
-	canRun = function( pl ) return pl:Alive( ) end
+	font = "catherine_chat_italic"
 } )
 
 catherine.chat.Register( "event", {
