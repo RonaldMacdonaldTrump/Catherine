@@ -246,4 +246,12 @@ catherine.menu.Register( function( )
 	return LANG( "News_UI_Title" )
 end, function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.news ) and catherine.vgui.news or vgui.Create( "catherine.vgui.news", menuPnl )
+end, function( )
+	local news = catherine.net.GetNetGlobalVar( "cat_news" )
+	
+	if ( !news or table.Count( news ) == 0 ) then
+		return false
+	else
+		return true
+	end
 end )

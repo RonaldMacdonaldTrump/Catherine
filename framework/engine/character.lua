@@ -537,7 +537,10 @@ if ( SERVER ) then
 		end
 
 		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
+		
 		if ( !networkRegistry ) then return end
+		
+		netstream.Start( pl, "catherine.character.StartSave" )
 		
 		hook.Run( "PostCharacterSave", pl )
 		
@@ -558,6 +561,10 @@ if ( SERVER ) then
 		
 			catherine.character.RefreshCharacterBuffer( pl )
 			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl:SteamName( ) .. "'s [" .. id .. "] character." )
+			
+			timer.Simple( 2, function( )
+				netstream.Start( pl, "catherine.character.FinishSave" )
+			end )
 		end )
 	end
 
@@ -694,6 +701,18 @@ else
 
 	netstream.Hook( "catherine.character.SendPlayerCharacterList", function( data )
 		catherine.character.localCharacters = data
+	end )
+	
+	netstream.Hook( "catherine.character.StartSave", function( data )
+		catherine.hud.characterSaving = {
+			status = true,
+			a = 0,
+			rotate = 0
+		}
+	end )
+
+	netstream.Hook( "catherine.character.FinishSave", function( data )
+		catherine.hud.characterSaving.status = false
 	end )
 	
 	function catherine.character.SetCustomBackground( bool )

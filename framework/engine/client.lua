@@ -48,6 +48,7 @@ catherine.intro = catherine.intro or {
 	
 	introDone = false
 }
+catherine.screenResolution = catherine.screenResolution or { w = ScrW( ), h = ScrH( ) }
 local entityCaches = { }
 local nextEntityCacheWork = RealTime( )
 local lastEntity = nil
@@ -764,7 +765,7 @@ function GM:AddRPInformation( pnl, data, pl )
 	data[ #data + 1 ] = LANG( "Cash_UI_HasStr", catherine.cash.Get( pl ) )
 end
 
-function GM:ScreenResolutionChanged( oldW, oldH )
+function GM:ScreenResolutionFix( )
 	catherine.hud.WelcomeIntroInitialize( true )
 	
 	catherine.chat.posSizeData = {
@@ -779,6 +780,8 @@ function GM:ScreenResolutionChanged( oldW, oldH )
 	end
 
 	catherine.chat.CreateBase( )
+	
+	RunConsoleCommand( "cat_menu_rebuild" )
 end
 
 function GM:PopulateToolMenu( )
@@ -803,6 +806,17 @@ function GM:PopulateToolMenu( )
 		language.Add( "tool." .. v.UniqueID .. ".0", v.HelpText )
 	end
 end
+
+timer.Create( "Catherine.timer.ScreenResolutionCheck", 3, 0, function( )
+	if ( catherine.screenResolution.w != ScrW( ) or catherine.screenResolution.h != ScrH( ) ) then
+		hook.Run( "ScreenResolutionFix" )
+		
+		catherine.screenResolution = {
+			w = ScrW( ),
+			h = ScrH( )
+		}
+	end
+end )
 
 netstream.Hook( "catherine.ShowHelp", function( )
 	if ( IsValid( catherine.vgui.information ) ) then

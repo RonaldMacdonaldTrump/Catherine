@@ -100,4 +100,6 @@ catherine.menu.Register( function( )
 	return LANG( "Class_UI_Title" )
 end, function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.class ) and catherine.vgui.class or vgui.Create( "catherine.vgui.class", menuPnl )
+end, function( )
+	return #catherine.class.GetJoinable( ) != 0
 end )
