@@ -355,7 +355,7 @@ LANGUAGE.data = {
 	[ "Player_Message_AlreadyFallovered" ] = "당신은 이미 기절했습니다!",
 	[ "Player_Message_NotFallovered" ] = "당신은 기절하지 않았습니다!",
 	[ "Player_Message_HasNotPermission" ] = "당신은 권한이 없습니다!",
-	[ "Player_Message_UnTie" ] = "'사용' 키를 눌러 수갑을 풀어주세요.",
+	[ "Player_Message_UnTie" ] = "'사용' 키를 눌러 수갑을 풀 수 있습니다.",
 	[ "Player_Message_TiedBlock" ] = "수갑에 묶인 상태에서는 할 수 없습니다.",
 	
 	// Recognize
@@ -491,6 +491,7 @@ LANGUAGE.data = {
 	[ "AntiHaX_KickMessage_TimeOut" ] = "죄송합니다, 당신은 치트 프로그램 확인 작업의 제한 시간을 초과했습니다 :(",
 	
 	// Weapon
+	[ "Weapon_MapEntity_Desc" ] = "'사용' 키를 눌러 장착하십시오.",
 	[ "Weapon_Instructions_Title" ] = "- 설명서 -",
 	[ "Weapon_Purpose_Title" ] = "- 용도 -",
 	[ "Weapon_Author_Title" ] = "- 개발자 -",
