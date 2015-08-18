@@ -40,7 +40,7 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 			local selectWeapon = self.weapons[ self.curSlot ]
 			
 			if ( selectWeapon and pl:HasWeapon( selectWeapon.uniqueID ) ) then
-				RunConsoleCommand( "cat_ws_selectWeapon", selectWeapon.uniqueID )
+				RunConsoleCommand( "cat_plugin_ws_select", selectWeapon.uniqueID )
 				
 				surface.PlaySound( "ui/buttonclickrelease.wav" )
 				
@@ -62,7 +62,7 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 			
 			surface.PlaySound( "common/talk.wav" )
 			
-			self.nextBind = CurTime( ) + 0.08
+			self.nextBind = CurTime( ) + 0.1
 			self.showTime = CurTime( )
 			self.fadeTime = CurTime( ) + 3
 			
@@ -78,7 +78,7 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 			
 			surface.PlaySound( "common/talk.wav" )
 			
-			self.nextBind = CurTime( ) + 0.08
+			self.nextBind = CurTime( ) + 0.1
 			self.showTime = CurTime( )
 			self.fadeTime = CurTime( ) + 3
 			
@@ -91,7 +91,6 @@ end
 
 function PLUGIN:HUDDraw( )
 	if ( !LocalPlayer( ):IsCharacterLoaded( ) or !LocalPlayer( ):Alive( ) ) then return end
-	
 	local scrW, scrH = ScrW( ), ScrH( )
 	
 	for k, v in pairs( self.weapons ) do
