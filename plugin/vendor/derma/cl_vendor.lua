@@ -78,16 +78,12 @@ function PANEL:Init( )
 	}
 	
 	self:SetSize( self.w, self.h )
-	self:Center( )
+	self:SetPos( ScrW( ), self.y )
+	self:MoveTo( ScrW( ) / 2 - self.w / 2, self.y, 0.2, 0 )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	self:ShowCloseButton( false )
 
-	if ( !PLUGIN.VENDOR_NOANI ) then
-		self:SetPos( ScrW( ), self.y )
-		self:MoveTo( ScrW( ) / 2 - self.w / 2, self.y, 0.2, 0 )
-	end
-	
 	self.buy = vgui.Create( "catherine.vgui.button", self )
 	self.buy:SetPos( 10, 35 )
 	self.buy:SetSize( self.w * 0.2, 25 )
@@ -1006,19 +1002,12 @@ function PANEL:Close( )
 		self.itemInformationPanel = nil
 	end
 	
-	if ( PLUGIN.VENDOR_NOANI ) then
-		self.closing = true
-		
+	self.closing = true
+	
+	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
 		self:Remove( )
 		self = nil
-	else
-		self.closing = true
-		
-		self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
-			self:Remove( )
-			self = nil
-		end )
-	end
+	end )
 end
 
 vgui.Register( "catherine.vgui.vendor", PANEL, "DFrame" )

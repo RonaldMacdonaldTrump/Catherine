@@ -17,26 +17,12 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.VENDOR_NOANI = PLUGIN.VENDOR_NOANI or false
 
 netstream.Hook( "catherine.plugin.vendor.RefreshRequest", function( data )
-	PLUGIN.VENDOR_NOANI = true
-	local menuID = nil
-	
 	if ( IsValid( catherine.vgui.vendor ) ) then
-		menuID = catherine.vgui.vendor.currMenu
-		catherine.vgui.vendor:Remove( )
-		catherine.vgui.vendor = nil
+		catherine.vgui.vendor:InitializeVendor( Entity( data ) )
+		catherine.vgui.vendor:ChangeMode( catherine.vgui.vendor.currMenu )
 	end
-	
-	catherine.vgui.vendor = vgui.Create( "catherine.vgui.vendor" )
-	catherine.vgui.vendor:InitializeVendor( Entity( data ) )
-	
-	if ( menuID ) then
-		catherine.vgui.vendor:ChangeMode( menuID )
-	end
-	
-	PLUGIN.VENDOR_NOANI = false
 end )
 
 netstream.Hook( "catherine.plugin.vendor.VendorUse", function( data )

@@ -349,7 +349,7 @@ end
 
 function GM:PlayerBindPress( pl, code, pressed )
 	if ( code:find( "messagemode" ) and pressed ) then
-		catherine.chat.SetStatus( true )
+		catherine.chat.Show( )
 		
 		return true
 	end
