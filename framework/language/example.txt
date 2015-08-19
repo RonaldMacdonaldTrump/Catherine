@@ -39,6 +39,11 @@ LANGUAGE.data = {
 	[ "GlobalBan_UI_NotUsing" ] = "This server doesn't using Global Ban service.",
 	[ "GlobalBan_UI_Users" ] = "%s's users are blocked.",
 	
+	// News
+	[ "News_UI_Title" ] = "News",
+	[ "News_UI_Back" ] = "Back",
+	[ "News_UI_SelectPage" ] = "Please select a page.",
+	
 	// Cash
 	[ "Cash_UI_HasStr" ] = "You have %s " .. cashName ..".",
 	[ "Cash_UI_TargetHasStr" ] = "This player has %s " .. cashName ..".",
@@ -64,6 +69,8 @@ LANGUAGE.data = {
 	[ "Character_UI_CharInfo" ] = "Character Information",
 	[ "Character_UI_CharName" ] = "Character Name",
 	[ "Character_UI_CharDesc" ] = "Character Description",
+	[ "Character_UI_MusicError" ] = "Failed to play background music! ( ERROR : %s )",
+	[ "Character_UI_Hint01" ] = "Catherine are supported multi-language system, Click the bottom right button for change the whatever language you can speak.",
 	[ "Character_UI_SelectFaction" ] = "> Select faction.",
 	[ "Character_Notify_DeleteQ" ] = "Are you sure you want to delete this character?",
 	[ "Character_Notify_ExitQ" ] = "Are you sure you want to disconnect from the server?",
@@ -73,14 +80,18 @@ LANGUAGE.data = {
 	[ "Character_Notify_CantUseThisFaction" ] = "You can't use this faction!",
 	[ "Character_Notify_IsNotValidFaction" ] = "This character's faction is not valid!",
 	[ "Character_Notify_CharBanned" ] = "This character is banned!",
+	[ "Character_Notify_CantSwitch" ] = "You can't switch character now!",
 	[ "Character_Notify_CantSwitchUsing" ] = "You are already using this character!",
 	[ "Character_Notify_CantSwitchDeath" ] = "You can not switch character while dead!",
 	[ "Character_Notify_CantSwitchTied" ] = "You can not switch characters while tied!",
 	[ "Character_Notify_MaxLimitHit" ] = "You can not create any more characters!",
 	[ "Character_Notify_CharBan" ] = "%s has banned the character %s.",
 	[ "Character_Notify_CharUnBan" ] = "%s has unbanned the character %s.",
+	[ "Character_Notify_CantCharBan_UnBan" ] = "You can't ban / unban this character!",
 	[ "Character_Notify_SetName" ] = "%s has set the name of %s to %s.",
+	[ "Character_Notify_SetNameError" ] = "Can't type # in the character name!",
 	[ "Character_Notify_SetDesc" ] = "%s has set the description of %s to %s.",
+	[ "Character_Notify_SetDescError" ] = "Can't type # in the character description!",
 	[ "Character_Notify_SetModel" ] = "%s are set %s model for %s.",
 	[ "Character_Notify_SetDescLC" ] = "You have set your character description to %s.",
 	[ "Character_Notify_SelectModel" ] = "Please select a character model!",
@@ -125,14 +136,16 @@ LANGUAGE.data = {
 	[ "Basic_Notify_InputText" ] = "Please enter the text!",
 
 	// Version
-	[ "Version_UI_Title" ] = "Version",
-	[ "Version_UI_YourVer_AV" ] = "Ver '%s'",
-	[ "Version_UI_YourVer_NO" ] = "Ver 'Error'",
+	[ "Version_UI_Title" ] = "Information",
+	[ "Version_UI_YourVer_AV" ] = "Version '%s'",
+	[ "Version_UI_YourVer_NO" ] = "Version 'Error'",
 	[ "Version_UI_Checking" ] = "Checking update ...",
 	[ "Version_UI_CheckButtonStr" ] = "Update Check",
+	[ "Version_UI_OpenUpdateLogStr" ] = "Update Log",
 	[ "Version_Notify_FoundNew" ] = "This server should update to the latest version of Catherine!",
 	[ "Version_Notify_AlreadyNew" ] = "This server is using the latest version of Catherine.",
 	[ "Version_Notify_CheckError" ] = "Update check error! - %s",
+	[ "Version_Notify_NextTime" ] = "Too often unable to check the version, try again later!",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",
@@ -183,10 +196,14 @@ LANGUAGE.data = {
 	[ "Help_UI_DefPageTitle" ] = "Welcome.",
 	[ "Help_UI_DefPageDesc" ] = "Press and look at page if you want.",
 	[ "Help_Category_Flag" ] = "Flag",
+	[ "Help_Desc_Flag" ] = "The listed of Flags ...",
 	[ "Help_Category_Credit" ] = "Credit",
+	[ "Help_HTMLValue_Credit" ] = credit_htmlValue,
 	[ "Help_Category_Changelog" ] = "Change log",
 	[ "Help_Category_Command" ] = "Command",
+	[ "Help_Desc_Command" ] = "The listed of Commands ...",
 	[ "Help_Category_Plugin" ] = "Plugin",
+	[ "Help_Desc_Plugin" ] = "The listed of Plugins ...",
 	
 	// Plugin
 	[ "Plugin_Value_Author" ] = "Development and design by %s",
@@ -196,6 +213,10 @@ LANGUAGE.data = {
 	[ "Storage_UI_StorageNoHaveItem" ] = "This storage is empty.",
 	[ "Storage_UI_PlayerNoHaveItem" ] = "You do not have any items.",
 	[ "Storage_Notify_HasNotSpace" ] = "This storage does not have enough inventory space!",
+	[ "Storage_Notify_NoStorage" ] = "This entity is not a valid storage!",
+	[ "Storage_CMD_SetPWD" ] = "You are setting a password %s for this storage.",
+	[ "Storage_PWDQ" ] = "What is the password for this storage?",
+	[ "Storage_Notify_PWDError" ] = "The password is not a valid!",
 	[ "Storage_OpenStr" ] = "Open",
 	
 	// Item SYSTEM
@@ -217,6 +238,8 @@ LANGUAGE.data = {
 	[ "Item_Category_Accessory" ] = "Accessory",
 	[ "Item_FuncStr01_Accessory" ] = "Wear",
 	[ "Item_FuncStr02_Accessory" ] = "Take off",
+	[ "Item_Category_Alcohol" ] = "Alcohol",
+	[ "Item_FuncStr01_Alcohol" ] = "Drink",
 	[ "Item_Category_Ammo" ] = "Ammunition",
 	[ "Item_FuncStr01_Ammo" ] = "Use",
 	
@@ -320,6 +343,7 @@ LANGUAGE.data = {
 	[ "Hint_Message_02" ] = "Type .// or [[ before your message to talk out-of-character locally.",
 	[ "Hint_Message_03" ] = "Press 'F1 key' to view your character and roleplay information.",
 	[ "Hint_Message_04" ] = "Press 'Tab key' to view the main menu.",
+	[ "Hint_Message_05" ] = "Press 'F2 key' to Recognize to other person.",
 	
 	// Option
 	[ "Option_UI_Title" ] = "Option",
@@ -382,6 +406,8 @@ LANGUAGE.data = {
 	[ "Basic_Error_NoSchema" ] = "Can't find Schema table. (CAT_ERR 0x1)",
 	[ "Basic_Error_NoDatabase" ] = "Catherine has not connected to Database. (CAT_ERR 0x2) : %s",
 	[ "Basic_Error_LibraryLoad" ] = "Failed to load Library. (CAT_ERR 0x3) ( Function : %s )",
+	[ "Basic_Error_LoadTimeoutWait" ] = "Failed to at loading the Catherine, Reloading the Catherine ... (CAT_ERR 0x4) ( %s attempts. )",
+	[ "Basic_Error_Reloading" ] = "Reloading the Catherine ...",
 	[ "Basic_Framework_Author" ] = "Development and design by %s.",
 	[ "Basic_Notify_BunnyHop" ] = "Do not Bunny-hop!",
 	
@@ -394,10 +420,12 @@ LANGUAGE.data = {
 	[ "Command_PrintBodyGroup_Fin" ] = "Printed target player Body groups on the Console.",
 	
 	// AntiHaX
+	[ "AntiHaX_KickMessageNotifyAdmin" ] = "%s/%s user are using the Cheat programes, So kicked the player.",
 	[ "AntiHaX_KickMessage" ] = "Sorry, you have been kicked for using cheats.",
 	[ "AntiHaX_KickMessage_TimeOut" ] = "Sorry, you have been kicked because the anti-cheat timed out.",
 	
 	// Weapon
+	[ "Weapon_MapEntity_Desc" ] = "Press 'Use' to equip.",
 	[ "Weapon_Instructions_Title" ] = "- Instructions -",
 	[ "Weapon_Purpose_Title" ] = "- Purpose -",
 	[ "Weapon_Author_Title" ] = "- Author -",

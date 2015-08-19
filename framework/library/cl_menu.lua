@@ -88,6 +88,12 @@ function catherine.menu.RecoverLastActivePanel( menuPanel )
 	end
 end
 
+function catherine.menu.Rebuild( )
+	if ( IsValid( catherine.vgui.menu ) ) then
+		catherine.vgui.menu:Remove( )
+	end
+end
+
 function catherine.menu.VGUIMousePressed( pnl, code )
 	local menuPanel = catherine.menu.GetPanel( )
 	local activePanel = catherine.menu.GetActivePanel( )
@@ -106,7 +112,5 @@ end
 hook.Add( "VGUIMousePressed", "catherine.menu.VGUIMousePressed", catherine.menu.VGUIMousePressed )
 
 concommand.Add( "cat_menu_rebuild", function( )
-	if ( IsValid( catherine.vgui.menu ) ) then
-		catherine.vgui.menu:Remove( )
-	end
+	catherine.menu.Rebuild( )
 end )
