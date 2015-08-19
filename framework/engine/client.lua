@@ -750,14 +750,14 @@ function GM:RenderScreenspaceEffects( )
 end
 
 function GM:CharacterMenuJoined( pl )
-	if ( IsValid( catherine.chat.backpanel ) ) then
-		catherine.chat.backpanel:SetVisible( false )
+	if ( IsValid( catherine.chat.backPanel ) ) then
+		catherine.chat.backPanel:SetVisible( false )
 	end
 end
 
 function GM:CharacterMenuExited( pl )
-	if ( IsValid( catherine.chat.backpanel ) ) then
-		catherine.chat.backpanel:SetVisible( true )
+	if ( IsValid( catherine.chat.backPanel ) ) then
+		catherine.chat.backPanel:SetVisible( true )
 	end
 end
 
@@ -769,7 +769,7 @@ function GM:ScreenResolutionFix( )
 	catherine.hud.WelcomeIntroInitialize( true )
 	
 	catherine.chat.SetSizePosData( ScrW( ) * 0.5, ScrH( ) * 0.3, 5, ScrH( ) - ( ScrH( ) * 0.3 ) - 5 )
-	catherine.chat.Rebuild( )
+	catherine.chat.SizePosFix( )
 	
 	RunConsoleCommand( "cat_menu_rebuild" )
 end
