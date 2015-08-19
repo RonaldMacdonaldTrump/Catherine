@@ -251,7 +251,7 @@ else
 	end )
 	
 	function catherine.flag.Has( uniqueID )
-		return tobool( catherine.character.GetCharVar( LocalPlayer( ), "flags", "" ):find( uniqueID ) )
+		return tobool( catherine.character.GetCharVar( catherine.pl, "flags", "" ):find( uniqueID ) )
 	end
 	
 	function META:HasFlag( uniqueID )
@@ -264,7 +264,7 @@ else
 
 	hook.Add( "LanguageChanged", "catherine.flag.LanguageChanged", catherine.flag.LanguageChanged )
 	
-	if ( IsValid( LocalPlayer( ) ) ) then
+	if ( IsValid( catherine.pl ) ) then
 		rebuildFlag( )
 	end
 end

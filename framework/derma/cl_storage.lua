@@ -22,7 +22,7 @@ function PANEL:Init( )
 	catherine.vgui.storage = self
 	
 	self.ent = nil
-	self.player = LocalPlayer( )
+	self.player = catherine.pl
 	self.w, self.h = ScrW( ) * 0.7, ScrH( ) * 0.8
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
 

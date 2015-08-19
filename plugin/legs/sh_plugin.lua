@@ -99,7 +99,7 @@ function PLUGIN:CreateLeg( )
 		self.legEntity:Remove( )
 	end
 	
-	if ( !util.IsValidModel( LocalPlayer( ):GetModel( ) ) ) then
+	if ( !util.IsValidModel( catherine.pl:GetModel( ) ) ) then
 		if ( IsValid( self.legEntity ) ) then
 			self.legEntity:Remove( )
 		end
@@ -107,7 +107,7 @@ function PLUGIN:CreateLeg( )
 		return
 	end
 
-	local legEnt = ClientsideModel( LocalPlayer( ):GetModel( ), 10 )
+	local legEnt = ClientsideModel( catherine.pl:GetModel( ), 10 )
 
 	if ( IsValid( legEnt ) ) then
 		for k, v in pairs( HIDDEN_BONES ) do
@@ -127,7 +127,7 @@ function PLUGIN:CreateLeg( )
 end
 
 function PLUGIN:Think( )
-	local pl = LocalPlayer( )
+	local pl = catherine.pl
 
 	if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) or GetConVarString( "cat_convar_legs" ) == "0" ) then
 		return
@@ -151,7 +151,7 @@ end
 function PLUGIN:PostDrawViewModel( )
 	if ( GetConVarString( "cat_convar_legs" ) == "1" and IsValid( self.legEntity ) ) then
 		local legEnt = self.legEntity
-		local pl = LocalPlayer( )
+		local pl = catherine.pl
 		local realTime = RealTime( )
 		local ang = pl:GetAngles( )
 

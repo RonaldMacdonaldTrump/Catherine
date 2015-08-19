@@ -832,7 +832,7 @@ catherine.option.Register( "CONVAR_ADMIN_ESP", "cat_convar_adminesp", "^Option_S
 catherine.option.Register( "CONVAR_ALWAYS_ADMIN_ESP", "cat_convar_alwaysadminesp", "^Option_Str_Always_ADMIN_ESP_Name", "^Option_Str_Always_ADMIN_ESP_Desc", "^Option_Category_03", CAT_OPTION_SWITCH )
 
 netstream.Hook( "catherine.SetModel", function( data )
-	LocalPlayer( ):SetModel( data )
+	catherine.pl:SetModel( data )
 end )
 
 netstream.Hook( "catherine.introStart", function( )

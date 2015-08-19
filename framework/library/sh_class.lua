@@ -145,7 +145,7 @@ if ( SERVER ) then
 	end )
 else
 	function catherine.class.GetJoinable( )
-		local pl = LocalPlayer( )
+		local pl = catherine.pl
 		local team = pl:Team( )
 		local class = pl:Class( )
 		local classes = { }
@@ -162,7 +162,7 @@ else
 	end
 	
 	function catherine.class.CharacterCharVarChanged( pl )
-		if ( pl == LocalPlayer( ) and IsValid( catherine.vgui.class ) and !catherine.vgui.class:IsHiding( ) ) then
+		if ( pl == catherine.pl and IsValid( catherine.vgui.class ) and !catherine.vgui.class:IsHiding( ) ) then
 			catherine.vgui.class:InitializeClasses( )
 		end
 	end

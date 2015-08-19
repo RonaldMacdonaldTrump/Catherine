@@ -269,7 +269,7 @@ else
 	end
 	
 	function catherine.item.OpenMenuUse( uniqueID )
-		local pl = LocalPlayer( )
+		local pl = catherine.pl
 		local itemTable = catherine.item.FindByID( uniqueID )
 		local menu = DermaMenu( )
 
@@ -285,7 +285,7 @@ else
 	end
 	
 	function catherine.item.OpenEntityUseMenu( data )
-		local pl = LocalPlayer( )
+		local pl = catherine.pl
 		local ent = Entity( data[ 1 ] )
 		local uniqueID = data[ 2 ]
 

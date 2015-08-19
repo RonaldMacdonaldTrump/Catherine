@@ -37,7 +37,7 @@ if ( SERVER ) then return end
 
 function PLUGIN:PostPlayerDraw( pl )
 	if ( !pl:IsChatTyping( ) ) then return end
-	local lp = LocalPlayer( )
+	local lp = catherine.pl
 	local a = catherine.util.GetAlphaFromDistance( lp:GetPos( ), pl:GetPos( ), 312 )
 	
 	if ( a <= 0 or !pl:Alive( ) or pl:IsNoclipping( ) ) then return end

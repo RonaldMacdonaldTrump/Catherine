@@ -31,7 +31,7 @@ function PANEL:Init( )
 end
 
 function PANEL:Setup( pl )
-	if ( LocalPlayer( ):IsKnow( pl ) or LocalPlayer( ) == pl ) then
+	if ( catherine.pl:IsKnow( pl ) or catherine.pl == pl ) then
 		self.isKnow = true
 		
 		self.avatar = vgui.Create( "AvatarImage", self )

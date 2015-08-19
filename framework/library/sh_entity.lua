@@ -108,7 +108,7 @@ if ( SERVER ) then
 	end )
 else
 	netstream.Hook( "catherine.entity.CustomUseMenu", function( data )
-		local pl = LocalPlayer( )
+		local pl = catherine.pl
 		local index = data
 		local ent = Entity( index )
 		local menu = DermaMenu( )

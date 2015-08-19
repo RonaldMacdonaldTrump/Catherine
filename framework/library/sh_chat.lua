@@ -62,9 +62,9 @@ end
 
 catherine.chat.Register( "ic", {
 	func = function( pl, text )
-		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
+		local name, desc = hook.Run( "GetPlayerInformation", catherine.pl, pl )
 		
-		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
+		if ( hook.Run( "GetUnknownTargetName", catherine.pl, pl ) == name ) then
 			name = desc
 		end
 		
@@ -101,9 +101,9 @@ catherine.chat.Register( "it", {
 
 catherine.chat.Register( "roll", {
 	func = function( pl, text )
-		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
+		local name, desc = hook.Run( "GetPlayerInformation", catherine.pl, pl )
 		
-		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
+		if ( hook.Run( "GetUnknownTargetName", catherine.pl, pl ) == name ) then
 			name = desc
 		end
 		
@@ -150,9 +150,9 @@ catherine.chat.Register( "event", {
 
 catherine.chat.Register( "yell", {
 	func = function( pl, text )
-		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
+		local name, desc = hook.Run( "GetPlayerInformation", catherine.pl, pl )
 		
-		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
+		if ( hook.Run( "GetUnknownTargetName", catherine.pl, pl ) == name ) then
 			name = desc
 		end
 		
@@ -170,9 +170,9 @@ catherine.chat.Register( "yell", {
 
 catherine.chat.Register( "whisper", {
 	func = function( pl, text )
-		local name, desc = hook.Run( "GetPlayerInformation", LocalPlayer( ), pl )
+		local name, desc = hook.Run( "GetPlayerInformation", catherine.pl, pl )
 		
-		if ( hook.Run( "GetUnknownTargetName", LocalPlayer( ), pl ) == name ) then
+		if ( hook.Run( "GetUnknownTargetName", catherine.pl, pl ) == name ) then
 			name = desc
 		end
 
@@ -494,7 +494,7 @@ else
 	chat.AddTextBuffer = chat.AddTextBuffer or chat.AddText
 	
 	function chat.AddText( ... )
-		if ( !IsValid( LocalPlayer( ) ) or !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+		if ( !IsValid( catherine.pl ) or !catherine.pl:IsCharacterLoaded( ) ) then return end
 		local data = { }
 		local lastColor = Color( 255, 255, 255 )
 

@@ -63,11 +63,11 @@ else
 	end
 	
 	function ENT:Draw( )
-		local lp = LocalPlayer( )
+		local lp = catherine.pl
 		local pl = self:GetAttachmentParent( )
 		local wep = pl:GetActiveWeapon( )
 
-		if ( pl:IsNoclipping( ) or lp == pl and !lp:ShouldDrawLocalPlayer( ) ) then
+		if ( pl:IsNoclipping( ) or lp == pl and !lp:ShouldDrawcatherine.pl ) then
 			return
 		end
 		

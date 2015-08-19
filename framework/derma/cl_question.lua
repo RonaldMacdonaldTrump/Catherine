@@ -22,7 +22,7 @@ function PANEL:Init( )
 	catherine.vgui.question = self
 
 	self.answers = { }
-	self.player = LocalPlayer( )
+	self.player = catherine.pl
 	self.w, self.h = ScrW( ), ScrH( )
 	self.questionTitle = LANG( "Question_UIStr" )
 	

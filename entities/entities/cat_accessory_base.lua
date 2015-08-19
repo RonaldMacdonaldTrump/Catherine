@@ -62,7 +62,7 @@ else
 	end
 	
 	function ENT:Draw( )
-		local lp = LocalPlayer( )
+		local lp = catherine.pl
 		local pl = self:GetAccessoryParent( )
 
 		if ( !IsValid( pl ) ) then
@@ -70,7 +70,7 @@ else
 			return
 		end
 		
-		if ( pl:IsNoclipping( ) or !pl:Alive( ) or ( lp == pl and !lp:ShouldDrawLocalPlayer( ) ) ) then
+		if ( pl:IsNoclipping( ) or !pl:Alive( ) or ( lp == pl and !lp:ShouldDrawcatherine.pl ) ) then
 			return
 		end
 		

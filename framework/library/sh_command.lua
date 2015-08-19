@@ -156,7 +156,7 @@ else
 	local function rebuildCommand( )
 		local title_command = LANG( "Help_Category_Command" )
 		local html = Format( command_htmlValue, title_command, LANG( "Help_Desc_Command" ) )
-		local pl = LocalPlayer( )
+		local pl = catherine.pl
 		
 		for k, v in SortedPairs( catherine.command.GetAll( ) ) do
 			local havePermission = nil
