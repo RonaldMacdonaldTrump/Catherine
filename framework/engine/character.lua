@@ -262,7 +262,7 @@ if ( SERVER ) then
 		pl.CAT_characterLoadBuffer[ id ] = true
 
 		return true
-		// Fin!
+		// Finish!
 	end
 
 	function catherine.character.Create( pl, data )
@@ -405,7 +405,7 @@ if ( SERVER ) then
 				for k1, v1 in pairs( data ) do
 					if ( !v.doConversion ) then continue end
 					
-					data[ k1 ][ v.field ] = util.JSONToTable( data[ k1 ][ v.field ] )
+					data[ k1 ][ v.field ] = util.JSONToTable( data[ k1 ][ v.field ] ) or { }
 				end
 			end
 			
@@ -419,9 +419,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.character.RefreshCharacterBuffer( pl )
-		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
-			return
-		end
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then return end
 		
 		local steamID = pl:SteamID( )
 		
@@ -445,18 +443,17 @@ if ( SERVER ) then
 	function catherine.character.ConvertDataTable( data )
 		for k, v in pairs( data ) do
 			local varTable = catherine.character.FindVarByField( k )
+			
 			if ( ( varTable and !varTable.doConversion ) or type( v ) == "table" ) then continue end
 			
-			data[ k ] = util.JSONToTable( v )
+			data[ k ] = util.JSONToTable( v ) or { }
 		end
 		
 		return data
 	end
 
 	function catherine.character.CreateNetworkRegistry( pl, id, data )
-		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
-			return
-		end
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then return end
 		
 		local steamID = pl:SteamID( )
 		
@@ -470,9 +467,9 @@ if ( SERVER ) then
 			catherine.character.networkRegistry[ steamID ][ k ] = v
 		end
 		
-		hook.Run( "CreateNetworkRegistry", pl, catherine.character.networkRegistry[ steamID ] )
-		
 		netstream.Start( nil, "catherine.character.CreateNetworkRegistry", { pl, catherine.character.networkRegistry[ steamID ] } )
+		
+		hook.Run( "CreateNetworkRegistry", pl, catherine.character.networkRegistry[ steamID ] )
 	end
 
 	function catherine.character.SendAllNetworkRegistries( pl )
@@ -484,10 +481,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.DeleteNetworkRegistry( pl )
-		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
-			return
-		end
-		
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then return end
 		local steamID = pl:SteamID( )
 		
 		catherine.character.networkRegistry[ steamID ] = nil
@@ -532,9 +526,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.character.Save( pl )
-		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
-			return
-		end
+		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then return end
 
 		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
 		
@@ -555,9 +547,7 @@ if ( SERVER ) then
 		local id = pl:GetCharacterID( )
 
 		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. steamID .. "'", networkRegistry, function( )
-			if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then
-				return
-			end
+			if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then return end
 		
 			catherine.character.RefreshCharacterBuffer( pl )
 			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl:SteamName( ) .. "'s [" .. id .. "] character." )
@@ -669,11 +659,11 @@ else
 	
 	netstream.Hook( "catherine.character.SetVar", function( data )
 		local pl = data[ 1 ]
-		local key = data[ 2 ]
-		local value = data[ 3 ]
 		
 		if ( !IsValid( pl ) ) then return end
 		
+		local key = data[ 2 ]
+		local value = data[ 3 ]
 		local steamID = pl:SteamID( )
 		
 		if ( !catherine.character.networkRegistry[ steamID ] ) then return end
@@ -685,11 +675,11 @@ else
 
 	netstream.Hook( "catherine.character.SetCharVar", function( data )
 		local pl = data[ 1 ]
-		local key = data[ 2 ]
-		local value = data[ 3 ]
 		
 		if ( !IsValid( pl ) ) then return end
 		
+		local key = data[ 2 ]
+		local value = data[ 3 ]
 		local steamID = pl:SteamID( )
 		
 		if ( !catherine.character.networkRegistry[ steamID ] or !catherine.character.networkRegistry[ steamID ][ "_charVar" ] ) then return end
