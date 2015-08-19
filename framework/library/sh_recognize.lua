@@ -65,7 +65,7 @@ else
 		local menu = DermaMenu( )
 		
 		menu:AddOption( LANG( "Recognize_UI_Option_LookingPlayer" ), function( )
-			local pl = LocalPlayer( )
+			local pl = catherine.pl
 			
 			local data = { }
 			data.start = pl:GetShootPos( )
@@ -115,5 +115,7 @@ end
 local META = FindMetaTable( "Player" )
 
 function META:IsKnow( target )
-	return catherine.recognize.IsKnowTarget( self, target )
+	local factionTable = catherine.faction.FindByIndex( target:Team( ) )
+
+	return ( factionTable and factionTable.alwaysRecognized ) and true or table.HasValue( catherine.character.GetCharVar( pl, "recognize", { } ), target:GetCharacterID( ) )
 end
