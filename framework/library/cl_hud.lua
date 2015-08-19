@@ -269,7 +269,7 @@ end
 function catherine.hud.CharacterSave( pl, w, h )
 	local data = catherine.hud.characterSaving
 	
-	if ( data ) then
+	if ( data and #data != 0 ) then
 		if ( data.status ) then
 			data.a = Lerp( 0.03, data.a, 200 )
 		else

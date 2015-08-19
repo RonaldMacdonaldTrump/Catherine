@@ -67,7 +67,7 @@ else
 		local pl = self:GetAttachmentParent( )
 		local wep = pl:GetActiveWeapon( )
 
-		if ( pl:IsNoclipping( ) or lp == pl and !lp:ShouldDrawcatherine.pl ) then
+		if ( pl:IsNoclipping( ) or lp == pl and !lp:ShouldDrawLocalPlayer( ) ) then
 			return
 		end
 		

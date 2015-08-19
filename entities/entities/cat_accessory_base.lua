@@ -70,7 +70,7 @@ else
 			return
 		end
 		
-		if ( pl:IsNoclipping( ) or !pl:Alive( ) or ( lp == pl and !lp:ShouldDrawcatherine.pl ) ) then
+		if ( pl:IsNoclipping( ) or !pl:Alive( ) or ( lp == pl and !lp:ShouldDrawLocalPlayer( ) ) ) then
 			return
 		end
 		
