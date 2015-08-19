@@ -768,20 +768,14 @@ end
 function GM:ScreenResolutionFix( )
 	catherine.hud.WelcomeIntroInitialize( true )
 	
-	catherine.chat.posSizeData = {
-		w = ScrW( ) * 0.5,
-		h = ScrH( ) * 0.3,
-		x = 5,
-		y = ScrH( ) - ( ScrH( ) * 0.3 ) - 5
-	}
-	
-	if ( IsValid( catherine.chat.backpanel ) ) then
-		catherine.chat.backpanel:Remove( )
-	end
-
-	catherine.chat.CreateBase( )
+	catherine.chat.SetSizePosData( ScrW( ) * 0.5, ScrH( ) * 0.3, 5, ScrH( ) - ( ScrH( ) * 0.3 ) - 5 )
+	catherine.chat.Rebuild( )
 	
 	RunConsoleCommand( "cat_menu_rebuild" )
+end
+
+function GM:CantStartChat( pl )
+	return !pl:IsCharacterLoaded( )
 end
 
 function GM:PopulateToolMenu( )
@@ -805,6 +799,10 @@ function GM:PopulateToolMenu( )
 		language.Add( "tool." .. v.UniqueID .. ".desc", v.Desc )
 		language.Add( "tool." .. v.UniqueID .. ".0", v.HelpText )
 	end
+end
+
+function GM:InitPostEntity( )
+	catherine.pl = LocalPlayer( )
 end
 
 timer.Create( "Catherine.timer.ScreenResolutionCheck", 3, 0, function( )

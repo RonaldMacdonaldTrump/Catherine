@@ -451,10 +451,10 @@ else
 	catherine.chat.backpanel = catherine.chat.backpanel or nil
 	catherine.chat.chatpanel = catherine.chat.chatpanel or nil
 	catherine.chat.isOpened = catherine.chat.isOpened or false
-	catherine.chat.msg = catherine.chat.msg or { }
-	catherine.chat.history = catherine.chat.history or { }
-	catherine.chat.overrideFont = catherine.chat.overrideFont or nil
-	catherine.chat.posSizeData = {
+	catherine.chat.chatLines = catherine.chat.chatLines or { }
+	catherine.chat.chatTypedHistory = catherine.chat.chatTypedHistory or { }
+	catherine.chat.overrideChatFont = catherine.chat.overrideChatFont or nil
+	catherine.chat.sizePosData = {
 		w = ScrW( ) * 0.5,
 		h = ScrH( ) * 0.3,
 		x = 5,
@@ -462,9 +462,9 @@ else
 	}
 	
 	local typingText = ""
-	local CHATBox_w, CHATBox_h = catherine.chat.posSizeData.w, catherine.chat.posSizeData.h
-	local CHATBox_x, CHATBox_y = catherine.chat.posSizeData.x, catherine.chat.posSizeData.y
 	local maxchatLine = catherine.configs.maxChatboxLine
+	local vgui_Create = vgui.Create
+	
 	
 	CAT_CONVAR_CHAT_TIMESTAMP = CreateClientConVar( "cat_convar_chat_timestamp", "1", true, true )
 	catherine.option.Register( "CONVAR_CHAT_TIMESTAMP", "cat_convar_chat_timestamp", "^Option_Str_CHAT_TIMESTAMP_Name", "^Option_Str_CHAT_TIMESTAMP_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
@@ -478,12 +478,10 @@ else
 			
 			if ( font ) then
 				catherine.chat.SetOverrideFont( font )
-			end
-			
-			classTable.func( speaker, data[ 3 ], data[ 4 ] )
-			
-			if ( font ) then
+				classTable.func( speaker, data[ 3 ], data[ 4 ] )
 				catherine.chat.SetOverrideFont( nil )
+			else
+				classTable.func( speaker, data[ 3 ], data[ 4 ] )
 			end
 		end
 	end )
@@ -519,19 +517,23 @@ else
 	end
 	
 	function catherine.chat.SetOverrideFont( font )
-		catherine.chat.overrideFont = font
+		catherine.chat.overrideChatFont = font
+	end
+	
+	function catherine.chat.GetOverrideFont( )
+		return catherine.chat.overrideChatFont
 	end
 	
 	function catherine.chat.AddText( ... )
-		local msg = vgui.Create( "catherine.vgui.chatmarkup" )
+		local msg = vgui_Create( "catherine.vgui.chatmarkup" )
 		msg:Dock( TOP )
-		msg:SetFont( catherine.chat.overrideFont or "catherine_chat" )
-		msg:SetMaxWidth( catherine.chat.posSizeData.w - 16 )
+		msg:SetFont( catherine.chat.overrideChatFont or "catherine_chat" )
+		msg:SetMaxWidth( catherine.chat.sizePosData.w - 16 )
 		msg:Run( ... )
 		
-		catherine.chat.msg[ #catherine.chat.msg + 1 ] = msg
+		catherine.chat.chatLines[ #catherine.chat.chatLines + 1 ] = msg
 		
-		if ( catherine.chat.backpanel ) then
+		if ( IsValid( catherine.chat.backpanel ) ) then
 			local scrollBar = catherine.chat.backpanel.history.VBar
 			
 			catherine.chat.backpanel.history:AddItem( msg )
@@ -542,69 +544,116 @@ else
 			end
 		end
 		
-		if ( #catherine.chat.msg > maxchatLine ) then
-			local firstPanel = catherine.chat.msg[ 1 ]
+		if ( #catherine.chat.chatLines > maxchatLine ) then
+			local firstPanel = catherine.chat.chatLines[ 1 ]
 			
 			if ( IsValid( firstPanel ) ) then
 				firstPanel:Remove( )
 			end
 
-			table.remove( catherine.chat.msg, 1 )
+			table.remove( catherine.chat.chatLines, 1 )
 		end
 	end
-
-	function catherine.chat.CreateBase( )
-		if ( IsValid( catherine.chat.backpanel ) ) then return end
+	
+	function catherine.chat.SetSizePosData( w, h, x, y )
+		local oldData = catherine.chat.sizePosData
 		
-		catherine.chat.backpanel = vgui.Create( "DPanel" )
-		catherine.chat.backpanel:SetPos( catherine.chat.posSizeData.x, catherine.chat.posSizeData.y )
-		catherine.chat.backpanel:SetSize( catherine.chat.posSizeData.w, catherine.chat.posSizeData.h - 25 )
-		catherine.chat.backpanel.Paint = function( ) end
-
-		catherine.chat.backpanel.history = vgui.Create( "DScrollPanel", catherine.chat.backpanel )
-		catherine.chat.backpanel.history:Dock( FILL )
-		catherine.chat.backpanel.history.VBar:SetWide( 0 )
-		catherine.chat.backpanel.history.alpha = 255
+		catherine.chat.sizePosData = {
+			w = w or oldData.w,
+			h = h or oldData.h,
+			x = x or oldData.x,
+			y = y or oldData.y
+		}
 	end
 	
-	function catherine.chat.SetStatus( bool )
-		if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
-		local chatBoxW, chatBoxH = catherine.chat.posSizeData.w, catherine.chat.posSizeData.h
-		local chatBoxX, chatBoxY = catherine.chat.posSizeData.x, catherine.chat.posSizeData.y
+	function catherine.chat.GetSizePosData( ) // Problem?
+		local data = catherine.chat.sizePosData
 		
-		catherine.chat.CreateBase( )
-		catherine.chat.isOpened = bool
+		return data.w, data.h, data.x, data.y
+	end
+
+	function catherine.chat.Create( force )
+		if ( !force and IsValid( catherine.chat.backpanel ) ) then return end
+		local w, h, x, y = catherine.chat.GetSizePosData( )
+		
+		local base = vgui_Create( "DPanel" )
+		base:SetPos( x, y )
+		base:SetSize( w, h - 25 )
+		base.Paint = function( ) end
+		
+		local history = vgui_Create( "DScrollPanel", base )
+		history:Dock( FILL )
+		history.VBar:SetWide( 0 )
+		history.alpha = 255
+		
+		catherine.chat.backpanel = base
+		catherine.chat.backpanel.history = history
+	end
+	
+	function catherine.chat.Rebuild( )
+		if ( IsValid( catherine.chat.backpanel ) ) then
+			catherine.chat.backpanel:Remove( )
+		end
+
+		catherine.chat.Create( )
+	end
+	
+	function catherine.chat.SizePosFix( )
+		if ( IsValid( catherine.chat.backpanel ) ) then
+			local w, h, x, y = catherine.chat.GetSizePosData( )
+			
+			catherine.chat.backpanel:SetPos( x, y )
+			catherine.chat.backpanel:SetSize( w, h - 25 )
+			
+			if ( IsValid( catherine.chat.backpanel.history ) ) then
+				catherine.chat.backpanel.history:Dock( FILL )
+			end
+		end
+	end
+	
+	function catherine.chat.IsOpened( )
+		return catherine.chat.isOpened
+	end
+	
+	local chatPostFunction = function( self, pnl )
+		local text = pnl:GetText( )
+		
+		if ( text != "" ) then
+			text = text:utf8sub( 1 )
+			netstream.Start( "catherine.chat.Run", text )
+			catherine.chat.chatTypedHistory[ #catherine.chat.chatTypedHistory + 1 ] = text
+			
+			if ( #catherine.chat.chatTypedHistory > 20 ) then
+				table.remove( catherine.chat.chatTypedHistory, 1 )
+			end
+			
+			hook.Run( "FinishChatDelay" )
+		end
+		
+		catherine.chat.isOpened = false
+		
+		self:Remove( )
+		self = nil
+		
+		hook.Run( "FinishChat" )
+		
+		typingText = ""
+	end
+	
+	function catherine.chat.Show( )
+		if ( hook.Run( "CantStartChat", catherine.pl ) == true ) then return end
+		local chatBoxW, chatBoxH, chatBoxX, chatBoxY = catherine.chat.GetSizePosData( )
+		
+		if ( !IsValid( catherine.chat.backpanel ) ) then
+			catherine.chat.Create( true )
+		end
+		
+		catherine.chat.isOpened = true
 		
 		local init = false
 		local self = catherine.chat.chatpanel
-		local initHistoryKey = #catherine.chat.history + 1
-		local onEnterFunc = function( pnl )
-			local text = pnl:GetText( )
-			
-			if ( text != "" ) then
-				text = text:utf8sub( 1 )
-				netstream.Start( "catherine.chat.Run", text )
-				catherine.chat.history[ #catherine.chat.history + 1 ] = text
-				
-				if ( #catherine.chat.history > 20 ) then
-					table.remove( catherine.chat.history, 1 )
-				end
-			end
-			
-			catherine.chat.isOpened = false
-			
-			self:Remove( )
-			self = nil
-			
-			if ( typingText != "" ) then
-				hook.Run( "FinishChatDelay" )
-			end
-			
-			hook.Run( "FinishChat" )
-			
-			typingText = ""
-		end
-		
+		local initHistoryKey = #catherine.chat.chatTypedHistory + 1
+
 		catherine.chat.backpanel.PaintOver = function( pnl, w, h )
 			if ( !init and typingText != "" ) then
 				hook.Run( "StartChatDelay" )
@@ -621,14 +670,18 @@ else
 
 				if ( #commands == 1 ) then
 					local commandTable = commands[ 1 ]
-					local commandText = "/" .. commandTable.command
 					
-					surface.SetFont( "catherine_normal25" )
-					local tw, th = surface.GetTextSize( commandText )
+					if ( commandTable ) then
+						local commandText = "/" .. commandTable.command
 						
-					draw.SimpleText( commandText, "catherine_normal25", 15, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
-					draw.SimpleText( commandTable.syntax, "catherine_normal15", 30 + tw, chatY - 48, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
-					draw.SimpleText( catherine.util.StuffLanguage( commandTable.desc ), "catherine_normal20", 15, chatY - 20, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+						surface.SetFont( "catherine_normal25" )
+						
+						local tw, th = surface.GetTextSize( commandText )
+						
+						draw.SimpleText( commandText, "catherine_normal25", 15, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( commandTable.syntax, "catherine_normal15", 30 + tw, chatY - 48, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( catherine.util.StuffLanguage( commandTable.desc ), "catherine_normal20", 15, chatY - 20, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+					end
 				else
 					for k, v in pairs( commands ) do
 						local yPos = chatY - ( 20 * k )
@@ -651,15 +704,15 @@ else
 			end
 		end
 
-		self = vgui.Create( "EditablePanel", self )
+		self = vgui_Create( "EditablePanel", self )
 		self:SetPos( chatBoxX, chatBoxY + chatBoxH - 25 )
 		self:SetSize( chatBoxW, 25 )
 		self.Paint = function( ) end
 		
-		self.textEnt = vgui.Create( "DTextEntry", self )
+		self.textEnt = vgui_Create( "DTextEntry", self )
 		self.textEnt:Dock( FILL )
 		self.textEnt.OnEnter = function( pnl )
-			onEnterFunc( pnl )
+			chatPostFunction( self, pnl )
 		end
 		self.textEnt:SetAllowNonAsciiCharacters( true )
 		self.textEnt.Paint = function( pnl, w, h )
@@ -677,21 +730,21 @@ else
 		end
 		self.textEnt.OnKeyCodeTyped = function( pnl, code )
 			if ( code == KEY_ENTER ) then
-				onEnterFunc( pnl )
+				chatPostFunction( self, pnl )
 			elseif ( code == KEY_UP ) then
 				if ( initHistoryKey > 1 ) then
 					initHistoryKey = initHistoryKey - 1
 					
-					local savedText = catherine.chat.history[ initHistoryKey ]
+					local savedText = catherine.chat.chatTypedHistory[ initHistoryKey ]
 					
 					pnl:SetText( savedText )
 					pnl:SetCaretPos( savedText:utf8len( ) )
 				end
 			elseif ( code == KEY_DOWN ) then
-				if ( initHistoryKey < #catherine.chat.history ) then
+				if ( initHistoryKey < #catherine.chat.chatTypedHistory ) then
 					initHistoryKey = initHistoryKey + 1
 					
-					local savedText = catherine.chat.history[ initHistoryKey ]
+					local savedText = catherine.chat.chatTypedHistory[ initHistoryKey ]
 					
 					pnl:SetText( savedText )
 					pnl:SetCaretPos( savedText:utf8len( ) )
@@ -706,7 +759,7 @@ else
 	end
 	
 	do
-		catherine.chat.CreateBase( )
+		catherine.chat.Create( )
 	end
 end
 
