@@ -25,7 +25,7 @@ function PANEL:Init( )
 	self.mode = 0
 	self.doorDesc = ""
 	self.doorCurLen = 0
-	self.player = LocalPlayer( )
+	self.player = catherine.pl
 	self.w, self.h = ScrW( ) * 0.5, ScrH( ) * 0.6
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
 	

@@ -634,7 +634,7 @@ else
 		hook.Remove( "Tick", "catherine.player.CheckLocalPlayer.Tick" )
 		hook.Add( "Tick", "catherine.player.CheckLocalPlayer.Tick", function( )
 			if ( ( catherine.player.nextLocalPlayerCheck or 0 ) <= CurTime( ) ) then
-				if ( IsValid( LocalPlayer( ) ) ) then
+				if ( IsValid( catherine.pl ) ) then
 					netstream.Start( "catherine.player.CheckLocalPlayer_Receive" )
 					hook.Remove( "Tick", "catherine.player.CheckLocalPlayer.Tick" )
 					catherine.player.nextLocalPlayerCheck = nil

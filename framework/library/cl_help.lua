@@ -19,6 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 if ( !catherine.language ) then
 	catherine.util.Include( "sh_language.lua" )
 end
+
 catherine.help = catherine.help or { }
 catherine.help.lists = { }
 CAT_HELP_HTML = 1

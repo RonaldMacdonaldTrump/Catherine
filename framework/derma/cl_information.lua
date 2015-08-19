@@ -21,7 +21,7 @@ local PANEL = { }
 function PANEL:Init( )
 	catherine.vgui.information = self
 	
-	self.player = LocalPlayer( )
+	self.player = catherine.pl
 	self.w, self.h = ScrW( ), ScrH( )
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
 	self.blurAmount = 0

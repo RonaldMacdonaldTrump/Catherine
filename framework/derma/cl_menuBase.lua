@@ -22,7 +22,7 @@ function PANEL:Init( )
 	self.w = ScrW( ) * 0.5
 	self.h = ScrH( ) * 0.5
 	self.name = "MENU"
-	self.player = LocalPlayer( )
+	self.player = catherine.pl
 	
 	self:SetSize( self.w, self.h )
 	self:SetPos( 0 - self.w * 3, 80 )

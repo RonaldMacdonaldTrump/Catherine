@@ -66,7 +66,7 @@ end
 
 function catherine.bar.Draw( )
 	if ( getconVar( "cat_convar_bar" ) == "0" ) then return end
-	if ( hook_run( "CantDrawBar" ) or !LocalPlayer( ):Alive( ) or !LocalPlayer( ):IsCharacterLoaded( ) or #catherine.bar.lists == 0 ) then
+	if ( hook_run( "CantDrawBar", catherine.pl ) or !catherine.pl:Alive( ) or !catherine.pl:IsCharacterLoaded( ) or #catherine.bar.lists == 0 ) then
 		hook_run( "HUDDrawBarBottom", 5, 5 )
 		return
 	end
@@ -118,14 +118,14 @@ end
 
 do
 	catherine.bar.Register( "health", true, function( )
-			return LocalPlayer( ):Health( )
+			return catherine.pl:Health( )
 		end, function( )
-			return LocalPlayer( ):GetMaxHealth( )
+			return catherine.pl:GetMaxHealth( )
 		end, color( 255, 50, 50 ), 10
 	)
 	
 	catherine.bar.Register( "armor", true, function( )
-			return LocalPlayer( ):Armor( )
+			return catherine.pl:Armor( )
 		end, function( )
 			return 255
 		end, color( 50, 50, 255 ), 10

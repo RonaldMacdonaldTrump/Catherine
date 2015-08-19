@@ -25,7 +25,11 @@ if ( SERVER ) then
 		
 		for k, v in pairs( shipLists ) do
 			local itemTable = catherine.item.FindByID( k )
-			if ( itemTable ) then continue end
+			
+			if ( !itemTable ) then
+				table.remove( shipLists, k )
+				continue
+			end
 			
 			cost = cost + ( itemTable.cost * v )
 		end

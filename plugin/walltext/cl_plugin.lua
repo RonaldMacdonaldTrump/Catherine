@@ -50,7 +50,7 @@ function PLUGIN:DrawText( data )
 end
 
 function PLUGIN:PostDrawTranslucentRenderables( )
-	local pos = LocalPlayer( ):GetPos( )
+	local pos = catherine.pl:GetPos( )
 	
 	for k, v in pairs( self.textLists ) do
 		local a = catherine.util.GetAlphaFromDistance( pos, v.pos, 1000 )

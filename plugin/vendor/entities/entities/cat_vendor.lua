@@ -73,7 +73,7 @@ else
 	local toscreen = FindMetaTable( "Vector" ).ToScreen
 	
 	function ENT:Think( )
-		self:SetEyeTarget( LocalPlayer( ):GetPos( ) )
+		self:SetEyeTarget( catherine.pl:GetPos( ) )
 	end
 	
 	function ENT:DrawEntityTargetID( pl, ent, a )

@@ -144,10 +144,10 @@ else
 	end
 	
 	function catherine.limb.GetTable( )
-		return catherine.character.GetCharVar( LocalPlayer( ), "limbTable", { } )
+		return catherine.character.GetCharVar( catherine.pl, "limbTable", { } )
 	end
 	
 	function catherine.limb.IsAnyDamaged( )
-		return table.Count( catherine.character.GetCharVar( LocalPlayer( ), "limbTable", { } ) ) > 0
+		return table.Count( catherine.character.GetCharVar( catherine.pl, "limbTable", { } ) ) > 0
 	end
 end

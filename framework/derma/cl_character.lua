@@ -19,11 +19,11 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local PANEL = { }
 
 function PANEL:Init( )
-	hook.Run( "CharacterMenuJoined", LocalPlayer( ) )
+	hook.Run( "CharacterMenuJoined", catherine.pl )
 	
 	catherine.vgui.character = self
 	
-	self.player = LocalPlayer( )
+	self.player = catherine.pl
 	self.w, self.h = ScrW( ), ScrH( )
 	self.blurAmount = 0
 	self.mainAlpha = 0
@@ -99,7 +99,7 @@ function PANEL:Init( )
 			menu:AddOption( v.name, function( )
 				RunConsoleCommand( "cat_convar_language", k )
 				catherine.help.lists = { }
-				RunConsoleCommand( "cat_menu_rebuild" )
+				catherine.menu.Rebuild( )
 
 				timer.Simple( 0, function( )
 					hook.Run( "LanguageChanged" )

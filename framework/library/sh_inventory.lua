@@ -236,7 +236,7 @@ if ( SERVER ) then
 	hook.Add( "CreateNetworkRegistry", "catherine.inventory.CreateNetworkRegistry", catherine.inventory.CreateNetworkRegistry )
 else
 	function catherine.inventory.Get( )
-		return table_copy( getVar( LocalPlayer( ), "_inv", { } ) )
+		return table_copy( getVar( catherine.pl, "_inv", { } ) )
 	end
 	
 	function catherine.inventory.GetInvItem( uniqueID )
@@ -325,7 +325,7 @@ else
 	end
 	
 	function catherine.inventory.CharacterVarChanged( pl, key )
-		if ( key == "_inv" and pl == LocalPlayer( ) and IsValid( catherine.vgui.inventory ) and !catherine.vgui.inventory:IsHiding( ) ) then
+		if ( key == "_inv" and pl == catherine.pl and IsValid( catherine.vgui.inventory ) and !catherine.vgui.inventory:IsHiding( ) ) then
 			catherine.vgui.inventory:BuildInventory( )
 		end
 	end

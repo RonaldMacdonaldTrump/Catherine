@@ -279,7 +279,6 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		for k, v in pairs( data ) do
 			self:SetVendorData( ent, k, v )
 		end
-
 	elseif ( workID == CAT_VENDOR_ACTION_ITEM_CHANGE ) then
 		if ( !pl:IsAdmin( ) ) then
 			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )

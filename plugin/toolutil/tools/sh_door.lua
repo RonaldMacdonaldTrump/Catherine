@@ -106,7 +106,7 @@ if ( CLIENT ) then
 	local function UpdateControlPanel( pnl )
 		pnl:ClearControls( )
 		
-		local mode = LocalPlayer( ):GetInfoNum( "cat_door_mode", 0 )
+		local mode = catherine.pl:GetInfoNum( "cat_door_mode", 0 )
 		
 		local list = vgui.Create( "DListView" )
 		list:SetSize( 30, 103 )

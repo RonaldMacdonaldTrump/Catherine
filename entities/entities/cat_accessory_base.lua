@@ -62,7 +62,7 @@ else
 	end
 	
 	function ENT:Draw( )
-		local lp = LocalPlayer( )
+		local lp = catherine.pl
 		local pl = self:GetAccessoryParent( )
 
 		if ( !IsValid( pl ) ) then

@@ -90,7 +90,7 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 end
 
 function PLUGIN:HUDDraw( )
-	if ( !LocalPlayer( ):IsCharacterLoaded( ) or !LocalPlayer( ):Alive( ) ) then return end
+	if ( !catherine.pl:IsCharacterLoaded( ) or !catherine.pl:Alive( ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 	
 	for k, v in pairs( self.weapons ) do
@@ -149,7 +149,7 @@ function PLUGIN:LanguageChanged( )
 	self.curSlot = 1
 	self.weapons = { }
 		
-	for k, v in pairs( LocalPlayer( ):GetWeapons( ) ) do
+	for k, v in pairs( catherine.pl:GetWeapons( ) ) do
 		if ( !v or !IsValid( v ) ) then return end
 		
 		local markupText = "<font=catherine_normal20>"
@@ -187,7 +187,7 @@ function PLUGIN:LanguageChanged( )
 end
 
 netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
-	if ( !IsValid( LocalPlayer( ) ) ) then return end
+	if ( !IsValid( catherine.pl ) ) then return end
 	local id = data[ 1 ]
 	local uniqueID = data[ 2 ]
 	
@@ -198,7 +198,7 @@ netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
 			end
 		end
 		
-		local wep = LocalPlayer( ):GetWeapon( uniqueID )
+		local wep = catherine.pl:GetWeapon( uniqueID )
 		
 		if ( !wep or !IsValid( wep ) ) then return end
 
@@ -248,7 +248,7 @@ netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
 		PLUGIN.curSlot = 1
 		PLUGIN.weapons = { }
 		
-		for k, v in pairs( LocalPlayer( ):GetWeapons( ) ) do
+		for k, v in pairs( catherine.pl:GetWeapons( ) ) do
 			if ( !v or !IsValid( v ) ) then return end
 			
 			local markupText = "<font=catherine_normal20>"

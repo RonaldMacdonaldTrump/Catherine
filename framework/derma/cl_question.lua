@@ -22,7 +22,7 @@ function PANEL:Init( )
 	catherine.vgui.question = self
 
 	self.answers = { }
-	self.player = LocalPlayer( )
+	self.player = catherine.pl
 	self.w, self.h = ScrW( ), ScrH( )
 	self.questionTitle = LANG( "Question_UIStr" )
 	
@@ -73,7 +73,7 @@ function PANEL:Init( )
 			menu:AddOption( v.name, function( )
 				RunConsoleCommand( "cat_convar_language", k )
 				catherine.help.lists = { }
-				RunConsoleCommand( "cat_menu_rebuild" )
+				catherine.menu.Rebuild( )
 				
 				timer.Simple( 0, function( )
 					self.start:SetStr( LANG( "Question_UI_Continue" ) )

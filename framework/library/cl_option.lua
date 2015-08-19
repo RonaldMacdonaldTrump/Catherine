@@ -88,7 +88,7 @@ catherine.option.Register( "CONVAR_LANGUAGE", "cat_convar_language", "^Option_St
 			func = function( )
 				RunConsoleCommand( "cat_convar_language", k )
 				catherine.help.lists = { }
-				RunConsoleCommand( "cat_menu_rebuild" )
+				catherine.menu.Rebuild( )
 				
 				timer.Simple( 0, function( )
 					catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )

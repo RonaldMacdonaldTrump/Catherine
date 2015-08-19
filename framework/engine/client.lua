@@ -79,21 +79,22 @@ function GM:ContextMenuOpen( )
 end
 
 function GM:HUDPaintBackground( )
-	local lp = LocalPlayer( )
-	if ( !lp:IsAdmin( ) or ( GetConVarString( "cat_convar_alwaysadminesp" ) == "0" and !lp:IsNoclipping( ) ) or GetConVarString( "cat_convar_adminesp" ) == "0" ) then return end
+	local pl = catherine.pl
+	
+	if ( !pl:IsAdmin( ) or ( GetConVarString( "cat_convar_alwaysadminesp" ) == "0" and !pl:IsNoclipping( ) ) or GetConVarString( "cat_convar_adminesp" ) == "0" ) then return end
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		if ( lp == v ) then continue end
+		if ( pl == v ) then continue end
 		local pos = toscreen( v:LocalToWorld( v:OBBCenter( ) + OFFSET_AD_ESP ) )
 
 		draw.SimpleText( v:Name( ), "catherine_normal15", pos.x, pos.y, team.GetColor( v:Team( ) ), 1, 1 )
 
-		hook.Run( "AdminESPDrawed", lp, v, pos.x, pos.y )
+		hook.Run( "AdminESPDrawed", pl, v, pos.x, pos.y )
 	end
 end
 
 function GM:SpawnMenuOpen( )
-	return LocalPlayer( ):IsAdmin( )
+	return catherine.pl:IsAdmin( )
 end
 
 function GM:CalcView( pl, pos, ang, fov )
@@ -144,7 +145,7 @@ function GM:CantDrawBar( )
 end
 
 function GM:HUDDrawScoreBoard( )
-	if ( LocalPlayer( ):IsCharacterLoaded( ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
+	if ( catherine.pl:IsCharacterLoaded( ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 	local realTime = RealTime( ) // YES, this is real time, thats all.
 
@@ -335,7 +336,7 @@ end
 function GM:PostDrawTranslucentRenderables( depth, skybox )
 	if ( depth or skybox ) then return end
 
-	for k, v in pairs( ents.FindInSphere( LocalPlayer( ):GetPos( ), 256 ) ) do
+	for k, v in pairs( ents.FindInSphere( catherine.pl:GetPos( ), 256 ) ) do
 		if ( !IsValid( v ) or !v:IsDoor( ) or v:GetNoDraw( ) or catherine.door.IsDoorDisabled( v ) ) then continue end
 		
 		hook.Run( "DrawDoorText", v )
@@ -348,7 +349,7 @@ end
 
 function GM:PlayerBindPress( pl, code, pressed )
 	if ( code:find( "messagemode" ) and pressed ) then
-		catherine.chat.SetStatus( true )
+		catherine.chat.Show( )
 		
 		return true
 	end
@@ -362,7 +363,7 @@ end
 
 function GM:DrawDoorText( ent )
 	if ( catherine.door.IsDoorDisabled( ent ) ) then return end
-	local a = catherine.util.GetAlphaFromDistance( ent:GetPos( ), LocalPlayer( ):GetPos( ), 256 )
+	local a = catherine.util.GetAlphaFromDistance( ent:GetPos( ), catherine.pl:GetPos( ), 256 )
 
 	if ( math.Round( a ) <= 0 ) then
 		return
@@ -426,7 +427,7 @@ function GM:FinishChatDelay( )
 end
 
 function GM:FinishChat( )
-	if ( IsValid( LocalPlayer( ) ) and LocalPlayer( ):IsChatTyping( ) ) then
+	if ( IsValid( catherine.pl ) and catherine.pl:IsChatTyping( ) ) then
 		netstream.Start( "catherine.IsTyping", false )
 	end
 end
@@ -542,7 +543,7 @@ local getCharVar = catherine.character.GetCharVar
 
 function GM:HUDPaint( )
 	if ( IsValid( catherine.vgui.character ) ) then return end
-	local pl = LocalPlayer( )
+	local pl = catherine.pl
 	
 	if ( getCharVar( pl, "charBanned" ) ) then
 		local scrW, scrH = ScrW( ), ScrH( )
@@ -608,7 +609,7 @@ end
 
 function GM:CalcViewModelView( wep, viewMdl, oldEyePos, oldEyeAngles, eyePos, eyeAng )
 	if ( !IsValid( wep ) ) then return end
-	local pl = LocalPlayer( )
+	local pl = catherine.pl
 	local fraction = ( pl.CAT_wepRaisedFraction or 0 ) / 100
 	local lowerAng = wep.LowerAngles or Angle( 30, -30, -25 )
 	
@@ -697,9 +698,9 @@ function GM:GetSchemaInformation( )
 end
 
 function GM:ScoreboardShow( )
-	if ( !LocalPlayer( ):IsCharacterLoaded( ) ) then return end
+	if ( !catherine.pl:IsCharacterLoaded( ) ) then return end
 	
-	if ( getCharVar( LocalPlayer( ), "charBanned" ) ) then
+	if ( getCharVar( catherine.pl, "charBanned" ) ) then
 		if ( IsValid( catherine.vgui.character ) ) then
 			catherine.vgui.character:Remove( )
 			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
@@ -718,7 +719,7 @@ function GM:ScoreboardShow( )
 end
 
 function GM:RenderScreenspaceEffects( )
-	local data = hook.Run( "PostRenderScreenColor", LocalPlayer( ) ) or { }
+	local data = hook.Run( "PostRenderScreenColor", catherine.pl ) or { }
 	
 	local tab = { }
 	tab[ "$pp_colour_addr" ] = data.addr or 0
@@ -750,14 +751,14 @@ function GM:RenderScreenspaceEffects( )
 end
 
 function GM:CharacterMenuJoined( pl )
-	if ( IsValid( catherine.chat.backpanel ) ) then
-		catherine.chat.backpanel:SetVisible( false )
+	if ( IsValid( catherine.chat.backPanel ) ) then
+		catherine.chat.backPanel:SetVisible( false )
 	end
 end
 
 function GM:CharacterMenuExited( pl )
-	if ( IsValid( catherine.chat.backpanel ) ) then
-		catherine.chat.backpanel:SetVisible( true )
+	if ( IsValid( catherine.chat.backPanel ) ) then
+		catherine.chat.backPanel:SetVisible( true )
 	end
 end
 
@@ -768,20 +769,14 @@ end
 function GM:ScreenResolutionFix( )
 	catherine.hud.WelcomeIntroInitialize( true )
 	
-	catherine.chat.posSizeData = {
-		w = ScrW( ) * 0.5,
-		h = ScrH( ) * 0.3,
-		x = 5,
-		y = ScrH( ) - ( ScrH( ) * 0.3 ) - 5
-	}
+	catherine.chat.SetSizePosData( ScrW( ) * 0.5, ScrH( ) * 0.3, 5, ScrH( ) - ( ScrH( ) * 0.3 ) - 5 )
+	catherine.chat.SizePosFix( )
 	
-	if ( IsValid( catherine.chat.backpanel ) ) then
-		catherine.chat.backpanel:Remove( )
-	end
+	catherine.menu.Rebuild( )
+end
 
-	catherine.chat.CreateBase( )
-	
-	RunConsoleCommand( "cat_menu_rebuild" )
+function GM:CantStartChat( pl )
+	return !pl:IsCharacterLoaded( )
 end
 
 function GM:PopulateToolMenu( )
@@ -805,6 +800,10 @@ function GM:PopulateToolMenu( )
 		language.Add( "tool." .. v.UniqueID .. ".desc", v.Desc )
 		language.Add( "tool." .. v.UniqueID .. ".0", v.HelpText )
 	end
+end
+
+function GM:InitPostEntity( )
+	catherine.pl = LocalPlayer( )
 end
 
 timer.Create( "Catherine.timer.ScreenResolutionCheck", 3, 0, function( )
@@ -833,7 +832,7 @@ catherine.option.Register( "CONVAR_ADMIN_ESP", "cat_convar_adminesp", "^Option_S
 catherine.option.Register( "CONVAR_ALWAYS_ADMIN_ESP", "cat_convar_alwaysadminesp", "^Option_Str_Always_ADMIN_ESP_Name", "^Option_Str_Always_ADMIN_ESP_Desc", "^Option_Category_03", CAT_OPTION_SWITCH )
 
 netstream.Hook( "catherine.SetModel", function( data )
-	LocalPlayer( ):SetModel( data )
+	catherine.pl:SetModel( data )
 end )
 
 netstream.Hook( "catherine.introStart", function( )

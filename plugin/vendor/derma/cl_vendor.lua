@@ -23,7 +23,7 @@ function PANEL:Init( )
 	catherine.vgui.vendor = self
 	
 	self.vendorData = { cash = nil, inv = nil }
-	self.player = LocalPlayer( )
+	self.player = catherine.pl
 	self.w, self.h = ScrW( ) * 0.6, ScrH( ) * 0.8
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
 	self.currMenu = nil
@@ -78,16 +78,12 @@ function PANEL:Init( )
 	}
 	
 	self:SetSize( self.w, self.h )
-	self:Center( )
+	self:SetPos( ScrW( ), self.y )
+	self:MoveTo( ScrW( ) / 2 - self.w / 2, self.y, 0.2, 0 )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	self:ShowCloseButton( false )
 
-	if ( !PLUGIN.VENDOR_NOANI ) then
-		self:SetPos( ScrW( ), self.y )
-		self:MoveTo( ScrW( ) / 2 - self.w / 2, self.y, 0.2, 0 )
-	end
-	
 	self.buy = vgui.Create( "catherine.vgui.button", self )
 	self.buy:SetPos( 10, 35 )
 	self.buy:SetSize( self.w * 0.2, 25 )
@@ -472,6 +468,7 @@ function PANEL:Refresh_List( id )
 				panel:SetSize( form:GetWide( ), 50 )
 				panel.Paint = function( pnl, w, h )
 					local cost = newData.cost or itemTable.cost
+					
 					draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 					draw.SimpleText( catherine.util.StuffLanguage( itemTable.name ), "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 					draw.SimpleText( catherine.util.StuffLanguage( itemTable.desc ), "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
@@ -702,9 +699,11 @@ function PANEL:GetSellableItems( )
 
 	for k, v in pairs( catherine.item.GetAll( ) ) do
 		if ( !catherine.inventory.HasItem( k ) ) then continue end
+		
 		local data = self.vendorData.inv[ k ] or { }
 		
 		if ( !data.type or table.HasValue( { 1, 2 }, data.type ) ) then continue end
+		
 		local category = v.category
 		
 		tab[ category ] = tab[ category ] or { }
@@ -721,6 +720,7 @@ function PANEL:GetBuyableItems( )
 		local data = self.vendorData.inv[ k ] or { }
 		
 		if ( !data.type or table.HasValue( { 1, 3 }, data.type ) ) then continue end
+		
 		local category = v.category
 		
 		tab[ category ] = tab[ category ] or { }
@@ -786,8 +786,10 @@ function PANEL:ItemInformationPanel( itemTable, data )
 			}
 		} )
 		
-		self.itemInformationPanel:Remove( )
-		self.itemInformationPanel = nil
+		if ( IsValid( self.itemInformationPanel ) ) then
+			self.itemInformationPanel:Remove( )
+			self.itemInformationPanel = nil
+		end
 	end
 	
 	self.itemInformationPanel.dis = vgui.Create( "catherine.vgui.button", self.itemInformationPanel )
@@ -804,8 +806,10 @@ function PANEL:ItemInformationPanel( itemTable, data )
 			newData.uniqueID
 		} )
 		
-		self.itemInformationPanel:Remove( )
-		self.itemInformationPanel = nil
+		if ( IsValid( self.itemInformationPanel ) ) then
+			self.itemInformationPanel:Remove( )
+			self.itemInformationPanel = nil
+		end
 	end
 	
 	self.itemInformationPanel.typeChange = vgui.Create( "catherine.vgui.button", self.itemInformationPanel )
@@ -843,8 +847,10 @@ function PANEL:ItemInformationPanel( itemTable, data )
 				}
 			} )
 			
-			self.itemInformationPanel:Remove( )
-			self.itemInformationPanel = nil
+			if ( IsValid( self.itemInformationPanel ) ) then
+				self.itemInformationPanel:Remove( )
+				self.itemInformationPanel = nil
+			end
 		end )
 		
 		menu:AddOption( LANG( "Vendor_UI_ItemSettingSellOnlyTypeStr" ), function( )
@@ -859,8 +865,10 @@ function PANEL:ItemInformationPanel( itemTable, data )
 				}
 			} )
 			
-			self.itemInformationPanel:Remove( )
-			self.itemInformationPanel = nil
+			if ( IsValid( self.itemInformationPanel ) ) then
+				self.itemInformationPanel:Remove( )
+				self.itemInformationPanel = nil
+			end
 		end )
 		
 		menu:AddOption( LANG( "Vendor_UI_ItemSettingBothTypeStr" ), function( )
@@ -875,8 +883,10 @@ function PANEL:ItemInformationPanel( itemTable, data )
 				}
 			} )
 			
-			self.itemInformationPanel:Remove( )
-			self.itemInformationPanel = nil
+			if ( IsValid( self.itemInformationPanel ) ) then
+				self.itemInformationPanel:Remove( )
+				self.itemInformationPanel = nil
+			end
 		end )
 		
 		menu:Open( )
@@ -948,8 +958,10 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	self.itemInformationPanel.close:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.itemInformationPanel.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.itemInformationPanel.close.Click = function( )
-		self.itemInformationPanel:Remove( )
-		self.itemInformationPanel = nil
+		if ( IsValid( self.itemInformationPanel ) ) then
+			self.itemInformationPanel:Remove( )
+			self.itemInformationPanel = nil
+		end
 	end
 end
 
@@ -990,19 +1002,12 @@ function PANEL:Close( )
 		self.itemInformationPanel = nil
 	end
 	
-	if ( PLUGIN.VENDOR_NOANI ) then
-		self.closing = true
-		
+	self.closing = true
+	
+	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
 		self:Remove( )
 		self = nil
-	else
-		self.closing = true
-		
-		self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
-			self:Remove( )
-			self = nil
-		end )
-	end
+	end )
 end
 
 vgui.Register( "catherine.vgui.vendor", PANEL, "DFrame" )

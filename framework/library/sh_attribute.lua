@@ -331,13 +331,13 @@ if ( SERVER ) then
 	hook.Add( "CreateNetworkRegistry", "catherine.attribute.CreateNetworkRegistry", catherine.attribute.CreateNetworkRegistry )
 else
 	function catherine.attribute.GetProgress( uniqueID )
-		local attribute = catherine.character.GetVar( LocalPlayer( ), "_att", { } )
+		local attribute = catherine.character.GetVar( catherine.pl, "_att", { } )
 
 		return attribute[ uniqueID ] and attribute[ uniqueID ].progress or 0
 	end
 	
 	function catherine.attribute.GetBoostProgress( uniqueID )
-		local attribute = catherine.character.GetVar( LocalPlayer( ), "_att", { } )
+		local attribute = catherine.character.GetVar( catherine.pl, "_att", { } )
 
 		return attribute[ uniqueID ] and attribute[ uniqueID ].boost or 0
 	end

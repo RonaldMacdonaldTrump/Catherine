@@ -617,7 +617,7 @@ else
 	end )
 
 	netstream.Hook( "catherine.util.PlayAdvanceSound", function( data )
-		if ( !IsValid( LocalPlayer( ) ) ) then return end
+		if ( !IsValid( catherine.pl ) ) then return end
 		local uniqueID = data[ 1 ]
 		local dir = data[ 2 ]
 		local volume = data[ 3 ]
@@ -626,7 +626,7 @@ else
 			catherine.util.advSounds[ uniqueID ]:Stop( )
 		end
 		
-		local soundObj = CreateSound( LocalPlayer( ), dir )
+		local soundObj = CreateSound( catherine.pl, dir )
 		soundObj:PlayEx( volume, 100 )
 		
 		catherine.util.advSounds[ uniqueID ] = soundObj
@@ -637,7 +637,7 @@ else
 	end )
 	
 	netstream.Hook( "catherine.util.StopAdvanceSound", function( data )
-		if ( !IsValid( LocalPlayer( ) ) ) then return end
+		if ( !IsValid( catherine.pl ) ) then return end
 		local uniqueID = data[ 1 ]
 		local fadeOut = data[ 2 ]
 		local soundObj = catherine.util.advSounds[ uniqueID ]

@@ -22,8 +22,6 @@ CAT_LOG_FLAG_BASIC = 2
 local printColor = Color( 50, 200, 50 )
 
 if ( SERVER ) then
-	if ( !catherine.configs.enable_Log ) then return end
-	
 	function catherine.log.Add( flag, str, isStream )
 		if ( !catherine.configs.enable_Log ) then return end
 		

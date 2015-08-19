@@ -93,8 +93,8 @@ function catherine.hud.DeathScreen( pl, w, h )
 end
 
 timer.Create( "catherine.hud.VignetteCheck", 1.5, 0, function( )
-	if ( !IsValid( LocalPlayer( ) ) or vignetteMat == "__material__error" ) then return end
-	local data = { start = LocalPlayer( ):GetPos( ) }
+	if ( !IsValid( catherine.pl ) or vignetteMat == "__material__error" ) then return end
+	local data = { start = catherine.pl:GetPos( ) }
 	data.endpos = data.start + Vector( 0, 0, 2000 )
 	local tr = traceLine( data )
 	
@@ -124,7 +124,7 @@ function catherine.hud.Ammo( pl, w, h )
 	if ( !IsValid( wep ) or wep.DrawHUD == false ) then return end
 	local clip1 = wep:Clip1( )
 	local pre = pl:GetAmmoCount( wep:GetPrimaryAmmoType( ) )
-	//local sec = LocalPlayer( ):GetAmmoCount( wep:GetSecondaryAmmoType( ) )
+	//local sec = catherine.pl:GetAmmoCount( wep:GetSecondaryAmmoType( ) )
 	
 	catherine.hud.clip1 = Lerp( 0.03, catherine.hud.clip1, clip1 )
 	catherine.hud.pre = Lerp( 0.03, catherine.hud.pre, pre )
@@ -269,7 +269,7 @@ end
 function catherine.hud.CharacterSave( pl, w, h )
 	local data = catherine.hud.characterSaving
 	
-	if ( data ) then
+	if ( data and #data != 0 ) then
 		if ( data.status ) then
 			data.a = Lerp( 0.03, data.a, 200 )
 		else
