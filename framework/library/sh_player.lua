@@ -162,16 +162,18 @@ if ( SERVER ) then
 	
 	function catherine.player.HealthRecoverTick( pl )
 		if ( !pl.CAT_healthRecover ) then return end
-
-		if ( math.Round( pl:Health( ) ) >= pl:GetMaxHealth( ) ) then
-			pl.CAT_healthRecover = false
-			hook.Run( "HealthFullRecovered", pl )
-			return
-		end
 		
-		if ( ( pl.CAT_healthRecoverTick or CurTime( ) ) <= CurTime( ) ) then
+		if ( ( pl.CAT_healthRecoverTick or 0 ) <= CurTime( ) ) then
+			if ( hook.Run( "CanRecoverHealth", pl ) == false ) then return end
+			
+			if ( pl:Health( ) >= pl:GetMaxHealth( ) ) then
+				pl.CAT_healthRecover = nil
+				hook.Run( "HealthFullRecovered", pl )
+				return
+			end
+			
 			pl:SetHealth( math.Clamp( pl:Health( ) + 1, 0, pl:GetMaxHealth( ) ) )
-			pl.CAT_healthRecoverTick = CurTime( ) + 5
+			pl.CAT_healthRecoverTick = CurTime( ) + ( hook.Run( "GetHealthRecoverInterval", pl ) or 5 )
 			hook.Run( "HealthRecovering", pl )
 		end
 	end

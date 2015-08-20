@@ -105,12 +105,17 @@ function GM:PlayerHealthSet( pl, newHealth, oldHealth )
 	
 	if ( newHealth > oldHealth ) then
 		catherine.limb.HealBody( pl, ( newHealth - oldHealth ) / 2.2 )
+		pl.CAT_healthRecover = true
 	end
 	
 	if ( newHealth >= maxHealth ) then
 		catherine.limb.HealBody( pl, 100 )
 		pl:RemoveAllDecals( )
 	end
+end
+
+function GM:GetHealthRecoverInterval( pl )
+
 end
 
 function GM:PlayerCharacterLoaded( pl )

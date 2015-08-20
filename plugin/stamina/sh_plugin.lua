@@ -43,58 +43,58 @@ if ( SERVER ) then
 	function PLUGIN:GetCustomPlayerDefaultRunSpeed( pl )
 		local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
 		
-		if ( math.Round( stamina ) <= 10 or pl.CAT_stm_rec ) then
+		if ( math.Round( stamina ) <= 10 or pl.CAT_staminaRegaining ) then
 			if ( math.Round( stamina ) >= 100 ) then
-				pl.CAT_stm_rec = nil
+				pl.CAT_staminaRegaining = nil
 				return
 			end
 			
-			pl.CAT_stm_rec = true
+			pl.CAT_staminaRegaining = true
 			
 			return pl:GetWalkSpeed( )
 		end
 	end
 
-	function PLUGIN:Think( )
-		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			if ( v:IsNoclipping( ) ) then continue end
-			
-			if ( !v.CAT_nextStaminaDown or !v.CAT_nextStaminaUp ) then
-				v.CAT_nextStaminaDown = CurTime( ) + 1
-				v.CAT_nextStaminaUp = CurTime( ) + 3
-			end
-			
-			if ( v:IsRunning( ) and v.CAT_nextStaminaDown <= CurTime( ) ) then
-				local staminaDown = math.Clamp( catherine.character.GetCharVar( v, "stamina", 100 ) + ( -10 + math.min( catherine.attribute.GetProgress( v, CAT_ATT_STAMINA ) * 0.25, 7.5 ) ), 0, 100 )
+	function PLUGIN:PlayerThink( pl )
+		if ( pl:IsNoclipping( ) ) then return end
+		local curTime = CurTime( )
+		
+		if ( pl:IsRunning( ) ) then
+			if ( ( pl.CAT_nextStaminaDown or 0 ) <= curTime ) then
+				local staminaDown = math.Clamp(
+					catherine.character.GetCharVar( pl, "stamina", 100 ) - ( 3 + ( 7 * ( 1 - ( catherine.attribute.GetProgress( pl, CAT_ATT_STAMINA ) / 100 ) ) ) ),
+					0,
+					100
+				) // Old : ( -10 + math.min( catherine.attribute.GetProgress( pl, CAT_ATT_STAMINA ) * 0.25, 7.5 ) )
 				
 				if ( math.Round( staminaDown ) < 5 ) then
-					catherine.attribute.AddProgress( v, CAT_ATT_STAMINA, 0.05 )
+					catherine.attribute.AddProgress( pl, CAT_ATT_STAMINA, 0.8 )
 					
-					if ( ( v.CAT_nextBreathingSound or CurTime( ) ) <= CurTime( ) ) then
-						catherine.util.PlayAdvanceSound( v, "ST_BreathingSound", "player/breathe1.wav", 100 )
-						v.CAT_isBreathing = true
-						v.CAT_nextBreathingSound = CurTime( ) + 1
+					if ( ( pl.CAT_nextBreathingSound or 0 ) <= curTime ) then
+						catherine.util.PlayAdvanceSound( pl, "ST_BreathingSound", "player/breathe1.wav", 100 )
+						pl.CAT_isBreathing = true
+						pl.CAT_nextBreathingSound = CurTime( ) + 1
 					end
 				else
-					catherine.character.SetCharVar( v, "stamina", staminaDown )
+					catherine.character.SetCharVar( pl, "stamina", staminaDown )
 				end
 				
-				v.CAT_nextStaminaDown = CurTime( ) + 1
-			else
-				if ( v.CAT_nextStaminaUp <= CurTime( ) ) then
-					local staminaUp = math.Clamp( catherine.character.GetCharVar( v, "stamina", 100 ) + 5, 0, 100 )
-
-					if ( staminaUp > 30 and v.CAT_isBreathing ) then
-						catherine.util.StopAdvanceSound( v, "ST_BreathingSound", 5 )
-						v.CAT_isBreathing = nil
-					end
-					
-					if ( staminaUp != catherine.character.GetCharVar( v, "stamina", 100 ) ) then
-						catherine.character.SetCharVar( v, "stamina", staminaUp )
-					end
-
-					v.CAT_nextStaminaUp = CurTime( ) + 3
+				pl.CAT_nextStaminaDown = CurTime( ) + 1.5
+			end
+		else
+			if ( ( pl.CAT_nextStaminaUp or 0 ) <= CurTime( ) ) then
+				local staminaUp = math.Clamp( catherine.character.GetCharVar( pl, "stamina", 100 ) + 5, 0, 100 )
+				
+				if ( staminaUp > 30 and pl.CAT_isBreathing ) then
+					catherine.util.StopAdvanceSound( pl, "ST_BreathingSound", 5 )
+					pl.CAT_isBreathing = nil
 				end
+				
+				if ( staminaUp != catherine.character.GetCharVar( pl, "stamina", 100 ) ) then
+					catherine.character.SetCharVar( pl, "stamina", staminaUp )
+				end
+				
+				pl.CAT_nextStaminaUp = CurTime( ) + 3
 			end
 		end
 	end

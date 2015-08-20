@@ -68,7 +68,7 @@ function catherine.bar.Draw( )
 	if ( #catherine.bar.lists == 0 or getconVar( "cat_convar_bar" ) == "0" ) then return end
 	local pl = catherine.pl
 	
-	if ( hook_run( "CantDrawBar", pl ) ) then
+	if ( hook_run( "CanDrawBar", pl ) == false ) then
 		hook_run( "HUDDrawBarBottom", 5, 5 )
 		return
 	end

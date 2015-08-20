@@ -35,7 +35,7 @@ if ( SERVER ) then
 
 		for k, v in pairs( hintTable and player.GetAllByLoaded( ) or { } ) do
 			if ( v:GetInfo( "cat_convar_hint" ) == "0" ) then continue end
-			if ( hook.Run( "CantSendHint", v ) == true or ( hintTable.canLook and hintTable.canLook( v ) == false ) ) then continue end
+			if ( hook.Run( "CanSendHint", v, hintTable ) == false or ( hintTable.canLook and hintTable.canLook( v ) == false ) ) then continue end
 			
 			netstream.Start( v, "catherine.hint.Receive", rand )
 		end
@@ -67,8 +67,8 @@ else
 	end )
 	
 	function catherine.hint.Draw( )
-		if ( !catherine.hint.curHint ) then return end
-		if ( hook.Run( "CantDrawHint", catherine.pl ) == true or GetConVarString( "cat_convar_hint" ) == "0" ) then return end
+		if ( !catherine.hint.curHint or GetConVarString( "cat_convar_hint" ) == "0" ) then return end
+		if ( hook.Run( "CanDrawHint", catherine.pl, catherine.hint.curHint ) == false ) then return end
 		local t = catherine.hint.curHint
 		
 		if ( t.time <= CurTime( ) ) then
