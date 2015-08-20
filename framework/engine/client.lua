@@ -48,6 +48,7 @@ catherine.intro = catherine.intro or {
 	
 	introDone = false
 }
+catherine.deathColAlpha = catherine.deathColAlpha or 0
 catherine.screenResolution = catherine.screenResolution or { w = ScrW( ), h = ScrH( ) }
 local entityCaches = { }
 local nextEntityCacheWork = RealTime( )
@@ -124,8 +125,8 @@ function GM:CalcView( pl, pos, ang, fov )
 	end
 
 	local ent = Entity( pl:GetNetVar( "ragdollIndex", 0 ) )
-
-	if ( IsValid( ent ) and ent:GetClass( ) == "prop_ragdoll" and pl:IsRagdolled( ) ) then
+	
+	if ( IsValid( ent ) and ent:GetClass( ) == "prop_ragdoll" ) then
 		local index = ent:LookupAttachment( "eyes" )
 		
 		if ( index ) then
@@ -737,6 +738,18 @@ function GM:ScoreboardShow( )
 			gui.EnableScreenClicker( true )
 		end
 	end
+end
+
+function GM:PostRenderScreenColor( pl )
+	if ( pl:Alive( ) ) then
+		catherine.deathColAlpha = Lerp( 0.03, catherine.deathColAlpha, 1 )
+	else
+		catherine.deathColAlpha = Lerp( 0.03, catherine.deathColAlpha, 0 )
+	end
+	
+	return {
+		colour = catherine.deathColAlpha
+	}
 end
 
 function GM:RenderScreenspaceEffects( )

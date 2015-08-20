@@ -254,18 +254,18 @@ if ( SERVER ) then
 		pl.CAT_doorSpamCount = pl.CAT_doorSpamCount + 1
 		
 		if ( pl.CAT_lastDoor == ent and pl.CAT_doorSpamCount >= 10 ) then
+			timer.Remove( "Catherine.timer.DoorSpamCountInitizlie_" .. steamID )
 			pl.lookingDoorEntity = nil
 			pl.CAT_doorSpamCount = 0
 			pl.CAT_cantUseDoor = true
 			catherine.util.NotifyLang( pl, "Door_Notify_DoorSpam" )
 			
-			timer.Create( "Catherine.timer.DoorSpamDelta_" .. steamID, 1, 1, function( )
+			timer.Create( "Catherine.timer.DoorSpamDelta_" .. steamID, 10, 1, function( )
 				if ( !IsValid( pl ) ) then return end
 				
 				pl.CAT_cantUseDoor = nil
 			end )
-			
-			timer.Remove( "Catherine.timer.DoorSpamCountInitizlie_" .. steamID )
+			return
 		elseif ( pl.CAT_lastDoor != ent ) then
 			pl.CAT_lastDoor = ent
 			pl.CAT_doorSpamCount = 1

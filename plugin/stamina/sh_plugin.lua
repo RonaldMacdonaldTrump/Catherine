@@ -61,40 +61,47 @@ if ( SERVER ) then
 		
 		if ( pl:IsRunning( ) ) then
 			if ( ( pl.CAT_nextStaminaDown or 0 ) <= curTime ) then
+				local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
 				local staminaDown = math.Clamp(
-					catherine.character.GetCharVar( pl, "stamina", 100 ) - ( 3 + ( 7 * ( 1 - ( catherine.attribute.GetProgress( pl, CAT_ATT_STAMINA ) / 100 ) ) ) ),
+					stamina - ( 3 + ( 7 * ( 1 - ( catherine.attribute.GetProgress( pl, CAT_ATT_STAMINA ) / 100 ) ) ) ),
 					0,
 					100
-				) // Old : ( -10 + math.min( catherine.attribute.GetProgress( pl, CAT_ATT_STAMINA ) * 0.25, 7.5 ) )
-				
-				if ( math.Round( staminaDown ) < 5 ) then
-					catherine.attribute.AddProgress( pl, CAT_ATT_STAMINA, 0.8 )
+				)
+
+				if ( math.Round( staminaDown ) <= 11 ) then
+					if ( !pl.CAT_staminaAttributeAdd ) then
+						catherine.attribute.AddProgress( pl, CAT_ATT_STAMINA, 0.8 )
+						pl.CAT_staminaAttributeAdd = true
+					end
 					
 					if ( ( pl.CAT_nextBreathingSound or 0 ) <= curTime ) then
 						catherine.util.PlayAdvanceSound( pl, "ST_BreathingSound", "player/breathe1.wav", 100 )
 						pl.CAT_isBreathing = true
-						pl.CAT_nextBreathingSound = CurTime( ) + 1
+						pl.CAT_nextBreathingSound = curTime + 1
 					end
+					
+					catherine.character.SetCharVar( pl, "stamina", staminaDown )
 				else
 					catherine.character.SetCharVar( pl, "stamina", staminaDown )
 				end
 				
-				pl.CAT_nextStaminaDown = CurTime( ) + 1.5
+				pl.CAT_nextStaminaDown = curTime + 1.5
 			end
 		else
-			if ( ( pl.CAT_nextStaminaUp or 0 ) <= CurTime( ) ) then
+			if ( ( pl.CAT_nextStaminaUp or 0 ) <= curTime ) then
 				local staminaUp = math.Clamp( catherine.character.GetCharVar( pl, "stamina", 100 ) + 5, 0, 100 )
 				
 				if ( staminaUp > 30 and pl.CAT_isBreathing ) then
 					catherine.util.StopAdvanceSound( pl, "ST_BreathingSound", 5 )
 					pl.CAT_isBreathing = nil
+					pl.CAT_staminaAttributeAdd = nil
 				end
 				
 				if ( staminaUp != catherine.character.GetCharVar( pl, "stamina", 100 ) ) then
 					catherine.character.SetCharVar( pl, "stamina", staminaUp )
 				end
 				
-				pl.CAT_nextStaminaUp = CurTime( ) + 3
+				pl.CAT_nextStaminaUp = curTime + 3
 			end
 		end
 	end

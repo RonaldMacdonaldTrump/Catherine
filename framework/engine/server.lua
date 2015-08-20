@@ -146,14 +146,17 @@ function GM:PlayerCharacterLoaded( pl )
 end
 
 function GM:PlayerSpawn( pl )
-	if ( IsValid( pl.deathBody ) ) then
-		pl.deathBody:Remove( )
-		pl.deathBody = nil
+	if ( IsValid( pl.CAT_deathBody ) ) then
+		pl:SetNetVar( "ragdollIndex", nil )
+		pl.CAT_deathBody:Remove( )
+		pl.CAT_deathBody = nil
 	end
 
 	pl.CAT_deathSoundPlayed = nil
 
 	pl:SetNetVar( "noDrawOriginal", nil )
+	pl:SetNetVar( "nextSpawnTime", nil )
+	pl:SetNetVar( "deathTime", nil )
 	
 	pl:Freeze( false )
 	pl:SetNoDraw( false )
@@ -294,8 +297,8 @@ function GM:PlayerAuthed( pl )
 end
 
 function GM:PlayerDisconnected( pl )
-	if ( IsValid( pl.deathBody ) ) then
-		pl.deathBody:Remove( )
+	if ( IsValid( pl.CAT_deathBody ) ) then
+		pl.CAT_deathBody:Remove( )
 	end
 	
 	if ( IsValid( pl.CAT_ragdoll ) ) then
@@ -661,9 +664,10 @@ end
 
 function GM:DoPlayerDeath( pl )
 	pl:SetNoDraw( true )
+	pl:SetNotSolid( true )
 	pl:Freeze( true )
 
-	if ( !pl.CAT_ragdoll ) then
+	if ( !IsValid( pl.CAT_ragdoll ) ) then
 		local ent = ents.Create( "prop_ragdoll" )
 		ent:SetAngles( pl:GetAngles( ) )
 		ent:SetModel( pl:GetModel( ) )
@@ -675,7 +679,7 @@ function GM:DoPlayerDeath( pl )
 		ent:SetNetVar( "player", pl )
 		
 		pl:SetNetVar( "ragdollIndex", ent:EntIndex( ) )
-		pl.deathBody = ent
+		pl.CAT_deathBody = ent
 	end
 	
 	pl:SetNetVar( "noDrawOriginal", true )

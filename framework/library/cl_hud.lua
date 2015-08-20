@@ -30,7 +30,6 @@ catherine.hud = catherine.hud or {
 	pre = 0,
 	vAlpha = 0,
 	vAlphaTarget = 255,
-	deathAlpha = 0,
 	
 	characterSaving = { }
 }
@@ -85,11 +84,15 @@ function catherine.hud.ZipTie( pl, w, h )
 end
 
 function catherine.hud.DeathScreen( pl, w, h )
-	if ( mathR( catherine.hud.deathAlpha ) <= 0 ) then return end
+	if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) ) then return end
+	local deathTime = pl:GetNetVar( "deathTime", 0 )
+	local nextSpawnTime = pl:GetNetVar( "nextSpawnTime", 0 )
 	
-	catherine.hud.deathAlpha = Lerp( 0.03, catherine.hud.deathAlpha, pl:Alive( ) and 0 or 255 )
+	if ( deathTime == 0 or nextSpawnTime == 0 ) then return end
 	
-	drawBox( 0, 0, 0, w, h, Color( 0, 0, 0, catherine.hud.deathAlpha ) )
+	local per = math.TimeFraction( deathTime, nextSpawnTime, CurTime( ) )
+	
+	drawBox( 0, 0, 0, w, h, Color( 20, 20, 20, per * 255 ) )
 end
 
 timer.Create( "catherine.hud.VignetteCheck", 1.5, 0, function( )
