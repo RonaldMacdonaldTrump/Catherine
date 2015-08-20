@@ -49,7 +49,7 @@ local plugin_htmlValue = [[
 local function rebuildPlugin( )
 	local title_plugin = LANG( "Help_Category_Plugin" )
 	local html = Format( plugin_htmlValue, title_plugin, LANG( "Help_Desc_Plugin" ) )
-			
+	
 	for k, v in SortedPairs( catherine.plugin.GetAll( ) ) do
 		html = html .. [[
 			<div class="panel panel-default">
@@ -63,7 +63,7 @@ local function rebuildPlugin( )
 	end
 	
 	html = html .. [[</body></html>]]
-		
+	
 	catherine.help.Register( CAT_HELP_HTML, title_plugin, html, true )
 end
 
@@ -113,7 +113,7 @@ function catherine.plugin.Include( dir )
 			
 			catherine.plugin.lists[ v ] = PLUGIN
 		else
-			MsgC( Color( 255, 255, 0 ), "[CAT ERROR] SORRY, The plugin <" .. v .. "> are do not have files named sh_plugin.lua, failed to loading it ...\n" )
+			MsgC( Color( 255, 0, 0 ), "[CAT ERROR] SORRY, The plugin <" .. v .. "> are do not have files named sh_plugin.lua, failed to loading it ...\n" )
 		end
 		
 		PLUGIN = nil

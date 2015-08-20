@@ -100,9 +100,9 @@ if ( SERVER ) then
 	end
 else
 	do
-		catherine.bar.Register( "stamina", false, function( )
-				return catherine.character.GetCharVar( catherine.pl, "stamina", 100 )
-			end, function( )
+		catherine.bar.Register( "stamina", false, function( pl )
+				return catherine.character.GetCharVar( pl, "stamina", 100 )
+			end, function( pl )
 				return 100
 			end, Color( 0, 206, 209 )
 		)

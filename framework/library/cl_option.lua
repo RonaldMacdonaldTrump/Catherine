@@ -69,10 +69,15 @@ function catherine.option.Get( uniqueID )
 	return optionTable.onGet and optionTable.onGet( optionTable ) or GetConVarString( optionTable.conVar )
 end
 
-local cat = "^Option_Category_01"
-catherine.option.Register( "CONVAR_BAR", "cat_convar_bar", "^Option_Str_BAR_Name", "^Option_Str_BAR_Desc", cat, CAT_OPTION_SWITCH )
-catherine.option.Register( "CONVAR_MAINHUD", "cat_convar_hud", "^Option_Str_MAINHUD_Name", "^Option_Str_MAINHUD_Desc", cat, CAT_OPTION_SWITCH )
-catherine.option.Register( "CONVAR_LANGUAGE", "cat_convar_language", "^Option_Str_MAINLANG_Name", "^Option_Str_MAINLANG_Desc", cat, CAT_OPTION_LIST, function( )
+local category = "^Option_Category_01"
+
+catherine.option.Register( "CONVAR_ADMIN_ESP", "cat_convar_adminesp", "^Option_Str_ADMIN_ESP_Name", "^Option_Str_ADMIN_ESP_Desc", "^Option_Category_03", CAT_OPTION_SWITCH )
+catherine.option.Register( "CONVAR_ALWAYS_ADMIN_ESP", "cat_convar_alwaysadminesp", "^Option_Str_Always_ADMIN_ESP_Name", "^Option_Str_Always_ADMIN_ESP_Desc", "^Option_Category_03", CAT_OPTION_SWITCH )
+catherine.option.Register( "CONVAR_CHAT_TIMESTAMP", "cat_convar_chat_timestamp", "^Option_Str_CHAT_TIMESTAMP_Name", "^Option_Str_CHAT_TIMESTAMP_Desc", category, CAT_OPTION_SWITCH )
+catherine.option.Register( "CONVAR_HINT", "cat_convar_hint", "^Option_Str_HINT_Name", "^Option_Str_HINT_Desc", category, CAT_OPTION_SWITCH )
+catherine.option.Register( "CONVAR_BAR", "cat_convar_bar", "^Option_Str_BAR_Name", "^Option_Str_BAR_Desc", category, CAT_OPTION_SWITCH )
+catherine.option.Register( "CONVAR_MAINHUD", "cat_convar_hud", "^Option_Str_MAINHUD_Name", "^Option_Str_MAINHUD_Desc", category, CAT_OPTION_SWITCH )
+catherine.option.Register( "CONVAR_LANGUAGE", "cat_convar_language", "^Option_Str_MAINLANG_Name", "^Option_Str_MAINLANG_Desc", category, CAT_OPTION_LIST, function( )
 	local lang = {
 		data = { },
 		curVal = "English"

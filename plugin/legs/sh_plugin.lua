@@ -37,9 +37,6 @@ catherine.language.Merge( "korean", {
 
 if ( SERVER ) then return end
 
-CAT_CONVAR_LEGS = CreateClientConVar( "cat_convar_legs", "1", true, true )
-catherine.option.Register( "CONVAR_LEGS", "cat_convar_legs", "^Option_Str_LEG_Name", "^Option_Str_LEG_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
-
 local HIDDEN_BONES = {
 	"ValveBiped.Bip01_Spine1",
 	"ValveBiped.Bip01_Spine2",
@@ -89,6 +86,10 @@ local HIDDEN_BONES = {
 	"ValveBiped.Bip01_R_Finger02",
 	"ValveBiped.baton_parent"
 }
+
+function PLUGIN:Initialize( )
+	CAT_CONVAR_LEGS = CreateClientConVar( "cat_convar_legs", "1", true, true )
+end
 
 function PLUGIN:CreateLeg( )
 	if ( GetConVarString( "cat_convar_legs" ) == "0" ) then
@@ -179,3 +180,5 @@ function PLUGIN:PostDrawViewModel( )
 		self.lastRT = realTime
 	end
 end
+
+catherine.option.Register( "CONVAR_LEGS", "cat_convar_legs", "^Option_Str_LEG_Name", "^Option_Str_LEG_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )

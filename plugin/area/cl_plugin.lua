@@ -20,9 +20,6 @@ local PLUGIN = PLUGIN
 local META = FindMetaTable( "Player" )
 PLUGIN.currAreaDisplay = PLUGIN.currAreaDisplay or nil
 
-CAT_CONVAR_SHOW_AREA = CreateClientConVar( "cat_convar_showarea", "1", true, true )
-catherine.option.Register( "CONVAR_SHOW_AREA", "cat_convar_showarea", "^Option_Str_Area_Name", "^Option_Str_Area_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
-
 netstream.Hook( "catherine.plugin.area.Display", function( data )
 	PLUGIN:StartAreaDisplay( data )
 end )
@@ -55,6 +52,10 @@ netstream.Hook( "catherine.plugin.area.DisplayPosition_Custom", function( data )
 	em:SetDieTime( time or 10 )
 	em:SetAirResistance( 300 )
 end )
+
+function PLUGIN:Initialize( )
+	CAT_CONVAR_SHOW_AREA = CreateClientConVar( "cat_convar_showarea", "1", true, true )
+end
 
 function PLUGIN:StartAreaDisplay( text )
 	surface.PlaySound( "common/talk.wav" )
@@ -105,3 +106,5 @@ function PLUGIN:HUDPaint( )
 	draw.SimpleText( LANG( "Area_UI_JoinedStr" ), "catherine_outline30", w / 2, areaDisplay.titleY, Color( 255, 255, 255, areaDisplay.titleA ), 1, 1 )
 	draw.SimpleText( areaDisplay.text, "catherine_outline25", w / 2, areaDisplay.textY, Color( 255, 255, 255, areaDisplay.textA ), 1, 1 )
 end
+
+catherine.option.Register( "CONVAR_SHOW_AREA", "cat_convar_showarea", "^Option_Str_Area_Name", "^Option_Str_Area_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )

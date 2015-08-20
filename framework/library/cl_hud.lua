@@ -295,9 +295,6 @@ function catherine.hud.CharacterSave( pl, w, h )
 	end
 end
 
-CAT_CONVAR_HUD = CreateClientConVar( "cat_convar_hud", "1", true, true )
-CAT_CONVAR_BAR = CreateClientConVar( "cat_convar_bar", "1", true, true )
-
 local modules = {
 	"CHudHealth",
 	"CHudBattery",

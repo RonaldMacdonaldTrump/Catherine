@@ -157,7 +157,7 @@ META.CATGetModel = META.CATGetModel or META.GetModel
 
 function META:SetModel( model )
 	if ( SERVER and self:IsPlayer( ) ) then
-		netstream.Start( self, "catherine.SetModel", model )
+		netstream.Start( self, "catherine.SetModel", { self, model } )
 	end
 	
 	self:CATSetModel( model )
