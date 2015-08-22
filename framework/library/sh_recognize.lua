@@ -117,5 +117,5 @@ local META = FindMetaTable( "Player" )
 function META:IsKnow( target )
 	local factionTable = catherine.faction.FindByIndex( target:Team( ) )
 
-	return ( factionTable and factionTable.alwaysRecognized ) and true or table.HasValue( catherine.character.GetCharVar( pl, "recognize", { } ), target:GetCharacterID( ) )
+	return ( factionTable and factionTable.alwaysRecognized ) and true or table.HasValue( catherine.character.GetCharVar( self, "recognize", { } ), target:GetCharacterID( ) )
 end
