@@ -22,6 +22,11 @@ catherine.command.Register( {
 	syntax = "[Getting up time]",
 	canRun = function( pl ) return pl:Alive( ) end,
 	runFunc = function( pl, args )
+		if ( pl.CAT_falloverNextCan and pl.CAT_falloverNextCan >= CurTime( ) ) then
+			catherine.util.NotifyLang( pl, "Player_Message_BlockFallover", math.ceil( pl.CAT_falloverNextCan - CurTime( ) ) )
+			return
+		end
+		
 		if ( pl:IsRagdolled( ) ) then
 			catherine.util.NotifyLang( pl, "Player_Message_AlreadyFallovered" )
 			return
@@ -32,6 +37,7 @@ catherine.command.Register( {
 		end
 		
 		catherine.player.RagdollWork( pl, !pl:IsRagdolled( ), args[ 1 ] )
+		pl.CAT_falloverNextCan = CurTime( ) + 15
 	end
 } )
 

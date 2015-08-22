@@ -355,6 +355,7 @@ LANGUAGE.data = {
 	[ "Player_Message_GettingUp" ] = "You are regaining consciousness ...",
 	[ "Player_Message_AlreayGettingUp" ] = "You are already getting up!",
 	[ "Player_Message_AlreadyFallovered" ] = "You are already fallen over!",
+	[ "Player_Message_BlockFallover" ] = "You can be fallover %s(sec) after!",
 	[ "Player_Message_NotFallovered" ] = "You are not fallen over!",
 	[ "Player_Message_HasNotPermission" ] = "You do not have permission!",
 	[ "Player_Message_UnTie" ] = "Press 'Use' to untie.",

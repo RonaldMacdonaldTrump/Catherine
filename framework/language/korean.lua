@@ -353,6 +353,7 @@ LANGUAGE.data = {
 	[ "Player_Message_GettingUp" ] = "정신을 차리고 있습니다 ...",
 	[ "Player_Message_AlreayGettingUp" ] = "당신은 이미 정신을 차리고 있습니다!",
 	[ "Player_Message_AlreadyFallovered" ] = "당신은 이미 기절했습니다!",
+	[ "Player_Message_BlockFallover" ] = "당신은 %s초후 다시 기절 할 수 있습니다!",
 	[ "Player_Message_NotFallovered" ] = "당신은 기절하지 않았습니다!",
 	[ "Player_Message_HasNotPermission" ] = "당신은 권한이 없습니다!",
 	[ "Player_Message_UnTie" ] = "'사용' 키를 눌러 수갑을 풀 수 있습니다.",
