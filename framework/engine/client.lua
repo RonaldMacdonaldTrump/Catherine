@@ -48,6 +48,7 @@ catherine.intro = catherine.intro or {
 	
 	introDone = false
 }
+catherine.deathColAlpha = catherine.deathColAlpha or 0
 catherine.screenResolution = catherine.screenResolution or { w = ScrW( ), h = ScrH( ) }
 local entityCaches = { }
 local nextEntityCacheWork = RealTime( )
@@ -63,6 +64,23 @@ local introBooA = 0
 local math_app = math.Approach
 local hook_run = hook.Run
 local trace_line = util.TraceLine
+
+function GM:InitPostEntity( )
+	catherine.pl = LocalPlayer( )
+end
+
+function GM:Initialize( )
+	CAT_CONVAR_ADMIN_ESP = CreateClientConVar( "cat_convar_adminesp", "1", true, true )
+	CAT_CONVAR_ALWAYS_ADMIN_ESP = CreateClientConVar( "cat_convar_alwaysadminesp", "0", true, true )
+	CAT_CONVAR_HUD = CreateClientConVar( "cat_convar_hud", "1", true, true )
+	CAT_CONVAR_BAR = CreateClientConVar( "cat_convar_bar", "1", true, true )
+	CAT_CONVAR_CHAT_TIMESTAMP = CreateClientConVar( "cat_convar_chat_timestamp", "1", true, true )
+	CAT_CONVAR_HINT = CreateClientConVar( "cat_convar_hint", "1", true, true )
+	
+	local languageTable = catherine.language.FindByID( catherine.configs.defaultLanguage )
+	
+	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", ( languageTable and languageTable.uniqueID or "english" ), true, true )
+end
 
 function GM:HUDShouldDraw( name )
 	for k, v in pairs( catherine.hud.GetBlockModules( ) ) do
@@ -107,8 +125,8 @@ function GM:CalcView( pl, pos, ang, fov )
 	end
 
 	local ent = Entity( pl:GetNetVar( "ragdollIndex", 0 ) )
-
-	if ( IsValid( ent ) and ent:GetClass( ) == "prop_ragdoll" and pl:IsRagdolled( ) ) then
+	
+	if ( IsValid( ent ) and ent:GetClass( ) == "prop_ragdoll" ) then
 		local index = ent:LookupAttachment( "eyes" )
 		
 		if ( index ) then
@@ -140,8 +158,12 @@ function GM:ChatText( index, name, text )
 	end
 end
 
-function GM:CantDrawBar( )
-	return IsValid( catherine.vgui.question )
+function GM:CanDrawBar( pl )
+	return !IsValid( catherine.vgui.question ) and pl:Alive( ) and pl:IsCharacterLoaded( )
+end
+
+function GM:CanDrawHint( pl, hintTable )
+
 end
 
 function GM:HUDDrawScoreBoard( )
@@ -718,6 +740,18 @@ function GM:ScoreboardShow( )
 	end
 end
 
+function GM:PostRenderScreenColor( pl )
+	if ( pl:Alive( ) ) then
+		catherine.deathColAlpha = Lerp( 0.03, catherine.deathColAlpha, 1 )
+	else
+		catherine.deathColAlpha = Lerp( 0.03, catherine.deathColAlpha, 0 )
+	end
+	
+	return {
+		colour = catherine.deathColAlpha
+	}
+end
+
 function GM:RenderScreenspaceEffects( )
 	local data = hook.Run( "PostRenderScreenColor", catherine.pl ) or { }
 	
@@ -802,10 +836,6 @@ function GM:PopulateToolMenu( )
 	end
 end
 
-function GM:InitPostEntity( )
-	catherine.pl = LocalPlayer( )
-end
-
 timer.Create( "Catherine.timer.ScreenResolutionCheck", 3, 0, function( )
 	if ( catherine.screenResolution.w != ScrW( ) or catherine.screenResolution.h != ScrH( ) ) then
 		hook.Run( "ScreenResolutionFix" )
@@ -817,6 +847,10 @@ timer.Create( "Catherine.timer.ScreenResolutionCheck", 3, 0, function( )
 	end
 end )
 
+timer.Remove( "HintSystem_Annoy1" )
+timer.Remove( "HintSystem_Annoy2" )
+timer.Remove( "HintSystem_OpeningMenu" )
+
 netstream.Hook( "catherine.ShowHelp", function( )
 	if ( IsValid( catherine.vgui.information ) ) then
 		catherine.vgui.information:Close( )
@@ -825,14 +859,13 @@ netstream.Hook( "catherine.ShowHelp", function( )
 	end
 end )
 
-CAT_CONVAR_ADMIN_ESP = CreateClientConVar( "cat_convar_adminesp", "1", true, true )
-CAT_CONVAR_ALWAYS_ADMIN_ESP = CreateClientConVar( "cat_convar_alwaysadminesp", "0", true, true )
-
-catherine.option.Register( "CONVAR_ADMIN_ESP", "cat_convar_adminesp", "^Option_Str_ADMIN_ESP_Name", "^Option_Str_ADMIN_ESP_Desc", "^Option_Category_03", CAT_OPTION_SWITCH )
-catherine.option.Register( "CONVAR_ALWAYS_ADMIN_ESP", "cat_convar_alwaysadminesp", "^Option_Str_Always_ADMIN_ESP_Name", "^Option_Str_Always_ADMIN_ESP_Desc", "^Option_Category_03", CAT_OPTION_SWITCH )
-
 netstream.Hook( "catherine.SetModel", function( data )
-	catherine.pl:SetModel( data )
+	local pl = data[ 1 ]
+	local model = data[ 2 ]
+	
+	if ( IsValid( pl ) and model ) then
+		pl:SetModel( model )
+	end
 end )
 
 netstream.Hook( "catherine.introStart", function( )

@@ -38,9 +38,15 @@ function catherine.language.FindByID( uniqueID )
 	return catherine.language.lists[ uniqueID ]
 end
 
-function catherine.language.Include( dir )
-	for k, v in pairs( file.Find( dir .. "/language/*.lua", "LUA" ) ) do
-		catherine.util.Include( dir .. "/language/" .. v, "SHARED" )
+function catherine.language.Include( dir, name )
+	local files = file.Find( dir .. "/language/*.lua", "LUA" )
+	
+	if ( #files == 0 ) then
+		MsgC( Color( 255, 255, 0 ), "[CAT WARNING] Can't find any language files on the " .. ( name or "framework" ) .. ", this is not good!\n" )
+	else
+		for k, v in pairs( files ) do
+			catherine.util.Include( dir .. "/language/" .. v, "SHARED" )
+		end
 	end
 end
 
@@ -69,8 +75,6 @@ if ( SERVER ) then
 	end
 else
 	local getConvarString = GetConVarString
-	
-	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", catherine.configs.defaultLanguage, true, true )
 	
 	function LANG( key, ... )
 		local languageTable = languageMasterTable[ getConvarString( "cat_convar_language" ) ] or languageMasterTable[ "english" ]

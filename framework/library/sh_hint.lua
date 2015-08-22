@@ -34,7 +34,8 @@ if ( SERVER ) then
 		local hintTable = catherine.hint.lists[ rand ]
 
 		for k, v in pairs( hintTable and player.GetAllByLoaded( ) or { } ) do
-			if ( v:GetInfo( "cat_convar_hint" ) == "0" or ( hintTable.canLook and hintTable.canLook( v ) == false ) ) then continue end
+			if ( v:GetInfo( "cat_convar_hint" ) == "0" ) then continue end
+			if ( hook.Run( "CanSendHint", v, hintTable ) == false or ( hintTable.canLook and hintTable.canLook( v ) == false ) ) then continue end
 			
 			netstream.Start( v, "catherine.hint.Receive", rand )
 		end
@@ -52,9 +53,6 @@ if ( SERVER ) then
 else
 	catherine.hint.curHint = catherine.hint.curHint or nil
 	
-	CAT_CONVAR_HINT = CreateClientConVar( "cat_convar_hint", "1", true, true )
-	catherine.option.Register( "CONVAR_HINT", "cat_convar_hint", "^Option_Str_HINT_Name", "^Option_Str_HINT_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
-	
 	netstream.Hook( "catherine.hint.Receive", function( data )
 		local msg = catherine.util.StuffLanguage( catherine.hint.lists[ data ].message )
 		surface.SetFont( "catherine_normal20" )
@@ -69,9 +67,10 @@ else
 	end )
 	
 	function catherine.hint.Draw( )
-		if ( GetConVarString( "cat_convar_hint" ) == "0" or !catherine.hint.curHint ) then return end
+		if ( !catherine.hint.curHint or GetConVarString( "cat_convar_hint" ) == "0" ) then return end
+		if ( hook.Run( "CanDrawHint", catherine.pl, catherine.hint.curHint ) == false ) then return end
 		local t = catherine.hint.curHint
-
+		
 		if ( t.time <= CurTime( ) ) then
 			t.x = Lerp( 0.003, t.x, ScrW( ) * 1.5 )
 			
@@ -82,7 +81,7 @@ else
 		else
 			t.x = Lerp( 0.03, t.x, t.targetX )
 		end
-
+		
 		draw.SimpleText( t.message, "catherine_normal20", t.x, 5, Color( 255, 255, 255, 255 ), 1 )
 	end
 end

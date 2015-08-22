@@ -39,8 +39,9 @@ catherine.language.Merge( "korean", {
 
 if ( SERVER ) then return end
 
-CAT_CONVAR_FPS = CreateClientConVar( "cat_convar_showfps", "0", true, true )
-catherine.option.Register( "CONVAR_FPS", "cat_convar_showfps", "^Option_Str_FPS_Name", "^Option_Str_FPS_Desc", "^Option_Category_02", CAT_OPTION_SWITCH )
+function PLUGIN:Initialize( )
+	CAT_CONVAR_FPS = CreateClientConVar( "cat_convar_showfps", "0", true, true )
+end
 
 function PLUGIN:HUDPaint( )
 	if ( GetConVarString( "cat_convar_showfps" ) == "0" ) then return end
@@ -77,3 +78,5 @@ catherine.font.Register( "catherine_fps", {
 } )
 
 catherine.hint.Register( "^Hint_FPS_01" )
+
+catherine.option.Register( "CONVAR_FPS", "cat_convar_showfps", "^Option_Str_FPS_Name", "^Option_Str_FPS_Desc", "^Option_Category_02", CAT_OPTION_SWITCH )

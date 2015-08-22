@@ -19,7 +19,3 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine = catherine or { vgui = { } }
 
 include( "catherine/framework/engine/boot.lua" )
-
-timer.Remove( "HintSystem_Annoy1" )
-timer.Remove( "HintSystem_Annoy2" )
-timer.Remove( "HintSystem_OpeningMenu" )

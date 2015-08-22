@@ -65,8 +65,10 @@ function catherine.bar.Remove( uniqueID )
 end
 
 function catherine.bar.Draw( )
-	if ( getconVar( "cat_convar_bar" ) == "0" ) then return end
-	if ( hook_run( "CantDrawBar", catherine.pl ) or !catherine.pl:Alive( ) or !catherine.pl:IsCharacterLoaded( ) or #catherine.bar.lists == 0 ) then
+	if ( #catherine.bar.lists == 0 or getconVar( "cat_convar_bar" ) == "0" ) then return end
+	local pl = catherine.pl
+	
+	if ( hook_run( "CanDrawBar", pl ) == false ) then
 		hook_run( "HUDDrawBarBottom", 5, 5 )
 		return
 	end
@@ -74,7 +76,7 @@ function catherine.bar.Draw( )
 	local i = 0
 	
 	for k, v in pairs( catherine.bar.lists ) do
-		local per = math_min( v.getFunc( ) / v.maxFunc( ), 1 )
+		local per = math_min( v.getFunc( pl ) / v.maxFunc( pl ), 1 )
 		
 		if ( v.prevValue != per ) then
 			v.lifeTime = CurTime( ) + ( v.lifeTimeFade or 5 )
@@ -117,16 +119,16 @@ function catherine.bar.Draw( )
 end
 
 do
-	catherine.bar.Register( "health", true, function( )
-			return catherine.pl:Health( )
-		end, function( )
-			return catherine.pl:GetMaxHealth( )
+	catherine.bar.Register( "health", true, function( pl )
+			return pl:Health( )
+		end, function( pl )
+			return pl:GetMaxHealth( )
 		end, color( 255, 50, 50 ), 10
 	)
 	
-	catherine.bar.Register( "armor", true, function( )
-			return catherine.pl:Armor( )
-		end, function( )
+	catherine.bar.Register( "armor", true, function( pl )
+			return pl:Armor( )
+		end, function( pl )
 			return 255
 		end, color( 50, 50, 255 ), 10
 	)

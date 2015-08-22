@@ -38,9 +38,6 @@ catherine.language.Merge( "korean", {
 
 if ( SERVER or !PLUGIN.enable ) then return end
 
-CAT_CONVAR_THIRDPERSON = CreateClientConVar( "cat_convar_thirdperson", "0", true, true )
-catherine.option.Register( "CONVAR_THIRD_PERSON", "cat_convar_thirdperson", "^Option_Str_Thirdperson_Name", "^Option_Str_Thirdperson_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
-
 local META = FindMetaTable( "Player" )
 
 function META:CanOverrideView( )
@@ -56,6 +53,10 @@ function META:CanOverrideView( )
 	) then
 		return true
 	end
+end
+
+function PLUGIN:Initialize( )
+	CAT_CONVAR_THIRDPERSON = CreateClientConVar( "cat_convar_thirdperson", "0", true, true )
 end
 	
 function PLUGIN:CalcView( pl, pos, ang, fov )
@@ -79,3 +80,5 @@ function PLUGIN:ShouldDrawLocalPlayer( pl )
 		return true
 	end
 end
+
+catherine.option.Register( "CONVAR_THIRD_PERSON", "cat_convar_thirdperson", "^Option_Str_Thirdperson_Name", "^Option_Str_Thirdperson_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )
