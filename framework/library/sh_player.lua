@@ -386,7 +386,7 @@ if ( SERVER ) then
 			if ( IsValid( pl.CAT_ragdoll ) ) then
 				pl.CAT_ragdoll:Remove( )
 			end
-
+			
 			local ent = ents.Create( "prop_ragdoll" )
 			ent:SetAngles( pl:GetAngles( ) )
 			ent:SetModel( pl:GetModel( ) )
@@ -437,25 +437,38 @@ if ( SERVER ) then
 			pl:SetNetVar( "ragdollIndex", ent:EntIndex( ) )
 			pl:SetNetVar( "isRagdolled", true )
 			
+			local timerID1 = "Catherine.timer.RagdollWork2_" .. ent:EntIndex( )
+			
+			timer.Create( timerID1, 1, 0, function( )
+				if ( !IsValid( pl ) or !IsValid( ent ) ) then
+					timer.Remove( timerID1 )
+					return
+				end
+
+				pl:SetPos( ent:GetPos( ) )
+			end )
+			
 			if ( time ) then
 				local time2 = time
 				
 				pl:SetNetVar( "isForceRagdolled", true )
 				
-				local uniqueID = "Catherine.timer.RagdollWork_" .. ent:EntIndex( )
+				local timerID2 = "Catherine.timer.RagdollWork_" .. ent:EntIndex( )
 				
 				catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
 					catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 					catherine.player.RagdollWork( pl )
 					pl:SetNetVar( "isForceRagdolled", nil )
-					timer.Remove( uniqueID )
+					timer.Remove( timerID1 )
+					timer.Remove( timerID2 )
 				end )
 
-				timer.Create( uniqueID, 1, 0, function( )
+				timer.Create( timerID2, 1, 0, function( )
 					if ( !IsValid( pl ) ) then return end
 
 					if ( !pl:Alive( ) ) then
-						timer.Remove( uniqueID )
+						timer.Remove( timerID1 )
+						timer.Remove( timerID2 )
 						pl:SetNetVar( "isForceRagdolled", nil )
 						return
 					end
@@ -478,7 +491,8 @@ if ( SERVER ) then
 									catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 									catherine.player.RagdollWork( pl )
 									pl:SetNetVar( "isForceRagdolled", nil )
-									timer.Remove( uniqueID )
+									timer.Remove( timerID1 )
+									timer.Remove( timerID2 )
 								end )
 								
 								ragdoll.CAT_paused = nil
@@ -489,11 +503,13 @@ if ( SERVER ) then
 								catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 								catherine.player.RagdollWork( pl )
 								pl:SetNetVar( "isForceRagdolled", nil )
-								timer.Remove( uniqueID )
+								timer.Remove( timerID1 )
+								timer.Remove( timerID2 )
 							end
 						end
 					else
-						timer.Remove( uniqueID )
+						timer.Remove( timerID1 )
+						timer.Remove( timerID2 )
 					end
 				end )
 			else

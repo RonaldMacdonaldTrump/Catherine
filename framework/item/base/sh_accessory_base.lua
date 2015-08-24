@@ -101,25 +101,25 @@ if ( SERVER ) then
 		end )
 	end )
 
-	hook.Add( "OnItemDrop", "catherine.item.hooks.accessory_base.OnItemDrop", function( pl, itemTable )
+	hook.Add( "PreItemDrop", "catherine.item.hooks.accessory_base.PreItemDrop", function( pl, itemTable )
 		if ( itemTable.isAccessory ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "OnItemStorageMove", "catherine.item.hooks.accessory_base.OnItemStorageMove", function( pl, itemTable )
+	hook.Add( "PreItemStorageMove", "catherine.item.hooks.accessory_base.PreItemStorageMove", function( pl, itemTable )
 		if ( itemTable.isAccessory ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "OnItemVendorSold", "catherine.item.hooks.accessory_base.OnItemVendorSold", function( pl, itemTable )
+	hook.Add( "PreItemVendorSell", "catherine.item.hooks.accessory_base.PreItemVendorSell", function( pl, ent, itemTable, data )
 		if ( itemTable.isAccessory ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "OnItemForceTake", "catherine.item.hooks.accessory_base.OnItemForceTake", function( pl, itemTable )
+	hook.Add( "PreItemForceTake", "catherine.item.hooks.accessory_base.PreItemForceTake", function( pl, itemTable )
 		if ( itemTable.isAccessory ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end

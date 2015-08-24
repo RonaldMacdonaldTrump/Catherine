@@ -28,12 +28,12 @@ GM.Description = "A neat and beautiful role-play framework for Garry's Mod."
 GM.Author = "L7D"
 GM.Website = "https://github.com/L7D/Catherine"
 GM.Email = "smhjyh2009@gmail.com"
-GM.Version = "2015/08/22"
+GM.Version = "2015/08/24"
 GM.Build = "DEV"
 
 catherine.FolderName = GM.FolderName
 
-function catherine.Initialize( )
+function catherine.Boot( )
 	local sysTime = SysTime( )
 	
 	AddCSLuaFile( baseDir .. "/engine/utility.lua" )
@@ -103,4 +103,4 @@ for i = 1, #getFunctionsData do
 	end
 end
 
-catherine.Initialize( )
+catherine.Boot( )

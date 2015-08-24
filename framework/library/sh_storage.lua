@@ -58,6 +58,10 @@ if ( SERVER ) then
 		
 		if ( !IsValid( pl ) or !IsValid( ent ) or !workID or !data ) then return end
 		
+		if ( hook.Run( "PlayerShouldWorkStorage", pl, ent, workID, data ) == false ) then
+			return
+		end
+		
 		if ( workID == CAT_STORAGE_ACTION_ADD ) then
 			local uniqueID = data.uniqueID
 			local itemTable = catherine.item.FindByID( uniqueID )
@@ -84,7 +88,7 @@ if ( SERVER ) then
 				return
 			end
 			
-			hook.Run( "OnItemStorageMove", pl, itemTable )
+			hook.Run( "PreItemStorageMove", pl, ent, itemTable, data )
 			
 			local inventory = catherine.storage.GetInv( ent )
 			local invData = inventory[ uniqueID ]
@@ -106,7 +110,7 @@ if ( SERVER ) then
 			catherine.item.Take( pl, uniqueID )
 			catherine.storage.SetInv( ent, inventory )
 			
-			hook.Run( "ItemStorageMoved", pl, itemTable )
+			hook.Run( "PostItemStorageMove", pl, ent, itemTable, data )
 		elseif ( workID == CAT_STORAGE_ACTION_REMOVE ) then
 			local itemTable = catherine.item.FindByID( data )
 			
@@ -127,7 +131,7 @@ if ( SERVER ) then
 				return
 			end
 			
-			hook.Run( "OnItemStorageTake", pl, itemTable )
+			hook.Run( "PreItemStorageTake", pl, ent, itemTable, data )
 			
 			local invData = inventory[ data ]
 			local itemDataBuffer = invData.itemData
@@ -149,7 +153,7 @@ if ( SERVER ) then
 			
 			catherine.storage.SetInv( ent, inventory )
 			
-			hook.Run( "ItemStorageTaked", pl, itemTable )
+			hook.Run( "PostItemStorageTake", pl, ent, itemTable, data )
 		elseif ( workID == CAT_STORAGE_ACTION_SETPASSWORD ) then
 			ent.password = data != "" and data or nil
 		end

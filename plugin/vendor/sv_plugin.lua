@@ -99,7 +99,7 @@ function PLUGIN:LoadVendors( )
 		self:MakeVendor( ent, v )
 		
 		ent:SetModel( v.model )
-		ent:SetAni( )
+		ent:InitializeAnimation( )
 	end
 end
 
@@ -126,14 +126,15 @@ function PLUGIN:SetVendorData( ent, id, data, noSync )
 	
 	if ( id == "model" ) then
 		ent:SetModel( data )
-		ent:SetAni( )
+		ent:InitializeAnimation( )
 	end
 	
 	if ( !noSync ) then
-		local target = self:GetVendorWorkingPlayers( )
+		local index = ent:EntIndex( )
+		local target = self:GetVendorWorkingPlayers( index )
 		
 		if ( #target != 0 ) then
-			netstream.Start( target, "catherine.plugin.vendor.RefreshRequest", ent:EntIndex( ) )
+			netstream.Start( target, "catherine.plugin.vendor.RefreshRequest", index )
 		end
 	end
 end
@@ -146,7 +147,11 @@ end
 
 function PLUGIN:VendorWork( pl, ent, workID, data )
 	if ( !IsValid( pl ) or !IsValid( ent ) or !workID or !data ) then return end
-
+	
+	if ( hook.Run( "PlayerShouldWorkVendor", pl, ent, workID, data ) == false ) then
+		return
+	end
+	
 	if ( workID == CAT_VENDOR_ACTION_BUY ) then
 		local uniqueID = data.uniqueID
 		local count = math.max( data.count or 1, 1 )
@@ -191,7 +196,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 			return
 		end
 		
-		hook.Run( "OnItemVendorSold", pl, itemTable )
+		hook.Run( "PreItemVendorSell", pl, ent, itemTable, data )
 
 		vendorInv[ uniqueID ] = {
 			uniqueID = uniqueID,
@@ -205,7 +210,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		self:SetVendorData( ent, "inv", vendorInv )
 		self:SetVendorData( ent, "cash", vendorCash - itemCost )
 		
-		hook.Run( "ItemVendorSolded", pl, itemTable )
+		hook.Run( "PostItemVendorSell", pl, ent, itemTable, data )
 		catherine.util.NotifyLang( pl, "Vendor_Notify_Sell", catherine.util.StuffLanguage( pl, itemTable.name ), catherine.cash.GetName( itemCost ) )
 	elseif ( workID == CAT_VENDOR_ACTION_SELL ) then
 		local uniqueID = data.uniqueID
@@ -237,7 +242,14 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 			return 
 		end
 		
-		hook.Run( "OnItemVendorBuy", pl, itemTable )
+		local success = catherine.item.Give( pl, uniqueID, count )
+		
+		if ( !success ) then
+			catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
+			return
+		end
+		
+		hook.Run( "PreItemVendorBuy", pl, ent, itemTable, data )
 
 		vendorInv[ uniqueID ] = {
 			uniqueID = uniqueID,
@@ -250,18 +262,11 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 			vendorInv[ uniqueID ].stock = 0
 		end
 		
-		local success = catherine.item.Give( pl, uniqueID, count )
-		
-		if ( !success ) then
-			catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
-			return
-		end
-		
 		catherine.cash.Take( pl, itemCost )
 		self:SetVendorData( ent, "inv", vendorInv )
 		self:SetVendorData( ent, "cash", vendorCash + itemCost )
 		
-		hook.Run( "ItemVendorBought", pl, itemTable )
+		hook.Run( "PostItemVendorBuy", pl, ent, itemTable, data )
 		catherine.util.NotifyLang( pl, "Vendor_Notify_Buy", catherine.util.StuffLanguage( pl, itemTable.name ), catherine.cash.GetName( itemCost ) )
 	elseif ( workID == CAT_VENDOR_ACTION_SETTING_CHANGE ) then
 		if ( !pl:IsAdmin( ) ) then
@@ -324,10 +329,14 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 end
 
 function PLUGIN:CanUseVendor( pl, ent )
-	if ( !IsValid( pl ) or !IsValid( ent ) or !ent.isVendor ) then return end
+	if ( !IsValid( ent ) or !ent.isVendor ) then return false end
 	
 	if ( !ent.vendorData.status ) then
 		//return false, "status" // 나중에 추가..
+	end
+	
+	if ( hook.Run( "PlayerShouldUseVendor", pl, ent ) == false ) then
+		return false
 	end
 	
 	local factionData = ent.vendorData.factions
@@ -358,5 +367,5 @@ netstream.Hook( "catherine.plugin.vendor.VendorWork", function( pl, data )
 end )
 
 netstream.Hook( "catherine.plugin.vendor.VendorClose", function( pl )
-	pl:SetNetVar( "vendor_work", nil )
+	pl:SetNetVar( "vendorWorkingID", nil )
 end )

@@ -44,10 +44,10 @@ if ( SERVER ) then
 			physObject:Sleep( )
 		end
 		
-		self:SetAni( )
+		self:InitializeAnimation( )
 	end
 	
-	function ENT:SetAni( )
+	function ENT:InitializeAnimation( )
 		for k, v in pairs( self:GetSequenceList( ) ) do
 			if ( !v:lower( ):find( "idle" ) or v == "idlenoise" ) then continue end
 			
@@ -62,12 +62,19 @@ if ( SERVER ) then
 		local status, reason = PLUGIN:CanUseVendor( pl, self )
 		
 		if ( !status ) then
-			catherine.util.NotifyLang( pl, "Vendor_Message_CantUse" )
+			if ( reason ) then
+				catherine.util.NotifyLang( pl, reason )
+			else
+				catherine.util.NotifyLang( pl, "Vendor_Message_CantUse" )
+			end
+			
 			return
 		end
 		
-		pl:SetNetVar( "vendor_work", true )
-		netstream.Start( pl, "catherine.plugin.vendor.VendorUse", self:EntIndex( ) )
+		local index = self:EntIndex( )
+		
+		pl:SetNetVar( "vendorWorkingID", index )
+		netstream.Start( pl, "catherine.plugin.vendor.VendorUse", index )
 	end
 else
 	local toscreen = FindMetaTable( "Vector" ).ToScreen
