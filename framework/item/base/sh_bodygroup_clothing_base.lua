@@ -166,13 +166,13 @@ if ( SERVER ) then
 		end
 	end )
 	
-	hook.Add( "OnItemStorageMove", "catherine.item.hooks.bodygroup_clothing_base.OnItemStorageMove", function( pl, itemTable )
+	hook.Add( "PreItemStorageMove", "catherine.item.hooks.bodygroup_clothing_base.PreItemStorageMove", function( pl, itemTable )
 		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "PostItemVendorSell", "catherine.item.hooks.bodygroup_clothing_base.PostItemVendorSell", function( pl, ent, itemTable, data )
+	hook.Add( "PreItemVendorSell", "catherine.item.hooks.bodygroup_clothing_base.PreItemVendorSell", function( pl, ent, itemTable, data )
 		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end

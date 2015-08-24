@@ -154,13 +154,13 @@ if ( SERVER ) then
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 	
-	hook.Add( "OnItemStorageMove", "catherine.item.hooks.weapon_base.OnItemStorageMove", function( pl, itemTable )
+	hook.Add( "PreItemStorageMove", "catherine.item.hooks.weapon_base.PreItemStorageMove", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
 
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 	
-	hook.Add( "PostItemVendorSell", "catherine.item.hooks.weapon_base.PostItemVendorSell", function( pl, ent, itemTable, data )
+	hook.Add( "PreItemVendorSell", "catherine.item.hooks.weapon_base.PreItemVendorSell", function( pl, ent, itemTable, data )
 		if ( !itemTable.isWeapon ) then return end
 		
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )

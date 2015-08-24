@@ -107,13 +107,13 @@ if ( SERVER ) then
 		end
 	end )
 	
-	hook.Add( "OnItemStorageMove", "catherine.item.hooks.accessory_base.OnItemStorageMove", function( pl, itemTable )
+	hook.Add( "PreItemStorageMove", "catherine.item.hooks.accessory_base.PreItemStorageMove", function( pl, itemTable )
 		if ( itemTable.isAccessory ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "PostItemVendorSell", "catherine.item.hooks.accessory_base.PostItemVendorSell", function( pl, ent, itemTable, data )
+	hook.Add( "PreItemVendorSell", "catherine.item.hooks.accessory_base.PreItemVendorSell", function( pl, ent, itemTable, data )
 		if ( itemTable.isAccessory ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
