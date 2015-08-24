@@ -108,7 +108,7 @@ function PLUGIN:CreateLeg( )
 		return
 	end
 
-	local legEnt = ClientsideModel( catherine.pl:GetModel( ), 10 )
+	local legEnt = ClientsideModel( catherine.pl:GetModel( ), RENDERGROUP_VIEWMODEL )
 
 	if ( IsValid( legEnt ) ) then
 		for k, v in pairs( HIDDEN_BONES ) do
@@ -158,25 +158,17 @@ function PLUGIN:PostDrawViewModel( )
 
 		ang.p = 0
 		ang.r = 0
-
+		
 		legEnt:SetPos( pl:GetPos( ) + pl:GetForward( ) * 15 + pl:GetUp( ) * -17 )
-		
-		local seq = pl:GetSequence( )
-		
-		if ( self.anim != seq ) then
-			self.anim = seq
-			
-			legEnt:ResetSequence( seq )
-		end
-		
 		legEnt:SetAngles( ang )
+		legEnt:SetSequence( pl:GetSequence( ) )
 		legEnt:SetSkin( pl:GetSkin( ) or 0 )
 		legEnt:SetPoseParameter( "move_yaw", 360 * pl:GetPoseParameter( "move_yaw" ) - 180 )
 		legEnt:SetPoseParameter( "move_x", pl:GetPoseParameter( "move_x" ) * 2 - 1 )
 		legEnt:SetPoseParameter( "move_y", pl:GetPoseParameter( "move_y" ) * 2 - 1 )
 		legEnt:FrameAdvance( realTime - ( self.lastRT or realTime ) )
 		legEnt:DrawModel( )
-
+		
 		self.lastRT = realTime
 	end
 end

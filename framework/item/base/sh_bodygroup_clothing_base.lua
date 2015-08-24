@@ -178,7 +178,7 @@ if ( SERVER ) then
 		end
 	end )
 	
-	hook.Add( "OnItemForceTake", "catherine.item.hooks.bodygroup_clothing_base.OnItemForceTake", function( pl, itemTable )
+	hook.Add( "PreItemForceTake", "catherine.item.hooks.bodygroup_clothing_base.PreItemForceTake", function( pl, itemTable )
 		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
