@@ -113,7 +113,7 @@ if ( SERVER ) then
 		catherine.character.SetCharVar( pl, "clothWearing", nil )
 	end )
 
-	hook.Add( "OnItemDrop", "catherine.item.hooks.clothing_base.OnItemDrop", function( pl, itemTable )
+	hook.Add( "PreItemDrop", "catherine.item.hooks.clothing_base.PreItemDrop", function( pl, itemTable )
 		if ( itemTable.isCloth ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end

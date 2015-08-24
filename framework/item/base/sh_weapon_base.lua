@@ -148,7 +148,7 @@ if ( SERVER ) then
 		end
 	end )
 
-	hook.Add( "OnItemDrop", "catherine.item.hooks.weapon_base.OnItemDrop", function( pl, itemTable )
+	hook.Add( "PreItemDrop", "catherine.item.hooks.weapon_base.PreItemDrop", function( pl, itemTable )
 		if ( !itemTable.isWeapon ) then return end
 
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )

@@ -48,11 +48,6 @@ function catherine.item.Register( itemTable )
 			icon = "icon16/basket_put.png",
 			canShowIsWorld = true,
 			func = function( pl, itemTable, ent )
-				if ( hook.Run( "CantTakeItem", pl, itemTable ) == true ) then
-					catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
-					return
-				end
-				
 				if ( !pl:Alive( ) ) then
 					catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 					return
@@ -73,7 +68,7 @@ function catherine.item.Register( itemTable )
 					return
 				end
 				
-				hook.Run( "OnItemTake", pl, itemTable )
+				hook.Run( "PreItemTake", pl, itemTable )
 
 				if ( IsValid( ent ) and itemTable.useDynamicItemData ) then
 					catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
@@ -89,7 +84,7 @@ function catherine.item.Register( itemTable )
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )
 				ent:Remove( )
 				
-				hook.Run( "ItemTaked", pl, itemTable )
+				hook.Run( "PostItemTake", pl, itemTable )
 			end
 		},
 		drop = {
@@ -97,11 +92,6 @@ function catherine.item.Register( itemTable )
 			icon = "icon16/basket_remove.png",
 			canShowIsMenu = true,
 			func = function( pl, itemTable )
-				if ( hook.Run( "CantDropItem", pl, itemTable ) == true ) then
-					catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
-					return
-				end
-				
 				if ( !pl:Alive( ) ) then
 					catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 					return
@@ -112,7 +102,7 @@ function catherine.item.Register( itemTable )
 					return
 				end
 				
-				hook.Run( "OnItemDrop", pl, itemTable )
+				hook.Run( "PreItemDrop", pl, itemTable )
 				
 				local uniqueID = itemTable.uniqueID
 				local ent = catherine.item.Spawn( uniqueID, catherine.util.GetItemDropPos( pl ), nil, itemTable.useDynamicItemData and catherine.inventory.GetItemDatas( pl, itemTable.uniqueID ) or { } )
@@ -123,7 +113,7 @@ function catherine.item.Register( itemTable )
 				
 				ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )
 				
-				hook.Run( "ItemDroped", pl, itemTable )
+				hook.Run( "PostItemDrop", pl, itemTable )
 			end,
 			canLook = function( pl, itemTable )
 				return catherine.inventory.HasItem( itemTable.uniqueID )
@@ -180,7 +170,12 @@ catherine.item.Include( catherine.FolderName .. "/framework" )
 if ( SERVER ) then
 	function catherine.item.Work( pl, uniqueID, funcID, ent_isMenu )
 		local itemTable = catherine.item.FindByID( uniqueID )
+		
 		if ( !itemTable or !itemTable.func or !itemTable.func[ funcID ] ) then return end
+		
+		if ( hook.Run( "PlayerShouldWorkItem", pl, itemTable, funcID, ent_isMenu ) == false ) then
+			return
+		end
 		
 		itemTable.func[ funcID ].func( pl, itemTable, ent_isMenu )
 	end
@@ -215,7 +210,9 @@ if ( SERVER ) then
 
 	function catherine.item.Spawn( uniqueID, pos, ang, itemData )
 		if ( !uniqueID or !pos ) then return end
+		
 		local itemTable = catherine.item.FindByID( uniqueID )
+		
 		if ( !itemTable ) then return end
 
 		local ent = ents.Create( "cat_item" )

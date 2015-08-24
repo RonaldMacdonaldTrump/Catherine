@@ -101,7 +101,7 @@ if ( SERVER ) then
 		end )
 	end )
 
-	hook.Add( "OnItemDrop", "catherine.item.hooks.accessory_base.OnItemDrop", function( pl, itemTable )
+	hook.Add( "PreItemDrop", "catherine.item.hooks.accessory_base.PreItemDrop", function( pl, itemTable )
 		if ( itemTable.isAccessory ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end

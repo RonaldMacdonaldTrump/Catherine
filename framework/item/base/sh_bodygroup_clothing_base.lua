@@ -160,7 +160,7 @@ if ( SERVER ) then
 		catherine.character.SetCharVar( pl, "bodygroups", nil )
 	end )
 
-	hook.Add( "OnItemDrop", "catherine.item.hooks.bodygroup_clothing_base.OnItemDrop", function( pl, itemTable )
+	hook.Add( "PreItemDrop", "catherine.item.hooks.bodygroup_clothing_base.PreItemDrop", function( pl, itemTable )
 		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
