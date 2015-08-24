@@ -160,7 +160,7 @@ if ( SERVER ) then
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 	end )
 	
-	hook.Add( "OnItemVendorSold", "catherine.item.hooks.weapon_base.OnItemVendorSold", function( pl, itemTable )
+	hook.Add( "PostItemVendorSell", "catherine.item.hooks.weapon_base.PostItemVendorSell", function( pl, ent, itemTable, data )
 		if ( !itemTable.isWeapon ) then return end
 		
 		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )

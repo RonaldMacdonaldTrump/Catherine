@@ -172,7 +172,7 @@ if ( SERVER ) then
 		end
 	end )
 	
-	hook.Add( "OnItemVendorSold", "catherine.item.hooks.bodygroup_clothing_base.OnItemVendorSold", function( pl, itemTable )
+	hook.Add( "PostItemVendorSell", "catherine.item.hooks.bodygroup_clothing_base.PostItemVendorSell", function( pl, ent, itemTable, data )
 		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end

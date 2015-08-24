@@ -113,7 +113,7 @@ if ( SERVER ) then
 		end
 	end )
 	
-	hook.Add( "OnItemVendorSold", "catherine.item.hooks.accessory_base.OnItemVendorSold", function( pl, itemTable )
+	hook.Add( "PostItemVendorSell", "catherine.item.hooks.accessory_base.PostItemVendorSell", function( pl, ent, itemTable, data )
 		if ( itemTable.isAccessory ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end

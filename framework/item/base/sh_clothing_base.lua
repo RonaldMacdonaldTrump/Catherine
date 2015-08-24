@@ -125,7 +125,7 @@ if ( SERVER ) then
 		end
 	end )
 	
-	hook.Add( "OnItemVendorSold", "catherine.item.hooks.clothing_base.OnItemVendorSold", function( pl, itemTable )
+	hook.Add( "PostItemVendorSell", "catherine.item.hooks.clothing_base.PostItemVendorSell", function( pl, ent, itemTable, data )
 		if ( itemTable.isCloth ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end

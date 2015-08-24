@@ -49,13 +49,13 @@ function PLUGIN:GetVendorDatas( ent )
 	return data
 end
 
-function PLUGIN:GetVendorWorkingPlayers( )
+function PLUGIN:GetVendorWorkingPlayers( index )
 	local players = { }
 
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		if ( !v:GetNetVar( "vendor_work" ) ) then continue end
-		
-		players[ #players + 1 ] = v
+		if ( v:GetNetVar( "vendorWorkingID", 0 ) == index ) then
+			players[ #players + 1 ] = v
+		end
 	end
 	
 	return players
