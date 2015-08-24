@@ -44,10 +44,10 @@ if ( SERVER ) then
 			physObject:Sleep( )
 		end
 		
-		self:SetAni( )
+		self:InitializeAnimation( )
 	end
 	
-	function ENT:SetAni( )
+	function ENT:InitializeAnimation( )
 		for k, v in pairs( self:GetSequenceList( ) ) do
 			if ( !v:lower( ):find( "idle" ) or v == "idlenoise" ) then continue end
 			

@@ -99,7 +99,7 @@ function PLUGIN:LoadVendors( )
 		self:MakeVendor( ent, v )
 		
 		ent:SetModel( v.model )
-		ent:SetAni( )
+		ent:InitializeAnimation( )
 	end
 end
 
@@ -126,7 +126,7 @@ function PLUGIN:SetVendorData( ent, id, data, noSync )
 	
 	if ( id == "model" ) then
 		ent:SetModel( data )
-		ent:SetAni( )
+		ent:InitializeAnimation( )
 	end
 	
 	if ( !noSync ) then

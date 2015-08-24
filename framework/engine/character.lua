@@ -189,7 +189,7 @@ if ( SERVER ) then
 			return false, "^Character_Notify_CantSwitchRagdolled"
 		end
 		
-		if ( hook.Run( "CanLoadCharacter", pl ) == false ) then
+		if ( hook.Run( "PlayerShouldLoadCharacter", pl ) == false ) then
 			return false, "^Character_Notify_CantSwitch"
 		end
 		
