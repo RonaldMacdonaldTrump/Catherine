@@ -85,7 +85,11 @@ function GM:CharacterVarChanged( pl, key, value )
 		pl:SetupHands( )
 		catherine.character.SetCharVar( pl, "originalModel", value )
 		hook.Run( "CharacterModelChanged", pl, value )
-	elseif ( key == "_skin" ) then
+	end
+end
+
+function GM:CharacterCharVarChanged( pl, key, value )
+	if ( key == "skin" ) then
 		value = tonumber( value ) or 0
 		
 		pl:SetSkin( value )

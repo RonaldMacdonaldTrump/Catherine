@@ -192,7 +192,7 @@ catherine.command.Register( {
 					local target = catherine.util.FindPlayerByName( args[ 1 ] )
 					
 					if ( IsValid( target ) and target:IsPlayer( ) ) then
-						catherine.character.SetVar( target, "_skin", skin, nil, true )
+						catherine.character.SetCharVar( target, "skin", skin )
 						catherine.util.NotifyAllLang( "Character_Notify_SetSkin", pl:Name( ), skin, target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
@@ -306,7 +306,7 @@ catherine.command.Register( {
 					local success, langKey, par = catherine.flag.Give( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Flag_Notify_Give", pl:Name( ), args[ 2 ], target:Name( ) )
+						catherine.util.NotifyAllLang( "Flag_Notify_Give", pl:Name( ), table.concat( par[ 1 ], ", " ), target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
@@ -336,7 +336,7 @@ catherine.command.Register( {
 					local success, langKey, par = catherine.flag.Take( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Flag_Notify_Take", pl:Name( ), args[ 2 ], target:Name( ) )
+						catherine.util.NotifyAllLang( "Flag_Notify_Take", pl:Name( ), table.concat( par[ 1 ], ", " ), target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, langKey, unpack( par or { } ) )
 					end
