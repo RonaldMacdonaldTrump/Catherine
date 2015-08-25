@@ -152,11 +152,6 @@ catherine.character.NewVar( "cash", {
 	default = catherine.configs.defaultCash
 } )
 
-catherine.character.NewVar( "skin", {
-	field = "_skin",
-	default = 0
-} )
-
 catherine.character.NewVar( "faction", {
 	field = "_faction",
 	doNetworking = true,
@@ -234,12 +229,13 @@ if ( SERVER ) then
 		pl:Spawn( )
 		pl:SetTeam( factionTable.index )
 		pl:SetModel( character._model )
-		pl:SetSkin( character._skin or 0 )
 		pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
 		pl:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( pl ) )
 
 		catherine.character.CreateNetworkRegistry( pl, id, character )
 		catherine.character.SetCharVar( pl, "class", nil )
+		
+		pl:SetSkin( catherine.character.GetCharVar( pl, "skin", 0 ) )
 		
 		hook.Run( "PlayerSpawnedInCharacter", pl )
 		hook.Run( "PlayerCharacterLoaded", pl )

@@ -86,6 +86,7 @@ if ( SERVER ) then
 		
 		local ex = string.Explode( "", flagID )
 		local flags = catherine.character.GetCharVar( pl, "flags", "" )
+		local hasTable = { }
 		
 		for k, v in pairs( ex ) do
 			local flagTable = catherine.flag.FindByID( v )
@@ -95,7 +96,9 @@ if ( SERVER ) then
 			end
 			
 			if ( catherine.flag.Has( pl, v ) ) then
-				return false, "Flag_Notify_AlreadyHas", { pl:Name( ), v }
+				hasTable[ #hasTable + 1 ] = v
+				ex[ k ] = nil
+				continue
 			end
 			
 			flags = flags .. v
@@ -105,11 +108,23 @@ if ( SERVER ) then
 			end
 		end
 		
-		hook.Run( "PlayerFlagGived", pl, ex )
-		catherine.character.SetCharVar( pl, "flags", flags )
-		netstream.Start( pl, "catherine.flag.BuildHelp" )
-		
-		return true
+		if ( table.Count( ex ) > 0 ) then
+			local i = 1
+			local buffer = { }
+			
+			for k, v in pairs( ex ) do
+				buffer[ i ] = v
+				i = i + 1
+			end
+			
+			hook.Run( "PlayerFlagGived", pl, buffer )
+			catherine.character.SetCharVar( pl, "flags", flags )
+			netstream.Start( pl, "catherine.flag.BuildHelp" )
+			
+			return true, nil, { buffer }
+		else
+			return false, "Flag_Notify_AlreadyHas", { pl:Name( ), table.concat( hasTable, ", " ) }
+		end
 	end
 	
 	function catherine.flag.Take( pl, flagID )
@@ -119,6 +134,7 @@ if ( SERVER ) then
 		
 		local ex = string.Explode( "", flagID )
 		local flags = catherine.character.GetCharVar( pl, "flags", "" )
+		local hasntTable = { }
 		
 		for k, v in pairs( ex ) do
 			local flagTable = catherine.flag.FindByID( v )
@@ -128,7 +144,9 @@ if ( SERVER ) then
 			end
 			
 			if ( !catherine.flag.Has( pl, v ) ) then
-				return false, "Flag_Notify_HasNot", { pl:Name( ), v }
+				hasntTable[ #hasntTable + 1 ] = v
+				ex[ k ] = nil
+				continue
 			end
 			
 			flags = flags:gsub( v, "" )
@@ -138,11 +156,23 @@ if ( SERVER ) then
 			end
 		end
 		
-		hook.Run( "PlayerFlagTaked", pl, ex )
-		catherine.character.SetCharVar( pl, "flags", flags )
-		netstream.Start( pl, "catherine.flag.BuildHelp" )
-		
-		return true
+		if ( table.Count( ex ) > 0 ) then
+			local i = 1
+			local buffer = { }
+			
+			for k, v in pairs( ex ) do
+				buffer[ i ] = v
+				i = i + 1
+			end
+			
+			hook.Run( "PlayerFlagTaked", pl, buffer )
+			catherine.character.SetCharVar( pl, "flags", flags )
+			netstream.Start( pl, "catherine.flag.BuildHelp" )
+			
+			return true, nil, { buffer }
+		else
+			return false, "Flag_Notify_HasNot", { pl:Name( ), table.concat( hasntTable, ", " ) }
+		end
 	end
 	
 	function catherine.flag.Has( pl, uniqueID )

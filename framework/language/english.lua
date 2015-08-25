@@ -160,6 +160,8 @@ LANGUAGE.data = {
 	[ "Character_Notify_SetNameError" ] = "Can't type # in the character name!",
 	[ "Character_Notify_SetDesc" ] = "%s has set the description of %s to %s.",
 	[ "Character_Notify_SetDescError" ] = "Can't type # in the character description!",
+	[ "Character_Notify_SetSkin" ] = "%s has set the skin of %s to %s.",
+	[ "Character_Notify_SetSkinError" ] = "This number is not a valid number!",
 	[ "Character_Notify_SetModel" ] = "%s are set %s model for %s.",
 	[ "Character_Notify_SetDescLC" ] = "You have set your character description to %s.",
 	[ "Character_Notify_SelectModel" ] = "Please select a character model!",
@@ -487,6 +489,7 @@ LANGUAGE.data = {
 	[ "Command_ClearDecals_Fin" ] = "You have cleared all decals on the map.",
 	[ "Command_SetTimeHour_Fin" ] = "You have set the roleplay time to %s(hour).",
 	[ "Command_PrintBodyGroup_Fin" ] = "Printed target player Body groups on the Console.",
+	[ "Command_PM_Error01" ] = "You can't send PM chat to yourself!",
 	
 	// AntiHaX
 	[ "AntiHaX_KickMessageNotifyAdmin" ] = "%s/%s user are using the Cheat programes, So kicked the player.",
