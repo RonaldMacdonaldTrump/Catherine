@@ -85,6 +85,11 @@ function GM:CharacterVarChanged( pl, key, value )
 		pl:SetupHands( )
 		catherine.character.SetCharVar( pl, "originalModel", value )
 		hook.Run( "CharacterModelChanged", pl, value )
+	elseif ( key == "_skin" ) then
+		value = tonumber( value ) or 0
+		
+		pl:SetSkin( value )
+		hook.Run( "CharacterSkinChanged", pl, value )
 	end
 end
 
@@ -131,9 +136,12 @@ function GM:PlayerCharacterLoaded( pl )
 	local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
 	
 	if ( factionTable and factionTable.salary and factionTable.salary > 0 ) then
-		timer.Create( "Catherine.timer.Salary_" .. pl:SteamID( ), factionTable.salaryTime or 350, 0, function( )
+		local timerID = "Catherine.timer.PlayerSalary." .. pl:SteamID( )
+		
+		timer.Remove( timerID )
+		timer.Create( timerID, factionTable.salaryTime or 350, 0, function( )
 			if ( !IsValid( pl ) ) then
-				timer.Remove( "Catherine.timer.Salary_" .. pl:SteamID( ) )
+				timer.Remove( timerID )
 				return
 			end
 			
@@ -157,6 +165,7 @@ function GM:PlayerSpawn( pl )
 	pl:SetNetVar( "noDrawOriginal", nil )
 	pl:SetNetVar( "nextSpawnTime", nil )
 	pl:SetNetVar( "deathTime", nil )
+	pl:SetNetVar( "isTied", false )
 	
 	pl:Freeze( false )
 	pl:SetNoDraw( false )
@@ -164,7 +173,6 @@ function GM:PlayerSpawn( pl )
 	player_manager.SetPlayerClass( pl, "cat_player" )
 	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
-	pl:SetNetVar( "isTied", false )
 	pl:SetCanZoom( false )
 	pl:RemoveAllDecals( )
 	pl:Extinguish( )
@@ -305,7 +313,7 @@ function GM:PlayerDisconnected( pl )
 		pl.CAT_ragdoll:Remove( )
 	end
 	
-	timer.Remove( "Catherine.timer.Salary_" .. pl:SteamID( ) )
+	timer.Remove( "Catherine.timer.PlayerSalary." .. pl:SteamID( ) )
 	
 	catherine.chat.Send( pl, "disconnect" )
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. pl:SteamID( ) .. " has disconnected a server." )
@@ -415,7 +423,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 	end
 	
 	if ( ent:IsPlayer( ) and dmgInfo:IsBulletDamage( ) ) then
-		local timerID = "Catherine.timer.RunSpamProtection_" .. ent:SteamID( )
+		local timerID = "Catherine.timer.RunSpamProtection." .. ent:SteamID( )
 		
 		ent.CAT_bulletHurtSpeedDown = true
 
@@ -438,7 +446,7 @@ end
 
 function GM:KeyPress( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Create( "Catherine.timer.WeaponToggle_" .. pl:SteamID( ), 1, 1, function( )
+		timer.Create( "Catherine.timer.WeaponToggle." .. pl:SteamID( ), 1, 1, function( )
 			if ( IsValid( pl ) ) then
 				pl:ToggleWeaponRaised( )
 			end
@@ -474,7 +482,7 @@ end
 
 function GM:KeyRelease( pl, key )
 	if ( key == IN_RELOAD ) then
-		timer.Remove( "Catherine.timer.WeaponToggle_" .. pl:SteamID( ) )
+		timer.Remove( "Catherine.timer.WeaponToggle." .. pl:SteamID( ) )
 	end
 end
 
@@ -728,17 +736,18 @@ function GM:PlayerThink( pl )
 			runSpeed = pl:GetRunSpeed( ),
 			walkSpeed = pl:GetWalkSpeed( )
 		} ) or { }
+		local jumpPower, runSpeed, walkSpeed = infoOverride.jumpPower, infoOverride.runSpeed, infoOverride.walkSpeed
 		
-		if ( infoOverride.jumpPower and infoOverride.jumpPower != pl:GetJumpPower( ) ) then
-			pl:SetJumpPower( infoOverride.jumpPower )
+		if ( jumpPower and jumpPower != pl:GetJumpPower( ) ) then
+			pl:SetJumpPower( jumpPower )
 		end
 		
-		if ( infoOverride.runSpeed and infoOverride.runSpeed != pl:GetRunSpeed( ) ) then
-			pl:SetRunSpeed( infoOverride.runSpeed )
+		if ( runSpeed and runSpeed != pl:GetRunSpeed( ) ) then
+			pl:SetRunSpeed( runSpeed )
 		end
 		
-		if ( infoOverride.walkSpeed and infoOverride.walkSpeed != pl:GetWalkSpeed( ) ) then
-			pl:SetWalkSpeed( infoOverride.walkSpeed )
+		if ( walkSpeed and walkSpeed != pl:GetWalkSpeed( ) ) then
+			pl:SetWalkSpeed( walkSpeed )
 		end
 		
 		pl.CAT_playerInfoTableTick = CurTime( ) + 0.1

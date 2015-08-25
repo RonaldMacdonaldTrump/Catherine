@@ -161,12 +161,44 @@ catherine.command.Register( {
 					if ( IsValid( target ) and target:IsPlayer( ) ) then
 						catherine.character.SetVar( target, "_desc", args[ 2 ], nil, true )
 						catherine.character.SendPlayerCharacterList( target )
-						catherine.util.NotifyLang( "Character_Notify_SetDesc", pl:Name( ), args[ 2 ], target:Name( ) )
+						catherine.util.NotifyAllLang( "Character_Notify_SetDesc", pl:Name( ), args[ 2 ], target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 					end
 				else
 					catherine.util.NotifyLang( pl, "Character_Notify_SetDescError" )
+				end
+			else
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
+			end
+		else
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+		end
+	end
+} )
+
+catherine.command.Register( {
+	command = "charsetskin",
+	desc = "Setting a character skin as target player.",
+	canRun = function( pl ) return pl:IsAdmin( ) end,
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			if ( args[ 2 ] ) then
+				local skin = tonumber( args[ 2 ] )
+				
+				if ( skin ) then
+					skin = math.max( skin, 0 )
+					
+					local target = catherine.util.FindPlayerByName( args[ 1 ] )
+					
+					if ( IsValid( target ) and target:IsPlayer( ) ) then
+						catherine.character.SetVar( target, "_skin", skin, nil, true )
+						catherine.util.NotifyAllLang( "Character_Notify_SetSkin", pl:Name( ), skin, target:Name( ) )
+					else
+						catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
+					end
+				else
+					catherine.util.NotifyLang( pl, "Character_Notify_SetSkinError" )
 				end
 			else
 				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 2 )
@@ -358,11 +390,7 @@ catherine.command.Register( {
 					if ( success ) then
 						catherine.util.NotifyLang( pl, "Item_GiveCommand_Fin", args[ 3 ] or 1, args[ 2 ], target:Name( ) )
 					else
-						if ( errorID == 1 ) then
-							catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpaceTarget" )
-						elseif ( errorID == 2 ) then
-							catherine.util.NotifyLang( pl, "Item_Notify_NoItemData" )
-						end
+						catherine.util.NotifyLang( pl, ( errorID == 1 and "Inventory_Notify_HasNotSpaceTarget" or "Item_Notify_NoItemData" ) )
 					end
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
@@ -496,7 +524,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorsettitle",
-	desc = "Setting a force door title. (Setting a 'Blank' text to initialize door title)",
+	desc = "Setting a force door title. (Setting a 'Blank' text to reset door title.)",
 	syntax = "[Text]",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
@@ -520,7 +548,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "doorsetdesc",
-	desc = "Setting a force door description. (Setting a 'Blank' text to initialize door description)",
+	desc = "Setting a force door description. (Setting a 'Blank' text to reset door description.)",
 	syntax = "[Text]",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
@@ -634,9 +662,13 @@ catherine.command.Register( {
 				local target = catherine.util.FindPlayerByName( args[ 1 ] )
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
-					local text = table.concat( args, " ", 2, #args )
-					
-					catherine.chat.Send( pl, "pm", text, { pl, target }, target )
+					if ( pl != target ) then
+						local text = table.concat( args, " ", 2, #args )
+						
+						catherine.chat.Send( pl, "pm", text, { pl, target }, target )
+					else
+						catherine.util.NotifyLang( pl, "Command_PM_Error01" )
+					end
 				else
 					catherine.util.NotifyLang( pl, "Basic_Notify_UnknownPlayer" )
 				end
@@ -758,7 +790,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "storagesetpwd",
-	desc = "Setting a Storage Password.",
+	desc = "Setting a Storage Password. (If you are change to 'None' does it change to default value.)",
 	syntax = "[Password]",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )

@@ -152,10 +152,12 @@ LANGUAGE.data = {
 	[ "Character_Notify_CharBan" ] = "%s 님이 %s 님의 캐릭터 를 밴하셨습니다.",
 	[ "Character_Notify_CharUnBan" ] = "%s 님이 %s 님의 캐릭터 밴을 푸셨습니다.",
 	[ "Character_Notify_CantCharBan_UnBan" ] = "이 사람을 캐릭터 밴 / 해제 할 수 없습니다!",
-	[ "Character_Notify_SetName" ] = "%s 님이 %s 로 %s 의 캐릭터 이름을 바꾸셨습니다.",
+	[ "Character_Notify_SetName" ] = "%s 님이 '%s' 로 %s 의 캐릭터 이름을 바꾸셨습니다.",
 	[ "Character_Notify_SetNameError" ] = "캐릭터 이름에 # 이 들어갈 수 없습니다!",
-	[ "Character_Notify_SetDesc" ] = "%s 님이 %s 로 %s 의 캐릭터 설명을 바꾸셨습니다.",
+	[ "Character_Notify_SetDesc" ] = "%s 님이 '%s' 로 %s 의 캐릭터 설명을 바꾸셨습니다.",
 	[ "Character_Notify_SetDescError" ] = "캐릭터 설명에 # 이 들어갈 수 없습니다!",
+	[ "Character_Notify_SetSkin" ] = "%s 님이 %s 로 %s 의 캐릭터 스킨을 바꾸셨습니다.",
+	[ "Character_Notify_SetSkinError" ] = "올바르지 않은 숫자 입니다!",
 	[ "Character_Notify_SetModel" ] = "%s 님이 %s 로 %s 의 캐릭터 모델을 바꾸셨습니다.",
 	[ "Character_Notify_SetDescLC" ] = "당신의 캐릭터 설명을 %s 로 바꿨습니다.",
 	[ "Character_Notify_SelectModel" ] = "캐릭터 모델을 선택하세요!",
@@ -485,6 +487,7 @@ LANGUAGE.data = {
 	[ "Command_ClearDecals_Fin" ] = "맵에 있는 데칼을 모두 지웠습니다.",
 	[ "Command_SetTimeHour_Fin" ] = "당신은 RP 시간을 %s시로 설정하셨습니다.",
 	[ "Command_PrintBodyGroup_Fin" ] = "해당 사람의 바디그룹 테이블 구조가 콘솔에 표시됩니다.",
+	[ "Command_PM_Error01" ] = "자기 자신에게 PM 채팅을 보낼 수 없습니다!",
 	
 	// AntiHaX
 	[ "AntiHaX_KickMessageNotifyAdmin" ] = "%s/%s 유저가 치트 프로그램을 사용하였습니다, 그래서 킥 처리를 하였습니다.",

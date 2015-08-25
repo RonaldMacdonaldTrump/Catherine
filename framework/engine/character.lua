@@ -234,7 +234,7 @@ if ( SERVER ) then
 		pl:Spawn( )
 		pl:SetTeam( factionTable.index )
 		pl:SetModel( character._model )
-		pl:SetSkin( character._skin or 0 )
+		pl:SetSkin( tonumber( character._skin or 0 ) )
 		pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
 		pl:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( pl ) )
 
