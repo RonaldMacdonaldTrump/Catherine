@@ -96,10 +96,11 @@ function BASE:GetDropModel( )
 end
 
 if ( SERVER ) then
-	hook.Add( "PlayerCharacterLoaded", "catherine.item.hooks.clothing_base.PlayerCharacterLoaded", function( pl )
+	catherine.item.RegisterHook( "PlayerCharacterLoaded", BASE, function( pl )
 		timer.Simple( 1, function( )
 			for k, v in pairs( catherine.inventory.Get( pl ) ) do
 				local itemTable = catherine.item.FindByID( k )
+				
 				if ( !itemTable.isCloth or !catherine.inventory.GetItemData( pl, k, "wearing" ) ) then continue end
 				
 				if ( catherine.character.GetCharVar( pl, "clothWearing" ) == nil and catherine.inventory.GetItemData( pl, k, "wearing" ) == true ) then
@@ -109,29 +110,29 @@ if ( SERVER ) then
 		end )
 	end )
 	
-	hook.Add( "CharacterLoadingStart", "catherine.item.hooks.clothing_base.CharacterLoadingStart", function( pl )
+	catherine.item.RegisterHook( "CharacterLoadingStart", BASE, function( pl )
 		catherine.character.SetCharVar( pl, "clothWearing", nil )
 	end )
-
-	hook.Add( "PreItemDrop", "catherine.item.hooks.clothing_base.PreItemDrop", function( pl, itemTable )
+	
+	catherine.item.RegisterHook( "PreItemDrop", BASE, function( pl, itemTable )
 		if ( itemTable.isCloth ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "PreItemStorageMove", "catherine.item.hooks.clothing_base.PreItemStorageMove", function( pl, itemTable )
+	catherine.item.RegisterHook( "PreItemStorageMove", BASE, function( pl, ent, itemTable, data )
 		if ( itemTable.isCloth ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "PreItemVendorSell", "catherine.item.hooks.clothing_base.PreItemVendorSell", function( pl, ent, itemTable, data )
+	catherine.item.RegisterHook( "PreItemVendorSell", BASE, function( pl, ent, itemTable, data )
 		if ( itemTable.isCloth ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "PreItemForceTake", "catherine.item.hooks.clothing_base.PreItemForceTake", function( pl, itemTable )
+	catherine.item.RegisterHook( "PreItemForceTake", BASE, function( pl, target, itemTable )
 		if ( itemTable.isCloth ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end

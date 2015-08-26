@@ -96,6 +96,13 @@ function GM:ContextMenuOpen( )
 	return false
 end
 
+function GM:OnReloaded( )
+	for k, v in pairs( catherine.item.GetAllHook( ) ) do
+		hook.Remove( v[ 1 ], v[ 2 ] )
+		catherine.item.hooks[ k ] = nil
+	end
+end
+
 function GM:HUDPaintBackground( )
 	local pl = catherine.pl
 	

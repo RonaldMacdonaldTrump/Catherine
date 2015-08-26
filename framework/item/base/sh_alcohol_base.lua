@@ -81,7 +81,7 @@ BASE.func.drink = {
 }
 
 if ( SERVER ) then
-	hook.Add( "PlayerLimbDamageHealed", "catherine.item.hooks.alcohol_base.PlayerLimbDamageHealed", function( pl, hitGroup, limbData )
+	catherine.item.RegisterHook( "PlayerLimbDamageHealed", BASE, function( pl, hitGroup, limbData )
 		if ( hitGroup == HITGROUP_HEAD and limbData == 0 and table.Count( catherine.character.GetCharVar( pl, "alcohol_stack", { } ) ) != 0 ) then
 			catherine.character.SetCharVar( pl, "alcohol_stack", { } )
 		end

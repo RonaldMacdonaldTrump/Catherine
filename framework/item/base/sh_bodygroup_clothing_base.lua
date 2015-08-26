@@ -138,10 +138,11 @@ function BASE:CanTakeOff( pl )
 end
 
 if ( SERVER ) then
-	hook.Add( "PlayerCharacterLoaded", "catherine.item.hooks.bodygroup_clothing_base.PlayerCharacterLoaded", function( pl )
+	catherine.item.RegisterHook( "PlayerCharacterLoaded", BASE, function( pl )
 		timer.Simple( 1, function( )
 			for k, v in pairs( catherine.inventory.Get( pl ) ) do
 				local itemTable = catherine.item.FindByID( k )
+				
 				if ( !itemTable.isBodygroupCloth or !catherine.inventory.GetItemData( pl, k, "wearing" ) or pl:GetBodygroup( itemTable.bodyGroup ) == itemTable.bodyGroupSubModelIndex ) then continue end
 
 				catherine.item.Work( pl, k, "wear" )
@@ -149,9 +150,10 @@ if ( SERVER ) then
 		end )
 	end )
 	
-	hook.Add( "CharacterLoadingStart", "catherine.item.hooks.bodygroup_clothing_base.CharacterLoadingStart", function( pl )
+	catherine.item.RegisterHook( "CharacterLoadingStart", BASE, function( pl )
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
 			local itemTable = catherine.item.FindByID( k )
+			
 			if ( !itemTable.isBodygroupCloth or !catherine.inventory.GetItemData( pl, k, "wearing" ) ) then continue end
 			
 			pl:SetBodygroup( itemTable.bodyGroup, 0 )
@@ -159,26 +161,26 @@ if ( SERVER ) then
 		
 		catherine.character.SetCharVar( pl, "bodygroups", nil )
 	end )
-
-	hook.Add( "PreItemDrop", "catherine.item.hooks.bodygroup_clothing_base.PreItemDrop", function( pl, itemTable )
+	
+	catherine.item.RegisterHook( "PreItemDrop", BASE, function( pl, itemTable )
 		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "PreItemStorageMove", "catherine.item.hooks.bodygroup_clothing_base.PreItemStorageMove", function( pl, itemTable )
+	catherine.item.RegisterHook( "PreItemStorageMove", BASE, function( pl, ent, itemTable, data )
 		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "PreItemVendorSell", "catherine.item.hooks.bodygroup_clothing_base.PreItemVendorSell", function( pl, ent, itemTable, data )
+	catherine.item.RegisterHook( "PreItemVendorSell", BASE, function( pl, ent, itemTable, data )
 		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
 	end )
 	
-	hook.Add( "PreItemForceTake", "catherine.item.hooks.bodygroup_clothing_base.PreItemForceTake", function( pl, itemTable )
+	catherine.item.RegisterHook( "PreItemForceTake", BASE, function( pl, target, itemTable )
 		if ( itemTable.isBodygroupCloth and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "wearing" ) ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "takeoff" )
 		end
