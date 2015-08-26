@@ -25,6 +25,9 @@ function catherine.faction.Register( factionTable )
 		return
 	end
 	
+	factionTable.color = factionTable.color or Color( 255, 255, 255 )
+	factionTable.name = factionTable.name or "Error Name"
+	
 	catherine.faction.lists[ factionTable.index ] = factionTable
 	team.SetUp( factionTable.index, factionTable.name, factionTable.color )
 	
@@ -142,6 +145,7 @@ if ( SERVER ) then
 	
 	function catherine.faction.PlayerFirstSpawned( pl )
 		local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
+		
 		if ( !factionTable or !factionTable.PlayerFirstSpawned ) then return end
 		
 		factionTable:PlayerFirstSpawned( pl )

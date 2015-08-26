@@ -286,7 +286,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.player.SetCharacterBan( pl, status, func )
-		if ( hook.Run( "PostCharacterBan", pl, status, func ) == false ) then
+		if ( hook.Run( "CanCharacterBan", pl, status, func ) == false ) then
 			return false, "Character_Notify_CantCharBan_UnBan"
 		end
 		

@@ -69,6 +69,7 @@ if ( SERVER ) then
 	catherine.configs.environmentSendInterval = 60
 	catherine.configs.netRegistryOptimizeInterval = 350
 	catherine.configs.saveInterval = 300
+	catherine.configs.fadeOutDeathBody = true
 	catherine.configs.voiceAllow = false --[[ Allow a Voice chat. ]]--
 	catherine.configs.voice3D = true --[[ Enabled the Voice 3D system. ]]--
 	catherine.configs.giveHand = true --[[ Enabled the Given hand weapon as spawn. ]]--

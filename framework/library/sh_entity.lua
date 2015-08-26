@@ -52,8 +52,64 @@ if ( SERVER ) then
 		return catherine.entity.mapEntities[ ent ] != nil
 	end
 	
-	function META:IsMapEntity( )
-		return catherine.entity.mapEntities[ self ] != nil
+	function catherine.entity.StartFadeOut( ent, time, func )
+		if ( ent.CAT_isFadeouting ) then return end
+		local col = ent:GetColor( )
+		local alpha = 0
+		local fadeAmount = col.a / time
+		local timerID = "Catherine.timer.entity.DoorFadeOut." .. ent:EntIndex( )
+		
+		ent.CAT_originalColor = col
+		ent.CAT_originalRenderMode = ent:GetRenderMode( )
+		ent.CAT_isFadeouting = true
+		ent:SetNetVar( "isFadeouting", true )
+		ent:SetRenderMode( RENDERMODE_TRANSALPHA )
+		
+		timer.Remove( timerID )
+		timer.Create( timerID, fadeAmount, time, function( )
+			if ( !IsValid( ent ) ) then
+				timer.Remove( timerID )
+				return
+			end
+			
+			if ( alpha > 0 ) then
+				alpha = alpha - fadeAmount
+				ent:SetColor( Color( col.r, col.g, col.b, alpha ) )
+			else
+				ent.CAT_isFadeouting = nil
+				ent:SetNetVar( "isFadeouting", nil )
+				timer.Remove( timerID )
+				
+				if ( func ) then
+					func( ent, time )
+				end
+			end
+		end )
+	end
+	
+	function catherine.entity.StopFadeOut( ent, func )
+		if ( !ent.CAT_isFadeouting ) then return end
+		
+		timer.Remove( "Catherine.timer.entity.DoorFadeOut." .. ent:EntIndex( ) )
+		
+		if ( ent.CAT_originalColor and ent.CAT_originalRenderMode ) then
+			ent:SetColor( ent.CAT_originalColor )
+			ent:SetRenderMode( ent.CAT_originalRenderMode )
+			
+			ent.CAT_originalRenderMode = nil
+			ent.CAT_originalColor = nil
+		end
+		
+		ent.CAT_isFadeouting = nil
+		ent:SetNetVar( "isFadeouting", nil )
+		
+		if ( func ) then
+			func( ent )
+		end
+	end
+	
+	function catherine.entity.IsFadeOuting( ent )
+		return ent.CAT_isFadeouting
 	end
 	
 	function catherine.entity.SetIgnoreUse( ent, bool )
@@ -62,7 +118,7 @@ if ( SERVER ) then
 	
 	function catherine.entity.GetIgnoreUse( ent )
 		return ent.CAT_ignoreUse
-	end 
+	end
 
 	function catherine.entity.RegisterUseMenu( ent, menuTable )
 		local forServer = { }
@@ -95,6 +151,10 @@ if ( SERVER ) then
 		if ( !catherine.entity.customUse[ index ] or !catherine.entity.customUse[ index ][ uniqueID ] ) then return end
 		
 		catherine.entity.customUse[ index ][ uniqueID ]( pl, Entity( index ) )
+	end
+	
+	function META:IsMapEntity( )
+		return catherine.entity.mapEntities[ self ] != nil
 	end
 	
 	function catherine.entity.EntityRemoved( ent )
@@ -137,6 +197,10 @@ else
 		end
 	end )
 	
+	function catherine.entity.IsFadeOuting( ent )
+		return ent:GetNetVar( "isFadeouting", false )
+	end
+	
 	function catherine.entity.LanguageChanged( )
 		for k, v in pairs( ents.GetAll( ) ) do
 			if ( !v.LanguageChanged ) then continue end
@@ -147,6 +211,8 @@ else
 	
 	hook.Add( "LanguageChanged", "catherine.entity.LanguageChanged", catherine.entity.LanguageChanged )
 end
+
+
 
 function catherine.entity.GetPlayer( ent )
 	return ent:GetNetVar( "player" )

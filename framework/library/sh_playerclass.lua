@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-local PLY = { }
-PLY.DisplayName = "Catherine Player"
+local PLAYER = { }
+PLAYER.DisplayName = "Catherine Player"
 
 local modelList = { }
 
@@ -25,30 +25,30 @@ for k, v in pairs( player_manager.AllValidModels( ) ) do
 	modelList[ v:lower( ) ] = k
 end
 
-function PLY:Loadout( )
+function PLAYER:Loadout( )
     self.Player:SetupHands( )
-
-    return
+	
+	return
 end
 
-function PLY:GetHandsModel( )
+function PLAYER:GetHandsModel( )
 	local model = self.Player:GetModel( ):lower( )
-
+	
 	if ( model:find( "police" ) ) then
 		model = "combine"
 	else
 		local modelConvert = model:gsub( "_", "" )
-
+		
 		for k, v in pairs( modelList ) do
 			if ( catherine.util.CheckStringMatch( modelConvert, v ) ) then
 				model = v
-
+				
 				break
 			end
 		end
 	end
-
+	
 	return player_manager.TranslatePlayerHands( model )
 end
 
-player_manager.RegisterClass( "cat_player", PLY, "player_default" )
+player_manager.RegisterClass( "cat_player", PLAYER, "player_default" )
