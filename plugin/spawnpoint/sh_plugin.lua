@@ -40,8 +40,10 @@ catherine.language.Merge( "korean", {
 catherine.util.Include( "sv_plugin.lua" )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_spawnPointAdd",
 	command = "spawnpointadd",
 	syntax = "[Faction Name]",
+	desc = "Add the Spawn Point for the target faction.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -68,8 +70,10 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_spawnPointRemove",
 	command = "spawnpointremove",
 	syntax = "[Range]",
+	desc = "Remove the Spawn Point in the this position.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local rad = math.max( tonumber( args[ 1 ] or "" ) or 140, 8 )

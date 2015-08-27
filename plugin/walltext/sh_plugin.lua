@@ -42,8 +42,10 @@ catherine.util.Include( "sv_plugin.lua" )
 catherine.util.Include( "cl_plugin.lua" )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_textAdd",
 	command = "textadd",
 	syntax = "[Text] [Size]",
+	desc = "Add the Text at the looking position.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -57,8 +59,10 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_textRemove",
 	command = "textremove",
 	syntax = "[Distance]",
+	desc = "Remove the Text at the looking position.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local i = PLUGIN:RemoveText( pl:GetShootPos( ), args[ 1 ] or 256 )
