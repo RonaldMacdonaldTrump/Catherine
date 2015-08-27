@@ -187,4 +187,11 @@ function catherine.plugin.LanguageChanged( )
 	rebuildPlugin( )
 end
 
+function catherine.plugin.InitPostEntity( )
+	if ( IsValid( catherine.pl ) ) then
+		rebuildPlugin( )
+	end
+end
+
 hook.Add( "LanguageChanged", "catherine.plugin.LanguageChanged", catherine.plugin.LanguageChanged )
+hook.Add( "InitPostEntity", "catherine.plugin.InitPostEntity", catherine.plugin.InitPostEntity )

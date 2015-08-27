@@ -76,10 +76,6 @@ function GM:Initialize( )
 	CAT_CONVAR_BAR = CreateClientConVar( "cat_convar_bar", "1", true, true )
 	CAT_CONVAR_CHAT_TIMESTAMP = CreateClientConVar( "cat_convar_chat_timestamp", "1", true, true )
 	CAT_CONVAR_HINT = CreateClientConVar( "cat_convar_hint", "1", true, true )
-	
-	local languageTable = catherine.language.FindByID( catherine.configs.defaultLanguage )
-	
-	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", ( languageTable and languageTable.uniqueID or "english" ), true, true )
 end
 
 function GM:HUDShouldDraw( name )

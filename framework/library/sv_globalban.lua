@@ -72,6 +72,14 @@ function catherine.globalban.IsBanned( steamID )
 	end
 end
 
+function catherine.globalban.GetBanData( steamID )
+	for k, v in pairs( catherine.globalban.database ) do
+		if ( v.steamID == steamID ) then
+			return v
+		end
+	end
+end
+
 function catherine.globalban.Think( )
 	if ( !catherine.configs.enable_globalBan ) then return end
 	
@@ -91,7 +99,9 @@ end
 
 function catherine.globalban.CheckPassword( steamID64 )
 	if ( catherine.configs.enable_globalBan and catherine.globalban.IsBanned( util.SteamIDFrom64( steamID64 ) ) ) then
-		return false, "[Catherine GlobalBan] You are banned by this server."
+		local banData = catherine.globalban.GetBanData( util.SteamIDFrom64( steamID64 ) )
+		
+		return false, "[GlobalBan] You are banned by this server.\n\n" .. banData.reason
 	end
 end
 

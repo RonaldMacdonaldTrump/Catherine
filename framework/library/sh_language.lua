@@ -75,6 +75,9 @@ if ( SERVER ) then
 	end
 else
 	local getConvarString = GetConVarString
+	local languageTable = catherine.language.FindByID( catherine.configs.defaultLanguage )
+	
+	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", ( languageTable and languageTable.uniqueID or "english" ), true, true )
 	
 	function LANG( key, ... )
 		local languageTable = languageMasterTable[ getConvarString( "cat_convar_language" ) ] or languageMasterTable[ "english" ]

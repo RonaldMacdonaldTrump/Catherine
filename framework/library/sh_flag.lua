@@ -289,8 +289,15 @@ else
 	function catherine.flag.LanguageChanged( )
 		rebuildFlag( )
 	end
+	
+	function catherine.flag.InitPostEntity( )
+		if ( IsValid( catherine.pl ) ) then
+			rebuildFlag( )
+		end
+	end
 
 	hook.Add( "LanguageChanged", "catherine.flag.LanguageChanged", catherine.flag.LanguageChanged )
+	hook.Add( "InitPostEntity", "catherine.flag.InitPostEntity", catherine.flag.InitPostEntity )
 	
 	if ( IsValid( catherine.pl ) ) then
 		rebuildFlag( )

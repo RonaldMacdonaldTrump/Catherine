@@ -19,6 +19,10 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.command = catherine.command or { lists = { } }
 
 function catherine.command.Register( commandTable )
+	if ( !commandTable or !commandTable.uniqueID or !commandTable.command ) then
+		return
+	end
+	
 	commandTable.syntax = commandTable.syntax or "[None]"
 	commandTable.desc = commandTable.desc or "^Command_DefDesc"
 	
@@ -190,7 +194,7 @@ else
 			html = html .. [[
 				<div class="]] .. ( havePermission and "panel panel-default" or "panel panel-danger" ) .. [[">
 					<div class="panel-heading">
-						<h3 class="panel-title">]] .. k .. [[</h3>
+						<h3 class="panel-title">]] .. v.command .. [[</h3>
 					</div>
 						<div class="panel-body">]] .. v.syntax .. [[<br>]] .. catherine.util.StuffLanguage( v.desc ) .. [[
 						</div>
@@ -229,14 +233,17 @@ else
 	function catherine.command.LanguageChanged( )
 		rebuildCommand( )
 	end
-
+	
+	function catherine.command.InitPostEntity( )
+		if ( IsValid( catherine.pl ) ) then
+			rebuildCommand( )
+		end
+	end
+	
 	hook.Add( "LanguageChanged", "catherine.command.LanguageChanged", catherine.command.LanguageChanged )
+	hook.Add( "InitPostEntity", "catherine.command.InitPostEntity", catherine.command.InitPostEntity )
 	
-	rebuildCommand( )
-	
-	concommand.Add( "catherine_runcommand", function( pl, cmd, args )
-		local id = args[ 1 ]
-		table.remove( args, 1 )
-		catherine.command.Run( id, args )
-	end )
+	if ( IsValid( catherine.pl ) ) then
+		rebuildCommand( )
+	end
 end

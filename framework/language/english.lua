@@ -104,6 +104,7 @@ LANGUAGE.data = {
 	// GlobalBan
 	[ "GlobalBan_UI_Title" ] = "Global Ban",
 	[ "GlobalBan_UI_Blank" ] = "Doesn't have user in Global Ban.",
+	[ "GlobalBan_UI_OpenProfile" ] = "Open the Steam Profile for this user.",
 	[ "GlobalBan_UI_NotUsing" ] = "This server doesn't using Global Ban service.",
 	[ "GlobalBan_UI_Users" ] = "%s's users are blocked.",
 	
@@ -276,7 +277,7 @@ LANGUAGE.data = {
 	[ "Help_Desc_Plugin" ] = "The listed of Plugins ...",
 	
 	// Plugin
-	[ "Plugin_Value_Author" ] = "Development and design by %s",
+	[ "Plugin_Value_Author" ] = "Development and design by '%s'",
 	
 	// Storage
 	[ "Storage_UI_YourInv" ] = "Your Inventory",
