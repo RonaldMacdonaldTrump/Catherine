@@ -22,23 +22,31 @@ function catherine.command.Register( commandTable )
 	commandTable.syntax = commandTable.syntax or "[None]"
 	commandTable.desc = commandTable.desc or "^Command_DefDesc"
 	
-	catherine.command.lists[ commandTable.command ] = commandTable
+	catherine.command.lists[ commandTable.uniqueID ] = commandTable
 end
 
 function catherine.command.GetAll( )
 	return catherine.command.lists
 end
 
-function catherine.command.FindByCMD( id )
-	return catherine.command.lists[ id ]
+function catherine.command.FindByID( uniqueID )
+	return catherine.command.lists[ uniqueID ]
+end
+
+function catherine.command.FindByCMD( command )
+	for k, v in pairs( catherine.command.GetAll( ) ) do
+		if ( v.command == command ) then
+			return catherine.command.lists[ k ]
+		end
+	end
 end
 
 function catherine.command.IsCommand( text )
 	if ( text:sub( 1, 1 ) != "/" ) then return end
 	local toArgs = catherine.command.TransferToArgsTab( text )
-	local id = toArgs[ 1 ]:sub( 2, #toArgs[ 1 ] )
+	local command = toArgs[ 1 ]:sub( 2, #toArgs[ 1 ] )
 	
-	return catherine.command.lists[ id ]
+	return catherine.command.FindByCMD( command ) or false
 end
 
 function catherine.command.TransferToArgsTab( text )
@@ -74,15 +82,21 @@ function catherine.command.TransferToArgsTab( text )
 end
 
 if ( SERVER ) then
-	function catherine.command.Run( pl, id, args )
-		local commandTable = catherine.command.FindByCMD( id )
+	function catherine.command.Run( pl, uniqueID_or_command, args )
+		local commandTable = nil
+		
+		if ( uniqueID_or_command:sub( 1, 1 ) == "&" ) then
+			commandTable = catherine.command.FindByID( uniqueID_or_command )
+		else
+			commandTable = catherine.command.FindByCMD( uniqueID_or_command )
+		end
 		
 		if ( !commandTable ) then
 			catherine.util.NotifyLang( pl, "Command_Notify_NotFound" )
 			return
 		end
 		
-		if ( commandTable.canRun and commandTable.canRun( pl, id ) == false ) then
+		if ( commandTable.canRun and commandTable.canRun( pl, commandTable ) == false ) then
 			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 			return
 		end
@@ -94,9 +108,9 @@ if ( SERVER ) then
 		local success, result = pcall( commandTable.runFunc, pl, args )
 		
 		if ( success ) then
-			catherine.log.Add( CAT_LOG_FLAG_BASIC, pl:Name( ) .. ", " .. pl:SteamName( ) .. " are using /" .. id .. " " .. table.concat( args or { }, " " ), true )
+			catherine.log.Add( CAT_LOG_FLAG_BASIC, pl:Name( ) .. ", " .. pl:SteamName( ) .. " are using /" .. commandTable.command .. " " .. table.concat( args or { }, " " ), true )
 		else
-			ErrorNoHalt( "\n[CAT ERROR] SORRY, Failed to run command <'" .. id .. "'>, because command has a error :< ...\n\n" .. result .. "\n" )
+			ErrorNoHalt( "\n[CAT ERROR] SORRY, Failed to run command <'" .. commandTable.command .. "'>, because command has a error :< ...\n\n" .. result .. "\n" )
 		end
 	end
 	
@@ -193,8 +207,8 @@ else
 		rebuildCommand( )
 	end )
 	
-	function catherine.command.Run( id, ... )
-		netstream.Start( "catherine.command.Run", { id, { ... } } )
+	function catherine.command.Run( uniqueID_or_command, ... )
+		netstream.Start( "catherine.command.Run", { uniqueID_or_command, { ... } } )
 	end
 	
 	function catherine.command.GetMatchCommands( text )
@@ -203,9 +217,9 @@ else
 		text = text:sub( 2 )
 		
 		for k, v in pairs( catherine.command.GetAll( ) ) do
-			if ( catherine.util.CheckStringMatch( k, text ) ) then
+			if ( catherine.util.CheckStringMatch( v.command, text ) ) then
 				commands[ #commands + 1 ] = v
-				sub = #text
+				sub = text:utf8len( )
 			end
 		end
 		

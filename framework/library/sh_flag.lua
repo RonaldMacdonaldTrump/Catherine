@@ -273,7 +273,7 @@ else
 		Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption06_Q" ), data[ 2 ] or "", function( val )
 				if ( !IsValid( data[ 1 ] ) ) then return end
 				
-				catherine.command.Run( "flagtake", data[ 1 ]:Name( ), val )
+				catherine.command.Run( "&uniqueID_flagTake", data[ 1 ]:Name( ), val )
 			end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
 		)
 	end )

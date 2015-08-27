@@ -57,7 +57,7 @@ function GM:ShowTeam( pl )
 			if ( isBuyable ) then
 				catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )
 					if ( bool ) then
-						catherine.command.Run( pl, "doorbuy" )
+						catherine.command.Run( pl, "&uniqueID_doorBuy" )
 					end
 				end )
 			end

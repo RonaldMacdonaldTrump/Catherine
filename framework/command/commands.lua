@@ -17,6 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charFallOver",
 	command = "charfallover",
 	desc = "Going to stunned state.",
 	syntax = "[Getting up time]",
@@ -42,6 +43,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charGetUp",
 	command = "chargetup",
 	desc = "Takes place in a stunned state.",
 	canRun = function( pl ) return pl:Alive( ) end,
@@ -69,6 +71,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charSetName",
 	command = "charsetname",
 	desc = "Setting a character name as target player.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
@@ -101,6 +104,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charBan",
 	command = "charban",
 	desc = "Toggle a banned state. (Ban, Unban)",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
@@ -149,6 +153,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charSetDesc",
 	command = "charsetdesc",
 	desc = "Setting a character description as target player.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
@@ -178,6 +183,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charSetSkin",
 	command = "charsetskin",
 	desc = "Setting a character skin as target player.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
@@ -210,6 +216,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charSetModel",
 	command = "charsetmodel",
 	desc = "Setting a character model as target player.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
@@ -235,6 +242,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charPhysDesc",
 	command = "charphysdesc",
 	desc = "Change a character description.",
 	runFunc = function( pl, args )
@@ -259,6 +267,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_doorLock",
 	command = "doorlock",
 	desc = "Lock the looking door.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
@@ -276,6 +285,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_doorUnlock",
 	command = "doorunlock",
 	desc = "Unlock the looking door.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
@@ -293,6 +303,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_flagGive",
 	command = "flaggive",
 	desc = "Gives the flag to the target player.",
 	syntax = "[Name] [Flag ID]",
@@ -323,6 +334,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_flagTake",
 	command = "flagtake",
 	desc = "Takes the flag to the target player.",
 	syntax = "[Name] [Flag ID]",
@@ -353,6 +365,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_itemSpawn",
 	command = "itemspawn",
 	desc = "Spawn item as the looking position.",
 	syntax = "[Item ID]",
@@ -371,6 +384,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_itemGive",
 	command = "itemgive",
 	desc = "Gives items to the target player.",
 	syntax = "[Name] [Item ID] [Count]",
@@ -405,6 +419,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charSetCash",
 	command = "charsetcash",
 	desc = "Setting a cash to the target player.",
 	syntax = "[Name] [Amount]",
@@ -435,6 +450,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charGiveCash",
 	command = "chargivecash",
 	desc = "Gives a cash to the target player.",
 	syntax = "[Name] [Amount]",
@@ -465,6 +481,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charTakeCash",
 	command = "chartakecash",
 	desc = "Takes a cash to the target player.",
 	syntax = "[Name] [Amount]",
@@ -495,6 +512,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_doorBuy",
 	command = "doorbuy",
 	desc = "Buying a door.",
 	runFunc = function( pl, args )
@@ -509,6 +527,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_doorSell",
 	command = "doorsell",
 	desc = "Selling a door.",
 	runFunc = function( pl, args )
@@ -523,6 +542,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_doorSetTitle",
 	command = "doorsettitle",
 	desc = "Setting a force door title. (Setting a 'Blank' text to reset door title.)",
 	syntax = "[Text]",
@@ -547,6 +567,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_doorSetDesc",
 	command = "doorsetdesc",
 	desc = "Setting a force door description. (Setting a 'Blank' text to reset door description.)",
 	syntax = "[Text]",
@@ -571,6 +592,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_doorSetStatus",
 	command = "doorsetstatus",
 	desc = "Toggles a door status. (Ownable, Unownable)",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
@@ -582,6 +604,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_doorSetActive",
 	command = "doorsetactive",
 	desc = "Toggles a door active. (Show, Hide)",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
@@ -593,6 +616,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_plyGiveWhitelist",
 	command = "plygivewhitelist",
 	desc = "Gives whitelist to the target player.",
 	syntax = "[Name] [Faction ID]",
@@ -623,6 +647,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_plyTakeWhitelist",
 	command = "plytakewhitelist",
 	desc = "Takes a target player whitelist.",
 	syntax = "[Name] [Faction ID]",
@@ -653,6 +678,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_pm",
 	command = "pm",
 	desc = "Send PM (Private Message) to target player.",
 	syntax = "[Name] [Text]",
@@ -682,6 +708,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_roll",
 	command = "roll",
 	desc = "Roll a dice. (for RP)",
 	runFunc = function( pl, args )
@@ -694,6 +721,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_clearDecals",
 	command = "cleardecals",
 	desc = "Clear all map decals. (Blood etc ..)",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
@@ -707,6 +735,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_restartLevel",
 	command = "restartlevel",
 	desc = "Restart server as the same map.",
 	syntax = "[Delay]",
@@ -723,6 +752,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_changeLevel",
 	command = "changelevel",
 	desc = "Restart server as the typed map.",
 	syntax = "[Map] [Delay]",
@@ -744,6 +774,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_setTimeHour",
 	command = "settimehour",
 	desc = "Change RP hour as the typed hour.",
 	syntax = "[0 ~ 24]",
@@ -768,6 +799,7 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_printPlayerBodyGroups",
 	command = "printplayerbodygroups",
 	desc = "Print player body groups on the Console.",
 	syntax = "[Name]",
@@ -790,6 +822,7 @@ catherine.command.Register( {
 
 catherine.command.Register( {
 	command = "storagesetpwd",
+	uniqueID = "&uniqueID_storageSetPwd",
 	desc = "Setting a Storage Password. (If you are change to 'None' does it change to default value.)",
 	syntax = "[Password]",
 	canRun = function( pl ) return pl:IsAdmin( ) end,

@@ -163,7 +163,9 @@ catherine.util.Include( "sv_plugin.lua" )
 catherine.util.Include( "cl_plugin.lua" )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_vendorAdd",
 	command = "vendoradd",
+	desc = "Add the Vendor NPC of this position.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		catherine.util.StringReceiver( pl, "Vendor_SpawnFunc_Name", "^Vendor_NameQ", "Johnson", function( _, val )
@@ -188,7 +190,9 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_vendorRemove",
 	command = "vendorremove",
+	desc = "Remove the looking Vendor NPC.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
