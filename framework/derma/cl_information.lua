@@ -113,7 +113,7 @@ function PANEL:Init( )
 		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
 	end
 	self.TopPanel.descEnt.OnEnter = function( pnl )
-		catherine.command.Run( "charphysdesc", pnl:GetText( ) )
+		catherine.command.Run( "&uniqueID_charPhysDesc", pnl:GetText( ) )
 	end
 	
 	self.LeftPanel = vgui.Create( "DPanel", self )

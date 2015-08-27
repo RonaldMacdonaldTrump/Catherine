@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.item = catherine.item or { bases = { }, items = { } }
+catherine.item = catherine.item or { bases = { }, items = { }, hooks = { } }
 
 function catherine.item.Register( itemTable )
 	if ( !itemTable ) then return end
@@ -137,12 +137,38 @@ function catherine.item.GetAll( )
 	return catherine.item.items
 end
 
+function catherine.item.GetAllHook( )
+	return catherine.item.hooks
+end
+
 function catherine.item.FindByID( id )
 	return catherine.item.items[ id ]
 end
 
 function catherine.item.FindBaseByID( id )
 	return catherine.item.bases[ id ]
+end
+
+function catherine.item.RegisterHook( hookID, itemTable, func )
+	local hookUniqueID = "catherine.item.hook." .. itemTable.uniqueID .. "." .. hookID
+	
+	hook.Add( hookID, hookUniqueID, function( ... )
+		func( ... )
+	end )
+	catherine.item.hooks[ #catherine.item.hooks + 1 ] = { hookID, hookUniqueID }
+end
+
+function catherine.item.RemoveHook( hookID, itemTable )
+	local hookUniqueID = "catherine.item.hook." .. itemTable.uniqueID .. "." .. hookID
+	
+	hook.Remove( hookID, hookUniqueID )
+	
+	for k, v in pairs( catherine.item.hooks ) do
+		if ( v[ 1 ] == hookID and v[ 2 ] == hookUniqueID ) then
+			catherine.item.hooks[ k ] = nil
+			return
+		end
+	end
 end
 
 function catherine.item.Include( dir )

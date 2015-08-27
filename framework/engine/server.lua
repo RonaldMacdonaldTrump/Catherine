@@ -27,27 +27,21 @@ if ( game.IsDedicated( ) ) then
 end
 
 function GM:ShowHelp( pl )
-	if ( !pl:IsCharacterLoaded( ) or catherine.character.GetCharVar( pl, "charBanned" ) ) then return end
-	local status = hook.Run( "CantLookF1", pl )
-
-	if ( status ) then return end
-
+	if ( hook.Run( "CanOpenInformationMenu", pl ) == false ) then return end
+	
 	netstream.Start( pl, "catherine.ShowHelp" )
 end
 
 function GM:ShowTeam( pl )
-	if ( !pl:IsCharacterLoaded( ) or catherine.character.GetCharVar( pl, "charBanned" ) ) then return end
-	local status = hook.Run( "CantLookF2", pl )
-
-	if ( status ) then return end
-
+	if ( hook.Run( "CanOpenRecognizeOrDoorMenu", pl ) == false ) then return end
+	
 	local data = { }
 	data.start = pl:GetShootPos( )
 	data.endpos = data.start + pl:GetAimVector( ) * 70
 	data.filter = pl
 	local ent = util.TraceLine( data ).Entity
 	
-	if ( IsValid( ent ) and ent:IsDoor( ) and !catherine.door.IsDoorDisabled( ent ) ) then
+	if ( IsValid( ent ) and ent:IsDoor( ) and !catherine.door.IsDoorDisabled( ent ) and !ent:GetNoDraw( ) ) then
 		local has, flag = catherine.door.IsHasDoorPermission( pl, ent )
 		
 		if ( has ) then
@@ -60,17 +54,25 @@ function GM:ShowTeam( pl )
 		else
 			local isBuyable = catherine.door.IsBuyableDoor( ent )
 			
-			if ( !isBuyable ) then return end
-			
-			catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )
-				if ( bool ) then
-					catherine.command.Run( pl, "doorbuy" )
-				end
-			end )
+			if ( isBuyable ) then
+				catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )
+					if ( bool ) then
+						catherine.command.Run( pl, "&uniqueID_doorBuy" )
+					end
+				end )
+			end
 		end
 	else
 		netstream.Start( pl, "catherine.recognize.SelectMenu" )
 	end
+end
+
+function GM:CanOpenInformationMenu( pl )
+	return pl:IsCharacterLoaded( ) and !catherine.player.IsCharacterBanned( pl )
+end
+
+function GM:CanOpenRecognizeOrDoorMenu( pl )
+	return pl:IsCharacterLoaded( ) and !catherine.player.IsCharacterBanned( pl )
 end
 
 function GM:PlayerFirstSpawned( pl, id )
@@ -85,6 +87,13 @@ function GM:CharacterVarChanged( pl, key, value )
 		pl:SetupHands( )
 		catherine.character.SetCharVar( pl, "originalModel", value )
 		hook.Run( "CharacterModelChanged", pl, value )
+	end
+end
+
+function GM:OnReloaded( )
+	for k, v in pairs( catherine.item.GetAllHook( ) ) do
+		hook.Remove( v[ 1 ], v[ 2 ] )
+		catherine.item.hooks[ k ] = nil
 	end
 end
 
@@ -160,8 +169,18 @@ end
 function GM:PlayerSpawn( pl )
 	if ( IsValid( pl.CAT_deathBody ) ) then
 		pl:SetNetVar( "ragdollIndex", nil )
-		pl.CAT_deathBody:Remove( )
-		pl.CAT_deathBody = nil
+		
+		if ( catherine.configs.fadeOutDeathBody ) then
+			catherine.entity.StartFadeOut( pl.CAT_deathBody, 20, function( ent )
+				if ( IsValid( pl.CAT_deathBody ) ) then
+					pl.CAT_deathBody:Remove( )
+					pl.CAT_deathBody = nil
+				end
+			end )
+		else
+			pl.CAT_deathBody:Remove( )
+			pl.CAT_deathBody = nil
+		end
 	end
 
 	pl.CAT_deathSoundPlayed = nil
@@ -692,6 +711,8 @@ function GM:DoPlayerDeath( pl )
 		
 		pl:SetNetVar( "ragdollIndex", ent:EntIndex( ) )
 		pl.CAT_deathBody = ent
+	else
+		catherine.entity.StartFadeOut( ent, time, func )
 	end
 	
 	pl:SetNetVar( "noDrawOriginal", true )
@@ -712,8 +733,17 @@ function GM:PlayerDeath( pl )
 
 	catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Dead_01" ), respawnTime, function( )
 		if ( IsValid( pl.CAT_ragdoll ) ) then
-			pl.CAT_ragdoll:Remove( )
-			pl.CAT_ragdoll = nil
+			if ( catherine.configs.fadeOutDeathBody ) then
+				catherine.entity.StartFadeOut( pl.CAT_ragdoll, 20, function( ent )
+					if ( IsValid( pl.CAT_ragdoll ) ) then
+						pl.CAT_ragdoll:Remove( )
+						pl.CAT_ragdoll = nil
+					end
+				end )
+			else
+				pl.CAT_ragdoll:Remove( )
+				pl.CAT_ragdoll = nil
+			end
 		end
 		
 		pl:Spawn( )

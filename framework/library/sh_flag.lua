@@ -184,13 +184,11 @@ if ( SERVER ) then
 	end
 	
 	function catherine.flag.PlayerSpawnedInCharacter( pl )
-		timer.Simple( 0.3, function( )
-			for k, v in pairs( catherine.flag.GetAll( ) ) do
-				if ( catherine.player.IsIgnoreGiveFlagWeapon( pl ) or !catherine.flag.Has( pl, v.uniqueID ) or !v.onSpawn ) then continue end
+		for k, v in pairs( catherine.flag.GetAll( ) ) do
+			if ( catherine.player.IsIgnoreGiveFlagWeapon( pl ) or !catherine.flag.Has( pl, v.uniqueID ) or !v.onSpawn ) then continue end
 
-				v.onSpawn( pl )
-			end
-		end )
+			v.onSpawn( pl )
+		end
 
 		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl:GetCharacterID( ) ) then
 			netstream.Start( pl, "catherine.flag.BuildHelp" )
@@ -275,7 +273,7 @@ else
 		Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption06_Q" ), data[ 2 ] or "", function( val )
 				if ( !IsValid( data[ 1 ] ) ) then return end
 				
-				catherine.command.Run( "flagtake", data[ 1 ]:Name( ), val )
+				catherine.command.Run( "&uniqueID_flagTake", data[ 1 ]:Name( ), val )
 			end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
 		)
 	end )
@@ -291,8 +289,15 @@ else
 	function catherine.flag.LanguageChanged( )
 		rebuildFlag( )
 	end
+	
+	function catherine.flag.InitPostEntity( )
+		if ( IsValid( catherine.pl ) ) then
+			rebuildFlag( )
+		end
+	end
 
 	hook.Add( "LanguageChanged", "catherine.flag.LanguageChanged", catherine.flag.LanguageChanged )
+	hook.Add( "InitPostEntity", "catherine.flag.InitPostEntity", catherine.flag.InitPostEntity )
 	
 	if ( IsValid( catherine.pl ) ) then
 		rebuildFlag( )

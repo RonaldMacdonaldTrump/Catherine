@@ -203,6 +203,7 @@ end
 
 for k, v in pairs( PLUGIN.actions ) do
 	catherine.command.Register( {
+		uniqueID = "&uniqueID_" .. k,
 		command = "act" .. k,
 		runFunc = function( pl, args )
 			local success, langKey = PLUGIN:StartAction( pl, k )

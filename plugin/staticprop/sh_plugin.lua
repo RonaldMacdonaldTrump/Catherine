@@ -38,7 +38,9 @@ catherine.language.Merge( "korean", {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_staticProp",
 	command = "staticprop",
+	desc = "Add / Remove the Static Prop list.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local ent = pl:GetEyeTraceNoCursor( ).Entity

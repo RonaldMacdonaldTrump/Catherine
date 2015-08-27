@@ -62,6 +62,7 @@ function PANEL:BuildGlobalBan( )
 	if ( !catherine.configs.enable_globalBan ) then return end
 	local scrollBar = self.Lists.VBar
 	local scroll = scrollBar.Scroll
+	local steamProfileUI = LANG( "GlobalBan_UI_OpenProfile" )
 	
 	self.Lists:Clear( )
 
@@ -76,8 +77,8 @@ function PANEL:BuildGlobalBan( )
 		panel.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 			
-			draw.SimpleText( name, "catherine_normal25", 90, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( steamID, "catherine_normal15", 90, 35, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( name, "catherine_normal25", 90, 20, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( steamID, "catherine_normal15", w - 10, 60, Color( 90, 90, 90, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			draw.SimpleText( reason, "catherine_normal15", 90, 60, Color( 255, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
 		end
 		
@@ -93,8 +94,9 @@ function PANEL:BuildGlobalBan( )
 		local avatarButton = vgui.Create( "DButton", panel )
 		avatarButton:SetPos( 5, 5 )
 		avatarButton:SetSize( 70, 70 )
-		avatarButton:SetDrawBackground( false )
+		avatarButton:SetToolTip( steamProfileUI )
 		avatarButton:SetText( "" )
+		avatarButton.Paint = function( ) end
 		avatarButton.DoClick = function( )
 			gui.OpenURL( "http://steamcommunity.com/profiles/" .. steamID64 )
 		end
@@ -111,4 +113,6 @@ catherine.menu.Register( function( )
 	return LANG( "GlobalBan_UI_Title" )
 end, function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.globalban ) and catherine.vgui.globalban or vgui.Create( "catherine.vgui.globalban", menuPnl )
+end, function( pl )
+	return pl:IsAdmin( )
 end )

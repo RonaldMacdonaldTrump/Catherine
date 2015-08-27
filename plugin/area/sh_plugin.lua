@@ -53,8 +53,10 @@ catherine.util.Include( "sv_plugin.lua" )
 catherine.util.Include( "cl_plugin.lua" )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_areaAdd",
 	command = "areaadd",
 	syntax = "[Area Name]",
+	desc = "Add the Area.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -87,8 +89,10 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_areaEdit",
 	command = "areaedit",
 	syntax = "[New Area Name]",
+	desc = "Edit the Area.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -115,7 +119,9 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_areaRemove",
 	command = "arearemove",
+	desc = "Remove the Area.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local currArea = pl:GetCurrentArea( )
@@ -132,8 +138,10 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_areaShow",
 	command = "areashow",
 	syntax = "[Showing Time]",
+	desc = "Show the all Areas.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local time = math.max( tonumber( args[ 1 ] ) or 5, 5 )

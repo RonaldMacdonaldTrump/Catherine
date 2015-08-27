@@ -76,10 +76,6 @@ function GM:Initialize( )
 	CAT_CONVAR_BAR = CreateClientConVar( "cat_convar_bar", "1", true, true )
 	CAT_CONVAR_CHAT_TIMESTAMP = CreateClientConVar( "cat_convar_chat_timestamp", "1", true, true )
 	CAT_CONVAR_HINT = CreateClientConVar( "cat_convar_hint", "1", true, true )
-	
-	local languageTable = catherine.language.FindByID( catherine.configs.defaultLanguage )
-	
-	CAT_CONVAR_LANGUAGE = CreateClientConVar( "cat_convar_language", ( languageTable and languageTable.uniqueID or "english" ), true, true )
 end
 
 function GM:HUDShouldDraw( name )
@@ -94,6 +90,13 @@ end
 
 function GM:ContextMenuOpen( )
 	return false
+end
+
+function GM:OnReloaded( )
+	for k, v in pairs( catherine.item.GetAllHook( ) ) do
+		hook.Remove( v[ 1 ], v[ 2 ] )
+		catherine.item.hooks[ k ] = nil
+	end
 end
 
 function GM:HUDPaintBackground( )
@@ -377,7 +380,7 @@ function GM:PlayerBindPress( pl, code, pressed )
 	end
 	
 	if ( !pl:GetNetVar( "gettingup" ) and pl:IsRagdolled( ) and !pl:GetNetVar( "isForceRagdolled" ) and code:find( "+jump" ) and pressed ) then
-		catherine.command.Run( "chargetup" )
+		catherine.command.Run( "&uniqueID_charGetUp" )
 		
 		return true
 	end
@@ -664,13 +667,13 @@ function GM:ScoreboardPlayerOption( pl, target )
 			if ( !v.isWhitelist ) then continue end
 			
 			whitelistGive:AddOption( catherine.util.StuffLanguage( v.name ), function( )
-				catherine.command.Run( "plygivewhitelist", target:Name( ), v.uniqueID )
+				catherine.command.Run( "&uniqueID_plyGiveWhitelist", target:Name( ), v.uniqueID )
 			end ):SetToolTip( catherine.util.StuffLanguage( v.desc ) )
 		end
 		
 		menu:AddOption( LANG( "Scoreboard_PlayerOption05_Str" ), function( )
 			Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption05_Q" ), "", function( val )
-					catherine.command.Run( "flaggive", target:Name( ), val )
+					catherine.command.Run( "&uniqueID_flagGive", target:Name( ), val )
 				end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
 			)
 		end )
@@ -683,14 +686,14 @@ function GM:ScoreboardPlayerOption( pl, target )
 	if ( pl:IsAdmin( ) ) then
 		menu:AddOption( LANG( "Scoreboard_PlayerOption04_Str" ), function( )
 			Derma_Query( LANG( "Scoreboard_PlayerOption04_Q" ), "", LANG( "Basic_UI_OK" ), function( )
-					catherine.command.Run( "charban", target:Name( ) )
+					catherine.command.Run( "&uniqueID_charBan", target:Name( ) )
 				end, LANG( "Basic_UI_NO" ), function( ) end
 			)
 		end )
 		
 		menu:AddOption( LANG( "Scoreboard_PlayerOption02_Str" ), function( )
 			Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption02_Q" ), target:Name( ), function( val )
-					catherine.command.Run( "charsetname", target:Name( ), val )
+					catherine.command.Run( "&uniqueID_charSetName", target:Name( ), val )
 				end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
 			)
 		end )
@@ -700,7 +703,7 @@ function GM:ScoreboardPlayerOption( pl, target )
 		menu:AddOption( LANG( "Scoreboard_PlayerOption07_Str" ), function( )
 			Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption07_Q1" ), "", function( val )
 					Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption07_Q2" ), "1", function( val2 )
-							catherine.command.Run( "itemgive", target:Name( ), val, val2 or 1 )
+							catherine.command.Run( "&uniqueID_itemGive", target:Name( ), val, val2 or 1 )
 						end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
 					)
 				end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )

@@ -443,6 +443,8 @@ end
 
 function PANEL:Refresh_List( id )
 	if ( id == 1 ) then
+		local buyLists_scrollBar = self.buyPanel.Lists.VBar
+		local buyLists_scroll = buyLists_scrollBar.Scroll
 		local buyalbeItems = self:GetBuyableItems( )
 		self.count = table.Count( buyalbeItems )
 		
@@ -459,10 +461,12 @@ function PANEL:Refresh_List( id )
 			form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
 			
 			for k1, v1 in SortedPairs( v ) do
-				local itemTable = catherine.item.FindByID( v1.uniqueID )
+				local itemTable = catherine.item.FindByID( k1 )
 				if ( !itemTable ) then continue end
-				local newData = self.vendorData.inv[ v1.uniqueID ] or { }
+				local newData = self.vendorData.inv[ k1 ] or { }
 				local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
+				local name = catherine.util.StuffLanguage( itemTable.name )
+				local desc = catherine.util.StuffLanguage( itemTable.desc )
 				
 				local panel = vgui.Create( "DPanel" )
 				panel:SetSize( form:GetWide( ), 50 )
@@ -470,8 +474,8 @@ function PANEL:Refresh_List( id )
 					local cost = newData.cost or itemTable.cost
 					
 					draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
-					draw.SimpleText( catherine.util.StuffLanguage( itemTable.name ), "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-					draw.SimpleText( catherine.util.StuffLanguage( itemTable.desc ), "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( name, "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( desc, "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 					
 					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetName( cost ), "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 					
@@ -492,16 +496,12 @@ function PANEL:Refresh_List( id )
 				button:SetText( "" )
 				button:SetDrawBackground( false )
 				button.DoClick = function( )
-					if ( !newData.stock ) then
-						return
-					end
+					if ( !newData.stock ) then return end
 					
 					netstream.Start( "catherine.plugin.vendor.VendorWork", {
 						self.ent,
 						CAT_VENDOR_ACTION_SELL,
-						{
-							uniqueID = v1.uniqueID
-						}
+						{ uniqueID = k1 }
 					} )
 				end
 				
@@ -518,7 +518,11 @@ function PANEL:Refresh_List( id )
 			
 			self.buyPanel.Lists:AddItem( form )
 		end
+		
+		buyLists_scrollBar:AnimateTo( buyLists_scroll, 0, 0, 0 )
 	elseif ( id == 2 ) then
+		local sellLists_scrollBar = self.sellPanel.Lists.VBar
+		local sellLists_scroll = sellLists_scrollBar.Scroll
 		local sellableItems = self:GetSellableItems( )
 		self.count = table.Count( sellableItems )
 		
@@ -535,9 +539,9 @@ function PANEL:Refresh_List( id )
 			form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
 			
 			for k1, v1 in SortedPairs( v ) do
-				local itemTable = catherine.item.FindByID( v1.uniqueID )
+				local itemTable = catherine.item.FindByID( k1 )
 				if ( !itemTable ) then continue end
-				local newData = self.vendorData.inv[ v1.uniqueID ] or { }
+				local newData = self.vendorData.inv[ k1 ] or { }
 				local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 				local name = catherine.util.StuffLanguage( itemTable.name )
 				local desc = catherine.util.StuffLanguage( itemTable.desc )
@@ -575,9 +579,7 @@ function PANEL:Refresh_List( id )
 					netstream.Start( "catherine.plugin.vendor.VendorWork", {
 						self.ent,
 						CAT_VENDOR_ACTION_BUY,
-						{
-							uniqueID = v1.uniqueID
-						}
+						{ uniqueID = k1 }
 					} )
 				end
 				
@@ -594,7 +596,12 @@ function PANEL:Refresh_List( id )
 			
 			self.sellPanel.Lists:AddItem( form )
 		end
+		
+		sellLists_scrollBar:AnimateTo( sellLists_scroll, 0, 0, 0 )
 	elseif ( id == 4 ) then
+		local manageItemLists_scrollBar = self.manageItemPanel.Lists.VBar
+		local manageItemLists_scroll = manageItemLists_scrollBar.Scroll
+	
 		self.manageItemPanel.Lists:Clear( )
 		
 		for k, v in SortedPairs( self:GetItemTables( ) ) do
@@ -608,9 +615,9 @@ function PANEL:Refresh_List( id )
 			form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
 			
 			for k1, v1 in SortedPairs( v ) do
-				local itemTable = catherine.item.FindByID( v1.uniqueID )
+				local itemTable = catherine.item.FindByID( k1 )
 				if ( !itemTable ) then continue end
-				local newData = self.vendorData.inv[ v1.uniqueID ] or { }
+				local newData = self.vendorData.inv[ k1 ] or { }
 				local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 				local name = catherine.util.StuffLanguage( itemTable.name )
 				local desc = catherine.util.StuffLanguage( itemTable.desc )
@@ -658,7 +665,7 @@ function PANEL:Refresh_List( id )
 				button:SetText( "" )
 				button:SetDrawBackground( false )
 				button.DoClick = function( )
-					self:ItemInformationPanel( itemTable, self.vendorData.inv[ v1.uniqueID ] )
+					self:ItemInformationPanel( itemTable, self.vendorData.inv[ k1 ] )
 				end
 				
 				local spawnIcon = vgui.Create( "SpawnIcon", panel )
@@ -674,6 +681,8 @@ function PANEL:Refresh_List( id )
 			
 			self.manageItemPanel.Lists:AddItem( form )
 		end
+		
+		manageItemLists_scrollBar:AnimateTo( manageItemLists_scroll, 0, 0, 0 )
 	end
 end
 
@@ -688,7 +697,7 @@ function PANEL:GetItemTables( )
 		local category = v.category
 		
 		tab[ category ] = tab[ category ] or { }
-		tab[ category ][ v.uniqueID ] = v
+		tab[ category ][ k ] = v
 	end
 	
 	return tab
@@ -707,7 +716,7 @@ function PANEL:GetSellableItems( )
 		local category = v.category
 		
 		tab[ category ] = tab[ category ] or { }
-		tab[ category ][ v.uniqueID ] = v
+		tab[ category ][ k ] = v
 	end
 	
 	return tab
@@ -724,7 +733,7 @@ function PANEL:GetBuyableItems( )
 		local category = v.category
 		
 		tab[ category ] = tab[ category ] or { }
-		tab[ category ][ v.uniqueID ] = v
+		tab[ category ][ k ] = v
 	end
 	
 	return tab
@@ -912,8 +921,8 @@ function PANEL:ItemInformationPanel( itemTable, data )
 			newCost = 0
 		end
 		
-		if ( newCost > 999999999 ) then
-			newCost = 999999999
+		if ( newCost > 9999999999 ) then
+			newCost = 9999999999
 		end
 		
 		newData.cost = math.Round( newCost )
@@ -941,8 +950,8 @@ function PANEL:ItemInformationPanel( itemTable, data )
 			newStock = 0
 		end
 		
-		if ( newStock > 999999999 ) then
-			newStock = 999999999
+		if ( newStock > 9999999999 ) then
+			newStock = 9999999999
 		end
 
 		newData.stock = math.Round( newStock )

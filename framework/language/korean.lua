@@ -100,6 +100,7 @@ LANGUAGE.data = {
 	// GlobalBan
 	[ "GlobalBan_UI_Title" ] = "공식밴",
 	[ "GlobalBan_UI_Blank" ] = "아직 공식밴 처리된 사용자가 없습니다.",
+	[ "GlobalBan_UI_OpenProfile" ] = "해당 사용자의 스팀 프로필을 방문합니다.",
 	[ "GlobalBan_UI_NotUsing" ] = "이 서버는 공식밴 서비스를 사용하고 있지 않습니다.",
 	[ "GlobalBan_UI_Users" ] = "%s명의 사용자가 차단되었습니다.",
 	
@@ -272,7 +273,7 @@ LANGUAGE.data = {
 	[ "Help_Desc_Plugin" ] = "플러그인들을 나열합니다 ...",
 	
 	// Plugin
-	[ "Plugin_Value_Author" ] = "개발 및 디자인 %s.",
+	[ "Plugin_Value_Author" ] = "개발 및 디자인 - '%s'",
 	
 	// Storage
 	[ "Storage_UI_YourInv" ] = "당신의 인벤토리",

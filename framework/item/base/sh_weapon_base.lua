@@ -117,59 +117,60 @@ BASE.func.unequip = {
 }
 
 if ( SERVER ) then
-	hook.Add( "PlayerSpawnedInCharacter", "catherine.item.hooks.weapon_base.PlayerSpawnedInCharacter", function( pl )
+	catherine.item.RegisterHook( "OnSpawnedInCharacter", BASE, function( pl )
 		catherine.character.SetCharVar( pl, "equippingWeaponTypes", { } )
 		
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
 			local itemTable = catherine.item.FindByID( k )
+			
 			if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( pl, k ) ) then continue end
 
 			catherine.item.Work( pl, k, "equip" )
 		end
 		
-		timer.Simple( 0.8, function( )
+		timer.Simple( 0, function( )
 			if ( catherine.configs.giveHand and pl:HasWeapon( "cat_fist" ) ) then
 				pl:SelectWeapon( "cat_fist" )
 			end
 		end )
 	end )
 	
-	hook.Add( "CharacterLoadingStart", "catherine.item.hooks.weapon_base.CharacterLoadingStart", function( pl )
+	catherine.item.RegisterHook( "CharacterLoadingStart", BASE, function( pl )
 		catherine.character.SetCharVar( pl, "equippingWeaponTypes", { } )
 	end )
-
-	hook.Add( "PlayerDeath", "catherine.item.hooks.weapon_base.PlayerDeath", function( pl )
+	
+	catherine.item.RegisterHook( "PlayerDeath", BASE, function( pl )
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
-			if ( !catherine.inventory.IsEquipped( pl, k ) ) then continue end
+			if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( pl, k ) ) then continue end
 			
 			catherine.item.Work( pl, k, "unequip" )
 			catherine.item.Spawn( k, pl:GetPos( ) )
 			catherine.item.Take( pl, k )
 		end
 	end )
-
-	hook.Add( "PreItemDrop", "catherine.item.hooks.weapon_base.PreItemDrop", function( pl, itemTable )
-		if ( !itemTable.isWeapon ) then return end
-
-		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+	
+	catherine.item.RegisterHook( "PreItemDrop", BASE, function( pl, itemTable )
+		if ( itemTable.isWeapon ) then
+			catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+		end
 	end )
 	
-	hook.Add( "PreItemStorageMove", "catherine.item.hooks.weapon_base.PreItemStorageMove", function( pl, itemTable )
-		if ( !itemTable.isWeapon ) then return end
-
-		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+	catherine.item.RegisterHook( "PreItemStorageMove", BASE, function( pl, ent, itemTable, data )
+		if ( itemTable.isWeapon ) then
+			catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+		end
 	end )
 	
-	hook.Add( "PreItemVendorSell", "catherine.item.hooks.weapon_base.PreItemVendorSell", function( pl, ent, itemTable, data )
-		if ( !itemTable.isWeapon ) then return end
-		
-		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+	catherine.item.RegisterHook( "PreItemVendorSell", BASE, function( pl, ent, itemTable, data )
+		if ( itemTable.isWeapon ) then
+			catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+		end
 	end )
 	
-	hook.Add( "PreItemForceTake", "catherine.item.hooks.weapon_base.PreItemForceTake", function( pl, itemTable )
-		if ( !itemTable.isWeapon ) then return end
-		
-		catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+	catherine.item.RegisterHook( "PreItemForceTake", BASE, function( pl, target, itemTable )
+		if ( itemTable.isWeapon ) then
+			catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+		end
 	end )
 else
 	function BASE:DoRightClick( pl, itemData )

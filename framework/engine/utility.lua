@@ -434,12 +434,15 @@ if ( SERVER ) then
 			physObject:SetVelocity( vel )
 		end
 		
-		local timerID = "Catherine.timer.DoorForceOpener_" .. ent:EntIndex( )
-		local timerID2 = "Catherine.timer.DoorRestore_" .. ent:EntIndex( )
+		local timerID = "Catherine.timer.DoorForceOpen." .. ent:EntIndex( )
+		local timerID2 = "Catherine.timer.DoorRestore." .. ent:EntIndex( )
 		
 		timer.Create( timerID, 1, 0, function( )
 			if ( IsValid( ent ) and IsValid( ent.CAT_doorDummy ) ) then
-				ent:Fire( "Open" )
+				if ( !ent.CAT_isDoorOpened ) then
+					ent:Fire( "Open" )
+					ent.CAT_isDoorOpened = true
+				end
 			else
 				timer.Remove( timerID )
 			end
@@ -450,7 +453,7 @@ if ( SERVER ) then
 				return
 			end
 			
-			local timerID3 = "Catherine.timer.DoorFader_" .. ent:EntIndex( )
+			local timerID3 = "Catherine.timer.DoorFade." .. ent:EntIndex( )
 			local alpha = col.a
 
 			timer.Create( timerID3, 0.1, col.a, function( )

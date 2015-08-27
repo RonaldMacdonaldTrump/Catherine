@@ -41,8 +41,10 @@ catherine.language.Merge( "korean", {
 catherine.util.Include( "sv_plugin.lua" )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charViewAdd",
 	command = "charviewadd",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	desc = "Add the Character View.",
+	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		PLUGIN:AddCharView( pl:GetPos( ), pl:EyeAngles( ) )
 		
@@ -51,8 +53,10 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_charViewRemove",
 	command = "charviewremove",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	desc = "Remove the Character View.",
+	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		local pos = pl:GetPos( )
 		local i = 0

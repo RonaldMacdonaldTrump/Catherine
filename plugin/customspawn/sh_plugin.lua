@@ -37,8 +37,10 @@ catherine.language.Merge( "korean", {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_customSpawnPointAdd",
 	command = "customspawnpointadd",
 	syntax = "[Name]",
+	desc = "Add the Custom Spawn Point for the target.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
@@ -60,8 +62,10 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_customSpawnPointRemove",
 	command = "customspawnpointremove",
 	syntax = "[Name]",
+	desc = "Remove the Custom Spawn Point for the target.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
