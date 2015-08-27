@@ -91,9 +91,13 @@ if ( SERVER ) then
 			return
 		end
 
-		commandTable.runFunc( pl, args )
+		local success, result = pcall( commandTable.runFunc, pl, args )
 		
-		catherine.log.Add( CAT_LOG_FLAG_BASIC, pl:Name( ) .. ", " .. pl:SteamName( ) .. " are using /" .. id .. " " .. table.concat( args or { }, " " ), true )
+		if ( success ) then
+			catherine.log.Add( CAT_LOG_FLAG_BASIC, pl:Name( ) .. ", " .. pl:SteamName( ) .. " are using /" .. id .. " " .. table.concat( args or { }, " " ), true )
+		else
+			ErrorNoHalt( "\n[CAT ERROR] SORRY, Failed to run command <'" .. id .. "'>, because command has a error :< ...\n\n" .. result .. "\n" )
+		end
 	end
 	
 	function catherine.command.RunByText( pl, text )
@@ -215,4 +219,10 @@ else
 	hook.Add( "LanguageChanged", "catherine.command.LanguageChanged", catherine.command.LanguageChanged )
 	
 	rebuildCommand( )
+	
+	concommand.Add( "catherine_runcommand", function( pl, cmd, args )
+		local id = args[ 1 ]
+		table.remove( args, 1 )
+		catherine.command.Run( id, args )
+	end )
 end
