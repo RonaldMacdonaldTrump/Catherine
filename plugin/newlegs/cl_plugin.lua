@@ -123,67 +123,64 @@ PLUGIN.breathScale = 0.5
 PLUGIN.nextBreath = 0
 
 function PLUGIN:LegsWork( pl, speed )
-		if not pl:Alive() then
-			self:CreateLegs( )
-			return
-		end
-			
-        if IsValid( self.LegEnt ) then
-			
-            if LocalPlayer():GetActiveWeapon() != self.OldWeapon then
-                self.OldWeapon = LocalPlayer():GetActiveWeapon()
-                self:WeaponChanged( self.OldWeapon )
-            end
-
-                     
-            if self.LegEnt:GetModel() != self:FixModelName( LocalPlayer():GetModel() ) then
-                self.LegEnt:SetModel( self:FixModelName( LocalPlayer():GetModel() ) )
-            end
-             
-            self.LegEnt:SetMaterial( LocalPlayer():GetMaterial() )
-            self.LegEnt:SetSkin( LocalPlayer():GetSkin() )
-     
-            self.Velocity = LocalPlayer():GetVelocity():Length2D()
-             
-            self.PlaybackRate = 1
-     
-            if self.Velocity > 0.5 then
-                if maxseqgroundspeed < 0.001 then
-                    self.PlaybackRate = 0.01
-                else
-                    self.PlaybackRate = self.Velocity / maxseqgroundspeed
-                    self.PlaybackRate = math.Clamp( self.PlaybackRate, 0.01, 10 )
-                end
-            end
-             
-            self.LegEnt:SetPlaybackRate( self.PlaybackRate )
-             
-            self.Sequence = LocalPlayer():GetSequence()
-             
-            if ( self.LegEnt.Anim != self.Sequence ) then
-                self.LegEnt.Anim = self.Sequence
-                self.LegEnt:ResetSequence( self.Sequence )
-            end
-             
-            self.LegEnt:FrameAdvance( CurTime() - self.LegEnt.LastTick )
-            self.LegEnt.LastTick = CurTime()
-             
-            Legs.BreathScale = sharpeye and sharpeye.GetStamina and math.Clamp( math.floor( sharpeye.GetStamina() * 5 * 10 ) / 10, 0.5, 5 ) or 0.5
-             
-            if Legs.NextBreath <= CurTime() then
-                Legs.NextBreath = CurTime() + 1.95 / Legs.BreathScale
-                self.LegEnt:SetPoseParameter( "breathing", Legs.BreathScale )
-            end
-             
-            self.LegEnt:SetPoseParameter( "move_x", ( LocalPlayer():GetPoseParameter( "move_x" ) * 2 ) - 1 )
-            self.LegEnt:SetPoseParameter( "move_y", ( LocalPlayer():GetPoseParameter( "move_y" ) * 2 ) - 1 )
-            self.LegEnt:SetPoseParameter( "move_yaw", ( LocalPlayer():GetPoseParameter( "move_yaw" ) * 360 ) - 180 )
-            self.LegEnt:SetPoseParameter( "body_yaw", ( LocalPlayer():GetPoseParameter( "body_yaw" ) * 180 ) - 90 )
-            self.LegEnt:SetPoseParameter( "spine_yaw",( LocalPlayer():GetPoseParameter( "spine_yaw" ) * 180 ) - 90 )
-             
-            if ( LocalPlayer():InVehicle() ) then
-                self.LegEnt:SetColor( color_transparent )
-                self.LegEnt:SetPoseParameter( "vehicle_steer", ( LocalPlayer():GetVehicle():GetPoseParameter( "vehicle_steer" ) * 2 ) - 1 )
-            end
-        end
-    end
+	if ( !pl:Alive( ) ) then
+		self:CreateLegs( )
+		return
+	end
+	
+	if ( !IsValid( self.legEnt ) ) then return end
+	local legEnt = self.legEnt
+	local curTime = CurTime( )
+	
+	if ( pl:GetActiveWeapon( ) != self.oldWeapon ) then
+		self.oldWeapon = pl:GetActiveWeapon( )
+		self:PlayerWeaponChanged( self.oldWeapon )
+	end
+	
+	if ( legEnt:GetModel( ) != pl:GetModel( ) ) then
+		legEnt:SetModel( pl:GetModel( ) )
+	end
+	
+	if ( legEnt:GetMaterial( ) != pl:GetMaterial( ) ) then
+		legEnt:SetMaterial( pl:GetMaterial( ) )
+	end
+	
+	if ( legEnt:GetSkin( ) != pl:GetSkin( ) ) then
+		legEnt:SetSkin( pl:GetSkin( ) )
+	end
+	
+	self.velocity = pl:GetVelocity( ):Length2D( )
+	self.playBackRate = 1
+	
+	if ( self.velocity > 0.5 ) then
+		self.playBackRate = speed < 0.001 and 0.01 or math.Clamp( self.velocity / speed, 0.01, 10 )
+	end
+	
+	legEnt:SetPlaybackRate( self.playBackRate )
+	self.sequence = pl:GetSequence( )
+	
+	if ( legEnt.Anim != self.sequence ) then
+		legEnt.Anim = self.sequence // Change?
+		legEnt:ResetSequence( self.sequence )
+	end
+	
+	legEnt:FrameAdvance( curTime - legEnt.lastTick )
+	legEnt.lastTick = curTime // Change?
+	//self.breathScale = sharpeye and sharpeye.GetStamina and math.Clamp( math.floor( sharpeye.GetStamina() * 5 * 10 ) / 10, 0.5, 5 ) or 0.5
+	
+	if ( self.nextBreath <= curTime ) then
+		self.nextBreath = curTime + 1.95 / self.breathScale
+		self.legEnt:SetPoseParameter( "breathing", self.breathScale )
+	end
+	
+	legEnt:SetPoseParameter( "move_x", ( pl:GetPoseParameter( "move_x" ) * 2 ) - 1 )
+	legEnt:SetPoseParameter( "move_y", ( pl:GetPoseParameter( "move_y" ) * 2 ) - 1 )
+	legEnt:SetPoseParameter( "move_yaw", ( pl:GetPoseParameter( "move_yaw" ) * 360 ) - 180 )
+	legEnt:SetPoseParameter( "body_yaw", ( pl:GetPoseParameter( "body_yaw" ) * 180 ) - 90 )
+	legEnt:SetPoseParameter( "spine_yaw",( pl:GetPoseParameter( "spine_yaw" ) * 180 ) - 90 )
+	
+	if ( pl:InVehicle( ) ) then
+		legEnt:SetColor( color_transparent )
+		legEnt:SetPoseParameter( "vehicle_steer", ( pl:GetVehicle( ):GetPoseParameter( "vehicle_steer" ) * 2 ) - 1 )
+	end
+end
