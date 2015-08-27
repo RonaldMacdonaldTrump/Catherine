@@ -32,6 +32,10 @@ function catherine.help.Register( types, category, codes, noPrefix )
 		codes = codes,
 		noPrefix = noPrefix
 	}
+	
+	if ( IsValid( catherine.vgui.help ) ) then
+		catherine.vgui.help:InitalizeHelps( )
+	end
 end
 
 function catherine.help.GetAll( )
