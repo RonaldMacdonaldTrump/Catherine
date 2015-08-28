@@ -305,7 +305,7 @@ function GM:PlayerInfoTable( pl, infoTable )
 	local walkSpeed = infoTable.walkSpeed
 	local leftLegLimbDmg = catherine.limb.GetDamage( pl, HITGROUP_LEFTLEG )
 	local rightLegLimbDmg = catherine.limb.GetDamage( pl, HITGROUP_RIGHTLEG )
-
+	
 	if ( pl.CAT_bulletHurtSpeedDown ) then
 		return {
 			runSpeed = walkSpeed
@@ -824,6 +824,50 @@ function GM:PlayerThink( pl )
 		end
 		
 		pl.CAT_playerInfoTableTick = CurTime( ) + 0.1
+	end
+	
+	if ( pl:Alive( ) ) then
+		if ( hook.Run( "PlayerShouldDrown", pl ) == false ) then return end
+		
+		if ( pl:WaterLevel( ) >= 3 ) then
+			if ( !pl.CAT_drowningTick ) then
+				pl.CAT_drowningTick = CurTime( ) + math.random( 30, 60 )
+				pl.CAT_drownDamage = pl.CAT_drownDamage or 0
+			end
+			
+			if ( pl.CAT_drowningTick <= CurTime( ) ) then
+				if ( ( pl.CAT_nextDrowning or 0 ) <= CurTime( ) ) then
+					local damage = math.random( 10, 15 )
+					
+					pl:TakeDamage( damage )
+					pl.CAT_drownDamage = pl.CAT_drownDamage + damage
+					
+					pl.CAT_nextDrowning = CurTime( ) + 1.5
+				end
+			end
+		else
+			if ( pl.CAT_drowningTick ) then
+				pl.CAT_drowningTick = nil
+				pl.CAT_nextDrowning = nil
+				pl.CAT_nextDrownDamageRecoverTick = CurTime( ) + 2
+			end
+			
+			if ( pl.CAT_nextDrownDamageRecoverTick and pl.CAT_nextDrownDamageRecoverTick <= CurTime( ) ) then
+				if ( pl.CAT_drownDamage > 0 ) then
+					pl.CAT_drownDamage = pl.CAT_drownDamage - 10
+					pl:SetHealth( math.Clamp( pl:Health( ) + 10, 0, pl:GetMaxHealth( ) ) )
+					pl.CAT_nextDrownDamageRecoverTick = CurTime( ) + 1
+				else
+					pl.CAT_nextDrownDamageRecoverTick = nil
+					pl.CAT_drownDamage = nil
+				end
+			end
+		end
+	else
+		if ( pl.CAT_nextDrownDamageRecoverTick and pl.CAT_drownDamage ) then
+			pl.CAT_nextDrownDamageRecoverTick = nil
+			pl.CAT_drownDamage = nil
+		end
 	end
 end
 
