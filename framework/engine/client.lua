@@ -173,11 +173,11 @@ function GM:ChatText( index, name, text )
 	end
 end
 
-function GM:CanDrawBar( pl )
+function GM:ShouldDrawBar( pl )
 	return !IsValid( catherine.vgui.question ) and pl:Alive( ) and pl:IsCharacterLoaded( )
 end
 
-function GM:CanDrawHint( pl, hintTable )
+function GM:ShouldDrawHint( pl, hintTable )
 
 end
 

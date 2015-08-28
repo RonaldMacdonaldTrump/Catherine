@@ -83,6 +83,8 @@ end
 
 function PLUGIN:HUDPaint( )
 	if ( !self.currAreaDisplay ) then return end
+	if ( hook.Run( "ShouldDrawAreaNotify", catherine.pl ) == false ) then return end
+	
 	local areaDisplay = self.currAreaDisplay
 	local w, h = ScrW( ), ScrH( )
 	
