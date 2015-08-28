@@ -252,13 +252,8 @@ function GM:PlayerSpawn( pl )
 	catherine.util.ProgressBar( pl, false )
 	catherine.util.TopNotify( pl, false )
 
-	if ( catherine.configs.giveHand ) then
-		pl:Give( "cat_fist" )
-	end
-	
-	if ( catherine.configs.giveKey ) then
-		pl:Give( "cat_key" )
-	end
+	pl:Give( "cat_fist" )
+	pl:Give( "cat_key" )
 
 	if ( pl:IsCharacterLoaded( ) and !pl.CAT_loadingChar ) then
 		hook.Run( "PlayerSpawnedInCharacter", pl )
@@ -920,7 +915,6 @@ function GM:InitPostEntity( )
 	end
 	
 	hook.Run( "DataLoad" )
-	hook.Run( "SchemaDataLoad" )
 	
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has loaded." )
 end
@@ -930,9 +924,7 @@ function GM:ShutDown( )
 	
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Shutting down ... :)" )
 	
-	hook.Run( "PostDataSave" )
 	hook.Run( "DataSave" )
-	hook.Run( "SchemaDataSave" )
 end
 
 function GM:Initialize( )

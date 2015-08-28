@@ -129,7 +129,7 @@ if ( SERVER ) then
 		end
 		
 		timer.Simple( 0, function( )
-			if ( catherine.configs.giveHand and pl:HasWeapon( "cat_fist" ) ) then
+			if ( pl:HasWeapon( "cat_fist" ) ) then
 				pl:SelectWeapon( "cat_fist" )
 			end
 		end )

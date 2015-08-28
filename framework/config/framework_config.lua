@@ -68,12 +68,11 @@ if ( SERVER ) then
 	catherine.configs.hintInterval = 30
 	catherine.configs.environmentSendInterval = 60
 	catherine.configs.netRegistryOptimizeInterval = 350
-	catherine.configs.saveInterval = 300
-	catherine.configs.fadeOutDeathBody = true
+	catherine.configs.characterSaveInterval = 300
+	catherine.configs.dataSaveInterval = 300
+	catherine.configs.fadeOutDeathBody = true --[[ Enabled the Fade out the Death body. ]]--
 	catherine.configs.voiceAllow = false --[[ Allow a Voice chat. ]]--
 	catherine.configs.voice3D = true --[[ Enabled the Voice 3D system. ]]--
-	catherine.configs.giveHand = true --[[ Enabled the Given hand weapon as spawn. ]]--
-	catherine.configs.giveKey = true --[[ Enabled the Given key weapon as spawn. ]]--
 	catherine.configs.spawnTime = 60 --[[ Setting a Spawn time. ]]--
 	catherine.configs.clearMap = true --[[ Enabled a Map Clear system. (Remove a map HL2 HP, Armor station and Vehicles(Chair) ) ]]--
 	catherine.configs.doorBreach = true --[[ Enabled a Door Breach system. (Shoot the door handle to open) ]]--

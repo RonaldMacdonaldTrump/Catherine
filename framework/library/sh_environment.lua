@@ -60,8 +60,8 @@ function catherine.environment.GetTimeString( )
 end
 
 if ( SERVER ) then
-	catherine.environment.NextSendTick = catherine.environment.NextSendTick or CurTime( ) + 60
-	catherine.environment.NextTemperatureTick = catherine.environment.NextTemperatureTick or CurTime( )
+	catherine.environment.nextSendTick = catherine.environment.nextSendTick or CurTime( ) + 60
+	catherine.environment.nextTemperatureTick = catherine.environment.nextTemperatureTick or CurTime( )
 	local enviromentSendInterval = catherine.configs.environmentSendInterval
 	
 	function catherine.environment.Work( )
@@ -105,16 +105,16 @@ if ( SERVER ) then
 			end
 		end
 		
-		if ( catherine.environment.NextTemperatureTick <= CurTime( ) ) then
+		if ( catherine.environment.nextTemperatureTick <= CurTime( ) ) then
 			catherine.environment.buffer.temperature = catherine.environment.CalcTemperature( )
 
 			catherine.environment.SendTemperatureConfig( )
-			catherine.environment.NextTemperatureTick = CurTime( ) + math.random( 60, 200 )
+			catherine.environment.nextTemperatureTick = CurTime( ) + math.random( 60, 200 )
 		end
 		
-		if ( catherine.environment.NextSendTick <= CurTime( ) ) then
+		if ( catherine.environment.nextSendTick <= CurTime( ) ) then
 			catherine.environment.SendAllEnvironmentConfig( )
-			catherine.environment.NextSendTick = CurTime( ) + enviromentSendInterval
+			catherine.environment.nextSendTick = CurTime( ) + enviromentSendInterval
 		end
 	end
 

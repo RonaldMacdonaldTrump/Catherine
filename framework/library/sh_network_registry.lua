@@ -21,7 +21,7 @@ local META = FindMetaTable( "Entity" )
 local META2 = FindMetaTable( "Player" )
 
 if ( SERVER ) then
-	catherine.net.NextOptimizeTick = catherine.net.NextOptimizeTick or CurTime( ) + catherine.configs.netRegistryOptimizeInterval
+	catherine.net.nextOptimizeTick = catherine.net.nextOptimizeTick or catherine.configs.netRegistryOptimizeInterval
 
 	function catherine.net.SetNetVar( ent, key, value, noSync )
 		catherine.net.entityRegistry[ ent ] = catherine.net.entityRegistry[ ent ] or { }
@@ -109,14 +109,18 @@ if ( SERVER ) then
 	
 	META2.SetNetVar = META.SetNetVar
 	
-	function catherine.net.Think( )
-		if ( catherine.net.NextOptimizeTick <= CurTime( ) ) then
+	timer.Create( "Catherine.timer.net.AutoScanError", 1, 0, function( )
+		if ( table.Count( catherine.net.entityRegistry ) == 0 ) then return end
+		
+		if ( catherine.net.nextOptimizeTick <= 0 ) then
 			catherine.net.ScanErrorInNetworkRegistry( )
 			
-			catherine.net.NextOptimizeTick = CurTime( ) + catherine.configs.netRegistryOptimizeInterval
+			catherine.net.nextOptimizeTick = catherine.configs.netRegistryOptimizeInterval
+		else
+			catherine.net.nextOptimizeTick = catherine.net.nextOptimizeTick - 1
 		end
-	end
-
+	end )
+	
 	function catherine.net.EntityRemoved( ent )
 		catherine.net.entityRegistry[ ent ] = nil
 		netstream.Start( nil, "catherine.net.ClearNetVar", ent:EntIndex( ) )
@@ -126,8 +130,7 @@ if ( SERVER ) then
 		catherine.net.entityRegistry[ pl ] = nil
 		netstream.Start( nil, "catherine.net.ClearNetVar", pl:SteamID( ) )
 	end
-
-	hook.Add( "Think", "catherine.net.Think", catherine.net.Think )
+	
 	hook.Add( "EntityRemoved", "catherine.net.EntityRemoved", catherine.net.EntityRemoved )
 	hook.Add( "PlayerDisconnected", "catherine.net.PlayerDisconnected", catherine.net.PlayerDisconnected )
 else

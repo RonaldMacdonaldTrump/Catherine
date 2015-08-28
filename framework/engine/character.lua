@@ -169,7 +169,7 @@ catherine.character.NewVar( "faction", {
 
 if ( SERVER ) then
 	catherine.character.buffers = catherine.character.buffers or { }
-	catherine.character.SaveTick = catherine.character.SaveTick or CurTime( ) + catherine.configs.saveInterval
+	catherine.character.saveTick = catherine.character.saveTick or catherine.configs.characterSaveInterval
 	
 	function catherine.character.New( pl, id )
 		if ( pl:IsTied( ) ) then
@@ -554,34 +554,33 @@ if ( SERVER ) then
 			end )
 		end )
 	end
-
-	function catherine.character.Think( )
-		if ( catherine.character.SaveTick <= CurTime( ) ) then
-			for k, v in pairs( player.GetAllByLoaded( ) ) do
-				catherine.character.Save( v )
+	
+	timer.Create( "Catherine.timer.character.AutoSaveCharacter", 1, 0, function( )
+		if ( table.Count( catherine.character.buffers ) == 0 ) then return end
+		
+		if ( catherine.character.saveTick <= 0 ) then
+			local players = player.GetAllByLoaded( )
+			
+			if ( #players > 0 ) then
+				for k, v in pairs( players ) do
+					catherine.character.Save( v )
+				end
+				
+				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, #players .. "'s characters saved.", true )
 			end
 			
-			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, #player.GetAllByLoaded( ) .. "'s characters saved.", true )
-			catherine.character.SaveTick = CurTime( ) + catherine.configs.saveInterval
+			catherine.character.saveTick = catherine.configs.characterSaveInterval
+		else
+			catherine.character.saveTick = catherine.character.saveTick - 1
 		end
-	end
-
-	function catherine.character.DataSave( )
-		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			catherine.character.Save( v )
-		end
-		
-		catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, #player.GetAllByLoaded( ) .. "'s characters saved." )
-	end
+	end )
 	
 	function catherine.character.PlayerDisconnected( pl )
 		catherine.character.Save( pl )
 		catherine.character.DeleteNetworkRegistry( pl )
 	end
-
-	hook.Add( "Think", "catherine.character.Think", catherine.character.Think )
+	
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected", catherine.character.PlayerDisconnected )
-	hook.Add( "DataSave", "catherine.character.DataSave", catherine.character.DataSave )
 
 	netstream.Hook( "catherine.character.Create", function( pl, data )
 		catherine.character.Create( pl, data )

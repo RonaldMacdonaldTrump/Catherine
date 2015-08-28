@@ -16,20 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.data = catherine.data or { buffer = { } }
-
-function catherine.data.FrameworkInitialized( )
-	file.CreateDir( "catherine" )
-	file.CreateDir( "catherine/globals" )
-end
-
-function catherine.data.SchemaInitialized( )
-	file.CreateDir( "catherine" )
-	file.CreateDir( "catherine/" .. catherine.schema.GetUniqueID( ) )
-end
-
-hook.Add( "FrameworkInitialized", "catherine.data.FrameworkInitialized", catherine.data.FrameworkInitialized )
-hook.Add( "SchemaInitialized", "catherine.data.SchemaInitialized", catherine.data.SchemaInitialized )
+catherine.data = catherine.data or { buffer = { }, saveTick = catherine.configs.dataSaveInterval }
 
 function catherine.data.Set( key, value, ignoreMap, isGlobal )
 	local dir = "catherine/" .. ( isGlobal and "globals/" or catherine.schema.GetUniqueID( ) .. "/" ) .. key .. "/"
@@ -52,3 +39,28 @@ function catherine.data.Get( key, default, ignoreMap, isGlobal, isBuffer )
 
 	return isBuffer and catherine.data.buffer[ key ] or util.JSONToTable( data )
 end
+
+timer.Create( "Catherine.timer.data.AutoSaveData", 1, 0, function( )
+	if ( catherine.data.saveTick <= 0 ) then
+		hook.Run( "DataSave" )
+		
+		catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has saved." )
+		
+		catherine.data.saveTick = catherine.configs.dataSaveInterval
+	else
+		catherine.data.saveTick = catherine.data.saveTick - 1
+	end
+end )
+
+function catherine.data.FrameworkInitialized( )
+	file.CreateDir( "catherine" )
+	file.CreateDir( "catherine/globals" )
+end
+
+function catherine.data.SchemaInitialized( )
+	file.CreateDir( "catherine" )
+	file.CreateDir( "catherine/" .. catherine.schema.GetUniqueID( ) )
+end
+
+hook.Add( "FrameworkInitialized", "catherine.data.FrameworkInitialized", catherine.data.FrameworkInitialized )
+hook.Add( "SchemaInitialized", "catherine.data.SchemaInitialized", catherine.data.SchemaInitialized )
