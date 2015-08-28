@@ -56,7 +56,7 @@ if ( SERVER ) then
 	end
 
 	function PLUGIN:PlayerThink( pl )
-		if ( pl:IsNoclipping( ) ) then return end
+		if ( pl:IsNoclipping( ) or !pl:IsOnGround( ) ) then return end
 		local curTime = CurTime( )
 		
 		if ( pl:IsRunning( ) ) then

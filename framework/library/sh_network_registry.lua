@@ -16,14 +16,24 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+if ( !catherine.system ) then
+	catherine.util.Include( "catherine/framework/engine/system.lua", "SHARED" )
+end
+
 catherine.net = catherine.net or { globalRegistry = { }, entityRegistry = { } }
 local META = FindMetaTable( "Entity" )
 local META2 = FindMetaTable( "Player" )
 
+function catherine.net.GetNetGlobalVar( key, default )
+	return catherine.net.globalRegistry[ key ] or default
+end
+
+function META:GetNetVar( key, default )
+	return catherine.net.GetNetVar( self, key, default )
+end
+
 if ( SERVER ) then
 	catherine.net.nextOptimizeTick = catherine.net.nextOptimizeTick or catherine.configs.netRegistryOptimizeInterval
-	
-	catherine.system.RegisterTick( "network_registry", "Network Registry", "1.", catherine.configs.netRegistryOptimizeInterval, catherine.net.nextOptimizeTick, 0 )
 	
 	function catherine.net.SetNetVar( ent, key, value, noSync )
 		catherine.net.entityRegistry[ ent ] = catherine.net.entityRegistry[ ent ] or { }
@@ -140,6 +150,8 @@ if ( SERVER ) then
 	
 	hook.Add( "EntityRemoved", "catherine.net.EntityRemoved", catherine.net.EntityRemoved )
 	hook.Add( "PlayerDisconnected", "catherine.net.PlayerDisconnected", catherine.net.PlayerDisconnected )
+	
+	catherine.system.RegisterTick( "network_registry", "Network Registry", "1.", catherine.configs.netRegistryOptimizeInterval, catherine.net.nextOptimizeTick, 0 )
 else
 	netstream.Hook( "catherine.net.SetNetVar", function( data )
 		local steamID = data[ 1 ]
@@ -170,12 +182,4 @@ else
 		
 		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
 	end
-end
-
-function catherine.net.GetNetGlobalVar( key, default )
-	return catherine.net.globalRegistry[ key ] or default
-end
-
-function META:GetNetVar( key, default )
-	return catherine.net.GetNetVar( self, key, default )
 end

@@ -638,6 +638,12 @@ function GM:PlayerSpawnProp( pl )
 	return pl:HasFlag( "e" )
 end
 
+function GM:GetPlayerPainSound( pl )
+	if ( pl:WaterLevel( ) >= 3 ) then
+		return "player/pl_drown" .. math.random( 1, 3 ) .. ".wav"
+	end
+end
+
 function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 	if ( pl:HasGodMode( ) ) then
 		return true
@@ -826,32 +832,35 @@ function GM:PlayerThink( pl )
 	if ( pl:Alive( ) ) then
 		if ( pl:WaterLevel( ) >= 3 ) then
 			if ( !pl.CAT_drowningTick ) then
-				pl.CAT_drowningTick = CurTime( ) + math.random( 30, 60 )
+				pl.CAT_drowningTick = CurTime( ) + 30
 				pl.CAT_drownDamage = pl.CAT_drownDamage or 0
 			end
 			
 			if ( pl.CAT_drowningTick <= CurTime( ) ) then
 				if ( ( pl.CAT_nextDrowning or 0 ) <= CurTime( ) ) then
-					local damage = math.random( 10, 15 )
+					catherine.player.SetIgnoreScreenColor( pl, true )
 					
-					pl:TakeDamage( damage )
-					pl.CAT_drownDamage = pl.CAT_drownDamage + damage
+					catherine.util.ScreenColorEffect( pl, Color( 50, 50, 255 ), 0.2, 0.01 )
+					pl:TakeDamage( 10 )
 					
-					pl.CAT_nextDrowning = CurTime( ) + 1.5
+					catherine.player.SetIgnoreScreenColor( pl, nil )
+					
+					pl.CAT_drownDamage = pl.CAT_drownDamage + 10
+					pl.CAT_nextDrowning = CurTime( ) + 2
 				end
 			end
 		else
 			if ( pl.CAT_drowningTick ) then
 				pl.CAT_drowningTick = nil
 				pl.CAT_nextDrowning = nil
-				pl.CAT_nextDrownDamageRecoverTick = CurTime( ) + 2
+				pl.CAT_nextDrownDamageRecoverTick = CurTime( ) + 3
 			end
 			
 			if ( pl.CAT_nextDrownDamageRecoverTick and pl.CAT_nextDrownDamageRecoverTick <= CurTime( ) ) then
 				if ( pl.CAT_drownDamage > 0 ) then
-					pl.CAT_drownDamage = pl.CAT_drownDamage - 10
-					pl:SetHealth( math.Clamp( pl:Health( ) + 10, 0, pl:GetMaxHealth( ) ) )
-					pl.CAT_nextDrownDamageRecoverTick = CurTime( ) + 1
+					pl.CAT_drownDamage = pl.CAT_drownDamage - 1
+					pl:SetHealth( math.Clamp( pl:Health( ) + 1, 0, pl:GetMaxHealth( ) ) )
+					pl.CAT_nextDrownDamageRecoverTick = CurTime( ) + 0.1
 				else
 					pl.CAT_nextDrownDamageRecoverTick = nil
 					pl.CAT_drownDamage = nil

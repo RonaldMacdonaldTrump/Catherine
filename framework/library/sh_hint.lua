@@ -70,7 +70,7 @@ if ( SERVER ) then
 	
 	function catherine.hint.SendRandomHintToAllPlayer( )
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			catherine.hint.SendHint( v )
+			catherine.hint.SendRandomHint( v )
 		end
 	end
 	
@@ -95,17 +95,24 @@ else
 		
 		local msg = catherine.util.StuffLanguage( hintTable.message )
 		
+		surface.SetFont( "catherine_normal20" )
+		
+		local tw, th = surface.GetTextSize( msg )
+		
 		local hintData = {
 			index = data,
 			message = msg,
 			time = CurTime( ) + 15,
-			a = 0
+			a = 0,
+			tw = tw
 		}
 		
 		hintData = hook.Run( "PreAddHint", catherine.pl, hintData ) or hintData
 		
 		catherine.hint.currHint = hintData
 	end )
+	
+	local gradient_right = Material( "VGUI/gradient-r" )
 	
 	function catherine.hint.Draw( )
 		if ( !catherine.hint.currHint or GetConVarString( "cat_convar_hint" ) == "0" ) then return end
@@ -123,7 +130,11 @@ else
 			t.a = Lerp( 0.02, t.a, 255 )
 		end
 		
-		draw.SimpleText( t.message, "catherine_normal20", ScrW( ) - 10, 5, Color( 255, 255, 255, t.a ), TEXT_ALIGN_RIGHT, 1 )
+		surface.SetDrawColor( 50, 50, 50, t.a / 2 )
+		surface.SetMaterial( gradient_right )
+		surface.DrawTexturedRect( ScrW( ) - t.tw, 0, t.tw, 30 )
+	
+		draw.SimpleText( t.message, "catherine_normal20", ScrW( ) - 10, 15, Color( 255, 255, 255, t.a ), TEXT_ALIGN_RIGHT, 1 )
 	end
 end
 
