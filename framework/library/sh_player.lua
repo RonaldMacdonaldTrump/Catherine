@@ -382,6 +382,8 @@ if ( SERVER ) then
 	end
 
 	function catherine.player.RagdollWork( pl, status, time )
+		if ( hook.Run( "PlayerShouldWorkRagdoll", pl, status, time ) == false ) then return end
+		
 		if ( status ) then
 			if ( IsValid( pl.CAT_ragdoll ) ) then
 				pl.CAT_ragdoll:Remove( )
@@ -437,7 +439,7 @@ if ( SERVER ) then
 			pl:SetNetVar( "ragdollIndex", ent:EntIndex( ) )
 			pl:SetNetVar( "isRagdolled", true )
 			
-			local timerID1 = "Catherine.timer.RagdollWork2_" .. ent:EntIndex( )
+			local timerID1 = "Catherine.timer.RagdollWork2." .. ent:EntIndex( )
 			
 			timer.Create( timerID1, 1, 0, function( )
 				if ( !IsValid( pl ) or !IsValid( ent ) ) then
@@ -453,7 +455,7 @@ if ( SERVER ) then
 				
 				pl:SetNetVar( "isForceRagdolled", true )
 				
-				local timerID2 = "Catherine.timer.RagdollWork_" .. ent:EntIndex( )
+				local timerID2 = "Catherine.timer.RagdollWork." .. ent:EntIndex( )
 				
 				catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
 					catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )

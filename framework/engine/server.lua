@@ -79,6 +79,23 @@ function GM:PlayerFirstSpawned( pl, id )
 	catherine.character.SetCharVar( pl, "originalModel", pl:GetModel( ) )
 end
 
+function GM:OnPhysgunFreeze( weapon, physObject, ent, pl )
+	if ( !physObject:IsMoveable( ) ) then return false end
+	if ( ent:GetUnFreezable( ) ) then return false end
+	
+	physObject:EnableMotion( false )
+	
+	if ( ent:GetClass( ) == "prop_vehicle_jeep" ) then
+		for i = 0, ent:GetPhysicsObjectCount( ) - 1 do
+			ent:GetPhysicsObjectNum( i ):EnableMotion( false )
+		end
+	end
+	
+	pl:AddFrozenPhysicsObject( ent, physObject )
+	
+	return true
+end
+
 function GM:CharacterVarChanged( pl, key, value )
 	if ( key == "_name" ) then
 		hook.Run( "CharacterNameChanged", pl, value )
@@ -134,6 +151,28 @@ end
 
 function GM:GetHealthRecoverInterval( pl )
 
+end
+
+function GM:PlayerShouldWorkItem( pl, itemTable, workID, ent_isMenu )
+	if ( !pl:Alive( ) ) then
+		catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
+		return false
+	end
+
+	if ( pl:IsTied( ) ) then
+		catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
+		return false
+	end
+	
+	if ( workID == "take" and hook.Run( "PlayerShouldTakeItem", pl, itemTable ) == false ) then
+		return false
+	end
+	
+	if ( workID == "drop" and hook.Run( "PlayerShouldDropItem", pl, itemTable ) == false ) then
+		return false
+	end
+	
+	return true
 end
 
 function GM:PlayerCharacterLoaded( pl )
@@ -814,8 +853,8 @@ function GM:GetUnknownTargetName( pl, target )
 	return LANG( pl, "Recognize_UI_Unknown" )
 end
 
-function GM:PlayerShouldTakeDamage( )
-	return true
+function GM:PlayerShouldTakeDamage( pl, attacker )
+	return pl:IsCharacterLoaded( ) != false
 end
 
 function GM:GetFallDamage( pl, speed )

@@ -48,16 +48,6 @@ function catherine.item.Register( itemTable )
 			icon = "icon16/basket_put.png",
 			canShowIsWorld = true,
 			func = function( pl, itemTable, ent )
-				if ( !pl:Alive( ) ) then
-					catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
-					return
-				end
-
-				if ( pl:IsTied( ) ) then
-					catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
-					return
-				end
-			
 				if ( !IsValid( ent ) ) then
 					catherine.util.NotifyLang( pl, "Entity_Notify_NotValid" )
 					return
@@ -92,16 +82,6 @@ function catherine.item.Register( itemTable )
 			icon = "icon16/basket_remove.png",
 			canShowIsMenu = true,
 			func = function( pl, itemTable )
-				if ( !pl:Alive( ) ) then
-					catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
-					return
-				end
-		
-				if ( pl:IsTied( ) ) then
-					catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
-					return
-				end
-				
 				hook.Run( "PreItemDrop", pl, itemTable )
 				
 				local uniqueID = itemTable.uniqueID

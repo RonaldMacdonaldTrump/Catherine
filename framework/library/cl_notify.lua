@@ -19,10 +19,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.notify = catherine.notify or { }
 catherine.notify.lists = { }
 
-function GM:AddNotify( str, _, length )
-	catherine.notify.Add( str, length, false )
-end
-
 function catherine.notify.Add( message, time, sound )
 	local index = #catherine.notify.lists + 1
 	

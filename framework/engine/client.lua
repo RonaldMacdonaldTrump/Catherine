@@ -99,6 +99,18 @@ function GM:OnReloaded( )
 	end
 end
 
+function GM:AddHint( name, delay )
+
+end
+
+function GM:AddNotify( message, _, time )
+	if ( message:sub( 1, 6 ) == "#Hint_" ) then
+		return
+	end
+	
+	catherine.notify.Add( message, time, false )
+end
+
 function GM:HUDPaintBackground( )
 	local pl = catherine.pl
 	

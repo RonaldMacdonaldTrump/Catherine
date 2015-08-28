@@ -57,10 +57,12 @@ function PLUGIN:PlayerGiveWeapon( pl, uniqueID )
 	if ( !IsValid( pl ) or !pl:IsCharacterLoaded( ) ) then return end
 
 	timer.Simple( 0.05, function( )
-		netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
-			1,
-			uniqueID
-		} )
+		if ( IsValid( pl ) and pl:HasWeapon( uniqueID ) ) then
+			netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
+				1,
+				uniqueID
+			} )
+		end
 	end )
 end
 
