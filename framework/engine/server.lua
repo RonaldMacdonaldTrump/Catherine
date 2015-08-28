@@ -826,9 +826,9 @@ function GM:PlayerThink( pl )
 		pl.CAT_playerInfoTableTick = CurTime( ) + 0.1
 	end
 	
+	if ( hook.Run( "PlayerShouldDrown", pl ) == false ) then return end
+	
 	if ( pl:Alive( ) ) then
-		if ( hook.Run( "PlayerShouldDrown", pl ) == false ) then return end
-		
 		if ( pl:WaterLevel( ) >= 3 ) then
 			if ( !pl.CAT_drowningTick ) then
 				pl.CAT_drowningTick = CurTime( ) + math.random( 30, 60 )
