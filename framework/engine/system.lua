@@ -20,9 +20,6 @@ catherine.system = catherine.system or { libVersion = "2015-08-28" }
 CAT_SYSTEM_DATATYPE_NUMBER = 0
 CAT_SYSTEM_DATATYPE_STRING = 1
 CAT_SYSTEM_DATATYPE_BOOL = 2
---[[
-	To Do;
-]]--
 
 if ( SERVER ) then
 	function catherine.system.RegisterTick( uniqueID, name, desc, max, time, status )
@@ -41,10 +38,6 @@ if ( SERVER ) then
 		catherine.net.SetNetGlobalVar( "cat_timeSystem", globalVar )
 	end
 	
-	function catherine.system.TickFindByID( uniqueID )
-		return catherine.net.GetNetGlobalVar( "cat_timeSystem", { } )[ uniqueID ]
-	end
-	
 	function catherine.system.SetTickData( uniqueID, dataType, dataID, newData )
 		if ( dataType == CAT_SYSTEM_DATATYPE_NUMBER ) then
 			SetGlobalInt( "catherine.system.globalInt.tickSystem." .. uniqueID .. "." .. dataID, newData )
@@ -56,6 +49,14 @@ if ( SERVER ) then
 	end
 else
 
+end
+
+function catherine.system.GetAllTick( )
+	return catherine.net.GetNetGlobalVar( "cat_timeSystem", { } )
+end
+
+function catherine.system.TickFindByID( uniqueID )
+	return catherine.net.GetNetGlobalVar( "cat_timeSystem", { } )[ uniqueID ]
 end
 
 function catherine.system.GetTickData( uniqueID, dataType, dataID, default )
