@@ -47,6 +47,9 @@ function catherine.Boot( )
 	
 	catherine.util.IncludeInDir( "library" )
 	
+	AddCSLuaFile( baseDir .. "/engine/system.lua" )
+	include( baseDir .. "/engine/system.lua" )
+	
 	AddCSLuaFile( baseDir .. "/engine/schema.lua" )
 	include( baseDir .. "/engine/schema.lua" )
 	

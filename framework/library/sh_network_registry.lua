@@ -22,7 +22,9 @@ local META2 = FindMetaTable( "Player" )
 
 if ( SERVER ) then
 	catherine.net.nextOptimizeTick = catherine.net.nextOptimizeTick or catherine.configs.netRegistryOptimizeInterval
-
+	
+	catherine.system.RegisterTick( "network_registry", "Network Registry", "1.", catherine.configs.netRegistryOptimizeInterval, catherine.net.nextOptimizeTick, 0 )
+	
 	function catherine.net.SetNetVar( ent, key, value, noSync )
 		catherine.net.entityRegistry[ ent ] = catherine.net.entityRegistry[ ent ] or { }
 		catherine.net.entityRegistry[ ent ][ key ] = value
@@ -113,11 +115,16 @@ if ( SERVER ) then
 		if ( table.Count( catherine.net.entityRegistry ) == 0 ) then return end
 		
 		if ( catherine.net.nextOptimizeTick <= 0 ) then
-			catherine.net.ScanErrorInNetworkRegistry( )
+			catherine.system.SetTickData( "network_registry", CAT_SYSTEM_DATATYPE_NUMBER, "status", 1 )
 			
+			catherine.net.ScanErrorInNetworkRegistry( )
 			catherine.net.nextOptimizeTick = catherine.configs.netRegistryOptimizeInterval
+			
+			catherine.system.SetTickData( "network_registry", CAT_SYSTEM_DATATYPE_NUMBER, "status", 0 )
 		else
 			catherine.net.nextOptimizeTick = catherine.net.nextOptimizeTick - 1
+			
+			catherine.system.SetTickData( "network_registry", CAT_SYSTEM_DATATYPE_NUMBER, "time", catherine.net.nextOptimizeTick )
 		end
 	end )
 	
