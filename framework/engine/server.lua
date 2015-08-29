@@ -327,10 +327,14 @@ function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
 	if ( !pl:IsPlayer( ) ) then return end
 	
 	if ( !catherine.player.IsIgnoreScreenColor( pl ) ) then
-		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
-		
-		if ( hitGroup == CAT_BODY_ID_HEAD ) then
-			catherine.util.ScreenColorEffect( pl, nil, 2, 0.005 )
+		if ( ( pl.CAT_nextDamageScreenColorEffect or 0 ) <= CurTime( ) ) then
+			catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+			
+			if ( hitGroup == CAT_BODY_ID_HEAD ) then
+				catherine.util.ScreenColorEffect( pl, nil, 1, 0.005 )
+			end
+			
+			pl.CAT_nextDamageScreenColorEffect = CurTime( ) + 1
 		end
 	end
 end
@@ -655,8 +659,10 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 	
 	pl.CAT_healthRecover = true
 
-	if ( !catherine.player.IsIgnoreScreenColor( pl ) ) then
+	if ( !catherine.player.IsIgnoreScreenColor( pl ) and ( pl.CAT_nextDamageScreenColorEffect or 0 ) <= CurTime( ) ) then
 		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+		
+		pl.CAT_nextDamageScreenColorEffect = CurTime( ) + 1
 	end
 	
 	local hitGroup = catherine.player.GetHitGroup( pl, dmgInfo:GetDamagePosition( ) )
@@ -764,13 +770,12 @@ function GM:PlayerDeath( pl )
 	
 	local respawnTime = hook.Run( "GetRespawnTime", pl ) or catherine.configs.spawnTime
 	
-	catherine.util.ProgressBar( pl, false )
-	
 	pl:SetViewEntity( NULL )
 	pl:UnSpectate( )
 	
 	pl.CAT_isDeadFunc = true
-
+	
+	catherine.util.ProgressBar( pl, false )
 	catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Dead_01" ), respawnTime, function( )
 		if ( IsValid( pl.CAT_ragdoll ) ) then
 			if ( catherine.configs.fadeOutDeathBody ) then
@@ -787,12 +792,12 @@ function GM:PlayerDeath( pl )
 		end
 		
 		pl:Spawn( )
-
+		
 		timer.Simple( 0, function( )
 			pl.CAT_isDeadFunc = nil
 		end )
 	end )
-
+	
 	catherine.util.TopNotify( pl, false )
 	
 	catherine.attribute.ClearBoost( pl )
