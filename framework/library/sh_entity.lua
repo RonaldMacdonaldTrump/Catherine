@@ -133,7 +133,7 @@ if ( SERVER ) then
 			}
 		end
 		
-		ent.IsCustomUse = true
+		ent.isCustomUse = true
 		catherine.entity.customUse[ ent:EntIndex( ) ] = forServer
 
 		ent:SetNetVar( "customUseClient", forClient )
@@ -211,8 +211,6 @@ else
 	
 	hook.Add( "LanguageChanged", "catherine.entity.LanguageChanged", catherine.entity.LanguageChanged )
 end
-
-
 
 function catherine.entity.GetPlayer( ent )
 	return ent:GetNetVar( "player" )

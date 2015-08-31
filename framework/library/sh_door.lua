@@ -253,14 +253,17 @@ if ( SERVER ) then
 		
 		pl.CAT_doorSpamCount = pl.CAT_doorSpamCount + 1
 		
+		local timerID1 = "Catherine.timer.door.SpawnCountReset." .. steamID
+		local timerID2 = "Catherine.timer.door.SpawnCountReset." .. steamID
+		
 		if ( pl.CAT_lastDoor == ent and pl.CAT_doorSpamCount >= 10 ) then
-			timer.Remove( "Catherine.timer.DoorSpamCountInitizlie_" .. steamID )
+			timer.Remove( timerID1 )
 			pl.lookingDoorEntity = nil
 			pl.CAT_doorSpamCount = 0
 			pl.CAT_cantUseDoor = true
 			catherine.util.NotifyLang( pl, "Door_Notify_DoorSpam" )
 			
-			timer.Create( "Catherine.timer.DoorSpamDelta_" .. steamID, 10, 1, function( )
+			timer.Create( "Catherine.timer.door.BlockReset." .. steamID, 10, 1, function( )
 				if ( !IsValid( pl ) ) then return end
 				
 				pl.CAT_cantUseDoor = nil
@@ -271,8 +274,8 @@ if ( SERVER ) then
 			pl.CAT_doorSpamCount = 1
 		end
 		
-		timer.Remove( "Catherine.timer.DoorSpamCountInitizlie_" .. steamID )
-		timer.Create( "Catherine.timer.DoorSpamCountInitizlie_" .. steamID, 1, 1, function( )
+		timer.Remove( timerID1 )
+		timer.Create( timerID1, 1, 1, function( )
 			if ( !IsValid( pl ) ) then return end
 			
 			pl.CAT_cantUseDoor = nil
@@ -281,7 +284,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.door.GetDoorCost( pl, ent )
-		return catherine.configs.doorCost // 나중에 수정 -_-
+		return catherine.configs.doorCost // -_-;
 	end
 
 	function catherine.door.DataSave( )
@@ -293,7 +296,7 @@ if ( SERVER ) then
 			local desc = v:GetNetVar( "forceDesc" )
 			local cantBuy = v:GetNetVar( "cantBuy", false )
 			local doorDisabled = v:GetNetVar( "disabled" )
-			if ( !desc and !title and !cantBuy and !doorDisabled ) then continue end
+			if ( !title and !desc and !cantBuy and !doorDisabled ) then continue end
 			
 			data[ #data + 1 ] = {
 				index = v:EntIndex( ),
@@ -310,7 +313,7 @@ if ( SERVER ) then
 	function catherine.door.DataLoad( )
 		for k, v in pairs( ents.GetAll( ) ) do
 			for k1, v1 in pairs( catherine.data.Get( "doors", { } ) ) do
-				if ( IsValid( v ) and v:IsDoor( ) and v:EntIndex(  ) == v1.index ) then
+				if ( IsValid( v ) and v:IsDoor( ) and v:EntIndex( ) == v1.index ) then
 					if ( v1.doorDisabled ) then
 						v:SetNetVar( "disabled", true )
 						
@@ -361,16 +364,18 @@ else
 	end )
 
 	function catherine.door.GetDetailString( ent )
-		local owner = ent:GetNetVar( "permissions" )
-		local customDesc = ent:GetNetVar( "customDesc" )
 		local forceDesc = ent:GetNetVar( "forceDesc" )
 		
 		if ( forceDesc ) then
 			return forceDesc
 		else
+			local customDesc = ent:GetNetVar( "customDesc" )
+			
 			if ( customDesc ) then
 				return customDesc
 			else
+				local owner = ent:GetNetVar( "permissions" )
+				
 				if ( owner ) then
 					return LANG( "Door_Message_AlreadySold" )
 				elseif ( !owner and catherine.door.IsBuyableDoor( ent ) ) then

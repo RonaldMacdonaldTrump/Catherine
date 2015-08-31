@@ -543,7 +543,7 @@ function GM:KeyPress( pl, key )
 			end
 		elseif ( ent:IsPlayer( ) ) then
 			return hook.Run( "PlayerInteract", pl, ent )
-		elseif ( ent.IsCustomUse ) then
+		elseif ( ent.isCustomUse ) then
 			netstream.Start( pl, "catherine.entity.CustomUseMenu", ent:EntIndex( ) )
 		end
 	end
