@@ -27,13 +27,13 @@ if ( game.IsDedicated( ) ) then
 end
 
 function GM:ShowHelp( pl )
-	if ( hook.Run( "CanOpenInformationMenu", pl ) == false ) then return end
+	if ( hook.Run( "PlayerShouldOpenInformationMenu", pl ) == false ) then return end
 	
 	netstream.Start( pl, "catherine.ShowHelp" )
 end
 
 function GM:ShowTeam( pl )
-	if ( hook.Run( "CanOpenRecognizeOrDoorMenu", pl ) == false ) then return end
+	if ( hook.Run( "PlayerShouldOpenRecognizeOrDoorMenu", pl ) == false ) then return end
 	
 	local data = { }
 	data.start = pl:GetShootPos( )
@@ -67,11 +67,11 @@ function GM:ShowTeam( pl )
 	end
 end
 
-function GM:CanOpenInformationMenu( pl )
+function GM:PlayerShouldOpenInformationMenu( pl )
 	return pl:IsCharacterLoaded( ) and !catherine.player.IsCharacterBanned( pl )
 end
 
-function GM:CanOpenRecognizeOrDoorMenu( pl )
+function GM:PlayerShouldOpenRecognizeOrDoorMenu( pl )
 	return pl:IsCharacterLoaded( ) and !catherine.player.IsCharacterBanned( pl )
 end
 
