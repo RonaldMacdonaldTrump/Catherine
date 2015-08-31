@@ -96,6 +96,14 @@ function GM:OnPhysgunFreeze( weapon, physObject, ent, pl )
 	return true
 end
 
+function GM:PlayerSwitchWeapon( pl, oldWep, newWep )
+	if ( newWep.AlwaysRaised and catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then
+		pl:SetWeaponRaised( true, newWep )
+	else
+		pl:SetWeaponRaised( false, newWep )
+	end
+end
+
 function GM:CharacterVarChanged( pl, key, value )
 	if ( key == "_name" ) then
 		hook.Run( "CharacterNameChanged", pl, value )

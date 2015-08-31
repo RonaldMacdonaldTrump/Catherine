@@ -72,7 +72,7 @@ else
 			data.endpos = data.start + pl:GetAimVector( ) * 70
 			data.filter = pl
 			local ent = util.TraceLine( data ).Entity
-
+			
 			if ( IsValid( ent ) and ent:IsPlayer( ) ) then
 				netstream.Start( "catherine.recognize.DoKnow", {
 					0,
@@ -99,7 +99,7 @@ else
 		menu:Center( )
 		
 		catherine.util.SetDermaMenuTitle( menu, LANG( "Basic_UI_RecogniseMenuOptionTitle" ) )
-			
+		
 		menu.OnRemove = function( )
 			catherine.util.SetDermaMenuTitle( )
 		end

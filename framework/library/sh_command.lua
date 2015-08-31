@@ -40,7 +40,7 @@ end
 function catherine.command.FindByCMD( command )
 	for k, v in pairs( catherine.command.GetAll( ) ) do
 		if ( v.command == command ) then
-			return catherine.command.lists[ k ]
+			return v
 		end
 	end
 end
@@ -183,7 +183,7 @@ else
 		for k, v in SortedPairs( catherine.command.GetAll( ) ) do
 			local havePermission = nil
 			
-			if ( v.canRun and v.canRun( pl, k ) == true ) then
+			if ( v.canRun and v.canRun( pl, v ) == true ) then
 				havePermission = true
 			elseif ( !v.canRun ) then
 				havePermission = true

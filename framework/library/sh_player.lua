@@ -19,7 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.player = catherine.player or { }
 local META = FindMetaTable( "Player" )
 local META2 = FindMetaTable( "Entity" )
-local velo = FindMetaTable( "Entity" ).GetVelocity
+local velo = META2.GetVelocity
 local twoD = FindMetaTable( "Vector" ).Length2D
 
 if ( SERVER ) then
@@ -633,16 +633,6 @@ if ( SERVER ) then
 	function META:IsInGod( )
 		return self.CAT_godMode
 	end
-
-	function catherine.player.PlayerSwitchWeapon( pl, oldWep, newWep )
-		if ( newWep.AlwaysRaised and catherine.configs.alwaysRaised[ newWep:GetClass( ) ] ) then
-			pl:SetWeaponRaised( true, newWep )
-		else
-			pl:SetWeaponRaised( false, newWep )
-		end
-	end
-	
-	hook.Add( "PlayerSwitchWeapon", "catherine.player.PlayerSwitchWeapon", catherine.player.PlayerSwitchWeapon )
 	
 	netstream.Hook( "catherine.player.Initialize_Reload", function( pl )
 		catherine.player.Initialize( pl, true )
