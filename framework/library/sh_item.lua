@@ -16,7 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.item = catherine.item or { bases = { }, items = { }, hooks = { } }
+catherine.item = catherine.item or { bases = { }, items = { } }
+catherine.item.hooks = { }
 
 function catherine.item.Register( itemTable )
 	if ( !itemTable ) then return end

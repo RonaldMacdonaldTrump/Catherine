@@ -99,10 +99,6 @@ else
 		menu:Center( )
 		
 		catherine.util.SetDermaMenuTitle( menu, LANG( "Basic_UI_RecogniseMenuOptionTitle" ) )
-		
-		menu.OnRemove = function( )
-			catherine.util.SetDermaMenuTitle( )
-		end
 	end )
 end
 
