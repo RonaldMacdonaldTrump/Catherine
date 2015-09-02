@@ -78,7 +78,11 @@ function catherine.plugin.Include( dir )
 		
 		if ( file.Exists( pluginDir .. "/sh_plugin.lua", "LUA" ) ) then
 			catherine.util.Include( pluginDir .. "/sh_plugin.lua" )
+			
 			catherine.item.Include( pluginDir )
+			catherine.faction.Include( pluginDir )
+			catherine.class.Include( pluginDir )
+			catherine.attribute.Include( pluginDir )
 			
 			catherine.plugin.IncludeEntities( pluginDir )
 			catherine.plugin.IncludeWeapons( pluginDir )
@@ -266,10 +270,7 @@ end
 hook.Add( "FrameworkInitialized", "catherine.plugin.FrameworkInitialized", catherine.plugin.FrameworkInitialized )
 
 catherine.plugin.RegisterExtras( "derma" )
-catherine.plugin.RegisterExtras( "attribute", "SHARED" )
 catherine.plugin.RegisterExtras( "library" )
-catherine.plugin.RegisterExtras( "class", "SHARED" )
-catherine.plugin.RegisterExtras( "faction", "SHARED" )
 
 if ( SERVER ) then
 	function catherine.plugin.SetActive( uniqueID )
