@@ -200,7 +200,11 @@ catherine.chat.Register( "ooc", {
 			icon = Material( "icon16/star.png" )
 		end
 		
-		icon = Material( hook.Run( "GetChatIcon", pl, "ooc", text ) or icon )
+		local override = hook.Run( "GetChatIcon", pl, "ooc", text )
+		
+		if ( override ) then
+			icon = Material( override )
+		end
 		
 		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
 			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 250, 40, 40 ), "[OOC] ", pl, Color( 255, 255, 255 ), " : ".. text )
@@ -278,7 +282,11 @@ catherine.chat.Register( "connect", {
 			icon = Material( "icon16/star.png" )
 		end
 		
-		icon = Material( hook.Run( "GetChatIcon", pl, "connect", text ) or icon )
+		local override = hook.Run( "GetChatIcon", pl, "connect", text )
+		
+		if ( override ) then
+			icon = Material( override )
+		end
 		
 		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
 			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Connect", pl:Name( ) ) )
@@ -301,7 +309,11 @@ catherine.chat.Register( "disconnect", {
 			icon = Material( "icon16/star.png" )
 		end
 		
-		icon = Material( hook.Run( "GetChatIcon", pl, "disconnect", text ) or icon )
+		local override = hook.Run( "GetChatIcon", pl, "disconnect", text )
+		
+		if ( override ) then
+			icon = Material( override )
+		end
 		
 		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
 			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )

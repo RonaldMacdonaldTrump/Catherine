@@ -237,12 +237,12 @@ if ( SERVER ) then
 		
 		pl:SetSkin( catherine.character.GetCharVar( pl, "skin", 0 ) )
 		
-		hook.Run( "PlayerSpawnedInCharacter", pl )
-		hook.Run( "PlayerCharacterLoaded", pl )
-
 		pl:SetNetVar( "charID", id )
 		pl:SetNetVar( "charLoaded", true )
-
+		
+		hook.Run( "PlayerSpawnedInCharacter", pl )
+		hook.Run( "PlayerCharacterLoaded", pl )
+		
 		if ( catherine.character.GetCharVar( pl, "isFirst", 1 ) == 1 ) then
 			catherine.character.SetCharVar( pl, "isFirst", 0 )
 			hook.Run( "PlayerFirstSpawned", pl, id )
@@ -544,6 +544,11 @@ if ( SERVER ) then
 		end
 		
 		local id = pl:GetCharacterID( )
+		
+		if ( !id ) then
+			netstream.Start( pl, "catherine.character.FinishSave" )
+			return
+		end
 
 		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. steamID .. "'", networkRegistry, function( )
 			if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then return end

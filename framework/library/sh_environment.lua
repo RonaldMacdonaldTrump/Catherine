@@ -422,7 +422,6 @@ else
 		if ( d.minute >= 60 ) then
 			d.hour = d.hour + 1
 			d.minute = 0
-			catherine.environment.AutomaticDayNight( )
 		end
 		
 		if ( d.hour >= 25 ) then
