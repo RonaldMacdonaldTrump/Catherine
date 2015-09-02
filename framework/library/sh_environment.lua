@@ -16,25 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.environment = catherine.environment or {
-	buffer = catherine.configs.defaultRPInformation,
-	NextTimeTick = CurTime( ) + catherine.configs.rpTimeInterval
-}
+catherine.environment = catherine.environment or { buffer = catherine.configs.defaultRPInformation }
 local rpTimeInterval = catherine.configs.rpTimeInterval
-local monthLen = {
-	31,
-	28,
-	31,
-	30,
-	31,
-	30,
-	31,
-	31,
-	30,
-	31,
-	30,
-	31
-}
+local monthLen = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
 
 function catherine.environment.GetDateString( )
 	local d = catherine.environment.buffer
@@ -63,47 +47,201 @@ if ( SERVER ) then
 	catherine.environment.nextSendTick = catherine.environment.nextSendTick or CurTime( ) + 60
 	catherine.environment.nextTemperatureTick = catherine.environment.nextTemperatureTick or CurTime( )
 	local enviromentSendInterval = catherine.configs.environmentSendInterval
+	local lightDatas = {
+		[ 1 ] = { // AM 1
+			lightStyle = "b",
+			skyColors = {
+				top = Vector( 0, 0, 0 ),
+				bottom = Vector( 0, 0, 0 )
+			}
+		},
+		[ 2 ] = { // AM 2
+			lightStyle = "b",
+			skyColors = {
+				top = Vector( 0, 0.001, 0.001 ),
+				bottom = Vector( 0, 0, 0 )
+			}
+		},
+		[ 3 ] = { // AM 3
+			lightStyle = "b",
+			skyColors = {
+				top = Vector( 0, 0.005, 0.005 ),
+				bottom = Vector( 0, 0, 0 )
+			}
+		},
+		[ 4 ] = { // AM 4
+			lightStyle = "c",
+			skyColors = {
+				top = Vector( 0, 0.005, 0.005 ),
+				bottom = Vector( 0, 0, 0 )
+			}
+		},
+		[ 5 ] = { // AM 5
+			sun = true,
+			lightStyle = "d",
+			skyColors = {
+				top = Vector( 0.45, 0.55, 1 ),
+				bottom = Vector( 0.91, 0.64, 0.05 )
+			}
+		},
+		[ 6 ] = { // AM 6
+			sun = true,
+			lightStyle = "f",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 7 ] = { // AM 7
+			sun = true,
+			lightStyle = "g",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 8 ] = { // AM 8
+			sun = true,
+			lightStyle = "h",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 9 ] = { // AM 9
+			sun = true,
+			lightStyle = "i",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 10 ] = { // AM 10
+			sun = true,
+			lightStyle = "j",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 11 ] = { // AM 11
+			sun = true,
+			lightStyle = "k",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 12 ] = { // AM 12
+			sun = true,
+			lightStyle = "l",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 13 ] = { // PM 1
+			sun = true,
+			lightStyle = "m",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 14 ] = { // PM 2
+			sun = true,
+			lightStyle = "n",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 15 ] = { // PM 3
+			sun = true,
+			lightStyle = "o",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 16 ] = { // PM 4
+			sun = true,
+			lightStyle = "p",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 17 ] = { // PM 5
+			sun = true,
+			lightStyle = "n",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 18 ] = { // PM 6
+			sun = true,
+			lightStyle = "j",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 19 ] = { // PM 7
+			sun = true,
+			lightStyle = "f",
+			skyColors = {
+				top = Vector( 0.24, 0.61, 1 ),
+				bottom = Vector( 0.4, 0.8, 1 )
+			}
+		},
+		[ 20 ] = { // PM 8
+			lightStyle = "c",
+			skyColors = {
+				top = Vector( 0, 0.01, 0.02 ),
+				bottom = Vector( 0, 0, 0 )
+			}
+		},
+		[ 21 ] = { // PM 9
+			lightStyle = "c",
+			skyColors = {
+				top = Vector( 0, 0.01, 0.02 ),
+				bottom = Vector( 0, 0, 0 )
+			}
+		},
+		[ 22 ] = { // PM 10
+			lightStyle = "c",
+			skyColors = {
+				top = Vector( 0, 0.01, 0.02 ),
+				bottom = Vector( 0, 0, 0 )
+			}
+		},
+		[ 23 ] = { // PM 11
+			lightStyle = "b",
+			skyColors = {
+				top = Vector( 0, 0.01, 0.02 ),
+				bottom = Vector( 0, 0, 0 )
+			}
+		},
+		[ 24 ] = { // PM 12
+			lightStyle = "b",
+			skyColors = {
+				top = Vector( 0, 0.01, 0.02 ),
+				bottom = Vector( 0, 0, 0 )
+			}
+		},
+		[ 25 ] = { // AM 1
+			lightStyle = "b",
+			skyColors = {
+				top = Vector( 0, 0.01, 0.02 ),
+				bottom = Vector( 0, 0, 0 )
+			}
+		}
+	}
 	
 	function catherine.environment.Work( )
-		if ( catherine.configs.enable_rpTime ) then
-			if ( catherine.environment.NextTimeTick <= CurTime( ) ) then
-				local d = catherine.environment.buffer
-				
-				if ( !d.second ) then
-					return
-				end
-				
-				d.second = d.second + 1
-				
-				if ( d.second >= 60 ) then
-					d.minute = d.minute + 1
-					d.second = 0
-				end
-				
-				if ( d.minute >= 60 ) then
-					d.hour = d.hour + 1
-					d.minute = 0
-					catherine.environment.AutomaticDayNight( )
-				end
-				
-				if ( d.hour >= 25 ) then
-					d.day = d.day + 1
-					d.hour = 1
-				end
-				
-				if ( d.day >= monthLen[ d.month ] ) then
-					d.month = d.month + 1
-					d.day = 1
-				end
-				
-				if ( d.month > 12 ) then
-					d.year = d.year + 1
-					d.month = 1
-				end
-
-				catherine.environment.NextTimeTick = CurTime( ) + rpTimeInterval
-			end
-		end
+		if ( !catherine.configs.enable_rpTime ) then return end
 		
 		if ( catherine.environment.nextTemperatureTick <= CurTime( ) ) then
 			catherine.environment.buffer.temperature = catherine.environment.CalcTemperature( )
@@ -117,207 +255,58 @@ if ( SERVER ) then
 			catherine.environment.nextSendTick = CurTime( ) + enviromentSendInterval
 		end
 	end
+	
+	timer.Remove( "Catherine.timer.environment.ServerRPTimeTick" )
+	timer.Create( "Catherine.timer.environment.ServerRPTimeTick", rpTimeInterval, 0, function( )
+		if ( !catherine.configs.enable_rpTime ) then return end
+		local d = catherine.environment.buffer
+		
+		if ( !d.second ) then
+			return
+		end
+		
+		d.second = d.second + 1
+		
+		if ( d.second >= 60 ) then
+			d.minute = d.minute + 1
+			d.second = 0
+		end
+		
+		if ( d.minute >= 60 ) then
+			d.hour = d.hour + 1
+			d.minute = 0
+			catherine.environment.AutomaticDayNight( )
+		end
+		
+		if ( d.hour >= 25 ) then
+			d.day = d.day + 1
+			d.hour = 1
+		end
+		
+		if ( d.day >= monthLen[ d.month ] ) then
+			d.month = d.month + 1
+			d.day = 1
+		end
+		
+		if ( d.month > 12 ) then
+			d.year = d.year + 1
+			d.month = 1
+		end
+	end )
 
 	function catherine.environment.GetLightDataByHour( )
-		local lightDatas = {
-			[ 1 ] = { // AM 1
-				lightStyle = "b",
-				skyColors = {
-					top = Vector( 0, 0, 0 ),
-					bottom = Vector( 0, 0, 0 )
-				}
-			},
-			[ 2 ] = { // AM 2
-				lightStyle = "b",
-				skyColors = {
-					top = Vector( 0, 0.001, 0.001 ),
-					bottom = Vector( 0, 0, 0 )
-				}
-			},
-			[ 3 ] = { // AM 3
-				lightStyle = "b",
-				skyColors = {
-					top = Vector( 0, 0.005, 0.005 ),
-					bottom = Vector( 0, 0, 0 )
-				}
-			},
-			[ 4 ] = { // AM 4
-				lightStyle = "c",
-				skyColors = {
-					top = Vector( 0, 0.005, 0.005 ),
-					bottom = Vector( 0, 0, 0 )
-				}
-			},
-			[ 5 ] = { // AM 5
-				sun = true,
-				lightStyle = "d",
-				skyColors = {
-					top = Vector( 0.45, 0.55, 1 ),
-					bottom = Vector( 0.91, 0.64, 0.05 )
-				}
-			},
-			[ 6 ] = { // AM 6
-				sun = true,
-				lightStyle = "f",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 7 ] = { // AM 7
-				sun = true,
-				lightStyle = "g",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 8 ] = { // AM 8
-				sun = true,
-				lightStyle = "h",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 9 ] = { // AM 9
-				sun = true,
-				lightStyle = "i",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 10 ] = { // AM 10
-				sun = true,
-				lightStyle = "j",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 11 ] = { // AM 11
-				sun = true,
-				lightStyle = "k",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 12 ] = { // AM 12
-				sun = true,
-				lightStyle = "l",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 13 ] = { // PM 1
-				sun = true,
-				lightStyle = "m",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 14 ] = { // PM 2
-				sun = true,
-				lightStyle = "n",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 15 ] = { // PM 3
-				sun = true,
-				lightStyle = "o",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 16 ] = { // PM 4
-				sun = true,
-				lightStyle = "p",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 17 ] = { // PM 5
-				sun = true,
-				lightStyle = "n",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 18 ] = { // PM 6
-				sun = true,
-				lightStyle = "j",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 19 ] = { // PM 7
-				sun = true,
-				lightStyle = "f",
-				skyColors = {
-					top = Vector( 0.24, 0.61, 1 ),
-					bottom = Vector( 0.4, 0.8, 1 )
-				}
-			},
-			[ 20 ] = { // PM 8
-				lightStyle = "c",
-				skyColors = {
-					top = Vector( 0, 0.01, 0.02 ),
-					bottom = Vector( 0, 0, 0 )
-				}
-			},
-			[ 21 ] = { // PM 9
-				lightStyle = "c",
-				skyColors = {
-					top = Vector( 0, 0.01, 0.02 ),
-					bottom = Vector( 0, 0, 0 )
-				}
-			},
-			[ 22 ] = { // PM 10
-				lightStyle = "c",
-				skyColors = {
-					top = Vector( 0, 0.01, 0.02 ),
-					bottom = Vector( 0, 0, 0 )
-				}
-			},
-			[ 23 ] = { // PM 11
-				lightStyle = "b",
-				skyColors = {
-					top = Vector( 0, 0.01, 0.02 ),
-					bottom = Vector( 0, 0, 0 )
-				}
-			},
-			[ 24 ] = { // PM 12
-				lightStyle = "b",
-				skyColors = {
-					top = Vector( 0, 0.01, 0.02 ),
-					bottom = Vector( 0, 0, 0 )
-				}
-			},
-			[ 25 ] = { // AM 1
-				lightStyle = "b",
-				skyColors = {
-					top = Vector( 0, 0.01, 0.02 ),
-					bottom = Vector( 0, 0, 0 )
-				}
-			}
-		}
-
 		return lightDatas[ catherine.environment.GetHour( ) ]
 	end
 	
 	function catherine.environment.SetHour( hour )
 		if ( hour and type( hour ) == "number" ) then
 			catherine.environment.buffer.hour = math.Clamp( hour, 1, 24 )
+		end
+	end
+	
+	function catherine.environment.SetTemperature( temperature )
+		if ( temperature and type( temperature ) == "number" ) then
+			catherine.environment.buffer.temperature = math.Clamp( temperature, 0, 35 )
 		end
 	end
 	
@@ -333,6 +322,7 @@ if ( SERVER ) then
 		if ( !catherine.configs.enable_Environment ) then return end
 		
 		local dayNightData = catherine.environment.GetLightDataByHour( )
+		
 		if ( !dayNightData ) then return end
 		
 		local sun = ents.FindByClass( "env_sun" )[ 1 ]
@@ -411,46 +401,43 @@ else
 	netstream.Hook( "catherine.environment.SetLightFlag", function( )
 		render.RedownloadAllLightmaps( )
 	end )
-
-	function catherine.environment.WorkClient( )
-		if ( !catherine.configs.enable_rpTime or table.Count( catherine.environment.buffer ) != 7 ) then return end
-		if ( catherine.environment.NextTimeTick <= CurTime( ) ) then
-			local d = catherine.environment.buffer
-			
-			if ( !d.second ) then
-				return
-			end
-			
-			d.second = d.second + 1
-			
-			if ( d.second >= 60 ) then
-				d.minute = d.minute + 1
-				d.second = 0
-			end
-			
-			if ( d.minute >= 60 ) then
-				d.hour = d.hour + 1
-				d.minute = 0
-			end
-			
-			if ( d.hour >= 25 ) then
-				d.day = d.day + 1
-				d.hour = 1
-			end
-			
-			if ( d.day >= monthLen[ d.month ] ) then
-				d.month = d.month + 1
-				d.day = 1
-			end
-			
-			if ( d.month > 12 ) then
-				d.year = d.year + 1
-				d.month = 1
-			end
-
-			catherine.environment.NextTimeTick = CurTime( ) + rpTimeInterval
+	
+	timer.Remove( "Catherine.timer.environment.ClientRPTimeTick" )
+	timer.Create( "Catherine.timer.environment.ClientRPTimeTick", rpTimeInterval, 0, function( )
+		if ( !catherine.configs.enable_rpTime ) then return end
+		if ( table.Count( catherine.environment.buffer ) != 7 ) then return end
+		local d = catherine.environment.buffer
+		
+		if ( !d.second ) then
+			return
 		end
-	end
-
-	hook.Add( "Tick", "catherine.environment.WorkClient", catherine.environment.WorkClient )
+		
+		d.second = d.second + 1
+		
+		if ( d.second >= 60 ) then
+			d.minute = d.minute + 1
+			d.second = 0
+		end
+		
+		if ( d.minute >= 60 ) then
+			d.hour = d.hour + 1
+			d.minute = 0
+			catherine.environment.AutomaticDayNight( )
+		end
+		
+		if ( d.hour >= 25 ) then
+			d.day = d.day + 1
+			d.hour = 1
+		end
+		
+		if ( d.day >= monthLen[ d.month ] ) then
+			d.month = d.month + 1
+			d.day = 1
+		end
+		
+		if ( d.month > 12 ) then
+			d.year = d.year + 1
+			d.month = 1
+		end
+	end )
 end

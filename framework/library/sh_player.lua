@@ -77,15 +77,6 @@ if ( SERVER ) then
 			end
 			
 			timer.Remove( "Catherine.player.Initialize.Reload" )
-
-			--[[
-			catherine.player.PlayerInformationUpdate( pl )
-			catherine.net.SendAllNetworkRegistries( pl ) // Send ALL entity, player network registries.
-			catherine.character.SendAllNetworkRegistries( pl ) // Send ALL character network registries.
-			catherine.environment.SendAllEnvironmentConfig( pl ) // Send ALL enviroment configs.
-			catherine.character.SendPlayerCharacterList( pl )
-			catherine.catData.SendAllNetworkRegistries( pl ) // Send ALL CAT DATA network registries.
-			]]--
 			
 			if ( !catherine.catData.GetVar( pl, "language" ) ) then
 				catherine.player.UpdateLanguageSetting( pl )
@@ -123,7 +114,9 @@ if ( SERVER ) then
 	end
 	
 	function catherine.player.UpdateLanguageSetting( pl )
-		pl:ConCommand( "cat_convar_language " .. catherine.configs.defaultLanguage )
+		local languageTable = catherine.language.FindByID( catherine.configs.defaultLanguage )
+		
+		pl:ConCommand( "cat_convar_language " .. ( languageTable and languageTable.uniqueID or "english" ) )
 		catherine.catData.SetVar( pl, "language", true, nil, true )
 	end
 
@@ -164,7 +157,7 @@ if ( SERVER ) then
 		if ( !pl.CAT_healthRecover ) then return end
 		
 		if ( ( pl.CAT_healthRecoverTick or 0 ) <= CurTime( ) ) then
-			if ( hook.Run( "CanRecoverHealth", pl ) == false ) then return end
+			if ( hook.Run( "PlayerShouldRecoverHealth", pl ) == false ) then return end
 			
 			if ( pl:Health( ) >= pl:GetMaxHealth( ) ) then
 				pl.CAT_healthRecover = nil
@@ -194,6 +187,8 @@ if ( SERVER ) then
 				catherine.util.NotifyLang( pl, "Item_Notify02_ZT" )
 				return
 			end
+			
+			if ( hook.Run( "PlayerShouldTie", pl, target, time ) == false ) then return end
 
 			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message01_ZT" ), hook.Run( "GetTieingTime", pl, target, bool ) or time or 2, function( )
 				local tr = { }
@@ -225,6 +220,8 @@ if ( SERVER ) then
 						return
 					end
 					
+					if ( hook.Run( "PlayerShouldTie", pl, target, time ) == false ) then return end
+					
 					if ( removeItem ) then
 						catherine.inventory.Work( pl, CAT_INV_ACTION_REMOVE, {
 							uniqueID = "zip_tie"
@@ -250,6 +247,8 @@ if ( SERVER ) then
 				return
 			end
 			
+			if ( hook.Run( "PlayerShouldUnTie", pl, target, time ) == false ) then return end
+			
 			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message02_ZT" ), hook.Run( "GetTieingTime", pl, target, bool ) or time or 2, function( )
 				local tr = { }
 				tr.start = pl:GetShootPos( )
@@ -274,6 +273,8 @@ if ( SERVER ) then
 						catherine.util.NotifyLang( pl, "Item_Notify04_ZT" )
 						return
 					end
+					
+					if ( hook.Run( "PlayerShouldUnTie", pl, target, time ) == false ) then return end
 				
 					newTarget:SetNetVar( "isTied", false )
 					
@@ -286,7 +287,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.player.SetCharacterBan( pl, status, func )
-		if ( hook.Run( "CanCharacterBan", pl, status, func ) == false ) then
+		if ( hook.Run( "PlayerShouldCharacterBan", pl, status, func ) == false ) then
 			return false, "Character_Notify_CantCharBan_UnBan"
 		end
 		
@@ -319,6 +320,8 @@ if ( SERVER ) then
 
 	function catherine.player.BunnyHopProtection( pl )
 		if ( pl:KeyPressed( IN_JUMP ) and ( pl.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
+			if ( hook.Run( "PlayerShouldCheckBunnyHop", pl ) == false ) then return end
+			
 			if ( !pl.CAT_nextBunnyCheck ) then
 				pl.CAT_nextBunnyCheck = CurTime( ) + 0.05
 			end
@@ -439,7 +442,7 @@ if ( SERVER ) then
 			pl:SetNetVar( "ragdollIndex", ent:EntIndex( ) )
 			pl:SetNetVar( "isRagdolled", true )
 			
-			local timerID1 = "Catherine.timer.RagdollWork2." .. ent:EntIndex( )
+			local timerID1 = "Catherine.timer.player.RagdollWork2." .. ent:EntIndex( )
 			
 			timer.Create( timerID1, 1, 0, function( )
 				if ( !IsValid( pl ) or !IsValid( ent ) ) then
@@ -455,7 +458,7 @@ if ( SERVER ) then
 				
 				pl:SetNetVar( "isForceRagdolled", true )
 				
-				local timerID2 = "Catherine.timer.RagdollWork." .. ent:EntIndex( )
+				local timerID2 = "Catherine.timer.player.RagdollWork." .. ent:EntIndex( )
 				
 				catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Ragdolled_01" ), time, function( )
 					catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
@@ -597,6 +600,8 @@ if ( SERVER ) then
 	end
 
 	function META:Give( uniqueID )
+		if ( hook.Run( "PlayerShouldGiveWeapon", self, uniqueID ) == false ) then return end
+		
 		self.CAT_isForceGiveWeapon = true
 		
 		local wep = self:CATGiveWeapon( uniqueID )
@@ -609,6 +614,8 @@ if ( SERVER ) then
 	end
 	
 	function META:StripWeapon( uniqueID )
+		if ( hook.Run( "PlayerShouldStripWeapon", self, uniqueID ) == false ) then return end
+		
 		hook.Run( "PlayerStripWeapon", self, uniqueID )
 		
 		self:CATTakeWeapon( uniqueID )

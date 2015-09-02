@@ -347,7 +347,11 @@ if ( SERVER ) then
 				target = pl
 			end
 			
-			netstream.Start( target, "catherine.character.SetVar", { pl, key, value } )
+			netstream.Start( target, "catherine.character.SetVar", {
+				pl,
+				key,
+				value
+			} )
 		end
 		
 		if ( save ) then
@@ -417,7 +421,6 @@ if ( SERVER ) then
 	
 	function catherine.character.RefreshCharacterBuffer( pl )
 		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then return end
-		
 		local steamID = pl:SteamID( )
 		
 		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. steamID .. "'", function( data )
@@ -451,7 +454,6 @@ if ( SERVER ) then
 
 	function catherine.character.CreateNetworkRegistry( pl, id, data )
 		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then return end
-		
 		local steamID = pl:SteamID( )
 		
 		catherine.character.networkRegistry[ steamID ] = { }
@@ -524,7 +526,7 @@ if ( SERVER ) then
 
 	function catherine.character.Save( pl )
 		if ( !IsValid( pl ) or !pl:IsPlayer( ) ) then return end
-
+		if ( hook.Run( "PlayerShouldSaveCharacter", pl ) == false ) then return end
 		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
 		
 		if ( !networkRegistry ) then return end

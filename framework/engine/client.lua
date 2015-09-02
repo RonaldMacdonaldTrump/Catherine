@@ -178,6 +178,10 @@ function GM:ShouldDrawHint( pl, hintTable )
 
 end
 
+function GM:GetChatIcon( pl, chatClass, text )
+
+end
+
 function GM:HUDDrawScoreBoard( )
 	if ( catherine.pl:IsCharacterLoaded( ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )

@@ -17,6 +17,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.plugin = catherine.plugin or { lists = { } }
+catherine.plugin.extras = { }
 
 local plugin_htmlValue = [[
 <!DOCTYPE html>
@@ -84,30 +85,16 @@ function catherine.plugin.Include( dir )
 			catherine.plugin.IncludeEffects( pluginDir )
 			catherine.plugin.IncludeTools( pluginDir )
 			
-			for k1, v1 in pairs( file.Find( pluginDir .. "/derma/*.lua", "LUA" ) ) do
-				catherine.util.Include( pluginDir .. "/derma/" .. v1 )
+			for k1, v1 in pairs( catherine.plugin.GetAllExtras( ) ) do
+				for k2, v2 in pairs( file.Find( pluginDir .. "/" .. v1.folderName .. "/*.lua", "LUA" ) ) do
+					catherine.util.Include( pluginDir .. "/" .. v1.folderName .. "/" .. v2, v1.typ )
+				end
 			end
 			
-			for k1, v1 in pairs( file.Find( pluginDir .. "/attribute/*.lua", "LUA" ) ) do
-				catherine.util.Include( pluginDir .. "/attribute/" .. v1, "SHARED" )
-			end
-			
-			for k1, v1 in pairs( file.Find( pluginDir .. "/library/*.lua", "LUA" ) ) do
-				catherine.util.Include( pluginDir .. "/library/" .. v1 )
-			end
-			
-			for k1, v1 in pairs( file.Find( pluginDir .. "/class/*.lua", "LUA" ) ) do
-				catherine.util.Include( pluginDir .. "/class/" .. v1, "SHARED" )
-			end
-			
-			for k1, v1 in pairs( file.Find( pluginDir .. "/faction/*.lua", "LUA" ) ) do
-				catherine.util.Include( pluginDir .. "/faction/" .. v1, "SHARED" )
-			end
-			
-			for k, v in pairs( PLUGIN ) do
-				if ( type( v ) == "function" ) then
-					CAT_HOOK_PLUGIN_CACHES[ k ] = CAT_HOOK_PLUGIN_CACHES[ k ] or { }
-					CAT_HOOK_PLUGIN_CACHES[ k ][ PLUGIN ] = v
+			for k1, v1 in pairs( PLUGIN ) do
+				if ( type( v1 ) == "function" ) then
+					CAT_HOOK_PLUGIN_CACHES[ k1 ] = CAT_HOOK_PLUGIN_CACHES[ k1 ] or { }
+					CAT_HOOK_PLUGIN_CACHES[ k1 ][ PLUGIN ] = v1
 				end
 			end
 			
@@ -124,8 +111,33 @@ function catherine.plugin.Include( dir )
 	end
 end
 
+function catherine.plugin.RegisterExtras( folderName, typ )
+	catherine.plugin.extras[ #catherine.plugin.extras + 1 ] = {
+		folderName = folderName,
+		typ = typ
+	}
+end
+
+function catherine.plugin.GetAll( )
+	return catherine.plugin.lists
+end
+
+function catherine.plugin.GetAllExtras( )
+	return catherine.plugin.extras
+end
+
+function catherine.plugin.Get( id )
+	return catherine.plugin.lists[ id ]
+end
+
+function catherine.plugin.GetActive( uniqueID )
+	// ;
+end
+
 function catherine.plugin.IncludeEntities( dir )
-	for k, v in pairs( file.Find( dir .. "/entities/entities/*.lua", "LUA" ) ) do
+	local files, folders = file.Find( dir .. "/entities/entities/*", "LUA" )
+	
+	for k, v in pairs( files ) do
 		ENT = { Type = "anim", Base = "base_gmodentity", ClassName = v:sub( 1, #v - 4 ) }
 		
 		catherine.util.Include( dir .. "/entities/entities/" .. v, "SHARED" )
@@ -133,10 +145,36 @@ function catherine.plugin.IncludeEntities( dir )
 		
 		ENT = nil
 	end
+	
+	for k, v in pairs( folders ) do
+		ENT = { Type = "anim", Base = "base_gmodentity", ClassName = v:sub( 1, #v - 4 ) }
+		
+		if ( SERVER ) then
+			if ( file.Exists( dir .. "/entities/entities/" .. v .. "/init.lua", "LUA" ) ) then
+				include( dir .. "/entities/entities/" .. v .. "/init.lua" )
+			elseif ( file.Exists( dir .. "/entities/entities/" .. v .. "/shared.lua", "LUA" ) ) then
+				include( dir .. "/entities/entities/" .. v .. "/shared.lua" )
+			end
+		
+			if ( file.Exists( dir .. "/entities/entities/" .. v .. "/cl_init.lua", "LUA" ) ) then
+				AddCSLuaFile( dir .. "/entities/entities/" .. v .. "/cl_init.lua" )
+			end
+		elseif ( file.Exists( dir .. "/entities/entities/" .. v .. "/cl_init.lua", "LUA" ) ) then
+			include( dir .. "/entities/entities/" .. v .. "/cl_init.lua" )
+		elseif ( file.Exists( dir .. "/entities/entities/" .. v .. "/shared.lua", "LUA" ) ) then
+			include( dir .. "/entities/entities/" .. v .. "/shared.lua" )
+		end
+		
+		scripted_ents.Register( ENT, ENT.ClassName )
+		
+		ENT = nil
+	end
 end
 
-function catherine.plugin.IncludeWeapons( dir )
-	for k, v in pairs( file.Find( dir .. "/entities/weapons/*.lua", "LUA" ) ) do
+function catherine.plugin.IncludeWeapons( dir )	
+	local files, folders = file.Find( dir .. "/entities/weapons/*", "LUA" )
+	
+	for k, v in pairs( files ) do
 		SWEP = { Base = "weapon_base", Primary = { }, Secondary = { }, ClassName = v:sub( 1, #v - 4 ) }
 		
 		catherine.util.Include( dir .. "/entities/weapons/" .. v, "SHARED" )
@@ -144,10 +182,36 @@ function catherine.plugin.IncludeWeapons( dir )
 		
 		SWEP = nil
 	end
+	
+	for k, v in pairs( folders ) do
+		SWEP = { Base = "weapon_base", Primary = { }, Secondary = { }, ClassName = v:sub( 1, #v - 4 ) }
+		
+		if ( SERVER ) then
+			if ( file.Exists( dir .. "/entities/weapons/" .. v .. "/init.lua", "LUA" ) ) then
+				include( dir .. "/entities/weapons/" .. v .. "/init.lua" )
+			elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/shared.lua", "LUA" ) ) then
+				include( dir .. "/entities/weapons/" .. v .. "/shared.lua" )
+			end
+		
+			if ( file.Exists( dir .. "/entities/weapons/" .. v .. "/cl_init.lua", "LUA" ) ) then
+				AddCSLuaFile( dir .. "/entities/weapons/" .. v .. "/cl_init.lua" )
+			end
+		elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/cl_init.lua", "LUA" ) ) then
+			include( dir .. "/entities/weapons/" .. v .. "/cl_init.lua" )
+		elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/shared.lua", "LUA" ) ) then
+			include( dir .. "/entities/weapons/" .. v .. "/shared.lua" )
+		end
+		
+		weapons.Register( SWEP, SWEP.ClassName )
+		
+		SWEP = nil
+	end
 end
 
 function catherine.plugin.IncludeEffects( dir )
-	for k, v in pairs( file.Find( dir .. "/entities/effects/*.lua", "LUA" ) ) do
+	local files, folders = file.Find( dir .. "/entities/effects/*", "LUA" )
+	
+	for k, v in pairs( files ) do
 		EFFECT = { ClassName = v:sub( 1, #v - 4 ) }
 		
 		catherine.util.Include( dir .. "/entities/effects/" .. v, "SHARED" )
@@ -155,20 +219,40 @@ function catherine.plugin.IncludeEffects( dir )
 		
 		EFFECT = nil
 	end
+	
+	for k, v in pairs( folders ) do
+		if ( SERVER ) then
+			if ( file.Exists( dir .. "/entities/weapons/" .. v .. "/cl_init.lua", "LUA" ) ) then
+				AddCSLuaFile( dir .. "/entities/weapons/" .. v .. "/cl_init.lua" )
+			elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/init.lua", "LUA" ) ) then
+				AddCSLuaFile( dir .. "/entities/weapons/" .. v .. "/init.lua" )
+			end
+		
+			if ( file.Exists( dir .. "/entities/weapons/" .. v .. "/cl_init.lua", "LUA" ) ) then
+				AddCSLuaFile( dir .. "/entities/weapons/" .. v .. "/cl_init.lua" )
+			end
+		elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/cl_init.lua", "LUA" ) ) then
+			EFFECT = { ClassName = v:sub( 1, #v - 4 ) }
+			
+			include( dir .. "/entities/weapons/" .. v .. "/cl_init.lua" )
+			effects.Register( EFFECT, EFFECT.ClassName )
+			
+			EFFECT = nil
+		elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/init.lua", "LUA" ) ) then
+			EFFECT = { ClassName = v:sub( 1, #v - 4 ) }
+			
+			include( dir .. "/entities/weapons/" .. v .. "/init.lua" )
+			effects.Register( EFFECT, EFFECT.ClassName )
+			
+			EFFECT = nil
+		end
+	end
 end
 
 function catherine.plugin.IncludeTools( dir )
 	for k, v in pairs( file.Find( dir .. "/tools/*.lua", "LUA" ) ) do
 		catherine.util.Include( dir .. "/tools/" .. v, "SHARED" )
 	end
-end
-
-function catherine.plugin.GetAll( )
-	return catherine.plugin.lists
-end
-
-function catherine.plugin.Get( id )
-	return catherine.plugin.lists[ id ]
 end
 
 function catherine.plugin.FrameworkInitialized( )
@@ -181,17 +265,27 @@ end
 
 hook.Add( "FrameworkInitialized", "catherine.plugin.FrameworkInitialized", catherine.plugin.FrameworkInitialized )
 
-if ( SERVER ) then return end
+catherine.plugin.RegisterExtras( "derma" )
+catherine.plugin.RegisterExtras( "attribute", "SHARED" )
+catherine.plugin.RegisterExtras( "library" )
+catherine.plugin.RegisterExtras( "class", "SHARED" )
+catherine.plugin.RegisterExtras( "faction", "SHARED" )
 
-function catherine.plugin.LanguageChanged( )
-	rebuildPlugin( )
-end
-
-function catherine.plugin.InitPostEntity( )
-	if ( IsValid( catherine.pl ) ) then
+if ( SERVER ) then
+	function catherine.plugin.SetActive( uniqueID )
+		// ;
+	end
+else
+	function catherine.plugin.LanguageChanged( )
 		rebuildPlugin( )
 	end
-end
 
-hook.Add( "LanguageChanged", "catherine.plugin.LanguageChanged", catherine.plugin.LanguageChanged )
-hook.Add( "InitPostEntity", "catherine.plugin.InitPostEntity", catherine.plugin.InitPostEntity )
+	function catherine.plugin.InitPostEntity( )
+		if ( IsValid( catherine.pl ) ) then
+			rebuildPlugin( )
+		end
+	end
+
+	hook.Add( "LanguageChanged", "catherine.plugin.LanguageChanged", catherine.plugin.LanguageChanged )
+	hook.Add( "InitPostEntity", "catherine.plugin.InitPostEntity", catherine.plugin.InitPostEntity )
+end

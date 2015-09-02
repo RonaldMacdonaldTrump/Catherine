@@ -200,6 +200,8 @@ catherine.chat.Register( "ooc", {
 			icon = Material( "icon16/star.png" )
 		end
 		
+		icon = Material( hook.Run( "GetChatIcon", pl, "ooc", text ) or icon )
+		
 		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
 			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 250, 40, 40 ), "[OOC] ", pl, Color( 255, 255, 255 ), " : ".. text )
 		else
@@ -276,6 +278,8 @@ catherine.chat.Register( "connect", {
 			icon = Material( "icon16/star.png" )
 		end
 		
+		icon = Material( hook.Run( "GetChatIcon", pl, "connect", text ) or icon )
+		
 		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
 			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Connect", pl:Name( ) ) )
 		else
@@ -296,6 +300,8 @@ catherine.chat.Register( "disconnect", {
 		elseif ( pl:IsAdmin( ) ) then
 			icon = Material( "icon16/star.png" )
 		end
+		
+		icon = Material( hook.Run( "GetChatIcon", pl, "disconnect", text ) or icon )
 		
 		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
 			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
@@ -327,7 +333,6 @@ if ( SERVER ) then
 		local commandTable = classTable.command or { }
 		local noSpace = classTable.noSpace
 		
-		// What the hell is this code!? :< ...
 		for k, v in ipairs( type( commandTable ) == "table" and commandTable or { commandTable } ) do
 			if ( text:sub( 1, #v + ( noSpace and 0 or 1 ) ) == v .. ( noSpace and "" or " " ) ) then
 				text = text:sub( #( v .. ( noSpace and "" or " " ) ) + 1 )
@@ -342,7 +347,6 @@ if ( SERVER ) then
 
 		if ( catherine.command.IsCommand( text ) ) then
 			catherine.command.RunByText( pl, text )
-			
 			return
 		end
 		
@@ -408,8 +412,9 @@ if ( SERVER ) then
 		
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			if ( classTable.canHear and classTable.canHear( pl ) == false ) then continue end
+			if ( pl == v ) then continue end
 			
-			if ( pl != v and catherine.util.CalcDistanceByPos( pl, v ) <= range ) then
+			if ( catherine.util.CalcDistanceByPos( pl, v ) <= range ) then
 				target[ #target + 1 ] = v
 			end
 		end
@@ -478,7 +483,9 @@ else
 		if ( classTable and IsValid( speaker ) ) then
 			if ( classTable.font ) then
 				catherine.chat.SetOverrideFont( classTable.font )
+				
 				classTable.func( speaker, data[ 3 ], data[ 4 ] )
+				
 				catherine.chat.SetOverrideFont( nil )
 			else
 				classTable.func( speaker, data[ 3 ], data[ 4 ] )
@@ -566,10 +573,10 @@ else
 		}
 	end
 	
-	function catherine.chat.GetSizePosData( ) // Problem?
+	function catherine.chat.GetSizePosData( )
 		local data = catherine.chat.sizePosData
 		
-		return data.w, data.h, data.x, data.y // 4?
+		return data.w, data.h, data.x, data.y
 	end
 
 	function catherine.chat.Create( force )

@@ -57,7 +57,7 @@ if ( SERVER ) then
 		local col = ent:GetColor( )
 		local alpha = 0
 		local fadeAmount = col.a / time
-		local timerID = "Catherine.timer.entity.DoorFadeOut." .. ent:EntIndex( )
+		local timerID = "Catherine.timer.entity.EntFadeOut." .. ent:EntIndex( )
 		
 		ent.CAT_originalColor = col
 		ent.CAT_originalRenderMode = ent:GetRenderMode( )
@@ -90,7 +90,7 @@ if ( SERVER ) then
 	function catherine.entity.StopFadeOut( ent, func )
 		if ( !ent.CAT_isFadeouting ) then return end
 		
-		timer.Remove( "Catherine.timer.entity.DoorFadeOut." .. ent:EntIndex( ) )
+		timer.Remove( "Catherine.timer.entity.EntFadeOut." .. ent:EntIndex( ) )
 		
 		if ( ent.CAT_originalColor and ent.CAT_originalRenderMode ) then
 			ent:SetColor( ent.CAT_originalColor )
