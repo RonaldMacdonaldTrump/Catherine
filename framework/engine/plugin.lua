@@ -19,6 +19,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.plugin = catherine.plugin or { lists = { } }
 catherine.plugin.extras = { }
 
+CAT_HOOK_PLUGIN_CACHES = { }
+
 local plugin_htmlValue = [[
 <!DOCTYPE html>
 <html lang="ko">

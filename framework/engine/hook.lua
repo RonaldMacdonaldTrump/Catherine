@@ -16,8 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-CAT_HOOK_PLUGIN_CACHES = { }
-
 hook.CallCatHooks = hook.CallCatHooks or hook.Call
 
 function hook.Call( hookID, gamemode, ... )
