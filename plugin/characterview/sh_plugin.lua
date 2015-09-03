@@ -98,7 +98,7 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 	if ( !catherine.character.IsCustomBackground( ) ) then return end
 	if ( #self.charViews <= 0 ) then return end
 	
-	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and !catherine.intro.status and !pl:IsCharacterLoaded( ) ) then
+	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and !catherine.intro.status ) then
 		if ( !self.lastView ) then
 			self.lastView = table.Random( self.charViews )
 		end
