@@ -80,7 +80,6 @@ local credit_htmlValue = [[
 	</body>
 </html>
 ]]
-local cashName = catherine.cash.GetOnlyName( )
 
 local LANGUAGE = catherine.language.New( "korean" )
 LANGUAGE.name = "Korean (한국어)"

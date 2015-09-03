@@ -185,13 +185,14 @@ function PANEL:BuildShoppingCart( )
 end
 
 function PANEL:BuildBusiness( )
+	if ( !self.business ) then return end
 	local pl = self.player
 	local scrollBar = self.Lists.VBar
 	local scroll = scrollBar.Scroll
 	
 	self.Lists:Clear( )
 
-	for k, v in pairs( self.business or { } ) do
+	for k, v in pairs( self.business ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
@@ -218,13 +219,12 @@ function PANEL:BuildBusiness( )
 			spawnIcon:SetModel( model, v1.skin or 0 )
 			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( v1 ) .. "\n" .. ( v1.cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( v1.cost ) ) )
 			spawnIcon.DoClick = function( )
-				local uniqueID = k1
 				local shoppingCart = self.shoppingcart
 				
-				if ( shoppingCart[ uniqueID ] ) then
-					shoppingCart[ uniqueID ] = shoppingCart[ uniqueID ] + 1
+				if ( shoppingCart[ k1 ] ) then
+					shoppingCart[ k1 ] = shoppingCart[ k1 ] + 1
 				else
-					shoppingCart[ uniqueID ] = 1
+					shoppingCart[ k1 ] = 1
 				end
 				
 				self:RefreshShoppingCartInfo( )
@@ -234,7 +234,7 @@ function PANEL:BuildBusiness( )
 			end
 			spawnIcon.PaintOver = function( pnl, w, h )
 				if ( v1.DrawInformation ) then
-					v1:DrawInformation( pl, v1, w, h, pl:GetInvItemDatas( k1 ) )
+					v1:DrawInformation( pl, w, h, pl:GetInvItemDatas( k1 ) )
 				end
 			end
 			
@@ -290,9 +290,10 @@ function PANEL:Init( )
 end
 
 function PANEL:BuildShipment( )
+	if ( !self.shipments ) then return end
 	self.Lists:Clear( )
 	
-	for k, v in pairs( self.shipments or { } ) do
+	for k, v in pairs( self.shipments ) do
 		local itemTable = catherine.item.FindByID( k )
 		local name = catherine.util.StuffLanguage( itemTable.name )
 		local count = LANG( "Basic_UI_Count", v )
@@ -379,7 +380,7 @@ function PANEL:Think( )
 			return
 		end
 		
-		self.entCheck = CurTime( ) + 0.5
+		self.entCheck = CurTime( ) + 0.3
 	end
 end
 

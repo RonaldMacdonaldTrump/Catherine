@@ -81,7 +81,7 @@ else
 		local itemTable = self:GetItemTable( )
 
 		if ( itemTable ) then
-			local customDesc = itemTable.GetDesc and itemTable:GetDesc( pl, self:GetItemData( ) )
+			local customDesc = itemTable.GetDesc and itemTable:GetDesc( pl, self:GetItemData( ), false )
 			
 			if ( !self.itemTable_name or !self.itemTable_desc ) then
 				self.itemTable_name = catherine.util.StuffLanguage( itemTable.name )
