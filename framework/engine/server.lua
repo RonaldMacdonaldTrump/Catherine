@@ -85,7 +85,7 @@ function GM:OnPhysgunFreeze( weapon, physObject, ent, pl )
 	
 	physObject:EnableMotion( false )
 	
-	if ( ent:GetClass( ) == "prop_vehicle_jeep" ) then
+	if ( table.HasValue( catherine.configs.physgunBoneFreezeList, ent:GetClass( ) ) ) then
 		for i = 0, ent:GetPhysicsObjectCount( ) - 1 do
 			ent:GetPhysicsObjectNum( i ):EnableMotion( false )
 		end

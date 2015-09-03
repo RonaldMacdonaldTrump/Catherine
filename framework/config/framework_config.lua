@@ -64,6 +64,12 @@ if ( SERVER ) then
 		"gmod_tool",
 		"gmod_camera"
 	}
+	catherine.configs.physgunBoneFreezeList = {
+		"prop_vehicle_jeep",
+		"prop_vehicle_airboat",
+		"Jeep",
+		"Airboat"
+	}
 	catherine.configs.limeCheckInterval = 300
 	catherine.configs.hintInterval = 30
 	catherine.configs.environmentSendInterval = 60

@@ -91,11 +91,14 @@ end )
 function PLUGIN:ShouldDrawLocalPlayer( pl )
 	if ( pl:IsActioning( ) or GetConVarString( "cat_convar_thirdperson" ) == "1" ) then return end
 	
-	return ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and catherine.character.customBackgroundEnabled
+	return ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and catherine.character.IsCustomBackground( )
 end
 
 function PLUGIN:CalcView( pl, pos, ang, fov )
-	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or !pl:IsCharacterLoaded( ) ) and catherine.character.customBackgroundEnabled and #self.charViews > 0 ) then
+	if ( !catherine.character.IsCustomBackground( ) ) then return end
+	if ( #self.charViews <= 0 ) then return end
+	
+	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and !catherine.intro.status and !pl:IsCharacterLoaded( ) ) then
 		if ( !self.lastView ) then
 			self.lastView = table.Random( self.charViews )
 		end

@@ -132,7 +132,7 @@ function GM:CalcView( pl, pos, ang, fov )
 
 	if ( catherine.intro.status ) then
 		return {
-			origin = Vector( 0, 0, 200000 )
+			origin = Vector( 0, 0, 20000 )
 		}
 	end
 
@@ -323,7 +323,7 @@ function GM:HUDDrawScoreBoard( )
 		if ( catherine.question.CanQuestion( ) ) then
 			catherine.question.Start( )
 		else
-			catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+			catherine.character.SetMenuActive( true )
 		end
 		
 		// Call panel

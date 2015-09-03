@@ -136,10 +136,6 @@ function catherine.plugin.Get( id )
 	return catherine.plugin.lists[ id ]
 end
 
-function catherine.plugin.GetActive( uniqueID )
-	// ;
-end
-
 function catherine.plugin.IncludeEntities( dir )
 	local files, folders = file.Find( dir .. "/entities/entities/*", "LUA" )
 	
@@ -275,8 +271,38 @@ catherine.plugin.RegisterExtras( "derma" )
 catherine.plugin.RegisterExtras( "library" )
 
 if ( SERVER ) then
-	function catherine.plugin.SetActive( uniqueID )
-		// ;
+	catherine.plugin.deactiveList = catherine.plugin.deactiveList or { }
+	
+	function catherine.plugin.ToggleActive( uniqueID )
+		local globalVar = catherine.net.GetNetGlobalVar( "plugin_deactiveList", { } )
+		
+		if ( catherine.plugin.GetActive( uniqueID ) ) then
+			catherine.plugin.deactiveList[ uniqueID ] = true
+			globalVar[ uniqueID ] = true
+		else
+			catherine.plugin.deactiveList[ uniqueID ] = nil
+			globalVar[ uniqueID ] = nil
+		end
+		
+		catherine.net.SetNetGlobalVar( "plugin_deactiveList", globalVar )
+	end
+	
+	function catherine.plugin.SetActive( uniqueID, active )
+		local globalVar = catherine.net.GetNetGlobalVar( "plugin_deactiveList", { } )
+		
+		if ( active ) then
+			catherine.plugin.deactiveList[ uniqueID ] = nil
+			globalVar[ uniqueID ] = nil
+		else
+			catherine.plugin.deactiveList[ uniqueID ] = true
+			globalVar[ uniqueID ] = true
+		end
+		
+		catherine.net.SetNetGlobalVar( "plugin_deactiveList", globalVar )
+	end
+	
+	function catherine.plugin.GetActive( uniqueID )
+		return !catherine.plugin.deactiveList[ uniqueID ]
 	end
 else
 	function catherine.plugin.LanguageChanged( )
@@ -291,4 +317,8 @@ else
 
 	hook.Add( "LanguageChanged", "catherine.plugin.LanguageChanged", catherine.plugin.LanguageChanged )
 	hook.Add( "InitPostEntity", "catherine.plugin.InitPostEntity", catherine.plugin.InitPostEntity )
+	
+	function catherine.plugin.GetActive( uniqueID )
+		return catherine.net.GetNetGlobalVar( "plugin_deactiveList", { } )[ uniqueID ] == nil
+	end
 end

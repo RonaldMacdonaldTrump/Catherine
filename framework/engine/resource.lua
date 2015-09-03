@@ -16,4 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-resource.AddWorkshop( "491904294" ) -- Catherine Framework Content <http://steamcommunity.com/sharedfiles/filedetails/?id=491904294>
+--[[
+	WorkShop : Catherine Framework Content <http://steamcommunity.com/sharedfiles/filedetails/?id=491904294>
+]]--
+
+resource.AddWorkshop( "491904294" )
