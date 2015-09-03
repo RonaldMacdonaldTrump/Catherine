@@ -742,7 +742,7 @@ catherine.command.Register( {
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		local delay = args[ 1 ] or 5
-
+		
 		catherine.util.NotifyAllLang( "Command_RestartLevel_Fin", delay )
 		
 		timer.Simple( delay, function( )
