@@ -38,7 +38,7 @@ function PLUGIN:DataSave( )
 	self:SaveTexts( )
 end
 
-function PLUGIN:AddText( pl, text, size )
+function PLUGIN:AddText( pl, text, size, col )
 	local tr = pl:GetEyeTraceNoCursor( )
 	local index = #self.textLists + 1
 	local data = {
@@ -46,7 +46,8 @@ function PLUGIN:AddText( pl, text, size )
 		pos = tr.HitPos + tr.HitNormal,
 		ang = tr.HitNormal:Angle( ),
 		text = text,
-		size = math.max( math.abs( size or 1 ) / 8, 0.005 )
+		size = math.max( math.abs( size or 1 ) / 8, 0.005 ),
+		col = col
 	}
 	local ang = data.ang
 	
@@ -85,7 +86,8 @@ function PLUGIN:SyncTextAll( pl )
 			text = v.text,
 			pos = v.pos,
 			ang = v.ang,
-			size = v.size
+			size = v.size,
+			col = v.col
 		} )
 	end
 end

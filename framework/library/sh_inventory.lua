@@ -325,8 +325,14 @@ else
 	end
 	
 	function catherine.inventory.CharacterVarChanged( pl, key )
-		if ( key == "_inv" and pl == catherine.pl and IsValid( catherine.vgui.inventory ) and !catherine.vgui.inventory:IsHiding( ) ) then
-			catherine.vgui.inventory:BuildInventory( )
+		if ( key == "_inv" and pl == catherine.pl ) then
+			if ( IsValid( catherine.vgui.inventory ) and !catherine.vgui.inventory:IsHiding( ) ) then
+				catherine.vgui.inventory:BuildInventory( )
+			end
+			
+			if ( IsValid( catherine.vgui.storage ) ) then
+				catherine.vgui.storage:InitializeStorage( catherine.vgui.storage.ent )
+			end
 		end
 	end
 	

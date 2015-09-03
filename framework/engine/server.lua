@@ -55,7 +55,7 @@ function GM:ShowTeam( pl )
 			local isBuyable = catherine.door.IsBuyableDoor( ent )
 			
 			if ( isBuyable ) then
-				catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ" ), function( _, bool )
+				catherine.util.QueryReceiver( pl, "BuyDoor_Question", LANG( pl, "Door_Notify_BuyQ", catherine.cash.GetCompleteName( catherine.door.GetDoorCost( pl, ent ) ) ), function( _, bool )
 					if ( bool ) then
 						catherine.command.Run( pl, "&uniqueID_doorBuy" )
 					end

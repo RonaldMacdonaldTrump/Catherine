@@ -313,7 +313,7 @@ LANGUAGE.data = {
 	
 	[ "Item_Category_Wallet" ] = "지갑",
 	[ "Item_Name_Wallet" ] = "지갑",
-	[ "Item_Desc_Wallet" ] = "%s 이(가) 쌓여있습니다.",
+	[ "Item_Desc_Wallet" ] = "당신의 지갑 입니다.",
 	[ "Item_Desc_World_Wallet" ] = "%s 이(가) 쌓여있습니다.",
 	[ "Item_FuncStr01_Wallet" ] = "%s 가지기",
 	[ "Item_FuncStr02_Wallet" ] = "%s 떨어트리기",
@@ -371,7 +371,7 @@ LANGUAGE.data = {
 	// Door
 	[ "Door_Notify_CMD_Locked" ] = "이 문을 잠갔습니다.",
 	[ "Door_Notify_CMD_UnLocked" ] = "이 문을 잠금 해제 하였습니다.",
-	[ "Door_Notify_BuyQ" ] = "이 문을 정말로 구매하시겠습니까?",
+	[ "Door_Notify_BuyQ" ] = "이 문을 %s 에 구입하시겠습니까?",
 	[ "Door_Notify_SellQ" ] = "이 문을 정말로 판매하시겠습니까?",
 	[ "Door_Message_Locking" ] = "잠그는 중 ...",
 	[ "Door_Message_UnLocking" ] = "잠금 해제 중 ...",

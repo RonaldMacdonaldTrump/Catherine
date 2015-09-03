@@ -90,6 +90,7 @@ function PANEL:BuildInventory( )
 		
 		for k1, v1 in SortedPairsByMemberValue( v, "uniqueID" ) do
 			local w, h = 64, 64
+			
 			local itemTable = catherine.item.FindByID( k1 )
 			local itemData = v1.itemData
 			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemData, true ) or nil

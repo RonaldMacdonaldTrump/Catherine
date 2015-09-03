@@ -315,7 +315,7 @@ LANGUAGE.data = {
 	
 	[ "Item_Category_Wallet" ] = "Wallet",
 	[ "Item_Name_Wallet" ] = "Wallet",
-	[ "Item_Desc_Wallet" ] = "%s in a small stack.",
+	[ "Item_Desc_Wallet" ] = "It is your wallet.",
 	[ "Item_Desc_World_Wallet" ] = "%s in a small stack.",
 	[ "Item_FuncStr01_Wallet" ] = "Take %s",
 	[ "Item_FuncStr02_Wallet" ] = "Drop %s",
@@ -373,7 +373,7 @@ LANGUAGE.data = {
 	// Door
 	[ "Door_Notify_CMD_Locked" ] = "You have locked this door.",
 	[ "Door_Notify_CMD_UnLocked" ] = "You have unlocked this door.",
-	[ "Door_Notify_BuyQ" ] = "Are you sure you want to buy this door?",
+	[ "Door_Notify_BuyQ" ] = "Are you sure you want to buy this door at %s?",
 	[ "Door_Notify_SellQ" ] = "Are you sure you want to sell this door?",
 	[ "Door_Message_Locking" ] = "Locking ...",
 	[ "Door_Message_UnLocking" ] = "Unlocking ...",
