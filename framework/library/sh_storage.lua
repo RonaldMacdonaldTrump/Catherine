@@ -76,8 +76,8 @@ if ( SERVER ) then
 				return
 			end
 
-			if ( itemTable.IsPersistent ) then
-				catherine.util.NotifyLang( pl, "Inventory_Notify_IsPersistent" )
+			if ( itemTable.isPersistent ) then
+				catherine.util.NotifyLang( pl, "Inventory_Notify_isPersistent" )
 				return
 			end
 			

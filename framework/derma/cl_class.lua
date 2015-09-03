@@ -67,7 +67,7 @@ function PANEL:BuildClasses( )
 			draw.SimpleText( name, "catherine_normal25", 80, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( desc, "catherine_normal15", 80, 50, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( LANG( "Class_UI_LimitStr", #catherine.class.GetPlayers( v.uniqueID ), v.limit or LANG( "Class_UI_Unlimited" ) ), "catherine_normal20", w - 10, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
-			draw.SimpleText( LANG( "Class_UI_SalaryStr", catherine.cash.GetName( v.salary or 0 ) ), "catherine_normal20", w - 10, 50, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			draw.SimpleText( LANG( "Class_UI_SalaryStr", catherine.cash.GetCompleteName( v.salary or 0 ) ), "catherine_normal20", w - 10, 50, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		end
 		
 		local button = vgui.Create( "DButton", panel )

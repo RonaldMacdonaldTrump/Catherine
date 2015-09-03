@@ -26,10 +26,10 @@ ITEM.weight = 0.5
 ITEM.itemData = {
 	amount = 0
 }
-ITEM.IsPersistent = true
+ITEM.isPersistent = true
 ITEM.func = { }
 ITEM.func.take = {
-	text = "^Item_FuncStr01_Wallet",
+	text = "EXAMPLE TEXT",
 	icon = "icon16/money_add.png",
 	canShowIsWorld = true,
 	func = function( pl, itemTable, ent )
@@ -40,16 +40,16 @@ ITEM.func.take = {
 		local itemData = ent:GetItemData( )
 		
 		catherine.cash.Give( pl, itemData.amount )
-		catherine.util.NotifyLang( pl, "Cash_Notify_Get", itemData.amount )
+		catherine.util.NotifyLang( pl, "Cash_Notify_Get", catherine.cash.GetCompleteName( itemData.amount ) )
 		
 		ent:Remove( )
 	end,
-	canLook = function( )
-		return true
+	preSetText = function( pl, itemTable )
+		return LANG( "Item_FuncStr01_Wallet", catherine.cash.GetOnlySingular( ) )
 	end
 }
 ITEM.func.drop = {
-	text = "^Item_FuncStr02_Wallet",
+	text = "EXAMPLE TEXT",
 	icon = "icon16/money_delete.png",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, isMenu )
@@ -57,14 +57,14 @@ ITEM.func.drop = {
 			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 			return
 		end
-				
+		
 		catherine.util.StringReceiver( pl, "Cash_UniqueDropMoney", "^Item_DropQ_Wallet", catherine.cash.Get( pl ), function( _, val )
 			val = tonumber( val )
 			
 			if ( !val ) then return end
 			
 			if ( !catherine.cash.Has( pl, val ) ) then
-				catherine.util.NotifyLang( pl, "Cash_Notify_HasNot" )
+				catherine.util.NotifyLang( pl, "Cash_Notify_HasNot", catherine.cash.GetOnlySingular( ) )
 				return
 			end
 			
@@ -74,6 +74,9 @@ ITEM.func.drop = {
 	end,
 	canLook = function( pl )
 		return catherine.cash.Get( pl ) > 0
+	end,
+	preSetText = function( pl, itemTable )
+		return LANG( "Item_FuncStr02_Wallet", catherine.cash.GetOnlySingular( ) )
 	end
 }
 
@@ -84,9 +87,11 @@ if ( SERVER ) then
 		catherine.item.Give( pl, "wallet" )
 	end )
 else
-	function ITEM:GetDesc( pl, itemTable, itemData, isInv )
+	function ITEM:GetDesc( pl, itemData, isInv )
 		if ( itemData.amount ) then
-			return isInv and LANG( "Cash_UI_HasStr", catherine.cash.Get( pl ) ) or LANG( "Item_Desc_World_Wallet", catherine.cash.GetName( itemData.amount ) )
+			return isInv and
+			LANG( "Cash_UI_HasStr", catherine.cash.GetCompleteName( catherine.cash.Get( pl ) ) ) or
+			LANG( "Item_Desc_World_Wallet", catherine.cash.GetCompleteName( itemData.amount ) )
 		end
 	end
 end

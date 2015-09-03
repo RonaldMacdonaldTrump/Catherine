@@ -205,7 +205,7 @@ function GM:PlayerCharacterLoaded( pl )
 			local amount = hook.Run( "GetSalaryAmount", pl, factionTable ) or factionTable.salary
 			
 			catherine.cash.Give( pl, amount )
-			catherine.util.NotifyLang( pl, "Cash_Notify_Salary", amount )
+			catherine.util.NotifyLang( pl, "Cash_Notify_Salary", catherine.cash.GetCompleteName( amount ) )
 		end )
 	end
 end

@@ -67,7 +67,7 @@ function PANEL:Init( )
 					netstream.Start( "catherine.business.BuyItems", self.shoppingcart )
 				end, LANG( "Basic_UI_NO" ), function( ) end )
 			else
-				catherine.notify.Add( LANG( "Cash_Notify_HasNot" ), 5 )
+				catherine.notify.Add( LANG( "Cash_Notify_HasNot", catherine.cash.GetOnlySingular( ) ), 5 )
 			end
 		else
 			catherine.notify.Add( LANG( "Business_Notify_NeedCartAdd" ), 5 )
@@ -100,7 +100,7 @@ function PANEL:MenuPaint( w, h )
 	draw.SimpleText( LANG( "Business_UI_ShoppingCartStr" ), "catherine_normal20", w * 0.6 + 20, 45, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 	
 	if ( self.shoppingcartInfo ) then
-		draw.SimpleText( LANG( "Business_UI_TotalStr", catherine.cash.GetName( self.shoppingcartInfo ) ), "catherine_normal20", w - 10, 45, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		draw.SimpleText( LANG( "Business_UI_TotalStr", catherine.cash.GetCompleteName( self.shoppingcartInfo ) ), "catherine_normal20", w - 10, 45, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	end
 end
 
@@ -151,7 +151,7 @@ function PANEL:BuildShoppingCart( )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 			
 			draw.SimpleText( name, "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( count .. " / " .. catherine.cash.GetName( costs ), "catherine_normal15", w - 40, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			draw.SimpleText( count .. " / " .. catherine.cash.GetCompleteName( costs ), "catherine_normal15", w - 40, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		end
 		
 		local removeItem = vgui.Create( "catherine.vgui.button", panel )
@@ -216,7 +216,7 @@ function PANEL:BuildBusiness( )
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( model, v1.skin or 0 )
-			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( v1 ) .. "\n" .. ( v1.cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetName( v1.cost ) ) )
+			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( v1 ) .. "\n" .. ( v1.cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( v1.cost ) ) )
 			spawnIcon.DoClick = function( )
 				local uniqueID = k1
 				local shoppingCart = self.shoppingcart

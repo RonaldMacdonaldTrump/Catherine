@@ -813,7 +813,7 @@ function GM:CharacterMenuExited( pl )
 end
 
 function GM:AddRPInformation( pnl, data, pl )
-	data[ #data + 1 ] = LANG( "Cash_UI_HasStr", catherine.cash.Get( pl ) )
+	data[ #data + 1 ] = LANG( "Cash_UI_HasStr", catherine.cash.GetCompleteName( catherine.cash.Get( pl ) ) )
 end
 
 function GM:ScreenResolutionFix( )

@@ -114,15 +114,15 @@ LANGUAGE.data = {
 	[ "News_UI_SelectPage" ] = "Please select a page.",
 	
 	// Cash
-	[ "Cash_UI_HasStr" ] = "You have %s " .. cashName ..".",
-	[ "Cash_UI_TargetHasStr" ] = "This player has %s " .. cashName ..".",
+	[ "Cash_UI_HasStr" ] = "You have a %s.",
+	[ "Cash_UI_TargetHasStr" ] = "This player has %s.",
 	[ "Cash_Notify_Set" ] = "%s has set %s to %s",
 	[ "Cash_Notify_Give" ] = "%s has given %s to %s",
 	[ "Cash_Notify_Take" ] = "%s has taken %s from %s",
-	[ "Cash_Notify_HasNot" ] = "You do not have a enough " .. cashName .. "!",
+	[ "Cash_Notify_HasNot" ] = "You do not have a enough %s!",
 	[ "Cash_Notify_NotValidAmount" ] = "Please enter a valid amount!",
-	[ "Cash_Notify_Salary" ] = "You have received %s " .. cashName .. " from your salary.",
-	[ "Cash_Notify_Get" ] = "You are found %s " .. cashName .. ".",
+	[ "Cash_Notify_Salary" ] = "You have received %s from your salary.",
+	[ "Cash_Notify_Get" ] = "You are found %s.",
 	
 	// Character
 	[ "Character_UI_Title" ] = "Character",
@@ -240,7 +240,7 @@ LANGUAGE.data = {
 	[ "Inventory_Notify_HasNotSpaceTarget" ] = "Target does not have enough inventory space!",
 	[ "Inventory_Notify_CantDrop01" ] = "You are looking too far away to drop this item!",
 	[ "Inventory_Notify_DontHave" ] = "You do not have this item!",
-	[ "Inventory_Notify_IsPersistent" ] = "This item is persistent!",
+	[ "Inventory_Notify_isPersistent" ] = "This item is persistent!",
 	
 	// Scoreboard
 	[ "Scoreboard_UI_Title" ] = "Player List",
@@ -316,10 +316,10 @@ LANGUAGE.data = {
 	
 	[ "Item_Category_Wallet" ] = "Wallet",
 	[ "Item_Name_Wallet" ] = "Wallet",
-	[ "Item_Desc_Wallet" ] = cashName .. " in a small stack.",
+	[ "Item_Desc_Wallet" ] = "%s in a small stack.",
 	[ "Item_Desc_World_Wallet" ] = "%s in a small stack.",
-	[ "Item_FuncStr01_Wallet" ] = "Take " .. cashName,
-	[ "Item_FuncStr02_Wallet" ] = "Drop " .. cashName,
+	[ "Item_FuncStr01_Wallet" ] = "Take %s",
+	[ "Item_FuncStr02_Wallet" ] = "Drop %s",
 	[ "Item_DropQ_Wallet" ] = "How much money would you like to drop?",
 	
 	[ "Item_Notify01_ZT" ] = "This player is already tied!",

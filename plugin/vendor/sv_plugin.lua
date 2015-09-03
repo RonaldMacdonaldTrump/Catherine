@@ -167,8 +167,8 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 			return
 		end
 		
-		if ( itemTable.IsPersistent ) then
-			catherine.util.NotifyLang( pl, "Inventory_Notify_IsPersistent" )
+		if ( itemTable.isPersistent ) then
+			catherine.util.NotifyLang( pl, "Inventory_Notify_isPersistent" )
 			return
 		end
 		
@@ -192,7 +192,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		local itemCost = math.Round( ( vendorInv[ uniqueID ].cost * count ) / self.VENDOR_SOLD_DISCOUNTPER )
 		
 		if ( vendorCash < itemCost ) then
-			catherine.util.NotifyLang( pl, "Vendor_Notify_VendorNoHasCash", catherine.cash.GetOnlyName( ) )
+			catherine.util.NotifyLang( pl, "Vendor_Notify_VendorNoHasCash", catherine.cash.GetOnlySingular( ) )
 			return
 		end
 		
@@ -211,7 +211,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		self:SetVendorData( ent, "cash", vendorCash - itemCost )
 		
 		hook.Run( "PostItemVendorSell", pl, ent, itemTable, data )
-		catherine.util.NotifyLang( pl, "Vendor_Notify_Sell", catherine.util.StuffLanguage( pl, itemTable.name ), catherine.cash.GetName( itemCost ) )
+		catherine.util.NotifyLang( pl, "Vendor_Notify_Sell", catherine.util.StuffLanguage( pl, itemTable.name ), catherine.cash.GetCompleteName( itemCost ) )
 	elseif ( workID == CAT_VENDOR_ACTION_SELL ) then
 		local uniqueID = data.uniqueID
 		local itemTable = catherine.item.FindByID( uniqueID )
@@ -267,7 +267,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		self:SetVendorData( ent, "cash", vendorCash + itemCost )
 		
 		hook.Run( "PostItemVendorBuy", pl, ent, itemTable, data )
-		catherine.util.NotifyLang( pl, "Vendor_Notify_Buy", catherine.util.StuffLanguage( pl, itemTable.name ), catherine.cash.GetName( itemCost ) )
+		catherine.util.NotifyLang( pl, "Vendor_Notify_Buy", catherine.util.StuffLanguage( pl, itemTable.name ), catherine.cash.GetCompleteName( itemCost ) )
 	elseif ( workID == CAT_VENDOR_ACTION_SETTING_CHANGE ) then
 		if ( !pl:IsAdmin( ) ) then
 			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )

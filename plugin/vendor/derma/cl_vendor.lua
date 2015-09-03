@@ -477,7 +477,7 @@ function PANEL:Refresh_List( id )
 					draw.SimpleText( name, "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 					draw.SimpleText( desc, "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 					
-					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetName( cost ), "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( cost ), "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 					
 					local stock = newData.stock
 					
@@ -555,7 +555,7 @@ function PANEL:Refresh_List( id )
 					draw.SimpleText( name, "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 					draw.SimpleText( desc, "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 					
-					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetName( cost ), "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( cost ), "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 					
 					local stock = newData.stock
 					
@@ -630,7 +630,7 @@ function PANEL:Refresh_List( id )
 					draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 					draw.SimpleText( name, "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 					draw.SimpleText( desc, "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetName( cost ), "catherine_normal15", w - 10, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( cost ), "catherine_normal15", w - 10, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 					
 					local mode = newData.type
 					
@@ -984,7 +984,7 @@ function PANEL:Paint( w, h )
 			draw.SimpleText( name, "catherine_normal20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 		end
 		
-		draw.SimpleText( LANG( "Vendor_UI_HasCash", catherine.cash.GetName( self.vendorData.cash ) ), "catherine_normal20", w - 35, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+		draw.SimpleText( LANG( "Vendor_UI_HasCash", catherine.cash.GetCompleteName( self.vendorData.cash ) ), "catherine_normal20", w - 35, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 	end
 end
 

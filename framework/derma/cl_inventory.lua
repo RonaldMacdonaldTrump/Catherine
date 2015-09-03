@@ -90,11 +90,11 @@ function PANEL:BuildInventory( )
 		
 		for k1, v1 in SortedPairsByMemberValue( v, "uniqueID" ) do
 			local w, h = 64, 64
-			local itemTable = catherine.item.FindByID( v1.uniqueID )
+			local itemTable = catherine.item.FindByID( k1 )
 			local itemData = pl:GetInvItemDatas( k1 )
-			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, itemData, true ) or nil
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemData, true ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
-			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, k1 )
+			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, itemTable )
 			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )

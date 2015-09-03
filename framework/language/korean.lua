@@ -110,15 +110,15 @@ LANGUAGE.data = {
 	[ "News_UI_SelectPage" ] = "페이지를 선택하세요.",
 	
 	// Cash
-	[ "Cash_UI_HasStr" ] = "당신은 %s " .. cashName .. " 를 가지고 있습니다.",
-	[ "Cash_UI_TargetHasStr" ] = "이 사람은 %s " .. cashName .. " 를 가지고 있습니다.",
+	[ "Cash_UI_HasStr" ] = "당신은 %s 을(를) 가지고 있습니다.",
+	[ "Cash_UI_TargetHasStr" ] = "이 사람은 %s 을(를) 가지고 있습니다.",
 	[ "Cash_Notify_Set" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 설정하셨습니다.",
 	[ "Cash_Notify_Give" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 주셨습니다.",
 	[ "Cash_Notify_Take" ] = "%s 님이 %s 만큼의 돈을 %s 님에게서 빼았었습니다.",
-	[ "Cash_Notify_HasNot" ] = "당신은 충분한 " .. cashName .. " 가 없습니다!",
+	[ "Cash_Notify_HasNot" ] = "당신은 충분한 %s 이(가) 없습니다!",
 	[ "Cash_Notify_NotValidAmount" ] = "올바른 금액을 입력하세요!",
-	[ "Cash_Notify_Salary" ] = "당신은 %s " .. cashName .. " 을 월급으로 받았습니다.",
-	[ "Cash_Notify_Get" ] = "당신은 %s " .. cashName .. " 를 찾으셨습니다.",
+	[ "Cash_Notify_Salary" ] = "당신은 %s 을(를) 월급으로 받았습니다.",
+	[ "Cash_Notify_Get" ] = "당신은 %s 을(를) 찾으셨습니다.",
 	
 	// Character
 	[ "Character_UI_Title" ] = "캐릭터",
@@ -236,7 +236,7 @@ LANGUAGE.data = {
 	[ "Inventory_Notify_HasNotSpaceTarget" ] = "해당 사람의 인벤토리에 공간이 없습니다!",
 	[ "Inventory_Notify_CantDrop01" ] = "그렇게 멀리 떨어트릴 수 없습니다!",
 	[ "Inventory_Notify_DontHave" ] = "당신은 이 물건을 가지고 있지 않습니다!",
-	[ "Inventory_Notify_IsPersistent" ] = "이 물건은 영구적으로 가지고 있어야 합니다!",
+	[ "Inventory_Notify_isPersistent" ] = "이 물건은 영구적으로 가지고 있어야 합니다!",
 	
 	// Scoreboard
 	[ "Scoreboard_UI_Title" ] = "플레이어 목록",
@@ -314,11 +314,11 @@ LANGUAGE.data = {
 	
 	[ "Item_Category_Wallet" ] = "지갑",
 	[ "Item_Name_Wallet" ] = "지갑",
-	[ "Item_Desc_Wallet" ] = cashName .. " 가 쌓여있습니다.",
-	[ "Item_Desc_World_Wallet" ] = "%s 가 쌓여있습니다.",
-	[ "Item_FuncStr01_Wallet" ] = cashName .. " 가지기",
-	[ "Item_FuncStr02_Wallet" ] = cashName .. " 떨어트리기",
-	[ "Item_DropQ_Wallet" ] = "떨어트릴 " .. cashName .. " 의 금액을 입력하세요.",
+	[ "Item_Desc_Wallet" ] = "%s 이(가) 쌓여있습니다.",
+	[ "Item_Desc_World_Wallet" ] = "%s 이(가) 쌓여있습니다.",
+	[ "Item_FuncStr01_Wallet" ] = "%s 가지기",
+	[ "Item_FuncStr02_Wallet" ] = "%s 떨어트리기",
+	[ "Item_DropQ_Wallet" ] = "떨어트릴 %s 의 액수를 입력하세요.",
 	
 	[ "Item_Notify01_ZT" ] = "이 사람은 이미 묶여있습니다!",
 	[ "Item_Notify02_ZT" ] = "당신은 수갑이 없습니다!",
@@ -340,7 +340,7 @@ LANGUAGE.data = {
 	[ "Entity_Notify_NotValid" ] = "이것은 올바르지 않은 엔티티 입니다!",
 	[ "Entity_Notify_NotPlayer" ] = "이것은 올바르지 않은 플레이어 입니다!",
 	[ "Entity_Notify_NotDoor" ] = "이것은 올바르지 않은 문 입니다!",
-	[ "Entity_Notify_TooFar" ] = "물체와의 거리가 너무 멈니다!",
+	[ "Entity_Notify_TooFar" ] = "물체와의 거리가 너무 멉니다!",
 	
 	// Command
 	[ "Command_Notify_NotFound" ] = "해당 명령어는 존재하지 않습니다!",

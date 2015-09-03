@@ -279,8 +279,15 @@ else
 
 		for k, v in pairs( itemTable and itemTable.func or { } ) do
 			if ( !v.canShowIsMenu or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
+			local text = "ERROR"
 			
-			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
+			if ( v.preSetText ) then
+				text = v.preSetText( pl, itemTable )
+			else
+				text = catherine.util.StuffLanguage( v.text or "ERROR" )
+			end
+			
+			menu:AddOption( text, function( )
 				catherine.item.Work( uniqueID, k, true )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
@@ -301,8 +308,15 @@ else
 		
 		for k, v in pairs( itemTable and itemTable.func or { } ) do
 			if ( !v.canShowIsWorld or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
-
-			menu:AddOption( catherine.util.StuffLanguage( v.text or "ERROR" ), function( )
+			local text = "ERROR"
+			
+			if ( v.preSetText ) then
+				text = v.preSetText( pl, itemTable )
+			else
+				text = catherine.util.StuffLanguage( v.text or "ERROR" )
+			end
+			
+			menu:AddOption( text, function( )
 				catherine.item.Work( uniqueID, k, ent )
 			end ):SetImage( v.icon or "icon16/information.png" )
 			

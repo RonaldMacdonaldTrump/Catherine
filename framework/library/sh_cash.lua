@@ -16,18 +16,31 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.cash = catherine.cash or { name = "Dollar" }
+catherine.cash = catherine.cash or { singular = "Dollar", plural = "Dollars" }
 
-function catherine.cash.GetOnlyName( )
-	return catherine.cash.name
+function catherine.cash.GetOnlySingular( )
+	return catherine.cash.singular
 end
 
-function catherine.cash.SetName( name )
-	catherine.cash.name = name
+function catherine.cash.GetOnlyPlural( )
+	return catherine.cash.plural
 end
 
-function catherine.cash.GetName( amount )
-	return amount .. " " .. catherine.cash.name
+function catherine.cash.GetName( )
+	return catherine.cash.singular, catherine.cash.plural
+end
+
+function catherine.cash.SetName( singular, plural )
+	catherine.cash.singular = singular
+	catherine.cash.plural = plural
+end
+
+function catherine.cash.GetCompleteName( amount )
+	if ( amount > 1 ) then
+		return amount .. " " .. catherine.cash.plural
+	else
+		return amount .. " " .. catherine.cash.singular
+	end
 end
 
 function catherine.cash.Has( pl, amount )

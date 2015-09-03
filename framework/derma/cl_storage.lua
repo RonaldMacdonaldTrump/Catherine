@@ -178,7 +178,7 @@ function PANEL:BuildStorage( )
 			local w, h = 54, 54
 			local itemTable = catherine.item.FindByID( k1 )
 			local itemData = v1.itemData
-			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, itemData, false ) or nil
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemData, false ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, k1 )
 			
@@ -243,7 +243,7 @@ function PANEL:BuildStorage( )
 			local w, h = 54, 54
 			local itemTable = catherine.item.FindByID( k1 )
 			local itemData = pl:GetInvItemDatas( k1 )
-			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, itemData, true ) or nil
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemData, true ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, k1 )
 			
