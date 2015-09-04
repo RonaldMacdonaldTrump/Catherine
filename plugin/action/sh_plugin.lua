@@ -28,7 +28,9 @@ catherine.language.Merge( "english", {
 	[ "ACT_Plugin_Notify_Cant01" ] = "You can't do this now!",
 	[ "ACT_Plugin_Notify_Cant02" ] = "You can't do this action!",
 	[ "ACT_Plugin_Notify_Cant03" ] = "Please action at the facing the wall and little bit a back at wall!",
-	[ "ACT_Plugin_Notify_Cant04" ] = "Please action at the facing back the wall!"
+	[ "ACT_Plugin_Notify_Cant04" ] = "Please action at the facing back the wall!",
+	[ "Hint_Message_Action01" ] = "If you are exit from action, press it 'Jump' key.",
+	[ "Hint_Message_Action02" ] = "Some actions need to special work."
 } )
 
 catherine.language.Merge( "korean", {
@@ -37,7 +39,9 @@ catherine.language.Merge( "korean", {
 	[ "ACT_Plugin_Notify_Cant01" ] = "당신은 지금 액션을 취할 수 없습니다!",
 	[ "ACT_Plugin_Notify_Cant02" ] = "당신은 이 액션을 취할 수 없습니다!",
 	[ "ACT_Plugin_Notify_Cant03" ] = "벽을 보고 조금 벽에서 떨어진 후 액션을 다시 취하세요!",
-	[ "ACT_Plugin_Notify_Cant04" ] = "벽을 등에 대고 액션을 다시 취하세요!"
+	[ "ACT_Plugin_Notify_Cant04" ] = "벽을 등에 대고 액션을 다시 취하세요!",
+	[ "Hint_Message_Action01" ] = "액션을 취하고 있는 상태에서 나가려면 '점프' 키를 누르세요.",
+	[ "Hint_Message_Action02" ] = "특정 액션을 취하려면 특별한 행동이 필요합니다."
 } )
 
 catherine.util.Include( "sh_actions.lua" )
@@ -60,6 +64,7 @@ if ( SERVER ) then
 				if ( k == "actions" ) then
 					if ( v[ class ] ) then
 						actionData = v[ class ]
+						break
 					else
 						return false, "ACT_Plugin_Notify_Cant02"
 					end
@@ -84,19 +89,19 @@ if ( SERVER ) then
 		if ( actionData.doStartSeq ) then
 			pl:SetNetVar( "doingAction", true )
 			
-			catherine.animation.SetSeqAnimation( pl, actionData.doStartSeq, pl:SequenceDuration( actionData.doStartSeq ), nil, function( )
-				catherine.animation.SetSeqAnimation( pl, actionData.seq, actionData.noAutoExit and 0 or nil, function( )
+			catherine.animation.StartSequence( pl, actionData.doStartSeq, pl:SequenceDuration( actionData.doStartSeq ), nil, function( )
+				catherine.animation.StartSequence( pl, actionData.seq, actionData.noAutoExit and 0 or nil, function( )
 					pl:SetNetVar( "doingAction", nil )
 				end, function( )
 					if ( actionData.doExitSeq ) then
-						catherine.animation.SetSeqAnimation( pl, actionData.doExitSeq, pl:SequenceDuration( actionData.doExitSeq ), nil, function( )
+						catherine.animation.StartSequence( pl, actionData.doExitSeq, pl:SequenceDuration( actionData.doExitSeq ), nil, function( )
 							self:ExitAction( pl )
 						end )
 					end
 				end )
 			end )
 		else
-			catherine.animation.SetSeqAnimation( pl, actionData.seq, actionData.noAutoExit and 0 or nil, nil, function( )
+			catherine.animation.StartSequence( pl, actionData.seq, actionData.noAutoExit and 0 or nil, nil, function( )
 				self:ExitAction( pl )
 			end )
 		end
@@ -117,15 +122,15 @@ if ( SERVER ) then
 					local exitSeq = v.actions[ class ].doExitSeq
 
 					if ( exitSeq ) then
-						catherine.animation.SetSeqAnimation( pl, exitSeq, pl:SequenceDuration( exitSeq ), nil, function( )
-							catherine.animation.ResetSeqAnimation( pl )
+						catherine.animation.StartSequence( pl, exitSeq, pl:SequenceDuration( exitSeq ), nil, function( )
+							catherine.animation.StopSequence( pl )
 							pl:SetMoveType( MOVETYPE_WALK )
 							pl:SetNetVar( "isActioning", nil )
 							pl:SetNetVar( "actionAngles", nil )
 						end )
 					end
 				else
-					catherine.animation.ResetSeqAnimation( pl )
+					catherine.animation.StopSequence( pl )
 					pl:SetMoveType( MOVETYPE_WALK )
 					pl:SetNetVar( "isActioning", nil )
 					pl:SetNetVar( "actionAngles", nil )
@@ -143,24 +148,26 @@ if ( SERVER ) then
 		self:ExitAction( pl )
 	end
 
-	concommand.Add( "cat_action_exit", function( pl )
+	concommand.Add( "cat_plugin_action_exit", function( pl )
 		PLUGIN:ExitAction( pl )
 	end )
 else
 	function PLUGIN:PlayerBindPress( pl, bind, pressed )
-		if ( pl:IsActioning( ) and bind == "+jump" ) then
-			if ( pl:GetNetVar( "doingAction" ) and pl.CAT_leavingAction ) then
-				pl.CAT_leavingAction = nil
-				timer.Remove( "Catherine.plugin.action.timer.WaitAction" )
-			else
+		if ( !pl:IsActioning( ) ) then return end
+		
+		if ( bind == "+jump" ) then
+			if ( !pl:GetNetVar( "doingAction" ) and !pl.CAT_leavingAction ) then // NEED TO CHECK;
 				pl.CAT_leavingAction = true
 				
 				timer.Create( "Catherine.plugin.action.timer.WaitAction", 1, 1, function( )
-					RunConsoleCommand( "cat_action_exit" )
+					if ( IsValid( pl ) ) then
+						pl.CAT_leavingAction = nil
+						RunConsoleCommand( "cat_plugin_action_exit" )
+					end
 				end )
+				
+				return true
 			end
-			
-			return true
 		end
 	end
 	
@@ -214,3 +221,6 @@ for k, v in pairs( PLUGIN.actions ) do
 		end
 	} )
 end
+
+catherine.hint.Register( "^Hint_Message_Action01" )
+catherine.hint.Register( "^Hint_Message_Action02" )

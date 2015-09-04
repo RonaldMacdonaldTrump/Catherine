@@ -412,22 +412,35 @@ function GM:PostCharacterSave( pl )
 	end
 end
 
+function GM:PlayerShouldRagdollDamage( pl, ent, dmgInfo )
+	if ( pl:IsNoclipping( ) ) then
+		return false
+	end
+end
+
+function GM:PlayerShouldDamage( pl, dmgInfo )
+	if ( pl:IsNoclipping( ) ) then
+		return false
+	end
+end
+
 function GM:EntityTakeDamage( ent, dmgInfo )
 	if ( ent:GetClass( ) == "prop_ragdoll" ) then
 		local pl = catherine.entity.GetPlayer( ent )
 		
-		if ( IsValid( pl ) and pl:IsPlayer( ) and !pl:HasGodMode( ) ) then
+		if ( IsValid( pl ) and pl:IsPlayer( ) ) then
+			if ( hook.Run( "PlayerShouldRagdollDamage", pl, ent, dmgInfo ) == false ) then return end
 			local inflictor = dmgInfo:GetInflictor( )
 			local attacker = dmgInfo:GetAttacker( )
 			local amount = dmgInfo:GetDamage( )
-
-			if ( !attacker:IsPlayer( ) or attacker:GetClass( ) == "prop_ragdoll" or attacker:IsDoor( ) or amount < 5 ) then
+			
+			if ( !attacker:IsPlayer( ) or attacker:GetClass( ) == "prop_ragdoll" or attacker:IsDoor( ) or amount < 5 ) then // NEED FIX;
 				return
 			end
 			
 			if ( amount >= 20 or dmgInfo:IsBulletDamage( ) ) then
 				catherine.player.SetIgnoreHurtSound( pl, true )
-
+				
 				pl:TakeDamage( amount, attacker, inflictor )
 				
 				catherine.effect.Create( "BLOOD", {
@@ -438,7 +451,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 				} )
 				
 				catherine.player.SetIgnoreHurtSound( pl, nil )
-
+				
 				if ( pl:Health( ) <= 0 and !pl.CAT_deathSoundPlayed ) then
 					hook.Run( "PlayerDeathSound", pl, ent )
 				else
@@ -447,6 +460,8 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 			end
 		end
 	elseif ( ent:IsPlayer( ) ) then
+		if ( hook.Run( "PlayerShouldDamage", ent, dmgInfo ) == false ) then return end
+		
 		hook.Run( "PlayerTakeDamage", ent, dmgInfo:GetAttacker( ), dmgInfo )
 	end
 	
@@ -456,9 +471,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 		if ( IsValid( pl ) and ent:GetClass( ) == "prop_door_rotating" and dmgInfo:IsBulletDamage( ) and !pl:IsNoclipping( ) and ( ent.CAT_nextDoorBreach or 0 ) <= CurTime( ) ) then
 			local partner = catherine.util.GetDoorPartner( ent )
 			
-			if ( IsValid( ent.lock ) or ( IsValid( partner ) and IsValid( partner.lock ) ) ) then
-				return
-			end
+			if ( IsValid( ent.lock ) or ( IsValid( partner ) and IsValid( partner.lock ) ) ) then return end
 			
 			local index = ent:LookupBone( "handle" )
 			
@@ -501,7 +514,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 		ent.CAT_bulletHurtSpeedDown = true
 
 		timer.Remove( timerID )
-		timer.Create( timerID, math.random( 1, 4 ), 1, function( )
+		timer.Create( timerID, math.random( 2, 4 ), 1, function( )
 			if ( IsValid( ent ) ) then
 				ent.CAT_bulletHurtSpeedDown = nil
 			end

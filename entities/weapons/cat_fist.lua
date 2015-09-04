@@ -70,7 +70,7 @@ function SWEP:PrimaryAttack( )
 	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
 	
-	if ( hook.Run( "PlayerCanThrowPunch", pl ) == false ) then
+	if ( hook.Run( "PlayerShouldThrowPunch", pl ) == false ) then
 		return
 	end
 	

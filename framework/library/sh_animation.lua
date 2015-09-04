@@ -356,40 +356,45 @@ catherine.animation.Register( "metrocop", "models/dpfilms/metropolice/playermode
 catherine.animation.Register( "metrocop", "models/dpfilms/metropolice/hl2concept.mdl" )
 
 if ( SERVER ) then
-	function catherine.animation.SetSeqAnimation( pl, seqID, time, doFunc, func )
-		local rightSeq, len = pl:LookupSequence( seqID )
+	function catherine.animation.StartSequence( pl, seqID, time, preFunc, postFunc )
+		local valid, len = pl:LookupSequence( seqID )
+		
 		time = time or len
-
-		if ( !rightSeq or rightSeq == -1 ) then
+		
+		if ( !valid or valid == -1 ) then
 			return
 		end
 		
 		pl:SetNetVar( "seqAni", seqID )
 
-		if ( doFunc ) then
-			doFunc( )
+		if ( preFunc ) then
+			preFunc( )
 		end
-
+		
 		if ( time > 0 ) then
-			timer.Create( "Catherine.timer.animation.SequenceAnimation." .. pl:SteamID( ), time, 1, function( )
+			local timerID = "Catherine.timer.animation.Sequence." .. pl:SteamID( )
+			
+			timer.Remove( timerID )
+			timer.Create( timerID, time, 1, function( )
 				if ( !IsValid( pl ) ) then return end
 				
-				catherine.animation.ResetSeqAnimation( pl )
+				catherine.animation.StopSequence( pl )
 
-				if ( func ) then
-					func( )
+				if ( postFunc ) then
+					postFunc( )
 				end
 			end )
 		end
-
-		return time, rightSeq
+		
+		return time, valid
 	end
 
-	function catherine.animation.ResetSeqAnimation( pl )
+	function catherine.animation.StopSequence( pl )
+		timer.Remove( "Catherine.timer.animation.Sequence." .. pl:SteamID( ) )
 		pl:SetNetVar( "seqAni", false )
 	end
 end
 
-function catherine.animation.GetSeqAnimation( pl )
+function catherine.animation.GetSequence( pl )
 	return pl:GetNetVar( "seqAni", false )
 end

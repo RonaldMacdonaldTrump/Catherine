@@ -19,6 +19,16 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.entity = catherine.entity or { }
 local META = FindMetaTable( "Entity" )
 local getClass = META.GetClass
+local getModel = META.GetModel
+local chairs = { }
+
+do
+	for k, v in pairs( list.Get( "Vehicles" ) ) do
+		if ( v.Category == "Chairs" ) then
+			chairs[ v.Model ] = true
+		end
+	end
+end
 
 function catherine.entity.IsDoor( ent )
 	local class = getClass( ent )
@@ -27,7 +37,11 @@ function catherine.entity.IsDoor( ent )
 end
 
 function catherine.entity.IsProp( ent )
-	return ent:GetClass( ):find( "prop_" )
+	return getClass( ent ):find( "prop_" )
+end
+
+function catherine.entity.IsChair( ent )
+	return chairs[ getModel( ent ) ]
 end
 
 function META:IsDoor( )
@@ -38,6 +52,10 @@ end
 
 function META:IsProp( )
 	return getClass( self ):find( "prop_" )
+end
+
+function META:IsChair( )
+	return chairs[ getModel( self ) ]
 end
 
 if ( SERVER ) then

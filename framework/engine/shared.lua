@@ -62,6 +62,7 @@ local normalHoldTypes = {
 	knife = true,
 	grenade = true
 }
+local needPosRecover = false
 WEAPON_LOWERED = 1
 WEAPON_RAISED = 2
 
@@ -144,14 +145,16 @@ function GM:CalcMainActivity( pl, velo )
 			pl.CalcIdle = aniClass.glide or ACT_GLIDE
 		elseif ( pl:InVehicle( ) ) then
 			local vehicleTable = aniClass.vehicle
-			local class = "chair" // need fix. :)
+			local vehicle = pl:GetVehicle( )
+			local class = vehicle:IsChair( ) and "chair" or vehicle:GetClass( )
 			
 			if ( vehicleTable and vehicleTable[ class ] ) then
 				local act = vehicleTable[ class ][ 1 ]
-				local vecFix = vehicleTable[ class ][ 2 ]
+				local posFix = vehicleTable[ class ][ 2 ]
 				
-				if ( vecFix ) then
-					pl:ManipulateBonePosition( 0, vecFix )
+				if ( posFix ) then
+					pl:ManipulateBonePosition( 0, posFix )
+					needPosRecover = true
 				end
 				
 				if ( act ) then
@@ -163,7 +166,10 @@ function GM:CalcMainActivity( pl, velo )
 				end
 			end
 		elseif ( ani ) then
-			pl:ManipulateBonePosition( 0, vector_origin )
+			if ( needPosRecover ) then
+				pl:ManipulateBonePosition( 0, vector_origin )
+				needPosRecover = false
+			end
 			
 			val = ani[ status ]
 
@@ -190,8 +196,14 @@ function GM:CalcMainActivity( pl, velo )
 	end
 end
 
-function GM:PlayerNoClip( pl, bool )
-	local force = hook.Run( "PlayerCanNoClip", pl, bool )
+function GM:PlayerCanNoClip( pl, status )
+	if ( pl:IsRagdolled( ) ) then
+		return false
+	end
+end
+
+function GM:PlayerNoClip( pl, status )
+	local force = hook.Run( "PlayerCanNoClip", pl, status )
 	local isAdmin = pl:IsAdmin( )
 	
 	if ( !isAdmin or force == false ) then
@@ -211,12 +223,6 @@ function GM:PlayerNoClip( pl, bool )
 		if ( SERVER ) then
 			pl:DrawWorldModel( false )
 			pl:SetNetVar( "nocliping", true )
-			
-			if ( pl:IsInGod( ) ) then
-				pl.CAT_alreadyNoclipGod = true
-			else
-				pl:GodEnable( )
-			end
 		end
 		
 		hook.Run( "PlayerNoclipJoined", pl )
@@ -229,12 +235,6 @@ function GM:PlayerNoClip( pl, bool )
 		if ( SERVER ) then
 			pl:DrawWorldModel( true )
 			pl:SetNetVar( "nocliping", false )
-			
-			if ( pl.CAT_alreadyNoclipGod ) then
-				pl.CAT_alreadyNoclipGod = nil
-			else
-				pl:GodDisable( )
-			end
 		end
 		
 		hook.Run( "PlayerNoclipExited", pl )
@@ -303,8 +303,10 @@ function GM:StartCommand( pl, cmd )
 	end
 end
 
-function GM:PlayerCanThrowPunch( pl )
-	return pl:GetWeaponRaised( )
+function GM:PlayerShouldThrowPunch( pl )
+	if ( pl:GetWeaponRaised( ) ) then
+		return true
+	end
 end
 
 function GM:GetPlayerInformation( pl, target, isFull )
