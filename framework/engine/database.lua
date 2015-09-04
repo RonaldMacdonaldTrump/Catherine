@@ -188,16 +188,6 @@ catherine.database.modules[ "tmysql4" ] = {
 			catherine.database.ErrorMsg = err
 		end
 	end,
-	
-	if ( func ) then
-			function result:onSuccess( data )
-				func( data )
-			end
-		end
-		
-		function result:onError( err )
-			MsgC( Color( 255, 0, 0 ), "[CAT Query ERROR] " .. query .. " -> " .. err .. " !!!\n" )
-		end
 	query = function( query, func )
 		catherine.database.object:Query( query, function( data, status, err )
 			if ( QUERY_SUCCESS and status == QUERY_SUCCESS ) then
@@ -224,15 +214,11 @@ catherine.database.modules[ "tmysql4" ] = {
 		end )
 	end,
 	escape = function( val )
-		local typ = type( val )
-		
-		if ( typ == "string" ) then
-			return sql.SQLStr( val, true )
-		elseif ( typ == "number" ) then
-			return sql.SQLStr( tostring( val ), true )
-		elseif ( typ == "table" ) then
-			return sql.SQLStr( util.TableToJSON( val ), true )
+		if ( catherine.database.object ) then
+			return catherine.database.object:Escape( val )
 		end
+		
+		return tmysql and tmysql.escape and tmysql.escape( val ) or sql.SQLStr( val, true )
 	end
 }
 catherine.database.modules[ "sqlite" ] = {
