@@ -721,6 +721,34 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_dropCash",
+	command = "dropcash",
+	desc = "Drop a Cash.",
+	runFunc = function( pl, args )
+		if ( args[ 1 ] ) then
+			local amount = tonumber( args[ 1 ] )
+			
+			if ( !amount ) then
+				catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+				return
+			end
+			
+			if ( !catherine.cash.Has( pl, amount ) ) then
+				catherine.util.NotifyLang( pl, "Cash_Notify_HasNot", catherine.cash.GetOnlySingular( ) )
+				return
+			end
+			
+			catherine.cash.Take( pl, amount )
+			catherine.cash.Spawn( pl, catherine.util.GetItemDropPos( pl ), nil, amount )
+			
+			catherine.util.NotifyLang( pl, "Cash_Notify_Drop", catherine.cash.GetCompleteName( amount ) )
+		else
+			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+		end
+	end
+} )
+
+catherine.command.Register( {
 	uniqueID = "&uniqueID_clearDecals",
 	command = "cleardecals",
 	desc = "Clear all map decals. (Blood etc ..)",

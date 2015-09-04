@@ -23,7 +23,7 @@ end
 catherine.inventory = catherine.inventory or { }
 local META = FindMetaTable( "Player" )
 
-// Optimize.
+// Function Optimize.
 local getCharVar = catherine.character.GetCharVar
 local setVar = catherine.character.SetVar
 local getVar = catherine.character.GetVar

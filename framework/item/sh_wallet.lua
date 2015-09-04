@@ -29,7 +29,7 @@ ITEM.itemData = {
 ITEM.isPersistent = true
 ITEM.func = { }
 ITEM.func.take = {
-	text = "EXAMPLE TEXT",
+	text = "TAKE",
 	icon = "icon16/money_add.png",
 	canShowIsWorld = true,
 	func = function( pl, itemTable, ent )
@@ -49,7 +49,7 @@ ITEM.func.take = {
 	end
 }
 ITEM.func.drop = {
-	text = "EXAMPLE TEXT",
+	text = "DROP",
 	icon = "icon16/money_delete.png",
 	canShowIsMenu = true,
 	func = function( pl, itemTable, isMenu )
@@ -61,7 +61,10 @@ ITEM.func.drop = {
 		catherine.util.StringReceiver( pl, "Cash_UniqueDropMoney", "^Item_DropQ_Wallet", catherine.cash.Get( pl ), function( _, val )
 			val = tonumber( val )
 			
-			if ( !val ) then return end
+			if ( !val ) then
+				catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+				return
+			end
 			
 			if ( !catherine.cash.Has( pl, val ) ) then
 				catherine.util.NotifyLang( pl, "Cash_Notify_HasNot", catherine.cash.GetOnlySingular( ) )
@@ -69,7 +72,9 @@ ITEM.func.drop = {
 			end
 			
 			catherine.cash.Take( pl, val )
-			catherine.item.Spawn( itemTable.uniqueID, catherine.util.GetItemDropPos( pl ), nil, { amount = val } )
+			catherine.cash.Spawn( pl, catherine.util.GetItemDropPos( pl ), nil, val )
+			
+			catherine.util.NotifyLang( pl, "Cash_Notify_Drop", catherine.cash.GetCompleteName( val ) )
 		end )
 	end,
 	canLook = function( pl )

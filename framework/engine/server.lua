@@ -522,6 +522,10 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 	end
 end
 
+function GM:PlayerShouldAutoHealLimbDamage( pl )
+
+end
+
 function GM:PlayerSwitchFlashlight( pl, bool )
 	return true
 end

@@ -118,6 +118,7 @@ LANGUAGE.data = {
 	[ "Cash_Notify_NotValidAmount" ] = "올바른 금액을 입력하세요!",
 	[ "Cash_Notify_Salary" ] = "당신은 %s 을(를) 월급으로 받았습니다.",
 	[ "Cash_Notify_Get" ] = "당신은 %s 을(를) 찾으셨습니다.",
+	[ "Cash_Notify_Drop" ] = "당신은 %s 을(를) 떨어트렸습니다.",
 	
 	// Character
 	[ "Character_UI_Title" ] = "캐릭터",

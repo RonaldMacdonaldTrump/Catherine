@@ -84,7 +84,7 @@ if ( SERVER ) then
 			attribute[ uniqueID ].removeTime = removeTime
 			
 			local charID = pl:GetCharacterID( )
-			local timerID = "Catherine.attribute.timer.AutoBoostRemove." .. pl:SteamID( ) .. "." .. uniqueID .. "." .. charID
+			local timerID = "Catherine.timer.attribute.AutoBoostRemove." .. pl:SteamID( ) .. "." .. uniqueID .. "." .. charID
 			local removeTime2 = removeTime
 			
 			timer.Remove( timerID )
@@ -279,7 +279,7 @@ if ( SERVER ) then
 			for k, v in pairs( catherine.character.GetVar( pl, "_att", { } ) ) do
 				if ( !v.boost or !v.removeTime ) then continue end
 				
-				local timerID = "Catherine.attribute.timer.AutoBoostRemove." .. steamID .. "." .. k .. "." .. charID
+				local timerID = "Catherine.timer.attribute.AutoBoostRemove." .. steamID .. "." .. k .. "." .. charID
 				local removeTime = v.removeTime
 				
 				timer.Remove( timerID )

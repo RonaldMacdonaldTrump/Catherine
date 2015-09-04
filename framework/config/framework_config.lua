@@ -100,7 +100,16 @@ if ( SERVER ) then
 	catherine.configs.oocDelay = 60 --[[ Setting a OOC delay. ]]--
 	catherine.configs.loocDelay = 2 --[[ Setting a LOOC delay. ]]--
 	
-	catherine.configs.limbDamageAutoRecover = 5
+	catherine.configs.limbDamageAutoHeal = 5
+	catherine.configs.limbHealAmount = {
+		[ HITGROUP_HEAD ] = 0.4,
+		[ HITGROUP_CHEST ] = 0.8,
+		[ HITGROUP_STOMACH ] = 0.5,
+		[ HITGROUP_RIGHTARM ] = 1,
+		[ HITGROUP_LEFTARM ] = 1,
+		[ HITGROUP_LEFTLEG ] = 1,
+		[ HITGROUP_RIGHTLEG ] = 1
+	}
 	
 	catherine.configs.enable_Log = true --[[ Enabled a Log system. ]]--
 	catherine.configs.enable_Environment = true --[[ Enabled a Environment system. (Day, Night, Skycolor) ]]--

@@ -131,7 +131,7 @@ function catherine.item.FindBaseByID( id )
 end
 
 function catherine.item.RegisterHook( hookID, itemTable, func )
-	local hookUniqueID = "catherine.item.hook." .. itemTable.uniqueID .. "." .. hookID
+	local hookUniqueID = "Catherine.hook.item." .. itemTable.uniqueID .. "." .. hookID
 	
 	hook.Add( hookID, hookUniqueID, function( ... )
 		func( ... )
@@ -140,7 +140,7 @@ function catherine.item.RegisterHook( hookID, itemTable, func )
 end
 
 function catherine.item.RemoveHook( hookID, itemTable )
-	local hookUniqueID = "catherine.item.hook." .. itemTable.uniqueID .. "." .. hookID
+	local hookUniqueID = "Catherine.hook.item." .. itemTable.uniqueID .. "." .. hookID
 	
 	hook.Remove( hookID, hookUniqueID )
 	
@@ -153,7 +153,7 @@ function catherine.item.RemoveHook( hookID, itemTable )
 end
 
 function catherine.item.Include( dir )
-	for k, v in pairs( file.Find( dir .. "/item/base/*", "LUA" ) ) do
+	for k, v in pairs( file.Find( dir .. "/item/base/*.lua", "LUA" ) ) do
 		catherine.util.Include( dir .. "/item/base/" .. v, "SHARED" )
 	end
 	

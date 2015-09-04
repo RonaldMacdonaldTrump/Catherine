@@ -122,6 +122,7 @@ LANGUAGE.data = {
 	[ "Cash_Notify_NotValidAmount" ] = "Please enter a valid amount!",
 	[ "Cash_Notify_Salary" ] = "You have received %s from your salary.",
 	[ "Cash_Notify_Get" ] = "You are found %s.",
+	[ "Cash_Notify_Drop" ] = "You have been drop %s.",
 	
 	// Character
 	[ "Character_UI_Title" ] = "Character",
