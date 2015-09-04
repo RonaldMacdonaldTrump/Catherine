@@ -19,8 +19,13 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.catData = catherine.catData or { networkRegistry = { } }
 
 if ( SERVER ) then
+	local META = FindMetaTable( "Player" )
+	local getSteamID = META.SteamID
+	local isPlayer = META.IsPlayer
+	
 	function catherine.catData.SetVar( pl, key, value, noSync, save )
-		local steamID = pl:SteamID( )
+		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
+		local steamID = getSteamID( pl )
 		
 		catherine.catData.networkRegistry[ steamID ] = catherine.catData.networkRegistry[ steamID ] or { }
 		catherine.catData.networkRegistry[ steamID ][ key ] = value
@@ -38,13 +43,16 @@ if ( SERVER ) then
 	end
 
 	function catherine.catData.GetVar( pl, key, default )
-		local steamID = pl:SteamID( )
+		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
+		local steamID = getSteamID( pl )
 		
 		return catherine.catData.networkRegistry[ steamID ] and catherine.catData.networkRegistry[ steamID ][ key ] or default
 	end
 	
 	function catherine.catData.Save( pl )
-		local steamID = pl:SteamID( )
+		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
+		local steamID = getSteamID( pl )
+		
 		if ( !catherine.catData.networkRegistry[ steamID ] ) then return end
 		
 		catherine.database.UpdateDatas( "catherine_players", "_steamID = '" .. steamID .. "'", {
@@ -53,7 +61,8 @@ if ( SERVER ) then
 	end
 	
 	function catherine.catData.SendAllNetworkRegistries( pl )
-		local steamID = pl:SteamID( )
+		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
+		local steamID = getSteamID( pl )
 		
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !data or !data[ 1 ] ) then return end
@@ -65,7 +74,7 @@ if ( SERVER ) then
 
 	function catherine.catData.PlayerDisconnected( pl )
 		catherine.catData.Save( pl )
-		catherine.catData.networkRegistry[ pl:SteamID( ) ] = nil
+		catherine.catData.networkRegistry[ getSteamID( pl ) ] = nil
 	end
 	
 	hook.Add( "PlayerDisconnected", "catherine.catData.PlayerDisconnected", catherine.catData.PlayerDisconnected )

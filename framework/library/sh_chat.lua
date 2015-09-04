@@ -614,7 +614,7 @@ else
 			catherine.chat.backPanel:Remove( )
 		end
 
-		catherine.chat.Create( )
+		catherine.chat.Create( true )
 	end
 	
 	function catherine.chat.SizePosFix( )
@@ -660,7 +660,7 @@ else
 	end
 	
 	function catherine.chat.Show( )
-		if ( hook.Run( "CantStartChat", catherine.pl ) == true ) then return end
+		if ( hook.Run( "ShouldStartChat", catherine.pl ) == false ) then return end
 		local chatBoxW, chatBoxH, chatBoxX, chatBoxY = catherine.chat.GetSizePosData( )
 		
 		if ( !IsValid( catherine.chat.backPanel ) ) then
@@ -745,8 +745,8 @@ else
 		textEnt.OnTextChanged = function( pnl )
 			typingText = pnl:GetText( )
 			
-			if ( typingText:utf8len( ) >= 150 ) then
-				typingText = typingText:utf8sub( 1, 150 )
+			if ( typingText:utf8len( ) >= 130 ) then
+				typingText = typingText:utf8sub( 1, 130 )
 				
 				pnl:SetText( typingText )
 			end
@@ -786,7 +786,8 @@ else
 	end
 	
 	function catherine.chat.Hide( )
-		if ( hook.Run( "CantFinishChat", catherine.pl ) == true ) then return end
+		if ( hook.Run( "ShouldFinishChat", catherine.pl ) == false ) then return end
+		
 		catherine.chat.isOpened = false
 		
 		local self = catherine.chat.chatPanel

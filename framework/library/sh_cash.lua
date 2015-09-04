@@ -36,11 +36,7 @@ function catherine.cash.SetName( singular, plural )
 end
 
 function catherine.cash.GetCompleteName( amount )
-	if ( amount > 1 ) then
-		return amount .. " " .. catherine.cash.plural
-	else
-		return amount .. " " .. catherine.cash.singular
-	end
+	return amount .. " " .. ( amount > 1 and catherine.cash.plural or catherine.cash.singular )
 end
 
 function catherine.cash.Has( pl, amount )

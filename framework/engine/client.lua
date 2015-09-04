@@ -825,8 +825,12 @@ function GM:ScreenResolutionFix( )
 	catherine.menu.Rebuild( )
 end
 
-function GM:CantStartChat( pl )
-	return !pl:IsCharacterLoaded( )
+function GM:ShouldStartChat( pl )
+	return pl:IsCharacterLoaded( )
+end
+
+function GM:ShouldFinishChat( pl )
+
 end
 
 function GM:PopulateToolMenu( )
