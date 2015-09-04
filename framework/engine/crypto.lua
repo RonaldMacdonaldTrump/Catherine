@@ -63,12 +63,8 @@ function catherine.crypto.Decode( text )
 		a = a + ap
 		b = b + bp
 		
-		tab[ #tab + 1 ] = find
+		tab[ #tab + 1 ] = find:sub( 1, 1 )
 	end
 	
-	for i = 1, #tab do
-		tab[ i ] = tab[ i ]:sub( 1, 1 )
-	end
-
 	return tc( tab, "" )
 end
