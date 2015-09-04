@@ -153,6 +153,88 @@ catherine.database.modules[ "mysqloo" ] = {
 		end
 	end
 }
+catherine.database.modules[ "tmysql4" ] = {
+	connect = function( func )
+		if ( !pcall( require, "tmysql4" ) ) then
+			catherine.util.Print( Color( 255, 0, 0 ), "Can't load database module!!! - tMySQL4" )
+			return
+		end
+		
+		local function initialize( )
+			local queries = string.Explode( ";", CREATE_TABLES_USING_MYSQL )
+
+			for i = 1, 2 do
+				catherine.database.query( queries[ i ] )
+			end
+		end
+		
+		local info = catherine.database.information
+		local object, err = tmysql.initialize( info.db_hostname or "127.0.0.1", info.db_account_id, info.db_account_password, info.db_name, tonumber( info.db_port ) or 3306 )
+		
+		if ( object ) then
+			catherine.database.object = object
+			catherine.database.Connected = true
+			catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using tMySQL4." )
+			initialize( )
+			
+			if ( func ) then
+				func( )
+			end
+			
+			hook.Run( "DatabaseConnected" )
+		else
+			catherine.util.Print( Color( 255, 0, 0 ), "Catherine has connect failed using tMySQL4 - " .. err .. " !!!" )
+			catherine.database.Connected = false
+			catherine.database.ErrorMsg = err
+		end
+	end,
+	
+	if ( func ) then
+			function result:onSuccess( data )
+				func( data )
+			end
+		end
+		
+		function result:onError( err )
+			MsgC( Color( 255, 0, 0 ), "[CAT Query ERROR] " .. query .. " -> " .. err .. " !!!\n" )
+		end
+	query = function( query, func )
+		catherine.database.object:Query( query, function( data, status, err )
+			if ( QUERY_SUCCESS and status == QUERY_SUCCESS ) then
+				if ( func ) then
+					func( data )
+				end
+			else
+				if ( data and data[ 1 ] ) then
+					local firstData = data[ 1 ]
+					
+					if ( firstData.status ) then
+						if ( func ) then
+							func( firstData.data, firstData.lastid )
+						end
+						
+						return
+					else
+						err = firstData.error
+					end
+				end
+				
+				MsgC( Color( 255, 0, 0 ), "[CAT Query ERROR] " .. query .. " -> " .. ( err or "Unknown" ) .. " !!!\n" )
+			end
+		end )
+	end,
+	escape = function( val )
+		local typ = type( val )
+		
+		if ( typ == "string" ) then
+			return sql.SQLStr( val, true )
+		elseif ( typ == "number" ) then
+			return sql.SQLStr( tostring( val ), true )
+		elseif ( typ == "table" ) then
+			return sql.SQLStr( util.TableToJSON( val ), true )
+		end
+	end
+}
 catherine.database.modules[ "sqlite" ] = {
 	connect = function( func )
 		catherine.database.Connected = true
