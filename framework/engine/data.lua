@@ -55,6 +55,7 @@ end )
 function catherine.data.FrameworkInitialized( )
 	file.CreateDir( "catherine" )
 	file.CreateDir( "catherine/globals" )
+	file.CreateDir( "catherine/database" )
 end
 
 function catherine.data.SchemaInitialized( )

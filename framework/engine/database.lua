@@ -186,6 +186,8 @@ catherine.database.modules[ "tmysql4" ] = {
 			catherine.util.Print( Color( 255, 0, 0 ), "Catherine has connect failed using tMySQL4 - " .. err .. " !!!" )
 			catherine.database.Connected = false
 			catherine.database.ErrorMsg = err
+			
+			hook.Run( "DatabaseError", nil, err )
 		end
 	end,
 	query = function( query, func )
@@ -210,6 +212,7 @@ catherine.database.modules[ "tmysql4" ] = {
 				end
 				
 				MsgC( Color( 255, 0, 0 ), "[CAT Query ERROR] " .. query .. " -> " .. ( err or "Unknown" ) .. " !!!\n" )
+				hook.Run( "DatabaseError", query, err )
 			end
 		end )
 	end,
@@ -237,7 +240,10 @@ catherine.database.modules[ "sqlite" ] = {
 		local result = sql.Query( query )
 		
 		if ( result == false ) then
-			MsgC( Color( 255, 0, 0 ), "[CAT Query ERROR] " .. query .. " -> " .. sql.LastError( ) .. " !!!\n" )
+			local err = sql.LastError( )
+			
+			MsgC( Color( 255, 0, 0 ), "[CAT Query ERROR] " .. query .. " -> " .. err .. " !!!\n" )
+			hook.Run( "DatabaseError", query, err )
 			return
 		end
 		

@@ -67,6 +67,13 @@ function GM:ShowTeam( pl )
 	end
 end
 
+function GM:DatabaseError( query, err )
+	local time = os.date( "*t" )
+	local today = time.year .. "-" .. time.month .. "-" .. time.day
+	
+	file.Append( "catherine/database/" .. today .. ".txt", "[" .. os.date( "%X" ) .. "] DATABASE ERROR > " .. ( query or "UNKNOWN" ) .. " -> " .. ( err or "Unknown" ) .. "\n" )
+end
+
 function GM:PlayerShouldOpenInformationMenu( pl )
 	return pl:IsCharacterLoaded( ) and !catherine.player.IsCharacterBanned( pl )
 end
