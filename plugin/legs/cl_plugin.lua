@@ -208,7 +208,7 @@ function PLUGIN:LegsWork( pl, speed )
 	if ( self.velocity > 0.5 ) then
 		self.playBackRate = speed < 0.001 and 0.01 or math.Clamp( self.velocity / speed, 0.01, 10 )
 	end
-	
+
 	legEnt:SetPlaybackRate( self.playBackRate )
 	self.sequence = pl:GetSequence( )
 	

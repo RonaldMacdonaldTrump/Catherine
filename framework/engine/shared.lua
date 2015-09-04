@@ -140,7 +140,7 @@ function GM:CalcMainActivity( pl, velo )
 
 		local ani = aniClass[ holdType ][ act ]
 		local val = ACT_IDLE
-
+		
 		if ( !pl:OnGround( ) ) then
 			pl.CalcIdle = aniClass.glide or ACT_GLIDE
 		elseif ( pl:InVehicle( ) ) then
@@ -306,6 +306,8 @@ end
 function GM:PlayerShouldThrowPunch( pl )
 	if ( pl:GetWeaponRaised( ) ) then
 		return true
+	else
+		return false
 	end
 end
 

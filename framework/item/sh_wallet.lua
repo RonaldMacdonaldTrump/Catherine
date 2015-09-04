@@ -58,7 +58,7 @@ ITEM.func.drop = {
 			return
 		end
 		
-		catherine.util.StringReceiver( pl, "Cash_UniqueDropMoney", "^Item_DropQ_Wallet", catherine.cash.Get( pl ), function( _, val )
+		catherine.util.StringReceiver( pl, "Cash_UniqueDropMoney", LANG( pl, "Item_DropQ_Wallet", catherine.cash.GetOnlySingular( ) ), catherine.cash.Get( pl ), function( _, val )
 			val = tonumber( val )
 			
 			if ( !val ) then

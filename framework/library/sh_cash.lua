@@ -40,7 +40,11 @@ function catherine.cash.GetCompleteName( amount )
 end
 
 function catherine.cash.Has( pl, amount )
-	return catherine.cash.Get( pl ) >= math.max( amount or 0, 0 )
+	if ( amount < 0 ) then
+		return false
+	end
+	
+	return catherine.cash.Get( pl ) >= amount
 end
 
 function catherine.cash.Get( pl )
