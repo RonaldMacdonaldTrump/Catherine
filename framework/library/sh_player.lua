@@ -432,7 +432,11 @@ if ( SERVER ) then
 			for k, v in ipairs( pl:GetWeapons( ) ) do
 				ent.CAT_weaponsBuffer[ #ent.CAT_weaponsBuffer + 1 ] = v:GetClass( )
 			end
-
+			
+			for k, v in ipairs( pl:GetBodyGroups( ) ) do
+				ent:SetBodygroup( v.id, pl:GetBodygroup( v.id ) )
+			end
+			
 			pl:StripWeapons( )
 			pl:GodDisable( )
 			pl:Freeze( true )

@@ -778,11 +778,16 @@ function GM:DoPlayerDeath( pl )
 		ent:SetAngles( pl:GetAngles( ) )
 		ent:SetModel( pl:GetModel( ) )
 		ent:SetPos( pl:GetPos( ) )
+		ent:SetSkin( pl:GetSkin( ) )
 		ent:Spawn( )
 		ent:Activate( )
 		ent:SetCollisionGroup( COLLISION_GROUP_WEAPON )
 		ent.player = self
 		ent:SetNetVar( "player", pl )
+		
+		for k, v in ipairs( pl:GetBodyGroups( ) ) do
+			ent:SetBodygroup( v.id, pl:GetBodygroup( v.id ) )
+		end
 		
 		pl:SetNetVar( "ragdollIndex", ent:EntIndex( ) )
 		pl.CAT_deathBody = ent
