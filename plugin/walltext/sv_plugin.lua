@@ -30,12 +30,20 @@ function PLUGIN:LoadTexts( )
 	self.textLists = catherine.data.Get( "walltext", { } )
 end
 
-function PLUGIN:DataLoad( )
+function PLUGIN:PreCleanupMap( )
+	self:SaveTexts( )
+end
+
+function PLUGIN:PostCleanupMap( )
 	self:LoadTexts( )
 end
 
 function PLUGIN:DataSave( )
 	self:SaveTexts( )
+end
+
+function PLUGIN:DataLoad( )
+	self:LoadTexts( )
 end
 
 function PLUGIN:AddText( pl, text, size, col )

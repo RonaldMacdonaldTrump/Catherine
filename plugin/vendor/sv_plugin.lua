@@ -354,12 +354,20 @@ function PLUGIN:CanUseVendor( pl, ent )
 	return true
 end
 
-function PLUGIN:DataLoad( )
+function PLUGIN:PreCleanupMap( )
+	self:SaveVendors( )
+end
+
+function PLUGIN:PostCleanupMap( )
 	self:LoadVendors( )
 end
 
 function PLUGIN:DataSave( )
 	self:SaveVendors( )
+end
+
+function PLUGIN:DataLoad( )
+	self:LoadVendors( )
 end
 
 netstream.Hook( "catherine.plugin.vendor.VendorWork", function( pl, data )

@@ -17,47 +17,47 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.name = "^StaticE_Plugin_Name"
+PLUGIN.name = "^PermanentE_Plugin_Name"
 PLUGIN.author = "L7D"
-PLUGIN.desc = "^StaticE_Plugin_Desc"
+PLUGIN.desc = "^PermanentE_Plugin_Desc"
 
 catherine.language.Merge( "english", {
-	[ "StaticE_Notify_Add" ] = "You are added this entity in static props.",
-	[ "StaticE_Notify_Remove" ] = "You are removed this entity in static props.",
-	[ "StaticE_Notify_IsNotProp" ] = "This entity is not prop!",
-	[ "StaticE_Plugin_Name" ] = "Static Prop",
-	[ "StaticE_Plugin_Desc" ] = "Good stuff."
+	[ "PermanentE_Notify_Add" ] = "Now this entity are permanently save.",
+	[ "PermanentE_Notify_Remove" ] = "Now this entity aren't saved.",
+	[ "PermanentE_Notify_Cant" ] = "This entity cannot be add to permanent entities!",
+	[ "PermanentE_Plugin_Name" ] = "Permanent Entity",
+	[ "PermanentE_Plugin_Desc" ] = "Save the entity as Permanent."
 } )
 
 catherine.language.Merge( "korean", {
-	[ "StaticE_Notify_Add" ] = "당신은 이 물체를 고정식 프롭에 추가했습니다.",
-	[ "StaticE_Notify_Remove" ] = "당신은 이 물체의 고정식 프롭 설정을 해제했습니다.",
-	[ "StaticE_Notify_IsNotProp" ] = "이 물체는 프롭이 아닙니다!",
-	[ "StaticE_Plugin_Name" ] = "고정식 프롭",
-	[ "StaticE_Plugin_Desc" ] = "프롭이 영구적으로 저장되게 할 수 있습니다.",
+	[ "PermanentE_Notify_Add" ] = "이제 이 물체는 영구적으로 저장됩니다.",
+	[ "PermanentE_Notify_Remove" ] = "이제 이 물체는 저장되지 않습니다.",
+	[ "PermanentE_Notify_Cant" ] = "이 물체는 영구 물체로 설정할 수 없습니다!",
+	[ "PermanentE_Plugin_Name" ] = "영구 물체",
+	[ "PermanentE_Plugin_Desc" ] = "물체를 영구적으로 저장합니다.",
 } )
 
 catherine.util.Include( "sv_plugin.lua" )
 
 catherine.command.Register( {
-	uniqueID = "&uniqueID_staticEntity",
+	uniqueID = "&uniqueID_permanentEntity",
 	command = "staticentity",
-	desc = "Add / Remove the Static Entity list.",
+	desc = "Add / Remove the Permanent Entity list.",
 	canRun = function( pl ) return pl:IsAdmin( ) end,
 	runFunc = function( pl, args )
 		local ent = pl:GetEyeTraceNoCursor( ).Entity
-
+		
 		if ( IsValid( ent ) ) then
-			if ( ent:IsProp( ) and !ent:IsDoor( ) ) then
+			if ( table.HasValue( PLUGIN.entClass, ent:GetClass( ):lower( ) ) ) then
 				local curStatus = ent:GetNetVar( "isStatic" )
-
+				
 				ent:SetNetVar( "isStatic", !curStatus )
-
-				catherine.util.NotifyLang( pl, !curStatus and "StaticE_Notify_Add" or "StaticE_Notify_Remove" )
+				
+				catherine.util.NotifyLang( pl, !curStatus and "PermanentE_Notify_Add" or "PermanentE_Notify_Remove" )
 				
 				PLUGIN:DataSave( )
 			else
-				catherine.util.NotifyLang( pl, "StaticE_Notify_IsNotProp" )
+				catherine.util.NotifyLang( pl, "PermanentE_Notify_Cant" )
 			end
 		else
 			catherine.util.NotifyLang( pl, "Entity_Notify_NotValid" )

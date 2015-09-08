@@ -17,6 +17,12 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
+PLUGIN.entClass = {
+	"prop_ragdoll",
+	"gmod_light",
+	"gmod_lamp",
+	"prop_physics"
+}
 
 function PLUGIN:DataSave( )
 	local data = { }
@@ -36,19 +42,18 @@ function PLUGIN:DataSave( )
 	end
 end
 
-function PLUGIN:ConvertFromStaticProp( ) // Need to update;
-	//local data = catherine.data.Get( "staticprops" )
+function PLUGIN:ConvertFromStaticProp( )
+	catherine.data.Set( "static_entity", catherine.data.Get( "staticprops" ) )
+	catherine.data.Set( "convert_from_staticprops", true )
 	
-	//catherine.data.Set( "convert_from_staticprops", true )
+	MsgC( Color( 0, 255, 0 ), "[CAT PLUGIN] Finished the convert progress.\n" )
 end
 
 function PLUGIN:DataLoad( )
---[[
 	if ( catherine.data.Get( "convert_from_staticprops", false ) == false ) then
-		MsgC( Color( 0, 255, 0 ), "[CAT PLUGIN] Processing the convert to Static entity from Static prop ...\n" )
+		MsgC( Color( 255, 255, 0 ), "[CAT PLUGIN] Processing the convert to Static entity from Static prop ...\n" )
 		self:ConvertFromStaticProp( )
 	end
---]]
 
 	local data = catherine.data.Get( "static_entity" )
 	
