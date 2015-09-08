@@ -29,9 +29,7 @@ catherine.hud = catherine.hud or {
 	clip1 = 0,
 	pre = 0,
 	vAlpha = 0,
-	vAlphaTarget = 255,
-	
-	characterSaving = { }
+	vAlphaTarget = 255
 }
 local blockedModules = { }
 
@@ -70,7 +68,6 @@ function catherine.hud.Draw( pl )
 	catherine.hud.ProgressBar( pl, w, h )
 	catherine.hud.TopNotify( pl, w, h )
 	catherine.hud.WelcomeIntro( pl, w, h )
-	catherine.hud.CharacterSave( pl, w, h )
 end
 
 function catherine.hud.ZipTie( pl, w, h )
@@ -267,35 +264,6 @@ function catherine.hud.ProgressBar( pl, w, h )
 	drawCircle( w / 2, h / 2 - 40, 15, 5, 90, 360 * frac, 100 )
 	
 	drawText( data.message or "", "catherine_normal25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
-end
-
-function catherine.hud.CharacterSave( pl, w, h )
-	local data = catherine.hud.characterSaving
-	
-	if ( data and #data != 0 ) then
-		if ( data.status ) then
-			data.a = Lerp( 0.03, data.a, 200 )
-		else
-			if ( math.Round( data.a ) > 0 ) then
-				data.a = Lerp( 0.03, data.a, 0 )
-			else
-				catherine.hud.characterSaving = nil
-				return
-			end
-		end
-		
-		data.rotate = math.Approach( data.rotate, data.rotate - 4, 4 )
-		
-		drawBox( 0, w - 70, 40, 50, 50, Color( 255, 255, 255, data.a ) )
-		
-		noTex( )
-		setColor( 90, 90, 90, data.a )
-		drawCircle( w - 45, 65, 15, 5, 90, 360, 100 )
-		
-		noTex( )
-		setColor( 255, 255, 255, data.a )
-		drawCircle( w - 45, 65, 15, 5, data.rotate, 90, 100 )
-	end
 end
 
 local modules = {
