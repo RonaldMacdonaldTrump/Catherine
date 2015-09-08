@@ -18,7 +18,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 local PLUGIN = PLUGIN
 PLUGIN.entClass = {
-	"prop_ragdoll",
 	"gmod_light",
 	"gmod_lamp",
 	"prop_physics"
@@ -44,7 +43,7 @@ end
 
 function PLUGIN:ConvertFromStaticProp( )
 	catherine.data.Set( "static_entity", catherine.data.Get( "staticprops" ) )
-	catherine.data.Set( "convert_from_staticprops", true )
+	catherine.data.Set( "convert_from_staticprops", "true" )
 	
 	MsgC( Color( 0, 255, 0 ), "[CAT PLUGIN] Finished the convert progress.\n" )
 end
