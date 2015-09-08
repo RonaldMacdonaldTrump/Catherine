@@ -56,14 +56,15 @@ PLUGIN.config.noHeadbobWeaponClass = {
 	"weapon_physgun",
 	"gmod_tool",
 }
-local velo = FindMetaTable( "Entity" ).GetVelocity
-local twoD = FindMetaTable( "Vector" ).Length2D
-local math_Clamp = math.Clamp
 PLUGIN.currAng = PLUGIN.currAng or Angle( 0, 0, 0 )
 PLUGIN.currPos = PLUGIN.currPos or Vector( 0, 0, 0 )
 PLUGIN.targetAng = PLUGIN.targetAng or Angle( 0, 0, 0 )
 PLUGIN.targetPos = PLUGIN.targetPos or Vector( 0, 0, 0 )
 PLUGIN.resultAng = PLUGIN.resultAng or Angle( 0, 0, 0 )
+
+local velo = FindMetaTable( "Entity" ).GetVelocity
+local twoD = FindMetaTable( "Vector" ).Length2D
+local math_Clamp = math.Clamp
 
 function PLUGIN:Initialize( )
 	CAT_CONVAR_REALISTIC = CreateClientConVar( "cat_convar_realistic", "1", true, true )
@@ -181,14 +182,10 @@ catherine.option.Register( "CONVAR_MOUSE_SMOOTHING_SCALE", "cat_convar_mouse_smo
 		curVal = "0"
 	}
 	
-	if ( GetConVarString( "cat_convar_mouse_smoothing_scale" ) == "0" ) then
-		result.curVal = LANG( "Option_Str_Mosue_Smoothing_Scale_Option04" )
-	elseif ( GetConVarString( "cat_convar_mouse_smoothing_scale" ) == "1" ) then
-		result.curVal = LANG( "Option_Str_Mosue_Smoothing_Scale_Option03" )
-	elseif ( GetConVarString( "cat_convar_mouse_smoothing_scale" ) == "2" ) then
-		result.curVal = LANG( "Option_Str_Mosue_Smoothing_Scale_Option02" )
-	elseif ( GetConVarString( "cat_convar_mouse_smoothing_scale" ) == "3" ) then
-		result.curVal = LANG( "Option_Str_Mosue_Smoothing_Scale_Option01" )
+	for i = 4, 1, -1 do
+		if ( GetConVarString( "cat_convar_mouse_smoothing_scale" ) == tostring( 4 - i ) ) then
+			result.curVal = LANG( "Option_Str_Mosue_Smoothing_Scale_Option0" .. i )
+		end
 	end
 	
 	return result
