@@ -149,7 +149,7 @@ function catherine.plugin.IncludeEntities( dir )
 	end
 	
 	for k, v in pairs( folders ) do
-		ENT = { Type = "anim", Base = "base_gmodentity", ClassName = v:sub( 1, #v - 4 ) }
+		ENT = { Type = "anim", Base = "base_gmodentity", ClassName = v }
 		
 		if ( SERVER ) then
 			if ( file.Exists( dir .. "/entities/entities/" .. v .. "/init.lua", "LUA" ) ) then
@@ -186,7 +186,7 @@ function catherine.plugin.IncludeWeapons( dir )
 	end
 	
 	for k, v in pairs( folders ) do
-		SWEP = { Base = "weapon_base", Primary = { }, Secondary = { }, ClassName = v:sub( 1, #v - 4 ) }
+		SWEP = { Base = "weapon_base", Primary = { }, Secondary = { }, ClassName = v }
 		
 		if ( SERVER ) then
 			if ( file.Exists( dir .. "/entities/weapons/" .. v .. "/init.lua", "LUA" ) ) then
@@ -234,14 +234,14 @@ function catherine.plugin.IncludeEffects( dir )
 				AddCSLuaFile( dir .. "/entities/weapons/" .. v .. "/cl_init.lua" )
 			end
 		elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/cl_init.lua", "LUA" ) ) then
-			EFFECT = { ClassName = v:sub( 1, #v - 4 ) }
+			EFFECT = { ClassName = v }
 			
 			include( dir .. "/entities/weapons/" .. v .. "/cl_init.lua" )
 			effects.Register( EFFECT, EFFECT.ClassName )
 			
 			EFFECT = nil
 		elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/init.lua", "LUA" ) ) then
-			EFFECT = { ClassName = v:sub( 1, #v - 4 ) }
+			EFFECT = { ClassName = v }
 			
 			include( dir .. "/entities/weapons/" .. v .. "/init.lua" )
 			effects.Register( EFFECT, EFFECT.ClassName )
