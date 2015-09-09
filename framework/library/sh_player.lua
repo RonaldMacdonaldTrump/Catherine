@@ -397,6 +397,8 @@ if ( SERVER ) then
 			ent:SetModel( pl:GetModel( ) )
 			ent:SetPos( pl:GetPos( ) )
 			ent:SetSkin( pl:GetSkin( ) )
+			ent:SetMaterial( pl:GetMaterial( ) )
+			ent:SetColor( pl:GetColor( ) )
 			ent:Spawn( )
 			ent:SetNetVar( "player", pl )
 			ent:SetCollisionGroup( COLLISION_GROUP_WEAPON )

@@ -29,7 +29,8 @@ if ( SERVER ) then
 		end
 
 		for k, v in pairs( target or { } ) do
-			if ( v == pl or !IsValid( v ) ) then continue end
+			if ( !IsValid( v ) ) then continue end
+			if ( pl == v ) then continue end
 			
 			catherine.recognize.RegisterKnow( pl, v )
 		end
@@ -50,12 +51,6 @@ if ( SERVER ) then
 	function catherine.recognize.Initialize( pl )
 		catherine.character.SetCharVar( pl, "recognize", { } )
 	end
-
-	function catherine.recognize.PlayerDeath( pl )
-		catherine.recognize.Initialize( pl )
-	end
-	
-	hook.Add( "PlayerDeath", "catherine.recognize.PlayerDeath", catherine.recognize.PlayerDeath )
 	
 	netstream.Hook( "catherine.recognize.DoKnow", function( pl, data )
 		catherine.recognize.DoKnow( pl, data[ 1 ], data[ 2 ] )

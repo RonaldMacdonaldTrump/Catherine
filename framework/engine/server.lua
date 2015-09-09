@@ -71,7 +71,7 @@ function GM:DatabaseError( query, err )
 	local time = os.date( "*t" )
 	local today = time.year .. "-" .. time.month .. "-" .. time.day
 	
-	file.Append( "catherine/database/" .. today .. ".txt", "[" .. os.date( "%X" ) .. "] DATABASE ERROR > " .. ( query or "UNKNOWN" ) .. " -> " .. ( err or "Unknown" ) .. "\n" )
+	file.Append( "catherine/database/" .. today .. ".txt", "[" .. os.date( "%X" ) .. "] DATABASE ERROR > " .. ( query or "UNKNOWN" ) .. " -> " .. ( err or "Unknown" ) .. "\r\n" )
 end
 
 function GM:PlayerShouldOpenInformationMenu( pl )
@@ -779,6 +779,8 @@ function GM:DoPlayerDeath( pl )
 		ent:SetModel( pl:GetModel( ) )
 		ent:SetPos( pl:GetPos( ) )
 		ent:SetSkin( pl:GetSkin( ) )
+		ent:SetMaterial( pl:GetMaterial( ) )
+		ent:SetColor( pl:GetColor( ) )
 		ent:Spawn( )
 		ent:Activate( )
 		ent:SetCollisionGroup( COLLISION_GROUP_WEAPON )
@@ -791,8 +793,6 @@ function GM:DoPlayerDeath( pl )
 		
 		pl:SetNetVar( "ragdollIndex", ent:EntIndex( ) )
 		pl.CAT_deathBody = ent
-	else
-		catherine.entity.StartFadeOut( ent, time, func )
 	end
 	
 	pl:SetNetVar( "noDrawOriginal", true )
@@ -835,6 +835,7 @@ function GM:PlayerDeath( pl )
 	catherine.util.TopNotify( pl, false )
 	
 	catherine.attribute.ClearBoost( pl )
+	catherine.recognize.Initialize( pl )
 	
 	pl:SetNetVar( "nextSpawnTime", CurTime( ) + respawnTime )
 	pl:SetNetVar( "deathTime", CurTime( ) )
@@ -972,6 +973,7 @@ function GM:ShutDown( )
 	
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Shutting down ... :)" )
 	
+	hook.Run( "ServerShutDown" )
 	hook.Run( "DataSave" )
 end
 

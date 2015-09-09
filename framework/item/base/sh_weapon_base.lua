@@ -25,7 +25,8 @@ BASE.weight = 0
 BASE.isWeapon = true
 BASE.weaponClass = "weapon_smg1"
 BASE.itemData = {
-	equiped = false
+	equiped = false,
+	clip1 = 0
 }
 BASE.weaponType = "primary"
 BASE.attachmentLimit = {
@@ -61,25 +62,36 @@ BASE.func.equip = {
 			catherine.item.Give( pl, itemTable.uniqueID )
 			ent:Remove( )
 		end
-
+		
+		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
+			pl:StripWeapon( itemTable.weaponClass )
+		end
+		
 		local wep = pl:Give( itemTable.weaponClass )
 		
 		if ( IsValid( wep ) ) then
 			pl:SelectWeapon( itemTable.weaponClass )
-			wep:SetClip1( 0 )
-		end
-
-		if ( playerWeaponType[ itemWeaponType ] ) then
-			playerWeaponType[ itemWeaponType ] = playerWeaponType[ itemWeaponType ] + 1
+			
+			if ( pl:GetAmmoCount( wep:GetPrimaryAmmoType( ) ) == wep:Clip1( ) and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "clip1", 0 ) == 0 ) then
+				pl:RemoveAmmo( wep:Clip1( ), wep:GetPrimaryAmmoType( ) )
+			end
+			
+			wep:SetClip1( catherine.inventory.GetItemData( pl, itemTable.uniqueID, "clip1", 0 ) )
+			
+			if ( playerWeaponType[ itemWeaponType ] ) then
+				playerWeaponType[ itemWeaponType ] = playerWeaponType[ itemWeaponType ] + 1
+			else
+				playerWeaponType[ itemWeaponType ] = 1
+			end
+			
+			catherine.attachment.Refresh( pl )
+			
+			pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
+			catherine.character.SetCharVar( pl, "equippingWeaponTypes", playerWeaponType )
+			catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", true )
 		else
-			playerWeaponType[ itemWeaponType ] = 1
+			ErrorNoHalt( "\n[CAT ERROR] On the Item <" .. itemTable.uniqueID .. "> called the weapon <" .. itemTable.weaponClass .. "> does not exist :< ...\n" )
 		end
-
-		catherine.attachment.Refresh( pl )
-		
-		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
-		catherine.character.SetCharVar( pl, "equippingWeaponTypes", playerWeaponType )
-		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", true )
 	end,
 	canLook = function( pl, itemTable )
 		return !catherine.inventory.IsEquipped( itemTable.uniqueID )
@@ -91,7 +103,12 @@ BASE.func.unequip = {
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
-			pl:StripWeapon( itemTable.weaponClass )
+			local wep = pl:GetWeapon( itemTable.weaponClass )
+			
+			if ( IsValid( wep ) ) then
+				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "clip1", wep:Clip1( ) )
+				pl:StripWeapon( itemTable.weaponClass )
+			end
 		end
 		
 		local playerWeaponType = catherine.character.GetCharVar( pl, "equippingWeaponTypes", { } )
@@ -136,6 +153,20 @@ if ( SERVER ) then
 	end )
 	
 	catherine.item.RegisterHook( "CharacterLoadingStart", BASE, function( pl )
+		if ( !pl:IsCharacterLoaded( ) ) then return end
+		
+		for k, v in pairs( catherine.inventory.Get( pl ) ) do
+			local itemTable = catherine.item.FindByID( k )
+			
+			if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( pl, k ) ) then continue end
+			
+			local wep = pl:GetWeapon( itemTable.weaponClass )
+		
+			if ( IsValid( wep ) ) then
+				catherine.inventory.SetItemData( pl, k, "clip1", wep:Clip1( ) )
+			end
+		end
+		
 		catherine.character.SetCharVar( pl, "equippingWeaponTypes", { } )
 	end )
 	
@@ -144,6 +175,7 @@ if ( SERVER ) then
 			if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( pl, k ) ) then continue end
 			
 			catherine.item.Work( pl, k, "unequip" )
+			catherine.inventory.SetItemData( pl, k, "clip1", 0 )
 			catherine.item.Spawn( k, pl:GetPos( ) )
 			catherine.item.Take( pl, k )
 		end
@@ -170,6 +202,22 @@ if ( SERVER ) then
 	catherine.item.RegisterHook( "PreItemForceTake", BASE, function( pl, target, itemTable )
 		if ( itemTable.isWeapon ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+		end
+	end )
+	
+	catherine.item.RegisterHook( "DataSave", BASE, function( )
+		for k, v in pairs( player.GetAllByLoaded( ) ) do
+			for k1, v1 in pairs( catherine.inventory.Get( v ) ) do
+				local itemTable = catherine.item.FindByID( k1 )
+				
+				if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( v, k1 ) ) then continue end
+				
+				local wep = v:GetWeapon( itemTable.weaponClass )
+			
+				if ( IsValid( wep ) ) then
+					catherine.inventory.SetItemData( v, k1, "clip1", wep:Clip1( ) )
+				end
+			end
 		end
 	end )
 else

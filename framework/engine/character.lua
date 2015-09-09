@@ -582,14 +582,14 @@ if ( SERVER ) then
 		catherine.character.DeleteNetworkRegistry( pl )
 	end
 	
-	function catherine.character.DataSave( )
+	function catherine.character.ServerShutDown( )
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			catherine.character.Save( v )
 		end
 	end
 	
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected", catherine.character.PlayerDisconnected )
-	hook.Add( "DataSave", "catherine.character.DataSave", catherine.character.DataSave )
+	hook.Add( "ServerShutDown", "catherine.character.ServerShutDown", catherine.character.ServerShutDown )
 
 	netstream.Hook( "catherine.character.Create", function( pl, data )
 		catherine.character.Create( pl, data )
