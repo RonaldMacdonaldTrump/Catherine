@@ -182,12 +182,14 @@ function catherine.hud.WelcomeIntro( pl, w, h )
 	local data = catherine.hud.welcomeIntroWorkingData
 	
 	for k, v in pairs( catherine.hud.welcomeIntroAnimations ) do
-		if ( data.initStartTime + v.startTime <= CurTime( ) ) then
+		local curTime = CurTime( )
+		
+		if ( data.initStartTime + v.startTime <= curTime ) then
 			if ( !v.initStartTime ) then
-				v.initStartTime = CurTime( )
+				v.initStartTime = curTime
 			end
 
-			if ( v.initStartTime + v.showingTime - 1 <= CurTime( ) ) then
+			if ( v.initStartTime + v.showingTime - 1 <= curTime ) then
 				if ( v.a <= 0 ) then
 					continue
 				else
@@ -199,12 +201,12 @@ function catherine.hud.WelcomeIntro( pl, w, h )
 			
 			local targetText = type( v.targetText ) == "function" and v.targetText( ) or v.targetText
 			
-			if ( v.textTime <= CurTime( ) and v.text:utf8len( ) < targetText:utf8len( ) ) then
+			if ( v.textTime <= curTime and v.text:utf8len( ) < targetText:utf8len( ) ) then
 				local text = targetText:utf8sub( v.textSubCount, v.textSubCount )
 				
 				v.text = v.text .. text
 				v.textSubCount = v.textSubCount + 1
-				v.textTime = CurTime( ) + v.textTimeDelay
+				v.textTime = curTime + v.textTimeDelay
 			end
 			
 			local col = v.col or Color( 255, 255, 255 )
@@ -212,7 +214,7 @@ function catherine.hud.WelcomeIntro( pl, w, h )
 			drawText( v.text, v.font, v.startX, v.startY, Color( col.r, col.g, col.b, v.a ), v.xAlign or 1, v.yAlign or 1 )
 		end
 		
-		if ( data.initStartTime + 60 <= CurTime( ) ) then
+		if ( data.initStartTime + 60 <= curTime ) then
 			catherine.hud.welcomeIntroWorkingData = nil
 		end
 	end
