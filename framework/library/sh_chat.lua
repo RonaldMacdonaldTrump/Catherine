@@ -325,6 +325,8 @@ catherine.chat.Register( "disconnect", {
 } )
 
 if ( SERVER ) then
+	catherine.chat.chatTypedHistoryBackup = catherine.chat.chatTypedHistoryBackup or { }
+	
 	function catherine.chat.Run( pl, text )
 		local classTable = catherine.chat.FindByID( catherine.chat.FindIDByText( text ) )
 		
@@ -442,6 +444,18 @@ if ( SERVER ) then
 		return true
 	end
 	
+	function catherine.chat.SetPlayerChatHistory( pl, data )
+		catherine.chat.chatTypedHistoryBackup[ pl:SteamID( ) ] = data
+	end
+	
+	function catherine.chat.GetPlayerChatHistory( pl )
+		return catherine.chat.chatTypedHistoryBackup[ pl:SteamID( ) ]
+	end
+	
+	function catherine.chat.StartChatHistoryRestore( pl )
+		netstream.Start( pl, "catherine.chat.RestoreChatHistory", catherine.chat.GetPlayerChatHistory( pl ) )
+	end
+	
 	function catherine.chat.RunByID( pl, uniqueID, text, target, ... )
 		local classTable = catherine.chat.FindByID( uniqueID )
 		
@@ -469,6 +483,10 @@ if ( SERVER ) then
 	
 	netstream.Hook( "catherine.chat.Run", function( pl, data )
 		hook.Run( "PlayerSay", pl, data, true )
+	end )
+	
+	netstream.Hook( "catherine.chat.BackupChatHistory", function( pl, data )
+		catherine.chat.SetPlayerChatHistory( pl, data )
 	end )
 else
 	catherine.chat.backPanel = catherine.chat.backPanel or nil
@@ -505,6 +523,10 @@ else
 		end
 	end )
 	
+	netstream.Hook( "catherine.chat.RestoreChatHistory", function( data )
+		catherine.chat.chatTypedHistory = data
+	end )
+	
 	catherine.hud.RegisterBlockModule( "CHudChat" )
 	
 	chat.AddTextBuffer = chat.AddTextBuffer or chat.AddText
@@ -533,6 +555,10 @@ else
 		end
 		
 		return chat.AddTextBuffer( unpack( data ) )
+	end
+	
+	function catherine.chat.StartChatHistoryBackup( )
+		netstream.Start( "catherine.chat.BackupChatHistory", catherine.chat.chatTypedHistory )
 	end
 	
 	function catherine.chat.SetOverrideFont( font )

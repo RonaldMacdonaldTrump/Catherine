@@ -377,6 +377,12 @@ function GM:PlayerAuthed( pl )
 	end )
 end
 
+function GM:PlayerLoadFinished( pl )
+	if ( catherine.chat.GetPlayerChatHistory( pl ) ) then
+		catherine.chat.StartChatHistoryRestore( pl )
+	end
+end
+
 function GM:PlayerDisconnected( pl )
 	if ( IsValid( pl.CAT_deathBody ) ) then
 		pl.CAT_deathBody:Remove( )

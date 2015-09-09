@@ -833,6 +833,10 @@ function GM:ShouldFinishChat( pl )
 
 end
 
+function GM:ShutDown( )
+	catherine.chat.StartChatHistoryBackup( )
+end
+
 function GM:PopulateToolMenu( )
 	local toolGun = weapons.GetStored( "gmod_tool" )
 
