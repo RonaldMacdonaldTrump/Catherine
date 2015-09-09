@@ -187,7 +187,7 @@ if ( SERVER ) then
 		itemTable.func[ funcID ].func( pl, itemTable, ent_isMenu )
 	end
 	
-	function catherine.item.Give( pl, uniqueID, itemCount, force )
+	function catherine.item.Give( pl, uniqueID, itemCount, force, itemData )
 		if ( !force ) then
 			local itemTable = catherine.item.FindByID( uniqueID )
 
@@ -200,7 +200,8 @@ if ( SERVER ) then
 		
 		catherine.inventory.Work( pl, CAT_INV_ACTION_ADD, {
 			uniqueID = uniqueID,
-			itemCount = itemCount
+			itemCount = itemCount,
+			itemData = itemData
 		} )
 
 		return true

@@ -28,6 +28,7 @@ BASE.itemData = {
 	equiped = false,
 	clip1 = 0
 }
+BASE.useDynamicItemData = true
 BASE.weaponType = "primary"
 BASE.attachmentLimit = {
 	primary = 1,
@@ -59,7 +60,7 @@ BASE.func.equip = {
 		end
 		
 		if ( type( ent ) == "Entity" ) then
-			catherine.item.Give( pl, itemTable.uniqueID )
+			catherine.item.Give( pl, itemTable.uniqueID, nil, nil, ent:GetItemData( ) )
 			ent:Remove( )
 		end
 		
@@ -184,6 +185,12 @@ if ( SERVER ) then
 	catherine.item.RegisterHook( "PreItemDrop", BASE, function( pl, itemTable )
 		if ( itemTable.isWeapon ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
+			
+			local wep = pl:GetWeapon( itemTable.weaponClass )
+		
+			if ( IsValid( wep ) ) then
+				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "clip1", wep:Clip1( ) )
+			end
 		end
 	end )
 	
