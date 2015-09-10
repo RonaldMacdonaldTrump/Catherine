@@ -60,7 +60,11 @@ BASE.func.equip = {
 		end
 		
 		if ( type( ent ) == "Entity" ) then
-			catherine.item.Give( pl, itemTable.uniqueID, nil, nil, ent:GetItemData( ) )
+			local itemData = ent:GetItemData( )
+			
+			itemData.equiped = nil
+			
+			catherine.item.Give( pl, itemTable.uniqueID, nil, nil, itemData )
 			ent:Remove( )
 		end
 		
@@ -185,12 +189,6 @@ if ( SERVER ) then
 	catherine.item.RegisterHook( "PreItemDrop", BASE, function( pl, itemTable )
 		if ( itemTable.isWeapon ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
-			
-			local wep = pl:GetWeapon( itemTable.weaponClass )
-		
-			if ( IsValid( wep ) ) then
-				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "clip1", wep:Clip1( ) )
-			end
 		end
 	end )
 	
