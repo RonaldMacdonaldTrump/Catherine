@@ -329,7 +329,7 @@ end
 --[[
 	[ How can i reset the database? ]
 	
-	Type 'cat_db_init' command in 'Dedicated Console'.
+	Input 'cat_db_init' command to 'Dedicated Console'.
 	( if you are working Local Server, Run command in Client Console !! ( You are must be joined 'Super Admin' group. ) )
 ]]--
 
@@ -348,7 +348,7 @@ concommand.Add( "cat_db_init", function( pl )
 				if ( i == 2 ) then
 					catherine.util.Print( Color( 255, 0, 0 ), "ALL Database has initialized." )
 					catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "ALL Database has initialized!!!" )
-					catherine.database.Connect( )
+					RunConsoleCommand( "changelevel", game.GetMap( ) )
 				end
 			end )
 		end
@@ -356,7 +356,7 @@ concommand.Add( "cat_db_init", function( pl )
 		catherine.database.Query( DROP_TABLES, function( )
 			catherine.util.Print( Color( 255, 0, 0 ), "ALL Database has initialized." )
 			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "ALL Database has initialized!!!" )
-			catherine.database.Connect( )
+			RunConsoleCommand( "changelevel", game.GetMap( ) )
 		end )
 	end
 end )
