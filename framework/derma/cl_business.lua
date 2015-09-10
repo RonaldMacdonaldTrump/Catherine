@@ -139,7 +139,7 @@ function PANEL:BuildShoppingCart( )
 	
 	self.Cart:Clear( )
 	
-	for k, v in pairs( self.shoppingcart ) do
+	for k, v in SortedPairs( self.shoppingcart ) do
 		local itemTable = catherine.item.FindByID( k )
 		local costs = itemTable.cost * v
 		local name = catherine.util.StuffLanguage( itemTable.name )
@@ -192,7 +192,7 @@ function PANEL:BuildBusiness( )
 	
 	self.Lists:Clear( )
 
-	for k, v in pairs( self.business ) do
+	for k, v in SortedPairs( self.business ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
@@ -206,18 +206,25 @@ function PANEL:BuildBusiness( )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
 		lists:SetSpacing( 3 )
 		lists:EnableHorizontal( true )
-		lists:EnableVerticalScrollbar( false )	
+		lists:EnableVerticalScrollbar( false )
 		
 		form:AddItem( lists )
 		
-		for k1, v1 in pairs( v ) do
+		for k1, v1 in SortedPairsByMemberValue( v, "uniqueID" ) do
 			local w, h = 64, 64
 			local model = v1.GetDropModel and v1:GetDropModel( ) or v1.model
+			local overrideItemDesc = v1.GetOverrideItemDesc and v1:GetOverrideItemDesc( pl, nil, CAT_ITEM_OVERRIDE_DESC_TYPE_BUSINESS ) or nil
 			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( model, v1.skin or 0 )
-			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( v1 ) .. "\n" .. ( v1.cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( v1.cost ) ) )
+			
+			if ( overrideItemDesc ) then
+				spawnIcon:SetToolTip( overrideItemDesc )
+			else
+				spawnIcon:SetToolTip( catherine.item.GetBasicDesc( v1 ) .. "\n" .. ( v1.cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( v1.cost ) ) )
+			end
+			
 			spawnIcon.DoClick = function( )
 				local shoppingCart = self.shoppingcart
 				
@@ -293,7 +300,7 @@ function PANEL:BuildShipment( )
 	if ( !self.shipments ) then return end
 	self.Lists:Clear( )
 	
-	for k, v in pairs( self.shipments ) do
+	for k, v in SortedPairs( self.shipments ) do
 		local itemTable = catherine.item.FindByID( k )
 		local name = catherine.util.StuffLanguage( itemTable.name )
 		local count = LANG( "Basic_UI_Count", v )

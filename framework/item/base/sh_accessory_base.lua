@@ -132,6 +132,14 @@ else
 			surface.DrawTexturedRect( 5, 5, 16, 16 )
 		end
 	end
+	
+	function BASE:DoRightClick( pl, itemData )
+		if ( itemData.wearing ) then
+			catherine.item.Work( self.uniqueID, "takeoff", true )
+		else
+			catherine.item.Work( self.uniqueID, "wear", true )
+		end
+	end
 end
 
 catherine.item.Register( BASE )

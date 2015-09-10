@@ -33,7 +33,7 @@ function catherine.item.Register( itemTable )
 		if ( base ) then
 			itemTable = table.Inherit( itemTable, base )
 		else
-			MsgC( Color( 255, 0, 0 ), "[CAT Item ERROR] Can't find Base item file ... <" .. itemTable.base .. ">\n" )
+			ErrorNoHalt( "\n[CAT ERROR] <" .. itemTable.uniqueID .. "> item has based of <" .. itemTable.base .. ">, but base is not valid! :< ...\n" )
 		end
 	end
 	
@@ -229,6 +229,15 @@ if ( SERVER ) then
 		ent:Spawn( )
 		ent:SetModel( itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model )
 		ent:SetSkin( itemTable.skin or 0 )
+		
+		if ( itemTable.color ) then
+			ent:SetColor( itemTable.color )
+		end
+		
+		if ( itemTable.material ) then
+			ent:SetMaterial( itemTable.material )
+		end
+		
 		ent:PhysicsInit( SOLID_VPHYSICS )
 		ent:InitializeItem( uniqueID, itemData )
 
@@ -261,6 +270,11 @@ if ( SERVER ) then
 		catherine.item.Take( pl, data )
 	end )
 else
+	CAT_ITEM_OVERRIDE_DESC_TYPE_INVENTORY = 0
+	CAT_ITEM_OVERRIDE_DESC_TYPE_BUSINESS = 1
+	CAT_ITEM_OVERRIDE_DESC_TYPE_STORAGE = 2
+	CAT_ITEM_OVERRIDE_DESC_TYPE_STORAGE_PLAYERINV = 3
+	
 	netstream.Hook( "catherine.item.EntityUseMenu", function( data )
 		catherine.item.OpenEntityUseMenu( data )
 	end )
@@ -276,20 +290,17 @@ else
 	function catherine.item.OpenMenuUse( uniqueID )
 		local pl = catherine.pl
 		local itemTable = catherine.item.FindByID( uniqueID )
+		
+		if ( !itemTable ) then return end
+		
 		local menu = DermaMenu( )
-
-		for k, v in pairs( itemTable and itemTable.func or { } ) do
+		
+		for k, v in pairs( itemTable.func or { } ) do
 			if ( !v.canShowIsMenu or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
-			local text = "ERROR"
 			
-			if ( v.preSetText ) then
-				text = v.preSetText( pl, itemTable )
-			else
-				text = catherine.util.StuffLanguage( v.text or "ERROR" )
-			end
-			
-			menu:AddOption( text, function( )
-				catherine.item.Work( uniqueID, k, true )
+			menu:AddOption( v.preSetText and v.preSetText( pl, itemTable ) or catherine.util.StuffLanguage( v.text or "ERROR" ),
+				function( )
+					catherine.item.Work( uniqueID, k, true )
 			end ):SetImage( v.icon or "icon16/information.png" )
 		end
 		
@@ -303,23 +314,20 @@ else
 
 		if ( !IsValid( ent ) or !IsValid( pl:GetEyeTrace( ).Entity ) or pl:GetActiveWeapon( ) == "weapon_physgun" ) then return end
 		
-		local isAv = false
 		local itemTable = catherine.item.FindByID( uniqueID )
+		
+		if ( !itemTable ) then return end
+		
+		local isAv = false
 		local menu = DermaMenu( )
 		
-		for k, v in pairs( itemTable and itemTable.func or { } ) do
+		for k, v in pairs( itemTable.func or { } ) do
 			if ( !v.canShowIsWorld or ( v.canLook and v.canLook( pl, itemTable ) == false ) ) then continue end
-			local text = "ERROR"
 			
-			if ( v.preSetText ) then
-				text = v.preSetText( pl, itemTable )
-			else
-				text = catherine.util.StuffLanguage( v.text or "ERROR" )
-			end
-			
-			menu:AddOption( text, function( )
-				catherine.item.Work( uniqueID, k, ent )
-			end ):SetImage( v.icon or "icon16/information.png" )
+			menu:AddOption( v.preSetText and v.preSetText( pl, itemTable ) or catherine.util.StuffLanguage( v.text or "ERROR" ),
+				function( )
+					catherine.item.Work( uniqueID, k, ent )
+				end ):SetImage( v.icon or "icon16/information.png" )
 			
 			isAv = true
 		end

@@ -179,6 +179,7 @@ function PANEL:BuildStorage( )
 			local w, h = 54, 54
 			local itemTable = catherine.item.FindByID( k1 )
 			local itemData = pl:GetInvItemDatas( k1 )
+			local overrideItemDesc = itemTable.GetOverrideItemDesc and itemTable:GetOverrideItemDesc( pl, itemData, CAT_ITEM_OVERRIDE_DESC_TYPE_STORAGE ) or nil
 			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemData, false ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, itemTable )
@@ -186,7 +187,13 @@ function PANEL:BuildStorage( )
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( model, itemTable.skin or 0 )
-			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
+			
+			if ( overrideItemDesc ) then
+				spawnIcon:SetToolTip( overrideItemDesc )
+			else
+				spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
+			end
+			
 			spawnIcon.DoClick = function( )
 				netstream.Start( "catherine.storage.Work", {
 					self.ent:EntIndex( ),
@@ -238,6 +245,7 @@ function PANEL:BuildStorage( )
 			local w, h = 54, 54
 			local itemTable = catherine.item.FindByID( k1 )
 			local itemData = pl:GetInvItemDatas( k1 )
+			local overrideItemDesc = itemTable.GetOverrideItemDesc and itemTable:GetOverrideItemDesc( pl, itemData, CAT_ITEM_OVERRIDE_DESC_TYPE_STORAGE_PLAYERINV ) or nil
 			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemData, true ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
 			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, itemTable )
@@ -245,7 +253,13 @@ function PANEL:BuildStorage( )
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( model, itemTable.skin or 0 )
-			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
+			
+			if ( overrideItemDesc ) then
+				spawnIcon:SetToolTip( overrideItemDesc )
+			else
+				spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
+			end
+			
 			spawnIcon.DoClick = function( )
 				netstream.Start( "catherine.storage.Work", {
 					self.ent:EntIndex( ),

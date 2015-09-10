@@ -99,7 +99,7 @@ else
 	
 	function ENT:LanguageChanged( )
 		local itemTable = self:GetItemTable( )
-
+		
 		if ( itemTable ) then
 			self.itemTable_name = catherine.util.StuffLanguage( itemTable.name )
 			self.itemTable_desc = catherine.util.StuffLanguage( itemTable.desc )

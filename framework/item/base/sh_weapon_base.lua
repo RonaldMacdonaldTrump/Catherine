@@ -227,12 +227,10 @@ if ( SERVER ) then
 	end )
 else
 	function BASE:DoRightClick( pl, itemData )
-		local uniqueID = self.uniqueID
-		
-		if ( catherine.inventory.IsEquipped( uniqueID ) ) then
-			catherine.item.Work( uniqueID, "unequip", true )
+		if ( itemData.equiped ) then
+			catherine.item.Work( self.uniqueID, "unequip", true )
 		else
-			catherine.item.Work( uniqueID, "equip", true )
+			catherine.item.Work( self.uniqueID, "equip", true )
 		end
 	end
 end

@@ -147,12 +147,10 @@ else
 	end
 	
 	function BASE:DoRightClick( pl, itemData )
-		local uniqueID = self.uniqueID
-		
 		if ( itemData.wearing ) then
-			catherine.item.Work( uniqueID, "takeoff", true )
+			catherine.item.Work( self.uniqueID, "takeoff", true )
 		else
-			catherine.item.Work( uniqueID, "wear", true )
+			catherine.item.Work( self.uniqueID, "wear", true )
 		end
 	end
 end
