@@ -24,7 +24,7 @@ PLUGIN.charViews = PLUGIN.charViews or { }
 
 catherine.language.Merge( "english", {
 	[ "CharacterView_Plugin_Name" ] = "Character View",
-	[ "CharacterView_Plugin_Desc" ] = "Good stuff.",
+	[ "CharacterView_Plugin_Desc" ] = "Adding the Character View in the Character menu.",
 	[ "CharacterView_Notify_Add" ] = "You are added character view on your position.",
 	[ "CharacterView_Notify_Remove" ] = "You are removed %s's character view on your position.",
 	[ "CharacterView_Notify_NoView" ] = "Doesn't have character view on this position."
@@ -32,7 +32,7 @@ catherine.language.Merge( "english", {
 
 catherine.language.Merge( "korean", {
 	[ "CharacterView_Plugin_Name" ] = "캐릭터 뷰",
-	[ "CharacterView_Plugin_Desc" ] = "캐릭터 창에 멋진 뷰 화면을 적용합니다.",
+	[ "CharacterView_Plugin_Desc" ] = "캐릭터 창에 위치 시점을 추가합니다.",
 	[ "CharacterView_Notify_Add" ] = "당신은 현재 캐릭터 뷰를 추가했습니다.",
 	[ "CharacterView_Notify_Remove" ] = "당신은 이 위치에 있는 %s개의 캐릭터 뷰를 제거했습니다.",
 	[ "CharacterView_Notify_NoView" ] = "이 위치에는 캐릭터 뷰가 없습니다!"

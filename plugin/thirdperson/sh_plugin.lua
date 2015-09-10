@@ -23,17 +23,17 @@ PLUGIN.desc = "^Thirdperson_Plugin_Desc"
 PLUGIN.enable = true
 
 catherine.language.Merge( "english", {
-	[ "Option_Str_Thirdperson_Name" ] = "Enable Third Person",
-	[ "Option_Str_Thirdperson_Desc" ] = "Enable the Third Person.",
 	[ "Thirdperson_Plugin_Name" ] = "Third Person",
-	[ "Thirdperson_Plugin_Desc" ] = "Good stuff."
+	[ "Thirdperson_Plugin_Desc" ] = "Adding the Third Person View.",
+	[ "Option_Str_Thirdperson_Name" ] = "Enable Third Person View",
+	[ "Option_Str_Thirdperson_Desc" ] = "Switch to Third Person view."
 } )
 
 catherine.language.Merge( "korean", {
-	[ "Option_Str_Thirdperson_Name" ] = "3인칭 활성화",
-	[ "Option_Str_Thirdperson_Desc" ] = "3인칭을 활성화 합니다.",
 	[ "Thirdperson_Plugin_Name" ] = "3인칭",
-	[ "Thirdperson_Plugin_Desc" ] = "3인칭으로 플레이 할 수 있게 합니다."
+	[ "Thirdperson_Plugin_Desc" ] = "3인칭 시점을 추가합니다.",
+	[ "Option_Str_Thirdperson_Name" ] = "3인칭 시점 활성화",
+	[ "Option_Str_Thirdperson_Desc" ] = "3인칭 시점으로 전환합니다."
 } )
 
 if ( SERVER or !PLUGIN.enable ) then return end

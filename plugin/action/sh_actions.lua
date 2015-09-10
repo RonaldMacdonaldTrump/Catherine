@@ -45,10 +45,7 @@ local function facingWallBack( pl )
 	end
 end
 
-CAT_ACT_STARTANI = 1
-CAT_ACT_EXITANI = 2
-
-local actionTable = {
+PLUGIN.actions = {
 	[ "sit" ] = {
 		text = "Sit!",
 		actions = {
@@ -142,5 +139,3 @@ local actionTable = {
 		}
 	}
 }
-
-PLUGIN.actions = actionTable

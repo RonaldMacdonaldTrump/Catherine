@@ -23,7 +23,7 @@ PLUGIN.desc = "^SI_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "SI_Plugin_Name" ] = "Save Item",
-	[ "SI_Plugin_Desc" ] = "Good stuff."
+	[ "SI_Plugin_Desc" ] = "Saving the items on the map."
 } )
 
 catherine.language.Merge( "korean", {

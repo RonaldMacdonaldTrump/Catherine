@@ -23,7 +23,7 @@ PLUGIN.desc = "^SavePos_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "SavePos_Plugin_Name" ] = "Save Pos",
-	[ "SavePos_Plugin_Desc" ] = "Good stuff."
+	[ "SavePos_Plugin_Desc" ] = "Saving the character position of the last."
 } )
 
 catherine.language.Merge( "korean", {

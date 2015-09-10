@@ -23,7 +23,7 @@ PLUGIN.desc = "^Legs_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "Legs_Plugin_Name" ] = "Legs",
-	[ "Legs_Plugin_Desc" ] = "The add legs to first person.",
+	[ "Legs_Plugin_Desc" ] = "Adding legs of first person view.",
 	[ "Option_Str_LEG_Name" ] = "Show Legs",
 	[ "Option_Str_LEG_Desc" ] = "Show legs on your body."
 } )

@@ -22,8 +22,8 @@ PLUGIN.author = "L7D"
 PLUGIN.desc = "^ToolUtil_Plugin_Desc"
 
 catherine.language.Merge( "english", {
-	[ "ToolUtil_Plugin_Name" ] = "Tool Utilities",
-	[ "ToolUtil_Plugin_Desc" ] = "Good stuff."
+	[ "ToolUtil_Plugin_Name" ] = "Tool Utility",
+	[ "ToolUtil_Plugin_Desc" ] = "Can be useful works using the tool gun."
 } )
 
 catherine.language.Merge( "korean", {

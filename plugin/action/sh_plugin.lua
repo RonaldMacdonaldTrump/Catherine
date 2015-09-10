@@ -24,7 +24,7 @@ PLUGIN.actions = { }
 
 catherine.language.Merge( "english", {
 	[ "ACT_Plugin_Name" ] = "Action",
-	[ "ACT_Plugin_Desc" ] = "Good stuff.",
+	[ "ACT_Plugin_Desc" ] = "Adding the action for the situation.",
 	[ "ACT_Plugin_Notify_Cant01" ] = "You can't do this now!",
 	[ "ACT_Plugin_Notify_Cant02" ] = "You can't do this action!",
 	[ "ACT_Plugin_Notify_Cant03" ] = "Please action at the facing the wall and little bit a back at wall!",
@@ -35,7 +35,7 @@ catherine.language.Merge( "english", {
 
 catherine.language.Merge( "korean", {
 	[ "ACT_Plugin_Name" ] = "액션",
-	[ "ACT_Plugin_Desc" ] = "RP 에 맞는 액션을 취할 수 있습니다.",
+	[ "ACT_Plugin_Desc" ] = "상황에 맞는 액션을 추가합니다.",
 	[ "ACT_Plugin_Notify_Cant01" ] = "당신은 지금 액션을 취할 수 없습니다!",
 	[ "ACT_Plugin_Notify_Cant02" ] = "당신은 이 액션을 취할 수 없습니다!",
 	[ "ACT_Plugin_Notify_Cant03" ] = "벽을 보고 조금 벽에서 떨어진 후 액션을 다시 취하세요!",

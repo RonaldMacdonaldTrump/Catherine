@@ -23,7 +23,7 @@ PLUGIN.desc = "^SPP_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "SPP_Plugin_Name" ] = "Spawn Point",
-	[ "SPP_Plugin_Desc" ] = "Good stuff.",
+	[ "SPP_Plugin_Desc" ] = "Adding the Spawn Point for the faction.",
 	[ "Spawnpoint_Notify_Add" ] = "You added spawnpoint for '%s' faction.",
 	[ "Spawnpoint_Notify_Remove" ] = "You removed %s's spawn points.",
 	[ "Spawnpoint_Notify_Remove_No" ] = "This place hasn't spawnpoint!"

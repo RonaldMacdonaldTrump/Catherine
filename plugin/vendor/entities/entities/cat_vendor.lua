@@ -20,8 +20,6 @@ local PLUGIN = PLUGIN
 
 AddCSLuaFile( )
 
-DEFINE_BASECLASS( "base_gmodentity" )
-
 ENT.Type = "anim"
 ENT.PrintName = "Catherine Vendor"
 ENT.Author = "L7D"

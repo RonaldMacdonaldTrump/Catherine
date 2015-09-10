@@ -23,7 +23,7 @@ PLUGIN.desc = "^CustomSpawn_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "CustomSpawn_Plugin_Name" ] = "Custom Spawn Point",
-	[ "CustomSpawn_Plugin_Desc" ] = "Good stuff.",
+	[ "CustomSpawn_Plugin_Desc" ] = "Setting the Custom Spawn Point for the target.",
 	[ "CustomSpawn_Notify_Add" ] = "You are setting a this position for target player.",
 	[ "CustomSpawn_Notify_Remove" ] = "You are removed a spawn point for target player."
 	

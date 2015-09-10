@@ -23,7 +23,7 @@ PLUGIN.desc = "^SA_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "SA_Plugin_Name" ] = "Save Ammo",
-	[ "SA_Plugin_Desc" ] = "Save the players ammos."
+	[ "SA_Plugin_Desc" ] = "Saving the player ammos."
 } )
 
 catherine.language.Merge( "korean", {

@@ -28,12 +28,12 @@ function PLUGIN:LoadAreas( )
 	self.areas = catherine.data.Get( "areas", { } )
 end
 
-function PLUGIN:DataLoad( )
-	self:LoadAreas( )
-end
-
 function PLUGIN:DataSave( )
 	self:SaveAreas( )
+end
+
+function PLUGIN:DataLoad( )
+	self:LoadAreas( )
 end
 
 function PLUGIN:AddArea( name, minVector, maxVector )

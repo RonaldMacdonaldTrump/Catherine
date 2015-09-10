@@ -23,12 +23,12 @@ PLUGIN.desc = "^WS_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "WS_Plugin_Name" ] = "Weapon Select",
-	[ "WS_Plugin_Desc" ] = "Good stuff."
+	[ "WS_Plugin_Desc" ] = "Adding the new Weapon Selection."
 } )
 
 catherine.language.Merge( "korean", {
 	[ "WS_Plugin_Name" ] = "무기 선택",
-	[ "WS_Plugin_Desc" ] = "RP 에 맞는 무기 선택으로 바꿔줍니다."
+	[ "WS_Plugin_Desc" ] = "새로운 무기 선택창을 추가합니다."
 } )
 
 catherine.util.Include( "sv_plugin.lua" )

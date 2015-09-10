@@ -18,12 +18,12 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 local PLUGIN = PLUGIN
 PLUGIN.name = "^Area_Plugin_Name"
-PLUGIN.author = "L7D"
+PLUGIN.author = "L7D, Chessnut"
 PLUGIN.desc = "^Area_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "Area_Plugin_Name" ] = "Area",
-	[ "Area_Plugin_Desc" ] = "Good stuff.",
+	[ "Area_Plugin_Desc" ] = "Adding the Area.",
 	[ "Area_UI_JoinedStr" ] = "Area Joined",
 	[ "Area_Notify_AreaIsNotValid" ] = "Area is not a valid!",
 	[ "Area_Notify_PlayerNoInArea" ] = "You are not joined any areas!",
@@ -37,7 +37,7 @@ catherine.language.Merge( "english", {
 
 catherine.language.Merge( "korean", {
 	[ "Area_Plugin_Name" ] = "구역",
-	[ "Area_Plugin_Desc" ] = "구역 시스템 입니다.",
+	[ "Area_Plugin_Desc" ] = "구역을 추가합니다.",
 	[ "Area_UI_JoinedStr" ] = "구역 입장",
 	[ "Area_Notify_AreaIsNotValid" ] = "구역이 올바르지 않습니다!",
 	[ "Area_Notify_PlayerNoInArea" ] = "당신은 어떠한 구역에도 속해있지 않습니다!",

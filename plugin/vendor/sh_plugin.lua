@@ -62,6 +62,9 @@ function PLUGIN:GetVendorWorkingPlayers( index )
 end
 
 catherine.language.Merge( "english", {
+	[ "VED_Plugin_Name" ] = "Vendor NPC",
+	[ "VED_Plugin_Desc" ] = "Adding the Vendor NPC.",
+	
 	[ "Vendor_Notify_Buy" ] = "You are brought '%s' at '%s' from this vendor!",
 	[ "Vendor_Notify_Sell" ] = "You are sold '%s' at '%s' from this vendor!",
 	[ "Vendor_Notify_VendorNoHasCash" ] = "This vendor has not enough %s!",
@@ -104,13 +107,13 @@ catherine.language.Merge( "english", {
 	[ "Vendor_UI_VendorItemBuyOnlyTypeStr" ] = "Buy Only",
 	[ "Vendor_UI_VendorItemSellOnlyTypeStr" ] = "Sell Only",
 	[ "Vendor_UI_VendorItemBothTypeStr" ] = "Buy and Sell",
-	[ "Vendor_UI_HasCash" ] = "This vendor has %s.",
-	
-	[ "VED_Plugin_Name" ] = "Vendor",
-	[ "VED_Plugin_Desc" ] = "Good stuff."
+	[ "Vendor_UI_HasCash" ] = "This vendor has %s."
 } )
 
 catherine.language.Merge( "korean", {
+	[ "VED_Plugin_Name" ] = "상인 NPC",
+	[ "VED_Plugin_Desc" ] = "상인 NPC 를 추가합니다.",
+	
 	[ "Vendor_Notify_Buy" ] = "당신은 '%s' 를 '%s' 에 구입하였습니다.",
 	[ "Vendor_Notify_Sell" ] = "당신은 '%s' 를 '%s' 에 파셨습니다.",
 	[ "Vendor_Notify_VendorNoHasCash" ] = "이 상인은 %s 가 없습니다!",
@@ -153,10 +156,7 @@ catherine.language.Merge( "korean", {
 	[ "Vendor_UI_VendorItemBuyOnlyTypeStr" ] = "구매만 가능",
 	[ "Vendor_UI_VendorItemSellOnlyTypeStr" ] = "판매만 가능",
 	[ "Vendor_UI_VendorItemBothTypeStr" ] = "구매, 판매 가능",
-	[ "Vendor_UI_HasCash" ] = "이 상인은 %s 를 가지고 있습니다.",
-	
-	[ "VED_Plugin_Name" ] = "상인",
-	[ "VED_Plugin_Desc" ] = "맵에 NPC 상인을 추가합니다."
+	[ "Vendor_UI_HasCash" ] = "이 상인은 %s 를 가지고 있습니다."
 } )
 
 catherine.util.Include( "sv_plugin.lua" )

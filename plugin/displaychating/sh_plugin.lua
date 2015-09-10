@@ -23,7 +23,7 @@ PLUGIN.desc = "^DC_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "DC_Plugin_Name" ] = "Display Chating",
-	[ "DC_Plugin_Desc" ] = "Good stuff.",
+	[ "DC_Plugin_Desc" ] = "Drawing the message if the chatting.",
 	[ "DisplayChating_Talking" ] = "Talking ..."
 } )
 
@@ -40,29 +40,34 @@ function PLUGIN:PostPlayerDraw( pl )
 	local lp = catherine.pl
 	local a = catherine.util.GetAlphaFromDistance( lp:GetPos( ), pl:GetPos( ), 312 )
 	
-	if ( a <= 0 or !pl:Alive( ) or pl:IsNoclipping( ) ) then return end
+	if ( math.Round( a <= 0 ) or !pl:Alive( ) or pl:IsNoclipping( ) ) then return end
+	
 	local index = pl:LookupBone( "ValveBiped.Bip01_Head1" )
 	
 	if ( index ) then
-		local pos = pl:GetBonePosition( index ) + Vector( 0, 0, 15 )
-		local ang = lp:EyeAngles( )
+		local pos = pl:GetBonePosition( index )
 		
-		pos = pos + ang:Up( )
-		ang:RotateAroundAxis( ang:Forward( ), 90 )
-		ang:RotateAroundAxis( ang:Right( ), 90 )
-		
-		if ( !self.typingText ) then
-			self.typingText = LANG( "DisplayChating_Talking" )
-		end
-		
-		local text = self.typingText
+		if ( pos ) then
+			pos = pos + Vector( 0, 0, 15 )
+			local ang = lp:EyeAngles( )
+			
+			pos = pos + ang:Up( )
+			ang:RotateAroundAxis( ang:Forward( ), 90 )
+			ang:RotateAroundAxis( ang:Right( ), 90 )
+			
+			if ( !self.typingText ) then
+				self.typingText = LANG( "DisplayChating_Talking" )
+			end
+			
+			local text = self.typingText
 
-		surface.SetFont( "catherine_normal50" )
-		local tw, th = surface.GetTextSize( text )
-		
-		cam.Start3D2D( pos, Angle( 0, ang.y, 90 ), 0.08 )
-			draw.SimpleText( text, "catherine_normal50", 0 - tw / 2, 0, Color( 255, 255, 255, a ) )
-		cam.End3D2D( )
+			surface.SetFont( "catherine_normal50" )
+			local tw, th = surface.GetTextSize( text )
+			
+			cam.Start3D2D( pos, Angle( 0, ang.y, 90 ), 0.08 )
+				draw.SimpleText( text, "catherine_normal50", 0 - tw / 2, 0, Color( 255, 255, 255, a ) )
+			cam.End3D2D( )
+		end
 	end
 end
 
