@@ -233,9 +233,9 @@ function GM:PlayerSpawn( pl )
 			pl.CAT_deathBody = nil
 		end
 	end
-
+	
 	pl.CAT_deathSoundPlayed = nil
-
+	
 	pl:SetNetVar( "noDrawOriginal", nil )
 	pl:SetNetVar( "nextSpawnTime", nil )
 	pl:SetNetVar( "deathTime", nil )
@@ -258,15 +258,15 @@ function GM:PlayerSpawn( pl )
 	if ( pl:FlashlightIsOn( ) ) then
 		pl:Flashlight( false )
 	end
-
+	
 	catherine.limb.HealBody( pl, 100 )
-
+	
 	catherine.util.ProgressBar( pl, false )
 	catherine.util.TopNotify( pl, false )
-
+	
 	pl:Give( "cat_fist" )
 	pl:Give( "cat_key" )
-
+	
 	if ( pl:IsCharacterLoaded( ) and !pl.CAT_loadingChar ) then
 		hook.Run( "PlayerSpawnedInCharacter", pl )
 	end
@@ -285,7 +285,7 @@ function GM:PlayerLimbDamageHealed( pl, hitGroup, amount )
 		local visibility = 1 - ( amount / 100 )
 		
 		catherine.util.StartMotionBlur( pl, visibility, 1, 0.02 )
-
+		
 		if ( visibility == 1 ) then
 			catherine.util.StopMotionBlur( pl )
 		end
@@ -303,7 +303,7 @@ function GM:GetUnlockTime( pl )
 end
 
 function GM:PlayerJump( pl )
-	
+
 end
 
 function GM:PlayerInfoTable( pl, infoTable )
@@ -320,7 +320,7 @@ function GM:PlayerInfoTable( pl, infoTable )
 	else
 		local defJumpPower = catherine.player.GetPlayerDefaultJumpPower( pl )
 		local defRunSpeed = catherine.player.GetPlayerDefaultRunSpeed( pl )
-	
+		
 		if ( ( leftLegLimbDmg and leftLegLimbDmg != 0 ) or ( rightLegLimbDmg and rightLegLimbDmg != 0 ) ) then
 			return {
 				jumpPower = defJumpPower * ( 1 - math.max( leftLegLimbDmg, rightLegLimbDmg ) / 100 ),
@@ -486,7 +486,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 
 				if ( pl:GetEyeTrace( ).Entity != ent or pl:GetPos( ):Distance( pos ) < 130 and pos:Distance( ent:GetBonePosition( index ) ) <= 5 ) then
 					ent:EmitSound( "physics/wood/wood_crate_break" .. math.random( 1, 5 ) .. ".wav", 150 )
-
+					
 					local effect = EffectData( )
 					effect:SetStart( pos )
 					effect:SetOrigin( pos )
@@ -495,7 +495,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 					
 					local dummyName = pl:SteamID( ) .. CurTime( )
 					pl:SetName( dummyName )
-
+					
 					ent:Fire( "SetSpeed", 100 )
 					ent:Fire( "UnLock" )
 					ent:Fire( "OpenAwayFrom", dummyName )
@@ -518,7 +518,7 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 		local timerID = "Catherine.timer.RunSpamProtection." .. ent:SteamID( )
 		
 		ent.CAT_bulletHurtSpeedDown = true
-
+		
 		timer.Remove( timerID )
 		timer.Create( timerID, math.random( 2, 4 ), 1, function( )
 			if ( IsValid( ent ) ) then
@@ -537,7 +537,7 @@ function GM:PlayerSwitchFlashlight( pl, bool )
 end
 
 function GM:AttributeChanged( pl, uniqueID )
-	
+
 end
 
 function GM:KeyPress( pl, key )
@@ -553,7 +553,7 @@ function GM:KeyPress( pl, key )
 		data.endpos = data.start + pl:GetAimVector( ) * 100
 		data.filter = pl
 		local ent = util.TraceLine( data ).Entity
-
+		
 		if ( !IsValid( ent ) or ent.CAT_ignoreUse ) then
 			return
 		end
@@ -563,7 +563,7 @@ function GM:KeyPress( pl, key )
 		end
 		
 		if ( !IsValid( ent ) ) then return end
-
+		
 		if ( ent:IsDoor( ) ) then
 			if ( GAMEMODE:PlayerUse( pl, ent ) ) then
 				catherine.door.DoorSpamProtection( pl, ent )

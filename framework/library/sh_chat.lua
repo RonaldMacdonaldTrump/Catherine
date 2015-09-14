@@ -16,7 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.chat = catherine.chat or { lists = { } }
+catherine.chat = catherine.chat or { }
+catherine.chat.lists = { }
 
 function catherine.chat.Register( uniqueID, classTable )
 	classTable = classTable or { }
@@ -84,7 +85,7 @@ catherine.chat.Register( "me", {
 		chat.AddText( Color( 193, 255, 193 ), "** " .. pl:Name( ) .. " - " .. text )
 	end,
 	font = "catherine_chat_italic",
-	command = { "/me", "/ME", "/Me" },
+	command = { "/me", "/ME", "/Me", "/mE" },
 	canHearRange = 800,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
@@ -94,7 +95,7 @@ catherine.chat.Register( "it", {
 		chat.AddText( Color( 193, 255, 193 ), "*** " .. pl:Name( ) .. " - " .. text )
 	end,
 	font = "catherine_chat_italic",
-	command = { "/it" },
+	command = { "/it", "/It", "/iT" },
 	canHearRange = 550,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
@@ -145,7 +146,7 @@ catherine.chat.Register( "event", {
 		end
 	end,
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
-	command = { "/event" }
+	command = { "/event", "/Event" }
 } )
 
 catherine.chat.Register( "yell", {

@@ -222,7 +222,7 @@ if ( SERVER ) then
 		local itemTable = catherine.item.FindByID( uniqueID )
 		
 		if ( !itemTable ) then return end
-
+		
 		local ent = ents.Create( "cat_item" )
 		ent:SetPos( Vector( pos.x, pos.y, pos.z + 10 ) )
 		ent:SetAngles( ang or Angle( ) )
@@ -240,16 +240,16 @@ if ( SERVER ) then
 		
 		ent:PhysicsInit( SOLID_VPHYSICS )
 		ent:InitializeItem( uniqueID, itemData )
-
+		
 		local physObject = ent:GetPhysicsObject( )
 		
 		if ( !IsValid( physObject ) ) then
 			local min, max = Vector( -8, -8, -8 ), Vector( 8, 8, 8 )
-
+			
 			ent:PhysicsInitBox( min, max )
 			ent:SetCollisionBounds( min, max )
 		end
-
+		
 		if ( IsValid( physObject ) ) then
 			physObject:EnableMotion( true )
 			physObject:Wake( )

@@ -89,7 +89,7 @@ if ( SERVER ) then
 	catherine.item.RegisterHook( "PlayerSpawnedInCharacter", ITEM, function( pl )
 		if ( catherine.inventory.HasItem( pl, "wallet" ) ) then
 			if ( catherine.inventory.GetItemInt( pl, "wallet" ) > 1 ) then
-				catherine.item.Take( pl, "wallet" )
+				catherine.item.Take( pl, "wallet", catherine.inventory.GetItemInt( pl, "wallet" ) - 1 )
 			end
 			
 			return

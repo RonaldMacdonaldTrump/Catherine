@@ -46,7 +46,7 @@ function catherine.command.FindByCMD( command )
 end
 
 function catherine.command.IsCommand( text )
-	if ( text:sub( 1, 1 ) != "/" ) then return end
+	if ( text:sub( 1, 1 ) != "/" ) then return false end
 	local toArgs = catherine.command.TransferToArgsTab( text )
 	local command = toArgs[ 1 ]:sub( 2, #toArgs[ 1 ] )
 	
