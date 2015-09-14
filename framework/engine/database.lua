@@ -221,7 +221,7 @@ catherine.database.modules[ "tmysql4" ] = {
 			return catherine.database.object:Escape( val )
 		end
 		
-		return tmysql and tmysql.escape and tmysql.escape( val ) or sql.SQLStr( val, true )
+		return ( tmysql and tmysql.escape ) and tmysql.escape( val ) or sql.SQLStr( val, true )
 	end
 }
 catherine.database.modules[ "sqlite" ] = {
@@ -270,7 +270,7 @@ function catherine.database.Connect( func )
 	local modules = catherine.database.modules[ catherine.database.information.db_module ]
 	
 	if ( !modules ) then
-		catherine.util.Print( Color( 255, 255, 0 ), "Unknown Database module, so using SQLite." )
+		catherine.util.Print( Color( 255, 0, 0 ), "A unknown Database module! <" .. catherine.database.information.db_module .. ">, so instead using SQLite." )
 		modules = catherine.database.modules.sqlite
 	end
 	

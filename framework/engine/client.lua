@@ -617,7 +617,7 @@ function GM:HUDDrawTop( )
 end
 
 function GM:PostRenderVGUI( )
-	if ( hook.Run( "CantDrawNotify" ) == true or IsValid( catherine.vgui.character ) ) then return end
+	if ( hook.Run( "ShouldDrawNotify" ) == false or IsValid( catherine.vgui.character ) ) then return end
 	
 	if ( IsValid( catherine.vgui.menu ) and catherine.vgui.menu:IsVisible( ) ) then
 		catherine.notify.DrawMenuType( )
@@ -770,15 +770,15 @@ function GM:RenderScreenspaceEffects( )
 	tab[ "$pp_colour_mulr" ] = data.mulr or 0
 	tab[ "$pp_colour_mulg" ] = data.mulg or 0
 	tab[ "$pp_colour_mulb" ] = data.mulb or 0
-
+	
 	DrawColorModify( tab )
 	
 	if ( catherine.util.motionBlur ) then
 		local motionBlurData = catherine.util.motionBlur
-
+		
 		if ( motionBlurData.status == false and motionBlurData.fadeTime ) then
 			motionBlurData.drawAlpha = Lerp( motionBlurData.fadeTime, motionBlurData.drawAlpha, 0 )
-
+			
 			if ( math.Round( motionBlurData.drawAlpha ) <= 0 ) then
 				catherine.util.motionBlur = nil
 				return
@@ -823,7 +823,7 @@ function GM:ShouldFinishChat( pl )
 end
 
 function GM:ShutDown( )
-	catherine.chat.StartChatHistoryBackup( )
+
 end
 
 function GM:PopulateToolMenu( )

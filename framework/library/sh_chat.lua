@@ -444,8 +444,15 @@ if ( SERVER ) then
 		return true
 	end
 	
-	function catherine.chat.SetPlayerChatHistory( pl, data )
-		catherine.chat.chatTypedHistoryBackup[ pl:SteamID( ) ] = data
+	function catherine.chat.AddPlayerChatHistory( pl, text )
+		local steamID = pl:SteamID( )
+		
+		catherine.chat.chatTypedHistoryBackup[ steamID ] = catherine.chat.chatTypedHistoryBackup[ steamID ] or { }
+		catherine.chat.chatTypedHistoryBackup[ steamID ][ #catherine.chat.chatTypedHistoryBackup[ steamID ] + 1 ] = text
+		
+		if ( #catherine.chat.chatTypedHistoryBackup[ steamID ] > 20 ) then
+			table.remove( catherine.chat.chatTypedHistoryBackup[ steamID ], 1 )
+		end
 	end
 	
 	function catherine.chat.GetPlayerChatHistory( pl )
@@ -483,10 +490,6 @@ if ( SERVER ) then
 	
 	netstream.Hook( "catherine.chat.Run", function( pl, data )
 		hook.Run( "PlayerSay", pl, data, true )
-	end )
-	
-	netstream.Hook( "catherine.chat.BackupChatHistory", function( pl, data )
-		catherine.chat.SetPlayerChatHistory( pl, data )
 	end )
 else
 	catherine.chat.backPanel = catherine.chat.backPanel or nil
@@ -555,10 +558,6 @@ else
 		end
 		
 		return chat.AddTextBuffer( unpack( data ) )
-	end
-	
-	function catherine.chat.StartChatHistoryBackup( )
-		netstream.Start( "catherine.chat.BackupChatHistory", catherine.chat.chatTypedHistory )
 	end
 	
 	function catherine.chat.SetOverrideFont( font )

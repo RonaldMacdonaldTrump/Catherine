@@ -612,6 +612,7 @@ function GM:PlayerUse( pl, ent )
 end
 
 function GM:PlayerSay( pl, text )
+	catherine.chat.AddPlayerChatHistory( pl, text )
 	catherine.chat.Run( pl, text )
 	catherine.log.Add( CAT_LOG_FLAG_BASIC, pl:Name( ) .. ", " .. pl:SteamName( ) .. " typed chat " .. text )
 end

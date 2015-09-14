@@ -53,3 +53,7 @@ end
 function catherine.schema.GetUniqueID( )
 	return Schema and Schema.UniqueID or "catherine"
 end
+
+function catherine.schema.IsLoaded( )
+	return catherine.schema.loaded
+end

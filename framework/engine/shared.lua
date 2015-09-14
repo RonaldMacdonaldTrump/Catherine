@@ -266,18 +266,18 @@ function GM:DoAnimationEvent( pl, eve, data )
 		holdType = "normal"
 	end
 
-	local SAO = catherine.animation[ class ][ holdType ]
+	local ani = catherine.animation[ class ][ holdType ]
 
 	if ( eve == PLAYERANIMEVENT_ATTACK_PRIMARY ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, SAO.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
 
 		return ACT_VM_PRIMARYATTACK
 	elseif ( eve == PLAYERANIMEVENT_ATTACK_SECONDARY ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, SAO.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
 
 		return ACT_VM_SECONDARYATTACK
 	elseif ( eve == PLAYERANIMEVENT_RELOAD ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, SAO.reload or ACT_GESTURE_RELOAD_SMG1, true )
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.reload or ACT_GESTURE_RELOAD_SMG1, true )
 
 		return ACT_INVALID
 	elseif ( eve == PLAYERANIMEVENT_CANCEL_RELOAD ) then
