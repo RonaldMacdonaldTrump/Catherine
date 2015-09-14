@@ -185,9 +185,8 @@ end
 function GM:HUDDrawScoreBoard( )
 	if ( catherine.pl:IsCharacterLoaded( ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
-	local realTime = RealTime( ) // YES, this is real time, thats all.
-
-	// Backgrounds
+	local realTime = RealTime( )
+	
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, catherine.intro.backAlpha ) )
 	
 	surface.SetDrawColor( 200, 200, 200, catherine.intro.backAlpha )
@@ -217,7 +216,6 @@ function GM:HUDDrawScoreBoard( )
 		catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 0 )
 	end
 	
-	// Intro codes
 	if ( catherine.intro.status and catherine.intro.startTime != 0 ) then
 		if ( catherine.intro.startTime <= realTime ) then
 			catherine.intro.firstStage = true
@@ -228,7 +226,7 @@ function GM:HUDDrawScoreBoard( )
 			
 			if ( !catherine.intro.firstStageEffect ) then
 				introBooA = 255
-				surface.PlaySound( "CAT/intro_slide_2.wav" ) // Tooong!
+				surface.PlaySound( "CAT/intro_slide_2.wav" )
 				catherine.intro.firstStageEffect = true
 			end
 			
@@ -245,7 +243,7 @@ function GM:HUDDrawScoreBoard( )
 				
 				if ( !catherine.intro.secondStageEffect ) then
 					introBooA = 255
-					surface.PlaySound( "CAT/intro_slide_2.wav" ) // Tooong!
+					surface.PlaySound( "CAT/intro_slide_2.wav" )
 					catherine.intro.secondStageEffect = true
 				end
 				
@@ -267,7 +265,7 @@ function GM:HUDDrawScoreBoard( )
 					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, 0 - 512, 25 )
 
 					if ( !catherine.intro.secondStageEnding ) then
-						surface.PlaySound( "CAT/intro_done.wav" ) // Sike!
+						surface.PlaySound( "CAT/intro_done.wav" )
 						catherine.intro.secondStageEnding = true
 					end
 
@@ -283,7 +281,6 @@ function GM:HUDDrawScoreBoard( )
 							else
 								catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
 							end
-							// Call panel
 						end
 					end
 				end
@@ -325,12 +322,9 @@ function GM:HUDDrawScoreBoard( )
 		else
 			catherine.character.SetMenuActive( true )
 		end
-		
-		// Call panel
 	end
 
 	if ( catherine.intro.loadingAlpha > 0 ) then
-		// Loading circle
 		if ( catherine.intro.noError or catherine.intro.onlyMessage ) then
 			catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 4, 4 )
 			
@@ -347,27 +341,22 @@ function GM:HUDDrawScoreBoard( )
 			catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 360, 100 )
 		end
 	end
-
-	// Framework logo
+	
 	surface.SetDrawColor( 255, 255, 255, 255 )
 	surface.SetMaterial( frameworkLogoMat )
 	surface.DrawTexturedRect( catherine.intro.firstStageX, scrH / 2 - 256 / 2, 512, 256 )
-
-	// Schema logo
+	
 	surface.SetDrawColor( 255, 255, 255, catherine.intro.secondStageAlpha )
 	surface.SetMaterial( Material( catherine.configs.schemaLogo ) )
 	surface.DrawTexturedRect( catherine.intro.secondStageX, scrH / 2 - 256 / 2, 512, 256 )
-
-	// Catherine version
+	
 	draw.SimpleText( LANG( "Version_UI_YourVer_AV", catherine.GetVersion( ) .. " " .. catherine.GetBuild( ) ), "catherine_normal15", 15, 20, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
 	
-	// Error message
 	if ( ( !catherine.intro.noError or catherine.intro.onlyMessage ) and catherine.intro.errorMessage ) then
 		draw.SimpleText( LANG( "Basic_Sorry" ), "catherine_normal20", 85, scrH - 55, Color( 0, 0, 0, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
 		draw.SimpleText( catherine.intro.errorMessage, "catherine_normal15", 85, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
 	end
 	
-	// Whitescreen
 	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, introBooA ) )
 end
 
@@ -561,7 +550,7 @@ function GM:EntityCacheWork( pl )
 		local targetAlpha = v and 255 or 0
 		local a = math_app( k.CAT_entityCacheAlpha or 0, targetAlpha, FrameTime( ) * 120 )
 
-		if ( a > 0 and hook_run( "CantDrawEntityTargetID", pl, k, a ) != true ) then
+		if ( a > 0 and hook_run( "ShouldDrawEntityTargetID", pl, k, a ) != true ) then
 			if ( k.DrawEntityTargetID ) then
 				k:DrawEntityTargetID( pl, k, a )
 			else
