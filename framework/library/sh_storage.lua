@@ -224,7 +224,7 @@ if ( SERVER ) then
 
 	function catherine.storage.SetInv( ent, data )
 		ent.inv = data
-		ent:SetNetVar( "inv", ent.inv )
+		ent:SetNetVar( "inv", data )
 	end
 	
 	function catherine.storage.GetInv( ent )
@@ -310,18 +310,18 @@ if ( SERVER ) then
 		end )
 	end
 
-	local staticPropPlugin = catherine.plugin.Get( "staticprop" )
-
+	local plugin = catherine.plugin.Get( "permanententity" )
+	
 	function catherine.storage.PlayerSpawnedProp( pl, _, ent )
 		timer.Simple( 1, function( )
 			if ( IsValid( ent ) ) then
 				local success = catherine.storage.Make( ent )
 
-				if ( staticPropPlugin and success ) then
+				if ( plugin and success ) then
 					ent.CAT_isStorageCustom = true
 					
 					ent:SetNetVar( "isStatic", true )
-					staticPropPlugin:DataSave( )
+					plugin:DataSave( )
 				end
 			end
 		end )

@@ -103,11 +103,11 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 		if ( vel > walkSpeed + 5 ) then
 			local runSpeed = pl:GetRunSpeed( )
 			
-			local perc = math.Clamp( vel / runSpeed * 100, 0.5, 5 )
+			local perc = math_Clamp( vel / runSpeed * 100, 0.5, 5 )
 			self.targetAng = Angle( math.abs( math.cos( realTime * ( runSpeed / 33 ) ) * 0.4 * perc ), math.sin( realTime * ( runSpeed / 29 ) ) * 0.5 * perc, 0 )
 			self.targetPos = Vector( 0, 0, math.sin( realTime * ( runSpeed / 30 ) ) * 0.4 * perc )
 		else
-			local perc = math.Clamp( ( vel / walkSpeed * 100 ) / 30, 0, 4 )
+			local perc = math_Clamp( ( vel / walkSpeed * 100 ) / 30, 0, 4 )
 			self.targetAng = Angle( math.cos( realTime * ( walkSpeed / 8 ) ) * 0.2 * perc, 0, 0 )
 			self.targetPos = Vector( 0, 0, ( math.sin( realTime * ( walkSpeed / 8 ) ) * 0.5 ) * perc )
 		end
@@ -122,7 +122,7 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 			else
 				vel = math.abs( pl:GetVelocity( ).z )
 				local af = 0
-				local perc = math.Clamp( vel / 200, 0.1, 8 )
+				local perc = math_Clamp( vel / 200, 0.1, 8 )
 				
 				if ( perc > 1 ) then
 					af = perc
