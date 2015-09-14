@@ -84,15 +84,12 @@ if ( SERVER ) then
 
 			timer.Simple( 1, function( )
 				netstream.Start( pl, "catherine.loadingFinished" )
-				pl:Freeze( false )
 				
 				--[[ Finish! ]]--
 			end )
 		end
 		
 		if ( isReloading ) then
-			pl:Freeze( true )
-			
 			timer.Simple( 1, function( )
 				Initializing( )
 			end )
@@ -106,8 +103,6 @@ if ( SERVER ) then
 					Initializing( )
 				end )
 			end )
-
-			pl:Freeze( true )
 			
 			netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
 		end

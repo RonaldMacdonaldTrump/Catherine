@@ -617,16 +617,23 @@ function GM:PlayerSay( pl, text )
 end
 
 function GM:PlayerInitialSpawn( pl )
+	pl:SetNoDraw( true )
+	pl:SetNotSolid( true )
+	pl:SetPos( Vector( 0, 0, 10000 ) )
+	pl:Freeze( true )
+	pl:Lock( )
+	
 	timer.Simple( 2, function( )
 		pl:SetNoDraw( true )
 		pl:SetNotSolid( true )
-		pl:GodEnable( )
 		pl:SetPos( Vector( 0, 0, 10000 ) )
+		pl:Freeze( true )
+		pl:Lock( )
 		
 		catherine.player.Initialize( pl )
 	end )
 	
-	timer.Create( "Catherine.player.Initialize.Reload", 10, 0, function( )
+	timer.Create( "Catherine.player.Initialize.Reload", 6, 0, function( )
 		if ( !IsValid( pl ) ) then
 			timer.Remove( "Catherine.player.Initialize.Reload" )
 			return
@@ -634,8 +641,9 @@ function GM:PlayerInitialSpawn( pl )
 		
 		pl:SetNoDraw( true )
 		pl:SetNotSolid( true )
-		pl:GodEnable( )
 		pl:SetPos( Vector( 0, 0, 10000 ) )
+		pl:Freeze( true )
+		pl:Lock( )
 		
 		catherine.player.Initialize( pl )
 	end )

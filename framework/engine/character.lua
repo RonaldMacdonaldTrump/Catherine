@@ -48,6 +48,8 @@ function catherine.character.FindVarByField( field )
 	end
 end
 
+local tableJSONDefault = util.TableToJSON( { } )
+
 catherine.character.NewVar( "id", {
 	field = "_id",
 	doNetworking = true,
@@ -103,7 +105,7 @@ catherine.character.NewVar( "model", {
 catherine.character.NewVar( "att", {
 	field = "_att",
 	doNetworking = true,
-	default = "[]",
+	default = tableJSONDefault,
 	doConversion = true,
 	doLocal = true
 } )
@@ -135,7 +137,7 @@ catherine.character.NewVar( "steamID", {
 catherine.character.NewVar( "charVar", {
 	field = "_charVar",
 	doNetworking = true,
-	default = "[]",
+	default = tableJSONDefault,
 	doConversion = true,
 	doLocal = true
 } )
@@ -143,7 +145,7 @@ catherine.character.NewVar( "charVar", {
 catherine.character.NewVar( "inventory", {
 	field = "_inv",
 	doNetworking = true,
-	default = "[]",
+	default = tableJSONDefault,
 	doConversion = true,
 	doLocal = true
 } )
@@ -207,9 +209,10 @@ if ( SERVER ) then
 		end
 		
 		if ( !prevID ) then
-			pl:GodDisable( )
+			pl:Freeze( false )
+			pl:UnLock( )
 		end
-
+		 
 		local factionTable = catherine.faction.FindByID( character._faction )
 
 		if ( !factionTable ) then
@@ -224,7 +227,7 @@ if ( SERVER ) then
 		else
 			netstream.Start( pl, "catherine.hud.WelcomeIntroStart" )
 		end
-
+		
 		pl.CAT_loadingChar = true
 		
 		pl:KillSilent( )
@@ -233,7 +236,7 @@ if ( SERVER ) then
 		pl:SetModel( character._model )
 		pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
 		pl:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( pl ) )
-
+		
 		catherine.character.CreateNetworkRegistry( pl, id, character )
 		catherine.character.SetCharVar( pl, "class", nil )
 		
@@ -275,12 +278,8 @@ if ( SERVER ) then
 		local charVars = { }
 		
 		for k, v in pairs( catherine.character.GetVarAll( ) ) do
-			local var = v.default or nil
+			local var = type( v.default ) == "function" and v.default( pl, data[ k ] ) or v.default
 			
-			if ( type( v.default ) == "function" ) then
-				var = v.default( pl )
-			end
-
 			if ( data[ k ] ) then
 				var = data[ k ]
 				
@@ -307,7 +306,7 @@ if ( SERVER ) then
 	function catherine.character.Use( pl, id )
 		local steamName = pl:SteamName( )
 		local charName = pl:Name( )
-		local prevName = steamName == charName and "NO Character" or charName
+		local prevName = steamName == charName and "No Character" or charName
 		local success, reason = catherine.character.New( pl, id )
 		
 		if ( success ) then
@@ -395,8 +394,8 @@ if ( SERVER ) then
 	function catherine.character.SendPlayerCharacterList( pl, func )
 		local steamID = getSteamID( pl )
 		
-		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. steamID .. "'", function( data )
-			if ( !data ) then
+		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. steamID .. "' AND _schema = '" .. catherine.schema.GetUniqueID( ) .. "'", function( data )
+			if ( !data or #data == 0 ) then
 				catherine.character.buffers[ steamID ] = { }
 				netstream.Start( pl, "catherine.character.SendPlayerCharacterList", { } )
 				
@@ -427,7 +426,7 @@ if ( SERVER ) then
 		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
 		local steamID = getSteamID( pl )
 		
-		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. steamID .. "'", function( data )
+		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. steamID .. "' AND _schema = '" .. catherine.schema.GetUniqueID( ) .. "'", function( data )
 			if ( !data ) then return end
 			
 			catherine.character.buffers[ steamID ] = data
