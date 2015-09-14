@@ -202,17 +202,17 @@ LANGUAGE.data = {
 	[ "Basic_Notify_NoArg" ] = "%s 번째 인수를 입력하세요!",
 	[ "Basic_Notify_InputText" ] = "문자를 입력하세요!",
 
-	// Version
-	[ "Version_UI_Title" ] = "정보",
-	[ "Version_UI_YourVer_AV" ] = "버전 '%s'",
-	[ "Version_UI_YourVer_NO" ] = "버전 '올바르지 않음'",
-	[ "Version_UI_Checking" ] = "버전을 확인하는 중 ...",
-	[ "Version_UI_CheckButtonStr" ] = "버전 확인",
-	[ "Version_UI_OpenUpdateLogStr" ] = "업데이트 내역",
-	[ "Version_Notify_FoundNew" ] = "이 서버는 최신 버전으로 업데이트가 필요합니다!",
-	[ "Version_Notify_AlreadyNew" ] = "이 서버는 최신 버전을 사용하고 있습니다, 감사합니다.",
-	[ "Version_Notify_CheckError" ] = "버전을 확인하는 중 오류가 발생하였습니다. - %s",
-	[ "Version_Notify_NextTime" ] = "너무 자주 버전을 확인할 수 없습니다, 나중에 다시 시도하세요!",
+	// System
+	[ "System_UI_Title" ] = "시스템",
+	[ "System_UI_Close" ] = "닫기",
+	[ "System_UI_Update_Title" ] = "업데이트",
+	[ "System_UI_Update_CoreVer" ] = "코어 버전 - %s %s",
+	[ "System_UI_Update_FoundNew" ] = "최신 버전이 아닙니다!",
+	[ "System_UI_Update_AlreadyNew" ] = "최신 버전을 사용하고 있습니다.",
+	[ "System_UI_Update_CheckButton" ] = "업데이트 확인",
+	[ "System_UI_Update_OpenUpdateLog" ] = "업데이트 기록",
+	[ "System_UI_Update_CheckingUpdate" ] = "업데이트 확인 중 ...",
+	[ "System_Notify_Update_NextTime" ] = "너무 자주 버전을 확인할 수 없습니다, 나중에 다시 시도하세요!",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "능력치",

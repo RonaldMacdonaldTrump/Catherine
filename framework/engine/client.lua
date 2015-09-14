@@ -350,7 +350,7 @@ function GM:HUDDrawScoreBoard( )
 	surface.SetMaterial( Material( catherine.configs.schemaLogo ) )
 	surface.DrawTexturedRect( catherine.intro.secondStageX, scrH / 2 - 256 / 2, 512, 256 )
 	
-	draw.SimpleText( LANG( "Version_UI_YourVer_AV", catherine.GetVersion( ) .. " " .. catherine.GetBuild( ) ), "catherine_normal15", 15, 20, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( LANG( "System_UI_Update_CoreVer", catherine.GetVersion( ), catherine.GetBuild( ) ), "catherine_normal15", 15, 20, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
 	
 	if ( ( !catherine.intro.noError or catherine.intro.onlyMessage ) and catherine.intro.errorMessage ) then
 		draw.SimpleText( LANG( "Basic_Sorry" ), "catherine_normal20", 85, scrH - 55, Color( 0, 0, 0, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )

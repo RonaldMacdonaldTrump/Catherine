@@ -37,7 +37,7 @@ if ( SERVER ) then
 						if ( IsValid( pl ) ) then
 							netstream.Start( pl, "catherine.version.CheckResult", {
 								false,
-								LANG( pl, "Version_Notify_CheckError", "Unknown Error" )
+								"Unknown Error"
 							} )
 						end
 						
@@ -45,7 +45,6 @@ if ( SERVER ) then
 					end
 					
 					local globalVer = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
-					local foundNew = false
 					
 					if ( body != catherine.GetVersion( ) ) then
 						if ( globalVer == false ) then
@@ -53,10 +52,7 @@ if ( SERVER ) then
 						end
 						
 						catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. catherine.GetVersion( ) .. " -> " .. body .. "]" )
-						foundNew = true
 					else
-						foundNew = false
-						
 						if ( globalVer == true ) then
 							catherine.net.SetNetGlobalVar( "cat_needUpdate", false )
 						end
@@ -64,8 +60,7 @@ if ( SERVER ) then
 					
 					if ( IsValid( pl ) ) then
 						netstream.Start( pl, "catherine.version.CheckResult", {
-							false,
-							foundNew and LANG( pl, "Version_Notify_FoundNew" ) or LANG( pl, "Version_Notify_AlreadyNew" )
+							false
 						} )
 					end
 				end, function( err )
@@ -74,7 +69,7 @@ if ( SERVER ) then
 					if ( IsValid( pl ) ) then
 						netstream.Start( pl, "catherine.version.CheckResult", {
 							false,
-							LANG( pl, "Version_Notify_CheckError", err )
+							err
 						} )
 					end
 				end
@@ -85,7 +80,7 @@ if ( SERVER ) then
 			if ( IsValid( pl ) ) then
 				netstream.Start( pl, "catherine.version.CheckResult", {
 					false,
-					LANG( pl, "Version_Notify_NextTime" )
+					LANG( pl, "System_Notify_Update_NextTime" )
 				} )
 			end
 		end
@@ -107,11 +102,12 @@ if ( SERVER ) then
 	end )
 else
 	netstream.Hook( "catherine.version.CheckResult", function( data )
-		if ( IsValid( catherine.vgui.version ) ) then
-			catherine.vgui.version.status = data[ 1 ]
-			catherine.vgui.version:Refresh( )
+		if ( IsValid( catherine.vgui.system ) ) then
+			catherine.vgui.system.updatePanel.status = data[ 1 ]
 		end
 		
-		Derma_Message( data[ 2 ], LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+		if ( data[ 2 ] ) then
+			catherine.vgui.system.updatePanel:SetErrorMessage( data[ 2 ] )
+		end
 	end )
 end

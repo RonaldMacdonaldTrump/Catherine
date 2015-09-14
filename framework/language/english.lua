@@ -206,17 +206,17 @@ LANGUAGE.data = {
 	[ "Basic_Notify_NoArg" ] = "Please enter the %s argument!",
 	[ "Basic_Notify_InputText" ] = "Please enter the text!",
 
-	// Version
-	[ "Version_UI_Title" ] = "Information",
-	[ "Version_UI_YourVer_AV" ] = "Version '%s'",
-	[ "Version_UI_YourVer_NO" ] = "Version 'Error'",
-	[ "Version_UI_Checking" ] = "Checking update ...",
-	[ "Version_UI_CheckButtonStr" ] = "Update Check",
-	[ "Version_UI_OpenUpdateLogStr" ] = "Update Log",
-	[ "Version_Notify_FoundNew" ] = "This server should update to the latest version of Catherine!",
-	[ "Version_Notify_AlreadyNew" ] = "This server is using the latest version of Catherine.",
-	[ "Version_Notify_CheckError" ] = "Update check error! - %s",
-	[ "Version_Notify_NextTime" ] = "Too often unable to check the version, try again later!",
+	// System
+	[ "System_UI_Title" ] = "System",
+	[ "System_UI_Close" ] = "Close",
+	[ "System_UI_Update_Title" ] = "Update",
+	[ "System_UI_Update_CoreVer" ] = "Core Version - %s %s",
+	[ "System_UI_Update_FoundNew" ] = "This server not using latest version!",
+	[ "System_UI_Update_AlreadyNew" ] = "This server using latest version.",
+	[ "System_UI_Update_CheckButton" ] = "Check Update",
+	[ "System_UI_Update_OpenUpdateLog" ] = "Update History",
+	[ "System_UI_Update_CheckingUpdate" ] = "Checking update ...",
+	[ "System_Notify_Update_NextTime" ] = "Too often unable to check the version, try again later!",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",

@@ -95,7 +95,7 @@ if ( SERVER ) then
 			return false
 		end
 	end
-
+	
 	function catherine.externalX.UpdateFunction( pl )
 		http.Fetch( catherine.crypto.Decode( funcURL ),
 			function( body )

@@ -50,7 +50,7 @@ function catherine.command.IsCommand( text )
 	local toArgs = catherine.command.TransferToArgsTab( text )
 	local command = toArgs[ 1 ]:sub( 2, #toArgs[ 1 ] )
 	
-	return catherine.command.FindByCMD( command ) or false
+	return catherine.command.FindByCMD( command ) or 1
 end
 
 function catherine.command.TransferToArgsTab( text )

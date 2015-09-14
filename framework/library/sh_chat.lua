@@ -359,10 +359,17 @@ if ( SERVER ) then
 				break
 			end
 		end
-
-		if ( catherine.command.IsCommand( text ) ) then
-			catherine.command.RunByText( pl, text )
-			return
+		
+		local isCommand = catherine.command.IsCommand( text )
+		
+		if ( isCommand ) then
+			if ( isCommand == 1 ) then
+				catherine.util.NotifyLang( pl, "Command_Notify_NotFound" )
+				return
+			else
+				catherine.command.RunByText( pl, text )
+				return
+			end
 		end
 		
 		local chatInformation = {
