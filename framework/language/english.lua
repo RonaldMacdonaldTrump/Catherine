@@ -217,6 +217,13 @@ LANGUAGE.data = {
 	[ "System_UI_Update_OpenUpdateLog" ] = "Update History",
 	[ "System_UI_Update_CheckingUpdate" ] = "Checking update ...",
 	[ "System_Notify_Update_NextTime" ] = "Too often unable to check the version, try again later!",
+	[ "System_UI_Plugin_Title" ] = "Plugin",
+	[ "System_UI_Plugin_ManagerButton" ] = "Plugin Management",
+	[ "System_UI_Plugin_ManagerAllPluginCount" ] = "Total Plugins %s's.",
+	[ "System_UI_Plugin_ManagerFrameworkPluginCount" ] = "Framework Plugins %s's.",
+	[ "System_UI_Plugin_ManagerSchemaPluginCount" ] = "Schema Plugins %s's.",
+	[ "System_UI_Plugin_ManagerDeactivePluginCount" ] = "Deactive Plugins %s's.",
+	[ "System_UI_Plugin_ManagerTitle" ] = "Plugin Management",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",

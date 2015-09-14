@@ -20,8 +20,9 @@ catherine.version = catherine.version or { }
 
 if ( SERVER ) then
 	catherine.version.checked = catherine.version.checked or false
-	local url = "htctJcpnyz:vaRG/OCENq/nTJXeTtbetsLVkeBvHRYubixWGCFWvJnKtfUgtsexJYWuOgatlvnmXOkpBJizmfJOuokrlUfjebtCkOsHPCoeSclMFWQetsMamafQnflUWyTrFtbGydUbFylJiyJeNrafFheVoNmAPznLpRfXlXjLrtWlsgicLflmRWPzcOk.bMzNsvPCazHQZIhIhqFcMRShzunPpypzLJFzWpnooGYxVGDOmxMvdSDVQnTAWOmpVBxCWssVGZpelFewnIcRN/MEoODmvPIgeWWVymkjfYmoDmNXRiOjQctjjAMHYiZIUpmuwr7yAPXjBJsZValiVzWGrNuqWkFD6fRgfMiZogfqfoJDyqiICzYzIVcjbJnfEbiVZqIZYjHGaGqyDWEmwLH/DUtKaghOZCwSkDwqhzVszkRDIuVfrlCexMtUZtgvlELiBwEoVzsbAaBWFoaaiLbLCbROUhcjtOHMxwOaDjGqNevYQwXnKXwCuwPcNBlOiztOybBPbesblgIjK"
-
+	
+	local url = "htotGApRdN:wATs/YQKJg/XtOgVftAXxLUwFeMMhRpleExWNbNiTrJstohuyKzdZeHujcGUyTMqBYqpSRXadbpeUSbmlubthnlZWPyugIodLsJqNkBaRXyLZajDcvhnniIvcAiHgdHSeooxCamnSLegPLeWcgdyWhIGLREnDZkmrRblOmgSizuCZIyyOeV.SDooHdMGkDsRGvRbOwbcBuUWqcSotDEQjqZdfEBAohSaFItJJowFCJrwDZFSJSmfrGNIhPwYcPFFWwmkXHyer/RyEQoDDCSiqzaHNjLILtqMRaepMupiAyJIfYeMrAOWOiZzhcgigzOgkpiEjPJcFynrjGryPCcN0mlKMGTEQpExZnVkvYOmBGgvXzy1nMjcFNiqaUzgMJMTlSFOgnFZgJCypuDfGIJPNJTysnZEPsZvmtSfPTVa/XcTwLdYZthgmRqEwvEVJSMXvuLOBwrCvOgupleZRXRAnEDxTRbXBZtmVtvPHaMhsTHECdzyjpLnExgUiCJrZldFTQfROwAaXFzWlnQOdRBbAWTwbeFbNlWIhzgIcY"
+	
 	function catherine.version.Check( pl )
 		if ( ( catherine.version.nextCheckable or 0 ) <= CurTime( ) ) then
 			http.Fetch( catherine.crypto.Decode( url ),
@@ -33,7 +34,7 @@ if ( SERVER ) then
 					
 					if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
 						catherine.util.Print( Color( 255, 0, 0 ), "Failed to checking version! - Unknown Error" )
-					
+						
 						if ( IsValid( pl ) ) then
 							netstream.Start( pl, "catherine.version.CheckResult", {
 								false,
@@ -44,19 +45,13 @@ if ( SERVER ) then
 						return
 					end
 					
-					local globalVer = catherine.net.GetNetGlobalVar( "cat_needUpdate", false )
+					local data = CompileString( body, "catherine.version.Check" )( )
 					
 					if ( body != catherine.GetVersion( ) ) then
-						if ( globalVer == false ) then
-							catherine.net.SetNetGlobalVar( "cat_needUpdate", true )
-						end
-						
-						catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. catherine.GetVersion( ) .. " -> " .. body .. "]" )
-					else
-						if ( globalVer == true ) then
-							catherine.net.SetNetGlobalVar( "cat_needUpdate", false )
-						end
+						catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. catherine.GetVersion( ) .. " -> " .. data.version .. "]" )
 					end
+					
+					catherine.net.SetNetGlobalVar( "cat_updateData", data )
 					
 					if ( IsValid( pl ) ) then
 						netstream.Start( pl, "catherine.version.CheckResult", {
@@ -75,7 +70,7 @@ if ( SERVER ) then
 				end
 			)
 			
-			catherine.version.nextCheckable = CurTime( ) + 300
+			catherine.version.nextCheckable = CurTime( ) + 1
 		else
 			if ( IsValid( pl ) ) then
 				netstream.Start( pl, "catherine.version.CheckResult", {
@@ -104,10 +99,11 @@ else
 	netstream.Hook( "catherine.version.CheckResult", function( data )
 		if ( IsValid( catherine.vgui.system ) ) then
 			catherine.vgui.system.updatePanel.status = data[ 1 ]
-		end
-		
-		if ( data[ 2 ] ) then
-			catherine.vgui.system.updatePanel:SetErrorMessage( data[ 2 ] )
+			catherine.vgui.system.updatePanel:RefreshHistory( )
+			
+			if ( data[ 2 ] ) then
+				catherine.vgui.system.updatePanel:SetErrorMessage( data[ 2 ] )
+			end
 		end
 	end )
 end

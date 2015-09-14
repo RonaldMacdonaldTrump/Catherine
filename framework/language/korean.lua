@@ -213,6 +213,13 @@ LANGUAGE.data = {
 	[ "System_UI_Update_OpenUpdateLog" ] = "업데이트 기록",
 	[ "System_UI_Update_CheckingUpdate" ] = "업데이트 확인 중 ...",
 	[ "System_Notify_Update_NextTime" ] = "너무 자주 버전을 확인할 수 없습니다, 나중에 다시 시도하세요!",
+	[ "System_UI_Plugin_Title" ] = "플러그인",
+	[ "System_UI_Plugin_ManagerButton" ] = "플러그인 관리",
+	[ "System_UI_Plugin_ManagerAllPluginCount" ] = "%s개의 모든 플러그인.",
+	[ "System_UI_Plugin_ManagerFrameworkPluginCount" ] = "%s개의 프레임워크 플러그인.",
+	[ "System_UI_Plugin_ManagerSchemaPluginCount" ] = "%s개의 스키마 플러그인.",
+	[ "System_UI_Plugin_ManagerDeactivePluginCount" ] = "%s개의 비 활성화 된 플러그인.",
+	[ "System_UI_Plugin_ManagerTitle" ] = "플러그인 관리",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "능력치",

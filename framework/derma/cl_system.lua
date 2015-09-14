@@ -53,9 +53,11 @@ function PANEL:Init( )
 		
 		draw.RoundedBox( 0, 0, 30, w, 1, Color( 0, 0, 0, 90 ) )
 		
-		draw.SimpleText( LANG( "System_UI_Update_Title" ), "catherine_normal20", 15, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( LANG( "System_UI_Update_Title" ), "catherine_normal20", 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 		
 		if ( pnl.status ) then
+			pnl.Lists:SetVisible( false )
+			
 			pnl.loadingAni = math.Approach( pnl.loadingAni, pnl.loadingAni - 10, 10 )
 			
 			draw.NoTexture( )
@@ -66,7 +68,10 @@ function PANEL:Init( )
 			surface.SetDrawColor( 255, 255, 255, 255 )
 			catherine.geometry.DrawCircle( w / 2, h / 2, 15, 5, pnl.loadingAni, 70, 100 )
 		else
-			draw.SimpleText( LANG( "System_UI_Update_CoreVer", catherine.GetVersion( ), catherine.GetBuild( ) ), "catherine_normal20", 15, 50, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			if ( !pnl.Lists:IsVisible( ) ) then
+				pnl.Lists:SetVisible( true )
+			end
+			draw.SimpleText( catherine.GetVersion( ) .. " " .. catherine.GetBuild( ), "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			
 			if ( pnl.errorMessage ) then
 				surface.SetDrawColor( 255, 255, 255, 255 )
@@ -75,7 +80,9 @@ function PANEL:Init( )
 				
 				draw.SimpleText( pnl.errorMessage, "catherine_normal15", 33, h - 90, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			else
-				if ( catherine.net.GetNetGlobalVar( "cat_needUpdate", false ) ) then
+				local data = catherine.net.GetNetGlobalVar( "cat_updateData", { } )
+				
+				if ( data.version != catherine.GetVersion( ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
 					surface.SetMaterial( foundNewMat )
 					surface.DrawTexturedRect( 10, h - 97, 16, 16 )
@@ -103,6 +110,46 @@ function PANEL:Init( )
 		end )
 	end
 	
+	self.updatePanel.RefreshHistory = function( pnl )
+		pnl.Lists:Clear( )
+		local data = catherine.net.GetNetGlobalVar( "cat_updateData", { } )
+		
+		if ( data.history ) then
+			for k, v in pairs( data.history ) do
+				local mat = nil
+				
+				if ( v.icon ) then
+					mat = Material( v.icon )
+				end
+				
+				local panel = vgui.Create( "DPanel" )
+				panel:SetSize( pnl.Lists:GetWide( ), 30 )
+				panel.Paint = function( pnl2, w, h )
+					draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 0, 0, 0, 90 ) )
+					draw.SimpleText( v.text, "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+					
+					if ( mat ) then
+						surface.SetDrawColor( 255, 255, 255, 255 )
+						surface.SetMaterial( mat )
+						surface.DrawTexturedRect( w - 25, h / 2 - 16 / 2, 16, 16 )
+					end
+				end
+				
+				pnl.Lists:AddItem( panel )
+			end
+		end
+	end
+	
+	self.updatePanel.Lists = vgui.Create( "DPanelList", self.updatePanel )
+	self.updatePanel.Lists:SetPos( 10, 40 )
+	self.updatePanel.Lists:SetSize( self.updatePanel.w - 20, self.updatePanel.h - 145 )
+	self.updatePanel.Lists:SetSpacing( 5 )
+	self.updatePanel.Lists:EnableHorizontal( false )
+	self.updatePanel.Lists:EnableVerticalScrollbar( true )
+	self.updatePanel.Lists:SetDrawBackground( false )
+	
+	self.updatePanel:RefreshHistory( )
+	
 	self.updatePanel.check = vgui.Create( "catherine.vgui.button", self.updatePanel )
 	self.updatePanel.check.progressing = false
 	self.updatePanel.check:SetSize( self.updatePanel.w - 15, 30 )
@@ -113,6 +160,7 @@ function PANEL:Init( )
 	self.updatePanel.check:SetGradientColor( Color( 255, 255, 255, 150 ) )
 	self.updatePanel.check.Click = function( pnl )
 		if ( pnl.progressing ) then return end
+		
 		self.updatePanel.status = true
 		netstream.Start( "catherine.version.Check" )
 	end
@@ -139,6 +187,105 @@ function PANEL:Init( )
 		gui.OpenURL( "http://github.com/L7D/Catherine/commits" )
 	end
 	self.updatePanel.openLog.PaintBackground = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
+	end
+	
+	self.pluginPanel = vgui.Create( "DPanel", self )
+	
+	self.pluginPanel.w, self.pluginPanel.h = self.w * 0.3, self.h * 0.5
+	self.pluginPanel.x, self.pluginPanel.y = 40 + self.updatePanel.w, 55
+	self.pluginPanel.status = false
+	self.pluginPanel.loadingAni = 0
+	self.pluginPanel.errorMessage = nil
+	
+	self.pluginPanel:SetSize( self.pluginPanel.w, self.pluginPanel.h )
+	self.pluginPanel:SetPos( self.pluginPanel.x, self.pluginPanel.y )
+	self.pluginPanel.Paint = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 150 ) )
+		
+		surface.SetDrawColor( 0, 0, 0, 90 )
+		surface.DrawOutlinedRect( 0, 0, w, h )
+		
+		draw.RoundedBox( 0, 0, 30, w, 1, Color( 0, 0, 0, 90 ) )
+		
+		draw.SimpleText( LANG( "System_UI_Plugin_Title" ), "catherine_normal20", 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		
+		local pluginAll = catherine.plugin.GetAll( )
+		
+		local frameworkPluginsCount, schemaPluginsCount, deactivePluginsCount = 0, 0, 0
+		
+		for k, v in pairs( pluginAll ) do
+			if ( !catherine.plugin.GetActive( k ) ) then
+				deactivePluginsCount = deactivePluginsCount + 1
+			end
+			
+			if ( v.FolderName:lower( ):find( "catherine/" ) ) then
+				frameworkPluginsCount = frameworkPluginsCount + 1
+			else
+				schemaPluginsCount = schemaPluginsCount + 1
+			end
+		end
+		
+		draw.SimpleText( LANG( "System_UI_Plugin_ManagerAllPluginCount", table.Count( pluginAll ) ), "catherine_normal20", w / 2, h * 0.3, Color( 50, 50, 50, 255 ), 1, 1 )
+		draw.SimpleText( LANG( "System_UI_Plugin_ManagerFrameworkPluginCount", frameworkPluginsCount ), "catherine_normal15", w / 2, h * 0.3 + 50, Color( 50, 50, 50, 255 ), 1, 1 )
+		draw.SimpleText( LANG( "System_UI_Plugin_ManagerSchemaPluginCount", schemaPluginsCount ), "catherine_normal15", w / 2, h * 0.3 + 70, Color( 50, 50, 50, 255 ), 1, 1 )
+		draw.SimpleText( LANG( "System_UI_Plugin_ManagerDeactivePluginCount", deactivePluginsCount ), "catherine_normal15", w / 2, h * 0.3 + 90, Color( 255, 90, 90, 255 ), 1, 1 )
+	end
+	
+	self.pluginPanel.OpenManager = function( pnl )
+		self.pluginManager = vgui.Create( "DFrame" )
+		
+		catherine.vgui.pluginManager = self.pluginManager
+		
+		self.pluginManager.w, self.pluginManager.h = ScrW( ), ScrH( )
+		self.pluginManager.x, self.pluginManager.y = ScrW( ) / 2 - self.pluginManager.w / 2, ScrH( ) / 2 - self.pluginManager.h / 2
+		
+		self.pluginManager:SetSize( self.pluginManager.w, self.pluginManager.h )
+		self.pluginManager:SetPos( self.pluginManager.x, self.pluginManager.y )
+		self.pluginManager:SetDraggable( false )
+		self.pluginManager:ShowCloseButton( true )
+		self.pluginManager:SetTitle( "" )
+		self.pluginManager:MakePopup( )
+		self.pluginManager.Paint = function( pnl, w, h )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
+			
+			draw.SimpleText( LANG( "System_UI_Plugin_ManagerTitle" ), "catherine_normal35", 20, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		end
+		
+		self.pluginManager.Close = function( pnl )
+			if ( pnl.closing ) then return end
+	
+			pnl.closing = true
+			
+			pnl:Remove( )
+			pnl = nil
+		end
+		
+		self.pluginManager.close = vgui.Create( "catherine.vgui.button", self.pluginManager )
+		self.pluginManager.close:SetPos( 15, self.pluginManager.h - 45 )
+		self.pluginManager.close:SetSize( self.pluginManager.w * 0.2, 30 )
+		self.pluginManager.close:SetStr( LANG( "System_UI_Close" ) )
+		self.pluginManager.close:SetStrColor( Color( 50, 50, 50, 255 ) )
+		self.pluginManager.close:SetGradientColor( Color( 255, 255, 255, 150 ) )
+		self.pluginManager.close.Click = function( )
+			self.pluginManager:Close( )
+		end
+		self.pluginManager.close.PaintBackground = function( pnl, w, h )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
+		end
+	end
+	
+	self.pluginPanel.open = vgui.Create( "catherine.vgui.button", self.pluginPanel )
+	self.pluginPanel.open:SetSize( self.pluginPanel.w - 15, 30 )
+	self.pluginPanel.open:SetPos( self.pluginPanel.w / 2 - self.pluginPanel.open:GetWide( ) / 2, self.pluginPanel.h - self.pluginPanel.open:GetTall( ) - 10 )
+	self.pluginPanel.open:SetStr( LANG( "System_UI_Plugin_ManagerButton" ) )
+	self.pluginPanel.open:SetStrFont( "catherine_normal15" )
+	self.pluginPanel.open:SetStrColor( Color( 50, 50, 50, 255 ) )
+	self.pluginPanel.open:SetGradientColor( Color( 255, 255, 255, 150 ) )
+	self.pluginPanel.open.Click = function( pnl )
+		self.pluginPanel:OpenManager( )
+	end
+	self.pluginPanel.open.PaintBackground = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 	end
 	
