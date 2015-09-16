@@ -38,9 +38,12 @@ if ( SERVER ) then return end
 function PLUGIN:PostPlayerDraw( pl )
 	if ( !pl:IsChatTyping( ) ) then return end
 	local lp = catherine.pl
+	
+	if ( !pl:Alive( ) or pl:IsNoclipping( ) ) then return end
+	
 	local a = catherine.util.GetAlphaFromDistance( lp:GetPos( ), pl:GetPos( ), 312 )
 	
-	if ( math.Round( a <= 0 ) or !pl:Alive( ) or pl:IsNoclipping( ) ) then return end
+	if ( a <= 0 ) then return end
 	
 	local index = pl:LookupBone( "ValveBiped.Bip01_Head1" )
 	

@@ -25,12 +25,12 @@ end
 function catherine.util.Include( dir, typ )
 	dir = dir:lower( )
 	
-	if ( SERVER and ( typ == "SERVER" or dir:find( "sv_" ) ) ) then 
+	if ( SERVER and ( typ == "SERVER" or dir:find( "sv_" ) ) ) then
 		include( dir )
 	elseif ( typ == "CLIENT" or dir:find( "cl_" ) ) then
-		if ( SERVER ) then 
-			AddCSLuaFile( dir )
-		else 
+		AddCSLuaFile( dir )
+		
+		if ( CLIENT ) then
 			include( dir )
 		end
 	elseif ( typ == "SHARED" or dir:find( "sh_" ) ) then
@@ -73,10 +73,10 @@ end
 function catherine.util.CheckStringMatch( one, two )
 	if ( one and two ) then
 		local one2, two2 = one:lower( ), two:lower( )
-
+		
 		if ( one == two ) then return true end
 		if ( one2 == two2 ) then return true end
-
+		
 		if ( one:find( two ) ) then return true end
 		if ( one2:find( two2 ) ) then return true end
 	end
@@ -103,7 +103,7 @@ end
 
 function catherine.util.GetChatTimeStamp( )
 	local hour = tonumber( os.date( "%H" ) )
-
+	
 	return os.date( "%p" ) .. " " .. ( hour > 12 and hour - 12 or hour ) .. ":" .. os.date( "%M" )
 end
 
@@ -149,7 +149,7 @@ function catherine.util.GetItemDropPos( pl )
 		endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * 86,
 		filter = pl
 	} )
-
+	
 	return tr.HitPos + tr.HitNormal * 36
 end
 
@@ -161,7 +161,7 @@ end
 
 function catherine.util.IsInBox( ent, minVector, maxVector, ignoreZPos )
 	local pos = ent:GetPos( )
-
+	
 	if ( ignoreZPos ) then
 		if ( ( pos.x >= math.min( minVector.x, maxVector.x ) and pos.x <= math.max( minVector.x, maxVector.x ) )
 		and ( pos.y >= math.min( minVector.y, maxVector.y ) and pos.y <= math.max( minVector.y, maxVector.y ) ) ) then
@@ -182,6 +182,18 @@ function catherine.util.GetDoorPartner( ent )
 			return v
 		end
 	end
+end
+
+function catherine.util.GetDoorPartners( ent )
+	local partners = { }
+	
+	for k, v in pairs( ents.FindInSphere( ent:GetPos( ), 128 ) ) do
+		if ( v:GetClass( ) == "prop_door_rotating" and ent:GetModel( ) == v:GetModel( ) and ent != v ) then
+			partners[ #partners + 1 ] = v
+		end
+	end
+	
+	return partners
 end
 
 local holdTypes = {
