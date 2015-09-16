@@ -28,7 +28,7 @@ GM.Description = "A neat and beautiful role-play framework for Garry's Mod."
 GM.Author = "L7D"
 GM.Website = "https://github.com/L7D/Catherine"
 GM.Email = "smhjyh2009@gmail.com"
-GM.Version = "2015/09/14"
+GM.Version = "0.8"
 GM.Build = "DEV"
 
 catherine.FolderName = GM.FolderName

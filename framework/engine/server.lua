@@ -170,7 +170,7 @@ function GM:PlayerShouldWorkItem( pl, itemTable, workID, ent_isMenu )
 		catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
 		return false
 	end
-
+	
 	if ( pl:IsTied( ) ) then
 		catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 		return false
@@ -190,7 +190,7 @@ end
 function GM:PlayerCharacterLoaded( pl )
 	local health = catherine.character.GetCharVar( pl, "char_health", pl:Health( ) )
 	local armor = catherine.character.GetCharVar( pl, "char_armor", 0 )
-
+	
 	pl:SetHealth( health )
 	
 	if ( armor != 0 ) then
@@ -200,7 +200,7 @@ function GM:PlayerCharacterLoaded( pl )
 	local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
 	
 	if ( factionTable and factionTable.salary and factionTable.salary > 0 ) then
-		local timerID = "Catherine.timer.PlayerSalary." .. pl:SteamID( )
+		local timerID = "Catherine.timer.AutoSalary." .. pl:SteamID( )
 		
 		timer.Remove( timerID )
 		timer.Create( timerID, factionTable.salaryTime or 350, 0, function( )
@@ -392,7 +392,7 @@ function GM:PlayerDisconnected( pl )
 		pl.CAT_ragdoll:Remove( )
 	end
 	
-	timer.Remove( "Catherine.timer.PlayerSalary." .. pl:SteamID( ) )
+	timer.Remove( "Catherine.timer.AutoSalary." .. pl:SteamID( ) )
 	
 	catherine.chat.Send( pl, "disconnect" )
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. pl:SteamID( ) .. " has disconnected a server." )
@@ -595,7 +595,7 @@ function GM:PlayerUse( pl, ent )
 		
 		return false
 	end
-
+	
 	local isDoor = ent:IsDoor( )
 	
 	if ( isDoor ) then
@@ -607,7 +607,7 @@ function GM:PlayerUse( pl, ent )
 			hook.Run( "PlayerUseDoor", pl, ent )
 		end
 	end
-
+	
 	return true
 end
 
@@ -702,7 +702,7 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 	end
 	
 	pl.CAT_healthRecover = true
-
+	
 	if ( !catherine.player.IsIgnoreScreenColor( pl ) and ( pl.CAT_nextDamageScreenColorEffect or 0 ) <= CurTime( ) ) then
 		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
 		
@@ -712,7 +712,7 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 	local hitGroup = catherine.player.GetHitGroup( pl, dmgInfo:GetDamagePosition( ) )
 	pl.CAT_lastHitGroup = hitGroup
 	local dataTable = hook.Run( "PlayerScaleDamage", pl, attacker, dmgInfo, hitGroup ) or { false, false }
-
+	
 	if ( dmgInfo:IsDamageType( DMG_FALL ) ) then
 		catherine.limb.TakeDamage( pl, HITGROUP_LEFTLEG, dmgInfo:GetDamage( ) )
 		catherine.limb.TakeDamage( pl, HITGROUP_RIGHTLEG, dmgInfo:GetDamage( ) )
@@ -721,13 +721,13 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 			catherine.limb.TakeDamage( pl, hitGroup, dmgInfo:GetDamage( ) )
 		end
 	end
-
+	
 	if ( !catherine.player.IsIgnoreHurtSound( pl ) and !dataTable[ 2 ] and ( pl.CAT_nextHurtDelay or 0 ) <= CurTime( ) ) then
 		pl.CAT_nextHurtDelay = CurTime( ) + 2
 		
 		local sound = hook.Run( "GetPlayerPainSound", pl )
 		local gender = pl:GetGender( )
-	
+		
 		if ( sound == nil ) then
 			if ( hitGroup == HITGROUP_HEAD ) then
 				sound = "vo/npc/" .. gender .. "01/ow0" .. math.random( 1, 2 ) .. ".wav"
@@ -741,14 +741,14 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 				sound = "vo/npc/" .. gender .. "01/startle0" .. math.random( 1, 2 ) .. ".wav"
 			end
 		end
-
+		
 		if ( sound != false ) then
 			if ( IsValid( ragdollEntity ) ) then
 				ragdollEntity:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
 				
 				return true
 			end
-
+			
 			pl:EmitSound( sound or "vo/npc/" .. gender .. "01/pain0" .. math.random( 1, 6 ) .. ".wav" )
 		end
 	end
@@ -787,7 +787,7 @@ function GM:DoPlayerDeath( pl )
 	pl:SetNoDraw( true )
 	pl:SetNotSolid( true )
 	pl:Freeze( true )
-
+	
 	if ( !IsValid( pl.CAT_ragdoll ) ) then
 		local ent = ents.Create( "prop_ragdoll" )
 		ent:SetAngles( pl:GetAngles( ) )

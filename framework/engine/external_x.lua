@@ -16,27 +16,24 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
---[[ Catherine External X 2.0 : Last Update 2015-08-10 ]]--
+--[[ Catherine External X 2.0 : Last Update 2015-09-16 ]]--
 
-catherine.externalX = catherine.externalX or { isRunned = false, libVersion = "2015-08-10" }
+catherine.externalX = catherine.externalX or { isRunned = false, libVersion = "2015-09-16" }
 
 if ( SERVER ) then
 	catherine.externalX.isInitialized = catherine.externalX.isInitialized or false
 	catherine.externalX.funcVersion = catherine.externalX.funcVersion or nil
 	
-	local checkURL = "htTtgspTmb:nGcC/nBubR/ewGrBytgRgImEqewCvdYYXExzXooPLuRWtVlEZqvcUyfuyPjQKOlOInhpqCRmLyGpXYxylUagodGxBNGzqGoRXNYxtUVmDssFZaNgQJtOrgDbmxJEtdaiSYYTQbKcqyYhTpeAxRCZkaRVyIBVcLGarSBDhVJVipACOKEYEHk.yQgCotLfxNFELrxCtTBcgDYQvMEDvrxNuJYszqubopZNCUBojrGMFQDYOYtkcxmvzQqthHCAemFjLtmZvrVUV/eRskcAgpJVQzLwyauNIDIIdasGpniaMSxZmLOStMJmxAeNjx0pQIoQONDVQFFxaacEIJYIUjrxhAEJfsToWhAFDkNSMKxooJNAHRQnFiCwCnEwTmSAcUryYDQZVQwcMpx8nbtpYHpMXPmPWSThdbRNfHaCKtds/JgOBgmgkYYCAgXkJfqvWgYgIbWILcrkTqdRSTvxJrFQNArTlfSTDxEkBPfJbaMJCXAxeAWcnFrDqEClzBkzxVAkUGANgwLXoZSubJeTqMJGrjdPEKeiJhUSuhdewh"
-	local funcURL = "htFtWzpxEy:asFJ/GTZMY/iBWgeQtmnrxtutebxQBUmbSxwSaFqHBIvtlLVldMvOpJuACZCfiyUhIlpigByaDwTwHdglKynvBOONxVyapoLQZNGSSitvoSXjaZkLKfUCOiosUurhdbjXeRBKnlFezeyeNerlryNlvWxYgHAGmoerbVCUVEhAOfBWtqtTmf.zlWwEeDULOZKFiMbbFucIYYvEFtMfqJXEPAIKpgNolWllAvrKTocUIgGfnLKzWmvdtluOsciVAUMIqbsBnAVD/YFDdVfvyEUntKoXTKwbmmUYatCUhhGZtjXAqTWeadbuDCiMk0LpAjmadWadwfJgbeJRNIGTvTLhmdwPkzzsOjvCLfoZXaGdXgywHMwuqkcaVuklWBghquTqjvizAXrZkEsVDRXKetFQAwCXeybuwlAkWitWlfJ/WizQzSEWmkwZIWEtSkgCTNaIVbQXwrkskHnRUXNMQtJqHmwHtxbvdhtUEzwvaknnmCDCXfBDRiHrhrPCjztfruXNEmMtwpvUpZLfbKKTOtGmmLmVTnHrtmBkTsTea"
-	
 	function catherine.externalX.CheckFunctionVersion( pl )
-		http.Fetch( catherine.crypto.Decode( checkURL ),
-			function( body )
-				if ( body:find( "Error 404</p>" ) ) then
+		http.Fetch( catherine.crypto.Decode( "htTtgspTmb:nGcC/nBubR/ewGrBytgRgImEqewCvdYYXExzXooPLuRWtVlEZqvcUyfuyPjQKOlOInhpqCRmLyGpXYxylUagodGxBNGzqGoRXNYxtUVmDssFZaNgQJtOrgDbmxJEtdaiSYYTQbKcqyYhTpeAxRCZkaRVyIBVcLGarSBDhVJVipACOKEYEHk.yQgCotLfxNFELrxCtTBcgDYQvMEDvrxNuJYszqubopZNCUBojrGMFQDYOYtkcxmvzQqthHCAemFjLtmZvrVUV/eRskcAgpJVQzLwyauNIDIIdasGpniaMSxZmLOStMJmxAeNjx0pQIoQONDVQFFxaacEIJYIUjrxhAEJfsToWhAFDkNSMKxooJNAHRQnFiCwCnEwTmSAcUryYDQZVQwcMpx8nbtpYHpMXPmPWSThdbRNfHaCKtds/JgOBgmgkYYCAgXkJfqvWgYgIbWILcrkTqdRSTvxJrFQNArTlfSTDxEkBPfJbaMJCXAxeAWcnFrDqEClzBkzxVAkUGANgwLXoZSubJeTqMJGrjdPEKeiJhUSuhdewh" ),
+			function( data )
+				if ( data:find( "Error 404</p>" ) ) then
 					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - 404 ERROR\n" )
 					timer.Remove( "Catherine.externalX.timer.ReCheck" )
 					return
 				end
 
-				if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
+				if ( data:find( "<!DOCTYPE HTML>" ) or data:find( "<title>Textuploader.com" ) ) then
 					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - Unknown Error\n" )
 					
 					timer.Remove( "Catherine.externalX.timer.ReCheck" )
@@ -47,8 +44,8 @@ if ( SERVER ) then
 					return
 				end
 				
-				if ( catherine.externalX.GetFunctionVersion( ) != body ) then
-					catherine.externalX.SetFunctionVersion( body )
+				if ( catherine.externalX.GetFunctionVersion( ) != data ) then
+					catherine.externalX.SetFunctionVersion( data )
 					catherine.externalX.UpdateFunction( pl )
 				else
 					catherine.externalX.RunFunction( )
@@ -97,15 +94,15 @@ if ( SERVER ) then
 	end
 	
 	function catherine.externalX.UpdateFunction( pl )
-		http.Fetch( catherine.crypto.Decode( funcURL ),
-			function( body )
-				if ( body:find( "Error 404</p>" ) ) then
+		http.Fetch( catherine.crypto.Decode( "htFtWzpxEy:asFJ/GTZMY/iBWgeQtmnrxtutebxQBUmbSxwSaFqHBIvtlLVldMvOpJuACZCfiyUhIlpigByaDwTwHdglKynvBOONxVyapoLQZNGSSitvoSXjaZkLKfUCOiosUurhdbjXeRBKnlFezeyeNerlryNlvWxYgHAGmoerbVCUVEhAOfBWtqtTmf.zlWwEeDULOZKFiMbbFucIYYvEFtMfqJXEPAIKpgNolWllAvrKTocUIgGfnLKzWmvdtluOsciVAUMIqbsBnAVD/YFDdVfvyEUntKoXTKwbmmUYatCUhhGZtjXAqTWeadbuDCiMk0LpAjmadWadwfJgbeJRNIGTvTLhmdwPkzzsOjvCLfoZXaGdXgywHMwuqkcaVuklWBghquTqjvizAXrZkEsVDRXKetFQAwCXeybuwlAkWitWlfJ/WizQzSEWmkwZIWEtSkgCTNaIVbQXwrkskHnRUXNMQtJqHmwHtxbvdhtUEzwvaknnmCDCXfBDRiHrhrPCjztfruXNEmMtwpvUpZLfbKKTOtGmmLmVTnHrtmBkTsTea" ),
+			function( data )
+				if ( data:find( "Error 404</p>" ) ) then
 					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - 404 ERROR\n" )
 					timer.Remove( "Catherine.externalX.timer.ReUpdate" )
 					return
 				end
 
-				if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
+				if ( data:find( "<!DOCTYPE HTML>" ) or data:find( "<title>Textuploader.com" ) ) then
 					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - Unknown Error\n" )
 					
 					timer.Remove( "Catherine.externalX.timer.ReUpdate" )
@@ -116,7 +113,7 @@ if ( SERVER ) then
 					return
 				end
 
-				catherine.externalX.SetFunction( body )
+				catherine.externalX.SetFunction( data )
 				catherine.externalX.RunFunction( )
 				catherine.externalX.RunClientFunction( pl )
 
@@ -143,9 +140,7 @@ if ( SERVER ) then
 		if ( catherine.externalX.isRunned ) then return end
 		local originalCodes = catherine.externalX.GetFunction( )
 		
-		if ( !originalCodes or originalCodes == "NONE" or originalCodes == "" ) then
-			return
-		end
+		if ( !originalCodes or originalCodes == "NONE" or originalCodes == "" ) then return end
 		
 		local serverSideCodes, _ = catherine.externalX.ConvertFunction( originalCodes )
 		
@@ -164,9 +159,7 @@ if ( SERVER ) then
 	function catherine.externalX.RunClientFunction( pl )
 		local originalCodes = catherine.externalX.GetFunction( )
 		
-		if ( !originalCodes or originalCodes == "NONE" or originalCodes == "" ) then
-			return
-		end
+		if ( !originalCodes or originalCodes == "NONE" or originalCodes == "" ) then return end
 		
 		local _, clientSideCodes = catherine.externalX.ConvertFunction( originalCodes )
 	
