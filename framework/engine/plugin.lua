@@ -72,9 +72,9 @@ end
 
 function catherine.plugin.Include( dir )
 	local _, folders = file.Find( dir .. "/plugin/*", "LUA" )
-
+	
 	for k, v in pairs( folders ) do
-		PLUGIN = catherine.plugin.Get( v ) or { uniqueID = v, FolderName = dir .. "/plugin/" .. v }
+		PLUGIN = catherine.plugin.Get( v ) or { uniqueID = v, FolderName = dir .. "/plugin/" .. v, isSchema = dir:lower( ) == "catherine" and "a" or "b", isLoaded = true }
 		
 		local pluginDir = PLUGIN.FolderName
 		
@@ -123,6 +123,9 @@ function catherine.plugin.RegisterExtras( folderName, typ )
 		typ = typ
 	}
 end
+
+catherine.plugin.RegisterExtras( "derma" )
+catherine.plugin.RegisterExtras( "library" )
 
 function catherine.plugin.GetAll( )
 	return catherine.plugin.lists
@@ -267,9 +270,6 @@ end
 
 hook.Add( "FrameworkInitialized", "catherine.plugin.FrameworkInitialized", catherine.plugin.FrameworkInitialized )
 
-catherine.plugin.RegisterExtras( "derma" )
-catherine.plugin.RegisterExtras( "library" )
-
 if ( SERVER ) then
 	catherine.plugin.deactiveList = catherine.plugin.deactiveList or { }
 	
@@ -277,14 +277,15 @@ if ( SERVER ) then
 		local globalVar = catherine.net.GetNetGlobalVar( "plugin_deactiveList", { } )
 		
 		if ( catherine.plugin.GetActive( uniqueID ) ) then
-			catherine.plugin.deactiveList[ uniqueID ] = true
-			globalVar[ uniqueID ] = true
+			catherine.plugin.deactiveList[ uniqueID ] = uniqueID
+			globalVar[ uniqueID ] = uniqueID
 		else
 			catherine.plugin.deactiveList[ uniqueID ] = nil
 			globalVar[ uniqueID ] = nil
 		end
 		
 		catherine.net.SetNetGlobalVar( "plugin_deactiveList", globalVar )
+		catherine.plugin.SaveActive( )
 	end
 	
 	function catherine.plugin.SetActive( uniqueID, active )
@@ -294,16 +295,32 @@ if ( SERVER ) then
 			catherine.plugin.deactiveList[ uniqueID ] = nil
 			globalVar[ uniqueID ] = nil
 		else
-			catherine.plugin.deactiveList[ uniqueID ] = true
-			globalVar[ uniqueID ] = true
+			catherine.plugin.deactiveList[ uniqueID ] = uniqueID
+			globalVar[ uniqueID ] = uniqueID
 		end
 		
 		catherine.net.SetNetGlobalVar( "plugin_deactiveList", globalVar )
+		catherine.plugin.SaveActive( )
+	end
+	
+	function catherine.plugin.SaveActive( )
+		catherine.data.Set( "plugin_deactive_list", catherine.net.GetNetGlobalVar( "plugin_deactiveList", { } ) )
+	end
+	
+	function catherine.plugin.LoadActive( )
+		local data = catherine.data.Get( "plugin_deactive_list", { } )
+		
+		catherine.plugin.deactiveList = data
+		catherine.net.SetNetGlobalVar( "plugin_deactiveList", data )
 	end
 	
 	function catherine.plugin.GetActive( uniqueID )
 		return !catherine.plugin.deactiveList[ uniqueID ]
 	end
+	
+	netstream.Hook( "catherine.plugin.ToggleActive", function( pl, data )
+		catherine.plugin.ToggleActive( data )
+	end )
 else
 	function catherine.plugin.LanguageChanged( )
 		rebuildPlugin( )

@@ -220,6 +220,14 @@ LANGUAGE.data = {
 	[ "System_UI_Plugin_ManagerSchemaPluginCount" ] = "%s개의 스키마 플러그인.",
 	[ "System_UI_Plugin_ManagerDeactivePluginCount" ] = "%s개의 비 활성화 된 플러그인.",
 	[ "System_UI_Plugin_ManagerTitle" ] = "플러그인 관리",
+	[ "System_UI_Plugin_ManagerIsSchemaPlugin" ] = "스키마 플러그인",
+	[ "System_UI_Plugin_ManagerIsFrameworkPlugin" ] = "프레임워크 플러그인",
+	[ "System_UI_Plugin_ManagerActive" ] = "활성화",
+	[ "System_UI_Plugin_ManagerDeactive" ] = "비 활성화",
+	[ "System_UI_Plugin_ManagerNeedRestart" ] = "변경 사항을 적용하려면 서버를 다시 시작해야 합니다.",
+	[ "System_UI_Plugin_DeactivePluginTitle" ] = "%s 플러그인",
+	[ "System_UI_Plugin_DeactivePluginDesc" ] = "이 플러그인은 비 활성화 되었습니다.",
+	[ "System_UI_Plugin_Deving" ] = "이 기능은 개발 중 입니다.",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "능력치",

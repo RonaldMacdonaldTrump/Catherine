@@ -224,6 +224,14 @@ LANGUAGE.data = {
 	[ "System_UI_Plugin_ManagerSchemaPluginCount" ] = "Schema Plugins %s's.",
 	[ "System_UI_Plugin_ManagerDeactivePluginCount" ] = "Deactive Plugins %s's.",
 	[ "System_UI_Plugin_ManagerTitle" ] = "Plugin Management",
+	[ "System_UI_Plugin_ManagerIsSchemaPlugin" ] = "Schema Plugin",
+	[ "System_UI_Plugin_ManagerIsFrameworkPlugin" ] = "Framework Plugin",
+	[ "System_UI_Plugin_ManagerActive" ] = "Active",
+	[ "System_UI_Plugin_ManagerDeactive" ] = "Deactive",
+	[ "System_UI_Plugin_ManagerNeedRestart" ] = "To apply the changes, you must restart the server.",
+	[ "System_UI_Plugin_DeactivePluginTitle" ] = "%s Plugin",
+	[ "System_UI_Plugin_DeactivePluginDesc" ] = "This plugin has been deactivated.",
+	[ "System_UI_Plugin_Deving" ] = "This function is currently developing.",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",

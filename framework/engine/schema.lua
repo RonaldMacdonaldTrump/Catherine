@@ -32,6 +32,10 @@ function catherine.schema.Initialization( )
 
 	local schemaFolderName = Schema.FolderName
 	
+	if ( SERVER ) then
+		catherine.plugin.LoadActive( )
+	end
+	
 	catherine.faction.Include( schemaFolderName .. "/schema" )
 	catherine.class.Include( schemaFolderName .. "/schema" )
 	catherine.item.Include( schemaFolderName .. "/schema" )
@@ -40,9 +44,10 @@ function catherine.schema.Initialization( )
 	catherine.language.Include( schemaFolderName .. "/schema", "schema" )
 	catherine.util.IncludeInDir( "library", schemaFolderName .. "/schema/" )
 	catherine.util.IncludeInDir( "derma", schemaFolderName .. "/schema/" )
+	
 	catherine.plugin.Include( schemaFolderName )
 	catherine.plugin.Include( catherine.FolderName )
-
+	
 	if ( !catherine.schema.loaded ) then
 		catherine.schema.loaded = true
 	end
