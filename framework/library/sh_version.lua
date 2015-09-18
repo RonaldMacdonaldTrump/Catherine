@@ -47,7 +47,7 @@ if ( SERVER ) then
 					
 					local data = CompileString( body, "catherine.version.Check" )( )
 					
-					if ( body != catherine.GetVersion( ) ) then
+					if ( data.version != catherine.GetVersion( ) ) then
 						catherine.util.Print( Color( 0, 255, 255 ), "This server should update to the latest version of Catherine! [" .. catherine.GetVersion( ) .. " -> " .. data.version .. "]" )
 					end
 					

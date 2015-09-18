@@ -20,6 +20,7 @@ catherine.plugin = catherine.plugin or { lists = { } }
 catherine.plugin.extras = { }
 
 CAT_HOOK_PLUGIN_CACHES = { }
+CAT_LUA_REFRESHING = CAT_LUA_REFRESHING or false
 
 local plugin_htmlValue = [[
 <!DOCTYPE html>
@@ -54,6 +55,8 @@ local function rebuildPlugin( )
 	local html = Format( plugin_htmlValue, title_plugin, LANG( "Help_Desc_Plugin" ) )
 	
 	for k, v in SortedPairs( catherine.plugin.GetAll( ) ) do
+		if ( v.isDisabled ) then continue end
+		
 		html = html .. [[
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -74,7 +77,34 @@ function catherine.plugin.Include( dir )
 	local _, folders = file.Find( dir .. "/plugin/*", "LUA" )
 	
 	for k, v in pairs( folders ) do
-		PLUGIN = catherine.plugin.Get( v ) or { uniqueID = v, FolderName = dir .. "/plugin/" .. v, isSchema = dir:lower( ) == "catherine" and "a" or "b", isLoaded = true }
+		if ( !catherine.plugin.GetActive( v ) ) then
+			if ( SERVER ) then
+				catherine.plugin.deactivePlugins[ v ] = {
+					uniqueID = v,
+					FolderName = dir .. "/plugin/" .. v,
+					isSchema = dir:lower( ) == "catherine" and "a" or "b",
+					isDisabled = true,
+					isLoaded = false
+				}
+			end
+			
+			local pluginTable = catherine.plugin.Get( v )
+			
+			if ( pluginTable ) then
+				pluginTable.isDisabled = true
+				pluginTable.isLoaded = false
+			end
+			
+			continue
+		end
+		
+		PLUGIN = catherine.plugin.Get( v ) or {
+			uniqueID = v,
+			FolderName = dir .. "/plugin/" .. v,
+			isSchema = dir:lower( ) == "catherine" and "a" or "b",
+			isDisabled = false,
+			isLoaded = true
+		}
 		
 		local pluginDir = PLUGIN.FolderName
 		
@@ -115,6 +145,28 @@ function catherine.plugin.Include( dir )
 	if ( CLIENT ) then
 		rebuildPlugin( )
 	end
+end
+
+function catherine.plugin.Refresh( )
+	if ( CAT_LUA_REFRESHING ) then return end
+	
+	CAT_LUA_REFRESHING = true
+	CAT_HOOK_PLUGIN_CACHES = { }
+	
+	if ( SERVER ) then
+		catherine.plugin.deactivePlugins = { }
+	end
+	
+	if ( Schema ) then
+		catherine.plugin.Include( Schema.Name )
+	end
+	
+	catherine.plugin.Include( catherine.FolderName )
+	
+	DeriveGamemode( "catherine" )
+	catherine.schema.Initialization( )
+	
+	CAT_LUA_REFRESHING = false
 end
 
 function catherine.plugin.RegisterExtras( folderName, typ )
@@ -271,9 +323,10 @@ end
 hook.Add( "FrameworkInitialized", "catherine.plugin.FrameworkInitialized", catherine.plugin.FrameworkInitialized )
 
 if ( SERVER ) then
+	catherine.plugin.deactivePlugins = { }
 	catherine.plugin.deactiveList = catherine.plugin.deactiveList or { }
 	
-	function catherine.plugin.ToggleActive( uniqueID )
+	function catherine.plugin.ToggleActive( uniqueID, doRefresh )
 		local globalVar = catherine.net.GetNetGlobalVar( "plugin_deactiveList", { } )
 		
 		if ( catherine.plugin.GetActive( uniqueID ) ) then
@@ -286,6 +339,10 @@ if ( SERVER ) then
 		
 		catherine.net.SetNetGlobalVar( "plugin_deactiveList", globalVar )
 		catherine.plugin.SaveActive( )
+		
+		if ( doRefresh ) then
+			catherine.plugin.Refresh( )
+		end
 	end
 	
 	function catherine.plugin.SetActive( uniqueID, active )
@@ -318,20 +375,34 @@ if ( SERVER ) then
 		return !catherine.plugin.deactiveList[ uniqueID ]
 	end
 	
+	function catherine.plugin.SendDeactivePlugins( pl )
+		if ( table.Count( catherine.plugin.deactivePlugins ) > 0 ) then
+			netstream.Start( pl, "catherine.plugin.SendDeactivePlugins", catherine.plugin.deactivePlugins )
+		end
+	end
+	
 	netstream.Hook( "catherine.plugin.ToggleActive", function( pl, data )
-		catherine.plugin.ToggleActive( data )
+		catherine.plugin.ToggleActive( data[ 1 ], data[ 2 ] )
+	end )
+	
+	netstream.Hook( "catherine.plugin.Refresh", function( pl )
+		catherine.plugin.Refresh( )
 	end )
 else
+	netstream.Hook( "catherine.plugin.SendDeactivePlugins", function( data )
+		catherine.plugin.lists = table.Merge( data, catherine.plugin.lists )
+	end )
+	
 	function catherine.plugin.LanguageChanged( )
 		rebuildPlugin( )
 	end
-
+	
 	function catherine.plugin.InitPostEntity( )
 		if ( IsValid( catherine.pl ) ) then
 			rebuildPlugin( )
 		end
 	end
-
+	
 	hook.Add( "LanguageChanged", "catherine.plugin.LanguageChanged", catherine.plugin.LanguageChanged )
 	hook.Add( "InitPostEntity", "catherine.plugin.InitPostEntity", catherine.plugin.InitPostEntity )
 	

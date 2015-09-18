@@ -252,20 +252,6 @@ function PANEL:Init( )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 			
 			draw.SimpleText( LANG( "System_UI_Plugin_ManagerTitle" ), "catherine_normal35", 20, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			
-			if ( changed ) then
-				local text = LANG( "System_UI_Plugin_ManagerNeedRestart" )
-				
-				surface.SetFont( "catherine_normal20" )
-				
-				local tw, th = surface.GetTextSize( text )
-				
-				surface.SetDrawColor( 255, 255, 255, 255 )
-				surface.SetMaterial( errorMat )
-				surface.DrawTexturedRect( w - 45 - tw, 18, 16, 16 )
-				
-				draw.SimpleText( text, "catherine_normal20", w - 20, 25, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
-			end
 		end
 		
 		self.pluginManager.Close = function( pnl )
@@ -289,11 +275,18 @@ function PANEL:Init( )
 			pnl.Lists:Clear( )
 			
 			for k, v in SortedPairsByMemberValue( catherine.plugin.GetAll( ), "isSchema" ) do
-				local name = catherine.util.StuffLanguage( v.name )
-				local desc = catherine.util.StuffLanguage( v.desc )
+				local name = "ERROR Title"
+				local desc = "ERROR Description"
+				local author = "ERROR Author"
+				
+				if ( !v.isDisabled ) then
+					name = catherine.util.StuffLanguage( v.name )
+					desc = catherine.util.StuffLanguage( v.desc )
+					author = LANG( "Plugin_Value_Author", v.author )
+				end
 				
 				local panel = vgui.Create( "DPanel" )
-				panel:SetSize( pnl.Lists:GetWide( ), 80 )
+				panel:SetSize( pnl.Lists:GetWide( ), 60 )
 				panel.Paint = function( pnl2, w, h )
 					draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 0, 0, 0, 90 ) )
 					
@@ -301,19 +294,20 @@ function PANEL:Init( )
 					
 					if ( !catherine.plugin.GetActive( k ) ) then
 						catherine.geometry.SlickBackground( 0, 0, w, h, false, Color( 255, 100, 100 ), Color( 0, 0, 0, 50 ) )
-						draw.SimpleText( LANG( "System_UI_Plugin_DeactivePluginTitle", k ), "catherine_normal25", 5, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-						draw.SimpleText( LANG( "System_UI_Plugin_DeactivePluginDesc" ), "catherine_normal15", 5, 60, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( LANG( "System_UI_Plugin_DeactivePluginTitle", k ), "catherine_normal20", 5, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( LANG( "System_UI_Plugin_DeactivePluginDesc" ), "catherine_normal15", 5, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 						
 						return
 					end
 					
 					if ( v.isLoaded ) then
-						draw.SimpleText( name, "catherine_normal25", 5, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-						draw.SimpleText( desc, "catherine_normal15", 5, 60, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( name, "catherine_normal20", 5, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( desc, "catherine_normal15", 5, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( author, "catherine_normal15", w / 2, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 					else
 						catherine.geometry.SlickBackground( 0, 0, w, h, false, Color( 255, 100, 100 ), Color( 0, 0, 0, 50 ) )
-						draw.SimpleText( LANG( "System_UI_Plugin_DeactivePluginTitle", k ), "catherine_normal25", 5, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-						draw.SimpleText( LANG( "System_UI_Plugin_ManagerNeedRestart" ), "catherine_normal15", 5, 60, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( LANG( "System_UI_Plugin_DeactivePluginTitle", k ), "catherine_normal20", 5, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( LANG( "System_UI_Plugin_ManagerNeedRestart" ), "catherine_normal15", 5, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 					end
 				end
 				
@@ -325,9 +319,14 @@ function PANEL:Init( )
 				switch:SetStrFont( "catherine_normal20" )
 				switch:SetGradientColor( Color( 0, 0, 0, 255 ) )
 				switch.Click = function( )
-					Derma_Message( LANG( "System_UI_Plugin_Deving" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
-					// changed = true
-					// netstream.Start( "catherine.plugin.ToggleActive", k ) // ERROR;
+					if ( !changed ) then
+						Derma_Message( LANG( "System_UI_Plugin_ManagerNeedRestart" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+					end
+					
+					changed = true
+					netstream.Start( "catherine.plugin.ToggleActive", {
+						k
+					} )
 				end
 				switch.Think = function( pnl2 )
 					if ( catherine.plugin.GetActive( k ) ) then

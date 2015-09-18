@@ -381,6 +381,8 @@ function GM:PlayerLoadFinished( pl )
 	if ( catherine.chat.GetPlayerChatHistory( pl ) ) then
 		catherine.chat.StartChatHistoryRestore( pl )
 	end
+	
+	catherine.plugin.SendDeactivePlugins( pl )
 end
 
 function GM:PlayerDisconnected( pl )

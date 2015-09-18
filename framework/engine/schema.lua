@@ -48,6 +48,10 @@ function catherine.schema.Initialization( )
 	catherine.plugin.Include( schemaFolderName )
 	catherine.plugin.Include( catherine.FolderName )
 	
+	if ( SERVER ) then
+		catherine.plugin.SendDeactivePlugins( nil )
+	end
+	
 	if ( !catherine.schema.loaded ) then
 		catherine.schema.loaded = true
 	end

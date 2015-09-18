@@ -231,7 +231,6 @@ LANGUAGE.data = {
 	[ "System_UI_Plugin_ManagerNeedRestart" ] = "To apply the changes, you must restart the server.",
 	[ "System_UI_Plugin_DeactivePluginTitle" ] = "%s Plugin",
 	[ "System_UI_Plugin_DeactivePluginDesc" ] = "This plugin has been deactivated.",
-	[ "System_UI_Plugin_Deving" ] = "This function is currently developing.",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",
