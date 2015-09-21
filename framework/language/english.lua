@@ -103,7 +103,7 @@ LANGUAGE.data = {
 	// GlobalBan
 	[ "GlobalBan_UI_Title" ] = "Global Ban",
 	[ "GlobalBan_UI_Blank" ] = "Doesn't have user in Global Ban.",
-	[ "GlobalBan_UI_OpenProfile" ] = "Open the Steam Profile for this user.",
+	[ "GlobalBan_UI_OpenProfile" ] = "Open the Steam Profile of this user.",
 	[ "GlobalBan_UI_NotUsing" ] = "This server doesn't using Global Ban service.",
 	[ "GlobalBan_UI_Users" ] = "%s's users are blocked.",
 	
@@ -231,6 +231,7 @@ LANGUAGE.data = {
 	[ "System_UI_Plugin_ManagerNeedRestart" ] = "To apply the changes, you must restart the server.",
 	[ "System_UI_Plugin_DeactivePluginTitle" ] = "%s Plugin",
 	[ "System_UI_Plugin_DeactivePluginDesc" ] = "This plugin has been deactivated.",
+	[ "System_UI_Plugin_NameSearch" ] = "Search by Name",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",

@@ -252,15 +252,57 @@ function PANEL:Init( )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 			
 			draw.SimpleText( LANG( "System_UI_Plugin_ManagerTitle" ), "catherine_normal35", 20, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( LANG( "System_UI_Plugin_NameSearch" ), "catherine_normal20", w - pnl.searchEnt:GetWide( ) - 25, 27, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		
+			local pluginAll = catherine.plugin.GetAll( )
+		
+			local frameworkPluginsCount, schemaPluginsCount, deactivePluginsCount = 0, 0, 0
+			
+			for k, v in pairs( pluginAll ) do
+				if ( !catherine.plugin.GetActive( k ) ) then
+					deactivePluginsCount = deactivePluginsCount + 1
+				end
+				
+				if ( v.isSchema == "b" ) then
+					schemaPluginsCount = schemaPluginsCount + 1
+				else
+					frameworkPluginsCount = frameworkPluginsCount + 1
+				end
+			end
+			
+			draw.SimpleText( LANG( "System_UI_Plugin_ManagerAllPluginCount", table.Count( pluginAll ) ) .. " : " .. LANG( "System_UI_Plugin_ManagerFrameworkPluginCount", frameworkPluginsCount ) .. ", " .. LANG( "System_UI_Plugin_ManagerSchemaPluginCount", schemaPluginsCount ) .. " - " .. LANG( "System_UI_Plugin_ManagerDeactivePluginCount", deactivePluginsCount ), "catherine_normal15", w - 10, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		end
 		
 		self.pluginManager.Close = function( pnl )
 			if ( pnl.closing ) then return end
-	
+			
 			pnl.closing = true
 			
 			pnl:Remove( )
 			pnl = nil
+		end
+		
+		self.pluginManager.searchEnt = vgui.Create( "DTextEntry", self.pluginManager )
+		self.pluginManager.searchEnt:SetSize( self.pluginManager.w * 0.4, 25 )
+		self.pluginManager.searchEnt:SetPos( self.pluginManager.w - self.pluginManager.searchEnt:GetWide( ) - 10, 15 )
+		self.pluginManager.searchEnt:SetFont( "catherine_normal15" )
+		self.pluginManager.searchEnt:SetText( "" )
+		self.pluginManager.searchEnt:SetAllowNonAsciiCharacters( true )
+		self.pluginManager.searchEnt.Paint = function( pnl, w, h )
+			catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
+			pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+		end
+		self.pluginManager.searchEnt.OnTextChanged = function( pnl )
+			local text = pnl:GetText( )
+			
+			if ( text == "" ) then
+				self.pluginManager:SearchString( text, true )
+			else
+				self.pluginManager:SearchString( text )
+			end
+		end
+		self.pluginManager.searchEnt.OnEnter = function( pnl )
+			self.pluginManager:SearchString( pnl:GetText( ) )
 		end
 		
 		self.pluginManager.Lists = vgui.Create( "DPanelList", self.pluginManager )
@@ -271,8 +313,9 @@ function PANEL:Init( )
 		self.pluginManager.Lists:EnableVerticalScrollbar( true )
 		self.pluginManager.Lists:SetDrawBackground( false )
 		
-		self.pluginManager.Refresh = function( pnl )
+		self.pluginManager.SearchString = function( pnl, text, force )
 			pnl.Lists:Clear( )
+			local delta = 0
 			
 			for k, v in SortedPairsByMemberValue( catherine.plugin.GetAll( ), "isSchema" ) do
 				local name = "ERROR Title"
@@ -285,15 +328,17 @@ function PANEL:Init( )
 					author = LANG( "Plugin_Value_Author", v.author )
 				end
 				
+				if ( !force and ( name == "ERROR Title" or !catherine.util.CheckStringMatch( name, text ) ) ) then continue end
+				
 				local panel = vgui.Create( "DPanel" )
-				panel:SetSize( pnl.Lists:GetWide( ), 60 )
+				panel:SetSize( pnl.Lists:GetWide( ), 0 )
 				panel.Paint = function( pnl2, w, h )
 					draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 0, 0, 0, 90 ) )
 					
 					draw.SimpleText( v.isSchema == "a" and LANG( "System_UI_Plugin_ManagerIsFrameworkPlugin" ) or LANG( "System_UI_Plugin_ManagerIsSchemaPlugin" ), "catherine_normal15", w - 20, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 					
 					if ( !catherine.plugin.GetActive( k ) ) then
-						catherine.geometry.SlickBackground( 0, 0, w, h, false, Color( 255, 100, 100 ), Color( 0, 0, 0, 50 ) )
+						catherine.geometry.SlickBackground( 0, 0, w, h, true, Color( 0, 0, 0, 0 ), Color( 255, 0, 0, 100 ) )
 						draw.SimpleText( LANG( "System_UI_Plugin_DeactivePluginTitle", k ), "catherine_normal20", 5, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
 						draw.SimpleText( LANG( "System_UI_Plugin_DeactivePluginDesc" ), "catherine_normal15", 5, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 						
@@ -305,18 +350,18 @@ function PANEL:Init( )
 						draw.SimpleText( desc, "catherine_normal15", 5, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 						draw.SimpleText( author, "catherine_normal15", w / 2, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 					else
-						catherine.geometry.SlickBackground( 0, 0, w, h, false, Color( 255, 100, 100 ), Color( 0, 0, 0, 50 ) )
+						catherine.geometry.SlickBackground( 0, 0, w, h, true, Color( 0, 0, 0, 0 ), Color( 255, 0, 0, 100 ) )
 						draw.SimpleText( LANG( "System_UI_Plugin_DeactivePluginTitle", k ), "catherine_normal20", 5, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
 						draw.SimpleText( LANG( "System_UI_Plugin_ManagerNeedRestart" ), "catherine_normal15", 5, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 					end
 				end
 				
 				local switch = vgui.Create( "catherine.vgui.button", panel )
-				switch:SetSize( 150, 30 )
-				switch:SetPos( panel:GetWide( ) - switch:GetWide( ) - 20, panel:GetTall( ) - 45 )
+				switch:SetSize( 150, 25 )
+				switch:SetPos( panel:GetWide( ) - switch:GetWide( ) - 20, panel:GetTall( ) - 35 )
 				switch:SetStr( "..." )
 				switch:SetStrColor( Color( 50, 50, 50, 255 ) )
-				switch:SetStrFont( "catherine_normal20" )
+				switch:SetStrFont( "catherine_normal15" )
 				switch:SetGradientColor( Color( 0, 0, 0, 255 ) )
 				switch.Click = function( )
 					if ( !changed ) then
@@ -331,8 +376,8 @@ function PANEL:Init( )
 				switch.Think = function( pnl2 )
 					if ( catherine.plugin.GetActive( k ) ) then
 						pnl2:SetStr( LANG( "System_UI_Plugin_ManagerDeactive" ) )
-						pnl2:SetStrColor( Color( 255, 150, 150, 255 ) )
-						pnl2:SetGradientColor( Color( 255, 150, 150, 255 ) )
+						pnl2:SetStrColor( Color( 255, 0, 0, 255 ) )
+						pnl2:SetGradientColor( Color( 255, 0, 0, 255 ) )
 					else
 						pnl2:SetStr( LANG( "System_UI_Plugin_ManagerActive" ) )
 						pnl2:SetStrColor( Color( 0, 0, 0, 255 ) )
@@ -343,6 +388,102 @@ function PANEL:Init( )
 					surface.SetDrawColor( 0, 0, 0, 100 )
 					surface.DrawOutlinedRect( 0, 0, w, h )
 				end
+				switch.PerformLayout = function( pnl2 )
+					pnl2:SetPos( panel:GetWide( ) - pnl2:GetWide( ) - 20, panel:GetTall( ) - 35 )
+				end
+				
+				panel:SizeTo( pnl.Lists:GetWide( ), 60, 0.05, delta, nil, function( )
+					pnl.Lists:Rebuild( )
+					switch:PerformLayout( )
+				end )
+				delta = delta + 0.05
+				
+				pnl.Lists:AddItem( panel )
+			end
+		end
+		
+		self.pluginManager.Refresh = function( pnl )
+			pnl.Lists:Clear( )
+			local delta = 0
+			
+			for k, v in SortedPairsByMemberValue( catherine.plugin.GetAll( ), "isSchema" ) do
+				local name = "ERROR Title"
+				local desc = "ERROR Description"
+				local author = "ERROR Author"
+				
+				if ( !v.isDisabled ) then
+					name = catherine.util.StuffLanguage( v.name )
+					desc = catherine.util.StuffLanguage( v.desc )
+					author = LANG( "Plugin_Value_Author", v.author )
+				end
+				
+				local panel = vgui.Create( "DPanel" )
+				panel:SetSize( pnl.Lists:GetWide( ), 0 )
+				panel.Paint = function( pnl2, w, h )
+					draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 0, 0, 0, 90 ) )
+					
+					draw.SimpleText( v.isSchema == "a" and LANG( "System_UI_Plugin_ManagerIsFrameworkPlugin" ) or LANG( "System_UI_Plugin_ManagerIsSchemaPlugin" ), "catherine_normal15", w - 20, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					
+					if ( !catherine.plugin.GetActive( k ) ) then
+						catherine.geometry.SlickBackground( 0, 0, w, h, true, Color( 0, 0, 0, 0 ), Color( 255, 0, 0, 100 ) )
+						draw.SimpleText( LANG( "System_UI_Plugin_DeactivePluginTitle", k ), "catherine_normal20", 5, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( LANG( "System_UI_Plugin_DeactivePluginDesc" ), "catherine_normal15", 5, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+						
+						return
+					end
+					
+					if ( v.isLoaded ) then
+						draw.SimpleText( name, "catherine_normal20", 5, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( desc, "catherine_normal15", 5, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( author, "catherine_normal15", w / 2, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+					else
+						catherine.geometry.SlickBackground( 0, 0, w, h, true, Color( 0, 0, 0, 0 ), Color( 255, 0, 0, 100 ) )
+						draw.SimpleText( LANG( "System_UI_Plugin_DeactivePluginTitle", k ), "catherine_normal20", 5, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( LANG( "System_UI_Plugin_ManagerNeedRestart" ), "catherine_normal15", 5, 40, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+					end
+				end
+				
+				local switch = vgui.Create( "catherine.vgui.button", panel )
+				switch:SetSize( 150, 25 )
+				switch:SetPos( panel:GetWide( ) - switch:GetWide( ) - 20, panel:GetTall( ) - 35 )
+				switch:SetStr( "..." )
+				switch:SetStrColor( Color( 50, 50, 50, 255 ) )
+				switch:SetStrFont( "catherine_normal15" )
+				switch:SetGradientColor( Color( 0, 0, 0, 255 ) )
+				switch.Click = function( )
+					if ( !changed ) then
+						Derma_Message( LANG( "System_UI_Plugin_ManagerNeedRestart" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+					end
+					
+					changed = true
+					netstream.Start( "catherine.plugin.ToggleActive", {
+						k
+					} )
+				end
+				switch.Think = function( pnl2 )
+					if ( catherine.plugin.GetActive( k ) ) then
+						pnl2:SetStr( LANG( "System_UI_Plugin_ManagerDeactive" ) )
+						pnl2:SetStrColor( Color( 255, 0, 0, 255 ) )
+						pnl2:SetGradientColor( Color( 255, 0, 0, 255 ) )
+					else
+						pnl2:SetStr( LANG( "System_UI_Plugin_ManagerActive" ) )
+						pnl2:SetStrColor( Color( 0, 0, 0, 255 ) )
+						pnl2:SetGradientColor( Color( 0, 0, 0, 255 ) )
+					end
+				end
+				switch.PaintBackground = function( pnl2, w, h )
+					surface.SetDrawColor( 0, 0, 0, 100 )
+					surface.DrawOutlinedRect( 0, 0, w, h )
+				end
+				switch.PerformLayout = function( pnl2 )
+					pnl2:SetPos( panel:GetWide( ) - pnl2:GetWide( ) - 20, panel:GetTall( ) - 35 )
+				end
+				
+				panel:SizeTo( pnl.Lists:GetWide( ), 60, 0.05, delta, nil, function( )
+					pnl.Lists:Rebuild( )
+					switch:PerformLayout( )
+				end )
+				delta = delta + 0.05
 				
 				pnl.Lists:AddItem( panel )
 			end

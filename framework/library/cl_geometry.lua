@@ -162,32 +162,6 @@ end
 
 // By Vein Gamemode
 // http://facepunch.com/showthread.php?t=1148261
-function catherine.geometry.SlickBackground( x, y, w, h, nograd )
-	if ( !nograd ) then
-		for i = 0, math.min( h, 32 ) do
-			surface.SetDrawColor( 100, 100, 100, math.min( h, 32 ) - i )
-			surface.DrawLine( x, y + i, x + w, y + i )
-		end
-	end
-	
-	h = h - 1
-	w = w - 1
-	
-	surface.SetDrawColor( 255, 10, 10, 100 )
-	
-	for i = 0, w + h, 20 do
-		if ( i < h ) then
-			surface.DrawLine( x + i, y, x, y + i )
-		elseif ( i > w ) then
-			surface.DrawLine( x + w, y + i - w, x - h + i, y + h )
-		else
-			surface.DrawLine( x + i, y, x + i - h, y + h )
-		end
-	end
-end
-
-// By Vein Gamemode
-// http://facepunch.com/showthread.php?t=1148261
 function catherine.geometry.SlickBackground( x, y, w, h, nograd, gridColor, backColor )
 	if ( !nograd ) then
 		gridColor = gridColor or Color( 100, 100, 100 )

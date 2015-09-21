@@ -227,6 +227,7 @@ LANGUAGE.data = {
 	[ "System_UI_Plugin_ManagerNeedRestart" ] = "변경 사항을 적용하려면 서버를 다시 시작해야 합니다.",
 	[ "System_UI_Plugin_DeactivePluginTitle" ] = "%s 플러그인",
 	[ "System_UI_Plugin_DeactivePluginDesc" ] = "이 플러그인은 비 활성화 되었습니다.",
+	[ "System_UI_Plugin_NameSearch" ] = "이름으로 검색",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "능력치",

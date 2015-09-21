@@ -70,7 +70,7 @@ if ( SERVER ) then
 				end
 			)
 			
-			catherine.version.nextCheckable = CurTime( ) + 1
+			catherine.version.nextCheckable = CurTime( ) + 500
 		else
 			if ( IsValid( pl ) ) then
 				netstream.Start( pl, "catherine.version.CheckResult", {
