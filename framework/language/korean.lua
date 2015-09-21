@@ -483,6 +483,7 @@ LANGUAGE.data = {
 	[ "Basic_UI_NO" ] = "아니오",
 	[ "Basic_UI_Count" ] = "%s개",
 	[ "Basic_IDK" ] = "...?",
+	[ "Basic_LangKeyError" ] = "언어 키 오류",
 	[ "Basic_Sorry" ] = "죄송합니다 ...",
 	[ "Basic_UI_EntityMenuOptionTitle" ] = "이 물체와의 상호작용을 선택하세요",
 	[ "Basic_UI_ItemMenuOptionTitle" ] = "이 아이템과의 상호작용을 선택하세요",

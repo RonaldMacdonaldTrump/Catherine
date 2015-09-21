@@ -485,6 +485,7 @@ LANGUAGE.data = {
 	[ "Basic_UI_NO" ] = "NO",
 	[ "Basic_UI_Count" ] = "%s's",
 	[ "Basic_IDK" ] = "...?",
+	[ "Basic_LangKeyError" ] = "Key Error",
 	[ "Basic_Sorry" ] = "SORRY ...",
 	[ "Basic_UI_EntityMenuOptionTitle" ] = "Choose interact with this Entity",
 	[ "Basic_UI_ItemMenuOptionTitle" ] = "Choose interact with this Item",

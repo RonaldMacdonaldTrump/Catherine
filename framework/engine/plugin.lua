@@ -147,6 +147,12 @@ function catherine.plugin.Include( dir )
 	end
 end
 
+--[[
+	catherine.plugin.Refresh( )
+	
+	This function is too Danger!
+		Do not run this. :<
+]]--
 function catherine.plugin.Refresh( )
 	if ( CAT_LUA_REFRESHING ) then return end
 	
@@ -390,7 +396,9 @@ if ( SERVER ) then
 	end )
 else
 	netstream.Hook( "catherine.plugin.SendDeactivePlugins", function( data )
-		catherine.plugin.lists = table.Merge( data, catherine.plugin.lists )
+		if ( table.Count( data ) > 0 ) then
+			catherine.plugin.lists = table.Merge( data, catherine.plugin.lists )
+		end
 	end )
 	
 	function catherine.plugin.LanguageChanged( )

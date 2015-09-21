@@ -16,9 +16,72 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-local cashName = catherine.cash.GetOnlyName( )
+local credit_htmlValue = [[
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<style>
+		@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+		body {
+			font-family: "Open Sans", "나눔고딕", "NanumGothic", "맑은 고딕", "Malgun Gothic", "serif", "sans-serif"; 
+			-webkit-font-smoothing: antialiased;
+		}
+	</style>
+</head>
+<body>
+	<div class="container" style="margin-top:15px;">
+	<div class="page-header">
+		<h1>Credit&nbsp&nbsp<small>The listed of Developing the Catherine or Helpers ...</small></h1>
+	</div>
+	
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">L7D</h3>
+		</div>
+			<div class="panel-body">Framework Development and Design.</div>
+	</div>
+	
+	<div class="panel panel-warning">
+		<div class="panel-heading">
+			<h3 class="panel-title">Chessnut</h3>
+		</div>
+			<div class="panel-body">Good helper :)</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">notcake (!cake)</h3>
+		</div>
+			<div class="panel-body">Author of UTF-8 module.</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">thelastpenguin™</h3>
+		</div>
+			<div class="panel-body">Author of pON module.</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Alexander Grist-Hucker (Alex Grist)</h3>
+		</div>
+			<div class="panel-body">Author of netstream 2 module.</div>
+	</div>
 
-local LANGUAGE = catherine.language.New( "example" ) --[[ Create language object( Change to language unique ID ) ]]--
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	</body>
+</html>
+]]
+
+local LANGUAGE = catherine.language.New( "example" ) --[[ Create language object( Language unique ID ) ]]--
 LANGUAGE.name = "Example Language" --[[ Setting language name. ]]--
 LANGUAGE.data = {
 	// Class
@@ -55,6 +118,7 @@ LANGUAGE.data = {
 	[ "Cash_Notify_NotValidAmount" ] = "Please enter a valid amount!",
 	[ "Cash_Notify_Salary" ] = "You have received %s from your salary.",
 	[ "Cash_Notify_Get" ] = "You are found %s.",
+	[ "Cash_Notify_Drop" ] = "You have been drop %s.",
 	
 	// Character
 	[ "Character_UI_Title" ] = "Character",
@@ -138,17 +202,31 @@ LANGUAGE.data = {
 	[ "Basic_Notify_NoArg" ] = "Please enter the %s argument!",
 	[ "Basic_Notify_InputText" ] = "Please enter the text!",
 
-	// Version
-	[ "Version_UI_Title" ] = "Information",
-	[ "Version_UI_YourVer_AV" ] = "Version '%s'",
-	[ "Version_UI_YourVer_NO" ] = "Version 'Error'",
-	[ "Version_UI_Checking" ] = "Checking update ...",
-	[ "Version_UI_CheckButtonStr" ] = "Update Check",
-	[ "Version_UI_OpenUpdateLogStr" ] = "Update Log",
-	[ "Version_Notify_FoundNew" ] = "This server should update to the latest version of Catherine!",
-	[ "Version_Notify_AlreadyNew" ] = "This server is using the latest version of Catherine.",
-	[ "Version_Notify_CheckError" ] = "Update check error! - %s",
-	[ "Version_Notify_NextTime" ] = "Too often unable to check the version, try again later!",
+	// System
+	[ "System_UI_Title" ] = "System",
+	[ "System_UI_Close" ] = "Close",
+	[ "System_UI_Update_Title" ] = "Update",
+	[ "System_UI_Update_CoreVer" ] = "Core Version - %s %s",
+	[ "System_UI_Update_FoundNew" ] = "This server not using latest version!",
+	[ "System_UI_Update_AlreadyNew" ] = "This server using latest version.",
+	[ "System_UI_Update_CheckButton" ] = "Check Update",
+	[ "System_UI_Update_OpenUpdateLog" ] = "Update History",
+	[ "System_UI_Update_CheckingUpdate" ] = "Checking update ...",
+	[ "System_Notify_Update_NextTime" ] = "Too often unable to check the version, try again later!",
+	[ "System_UI_Plugin_Title" ] = "Plugin",
+	[ "System_UI_Plugin_ManagerButton" ] = "Plugin Management",
+	[ "System_UI_Plugin_ManagerAllPluginCount" ] = "Total Plugins %s's.",
+	[ "System_UI_Plugin_ManagerFrameworkPluginCount" ] = "Framework Plugins %s's.",
+	[ "System_UI_Plugin_ManagerSchemaPluginCount" ] = "Schema Plugins %s's.",
+	[ "System_UI_Plugin_ManagerDeactivePluginCount" ] = "Deactive Plugins %s's.",
+	[ "System_UI_Plugin_ManagerTitle" ] = "Plugin Management",
+	[ "System_UI_Plugin_ManagerIsSchemaPlugin" ] = "Schema Plugin",
+	[ "System_UI_Plugin_ManagerIsFrameworkPlugin" ] = "Framework Plugin",
+	[ "System_UI_Plugin_ManagerActive" ] = "Active",
+	[ "System_UI_Plugin_ManagerDeactive" ] = "Deactive",
+	[ "System_UI_Plugin_ManagerNeedRestart" ] = "To apply the changes, you must restart the server.",
+	[ "System_UI_Plugin_DeactivePluginTitle" ] = "%s Plugin",
+	[ "System_UI_Plugin_DeactivePluginDesc" ] = "This plugin has been deactivated.",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",
@@ -248,7 +326,7 @@ LANGUAGE.data = {
 	
 	[ "Item_Category_Wallet" ] = "Wallet",
 	[ "Item_Name_Wallet" ] = "Wallet",
-	[ "Item_Desc_Wallet" ] = "%s in a small stack.",
+	[ "Item_Desc_Wallet" ] = "It is your wallet.",
 	[ "Item_Desc_World_Wallet" ] = "%s in a small stack.",
 	[ "Item_FuncStr01_Wallet" ] = "Take %s",
 	[ "Item_FuncStr02_Wallet" ] = "Drop %s",
@@ -306,7 +384,7 @@ LANGUAGE.data = {
 	// Door
 	[ "Door_Notify_CMD_Locked" ] = "You have locked this door.",
 	[ "Door_Notify_CMD_UnLocked" ] = "You have unlocked this door.",
-	[ "Door_Notify_BuyQ" ] = "Are you sure you want to buy this door?",
+	[ "Door_Notify_BuyQ" ] = "Are you sure you want to buy this door at %s?",
 	[ "Door_Notify_SellQ" ] = "Are you sure you want to sell this door?",
 	[ "Door_Message_Locking" ] = "Locking ...",
 	[ "Door_Message_UnLocking" ] = "Unlocking ...",
@@ -403,6 +481,7 @@ LANGUAGE.data = {
 	[ "Basic_UI_NO" ] = "NO",
 	[ "Basic_UI_Count" ] = "%s's",
 	[ "Basic_IDK" ] = "...?",
+	[ "Basic_LangKeyError" ] = "Key Error",
 	[ "Basic_Sorry" ] = "SORRY ...",
 	[ "Basic_UI_EntityMenuOptionTitle" ] = "Choose interact with this Entity",
 	[ "Basic_UI_ItemMenuOptionTitle" ] = "Choose interact with this Item",

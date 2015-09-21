@@ -302,6 +302,8 @@ if ( SERVER ) then
 	end
 
 	function catherine.util.StuffLanguage( pl, key, ... )
+		key = key or "^Basic_LangKeyError"
+		
 		return key:Left( 1 ) == "^" and LANG( pl, key:sub( 2 ), ... ) or key
 	end
 	
@@ -703,6 +705,8 @@ else
 	end
 	
 	function catherine.util.StuffLanguage( key, ... )
+		key = key or "^Basic_LangKeyError"
+		
 		return key:Left( 1 ) == "^" and LANG( key:sub( 2 ), ... ) or key
 	end
 	
