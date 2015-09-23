@@ -1,0 +1,8 @@
+# Database Config
+
+db_module = "sqlite"
+db_hostname = "127.0.0.1"
+db_account_id = "root"
+db_account_password = ""
+db_name = ""
+db_port = 3306

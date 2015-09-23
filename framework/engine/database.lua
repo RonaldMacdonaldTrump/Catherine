@@ -83,7 +83,6 @@ catherine.database = catherine.database or {
 	ErrorMsg = "Connection Error",
 	object = nil
 }
-include( "catherine/framework/config/database_config.lua" )
 catherine.database.modules[ "mysqloo" ] = {
 	connect = function( func )
 		if ( !pcall( require, "mysqloo" ) ) then
@@ -274,9 +273,37 @@ function catherine.database.Connect( func )
 		modules = catherine.database.modules.sqlite
 	end
 	
+	catherine.database.information = catherine.database.GetConfig( )
+	
 	modules.connect( func )
 	catherine.database.query = modules.query
 	catherine.database.escape = modules.escape
+end
+
+function catherine.database.GetConfig( )
+	local config = file.Read( "catherine/database_config.txt", "LUA" ) or nil
+	
+	if ( config ) then
+		local result = { }
+		
+		for k, v in pairs( string.Explode( "\n", config ) ) do
+			if ( v:sub( 1, 1 ) == "#" ) then continue end
+			local key, value = v:match( "^(.-)%s=%s(.+)" )
+			
+			result[ key ] = value
+		end
+		
+		return result
+	else
+		return {
+			db_module = "sqlite",
+			db_hostname = "127.0.0.1",
+			db_account_id = "",
+			db_account_password = "",
+			db_name = "",
+			db_port = 3306
+		}
+	end
 end
 
 function catherine.database.InsertDatas( tab, data, func )

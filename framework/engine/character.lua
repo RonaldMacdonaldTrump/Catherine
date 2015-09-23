@@ -774,26 +774,24 @@ function META:IsCharacterLoaded( )
 	return self:GetNetVar( "charLoaded", false )
 end
 
-do
-	META.RealName = META.RealName or META.Name
-	META.SteamName = META.RealName
+META.RealName = META.RealName or META.Name
+META.SteamName = META.RealName
 
-	function META:Name( )
-		return self:GetVar( "_name", self:SteamName( ) )
-	end
-	
-	function META:Desc( )
-		return self:GetVar( "_desc", "A Description." )
-	end
-	
-	function META:Faction( )
-		return self:GetVar( "_faction", "citizen" )
-	end
-	
-	function META:FactionName( )
-		return catherine.util.StuffLanguage( team.GetName( self:Team( ) ) )
-	end
-	
-	META.Nick = META.Name
-	META.GetName = META.Name
+function META:Name( )
+	return self:GetVar( "_name", self:SteamName( ) )
 end
+
+function META:Desc( )
+	return self:GetVar( "_desc", "A Description." )
+end
+
+function META:Faction( )
+	return self:GetVar( "_faction", "citizen" )
+end
+
+function META:FactionName( )
+	return catherine.util.StuffLanguage( team.GetName( self:Team( ) ) )
+end
+
+META.Nick = META.Name
+META.GetName = META.Name
