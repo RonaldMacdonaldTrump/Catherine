@@ -99,7 +99,7 @@ catherine.database.modules[ "mysqloo" ] = {
 		end
 		
 		local info = catherine.database.information
-		catherine.database.object = mysqloo.connect( info.db_hostname or "127.0.0.1", info.db_account_id, info.db_account_password, info.db_name, tonumber( info.db_port ) or 3306 )
+		catherine.database.object = mysqloo.connect( info.DATABASE_HOST or "127.0.0.1", info.DATABASE_ID, info.DATABASE_PASSWORD, info.DATABASE_NAME, tonumber( info.DATABASE_PORT ) or 3306 )
 		catherine.database.object.onConnected = function( )
 			catherine.database.Connected = true
 			catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using MySQLoo." )
@@ -168,7 +168,7 @@ catherine.database.modules[ "tmysql4" ] = {
 		end
 		
 		local info = catherine.database.information
-		local object, err = tmysql.initialize( info.db_hostname or "127.0.0.1", info.db_account_id, info.db_account_password, info.db_name, tonumber( info.db_port ) or 3306 )
+		local object, err = tmysql.initialize( info.DATABASE_HOST or "127.0.0.1", info.DATABASE_ID, info.DATABASE_PASSWORD, info.DATABASE_NAME, tonumber( info.DATABASE_PORT ) or 3306 )
 		
 		if ( object ) then
 			catherine.database.object = object
@@ -266,10 +266,10 @@ catherine.database.query = catherine.database.query or catherine.database.module
 catherine.database.escape = catherine.database.escape or catherine.database.modules.sqlite.escape
 
 function catherine.database.Connect( func )
-	local modules = catherine.database.modules[ catherine.database.information.db_module ]
+	local modules = catherine.database.modules[ catherine.database.information.DATABASE_MODULE ]
 	
 	if ( !modules ) then
-		catherine.util.Print( Color( 255, 0, 0 ), "A unknown Database module! <" .. catherine.database.information.db_module .. ">, so instead using SQLite." )
+		catherine.util.Print( Color( 255, 0, 0 ), "A unknown Database module! <" .. catherine.database.information.DATABASE_MODULE .. ">, so instead using SQLite." )
 		modules = catherine.database.modules.sqlite
 	end
 	
@@ -281,7 +281,7 @@ function catherine.database.Connect( func )
 end
 
 function catherine.database.GetConfig( )
-	local config = file.Read( "catherine/database_config.txt", "LUA" ) or nil
+	local config = file.Read( "catherine/database_config.cfg", "LUA" ) or nil
 	
 	if ( config ) then
 		local result = { }
@@ -295,13 +295,15 @@ function catherine.database.GetConfig( )
 		
 		return result
 	else
+		MsgC( Color( 255, 0, 0 ), "[CAT DB ERROR] Couldn't load Database config file, so instead using SQLite.\n" )
+		
 		return {
-			db_module = "sqlite",
-			db_hostname = "127.0.0.1",
-			db_account_id = "",
-			db_account_password = "",
-			db_name = "",
-			db_port = 3306
+			DATABASE_MODULE = "sqlite",
+			DATABASE_HOST = "127.0.0.1",
+			DATABASE_ID = "root",
+			DATABASE_PASSWORD = "",
+			DATABASE_NAME = "",
+			DATABASE_PORT = 3306
 		}
 	end
 end

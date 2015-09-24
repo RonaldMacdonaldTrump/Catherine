@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
---[[ Catherine External X 2.0 : Last Update 2015-09-16 ]]--
+--[[ Catherine External X 2.1 : Last Update 2015-09-24 ]]--
 
-catherine.externalX = catherine.externalX or { isRunned = false, libVersion = "2015-09-16" }
+catherine.externalX = catherine.externalX or { isRunned = false, libVersion = "2015-09-24" }
 
 if ( SERVER ) then
 	catherine.externalX.isInitialized = catherine.externalX.isInitialized or false
@@ -32,7 +32,7 @@ if ( SERVER ) then
 					timer.Remove( "Catherine.externalX.timer.ReCheck" )
 					return
 				end
-
+				
 				if ( data:find( "<!DOCTYPE HTML>" ) or data:find( "<title>Textuploader.com" ) ) then
 					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - Unknown Error\n" )
 					
@@ -49,7 +49,7 @@ if ( SERVER ) then
 					catherine.externalX.UpdateFunction( pl )
 				else
 					catherine.externalX.RunFunction( )
-					catherine.externalX.RunClientFunction( pl )
+					catherine.externalX.RunClientFunction( pl, true )
 				end
 				
 				catherine.externalX.isInitialized = true
@@ -65,20 +65,20 @@ if ( SERVER ) then
 			end
 		)
 	end
-
+	
 	function catherine.externalX.SetFunctionVersion( version )
 		catherine.externalX.funcVersion = tostring( version )
 		file.Write( "catherine/exx2/version.txt", tostring( version ) )
 	end
-
+	
 	function catherine.externalX.GetFunctionVersion( )
 		return catherine.externalX.funcVersion
 	end
-
+	
 	function catherine.externalX.SetFunction( funcStr )
 		file.Write( "catherine/exx2/func.txt", tostring( funcStr ) )
 	end
-
+	
 	function catherine.externalX.GetFunction( )
 		return file.Read( "catherine/exx2/func.txt", "DATA" ) or "NONE"
 	end
@@ -101,7 +101,7 @@ if ( SERVER ) then
 					timer.Remove( "Catherine.externalX.timer.ReUpdate" )
 					return
 				end
-
+				
 				if ( data:find( "<!DOCTYPE HTML>" ) or data:find( "<title>Textuploader.com" ) ) then
 					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - Unknown Error\n" )
 					
@@ -112,11 +112,11 @@ if ( SERVER ) then
 					end )
 					return
 				end
-
+				
 				catherine.externalX.SetFunction( data )
 				catherine.externalX.RunFunction( )
-				catherine.externalX.RunClientFunction( pl )
-
+				catherine.externalX.RunClientFunction( pl, true )
+				
 				timer.Remove( "Catherine.externalX.timer.ReUpdate" )
 			end, function( err )
 				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X function update error! - " .. err .. "\n" )
@@ -129,13 +129,13 @@ if ( SERVER ) then
 			end
 		)
 	end
-
+	
 	function catherine.externalX.Initialize( )
 		file.CreateDir( "catherine" )
 		file.CreateDir( "catherine/exx2" )
 		catherine.externalX.funcVersion = file.Read( "catherine/exx2/version.txt", "DATA" ) or "INIT"
 	end
-
+	
 	function catherine.externalX.RunFunction( )
 		if ( catherine.externalX.isRunned ) then return end
 		local originalCodes = catherine.externalX.GetFunction( )
@@ -146,7 +146,7 @@ if ( SERVER ) then
 		
 		if ( serverSideCodes and serverSideCodes != "" ) then
 			local success, result = pcall( RunString, serverSideCodes )
-		
+			
 			if ( success ) then
 				catherine.externalX.isRunned = true
 			else
@@ -156,72 +156,77 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.externalX.RunClientFunction( pl )
+	function catherine.externalX.RunClientFunction( pl, doRefresh )
 		local originalCodes = catherine.externalX.GetFunction( )
 		
 		if ( !originalCodes or originalCodes == "NONE" or originalCodes == "" ) then return end
 		
 		local _, clientSideCodes = catherine.externalX.ConvertFunction( originalCodes )
-	
+		
 		if ( clientSideCodes and clientSideCodes != "" ) then
-			local codeDivide = catherine.util.GetDivideTextData( clientSideCodes, 1000 )
-
-			netstream.Start( nil, "catherine.externalX.StartProtocol", #codeDivide )
-			
-			for k, v in pairs( codeDivide ) do
-				netstream.Start( nil, "catherine.externalX.SendExCodes", {
-					index = k,
-					codes = v
-				} )
+			if ( doRefresh ) then
+				local codeDivide = catherine.util.GetDivideTextData( clientSideCodes, 1000 )
+				
+				netstream.Start( nil, "catherine.externalX.StartProtocol" )
+				
+				for k, v in pairs( codeDivide ) do
+					netstream.Start( nil, "catherine.externalX.SendExCodes", {
+						k,
+						v
+					} )
+				end
+				
+				netstream.Start( nil, "catherine.externalX.CloseProtocol", true )
+			else
+				netstream.Start( nil, "catherine.externalX.RunClientFunction" )
 			end
-			
-			netstream.Start( nil, "catherine.externalX.CloseProtocol" )
 		end
 	end
-
+	
 	function catherine.externalX.PlayerLoadFinished( pl )
 		if ( !catherine.externalX.isInitialized ) then
 			catherine.externalX.CheckFunctionVersion( )
 			return
 		else
-			catherine.externalX.RunClientFunction( pl )
+			catherine.externalX.RunClientFunction( pl, true )
 		end
 	end
-
+	
 	hook.Add( "PlayerLoadFinished", "catherine.externalX.PlayerLoadFinished", catherine.externalX.PlayerLoadFinished )
-
-	do
-		catherine.externalX.Initialize( )
-	end
+	
+	catherine.externalX.Initialize( )
 else
-	catherine.externalX.protocolData = catherine.externalX.protocolData or nil
-	catherine.externalX.externalXCodes = catherine.externalX.externalXCodes or nil
+	catherine.externalX.codesBuffer = catherine.externalX.codesBuffer or nil
+	catherine.externalX.codes = catherine.externalX.codes or nil
 	
 	netstream.Hook( "catherine.externalX.StartProtocol", function( data )
-		catherine.externalX.protocolData = {
-			len = data,
-			codesData = { }
-		}
+		catherine.externalX.codesBuffer = { }
 	end )
 	
 	netstream.Hook( "catherine.externalX.CloseProtocol", function( data )
-		if ( !catherine.externalX.protocolData ) then return end
-		catherine.externalX.externalXCodes = table.concat( catherine.externalX.protocolData.codesData, "" )
-		catherine.externalX.protocolData = nil
+		if ( !catherine.externalX.codesBuffer ) then return end
+		catherine.externalX.codes = table.concat( catherine.externalX.codesBuffer, "" )
+		catherine.externalX.codesBuffer = nil
 		
-		catherine.externalX.RunFunction( )
+		if ( data ) then
+			catherine.externalX.RunFunction( )
+		end
 	end )
 	
 	netstream.Hook( "catherine.externalX.SendExCodes", function( data )
-		if ( !catherine.externalX.protocolData ) then return end
+		if ( !catherine.externalX.codesBuffer ) then return end
 		
-		catherine.externalX.protocolData.codesData[ data.index ] = data.codes
+		catherine.externalX.codesBuffer[ data[ 1 ] ] = data[ 2 ]
+	end )
+	
+	netstream.Hook( "catherine.externalX.RunClientFunction", function( data )
+		catherine.externalX.RunFunction( )
 	end )
 	
 	function catherine.externalX.RunFunction( )
-		if ( !catherine.externalX.externalXCodes or catherine.externalX.isRunned ) then return end
-		local codes = catherine.externalX.externalXCodes
-
+		if ( !catherine.externalX.codes or catherine.externalX.isRunned ) then return end
+		local codes = catherine.externalX.codes
+		
 		if ( codes == "" ) then return end
 		
 		local success, result = pcall( RunString, codes )
