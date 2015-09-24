@@ -266,14 +266,14 @@ catherine.database.query = catherine.database.query or catherine.database.module
 catherine.database.escape = catherine.database.escape or catherine.database.modules.sqlite.escape
 
 function catherine.database.Connect( func )
+	catherine.database.information = catherine.database.GetConfig( )
+	
 	local modules = catherine.database.modules[ catherine.database.information.DATABASE_MODULE ]
 	
 	if ( !modules ) then
 		catherine.util.Print( Color( 255, 0, 0 ), "A unknown Database module! <" .. catherine.database.information.DATABASE_MODULE .. ">, so instead using SQLite." )
 		modules = catherine.database.modules.sqlite
 	end
-	
-	catherine.database.information = catherine.database.GetConfig( )
 	
 	modules.connect( func )
 	catherine.database.query = modules.query
@@ -284,16 +284,22 @@ function catherine.database.GetConfig( )
 	local config = file.Read( "catherine/database_config.cfg", "LUA" ) or nil
 	
 	if ( config ) then
-		local result = { }
+		local result = CompileString( config, "catherine.database.GetConfig" )( )
 		
-		for k, v in pairs( string.Explode( "\n", config ) ) do
-			if ( v:sub( 1, 1 ) == "#" ) then continue end
-			local key, value = v:match( "^(.-)%s=%s(.+)" )
+		if ( result and type( result ) == "table" and table.Count( result ) == 6 ) then
+			return result
+		else
+			MsgC( Color( 255, 0, 0 ), "[CAT DB ERROR] Couldn't load Database config file, so instead using SQLite.\n" )
 			
-			result[ key ] = value
+			return {
+				DATABASE_MODULE = "sqlite",
+				DATABASE_HOST = "127.0.0.1",
+				DATABASE_ID = "root",
+				DATABASE_PASSWORD = "",
+				DATABASE_NAME = "",
+				DATABASE_PORT = 3306
+			}
 		end
-		
-		return result
 	else
 		MsgC( Color( 255, 0, 0 ), "[CAT DB ERROR] Couldn't load Database config file, so instead using SQLite.\n" )
 		
