@@ -274,6 +274,8 @@ end
 
 function GM:PlayerLimbTakeDamage( pl, hitGroup, amount )
 	if ( hitGroup == HITGROUP_HEAD ) then
+		pl.CAT_isLimbForceMotionBlur = true
+		
 		local visibility = 1 - ( ( amount / 100 ) / 1 )
 		
 		catherine.util.StartMotionBlur( pl, math.max( visibility, 0.13 ), 1, 0.02 )
@@ -287,6 +289,7 @@ function GM:PlayerLimbDamageHealed( pl, hitGroup, amount )
 		catherine.util.StartMotionBlur( pl, visibility, 1, 0.02 )
 		
 		if ( visibility == 1 ) then
+			pl.CAT_isLimbForceMotionBlur = nil
 			catherine.util.StopMotionBlur( pl )
 		end
 	end
