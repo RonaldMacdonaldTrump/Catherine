@@ -34,6 +34,7 @@ function PANEL:Init( )
 	local foundNewMat = Material( "icon16/error.png" )
 	local errorMat = Material( "icon16/exclamation.png" )
 	local alreadyNewMat = Material( "CAT/ui/accept.png" )
+	local firstMenuDelta = 0
 	
 	self.updatePanel = vgui.Create( "DPanel", self )
 	
@@ -45,6 +46,10 @@ function PANEL:Init( )
 	
 	self.updatePanel:SetSize( self.updatePanel.w, self.updatePanel.h )
 	self.updatePanel:SetPos( self.updatePanel.x, self.updatePanel.y )
+	self.updatePanel:SetAlpha( 0 )
+	self.updatePanel:AlphaTo( 255, 0.5, firstMenuDelta )
+	
+	firstMenuDelta = firstMenuDelta + 0.1
 	self.updatePanel.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 150 ) )
 		
@@ -193,13 +198,17 @@ function PANEL:Init( )
 	self.pluginPanel = vgui.Create( "DPanel", self )
 	
 	self.pluginPanel.w, self.pluginPanel.h = self.w * 0.3, self.h * 0.5
-	self.pluginPanel.x, self.pluginPanel.y = 40 + self.updatePanel.w, 55
+	self.pluginPanel.x, self.pluginPanel.y = self.w / 2 - self.updatePanel.w / 2, 55
 	self.pluginPanel.status = false
 	self.pluginPanel.loadingAni = 0
 	self.pluginPanel.errorMessage = nil
 	
 	self.pluginPanel:SetSize( self.pluginPanel.w, self.pluginPanel.h )
 	self.pluginPanel:SetPos( self.pluginPanel.x, self.pluginPanel.y )
+	self.pluginPanel:SetAlpha( 0 )
+	self.pluginPanel:AlphaTo( 255, 0.5, firstMenuDelta )
+	
+	firstMenuDelta = firstMenuDelta + 0.1
 	self.pluginPanel.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 150 ) )
 		
@@ -251,7 +260,7 @@ function PANEL:Init( )
 		self.pluginManager.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 			
-			draw.SimpleText( LANG( "System_UI_Plugin_ManagerTitle" ), "catherine_normal35", 20, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( LANG( "System_UI_Plugin_ManagerTitle" ), "catherine_normal35", 10, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( LANG( "System_UI_Plugin_NameSearch" ), "catherine_normal20", w - pnl.searchEnt:GetWide( ) - 25, 27, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		
 			local pluginAll = catherine.plugin.GetAll( )
@@ -517,6 +526,49 @@ function PANEL:Init( )
 	end
 	self.pluginPanel.open.PaintBackground = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
+	end
+	
+	self.databasePanel = vgui.Create( "DPanel", self )
+	
+	self.databasePanel.w, self.databasePanel.h = self.w * 0.3, self.h * 0.5
+	self.databasePanel.x, self.databasePanel.y = self.w - self.databasePanel.w - 20, 55
+	self.databasePanel.loadingAni = 0
+	
+	self.databasePanel:SetSize( self.databasePanel.w, self.databasePanel.h )
+	self.databasePanel:SetPos( self.databasePanel.x, self.databasePanel.y )
+	self.databasePanel:SetAlpha( 0 )
+	self.databasePanel:AlphaTo( 255, 0.5, firstMenuDelta )
+	
+	firstMenuDelta = firstMenuDelta + 0.1
+	self.databasePanel.Paint = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 150 ) )
+		
+		surface.SetDrawColor( 0, 0, 0, 90 )
+		surface.DrawOutlinedRect( 0, 0, w, h )
+		
+		draw.RoundedBox( 0, 0, 30, w, 1, Color( 0, 0, 0, 90 ) )
+		
+		draw.SimpleText( LANG( "System_UI_DB_Title" ), "catherine_normal20", 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		
+		local status = catherine.database.GetStatus( )
+		
+		draw.SimpleText( LANG( "System_UI_DB_Status" .. status ), "catherine_normal20", 85, 55, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		
+		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.SetMaterial( Material( "cat/ui/db_" .. status .. ".png", "smooth" ) )
+		surface.DrawTexturedRect( 10, 45, 64, 64 )
+		
+		if ( status == 1 ) then
+			pnl.loadingAni = math.Approach( pnl.loadingAni, pnl.loadingAni - 10, 10 )
+			
+			draw.NoTexture( )
+			surface.SetDrawColor( 90, 90, 90, 255 )
+			catherine.geometry.DrawCircle( 25, h - 25, 10, 3, 0, 360, 100 )
+			
+			draw.NoTexture( )
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			catherine.geometry.DrawCircle( 25, h - 25, 10, 3, pnl.loadingAni, 70, 100 )
+		end
 	end
 	
 	self.close = vgui.Create( "catherine.vgui.button", self )

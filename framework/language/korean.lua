@@ -206,7 +206,7 @@ LANGUAGE.data = {
 	[ "System_UI_Title" ] = "시스템",
 	[ "System_UI_Close" ] = "닫기",
 	[ "System_UI_Update_Title" ] = "업데이트",
-	[ "System_UI_Update_CoreVer" ] = "코어 버전 - %s %s",
+	[ "System_UI_Update_CoreVer" ] = "%s %s",
 	[ "System_UI_Update_FoundNew" ] = "최신 버전이 아닙니다!",
 	[ "System_UI_Update_AlreadyNew" ] = "최신 버전을 사용하고 있습니다.",
 	[ "System_UI_Update_CheckButton" ] = "업데이트 확인",
@@ -228,6 +228,11 @@ LANGUAGE.data = {
 	[ "System_UI_Plugin_DeactivePluginTitle" ] = "%s 플러그인",
 	[ "System_UI_Plugin_DeactivePluginDesc" ] = "이 플러그인은 비 활성화 되었습니다.",
 	[ "System_UI_Plugin_NameSearch" ] = "이름으로 검색",
+	[ "System_UI_DB_Title" ] = "데이터베이스",
+	[ "System_UI_DB_Status0" ] = "유휴 상태",
+	[ "System_UI_DB_Status1" ] = "작업중 ...",
+	[ "System_UI_DB_Status2" ] = "작업 오류",
+	[ "System_UI_DB_Status3" ] = "연결 실패",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "능력치",

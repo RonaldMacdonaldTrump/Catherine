@@ -210,7 +210,7 @@ LANGUAGE.data = {
 	[ "System_UI_Title" ] = "System",
 	[ "System_UI_Close" ] = "Close",
 	[ "System_UI_Update_Title" ] = "Update",
-	[ "System_UI_Update_CoreVer" ] = "Core Version - %s %s",
+	[ "System_UI_Update_CoreVer" ] = "%s %s",
 	[ "System_UI_Update_FoundNew" ] = "This server not using latest version!",
 	[ "System_UI_Update_AlreadyNew" ] = "This server using latest version.",
 	[ "System_UI_Update_CheckButton" ] = "Check Update",
@@ -232,6 +232,11 @@ LANGUAGE.data = {
 	[ "System_UI_Plugin_DeactivePluginTitle" ] = "%s Plugin",
 	[ "System_UI_Plugin_DeactivePluginDesc" ] = "This plugin has been deactivated.",
 	[ "System_UI_Plugin_NameSearch" ] = "Search by Name",
+	[ "System_UI_DB_Title" ] = "Database",
+	[ "System_UI_DB_Status0" ] = "Idle",
+	[ "System_UI_DB_Status1" ] = "Working ...",
+	[ "System_UI_DB_Status2" ] = "Query Error",
+	[ "System_UI_DB_Status3" ] = "Connection Error",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",
