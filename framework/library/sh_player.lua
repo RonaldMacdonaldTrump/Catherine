@@ -136,7 +136,7 @@ if ( SERVER ) then
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !IsValid( pl ) ) then return end
 			
-			if ( steamID == catherine.configs.OWNER ) then
+			if ( catherine.configs.OWNER != "" and steamID == catherine.configs.OWNER ) then
 				if ( pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
 					local doDef = true
 					

@@ -920,7 +920,7 @@ function GM:PlayerThink( pl )
 				if ( pl.CAT_drownDamage > 0 ) then
 					pl.CAT_drownDamage = pl.CAT_drownDamage - 1
 					pl:SetHealth( math.Clamp( pl:Health( ) + 1, 0, pl:GetMaxHealth( ) ) )
-					pl.CAT_nextDrownDamageRecoverTick = CurTime( ) + 0.1
+					pl.CAT_nextDrownDamageRecoverTick = CurTime( ) + 0.2
 				else
 					pl.CAT_nextDrownDamageRecoverTick = nil
 					pl.CAT_drownDamage = nil
