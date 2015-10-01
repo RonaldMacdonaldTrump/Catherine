@@ -18,7 +18,10 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.configs = catherine.configs or { }
 
-catherine.configs.OWNER = "" 
+if ( SERVER ) then
+	catherine.configs.OWNER = "" --[[ Setting a Owner SteamID. ]]--
+end
+
 catherine.configs.defaultLanguage = "english" --[[ Setting a default Language (english, korean). ]]--
 
 catherine.configs.doorCost = 50 --[[ Setting a Door cost. ]]--

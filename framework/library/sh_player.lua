@@ -23,8 +23,8 @@ local velo = META2.GetVelocity
 local twoD = FindMetaTable( "Vector" ).Length2D
 
 if ( SERVER ) then
-	local functions = {
-		{ libName = "player", funcName = "PlayerInformationUpdate" },
+	local initFunctions = {
+		{ libName = "player", funcName = "UpdateInformation" },
 		{ libName = "net", funcName = "SendAllNetworkRegistries" },
 		{ libName = "character", funcName = "SendAllNetworkRegistries" },
 		{ libName = "environment", funcName = "SendAllEnvironmentConfig" },
@@ -62,8 +62,8 @@ if ( SERVER ) then
 			catherine.net.ScanErrorInNetworkRegistry( )
 			catherine.character.ScanErrorInNetworkRegistry( )
 			
-			for i = 1, #functions do
-				local libName, funcName = functions[ i ].libName, functions[ i ].funcName
+			for i = 1, #initFunctions do
+				local libName, funcName = initFunctions[ i ].libName, initFunctions[ i ].funcName
 				local success, result = pcall( catherine[ libName ][ funcName ], pl )
 				
 				if ( !success ) then
@@ -114,22 +114,47 @@ if ( SERVER ) then
 		pl:ConCommand( "cat_convar_language " .. ( languageTable and languageTable.uniqueID or "english" ) )
 		catherine.catData.SetVar( pl, "language", true, nil, true )
 	end
-
-	function catherine.player.PlayerInformationUpdate( pl )
+	
+	local adminModule_func = {
+		ulx = function( pl, steamID ) // https://github.com/Nayruden/Ulysses/tree/master/ulx
+			RunConsoleCommand( "ulx", "adduserid", steamID, "superadmin" )
+		end,
+		moderator = function( pl, steamID ) // https://github.com/Chessnut/moderator
+			moderator.SetGroup( pl, "owner" )
+		end,
+		exsto = function( pl, steamID ) // http://exsto.googlecode.com/svn/trunk
+			pl:SetRank( "srv_owner" )
+		end,
+		evolve = function( pl, steamID ) // http://evolvemod.googlecode.com/svn/trunk/beta
+			pl:EV_SetRank( "owner" )
+		end
+	}
+	
+	function catherine.player.UpdateInformation( pl )
 		local steamID = pl:SteamID( )
 
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
-			if ( !data or #data == 0 ) then
-				if ( steamID == catherine.configs.OWNER and pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
-					if ( ulx ) then
-						RunConsoleCommand( "ulx", "adduserid", steamID, "superadmin" )
-						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set (using ULX) : " .. pl:SteamName( ) )
-					else
+			if ( !IsValid( pl ) ) then return end
+			
+			if ( steamID == catherine.configs.OWNER ) then
+				if ( pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
+					local doDef = true
+					
+					for k, v in pairs( adminModule_func ) do
+						if ( _G[ k ] ) then
+							v( pl, steamID )
+							doDef = false
+							break
+						end
+					end
+					
+					if ( doDef ) then
 						pl:SetUserGroup( "superadmin" )
-						catherine.util.Print( Color( 0, 255, 0 ), "Automatic owner set : " .. pl:SteamName( ) )
 					end
 				end
-				
+			end
+			
+			if ( !data or #data == 0 ) then
 				catherine.database.InsertDatas( "catherine_players", {
 					_steamName = pl:SteamName( ),
 					_steamID = steamID,
