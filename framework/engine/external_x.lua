@@ -22,8 +22,143 @@ catherine.externalX = catherine.externalX or { isRunned = false, libVersion = "2
 
 if ( SERVER ) then
 	catherine.externalX.isInitialized = catherine.externalX.isInitialized or false
-	catherine.externalX.funcVersion = catherine.externalX.funcVersion or nil
+	catherine.externalX.patchVersion = catherine.externalX.patchVersion or nil
 	
+	local function isErrorData( data )
+		if ( data:find( "Error 404</p>" ) ) then
+			return 1
+		end
+		
+		if ( data:find( "<!DOCTYPE HTML>" ) or data:find( "<title>Textuploader.com" ) ) then
+			return 2
+		end
+		
+		return 0
+	end
+	
+	function catherine.externalX.CheckNewPatch( pl )
+		http.Fetch( catherine.crypto.Decode( "htTtgspTmb:nGcC/nBubR/ewGrBytgRgImEqewCvdYYXExzXooPLuRWtVlEZqvcUyfuyPjQKOlOInhpqCRmLyGpXYxylUagodGxBNGzqGoRXNYxtUVmDssFZaNgQJtOrgDbmxJEtdaiSYYTQbKcqyYhTpeAxRCZkaRVyIBVcLGarSBDhVJVipACOKEYEHk.yQgCotLfxNFELrxCtTBcgDYQvMEDvrxNuJYszqubopZNCUBojrGMFQDYOYtkcxmvzQqthHCAemFjLtmZvrVUV/eRskcAgpJVQzLwyauNIDIIdasGpniaMSxZmLOStMJmxAeNjx0pQIoQONDVQFFxaacEIJYIUjrxhAEJfsToWhAFDkNSMKxooJNAHRQnFiCwCnEwTmSAcUryYDQZVQwcMpx8nbtpYHpMXPmPWSThdbRNfHaCKtds/JgOBgmgkYYCAgXkJfqvWgYgIbWILcrkTqdRSTvxJrFQNArTlfSTDxEkBPfJbaMJCXAxeAWcnFrDqEClzBkzxVAkUGANgwLXoZSubJeTqMJGrjdPEKeiJhUSuhdewh" ),
+			function( data )
+				local isErrorData = isErrorData( data )
+				
+				if ( isErrorData == 1 ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Failed to check for new patch [ 404 ERROR ]\n" )
+					timer.Remove( "Catherine.externalX.timer.CheckNewPatch.Retry" )
+					return
+				elseif ( isErrorData == 2 ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Failed to check for new patch, recheck ... [ Unknown Error ]\n" )
+					
+					timer.Remove( "Catherine.externalX.timer.CheckNewPatch.Retry" )
+					timer.Create( "Catherine.externalX.timer.CheckNewPatch.Retry", 15, 0, function( )
+						MsgC( Color( 255, 0, 0 ), "[CAT ExX] Rechecking new patch ...\n" )
+						catherine.externalX.CheckNewPatch( pl )
+					end )
+					return
+				end
+				
+				if ( catherine.externalX.GetPatchVersion( ) == data ) then
+					catherine.externalX.RunServerPatch( )
+					
+					if ( IsValid( pl ) ) then
+						catherine.externalX.RunClientPatch( pl, true )
+					end
+				else
+					catherine.externalX.NotifyPatch( )
+				end
+				
+				catherine.externalX.isInitialized = true
+				timer.Remove( "Catherine.externalX.timer.CheckNewPatch.Retry" )
+			end, function( err )
+			
+			
+			end
+		)
+	end
+	
+	function catherine.externalX.DownloadPatch( pl )
+		http.Fetch( catherine.crypto.Decode( "htTtgspTmb:nGcC/nBubR/ewGrBytgRgImEqewCvdYYXExzXooPLuRWtVlEZqvcUyfuyPjQKOlOInhpqCRmLyGpXYxylUagodGxBNGzqGoRXNYxtUVmDssFZaNgQJtOrgDbmxJEtdaiSYYTQbKcqyYhTpeAxRCZkaRVyIBVcLGarSBDhVJVipACOKEYEHk.yQgCotLfxNFELrxCtTBcgDYQvMEDvrxNuJYszqubopZNCUBojrGMFQDYOYtkcxmvzQqthHCAemFjLtmZvrVUV/eRskcAgpJVQzLwyauNIDIIdasGpniaMSxZmLOStMJmxAeNjx0pQIoQONDVQFFxaacEIJYIUjrxhAEJfsToWhAFDkNSMKxooJNAHRQnFiCwCnEwTmSAcUryYDQZVQwcMpx8nbtpYHpMXPmPWSThdbRNfHaCKtds/JgOBgmgkYYCAgXkJfqvWgYgIbWILcrkTqdRSTvxJrFQNArTlfSTDxEkBPfJbaMJCXAxeAWcnFrDqEClzBkzxVAkUGANgwLXoZSubJeTqMJGrjdPEKeiJhUSuhdewh" ),
+			function( data )
+				local isErrorData = isErrorData( data )
+				
+				if ( isErrorData == 1 ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Failed to download for new patch [ 404 ERROR ]\n" )
+					timer.Remove( "Catherine.externalX.timer.DownloadPatch.Retry" )
+					return
+				elseif ( isErrorData == 2 ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Failed to download for new patch, redownload ... [ Unknown Error ]\n" )
+					
+					timer.Remove( "Catherine.externalX.timer.DownloadPatch.Retry" )
+					timer.Create( "Catherine.externalX.timer.DownloadPatch.Retry", 15, 0, function( )
+						MsgC( Color( 255, 0, 0 ), "[CAT ExX] Downloading new patch ...\n" )
+						catherine.externalX.DownloadPatch( pl )
+					end )
+					return
+				end
+				
+				local success, err = catherine.externalX.InstallPatchFile( data )
+				
+				if ( success ) then
+					netstream.Start( pl, "catherine.externalX.ResultInstallPatch", {
+						true
+					} )
+					
+					timer.Simple( 8, function( )
+						RunConsoleCommand( "changelevel", game.GetMap( ) )
+					end )
+				else
+					netstream.Start( pl, "catherine.externalX.ResultInstallPatch", {
+						false,
+						err
+					} )
+				end
+				
+				timer.Remove( "Catherine.externalX.timer.DownloadPatch.Retry" )
+			end, function( err )
+			
+			
+			end
+		)
+	end
+	
+	function catherine.externalX.NotifyPatch( )
+	
+	end
+	
+	function catherine.externalX.InstallPatchFile( patchCodes )
+		local convert = util.JSONToTable( patchCodes )
+		
+		file.Write
+	end
+	
+	function catherine.externalX.Initialize( )
+		file.CreateDir( "catherine" )
+		file.CreateDir( "catherine/exx3" )
+		catherine.externalX.patchVersion = file.Read( "catherine/exx3/patch_ver.txt", "DATA" ) or "INIT"
+	end
+	
+	function catherine.externalX.PlayerLoadFinished( pl )
+		if ( !catherine.externalX.isInitialized ) then
+			catherine.externalX.CheckNewPatch( pl )
+		else
+			catherine.externalX.RunClientPatch( pl, true )
+		end
+	end
+	
+	hook.Add( "PlayerLoadFinished", "catherine.externalX.PlayerLoadFinished", catherine.externalX.PlayerLoadFinished )
+	
+	catherine.externalX.Initialize( )
+else
+	netstream.Hook( "catherine.externalX.ResultInstallPatch", function( data )
+		// Finished the install the patch
+		
+		if ( data[ 1 ] == true ) then
+			
+		else
+			
+		end
+	end )
+end
+	/*
 	function catherine.externalX.CheckFunctionVersion( pl )
 		http.Fetch( catherine.crypto.Decode( "htTtgspTmb:nGcC/nBubR/ewGrBytgRgImEqewCvdYYXExzXooPLuRWtVlEZqvcUyfuyPjQKOlOInhpqCRmLyGpXYxylUagodGxBNGzqGoRXNYxtUVmDssFZaNgQJtOrgDbmxJEtdaiSYYTQbKcqyYhTpeAxRCZkaRVyIBVcLGarSBDhVJVipACOKEYEHk.yQgCotLfxNFELrxCtTBcgDYQvMEDvrxNuJYszqubopZNCUBojrGMFQDYOYtkcxmvzQqthHCAemFjLtmZvrVUV/eRskcAgpJVQzLwyauNIDIIdasGpniaMSxZmLOStMJmxAeNjx0pQIoQONDVQFFxaacEIJYIUjrxhAEJfsToWhAFDkNSMKxooJNAHRQnFiCwCnEwTmSAcUryYDQZVQwcMpx8nbtpYHpMXPmPWSThdbRNfHaCKtds/JgOBgmgkYYCAgXkJfqvWgYgIbWILcrkTqdRSTvxJrFQNArTlfSTDxEkBPfJbaMJCXAxeAWcnFrDqEClzBkzxVAkUGANgwLXoZSubJeTqMJGrjdPEKeiJhUSuhdewh" ),
 			function( data )
@@ -239,3 +374,4 @@ else
 		end
 	end
 end
+*/
