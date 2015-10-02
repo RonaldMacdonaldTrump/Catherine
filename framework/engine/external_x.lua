@@ -24,6 +24,7 @@ if ( SERVER ) then
 	catherine.externalX.isInitialized = catherine.externalX.isInitialized or false
 	catherine.externalX.applied = catherine.externalX.applied or false
 	catherine.externalX.patchVersion = catherine.externalX.patchVersion or nil
+	catherine.externalX.foundNewPatch = catherine.externalX.foundNewPatch or false
 	
 	local function isErrorData( data )
 		if ( data:find( "Error 404</p>" ) ) then
@@ -57,7 +58,7 @@ if ( SERVER ) then
 					return
 				end
 				
-				if ( catherine.externalX.GetPatchVersion( ) == data ) then
+				if ( catherine.externalX.patchVersion == data ) then
 					catherine.externalX.ApplyServerPatch( )
 					
 					if ( IsValid( pl ) ) then
@@ -128,7 +129,12 @@ if ( SERVER ) then
 	end
 	
 	function catherine.externalX.NotifyPatch( )
-	
+		catherine.externalX.foundNewPatch = true
+		
+		netstream.Start( nil, "catherine.externalX.SendData", {
+			foundNewPatch = catherine.externalX.foundNewPatch,
+			patchVersion = catherine.externalX.patchVersion
+		} )
 	end
 	
 	function catherine.externalX.InstallPatchFile( patchCodes )
@@ -139,6 +145,8 @@ if ( SERVER ) then
 		file.Write( "catherine/exx3/patch_ver.txt", patchVer or "INIT" )
 		file.Write( "catherine/exx3/patch_server.txt", serverPatchCodes )
 		file.Write( "catherine/exx3/patch_client.txt", clientPatchCodes )
+		
+		catherine.externalX.foundNewPatch = false
 		
 		return true
 	end
@@ -159,7 +167,22 @@ if ( SERVER ) then
 	end
 	
 	function catherine.externalX.ApplyClientPatch( pl )
-	
+		local clientPatchCodes = file.Read( "catherine/exx3/patch_client.txt", "DATA" ) or ""
+		
+		if ( !clientPatchCodes or clientPatchCodes == "nil" or clientPatchCodes == "" or clientPatchCodes == "INIT" ) then return end
+		
+		local codeDivide = catherine.util.GetDivideTextData( clientPatchCodes, 1000 )
+				
+		netstream.Start( nil, "catherine.externalX.StartProtocol" )
+		
+		for k, v in pairs( codeDivide ) do
+			netstream.Start( nil, "catherine.externalX.SendExCodes", {
+				k,
+				v
+			} )
+		end
+		
+		netstream.Start( nil, "catherine.externalX.CloseProtocol", true )
 	end
 	
 	function catherine.externalX.Initialize( )
@@ -172,6 +195,11 @@ if ( SERVER ) then
 		if ( !catherine.externalX.isInitialized ) then
 			catherine.externalX.CheckNewPatch( pl )
 		else
+			netstream.Start( pl, "catherine.externalX.SendData", {
+				foundNewPatch = catherine.externalX.foundNewPatch,
+				patchVersion = catherine.externalX.patchVersion
+			} )
+			
 			catherine.externalX.ApplyClientPatch( pl, true )
 		end
 	end
@@ -180,6 +208,14 @@ if ( SERVER ) then
 	
 	catherine.externalX.Initialize( )
 else
+	catherine.externalX.foundNewPatch = catherine.externalX.foundNewPatch or false
+	catherine.externalX.patchVersion = catherine.externalX.patchVersion or nil
+	
+	netstream.Hook( "catherine.externalX.StartNotifyPatch", function( data )
+		catherine.externalX.foundNewPatch = data.foundNewPatch
+		catherine.externalX.patchVersion = data.patchVersion
+	end )
+	
 	netstream.Hook( "catherine.externalX.ResultInstallPatch", function( data )
 		// Finished the install the patch
 		
