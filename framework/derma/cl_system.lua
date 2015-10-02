@@ -594,6 +594,7 @@ function PANEL:Init( )
 		draw.RoundedBox( 0, 0, 30, w, 1, Color( 0, 0, 0, 90 ) )
 		
 		draw.SimpleText( LANG( "System_UI_ExternalX_Title" ), "catherine_normal20", 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( catherine.externalX.patchVersion, "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		
 		if ( pnl.hideAll or pnl.restartDelay ) then
 			pnl.install:SetVisible( false )
@@ -624,15 +625,15 @@ function PANEL:Init( )
 			return
 		end
 		
+		local textH = pnl.install:IsVisible( ) and h - 95 or h - 60
+		
 		if ( pnl.errorMessage ) then
 			surface.SetDrawColor( 255, 255, 255, 255 )
 			surface.SetMaterial( errorMat )
-			surface.DrawTexturedRect( 10, h - 97, 16, 16 )
+			surface.DrawTexturedRect( 10, textH - 7, 16, 16 )
 			
-			draw.SimpleText( pnl.errorMessage, "catherine_normal15", 33, h - 90, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( pnl.errorMessage, "catherine_normal15", 35, textH, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 		else
-			local textH = pnl.install:IsVisible( ) and h - 95 or h - 60
-			
 			if ( catherine.externalX.foundNewPatch ) then
 				pnl.install:SetVisible( true )
 			else

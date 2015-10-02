@@ -238,9 +238,10 @@ LANGUAGE.data = {
 	[ "System_UI_ExternalX_CheckingButton" ] = "패치 확인 중 ...",
 	[ "System_UI_ExternalX_FoundNewPatch" ] = "새로운 (%s) 패치가 있습니다, 설치하십시오.",
 	[ "System_UI_ExternalX_AlreadyNewPatch" ] = "새로운 패치가 없습니다.",
-	[ "System_UI_ExternalX_InstallButton" ] = "< 패치 다운로드 / 설치 >",
-	[ "System_UI_ExternalX_Installing" ] = "패치를 설치하는 중 입니다 ...",
+	[ "System_UI_ExternalX_InstallButton" ] = "패치 다운로드 / 설치",
+	[ "System_UI_ExternalX_Installing" ] = "패치를 다운로드하고 설치하는 중 입니다 ...",
 	[ "System_UI_ExternalX_RestartServer" ] = "경고 : 서버가 잠시 후에 다시 시작됩니다 :>",
+	[ "System_Notify_ExternalX_NextTime" ] = "너무 자주 패치를 확인할 수 없습니다, 나중에 다시 시도하세요!",
 	[ "System_Notify_InstallQ" ] = "새로운 패치를 설치하시겠습니까?, 설치가 완료된 후 자동으로 서버를 다시 시작합니다!",
 	
 	// Attribute

@@ -242,9 +242,10 @@ LANGUAGE.data = {
 	[ "System_UI_ExternalX_CheckingButton" ] = "Checking new patch ...",
 	[ "System_UI_ExternalX_FoundNewPatch" ] = "New patch (%s) has available, please install.",
 	[ "System_UI_ExternalX_AlreadyNewPatch" ] = "Doesn't have new patch.",
-	[ "System_UI_ExternalX_InstallButton" ] = "< Download / Install Patch >",
-	[ "System_UI_ExternalX_Installing" ] = "Installing the patch ...",
+	[ "System_UI_ExternalX_InstallButton" ] = "Download / Install Patch",
+	[ "System_UI_ExternalX_Installing" ] = "Download and Installing the patch ...",
 	[ "System_UI_ExternalX_RestartServer" ] = "WARNING : Server is restart after a while :>",
+	[ "System_Notify_ExternalX_NextTime" ] = "Too often unable to check the patch, try again later!",
 	[ "System_Notify_InstallQ" ] = "Are you want to install this patch?, automatic 'RESTART SERVER' after install!",
 	
 	// Attribute

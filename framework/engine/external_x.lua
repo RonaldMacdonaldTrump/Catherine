@@ -39,7 +39,17 @@ if ( SERVER ) then
 		return 0
 	end
 	
-	function catherine.externalX.CheckNewPatch( pl, isManual )
+	function catherine.externalX.CheckNewPatch( pl, isManual, runFunc )
+		if ( isManual and IsValid( pl ) ) then
+			if ( ( catherine.externalX.nextCheckable or 0 ) >= CurTime( ) ) then
+				netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", {
+					false,
+					LANG( pl, "System_Notify_ExternalX_NextTime" )
+				} )
+				return
+			end
+		end
+		
 		http.Fetch( catherine.crypto.Decode( "htDtgtpzMl:YbCb/qpehh/FqoQeNtnYXIDruelRVQLCJExSAvHwIqWStqQBFGQanDuuCpgGbgoekIBpKbMivrjFMbeOloLqFSPDUoysAyoTygVRLIQIzZyceapFeopiZpYaUncIXdNHsWUtHuLqheLFFQeoBgSCUAppkQNmKNuartzJoFLIHtQlWpbkeGN.HMNCsRWkSEgIZZZqtEmcDKjBMshaDuzrBvztufYfotBKoxmArgttkpTZHdMsDVmBQksVJzErdSRnsHnTWhzTq/LtNmhxBtoeZVebrRJgVbcKZapUOtwOWGtiOMbAuJJwCqqemz2uIFXrdJWhodcaHMJiVEtzRHgsnzTisaeozTvyrGStfdqItnDTtFJ0xwEaREyRVdSXEPxDRfXnrPZMRwCtlTOajRgtqttIbAGeOIzYtHXFpTfE/ELATjQiWCUXccTzUxaiZWVRixzqRYrdQchaxIOhFcfVcjvQXprLbvLMtpyvearNDsEVefEwsCUsHXfQMKUTZKOscKeFtwdVIldJKVawUXPUYIoaLRWEyukxncXlbN" ),
 			function( data )
 				local isErrorData = isErrorData( data )
@@ -61,16 +71,26 @@ if ( SERVER ) then
 					timer.Remove( "Catherine.externalX.timer.CheckNewPatch.Retry" )
 					timer.Create( "Catherine.externalX.timer.CheckNewPatch.Retry", 15, 0, function( )
 						MsgC( Color( 255, 0, 0 ), "[CAT ExX] Rechecking new patch ...\n" )
-						catherine.externalX.CheckNewPatch( pl, isManual )
+						catherine.externalX.CheckNewPatch( pl, isManual, runFunc )
 					end )
 					return
 				end
 				
 				if ( catherine.externalX.patchVersion == data ) then
-					catherine.externalX.StartApplyServerPatch( )
+					if ( runFunc ) then
+						catherine.externalX.StartApplyServerPatch( )
+					end
 					
 					if ( IsValid( pl ) ) then
-						catherine.externalX.StartInitApplyRequestClientPatch( pl )
+						netstream.Start( nil, "catherine.externalX.SendData", {
+							catherine.externalX.foundNewPatch,
+							catherine.externalX.patchVersion,
+							catherine.externalX.newPatchVersion
+						} )
+						
+						if ( runFunc ) then
+							catherine.externalX.StartInitApplyRequestClientPatch( pl )
+						end
 					end
 				else
 					catherine.externalX.NotifyPatch( data )
@@ -84,6 +104,8 @@ if ( SERVER ) then
 						true
 					} )
 				end
+				
+				catherine.externalX.nextCheckable = CurTime( ) + 150
 			end, function( err )
 				if ( isManual and IsValid( pl ) ) then
 					netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", {
@@ -224,7 +246,7 @@ if ( SERVER ) then
 	
 	function catherine.externalX.PlayerLoadFinished( pl )
 		if ( !catherine.externalX.isInitialized ) then
-			catherine.externalX.CheckNewPatch( pl )
+			catherine.externalX.CheckNewPatch( pl, false, true )
 		else
 			netstream.Start( pl, "catherine.externalX.SendData", {
 				catherine.externalX.foundNewPatch,
@@ -245,7 +267,7 @@ if ( SERVER ) then
 	end )
 	
 	netstream.Hook( "catherine.externalX.CheckNewPatch", function( pl, data )
-		catherine.externalX.CheckNewPatch( pl, true )
+		catherine.externalX.CheckNewPatch( pl, true, false )
 	end )
 else
 	catherine.externalX.applied = catherine.externalX.applied or false
@@ -287,7 +309,7 @@ else
 	
 	netstream.Hook( "catherine.externalX.ResultCheckNewPatch", function( data )
 		if ( IsValid( catherine.vgui.system ) ) then
-			catherine.vgui.system.externalXPanel.status = !data[ 1 ]
+			catherine.vgui.system.externalXPanel.status = false
 			
 			if ( data[ 2 ] ) then
 				catherine.vgui.system.externalXPanel:SetErrorMessage( data[ 2 ] )
@@ -302,7 +324,7 @@ else
 				catherine.externalX.foundNewPatch = false
 			end
 			
-			catherine.vgui.system.externalXPanel.status = !data[ 1 ]
+			catherine.vgui.system.externalXPanel.status = false
 			catherine.vgui.system.externalXPanel.hideAll = false
 			
 			if ( data[ 2 ] ) then
