@@ -31,15 +31,17 @@ function PANEL:Init( )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	
-	local foundNewMat = Material( "icon16/error.png" )
+	local foundNewMat = Material( "icon16/asterisk_orange.png" )
 	local errorMat = Material( "icon16/exclamation.png" )
 	local alreadyNewMat = Material( "CAT/ui/accept.png" )
 	local firstMenuDelta = 0
 	
+	local panelWSize = ( self.w / 3 ) - ( 20 * 1.5 )
+	
 	self.updatePanel = vgui.Create( "DPanel", self )
 	
-	self.updatePanel.w, self.updatePanel.h = self.w * 0.3, self.h * 0.5
-	self.updatePanel.x, self.updatePanel.y = 20, 55
+	self.updatePanel.w, self.updatePanel.h = panelWSize, self.h * 0.45
+	self.updatePanel.x, self.updatePanel.y = 20, 45
 	self.updatePanel.status = false
 	self.updatePanel.loadingAni = 0
 	self.updatePanel.errorMessage = nil
@@ -197,11 +199,8 @@ function PANEL:Init( )
 	
 	self.pluginPanel = vgui.Create( "DPanel", self )
 	
-	self.pluginPanel.w, self.pluginPanel.h = self.w * 0.3, self.h * 0.5
-	self.pluginPanel.x, self.pluginPanel.y = self.w / 2 - self.updatePanel.w / 2, 55
-	self.pluginPanel.status = false
-	self.pluginPanel.loadingAni = 0
-	self.pluginPanel.errorMessage = nil
+	self.pluginPanel.w, self.pluginPanel.h = panelWSize, self.h * 0.45
+	self.pluginPanel.x, self.pluginPanel.y = self.w / 2 - self.updatePanel.w / 2, 45
 	
 	self.pluginPanel:SetSize( self.pluginPanel.w, self.pluginPanel.h )
 	self.pluginPanel:SetPos( self.pluginPanel.x, self.pluginPanel.y )
@@ -260,7 +259,7 @@ function PANEL:Init( )
 		self.pluginManager.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 			
-			draw.SimpleText( LANG( "System_UI_Plugin_ManagerTitle" ), "catherine_normal35", 10, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( LANG( "System_UI_Plugin_ManagerTitle" ), "catherine_normal25", 10, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( LANG( "System_UI_Plugin_NameSearch" ), "catherine_normal20", w - pnl.searchEnt:GetWide( ) - 25, 27, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		
 			local pluginAll = catherine.plugin.GetAll( )
@@ -530,8 +529,8 @@ function PANEL:Init( )
 	
 	self.databasePanel = vgui.Create( "DPanel", self )
 	
-	self.databasePanel.w, self.databasePanel.h = self.w * 0.3, self.h * 0.5
-	self.databasePanel.x, self.databasePanel.y = self.w - self.databasePanel.w - 20, 55
+	self.databasePanel.w, self.databasePanel.h = panelWSize, self.h * 0.45
+	self.databasePanel.x, self.databasePanel.y = self.w - self.databasePanel.w - 20, 45
 	self.databasePanel.loadingAni = 0
 	
 	self.databasePanel:SetSize( self.databasePanel.w, self.databasePanel.h )
@@ -571,9 +570,158 @@ function PANEL:Init( )
 		end
 	end
 	
+	self.externalXPanel = vgui.Create( "DPanel", self )
+	
+	self.externalXPanel.w, self.externalXPanel.h = panelWSize, self.h * 0.45 + 5
+	self.externalXPanel.x, self.externalXPanel.y = 20, self.h * 0.5 + 20
+	self.externalXPanel.loadingAni = 0
+	self.externalXPanel.errorMessage = nil
+	self.externalXPanel.hideAll = false
+	self.externalXPanel.restartDelay = false
+	
+	self.externalXPanel:SetSize( self.externalXPanel.w, self.externalXPanel.h )
+	self.externalXPanel:SetPos( self.externalXPanel.x, self.externalXPanel.y )
+	self.externalXPanel:SetAlpha( 0 )
+	self.externalXPanel:AlphaTo( 255, 0.5, firstMenuDelta )
+	
+	firstMenuDelta = firstMenuDelta + 0.1
+	self.externalXPanel.Paint = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 150 ) )
+		
+		surface.SetDrawColor( 0, 0, 0, 90 )
+		surface.DrawOutlinedRect( 0, 0, w, h )
+		
+		draw.RoundedBox( 0, 0, 30, w, 1, Color( 0, 0, 0, 90 ) )
+		
+		draw.SimpleText( LANG( "System_UI_ExternalX_Title" ), "catherine_normal20", 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		
+		if ( pnl.hideAll or pnl.restartDelay ) then
+			pnl.install:SetVisible( false )
+			pnl.check:SetVisible( false )
+		else
+			pnl.check:SetVisible( true )
+		end
+		
+		if ( pnl.restartDelay ) then
+			draw.SimpleText( LANG( "System_UI_ExternalX_RestartServer" ), "catherine_normal20", w / 2, h / 2, Color( 0, 0, 0, 255 ), 1, 1 )
+		end
+		
+		if ( pnl.status ) then
+			if ( pnl.hideAll ) then
+				draw.SimpleText( LANG( "System_UI_ExternalX_Installing" ), "catherine_normal20", w / 2, h / 2 + 60, Color( 50, 50, 50, 255 ), 1, 1 )
+			end
+			
+			pnl.loadingAni = math.Approach( pnl.loadingAni, pnl.loadingAni - 10, 10 )
+			
+			draw.NoTexture( )
+			surface.SetDrawColor( 90, 90, 90, 255 )
+			catherine.geometry.DrawCircle( w / 2, h / 2, 15, 5, 0, 360, 100 )
+			
+			draw.NoTexture( )
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			catherine.geometry.DrawCircle( w / 2, h / 2, 15, 5, pnl.loadingAni, 70, 100 )
+			
+			return
+		end
+		
+		if ( pnl.errorMessage ) then
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface.SetMaterial( errorMat )
+			surface.DrawTexturedRect( 10, h - 97, 16, 16 )
+			
+			draw.SimpleText( pnl.errorMessage, "catherine_normal15", 33, h - 90, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		else
+			local textH = pnl.install:IsVisible( ) and h - 95 or h - 60
+			
+			if ( catherine.externalX.foundNewPatch ) then
+				pnl.install:SetVisible( true )
+			else
+				pnl.install:SetVisible( false )
+			end
+			
+			if ( catherine.externalX.foundNewPatch ) then
+				surface.SetDrawColor( 255, 255, 255, 255 )
+				surface.SetMaterial( foundNewMat )
+				surface.DrawTexturedRect( 10, textH - 7, 16, 16 )
+				
+				draw.SimpleText( LANG( "System_UI_ExternalX_FoundNewPatch", catherine.externalX.newPatchVersion or "INIT" ), "catherine_normal15", 35, textH, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			else
+				if ( pnl.restartDelay ) then return end
+				
+				surface.SetDrawColor( 255, 255, 255, 255 )
+				surface.SetMaterial( alreadyNewMat )
+				surface.DrawTexturedRect( 10, textH - 7, 16, 16 )
+				
+				draw.SimpleText( LANG( "System_UI_ExternalX_AlreadyNewPatch" ), "catherine_normal15", 35, textH, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			end
+		end
+	end
+	
+	self.externalXPanel.SetErrorMessage = function( pnl, text )
+		pnl.errorMessage = text
+		
+		timer.Remove( "Catherine.timer.system.ErrorMessageRemove2" )
+		timer.Create( "Catherine.timer.system.ErrorMessageRemove2", 5, 1, function( )
+			if ( IsValid( catherine.vgui.system ) ) then
+				pnl.errorMessage = nil
+			end
+		end )
+	end
+	
+	self.externalXPanel.check = vgui.Create( "catherine.vgui.button", self.externalXPanel )
+	self.externalXPanel.check.progressing = false
+	self.externalXPanel.check:SetSize( self.externalXPanel.w - 15, 30 )
+	self.externalXPanel.check:SetPos( self.externalXPanel.w / 2 - self.externalXPanel.check:GetWide( ) / 2, self.externalXPanel.h - self.externalXPanel.check:GetTall( ) - 10 )
+	self.externalXPanel.check:SetStr( LANG( "System_UI_ExternalX_CheckButton" ) )
+	self.externalXPanel.check:SetStrFont( "catherine_normal15" )
+	self.externalXPanel.check:SetStrColor( Color( 50, 50, 50, 255 ) )
+	self.externalXPanel.check:SetGradientColor( Color( 255, 255, 255, 150 ) )
+	self.externalXPanel.check.Click = function( pnl )
+		if ( pnl.progressing ) then return end
+		
+		self.externalXPanel.status = true
+		netstream.Start( "catherine.externalX.CheckNewPatch" )
+	end
+	self.externalXPanel.check.PaintBackground = function( pnl, w, h )
+		if ( self.externalXPanel.status and !pnl.progressing ) then
+			pnl:SetStr( LANG( "System_UI_ExternalX_CheckingButton" ) )
+			pnl.progressing = true
+		elseif ( !self.externalXPanel.status and pnl.progressing ) then
+			pnl:SetStr( LANG( "System_UI_ExternalX_CheckButton" ) )
+			pnl.progressing = false
+		end
+		
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
+	end
+	
+	self.externalXPanel.install = vgui.Create( "catherine.vgui.button", self.externalXPanel )
+	self.externalXPanel.install.progressing = false
+	self.externalXPanel.install:SetVisible( false )
+	self.externalXPanel.install:SetSize( self.externalXPanel.w - 15, 30 )
+	self.externalXPanel.install:SetPos( self.externalXPanel.w / 2 - self.externalXPanel.install:GetWide( ) / 2, self.externalXPanel.h - ( self.externalXPanel.install:GetTall( ) * 2 ) - 15 )
+	self.externalXPanel.install:SetStr( LANG( "System_UI_ExternalX_InstallButton" ) )
+	self.externalXPanel.install:SetStrFont( "catherine_normal20" )
+	self.externalXPanel.install:SetStrColor( Color( 50, 50, 50, 255 ) )
+	self.externalXPanel.install:SetGradientColor( Color( 255, 255, 255, 150 ) )
+	self.externalXPanel.install.Click = function( pnl )
+		if ( pnl.progressing ) then return end
+		
+		Derma_Query( LANG( "System_Notify_InstallQ" ), "", LANG( "Basic_UI_YES" ), function( )
+			self.externalXPanel.status = true
+			self.externalXPanel.hideAll = true
+			
+			timer.Simple( 1, function( )
+				netstream.Start( "catherine.externalX.DownloadPatch" )
+			end )
+		end, LANG( "Basic_UI_NO" ), function( ) end )
+	end
+	self.externalXPanel.install.PaintBackground = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
+	end
+	
 	self.close = vgui.Create( "catherine.vgui.button", self )
-	self.close:SetPos( 15, self.h - 45 )
-	self.close:SetSize( self.w * 0.2, 30 )
+	self.close:SetPos( self.w - ( self.w * 0.1 ) - 20, 10 )
+	self.close:SetSize( self.w * 0.1, 25 )
 	self.close:SetStr( LANG( "System_UI_Close" ) )
 	self.close:SetStrColor( Color( 50, 50, 50, 255 ) )
 	self.close:SetGradientColor( Color( 255, 255, 255, 150 ) )
@@ -581,14 +729,14 @@ function PANEL:Init( )
 		self:Close( )
 	end
 	self.close.PaintBackground = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 200, 200, 255 ) )
 	end
 end
 
 function PANEL:Paint( w, h )
 	draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 	
-	draw.SimpleText( LANG( "System_UI_Title" ), "catherine_normal35", 20, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( LANG( "System_UI_Title" ), "catherine_normal25", 20, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 end
 
 function PANEL:Close( )

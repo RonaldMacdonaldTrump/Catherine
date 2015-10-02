@@ -177,6 +177,8 @@ if ( SERVER ) then
 	
 	catherine.item.RegisterHook( "PlayerDeath", BASE, function( pl )
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
+			local itemTable = catherine.item.FindByID( k )
+			
 			if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( pl, k ) ) then continue end
 			
 			catherine.item.Work( pl, k, "unequip" )

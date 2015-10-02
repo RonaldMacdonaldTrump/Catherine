@@ -21,11 +21,9 @@ catherine.version = catherine.version or { }
 if ( SERVER ) then
 	catherine.version.checked = catherine.version.checked or false
 	
-	local url = "htotGApRdN:wATs/YQKJg/XtOgVftAXxLUwFeMMhRpleExWNbNiTrJstohuyKzdZeHujcGUyTMqBYqpSRXadbpeUSbmlubthnlZWPyugIodLsJqNkBaRXyLZajDcvhnniIvcAiHgdHSeooxCamnSLegPLeWcgdyWhIGLREnDZkmrRblOmgSizuCZIyyOeV.SDooHdMGkDsRGvRbOwbcBuUWqcSotDEQjqZdfEBAohSaFItJJowFCJrwDZFSJSmfrGNIhPwYcPFFWwmkXHyer/RyEQoDDCSiqzaHNjLILtqMRaepMupiAyJIfYeMrAOWOiZzhcgigzOgkpiEjPJcFynrjGryPCcN0mlKMGTEQpExZnVkvYOmBGgvXzy1nMjcFNiqaUzgMJMTlSFOgnFZgJCypuDfGIJPNJTysnZEPsZvmtSfPTVa/XcTwLdYZthgmRqEwvEVJSMXvuLOBwrCvOgupleZRXRAnEDxTRbXBZtmVtvPHaMhsTHECdzyjpLnExgUiCJrZldFTQfROwAaXFzWlnQOdRBbAWTwbeFbNlWIhzgIcY"
-	
 	function catherine.version.Check( pl )
 		if ( ( catherine.version.nextCheckable or 0 ) <= CurTime( ) ) then
-			http.Fetch( catherine.crypto.Decode( url ),
+			http.Fetch( catherine.crypto.Decode( "htotGApRdN:wATs/YQKJg/XtOgVftAXxLUwFeMMhRpleExWNbNiTrJstohuyKzdZeHujcGUyTMqBYqpSRXadbpeUSbmlubthnlZWPyugIodLsJqNkBaRXyLZajDcvhnniIvcAiHgdHSeooxCamnSLegPLeWcgdyWhIGLREnDZkmrRblOmgSizuCZIyyOeV.SDooHdMGkDsRGvRbOwbcBuUWqcSotDEQjqZdfEBAohSaFItJJowFCJrwDZFSJSmfrGNIhPwYcPFFWwmkXHyer/RyEQoDDCSiqzaHNjLILtqMRaepMupiAyJIfYeMrAOWOiZzhcgigzOgkpiEjPJcFynrjGryPCcN0mlKMGTEQpExZnVkvYOmBGgvXzy1nMjcFNiqaUzgMJMTlSFOgnFZgJCypuDfGIJPNJTysnZEPsZvmtSfPTVa/XcTwLdYZthgmRqEwvEVJSMXvuLOBwrCvOgupleZRXRAnEDxTRbXBZtmVtvPHaMhsTHECdzyjpLnExgUiCJrZldFTQfROwAaXFzWlnQOdRBbAWTwbeFbNlWIhzgIcY" ),
 				function( body )
 					if ( body:find( "Error 404</p>" ) ) then
 						catherine.util.Print( Color( 255, 0, 0 ), "Failed to checking version! - 404 ERROR" )

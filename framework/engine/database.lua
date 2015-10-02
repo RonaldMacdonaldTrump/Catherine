@@ -462,8 +462,6 @@ if ( SERVER ) then
 			end )
 		end
 	end )
-else
-	
 end
 
 function catherine.database.GetStatus( )
