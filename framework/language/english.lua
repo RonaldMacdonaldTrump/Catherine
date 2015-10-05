@@ -513,6 +513,7 @@ LANGUAGE.data = {
 	[ "Basic_Error_Reloading" ] = "Reloading the Catherine ...",
 	[ "Basic_Framework_Author" ] = "Development and design by %s.",
 	[ "Basic_Notify_BunnyHop" ] = "Do not Bunny-hop!",
+	[ "Basic_Notify_RestoreDatabaseKick" ] = "SORRY, You have been kicked from this server, because server are working Database restore.",
 	
 	// Command
 	[ "Command_ChangeLevel_Fin" ] = "%s(sec) after change map to %s.",

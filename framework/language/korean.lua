@@ -511,6 +511,7 @@ LANGUAGE.data = {
 	[ "Basic_Error_Reloading" ] = "캐서린을 다시 로딩하는 중 입니다 ...",
 	[ "Basic_Framework_Author" ] = "프레임워크 개발 및 디자인 - %s.",
 	[ "Basic_Notify_BunnyHop" ] = "버니합을 하지 마십시오!",
+	[ "Basic_Notify_RestoreDatabaseKick" ] = "죄송합니다, 서버 데이터베이스 복구 작업으로 인해 강퇴 처리되셨습니다.",
 	
 	// Command
 	[ "Command_ChangeLevel_Fin" ] = "%s초 후 맵이 %s 로 바뀝니다.",

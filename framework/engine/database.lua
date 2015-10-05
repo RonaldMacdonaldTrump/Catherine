@@ -88,9 +88,6 @@ if ( SERVER ) then
 		DROP TABLE IF EXISTS `catherine_players`;
 	]]
 	
-	CAT_DATABASE_TYPE_SQLITE = 0
-	CAT_DATABASE_TYPE_NON_SQLITE = 1
-	
 	catherine.database.modules[ "mysqloo" ] = {
 		connect = function( func )
 			if ( !pcall( require, "mysqloo" ) ) then
@@ -103,7 +100,7 @@ if ( SERVER ) then
 			catherine.database.object.onConnected = function( )
 				catherine.database.Connected = true
 				catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using MySQLoo." )
-				catherine.database.FirstInitialize( CAT_DATABASE_TYPE_NON_SQLITE )
+				catherine.database.FirstInitialize( )
 				
 				catherine.database.SetStatus( 0 )
 				
@@ -190,7 +187,7 @@ if ( SERVER ) then
 				catherine.database.object = object
 				catherine.database.Connected = true
 				catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using tMySQL4." )
-				catherine.database.FirstInitialize( CAT_DATABASE_TYPE_NON_SQLITE )
+				catherine.database.FirstInitialize( )
 				
 				catherine.database.SetStatus( 0 )
 				
@@ -263,7 +260,7 @@ if ( SERVER ) then
 		connect = function( func )
 			catherine.database.Connected = true
 			catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using SQLite." )
-			catherine.database.FirstInitialize( CAT_DATABASE_CREATE_TABLES_SQLITE )
+			catherine.database.FirstInitialize( )
 			
 			catherine.database.SetStatus( 0 )
 			
@@ -319,15 +316,19 @@ if ( SERVER ) then
 	}
 	catherine.database.query = catherine.database.query or catherine.database.modules.sqlite.query
 	catherine.database.escape = catherine.database.escape or catherine.database.modules.sqlite.escape
+	catherine.database.moduleName = catherine.database.moduleName or "sqlite"
 	
 	function catherine.database.Connect( func )
 		catherine.database.information = catherine.database.GetConfig( )
 		
 		local modules = catherine.database.modules[ catherine.database.information.DATABASE_MODULE ]
 		
+		catherine.database.moduleName = catherine.database.information.DATABASE_MODULE
+		
 		if ( !modules ) then
 			catherine.util.Print( Color( 255, 0, 0 ), "A unknown Database module! <" .. catherine.database.information.DATABASE_MODULE .. ">, so instead using SQLite." )
 			modules = catherine.database.modules.sqlite
+			catherine.database.moduleName = "sqlite"
 		end
 		
 		modules.connect( func )
@@ -335,15 +336,15 @@ if ( SERVER ) then
 		catherine.database.escape = modules.escape
 	end
 	
-	function catherine.database.FirstInitialize( typ )
-		if ( typ == CAT_DATABASE_TYPE_NON_SQLITE ) then
+	function catherine.database.FirstInitialize( )
+		if ( catherine.database.moduleName == "sqlite" ) then
+			catherine.database.query( CAT_DATABASE_CREATE_TABLES_SQLITE )
+		else
 			local queries = string.Explode( ";", CAT_DATABASE_CREATE_TABLES_NON_SQLITE )
 
 			for i = 1, 2 do
 				catherine.database.query( queries[ i ] )
 			end
-		else
-			catherine.database.query( CAT_DATABASE_CREATE_TABLES_SQLITE )
 		end
 	end
 	
@@ -420,7 +421,9 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.database.Restore( pl, folderName )
+	function catherine.database.Restore( pl, folderName, func )
+		MsgC( Color( 0, 255, 255 ), "\n[CATHERINE DATABASE RESTORE]\n" )
+		MsgC( Color( 0, 255, 0 ), "[CAT DB Restore] Ready for database restore ...\n" )
 		
 		if ( file.Exists( "catherine/database/backup/" .. folderName, "DATA" ) ) then
 			local data = file.Read( "catherine/database/backup/" .. folderName .. "/data.txt", "DATA" ) or nil
@@ -429,10 +432,12 @@ if ( SERVER ) then
 				local convert = util.JSONToTable( data )
 				
 				if ( convert ) then
-					for k, v in pairs( player.GetAll( ) ) do
-						
-					end
+					// Block a connect from player.
+					hook.Add( "CheckPassword", "catherine.database.CheckPassword", function( steamID64, ip, svPassword, clPassword, name )
+						return false, "SORRY, You have been kicked from this server, because server are working Database restore."
+					end )
 					
+					// Block a Database progress.
 					hook.Add( "PlayerShouldSaveCharacter", "catherine.database.PlayerShouldSaveCharacter", function( pl )
 						return false
 					end )
@@ -441,10 +446,55 @@ if ( SERVER ) then
 						return false
 					end )
 					
+					// Kick all players.
+					if ( IsValid( pl ) ) then
+						for k, v in pairs( player.GetAll( ) ) do
+							if ( IsValid( v ) and pl != v ) then
+								v:Kick( LANG( v, "Basic_Notify_RestoreDatabaseKick" ) )
+							end
+						end
+					else
+						for k, v in pairs( player.GetAll( ) ) do
+							if ( IsValid( v ) ) then
+								v:Kick( LANG( v, "Basic_Notify_RestoreDatabaseKick" ) )
+							end
+						end
+					end
 					
+					dropTable( ) // Initialize a Database.
+					catherine.database.FirstInitialize( ) // Create a Tables.
 					
-					dropTable( )
+					// Insert data from the backup data.
+					for k, v in pairs( convert.data ) do
+						local per, count = 0, table.Count( v )
+						
+						for k1, v1 in pairs( v ) do
+							per = k1 / count
+							
+							catherine.database.InsertDatas( k, v1, function( )
+								MsgC( Color( 0, 255, 0 ), "[CAT DB Restore] Working database restore ... [" .. k .. "/" .. per * 100 .. "%]\n" )
+							end )
+						end
+					end
+					
+					MsgC( Color( 0, 255, 0 ), "[CAT DB Restore] Finished for database restore!\n" )
+					
+					if ( func ) then
+						func( pl, folderName )
+					end
+					
+					if ( IsValid( pl ) ) then
+						netstream.Start( pl, "catherine.database.ResultRestore", {
+							true
+						} )
+					else
+						return true
+					end
+					
+					// Finished.
 				else
+					MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to Restore database!!! [ ]\n" )
+					
 					if ( IsValid( pl ) ) then
 						netstream.Start( pl, "catherine.database.ResultRestore", {
 							false,
@@ -455,6 +505,8 @@ if ( SERVER ) then
 					end
 				end
 			else
+				MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to Restore database!!! [ ]\n" )
+				
 				if ( IsValid( pl ) ) then
 					netstream.Start( pl, "catherine.database.ResultRestore", {
 						false,
@@ -465,6 +517,8 @@ if ( SERVER ) then
 				end
 			end
 		else
+			MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to Restore database!!! [ ]\n" )
+			
 			if ( IsValid( pl ) ) then
 				netstream.Start( pl, "catherine.database.ResultRestore", {
 					false,
@@ -473,14 +527,6 @@ if ( SERVER ) then
 			else
 				return false
 			end
-		end
-		
-		if ( IsValid( pl ) ) then
-			netstream.Start( pl, "catherine.database.ResultRestore", {
-				true
-			} )
-		else
-			return true
 		end
 	end
 	
