@@ -399,7 +399,7 @@ if ( SERVER ) then
 				timeNumber = os.time( ),
 				timeString = today .. " | " .. os.date( "%p" ) .. " " .. os.date( "%I" ) .. ":" .. os.date( "%M" ),
 				requester = IsValid( pl ) and pl:SteamID( ) or "CONSOLE"
-			}
+			},
 			data = { }
 		}
 		
@@ -606,7 +606,7 @@ if ( SERVER ) then
 	function catherine.database.UpdateDatas( tab, cre, newData, func )
 		if ( !catherine.database.connected or !tab or !newData or !cre ) then return end
 		local query = "UPDATE `" .. tab .. "` SET "
-
+		
 		for k, v in pairs( newData ) do
 			query = query .. k .. " = '" .. catherine.database.escape( v ) .. "', "
 		end
@@ -631,14 +631,14 @@ if ( SERVER ) then
 		
 		catherine.database.query( query, func )
 	end
-
+	
 	--[[
 		[ How can i reset the database? ]
 		
 		Input 'cat_db_init' command to 'Dedicated Console'.
 		( if you are working Local Server, Run command in Client Console !! ( You are must be joined 'Super Admin' group. ) )
 	]]--
-
+	
 	concommand.Add( "cat_db_init", function( pl )
 		if ( game.IsDedicated( ) and IsValid( pl ) ) then
 			return
@@ -649,6 +649,7 @@ if ( SERVER ) then
 		catherine.database.Drop( function( )
 			MsgC( Color( 255, 0, 0 ), "[CAT DB] Database has been initialized. [" .. ( IsValid( pl ) and pl:SteamID( ) or "CONSOLE" ) .. "]\n" )
 			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Database has been initialized. [" .. ( IsValid( pl ) and pl:SteamID( ) or "CONSOLE" ) .. "]" )
+			catherine.database.FirstInitialize( )
 			RunConsoleCommand( "changelevel", game.GetMap( ) )
 		end )
 	end )
@@ -658,7 +659,7 @@ if ( SERVER ) then
 		file.CreateDir( "catherine/database" )
 		file.CreateDir( "catherine/database/backup" )
 	end
-
+	
 	hook.Add( "FrameworkInitialized", "catherine.database.FrameworkInitialized", catherine.database.FrameworkInitialized )
 	
 	netstream.Hook( "catherine.database.dbcijW", function( pl, data )
