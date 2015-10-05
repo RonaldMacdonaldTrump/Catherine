@@ -24,7 +24,7 @@ function hook.Call( hookID, gamemode, ... )
 	if ( cacheData ) then
 		for k, v in pairs( cacheData ) do
 			local success, result = pcall( v, k, ... )
-
+			
 			if ( success ) then
 				result = { result }
 				
@@ -36,7 +36,7 @@ function hook.Call( hookID, gamemode, ... )
 			end
 		end
 	end
-
+	
 	if ( Schema and Schema[ hookID ] ) then
 		local success, result = pcall( Schema[ hookID ], Schema, ... )
 		
