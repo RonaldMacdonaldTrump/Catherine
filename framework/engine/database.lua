@@ -190,7 +190,8 @@ if ( SERVER ) then
 	catherine.database.modules[ "tmysql4" ] = {
 		connect = function( func, config )
 			if ( !pcall( require, "tmysql4" ) ) then
-				catherine.util.Print( Color( 255, 0, 0 ), "Can't load database module!!! - tMySQL4" )
+				MsgC( Color( 255, 0, 0 ), "[CAT DB ERROR] Couldn't load tMySQL4 database module!!!\n" )
+				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Couldn't load tMySQL4 database module!!!" )
 				return
 			end
 			
@@ -251,14 +252,15 @@ if ( SERVER ) then
 						end
 					end
 					
-					MsgC( Color( 255, 0, 0 ), "[CAT Query ERROR] " .. query .. " -> " .. ( err or "Unknown" ) .. " !!!\n" )
-					hook.Run( "DatabaseError", query, err )
+					MsgC( Color( 255, 0, 0 ), "[CAT DB ERROR] An error of run working on Query!!!\n<" .. query .. "> -> <" .. ( err or "Unknown" ) .. ">\n" )
 					
 					timer.Simple( 10, function( )
 						if ( catherine.database.GetStatus( ) == 2 ) then
 							catherine.database.SetStatus( 0 )
 						end
 					end )
+					
+					hook.Run( "DatabaseError", query, err )
 				end
 			end )
 		end,
@@ -272,10 +274,10 @@ if ( SERVER ) then
 	}
 	catherine.database.modules[ "sqlite" ] = {
 		connect = function( func )
-			catherine.database.connected = true
-			catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using SQLite." )
-			catherine.database.FirstInitialize( )
+			MsgC( Color( 0, 255, 0 ), "[CAT DB] Connected to the database using SQLite.\n" )
 			
+			catherine.database.connected = true
+			catherine.database.FirstInitialize( )
 			catherine.database.SetStatus( 0 )
 			
 			if ( func ) then
@@ -290,18 +292,19 @@ if ( SERVER ) then
 			local result = sql.Query( query )
 			
 			if ( result == false ) then
-				catherine.database.SetStatus( 2 )
-				
 				local err = sql.LastError( )
 				
-				MsgC( Color( 255, 0, 0 ), "[CAT Query ERROR] " .. query .. " -> " .. err .. " !!!\n" )
-				hook.Run( "DatabaseError", query, err )
+				catherine.database.SetStatus( 2 )
+				
+				MsgC( Color( 255, 0, 0 ), "[CAT DB ERROR] An error of run working on Query!!!\n<" .. query .. "> -> <" .. ( err or "Unknown" ) .. ">\n" )
 				
 				timer.Simple( 10, function( )
 					if ( catherine.database.GetStatus( ) == 2 ) then
 						catherine.database.SetStatus( 0 )
 					end
 				end )
+				
+				hook.Run( "DatabaseError", query, err )
 				
 				return
 			end
