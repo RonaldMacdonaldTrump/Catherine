@@ -263,7 +263,14 @@ if ( SERVER ) then
 	catherine.externalX.Initialize( )
 	
 	netstream.Hook( "catherine.externalX.DownloadPatch", function( pl, data )
-		catherine.externalX.DownloadPatch( pl )
+		if ( pl:IsSuperAdmin( ) ) then
+			catherine.externalX.DownloadPatch( pl )
+		else
+			netstream.Start( pl, "catherine.externalX.ResultInstallPatch", {
+				false,
+				"Permission ERROR"
+			} )
+		end
 	end )
 	
 	netstream.Hook( "catherine.externalX.CheckNewPatch", function( pl, data )

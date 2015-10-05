@@ -78,12 +78,12 @@ if ( SERVER ) then
 	);
 	]]
 	
-	local DATABASE_TABLES = {
+	local CAT_DATABASE_TABLES = {
 		"catherine_characters",
 		"catherine_players"
 	}
 
-	local DROP_TABLES = [[
+	local CAT_DATABASE_DROP_TABLE = [[
 		DROP TABLE IF EXISTS `catherine_characters`;
 		DROP TABLE IF EXISTS `catherine_players`;
 	]]
@@ -96,7 +96,13 @@ if ( SERVER ) then
 			end
 			
 			local info = catherine.database.information
-			catherine.database.object = mysqloo.connect( info.DATABASE_HOST or "127.0.0.1", info.DATABASE_ID, info.DATABASE_PASSWORD, info.DATABASE_NAME, tonumber( info.DATABASE_PORT ) or 3306 )
+			local hostname = info.DATABASE_HOST
+			
+			if ( hostname == "localhost" ) then
+				hostname = "127.0.0.1"
+			end
+			
+			catherine.database.object = mysqloo.connect( hostname, info.DATABASE_ID, info.DATABASE_PASSWORD, info.DATABASE_NAME, tonumber( info.DATABASE_PORT ) or 3306 )
 			catherine.database.object.onConnected = function( )
 				catherine.database.Connected = true
 				catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using MySQLoo." )
@@ -336,12 +342,32 @@ if ( SERVER ) then
 		catherine.database.escape = modules.escape
 	end
 	
+	function catherine.database.Drop( func )
+		if ( catherine.database.object ) then
+			local ex = string.Explode( ";", CAT_DATABASE_DROP_TABLE )
+			
+			for i = 1, 2 do
+				catherine.database.Query( ex[ i ] )
+			end
+			
+			if ( func ) then
+				func( )
+			end
+		else
+			catherine.database.Query( CAT_DATABASE_DROP_TABLE )
+			
+			if ( func ) then
+				func( )
+			end
+		end
+	end
+	
 	function catherine.database.FirstInitialize( )
 		if ( catherine.database.moduleName == "sqlite" ) then
 			catherine.database.query( CAT_DATABASE_CREATE_TABLES_SQLITE )
 		else
 			local queries = string.Explode( ";", CAT_DATABASE_CREATE_TABLES_NON_SQLITE )
-
+			
 			for i = 1, 2 do
 				catherine.database.query( queries[ i ] )
 			end
@@ -351,16 +377,6 @@ if ( SERVER ) then
 	function catherine.database.SetStatus( id )
 		SetGlobalInt( "catherine.database.status", id )
 	end
-	
-	local DATABASE_TABLES = {
-		"catherine_characters",
-		"catherine_players"
-	}
-
-	local DROP_TABLES = [[
-		DROP TABLE IF EXISTS `catherine_characters`;
-		DROP TABLE IF EXISTS `catherine_players`;
-	]]
 	
 	function catherine.database.Backup( pl )
 		local time = os.date( "*t" )
@@ -374,13 +390,13 @@ if ( SERVER ) then
 			data = { }
 		}
 		
-		for i = 1, #DATABASE_TABLES do
-			backUp.data[ DATABASE_TABLES[ i ] ] = { }
+		for i = 1, #CAT_DATABASE_TABLES do
+			backUp.data[ CAT_DATABASE_TABLES[ i ] ] = { }
 			
-			catherine.database.GetDatas( DATABASE_TABLES[ i ], nil, function( data )
+			catherine.database.GetDatas( CAT_DATABASE_TABLES[ i ], nil, function( data )
 				if ( !data or #data == 0 ) then return end
 				
-				backUp.data[ DATABASE_TABLES[ i ] ] = data
+				backUp.data[ CAT_DATABASE_TABLES[ i ] ] = data
 			end )
 		end
 		
@@ -389,6 +405,14 @@ if ( SERVER ) then
 		if ( convert ) then
 			file.CreateDir( "catherine/database/backup/" .. today )
 			file.Write( "catherine/database/backup/" .. today .. "/data.txt", convert )
+			
+			if ( IsValid( pl ) ) then
+				netstream.Start( pl, "catherine.database.ResultBackup", {
+					true
+				} )
+			else
+				return true
+			end
 		else
 			if ( IsValid( pl ) ) then
 				netstream.Start( pl, "catherine.database.ResultBackup", {
@@ -398,26 +422,6 @@ if ( SERVER ) then
 			else
 				return false
 			end
-		end
-		
-		if ( IsValid( pl ) ) then
-			netstream.Start( pl, "catherine.database.ResultBackup", {
-				true
-			} )
-		else
-			return true
-		end
-	end
-	
-	local function dropTable( )
-		if ( catherine.database.object ) then
-			local ex = string.Explode( ";", DROP_TABLES )
-			
-			for i = 1, 2 do
-				catherine.database.Query( ex[ i ] )
-			end
-		else
-			catherine.database.Query( DROP_TABLES )
 		end
 	end
 	
@@ -461,7 +465,7 @@ if ( SERVER ) then
 						end
 					end
 					
-					dropTable( ) // Initialize a Database.
+					catherine.database.Drop( ) // Initialize a Database.
 					catherine.database.FirstInitialize( ) // Create a Tables.
 					
 					// Insert data from the backup data.
@@ -625,25 +629,11 @@ if ( SERVER ) then
 			return
 		end
 
-		if ( catherine.database.object ) then
-			local ex = string.Explode( ";", DROP_TABLES )
-			
-			for i = 1, 2 do
-				catherine.database.Query( ex[ i ], function( )
-					if ( i == 2 ) then
-						catherine.util.Print( Color( 255, 0, 0 ), "ALL Database has initialized." )
-						catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "ALL Database has initialized!!!" )
-						RunConsoleCommand( "changelevel", game.GetMap( ) )
-					end
-				end )
-			end
-		else
-			catherine.database.Query( DROP_TABLES, function( )
-				catherine.util.Print( Color( 255, 0, 0 ), "ALL Database has initialized." )
-				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "ALL Database has initialized!!!" )
-				RunConsoleCommand( "changelevel", game.GetMap( ) )
-			end )
-		end
+		catherine.database.Drop( function( )
+			catherine.util.Print( Color( 255, 0, 0 ), "ALL Database has initialized." )
+			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "ALL Database has initialized!!!" )
+			RunConsoleCommand( "changelevel", game.GetMap( ) )
+		end )
 	end )
 	
 	function catherine.database.FrameworkInitialized( )
