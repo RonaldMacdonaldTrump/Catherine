@@ -55,7 +55,7 @@ if ( SERVER ) then
 				local isErrorData = isErrorData( data )
 				
 				if ( isErrorData == 1 ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Failed to check for new patch [ 404 ERROR ]\n" )
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to check for new patch! [404 ERROR]\n" )
 					timer.Remove( "Catherine.timer.externalX.CheckNewPatch.Retry" )
 					
 					if ( isManual and IsValid( pl ) ) then
@@ -66,11 +66,11 @@ if ( SERVER ) then
 					end
 					return
 				elseif ( isErrorData == 2 ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Failed to check for new patch, recheck ... [ Unknown Error ]\n" )
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to check for new patch!, recheck ... [Unknown Error]\n" )
 					
 					timer.Remove( "Catherine.timer.externalX.CheckNewPatch.Retry" )
 					timer.Create( "Catherine.timer.externalX.CheckNewPatch.Retry", 15, 0, function( )
-						MsgC( Color( 255, 0, 0 ), "[CAT ExX] Rechecking new patch ...\n" )
+						MsgC( Color( 255, 255, 0 ), "[CAT ExX] Rechecking new patch ...\n" )
 						catherine.externalX.CheckNewPatch( pl, isManual, runFunc )
 					end )
 					return
@@ -107,6 +107,8 @@ if ( SERVER ) then
 				
 				catherine.externalX.nextCheckable = CurTime( ) + 150
 			end, function( err )
+				MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to check for new patch! [" .. err .. "]\n" )
+				
 				if ( isManual and IsValid( pl ) ) then
 					netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", {
 						false,
@@ -123,21 +125,21 @@ if ( SERVER ) then
 				local isErrorData = isErrorData( data )
 				
 				if ( isErrorData == 1 ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Failed to download for new patch [ 404 ERROR ]\n" )
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to download for new patch! [404 ERROR]\n" )
 					timer.Remove( "Catherine.timer.externalX.DownloadPatch.Retry" )
 					return
 				elseif ( isErrorData == 2 ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Failed to download for new patch, redownload ... [ Unknown Error ]\n" )
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to download for new patch, redownload ... [Unknown Error]\n" )
 					
 					timer.Remove( "Catherine.timer.externalX.DownloadPatch.Retry" )
 					timer.Create( "Catherine.timer.externalX.DownloadPatch.Retry", 15, 0, function( )
-						MsgC( Color( 255, 0, 0 ), "[CAT ExX] Downloading new patch ...\n" )
+						MsgC( Color( 255, 255, 0 ), "[CAT ExX] Downloading new patch ...\n" )
 						catherine.externalX.DownloadPatch( pl )
 					end )
 					return
 				end
 				
-				timer.Simple( 2, function( )
+				timer.Simple( 1, function( )
 					local success, err = catherine.externalX.InstallPatchFile( data )
 					
 					if ( success ) then
@@ -164,6 +166,7 @@ if ( SERVER ) then
 				
 				timer.Remove( "Catherine.timer.externalX.DownloadPatch.Retry" )
 			end, function( err )
+				MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to download for new patch! [" .. err .. "]\n" )
 				
 				netstream.Start( pl, "catherine.externalX.ResultInstallPatch", {
 					false,

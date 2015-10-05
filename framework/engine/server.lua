@@ -985,7 +985,7 @@ function GM:InitPostEntity( )
 	
 	hook.Run( "DataLoad" )
 	
-	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has loaded." )
+	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has been loaded." )
 end
 
 function GM:ShutDown( )
@@ -998,7 +998,7 @@ function GM:ShutDown( )
 end
 
 function GM:Initialize( )
-	MsgC( Color( 0, 255, 0 ), "[CAT] You are using Catherine '" .. catherine.GetVersion( ) .. "' date Version, Thanks.\n" )
+	MsgC( Color( 0, 255, 0 ), "[CAT] You have been using Catherine '" .. catherine.GetVersion( ) .. "' Version.\n" )
 	
 	hook.Run( "FrameworkInitialized" )
 end

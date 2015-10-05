@@ -44,7 +44,7 @@ timer.Create( "Catherine.timer.data.AutoSaveData", 1, 0, function( )
 	if ( catherine.data.saveTick <= 0 ) then
 		hook.Run( "DataSave" )
 		
-		catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has saved." )
+		catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has been saved." )
 		
 		catherine.data.saveTick = catherine.configs.dataSaveInterval
 	else

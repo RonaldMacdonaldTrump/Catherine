@@ -22,18 +22,16 @@ if ( SERVER ) then
 	catherine.news.updated = catherine.news.updated or false
 	catherine.news.lists = catherine.news.lists or { }
 	
-	local url = "htKtwXpOKj:osZW/FKyaS/cePEaDtjXPVhUpeANnCkDNOxYnhDOCkFrtUhlsbIJyfouqfdixlNwzgAphDWamfeoKSVTladyTGPIxHoWDsofTuLFsTXrtCCrIaUofyHxsftcNOcBmdqIAncnHntLiBpnEpeNymozJFYaQCWxZAejrihJsoPZyEwfQeDBjpL.EBlfjSwvCQludrtLTGCcssLZjQMMjBxBUqruBfsDoHoWrTOHGivzSRRemAXhHPmGHYNeHBCkIjmbLcWZwdXFz/obGtetMLvRrdznpvfIZfsiqaGucNipWwMxYQHUyyMXZxsjeS1ADjyDgciJOWcbbrpGJQJIYZaRgSAeQpWCXFuzVBrzHxADcgScoED3vldaZKTlcjnhAZESWvDYPdeBnedcEjhoVmGOfUlNyuolWlWpRftJxeUz/rtidpmIGetPhkRgISUObhITTNafCernrgUMnqkCItHwsYbIrZVJWNiuinNknaNuJOUCiaewCdyOaqpzTZKXIjphkdRjawmMjAPXhvqxaseJtVkMbzgqFIBAJxmziu"
-
 	function catherine.news.Update( )
-		http.Fetch( catherine.crypto.Decode( url ),
+		http.Fetch( catherine.crypto.Decode( "htKtwXpOKj:osZW/FKyaS/cePEaDtjXPVhUpeANnCkDNOxYnhDOCkFrtUhlsbIJyfouqfdixlNwzgAphDWamfeoKSVTladyTGPIxHoWDsofTuLFsTXrtCCrIaUofyHxsftcNOcBmdqIAncnHntLiBpnEpeNymozJFYaQCWxZAejrihJsoPZyEwfQeDBjpL.EBlfjSwvCQludrtLTGCcssLZjQMMjBxBUqruBfsDoHoWrTOHGivzSRRemAXhHPmGHYNeHBCkIjmbLcWZwdXFz/obGtetMLvRrdznpvfIZfsiqaGucNipWwMxYQHUyyMXZxsjeS1ADjyDgciJOWcbbrpGJQJIYZaRgSAeQpWCXFuzVBrzHxADcgScoED3vldaZKTlcjnhAZESWvDYPdeBnedcEjhoVmGOfUlNyuolWlWpRftJxeUz/rtidpmIGetPhkRgISUObhITTNafCernrgUMnqkCItHwsYbIrZVJWNiuinNknaNuJOUCiaewCdyOaqpzTZKXIjphkdRjawmMjAPXhvqxaseJtVkMbzgqFIBAJxmziu" ),
 			function( data )
 				if ( data:find( "Error 404</p>" ) ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT News] News update error! - 404 ERROR\n" )
+					MsgC( Color( 255, 0, 0 ), "[CAT News ERROR] Failed to update news data! [404 ERROR]\n" )
 					return
 				end
 
 				if ( data:find( "<!DOCTYPE HTML>" ) or data:find( "<title>Textuploader.com" ) ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT News] News update error! - Unknown Error\n" )
+					MsgC( Color( 255, 0, 0 ), "[CAT News ERROR] Failed to update news data! [Unknown Error]\n" )
 					return
 				end
 			
@@ -43,7 +41,7 @@ if ( SERVER ) then
 					catherine.net.SetNetGlobalVar( "cat_news", val )
 				end
 			end, function( err )
-				MsgC( Color( 255, 0, 0 ), "[CAT News] News update error! - " .. err .. "\n" )
+				MsgC( Color( 255, 0, 0 ), "[CAT News ERROR] Failed to update news data! [" .. err .. "]\n" )
 			end
 		)
 	end

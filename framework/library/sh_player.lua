@@ -71,7 +71,7 @@ if ( SERVER ) then
 						LANG( pl, "Basic_Error_LibraryLoad", "catherine." .. libName .. "." .. funcName ),
 						false
 					} )
-					MsgC( Color( 255, 0, 0 ), "[CAT ERROR] Failed to initialize Catherine ( Player : " .. pl:Name( ) .. "/" .. pl:SteamID( ) .. " ) ( Function : catherine." .. libName .. "." .. funcName .. " )\n" .. result .. "\n" )
+					MsgC( Color( 255, 0, 0 ), "[CAT ERROR] Failed to initialize Catherine! ( Player : " .. pl:Name( ) .. "/" .. pl:SteamID( ) .. " ) ( Function : catherine." .. libName .. "." .. funcName .. " )\n" .. result .. "\n" )
 					return
 				end
 			end

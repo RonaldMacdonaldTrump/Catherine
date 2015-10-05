@@ -552,7 +552,7 @@ if ( SERVER ) then
 			if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
 		
 			catherine.character.RefreshCharacterBuffer( pl )
-			catherine.util.Print( Color( 0, 255, 0 ), "Saved " .. pl:SteamName( ) .. "'s [" .. id .. "] character." )
+			catherine.util.Print( Color( 0, 255, 0 ), pl:SteamName( ) .. "'s [" .. id .. "] character has been saved." )
 		end )
 	end
 	
@@ -567,7 +567,7 @@ if ( SERVER ) then
 					catherine.character.Save( v )
 				end
 				
-				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, #players .. "'s characters saved.", true )
+				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, #players .. "'s characters has been saved.", true )
 			end
 			
 			catherine.character.saveTick = catherine.configs.characterSaveInterval

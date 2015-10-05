@@ -169,7 +169,7 @@ function PANEL:Init( )
 		if ( pnl.progressing ) then return end
 		
 		self.updatePanel.status = true
-		netstream.Start( "catherine.version.Check" )
+		netstream.Start( "catherine.update.Check" )
 	end
 	self.updatePanel.check.PaintBackground = function( pnl, w, h )
 		if ( self.updatePanel.status and !pnl.progressing ) then

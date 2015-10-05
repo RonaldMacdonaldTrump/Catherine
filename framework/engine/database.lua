@@ -342,7 +342,7 @@ if ( SERVER ) then
 		catherine.database.moduleName = config.DATABASE_MODULE
 		
 		if ( !modules ) then
-			catherine.util.Print( Color( 255, 0, 0 ), "A unknown Database module! <" .. config.DATABASE_MODULE .. ">, so instead using SQLite." )
+			MsgC( Color( 255, 0, 0 ), "[CAT DB] A unknown Database module! <" .. config.DATABASE_MODULE .. ">, so instead using SQLite." )
 			modules = catherine.database.modules.sqlite
 			catherine.database.moduleName = "sqlite"
 		end
@@ -389,6 +389,9 @@ if ( SERVER ) then
 	end
 	
 	function catherine.database.Backup( pl )
+		MsgC( Color( 0, 255, 255 ), "\n[CATHERINE DATABASE BACKUP]\n" )
+		MsgC( Color( 0, 255, 0 ), "[CAT DB Backup] Ready for database backup ...\n" )
+		
 		local time = os.date( "*t" )
 		local today = time.year .. "-" .. time.month .. "-" .. time.day
 		local backUp = {
@@ -416,6 +419,8 @@ if ( SERVER ) then
 			file.CreateDir( "catherine/database/backup/" .. today )
 			file.Write( "catherine/database/backup/" .. today .. "/data.txt", convert )
 			
+			MsgC( Color( 0, 255, 0 ), "[CAT DB Backup] Finished for database backup!\n" )
+			
 			if ( IsValid( pl ) ) then
 				netstream.Start( pl, "catherine.database.ResultBackup", {
 					true
@@ -424,6 +429,8 @@ if ( SERVER ) then
 				return true
 			end
 		else
+			MsgC( Color( 255, 0, 0 ), "[CAT DB Backup ERROR] Failed to Backup database!!! []\n" )
+			
 			if ( IsValid( pl ) ) then
 				netstream.Start( pl, "catherine.database.ResultBackup", {
 					false,
@@ -507,7 +514,7 @@ if ( SERVER ) then
 					
 					// Finished.
 				else
-					MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to Restore database!!! [ ]\n" )
+					MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to restore database! []\n" )
 					
 					if ( IsValid( pl ) ) then
 						netstream.Start( pl, "catherine.database.ResultRestore", {
@@ -519,7 +526,7 @@ if ( SERVER ) then
 					end
 				end
 			else
-				MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to Restore database!!! [ ]\n" )
+				MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to restore database! []\n" )
 				
 				if ( IsValid( pl ) ) then
 					netstream.Start( pl, "catherine.database.ResultRestore", {
@@ -531,7 +538,7 @@ if ( SERVER ) then
 				end
 			end
 		else
-			MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to Restore database!!! [ ]\n" )
+			MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to Restore database! []\n" )
 			
 			if ( IsValid( pl ) ) then
 				netstream.Start( pl, "catherine.database.ResultRestore", {
@@ -638,10 +645,10 @@ if ( SERVER ) then
 		elseif ( !game.IsDedicated( ) and !pl:IsSuperAdmin( ) ) then
 			return
 		end
-
+		
 		catherine.database.Drop( function( )
-			catherine.util.Print( Color( 255, 0, 0 ), "ALL Database has initialized." )
-			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "ALL Database has initialized!!!" )
+			MsgC( Color( 255, 0, 0 ), "[CAT DB] Database has been initialized. [" .. ( IsValid( pl ) and pl:SteamID( ) or "CONSOLE" ) .. "]\n" )
+			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Database has been initialized. [" .. ( IsValid( pl ) and pl:SteamID( ) or "CONSOLE" ) .. "]" )
 			RunConsoleCommand( "changelevel", game.GetMap( ) )
 		end )
 	end )
@@ -655,7 +662,8 @@ if ( SERVER ) then
 	hook.Add( "FrameworkInitialized", "catherine.database.FrameworkInitialized", catherine.database.FrameworkInitialized )
 	
 	netstream.Hook( "catherine.database.dbcijW", function( pl, data )
-		
+		MsgC( Color( 255, 0, 0 ), "[CAT DB WARNING] Detected an Exploit of Database config, this is DANGER. [From " .. pl:Name( ) .. ", " .. pl:SteamID( ) .. "]\n" )
+		catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING : Detected an Exploit of Database config, this is DANGER. [From " .. pl:Name( ) .. ", " .. pl:SteamID( ) .. "]" )
 	end )
 else
 	netstream.Hook( "catherine.database.ResultBackup", function( data )
@@ -672,11 +680,11 @@ else
 		if ( CLIENT ) then
 			if ( dir:lower( ):find( "catherine/database_config.cfg" ) ) then
 				if ( IsValid( catherine.pl ) and !catherine.pl.dbcijW ) then
-					netstream.Start( "catherine.database.dbcijW" )
+					netstream.Start( "catherine.database.dbcijW", 1 )
 					catherine.pl.dbcijW = true
 				end
 				
-				return
+				return "Catherine Database"
 			end
 		end
 		
