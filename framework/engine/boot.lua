@@ -86,7 +86,7 @@ function catherine.Boot( )
 	AddCSLuaFile( baseDir .. "/command/commands.lua" )
 	include( baseDir .. "/command/commands.lua" )
 	
-	if ( SERVER and !catherine.database.Connected ) then
+	if ( SERVER and !catherine.database.connected ) then
 		catherine.database.Connect( )
 	end
 	

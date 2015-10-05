@@ -47,10 +47,10 @@ if ( SERVER ) then
 				return
 			end
 
-			if ( !catherine.database.Connected ) then
+			if ( !catherine.database.connected ) then
 				timer.Remove( "Catherine.player.Initialize.Reload" )
 				netstream.Start( pl, "catherine.loadingError", {
-					LANG( pl, "Basic_Error_NoDatabase", catherine.database.ErrorMsg ),
+					LANG( pl, "Basic_Error_NoDatabase", catherine.database.errorMsg ),
 					true
 				} )
 				

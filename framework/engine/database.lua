@@ -20,8 +20,8 @@ catherine.database = catherine.database or { }
 
 if ( SERVER ) then
 	catherine.database.modules = { }
-	catherine.database.Connected = catherine.database.Connected or false
-	catherine.database.ErrorMsg = catherine.database.ErrorMsg or "Connection Error"
+	catherine.database.connected = catherine.database.connected or false
+	catherine.database.errorMsg = catherine.database.errorMsg or "Connection Error"
 	catherine.database.object = catherine.database.object or nil
 
 	local CAT_DATABASE_CREATE_TABLES_NON_SQLITE = [[
@@ -89,25 +89,25 @@ if ( SERVER ) then
 	]]
 	
 	catherine.database.modules[ "mysqloo" ] = {
-		connect = function( func )
+		connect = function( func, config )
 			if ( !pcall( require, "mysqloo" ) ) then
-				catherine.util.Print( Color( 255, 0, 0 ), "Can't load database module!!! - MySQLoo" )
+				MsgC( Color( 255, 0, 0 ), "[CAT DB ERROR] Couldn't load MySQLoo database module!!!\n" )
+				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Couldn't load MySQLoo database module!!!" )
 				return
 			end
 			
-			local info = catherine.database.information
-			local hostname = info.DATABASE_HOST
+			local hostname = config.DATABASE_HOST
 			
 			if ( hostname == "localhost" ) then
 				hostname = "127.0.0.1"
 			end
 			
-			catherine.database.object = mysqloo.connect( hostname, info.DATABASE_ID, info.DATABASE_PASSWORD, info.DATABASE_NAME, tonumber( info.DATABASE_PORT ) or 3306 )
-			catherine.database.object.onConnected = function( )
-				catherine.database.Connected = true
-				catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using MySQLoo." )
-				catherine.database.FirstInitialize( )
+			local object = mysqloo.connect( hostname, config.DATABASE_ID, config.DATABASE_PASSWORD, config.DATABASE_NAME, tonumber( config.DATABASE_PORT ) or 3306 )
+			object.onConnected = function( )
+				MsgC( Color( 0, 255, 0 ), "[CAT DB] Connected to the database using MySQLoo.\n" )
 				
+				catherine.database.connected = true
+				catherine.database.FirstInitialize( )
 				catherine.database.SetStatus( 0 )
 				
 				if ( func ) then
@@ -116,18 +116,24 @@ if ( SERVER ) then
 				
 				hook.Run( "DatabaseConnected" )
 			end
-			catherine.database.object.onConnectionFailed = function( _, err )
-				catherine.util.Print( Color( 255, 0, 0 ), "Catherine has connect failed using MySQLoo - " .. err .. " !!!" )
-				catherine.database.Connected = false
-				catherine.database.ErrorMsg = err
+			object.onConnectionFailed = function( _, err )
+				MsgC( Color( 255, 0, 0 ), "[CAT DB ERROR] Failed to connect to the database using MySQLoo!!! [" .. err .. "]\n" )
+				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Failed to connect to the database using MySQLoo!!! [" .. err .. "]" )
 				
+				catherine.database.connected = false
+				catherine.database.errorMsg = err
 				catherine.database.SetStatus( 3 )
+				
+				hook.Run( "DatabaseError", nil, err )
 			end
 			
-			catherine.database.object:connect( )
+			object:connect( )
+			
+			catherine.database.object = object
 		end,
 		query = function( query, func )
 			if ( !catherine.database.object ) then return end
+			
 			catherine.database.SetStatus( 1 )
 			
 			local result = catherine.database.object:query( query )
@@ -152,13 +158,15 @@ if ( SERVER ) then
 			function result:onError( err )
 				catherine.database.SetStatus( 2 )
 				
-				MsgC( Color( 255, 0, 0 ), "[CAT Query ERROR] " .. query .. " -> " .. err .. " !!!\n" )
+				MsgC( Color( 255, 0, 0 ), "[CAT DB ERROR] An error of run working on Query!!!\n<" .. query .. "> -> <" .. err .. ">\n" )
 				
 				timer.Simple( 10, function( )
 					if ( catherine.database.GetStatus( ) == 2 ) then
 						catherine.database.SetStatus( 0 )
 					end
 				end )
+				
+				hook.Run( "DatabaseError", query, err )
 			end
 			
 			result:start( )
@@ -180,21 +188,20 @@ if ( SERVER ) then
 		end
 	}
 	catherine.database.modules[ "tmysql4" ] = {
-		connect = function( func )
+		connect = function( func, config )
 			if ( !pcall( require, "tmysql4" ) ) then
 				catherine.util.Print( Color( 255, 0, 0 ), "Can't load database module!!! - tMySQL4" )
 				return
 			end
 			
-			local info = catherine.database.information
-			local object, err = tmysql.initialize( info.DATABASE_HOST or "127.0.0.1", info.DATABASE_ID, info.DATABASE_PASSWORD, info.DATABASE_NAME, tonumber( info.DATABASE_PORT ) or 3306 )
+			local object, err = tmysql.initialize( config.DATABASE_HOST or "127.0.0.1", config.DATABASE_ID, config.DATABASE_PASSWORD, config.DATABASE_NAME, tonumber( config.DATABASE_PORT ) or 3306 )
 			
 			if ( object ) then
-				catherine.database.object = object
-				catherine.database.Connected = true
-				catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using tMySQL4." )
-				catherine.database.FirstInitialize( )
+				MsgC( Color( 0, 255, 0 ), "[CAT DB] Connected to the database using tMySQL4.\n" )
 				
+				catherine.database.object = object
+				catherine.database.connected = true
+				catherine.database.FirstInitialize( )
 				catherine.database.SetStatus( 0 )
 				
 				if ( func ) then
@@ -203,11 +210,12 @@ if ( SERVER ) then
 				
 				hook.Run( "DatabaseConnected" )
 			else
-				catherine.database.SetStatus( 3 )
+				MsgC( Color( 255, 0, 0 ), "[CAT DB ERROR] Failed to connect to the database using tMySQL4!!! [" .. err .. "]\n" )
+				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Failed to connect to the database using tMySQL4!!! [" .. err .. "]" )
 				
-				catherine.util.Print( Color( 255, 0, 0 ), "Catherine has connect failed using tMySQL4 - " .. err .. " !!!" )
-				catherine.database.Connected = false
-				catherine.database.ErrorMsg = err
+				catherine.database.connected = false
+				catherine.database.errorMsg = err
+				catherine.database.SetStatus( 3 )
 				
 				hook.Run( "DatabaseError", nil, err )
 			end
@@ -264,7 +272,7 @@ if ( SERVER ) then
 	}
 	catherine.database.modules[ "sqlite" ] = {
 		connect = function( func )
-			catherine.database.Connected = true
+			catherine.database.connected = true
 			catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using SQLite." )
 			catherine.database.FirstInitialize( )
 			
@@ -325,36 +333,35 @@ if ( SERVER ) then
 	catherine.database.moduleName = catherine.database.moduleName or "sqlite"
 	
 	function catherine.database.Connect( func )
-		catherine.database.information = catherine.database.GetConfig( )
+		local config = catherine.database.GetConfig( )
+		local modules = catherine.database.modules[ config.DATABASE_MODULE ]
 		
-		local modules = catherine.database.modules[ catherine.database.information.DATABASE_MODULE ]
-		
-		catherine.database.moduleName = catherine.database.information.DATABASE_MODULE
+		catherine.database.moduleName = config.DATABASE_MODULE
 		
 		if ( !modules ) then
-			catherine.util.Print( Color( 255, 0, 0 ), "A unknown Database module! <" .. catherine.database.information.DATABASE_MODULE .. ">, so instead using SQLite." )
+			catherine.util.Print( Color( 255, 0, 0 ), "A unknown Database module! <" .. config.DATABASE_MODULE .. ">, so instead using SQLite." )
 			modules = catherine.database.modules.sqlite
 			catherine.database.moduleName = "sqlite"
 		end
 		
-		modules.connect( func )
+		modules.connect( func, config )
 		catherine.database.query = modules.query
 		catherine.database.escape = modules.escape
 	end
 	
 	function catherine.database.Drop( func )
-		if ( catherine.database.object ) then
-			local ex = string.Explode( ";", CAT_DATABASE_DROP_TABLE )
-			
-			for i = 1, 2 do
-				catherine.database.Query( ex[ i ] )
-			end
+		if ( catherine.database.moduleName == "sqlite" ) then
+			catherine.database.query( CAT_DATABASE_DROP_TABLE )
 			
 			if ( func ) then
 				func( )
 			end
 		else
-			catherine.database.Query( CAT_DATABASE_DROP_TABLE )
+			local queries = string.Explode( ";", CAT_DATABASE_DROP_TABLE )
+			
+			for i = 1, 2 do
+				catherine.database.query( queries[ i ] )
+			end
 			
 			if ( func ) then
 				func( )
@@ -569,7 +576,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.database.InsertDatas( tab, data, func )
-		if ( !catherine.database.Connected or !tab or !data ) then return end
+		if ( !catherine.database.connected or !tab or !data ) then return end
 		local query = "INSERT INTO `" .. tab .. "` ( "
 		
 		for k, v in pairs( data ) do
@@ -587,7 +594,7 @@ if ( SERVER ) then
 	end
 
 	function catherine.database.UpdateDatas( tab, cre, newData, func )
-		if ( !catherine.database.Connected or !tab or !newData or !cre ) then return end
+		if ( !catherine.database.connected or !tab or !newData or !cre ) then return end
 		local query = "UPDATE `" .. tab .. "` SET "
 
 		for k, v in pairs( newData ) do
@@ -599,13 +606,13 @@ if ( SERVER ) then
 	end
 
 	function catherine.database.Query( query, func )
-		if ( !catherine.database.Connected or !query ) then return end
+		if ( !catherine.database.connected or !query ) then return end
 		
 		catherine.database.query( query, func )
 	end
 
 	function catherine.database.GetDatas( tab, cre, func )
-		if ( !catherine.database.Connected or !tab ) then return end
+		if ( !catherine.database.connected or !tab ) then return end
 		local query = "SELECT * FROM " .. "`" .. tab .. "`"
 		
 		if ( cre ) then
