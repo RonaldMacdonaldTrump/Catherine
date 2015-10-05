@@ -159,7 +159,8 @@ else
 			if ( !pl:GetNetVar( "doingAction" ) and !pl.CAT_leavingAction ) then // NEED TO CHECK;
 				pl.CAT_leavingAction = true
 				
-				timer.Create( "Catherine.plugin.action.timer.WaitAction", 1, 1, function( )
+				timer.Remove( "Catherine.timer.WaitActionExit" )
+				timer.Create( "Catherine.timer.WaitActionExit", 1, 1, function( )
 					if ( IsValid( pl ) ) then
 						pl.CAT_leavingAction = nil
 						RunConsoleCommand( "cat_plugin_action_exit" )

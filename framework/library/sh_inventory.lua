@@ -324,8 +324,8 @@ else
 		return catherine.inventory.GetItemDatas( uniqueID )
 	end
 	
-	function catherine.inventory.CharacterVarChanged( pl, key )
-		if ( key == "_inv" and pl == catherine.pl ) then
+	function catherine.inventory.CharacterVarChanged( pl, key, value )
+		if ( key == "_inv" ) then
 			if ( IsValid( catherine.vgui.inventory ) and !catherine.vgui.inventory:IsHiding( ) ) then
 				catherine.vgui.inventory:BuildInventory( )
 			end

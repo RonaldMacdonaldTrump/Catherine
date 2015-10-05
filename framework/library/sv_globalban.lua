@@ -31,15 +31,15 @@ function catherine.globalban.UpdateDatabase( )
 		function( body )
 			if ( body:find( "Error 404</p>" ) ) then
 				catherine.util.Print( Color( 255, 0, 0 ), "GlobalBan Database update error! - 404 ERROR" )
-				timer.Remove( "Catherine.globalban.timer.ReUpdate" )
+				timer.Remove( "Catherine.timer.globalban.ReUpdate" )
 				return
 			end
 			
 			if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
 				catherine.util.Print( Color( 255, 0, 0 ), "GlobalBan Database update error! - Unknown Error" )
 				
-				timer.Remove( "Catherine.globalban.timer.ReUpdate" )
-				timer.Create( "Catherine.globalban.timer.ReUpdate", 15, 0, function( )
+				timer.Remove( "Catherine.timer.globalban.ReUpdate" )
+				timer.Create( "Catherine.timer.globalban.ReUpdate", 15, 0, function( )
 					catherine.util.Print( Color( 255, 0, 0 ), "Re updating the GlobalBan Database ...\n" )
 					catherine.globalban.UpdateDatabase( )
 				end )
@@ -57,8 +57,8 @@ function catherine.globalban.UpdateDatabase( )
 		end, function( err )
 			catherine.util.Print( Color( 255, 0, 0 ), "GlobalBan Database update error! - " .. err )
 			
-			timer.Remove( "Catherine.globalban.timer.ReUpdate" )
-			timer.Create( "Catherine.globalban.timer.ReUpdate", 15, 0, function( )
+			timer.Remove( "Catherine.timer.globalban.ReUpdate" )
+			timer.Create( "Catherine.timer.globalban.ReUpdate", 15, 0, function( )
 				catherine.util.Print( Color( 255, 0, 0 ), "Re updating the GlobalBan Database ...\n" )
 				catherine.globalban.UpdateDatabase( )
 			end )
