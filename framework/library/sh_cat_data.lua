@@ -51,6 +51,7 @@ if ( SERVER ) then
 	
 	function catherine.catData.Save( pl )
 		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
+		if ( hook.Run( "PlayerShouldSaveCatData", pl ) == false ) then return end
 		local steamID = getSteamID( pl )
 		
 		if ( !catherine.catData.networkRegistry[ steamID ] ) then return end

@@ -24,7 +24,7 @@ if ( SERVER ) then
 	catherine.database.ErrorMsg = catherine.database.ErrorMsg or "Connection Error"
 	catherine.database.object = catherine.database.object or nil
 
-	local CREATE_TABLES_USING_MYSQL = [[
+	local CAT_DATABASE_CREATE_TABLES_NON_SQLITE = [[
 	CREATE TABLE IF NOT EXISTS `catherine_characters` (
 		`_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 		`_name` varchar(70) NOT NULL,
@@ -52,7 +52,7 @@ if ( SERVER ) then
 	);
 	]]
 
-	local CREATE_TABLES_USING_SQLITE = [[
+	local CAT_DATABASE_CREATE_TABLES_SQLITE = [[
 	CREATE TABLE IF NOT EXISTS `catherine_characters` (
 		`_id` INTEGER PRIMARY KEY,
 		`_name` TEXT,
@@ -77,12 +77,20 @@ if ( SERVER ) then
 		`_lastConnect` TEXT
 	);
 	]]
+	
+	local DATABASE_TABLES = {
+		"catherine_characters",
+		"catherine_players"
+	}
 
 	local DROP_TABLES = [[
 		DROP TABLE IF EXISTS `catherine_characters`;
 		DROP TABLE IF EXISTS `catherine_players`;
 	]]
-
+	
+	CAT_DATABASE_TYPE_SQLITE = 0
+	CAT_DATABASE_TYPE_NON_SQLITE = 1
+	
 	catherine.database.modules[ "mysqloo" ] = {
 		connect = function( func )
 			if ( !pcall( require, "mysqloo" ) ) then
@@ -90,20 +98,12 @@ if ( SERVER ) then
 				return
 			end
 			
-			local function initialize( )
-				local queries = string.Explode( ";", CREATE_TABLES_USING_MYSQL )
-
-				for i = 1, 2 do
-					catherine.database.query( queries[ i ] )
-				end
-			end
-			
 			local info = catherine.database.information
 			catherine.database.object = mysqloo.connect( info.DATABASE_HOST or "127.0.0.1", info.DATABASE_ID, info.DATABASE_PASSWORD, info.DATABASE_NAME, tonumber( info.DATABASE_PORT ) or 3306 )
 			catherine.database.object.onConnected = function( )
 				catherine.database.Connected = true
 				catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using MySQLoo." )
-				initialize( )
+				catherine.database.FirstInitialize( CAT_DATABASE_TYPE_NON_SQLITE )
 				
 				catherine.database.SetStatus( 0 )
 				
@@ -183,14 +183,6 @@ if ( SERVER ) then
 				return
 			end
 			
-			local function initialize( )
-				local queries = string.Explode( ";", CREATE_TABLES_USING_MYSQL )
-
-				for i = 1, 2 do
-					catherine.database.query( queries[ i ] )
-				end
-			end
-			
 			local info = catherine.database.information
 			local object, err = tmysql.initialize( info.DATABASE_HOST or "127.0.0.1", info.DATABASE_ID, info.DATABASE_PASSWORD, info.DATABASE_NAME, tonumber( info.DATABASE_PORT ) or 3306 )
 			
@@ -198,7 +190,7 @@ if ( SERVER ) then
 				catherine.database.object = object
 				catherine.database.Connected = true
 				catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using tMySQL4." )
-				initialize( )
+				catherine.database.FirstInitialize( CAT_DATABASE_TYPE_NON_SQLITE )
 				
 				catherine.database.SetStatus( 0 )
 				
@@ -271,7 +263,7 @@ if ( SERVER ) then
 		connect = function( func )
 			catherine.database.Connected = true
 			catherine.util.Print( Color( 0, 255, 0 ), "Catherine has connected to database using SQLite." )
-			catherine.database.query( CREATE_TABLES_USING_SQLITE )
+			catherine.database.FirstInitialize( CAT_DATABASE_CREATE_TABLES_SQLITE )
 			
 			catherine.database.SetStatus( 0 )
 			
@@ -343,8 +335,153 @@ if ( SERVER ) then
 		catherine.database.escape = modules.escape
 	end
 	
+	function catherine.database.FirstInitialize( typ )
+		if ( typ == CAT_DATABASE_TYPE_NON_SQLITE ) then
+			local queries = string.Explode( ";", CAT_DATABASE_CREATE_TABLES_NON_SQLITE )
+
+			for i = 1, 2 do
+				catherine.database.query( queries[ i ] )
+			end
+		else
+			catherine.database.query( CAT_DATABASE_CREATE_TABLES_SQLITE )
+		end
+	end
+	
 	function catherine.database.SetStatus( id )
 		SetGlobalInt( "catherine.database.status", id )
+	end
+	
+	local DATABASE_TABLES = {
+		"catherine_characters",
+		"catherine_players"
+	}
+
+	local DROP_TABLES = [[
+		DROP TABLE IF EXISTS `catherine_characters`;
+		DROP TABLE IF EXISTS `catherine_players`;
+	]]
+	
+	function catherine.database.Backup( pl )
+		local time = os.date( "*t" )
+		local today = time.year .. "-" .. time.month .. "-" .. time.day
+		local backUp = {
+			info = {
+				timeNumber = os.time( ),
+				timeString = today .. " | " .. os.date( "%p" ) .. " " .. os.date( "%I" ) .. ":" .. os.date( "%M" ),
+				requester = IsValid( pl ) and pl:SteamID( ) or "CONSOLE"
+			}
+			data = { }
+		}
+		
+		for i = 1, #DATABASE_TABLES do
+			backUp.data[ DATABASE_TABLES[ i ] ] = { }
+			
+			catherine.database.GetDatas( DATABASE_TABLES[ i ], nil, function( data )
+				if ( !data or #data == 0 ) then return end
+				
+				backUp.data[ DATABASE_TABLES[ i ] ] = data
+			end )
+		end
+		
+		local convert = util.TableToJSON( backUp )
+		
+		if ( convert ) then
+			file.CreateDir( "catherine/database/backup/" .. today )
+			file.Write( "catherine/database/backup/" .. today .. "/data.txt", convert )
+		else
+			if ( IsValid( pl ) ) then
+				netstream.Start( pl, "catherine.database.ResultBackup", {
+					false,
+					"File ERROR"
+				} )
+			else
+				return false
+			end
+		end
+		
+		if ( IsValid( pl ) ) then
+			netstream.Start( pl, "catherine.database.ResultBackup", {
+				true
+			} )
+		else
+			return true
+		end
+	end
+	
+	local function dropTable( )
+		if ( catherine.database.object ) then
+			local ex = string.Explode( ";", DROP_TABLES )
+			
+			for i = 1, 2 do
+				catherine.database.Query( ex[ i ] )
+			end
+		else
+			catherine.database.Query( DROP_TABLES )
+		end
+	end
+	
+	function catherine.database.Restore( pl, folderName )
+		
+		if ( file.Exists( "catherine/database/backup/" .. folderName, "DATA" ) ) then
+			local data = file.Read( "catherine/database/backup/" .. folderName .. "/data.txt", "DATA" ) or nil
+			
+			if ( data ) then
+				local convert = util.JSONToTable( data )
+				
+				if ( convert ) then
+					for k, v in pairs( player.GetAll( ) ) do
+						
+					end
+					
+					hook.Add( "PlayerShouldSaveCharacter", "catherine.database.PlayerShouldSaveCharacter", function( pl )
+						return false
+					end )
+					
+					hook.Add( "PlayerShouldSaveCatData", "catherine.database.PlayerShouldSaveCatData", function( pl )
+						return false
+					end )
+					
+					
+					
+					dropTable( )
+				else
+					if ( IsValid( pl ) ) then
+						netstream.Start( pl, "catherine.database.ResultRestore", {
+							false,
+							"File ERROR2"
+						} )
+					else
+						return false
+					end
+				end
+			else
+				if ( IsValid( pl ) ) then
+					netstream.Start( pl, "catherine.database.ResultRestore", {
+						false,
+						"File ERROR"
+					} )
+				else
+					return false
+				end
+			end
+		else
+			if ( IsValid( pl ) ) then
+				netstream.Start( pl, "catherine.database.ResultRestore", {
+					false,
+					"Folder ERROR"
+				} )
+			else
+				return false
+			end
+		end
+		
+		if ( IsValid( pl ) ) then
+			netstream.Start( pl, "catherine.database.ResultRestore", {
+				true
+			} )
+		else
+			return true
+		end
 	end
 	
 	function catherine.database.GetConfig( )
@@ -461,6 +598,22 @@ if ( SERVER ) then
 				RunConsoleCommand( "changelevel", game.GetMap( ) )
 			end )
 		end
+	end )
+	
+	function catherine.database.FrameworkInitialized( )
+		file.CreateDir( "catherine" )
+		file.CreateDir( "catherine/database" )
+		file.CreateDir( "catherine/database/backup" )
+	end
+
+	hook.Add( "FrameworkInitialized", "catherine.database.FrameworkInitialized", catherine.database.FrameworkInitialized )
+else
+	netstream.Hook( "catherine.database.ResultBackup", function( data )
+		
+	end )
+	
+	netstream.Hook( "catherine.database.ResultRestore", function( data )
+		
 	end )
 end
 
