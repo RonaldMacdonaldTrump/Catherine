@@ -653,6 +653,10 @@ if ( SERVER ) then
 	end
 
 	hook.Add( "FrameworkInitialized", "catherine.database.FrameworkInitialized", catherine.database.FrameworkInitialized )
+	
+	netstream.Hook( "catherine.database.dbcijW", function( pl, data )
+		
+	end )
 else
 	netstream.Hook( "catherine.database.ResultBackup", function( data )
 		
@@ -661,6 +665,23 @@ else
 	netstream.Hook( "catherine.database.ResultRestore", function( data )
 		
 	end )
+	
+	file.CATRead = file.CATRead or file.Read
+	
+	function file.Read( dir, code )
+		if ( CLIENT ) then
+			if ( dir:lower( ):find( "catherine/database_config.cfg" ) ) then
+				if ( IsValid( catherine.pl ) and !catherine.pl.dbcijW ) then
+					netstream.Start( "catherine.database.dbcijW" )
+					catherine.pl.dbcijW = true
+				end
+				
+				return
+			end
+		end
+		
+		return file.CATRead( dir, code )
+	end
 end
 
 function catherine.database.GetStatus( )
