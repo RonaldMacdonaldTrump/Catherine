@@ -88,7 +88,7 @@ if ( SERVER ) then
 				if ( success ) then
 					netstream.stored[ NET_NAME ]( pl, unpack( value ) )
 				else
-					ErrorNoHalt("NetStream: '"..NET_NAME.."'\n"..value.."\n")
+					ErrorNoHalt( "\n[CAT NetStream ERROR] An error of run working on Netstream '" .. NET_NAME .. "' hook!\n\n" .. value .. "\n" )
 				end
 			end
 		end
@@ -119,7 +119,7 @@ else
 				if ( success ) then
 					netstream.stored[ NET_NAME ]( unpack( value ) )
 				else
-					ErrorNoHalt( "NetStream: '".. NET_NAME .."'\n".. value .."\n" )
+					ErrorNoHalt( "\n[CAT NetStream ERROR] An error of run working on Netstream '" .. NET_NAME .. "' hook!\n\n" .. value .. "\n" )
 				end
 			end
 		end

@@ -183,7 +183,7 @@ end
 
 do
 	timer.Remove( "Catherine.timer.lime.CheckSystem" )
-	timer.Create( "Catherine.timer.lime.CheckSystem", 10, 0, function( )
+	timer.Create( "Catherine.timer.lime.CheckSystem", 30, 0, function( )
 		if ( catherine.configs.enable_Lime and !catherine.lime ) then
 			MsgC( Color( 255, 0, 0 ), "[CAT Lime WARNING] 'catherine.lime' variable is nil!, This happened from the unknown Lime Exploit!!!\n" )
 		end
