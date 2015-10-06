@@ -40,10 +40,9 @@ function catherine.util.Include( dir, typ )
 end
 
 function catherine.util.IncludeInDir( dir, prefix )
-	local dir2 = ( prefix or "catherine/framework/" ) .. dir .. "/*.lua"
 	local dir3 = ( prefix or "catherine/framework/" ) .. dir
-
-	for k, v in pairs( file.Find( dir2, "LUA" ) ) do
+	
+	for k, v in pairs( file.Find( ( prefix or "catherine/framework/" ) .. dir .. "/*.lua", "LUA" ) ) do
 		catherine.util.Include( dir3 .. "/" .. v )
 	end
 end
@@ -250,11 +249,11 @@ function catherine.util.GetDivideTextData( text, width )
 	if ( tw <= width ) then
 		return { ( text:gsub( "%s", " " ) ) }, tw
 	end
-
+	
 	for i = 1, #ex do
 		line = line .. " " .. ex[ i ]
 		tw = line:utf8len( )
-
+		
 		if ( tw > width ) then
 			wrapData[ #wrapData + 1 ] = line
 			line = ""
@@ -300,7 +299,7 @@ if ( SERVER ) then
 			{ ... }
 		} )
 	end
-
+	
 	function catherine.util.StuffLanguage( pl, key, ... )
 		key = key or "^Basic_LangKeyError"
 		
@@ -331,7 +330,7 @@ if ( SERVER ) then
 	function catherine.util.TopNotify( pl, message )
 		netstream.Start( pl, "catherine.util.TopNotify", message )
 	end
-
+	
 	function catherine.util.PlayAdvanceSound( pl, uniqueID, dir, volume )
 		pl.CAT_soundAdvPlaying = pl.CAT_soundAdvPlaying or { }
 		
@@ -360,7 +359,7 @@ if ( SERVER ) then
 			} )
 		end
 	end
-
+	
 	function catherine.util.AddResourceInFolder( dir )
 		local files, dirs = file.Find( dir .. "/*", "GAME" )
 		
@@ -386,7 +385,7 @@ if ( SERVER ) then
 		if ( IsValid( ent.CAT_doorDummy ) ) then
 			ent.CAT_doorDummy:Remove( )
 		end
-
+		
 		local partner = catherine.util.GetDoorPartner( ent )
 		
 		if ( IsValid( partner ) and !ignorePartnerDoor ) then
@@ -408,7 +407,7 @@ if ( SERVER ) then
 		dummyEnt:Spawn( )
 		dummyEnt:CallOnRemove( "RecoverDoor", function( )
 			if ( !IsValid( ent ) ) then return end
-
+			
 			ent:SetNotSolid( false )
 			ent:SetNoDraw( false )
 			ent:DrawShadow( true )
@@ -434,7 +433,7 @@ if ( SERVER ) then
 		for k, v in ipairs( ent:GetBodyGroups( ) ) do
 			dummyEnt:SetBodygroup( v.id, ent:GetBodygroup( v.id ) )
 		end
-
+		
 		for k, v in ipairs( ents.GetAll( ) ) do
 			if ( v:GetParent( ) != ent ) then continue end
 			
@@ -461,7 +460,7 @@ if ( SERVER ) then
 				timer.Remove( timerID )
 			end
 		end )
-
+		
 		timer.Create( timerID2, lifeTime, 1, function( )
 			if ( !IsValid( ent ) or !IsValid( ent.CAT_doorDummy ) ) then
 				return
@@ -469,7 +468,7 @@ if ( SERVER ) then
 			
 			local timerID3 = "Catherine.timer.DoorFade." .. ent:EntIndex( )
 			local alpha = col.a
-
+			
 			timer.Create( timerID3, 0.1, col.a, function( )
 				if ( IsValid( dummyEnt ) ) then
 					alpha = alpha - 1
@@ -499,7 +498,7 @@ if ( SERVER ) then
 	function catherine.util.StopMotionBlur( pl, fadeTime )
 		netstream.Start( pl, "catherine.util.StopMotionBlur", fadeTime )
 	end
-
+	
 	function catherine.util.StringReceiver( pl, id, msg, defV, func )
 		local steamID = pl:SteamID( )
 		
@@ -532,7 +531,7 @@ if ( SERVER ) then
 			fadeTime
 		} )
 	end
-
+	
 	netstream.Hook( "catherine.util.StringReceiver_Receive", function( pl, data )
 		local id = data[ 1 ]
 		local steamID = pl:SteamID( )
@@ -611,13 +610,13 @@ else
 			catherine.util.motionBlur = motionBlurData
 		end
 	end )
-
+	
 	netstream.Hook( "catherine.util.ScreenColorEffect", function( data )
 		local col = data[ 1 ]
 		local time = CurTime( ) + ( data[ 2 ] or 0.1 )
 		local fadeTime = data[ 3 ] or 0.03
 		local a = 255
-
+		
 		hook.Remove( "HUDPaint", "catherine.util.ScreenColorEffect" )
 		hook.Add( "HUDPaint", "catherine.util.ScreenColorEffect", function( )
 			if ( time <= CurTime( ) ) then
@@ -632,13 +631,13 @@ else
 			draw.RoundedBox( 0, 0, 0, ScrW( ), ScrH( ), Color( col.r, col.g, col.b, a ) )
 		end )
 	end )
-
+	
 	netstream.Hook( "catherine.util.PlayAdvanceSound", function( data )
 		if ( !IsValid( catherine.pl ) ) then return end
 		local uniqueID = data[ 1 ]
 		local dir = data[ 2 ]
 		local volume = data[ 3 ]
-
+		
 		if ( catherine.util.advSounds[ uniqueID ] ) then
 			catherine.util.advSounds[ uniqueID ]:Stop( )
 		end
@@ -669,7 +668,7 @@ else
 			catherine.util.advSounds[ uniqueID ] = nil
 		end
 	end )
-
+	
 	netstream.Hook( "catherine.util.Notify", function( data )
 		catherine.notify.Add( data[ 1 ], data[ 2 ] )
 	end )
@@ -681,7 +680,7 @@ else
 	netstream.Hook( "catherine.util.NotifyAllLang", function( data )
 		catherine.notify.Add( LANG( data[ 1 ], unpack( data[ 2 ] ) ) )
 	end )
-
+	
 	netstream.Hook( "catherine.util.ProgressBar", function( data )
 		if ( data[ 1 ] == false ) then
 			catherine.hud.progressBar = nil
@@ -699,7 +698,7 @@ else
 		
 		catherine.hud.TopNotifyAdd( data )
 	end )
-
+	
 	function catherine.util.PlayButtonSound( typ )
 	
 	end
@@ -713,7 +712,7 @@ else
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )
 		if ( !message or !font or !x or !y ) then return end
 		backgroundBor = backgroundBor or 5
-
+		
 		surface.SetFont( font )
 		local tw, th = surface.GetTextSize( message )
 		
@@ -746,7 +745,7 @@ else
 	function catherine.util.BlurDraw( x, y, w, h, amount )
 		surface.SetMaterial( blurMat )
 		surface.SetDrawColor( 255, 255, 255 )
-
+		
 		for i = -0.2, 1, 0.2 do
 			blurMat:SetFloat( "$blur", i * ( amount or 5 ) )
 			blurMat:Recompute( )
@@ -754,7 +753,7 @@ else
 			surface.DrawTexturedRectUV( x, y, w, h, x / ScrW( ), y / ScrH( ), ( x + w ) / ScrW( ), ( y + h ) / ScrH( ) )
 		end
 	end
-
+	
 	function catherine.util.GetWrapTextData( text, width, font )
 		font = font or "catherine_normal15"
 		surface.SetFont( font )
@@ -768,7 +767,7 @@ else
 		if ( tw <= width ) then
 			return { ( text:gsub( "%s", " " ) ) }, tw
 		end
-
+		
 		for i = 1, #ex do
 			line = line .. " " .. ex[ i ]
 			tw = surface.GetTextSize( line )

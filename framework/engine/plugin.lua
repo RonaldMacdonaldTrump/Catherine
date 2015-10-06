@@ -218,7 +218,7 @@ function catherine.plugin.IncludeEntities( dir )
 			elseif ( file.Exists( dir .. "/entities/entities/" .. v .. "/shared.lua", "LUA" ) ) then
 				include( dir .. "/entities/entities/" .. v .. "/shared.lua" )
 			end
-		
+			
 			if ( file.Exists( dir .. "/entities/entities/" .. v .. "/cl_init.lua", "LUA" ) ) then
 				AddCSLuaFile( dir .. "/entities/entities/" .. v .. "/cl_init.lua" )
 			end
@@ -255,7 +255,7 @@ function catherine.plugin.IncludeWeapons( dir )
 			elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/shared.lua", "LUA" ) ) then
 				include( dir .. "/entities/weapons/" .. v .. "/shared.lua" )
 			end
-		
+			
 			if ( file.Exists( dir .. "/entities/weapons/" .. v .. "/cl_init.lua", "LUA" ) ) then
 				AddCSLuaFile( dir .. "/entities/weapons/" .. v .. "/cl_init.lua" )
 			end
@@ -290,7 +290,7 @@ function catherine.plugin.IncludeEffects( dir )
 			elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/init.lua", "LUA" ) ) then
 				AddCSLuaFile( dir .. "/entities/weapons/" .. v .. "/init.lua" )
 			end
-		
+			
 			if ( file.Exists( dir .. "/entities/weapons/" .. v .. "/cl_init.lua", "LUA" ) ) then
 				AddCSLuaFile( dir .. "/entities/weapons/" .. v .. "/cl_init.lua" )
 			end
@@ -320,7 +320,7 @@ end
 
 function catherine.plugin.FrameworkInitialized( )
 	local toolGun = weapons.GetStored( "gmod_tool" )
-
+	
 	for k, v in pairs( catherine.tool.GetAll( ) ) do
 		toolGun.Tool[ v.Mode ] = v
 	end

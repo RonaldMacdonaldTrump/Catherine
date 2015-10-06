@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
-
+/*
 catherine.system = catherine.system or { libVersion = "2015-08-28" }
 CAT_SYSTEM_DATATYPE_NUMBER = 0
 CAT_SYSTEM_DATATYPE_STRING = 1
@@ -70,3 +70,4 @@ function catherine.system.GetTickData( uniqueID, dataType, dataID, default )
 	
 	return default
 end
+*/
