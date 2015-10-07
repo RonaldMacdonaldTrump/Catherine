@@ -394,22 +394,15 @@ if ( SERVER ) then
 		
 		local time = os.date( "*t" )
 		local today = time.year .. "-" .. time.month .. "-" .. time.day
-		local backUp = {
-			info = {
-				timeNumber = os.time( ),
-				timeString = today .. " | " .. os.date( "%p" ) .. " " .. os.date( "%I" ) .. ":" .. os.date( "%M" ),
-				requester = IsValid( pl ) and pl:SteamID( ) or "CONSOLE"
-			},
-			data = { }
-		}
+		local backUp = { }
 		
 		for i = 1, #CAT_DATABASE_TABLES do
-			backUp.data[ CAT_DATABASE_TABLES[ i ] ] = { }
+			backUp[ CAT_DATABASE_TABLES[ i ] ] = { }
 			
 			catherine.database.GetDatas( CAT_DATABASE_TABLES[ i ], nil, function( data )
 				if ( !data or #data == 0 ) then return end
 				
-				backUp.data[ CAT_DATABASE_TABLES[ i ] ] = data
+				backUp[ CAT_DATABASE_TABLES[ i ] ] = data
 			end )
 		end
 		
@@ -417,6 +410,7 @@ if ( SERVER ) then
 		
 		if ( convert ) then
 			file.CreateDir( "catherine/database/backup/" .. today )
+			file.Write( "catherine/database/backup/" .. today .. "/info.txt", os.time( ) .. "\n" .. today .. " | " .. os.date( "%p" ) .. " " .. os.date( "%I" ) .. ":" .. os.date( "%M" ) .. "\n" .. ( IsValid( pl ) and pl:SteamID( ) or "CONSOLE" ) )
 			file.Write( "catherine/database/backup/" .. today .. "/data.txt", convert )
 			
 			MsgC( Color( 0, 255, 0 ), "[CAT DB Backup] Finished for database backup!\n" )
@@ -425,6 +419,7 @@ if ( SERVER ) then
 				netstream.Start( pl, "catherine.database.ResultBackup", {
 					true
 				} )
+				netstream.Start( pl, "catherine.database.SendData", catherine.database.GetBackupFilesData( ) )
 			else
 				return true
 			end
@@ -486,7 +481,7 @@ if ( SERVER ) then
 					catherine.database.FirstInitialize( ) // Create a Tables.
 					
 					// Insert data from the backup data.
-					for k, v in pairs( convert.data ) do
+					for k, v in pairs( convert ) do
 						local per, count = 0, table.Count( v )
 						
 						for k1, v1 in pairs( v ) do
@@ -549,6 +544,28 @@ if ( SERVER ) then
 				return false
 			end
 		end
+	end
+	
+	function catherine.database.GetBackupFilesData( )
+		local data = { }
+		local _, folders = file.Find( "catherine/database/backup/*", "DATA" )
+		
+		for k, v in pairs( folders ) do
+			local infoFile = file.Read( "catherine/database/backup/" .. v .. "/info.txt", "DATA" ) or nil
+			
+			if ( infoFile ) then
+				local toTable = string.Explode( "\n", infoFile )
+				
+				data[ #data + 1 ] = {
+					name = v,
+					timeNumber = toTable[ 1 ],
+					timeString = toTable[ 2 ],
+					requester = toTable[ 3 ]
+				}
+			end
+		end
+		
+		return data
 	end
 	
 	function catherine.database.GetConfig( )
@@ -662,17 +679,71 @@ if ( SERVER ) then
 	
 	hook.Add( "FrameworkInitialized", "catherine.database.FrameworkInitialized", catherine.database.FrameworkInitialized )
 	
+	netstream.Hook( "catherine.database.Backup", function( pl, data )
+		catherine.database.Backup( pl )
+	end )
+	
+	netstream.Hook( "catherine.database.Restore", function( pl, data )
+		catherine.database.Restore( pl, data, function( )
+			timer.Simple( 3, function( )
+				RunConsoleCommand( "changelevel", game.GetMap( ) )
+			end )
+		end )
+	end )
+	
 	netstream.Hook( "catherine.database.dbcijW", function( pl, data )
 		MsgC( Color( 255, 0, 0 ), "[CAT DB WARNING] Detected an Exploit of Database config, this is DANGER. [From " .. pl:Name( ) .. ", " .. pl:SteamID( ) .. "]\n" )
 		catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "WARNING : Detected an Exploit of Database config, this is DANGER. [From " .. pl:Name( ) .. ", " .. pl:SteamID( ) .. "]" )
 	end )
+	
+	netstream.Hook( "catherine.database.RequestData", function( pl, data )
+		netstream.Start( pl, "catherine.database.SendData", catherine.database.GetBackupFilesData( ) )
+	end )
 else
-	netstream.Hook( "catherine.database.ResultBackup", function( data )
+	catherine.database.backupFilesData = catherine.database.backupFilesData or { }
+	
+	netstream.Hook( "catherine.database.SendData", function( data )
+		catherine.database.backupFilesData = data
 		
+		if ( IsValid( catherine.vgui.databaseManager ) ) then
+			catherine.vgui.databaseManager.backupFilesData = data
+			
+			catherine.vgui.databaseManager.backup:Refresh( )
+			catherine.vgui.databaseManager.restore:Refresh( )
+		end
+	end )
+	
+	netstream.Hook( "catherine.database.ResultBackup", function( data )
+		if ( IsValid( catherine.vgui.databaseManager ) ) then
+			catherine.vgui.databaseManager.backup.status = false
+			
+			if ( data[ 1 ] == true ) then
+				Derma_Message( LANG( "System_Notify_BackupFinish" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+			else
+				if ( data[ 2 ] ) then
+					Derma_Message( data[ 2 ], LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+				end
+			end
+		end
 	end )
 	
 	netstream.Hook( "catherine.database.ResultRestore", function( data )
-		
+		if ( IsValid( catherine.vgui.databaseManager ) ) then
+			catherine.vgui.databaseManager.restore.status = false
+			
+			if ( data[ 1 ] == true ) then
+				catherine.vgui.databaseManager.restore.restartDelay = true
+				
+				Derma_Message( LANG( "System_Notify_RestoreFinish" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+			else
+				catherine.vgui.databaseManager.backup.block = false
+				catherine.vgui.databaseManager.close.block = false
+				
+				if ( data[ 2 ] ) then
+					Derma_Message( data[ 2 ], LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+				end
+			end
+		end
 	end )
 	
 	file.CATRead = file.CATRead or file.Read
