@@ -424,12 +424,12 @@ if ( SERVER ) then
 				return true
 			end
 		else
-			MsgC( Color( 255, 0, 0 ), "[CAT DB Backup ERROR] Failed to Backup database!!! []\n" )
+			MsgC( Color( 255, 0, 0 ), "[CAT DB Backup ERROR] Failed to Backup database! [Convert Error]\n" )
 			
 			if ( IsValid( pl ) ) then
 				netstream.Start( pl, "catherine.database.ResultBackup", {
 					false,
-					"File ERROR"
+					"Convert Error"
 				} )
 			else
 				return false
@@ -509,36 +509,36 @@ if ( SERVER ) then
 					
 					// Finished.
 				else
-					MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to restore database! []\n" )
+					MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to restore database! [Convert Error]\n" )
 					
 					if ( IsValid( pl ) ) then
 						netstream.Start( pl, "catherine.database.ResultRestore", {
 							false,
-							"File ERROR2"
+							"Convert Error"
 						} )
 					else
 						return false
 					end
 				end
 			else
-				MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to restore database! []\n" )
+				MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to restore database! [File is not exist]\n" )
 				
 				if ( IsValid( pl ) ) then
 					netstream.Start( pl, "catherine.database.ResultRestore", {
 						false,
-						"File ERROR"
+						"File is not exist"
 					} )
 				else
 					return false
 				end
 			end
 		else
-			MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to Restore database! []\n" )
+			MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to Restore database! [Folder is not exist]\n" )
 			
 			if ( IsValid( pl ) ) then
 				netstream.Start( pl, "catherine.database.ResultRestore", {
 					false,
-					"Folder ERROR"
+					"Folder is not exist"
 				} )
 			else
 				return false
@@ -721,7 +721,7 @@ else
 				Derma_Message( LANG( "System_Notify_BackupFinish" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 			else
 				if ( data[ 2 ] ) then
-					Derma_Message( data[ 2 ], LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+					Derma_Message( LANG( "System_Notify_BackupError", data[ 2 ] ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 				end
 			end
 		end
@@ -740,7 +740,7 @@ else
 				catherine.vgui.databaseManager.close.block = false
 				
 				if ( data[ 2 ] ) then
-					Derma_Message( data[ 2 ], LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+					Derma_Message( LANG( "System_Notify_RestoreError2", data[ 2 ] ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 				end
 			end
 		end
