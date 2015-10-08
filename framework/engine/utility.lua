@@ -361,11 +361,11 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.AddResourceInFolder( dir )
-		local files, dirs = file.Find( dir .. "/*", "GAME" )
+		local files, folders = file.Find( dir .. "/*", "GAME" )
 		
-		table.RemoveByValue( dirs, ".svn" )
+		table.RemoveByValue( folders, ".svn" )
 		
-		for k, v in pairs( dirs ) do
+		for k, v in pairs( folders ) do
 			catherine.util.AddResourceInFolder( dir .. "/" .. v )
 		end
 		
@@ -375,9 +375,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.ForceDoorOpen( ent, lifeTime, vel, ignorePartnerDoor )
-		if ( !ent:IsDoor( ) ) then
-			return
-		end
+		if ( !ent:IsDoor( ) ) then return end
 		
 		lifeTime = lifeTime or 150
 		vel = vel or VectorRand( ) * 120
@@ -532,7 +530,7 @@ if ( SERVER ) then
 		} )
 	end
 	
-	netstream.Hook( "catherine.util.StringReceiver_Receive", function( pl, data )
+	netstream.Hook( "catherine.util.StringReceiverReceive", function( pl, data )
 		local id = data[ 1 ]
 		local steamID = pl:SteamID( )
 		local rec = catherine.util.receiver.str
@@ -543,7 +541,7 @@ if ( SERVER ) then
 		catherine.util.receiver.str[ steamID ][ id ] = nil
 	end )
 	
-	netstream.Hook( "catherine.util.QueryReceiver_Receive", function( pl, data )
+	netstream.Hook( "catherine.util.QueryReceiverReceive", function( pl, data )
 		local id = data[ 1 ]
 		local steamID = pl:SteamID( )
 		local rec = catherine.util.receiver.qry
@@ -562,7 +560,7 @@ else
 	
 	netstream.Hook( "catherine.util.StringReceiver", function( data )
 		Derma_StringRequest( "", catherine.util.StuffLanguage( data[ 2 ] ), data[ 3 ] or "", function( val )
-				netstream.Start( "catherine.util.StringReceiver_Receive", {
+				netstream.Start( "catherine.util.StringReceiverReceive", {
 					data[ 1 ],
 					val
 				} )
@@ -572,12 +570,12 @@ else
 	
 	netstream.Hook( "catherine.util.QueryReceiver", function( data )
 		Derma_Query( catherine.util.StuffLanguage( data[ 2 ] ), "", LANG( "Basic_UI_OK" ), function( )
-				netstream.Start( "catherine.util.QueryReceiver_Receive", {
+				netstream.Start( "catherine.util.QueryReceiverReceive", {
 					data[ 1 ],
 					true
 				} )
 			end, LANG( "Basic_UI_NO" ), function( ) 
-				netstream.Start( "catherine.util.QueryReceiver_Receive", {
+				netstream.Start( "catherine.util.QueryReceiverReceive", {
 					data[ 1 ],
 					false
 				} )

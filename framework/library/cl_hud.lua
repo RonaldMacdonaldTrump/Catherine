@@ -29,7 +29,7 @@ catherine.hud = catherine.hud or {
 }
 local blockedModules = { }
 
---[[ Function Optimize ]]--
+--[[ Function Optimize :> ]]--
 local gradient_center = Material( "gui/center_gradient" )
 local vignetteMat = Material( "CAT/vignette.png" ) or "__material__error"
 local animationApproach = math.Approach
@@ -83,26 +83,29 @@ function catherine.hud.DeathScreen( pl, w, h )
 	
 	if ( deathTime == 0 or nextSpawnTime == 0 ) then return end
 	
-	local per = math.TimeFraction( deathTime, nextSpawnTime, CurTime( ) )
+	local per = timeFrac( deathTime, nextSpawnTime, CurTime( ) )
 	
 	drawBox( 0, 0, 0, w, h, Color( 20, 20, 20, per * 255 ) )
 end
 
-timer.Create( "catherine.hud.VignetteCheck", 1.5, 0, function( )
-	if ( !IsValid( catherine.pl ) or vignetteMat == "__material__error" ) then return end
-	local data = { start = catherine.pl:GetPos( ) }
+timer.Create( "catherine.hud.VignetteCheck", 2, 0, function( )
+	if ( vignetteMat == "__material__error" ) then return end
+	local pl = catherine.pl
+	
+	if ( !IsValid( pl ) ) then return end
+	if ( hook.Run( "ShouldCheckVignette", pl ) == false ) then return end
+	
+	
+	local data = { start = pl:GetPos( ) }
 	data.endpos = data.start + Vector( 0, 0, 2000 )
 	local tr = traceLine( data )
 	
-	if ( !tr.Hit or tr.HitSky ) then
-		catherine.hud.vAlphaTarget = 125
-	else
-		catherine.hud.vAlphaTarget = 255
-	end
+	catherine.hud.vAlphaTarget = ( !tr.Hit or tr.HitSky ) and 125 or 255
 end )
 
 function catherine.hud.Vignette( pl, w, h )
 	if ( vignetteMat == "__material__error" ) then return end
+	if ( hook.Run( "ShouldDrawVignette", pl ) == false ) then return end
 	
 	catherine.hud.vAlpha = animationApproach( catherine.hud.vAlpha, catherine.hud.vAlphaTarget, FrameTime( ) * 90 )
 	
@@ -112,10 +115,12 @@ function catherine.hud.Vignette( pl, w, h )
 end
 
 function catherine.hud.ScreenDamage( pl, w, h )
-
+	if ( hook.Run( "ShouldDrawScreenDamage", pl ) == false ) then return end
+	
 end
 
 function catherine.hud.Ammo( pl, w, h )
+	if ( hook.Run( "ShouldDrawAmmo", pl ) == false ) then return end
 	local wep = pl:GetActiveWeapon( )
 	if ( !IsValid( wep ) or wep.DrawHUD == false ) then return end
 	local clip1 = wep:Clip1( )
@@ -175,6 +180,7 @@ end
 
 function catherine.hud.WelcomeIntro( pl, w, h )
 	if ( !catherine.hud.welcomeIntroWorkingData ) then return end
+	if ( hook.Run( "ShouldDrawWelcomeIntro", pl ) == false ) then return end
 	local data = catherine.hud.welcomeIntroWorkingData
 	
 	for k, v in pairs( catherine.hud.welcomeIntroAnimations ) do
@@ -230,6 +236,7 @@ end
 
 function catherine.hud.TopNotify( pl, w, h )
 	if ( !catherine.hud.topNotify ) then return end
+	if ( hook.Run( "ShouldDrawTopNotify", pl ) == false ) then return end
 
 	setColor( 50, 50, 50, 150 )
 	setMat( gradient_center )
@@ -240,6 +247,7 @@ end
 
 function catherine.hud.ProgressBar( pl, w, h )
 	if ( !catherine.hud.progressBar ) then return end
+	if ( hook.Run( "ShouldDrawProgressBar", pl ) == false ) then return end
 	local data = catherine.hud.progressBar
 	
 	if ( data.endTime <= CurTime( ) ) then

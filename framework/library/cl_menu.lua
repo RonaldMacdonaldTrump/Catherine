@@ -76,7 +76,7 @@ end
 
 function catherine.menu.RecoverLastActivePanel( menuPanel )
 	local activePanel = catherine.menu.GetActivePanel( )
-
+	
 	if ( IsValid( activePanel ) and type( activePanel ) == "Panel" and activePanel:IsHiding( ) ) then
 		local w, x = catherine.menu.GetActiveButtonData( )
 		
@@ -90,7 +90,15 @@ end
 
 function catherine.menu.Rebuild( )
 	if ( IsValid( catherine.vgui.menu ) ) then
-		catherine.vgui.menu:Remove( )
+		if ( catherine.vgui.menu:IsVisible( ) ) then
+			catherine.vgui.menu:Remove( )
+			
+			timer.Simple( 0, function( )
+				catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )
+			end )
+		else
+			catherine.vgui.menu:Remove( )
+		end
 	end
 end
 

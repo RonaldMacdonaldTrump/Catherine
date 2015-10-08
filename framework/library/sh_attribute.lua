@@ -64,7 +64,7 @@ end
 catherine.attribute.Include( catherine.FolderName .. "/framework" )
 
 if ( SERVER ) then
-	function catherine.attribute.AddBoostProgress( pl, uniqueID, boost, removeTime )
+	function catherine.attribute.AddTemporaryIncreaseProgress( pl, uniqueID, amount, removeTime )
 		local attributeTable = catherine.attribute.FindByID( uniqueID )
 		
 		if ( !attributeTable ) then return end
@@ -76,15 +76,15 @@ if ( SERVER ) then
 		if ( attribute[ uniqueID ] ) then
 			local progress = attribute[ uniqueID ].progress
 			
-			if ( attributeTable.max < progress + boost ) then
+			if ( attributeTable.max < progress + amount ) then
 				return
 			end
 
-			attribute[ uniqueID ].boost = math.Clamp( boost, 0, attributeTable.max )
+			attribute[ uniqueID ].boost = math.Clamp( amount, 0, attributeTable.max )
 			attribute[ uniqueID ].removeTime = removeTime
 			
 			local charID = pl:GetCharacterID( )
-			local timerID = "Catherine.timer.attribute.AutoBoostRemove." .. pl:SteamID( ) .. "." .. uniqueID .. "." .. charID
+			local timerID = "Catherine.timer.attribute.TemporaryIncreaseRemove." .. pl:SteamID( ) .. "." .. uniqueID .. "." .. charID
 			local removeTime2 = removeTime
 			
 			timer.Remove( timerID )
@@ -95,7 +95,7 @@ if ( SERVER ) then
 				end
 				
 				if ( removeTime2 - 3 <= 0 ) then
-					catherine.attribute.RemoveBoost( pl, uniqueID )
+					catherine.attribute.RemoveTemporaryIncreaseProgress( pl, uniqueID )
 					timer.Remove( timerID )
 					return
 				end
@@ -127,7 +127,81 @@ if ( SERVER ) then
 			attribute[ uniqueID ] = {
 				per = 0,
 				progress = 0,
-				boost = math.Clamp( boost, 0, attributeTable.max ),
+				boost = math.Clamp( amount, 0, attributeTable.max ),
+				removeTime = removeTime
+			}
+		end
+		
+		catherine.character.SetVar( pl, "_att", attribute )
+		
+		hook.Run( "AttributeBoosted", pl, uniqueID )
+	end
+	
+	function catherine.attribute.AddTemporaryDecreaseProgress( pl, uniqueID, amount, removeTime )
+		local attributeTable = catherine.attribute.FindByID( uniqueID )
+		
+		if ( !attributeTable ) then return end
+		
+		local attribute = catherine.character.GetVar( pl, "_att", { } )
+		local decreaseTable = catherine.character.GetCharVar( pl, "attribute_temporary", { } )
+		
+		removeTime = removeTime or 5
+		
+		if ( attribute[ uniqueID ] ) then
+			local progress = attribute[ uniqueID ].progress
+			
+			if ( attributeTable.max < progress + amount ) then
+				return
+			end
+
+			attribute[ uniqueID ].boost = math.Clamp( amount, 0, attributeTable.max )
+			attribute[ uniqueID ].removeTime = removeTime
+			
+			local charID = pl:GetCharacterID( )
+			local timerID = "Catherine.timer.attribute.TemporaryDecreaseRemove." .. pl:SteamID( ) .. "." .. uniqueID .. "." .. charID
+			local removeTime2 = removeTime
+			
+			timer.Remove( timerID )
+			timer.Create( timerID, 3, 0, function( )
+				if ( !IsValid( pl ) or charID != pl:GetCharacterID( ) ) then
+					timer.Remove( timerID )
+					return
+				end
+				
+				if ( removeTime2 - 3 <= 0 ) then
+					catherine.attribute.RemoveTemporaryIncreaseProgress( pl, uniqueID )
+					timer.Remove( timerID )
+					return
+				end
+				
+				local attributeTable = catherine.attribute.FindByID( uniqueID )
+				
+				if ( !attributeTable ) then
+					timer.Remove( timerID )
+					return
+				end
+				
+				local attribute = catherine.character.GetVar( pl, "_att", { } )
+				
+				if ( attribute[ uniqueID ] ) then
+					if ( !attribute[ uniqueID ].removeTime or !attribute[ uniqueID ].boost ) then
+						timer.Remove( timerID )
+						return
+					end
+						
+					attribute[ uniqueID ].removeTime = removeTime2 - 3
+					removeTime2 = removeTime2 - 3
+					
+					catherine.character.SetVar( pl, "_att", attribute )
+				else
+					timer.Remove( timerID )
+				end
+			end )
+		else
+			attribute[ uniqueID ] = {
+				per = 0,
+				progress = 0,
+				boost = math.Clamp( amount, 0, attributeTable.max ),
 				removeTime = removeTime
 			}
 		end
