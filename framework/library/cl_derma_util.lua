@@ -16,8 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-function Derma_Message( strText, strTitle, strButtonText )
-	surface.PlaySound( "CAT/notify02.wav" )
+function Derma_Message( strText, _, strButtonText, sound )
+	if ( type( sound ) == "string" ) then
+		surface.PlaySound( sound )
+	elseif ( sound != false ) then
+		surface.PlaySound( "CAT/notify02.wav" )
+	end
+	
 	local imageWAni = 0
 	local imageHAni = 0
 	
@@ -82,7 +87,7 @@ function Derma_Message( strText, strTitle, strButtonText )
 	return Window
 end
 
-function Derma_Query( strText, strTitle, ... )
+function Derma_Query( strText, _, ... )
 	surface.PlaySound( "CAT/notify02.wav" )
 	local imageWAni = 0
 	local imageHAni = 0
@@ -171,7 +176,7 @@ function Derma_Query( strText, strTitle, ... )
 	return Window
 end
 
-function Derma_StringRequest( strTitle, strText, strDefaultText, fnEnter, fnCancel, strButtonText, strButtonCancelText )
+function Derma_StringRequest( _, strText, strDefaultText, fnEnter, fnCancel, strButtonText, strButtonCancelText )
 	surface.PlaySound( "CAT/notify02.wav" )
 	local imageWAni = 0
 	local imageHAni = 0

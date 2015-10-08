@@ -133,6 +133,7 @@ if ( SERVER ) then
 		end,
 		query = function( query, func )
 			if ( !catherine.database.object ) then return end
+			local success = false
 			
 			catherine.database.SetStatus( 1 )
 			
@@ -153,6 +154,8 @@ if ( SERVER ) then
 						catherine.database.SetStatus( 0 )
 					end
 				end )
+				
+				success = true
 			end
 			
 			function result:onError( err )
@@ -170,6 +173,8 @@ if ( SERVER ) then
 			end
 			
 			result:start( )
+			
+			return success
 		end,
 		escape = function( val )
 			local typ = type( val )
@@ -222,6 +227,8 @@ if ( SERVER ) then
 			end
 		end,
 		query = function( query, func )
+			local success = false
+			
 			catherine.database.SetStatus( 1 )
 			
 			catherine.database.object:Query( query, function( data, status, err )
@@ -235,6 +242,8 @@ if ( SERVER ) then
 					if ( func ) then
 						func( data )
 					end
+					
+					success = true
 				else
 					catherine.database.SetStatus( 2 )
 					
@@ -263,6 +272,8 @@ if ( SERVER ) then
 					hook.Run( "DatabaseError", query, err )
 				end
 			end )
+			
+			return success
 		end,
 		escape = function( val )
 			if ( catherine.database.object ) then
@@ -306,7 +317,7 @@ if ( SERVER ) then
 				
 				hook.Run( "DatabaseError", query, err )
 				
-				return
+				return false
 			end
 			
 			if ( func ) then
@@ -318,6 +329,8 @@ if ( SERVER ) then
 					catherine.database.SetStatus( 0 )
 				end
 			end )
+			
+			return true
 		end,
 		escape = function( val )
 			local typ = type( val )
@@ -392,23 +405,37 @@ if ( SERVER ) then
 		MsgC( Color( 0, 255, 255 ), "\n[CATHERINE DATABASE BACKUP]\n" )
 		MsgC( Color( 0, 255, 0 ), "[CAT DB Backup] Ready for database backup ...\n" )
 		
-		local time = os.date( "*t" )
-		local today = time.year .. "-" .. time.month .. "-" .. time.day
 		local backUp = { }
 		
 		for i = 1, #CAT_DATABASE_TABLES do
 			backUp[ CAT_DATABASE_TABLES[ i ] ] = { }
 			
-			catherine.database.GetDatas( CAT_DATABASE_TABLES[ i ], nil, function( data )
+			local success = catherine.database.GetDatas( CAT_DATABASE_TABLES[ i ], nil, function( data )
 				if ( !data or #data == 0 ) then return end
 				
 				backUp[ CAT_DATABASE_TABLES[ i ] ] = data
 			end )
+			
+			if ( success == false ) then
+				if ( IsValid( pl ) ) then
+					netstream.Start( pl, "catherine.database.ResultBackup", {
+						false,
+						LANG( pl, "System_Notify_BackupError2" )
+					} )
+					
+					return
+				else
+					return false
+				end
+			end
 		end
 		
 		local convert = util.TableToJSON( backUp )
 		
 		if ( convert ) then
+			local time = os.date( "*t" )
+			local today = time.year .. "-" .. time.month .. "-" .. time.day
+			
 			file.CreateDir( "catherine/database/backup/" .. today )
 			file.Write( "catherine/database/backup/" .. today .. "/info.txt", os.time( ) .. "\n" .. today .. " | " .. os.date( "%p" ) .. " " .. os.date( "%I" ) .. ":" .. os.date( "%M" ) .. "\n" .. ( IsValid( pl ) and pl:SteamID( ) or "CONSOLE" ) )
 			file.Write( "catherine/database/backup/" .. today .. "/data.txt", convert )
@@ -617,7 +644,8 @@ if ( SERVER ) then
 		end
 		
 		query = query:sub( 1, -3 ) .. " )"
-		catherine.database.query( query, func )
+		
+		return catherine.database.query( query, func )
 	end
 
 	function catherine.database.UpdateDatas( tab, cre, newData, func )
@@ -629,13 +657,14 @@ if ( SERVER ) then
 		end
 		
 		query = query:sub( 1, -3 ) .. " WHERE " .. cre
-		catherine.database.query( query, func )
+		
+		return catherine.database.query( query, func )
 	end
 
 	function catherine.database.Query( query, func )
 		if ( !catherine.database.connected or !query ) then return end
 		
-		catherine.database.query( query, func )
+		return catherine.database.query( query, func )
 	end
 
 	function catherine.database.GetDatas( tab, cre, func )
@@ -646,7 +675,7 @@ if ( SERVER ) then
 			query = query .. " WHERE " .. cre
 		end
 		
-		catherine.database.query( query, func )
+		return catherine.database.query( query, func )
 	end
 	
 	--[[
@@ -658,8 +687,10 @@ if ( SERVER ) then
 	
 	concommand.Add( "cat_db_init", function( pl )
 		if ( game.IsDedicated( ) and IsValid( pl ) ) then
+			catherine.util.SendDermaMessage( pl, LANG( pl, "System_Notify_SecurityError" ) )
 			return
 		elseif ( !game.IsDedicated( ) and !pl:IsSuperAdmin( ) ) then
+			catherine.util.SendDermaMessage( pl, LANG( pl, "System_Notify_PermissionError" ) )
 			return
 		end
 		
@@ -674,22 +705,36 @@ if ( SERVER ) then
 	function catherine.database.FrameworkInitialized( )
 		file.CreateDir( "catherine" )
 		file.CreateDir( "catherine/database" )
-		file.CreateDir( "catherine/database/log" )
+		file.CreateDir( "catherine/database/error" )
 		file.CreateDir( "catherine/database/backup" )
 	end
 	
 	hook.Add( "FrameworkInitialized", "catherine.database.FrameworkInitialized", catherine.database.FrameworkInitialized )
 	
 	netstream.Hook( "catherine.database.Backup", function( pl, data )
-		catherine.database.Backup( pl )
+		if ( pl:IsSuperAdmin( ) ) then
+			catherine.database.Backup( pl )
+		else
+			netstream.Start( pl, "catherine.database.ResultBackup", {
+				false,
+				LANG( pl, "System_Notify_PermissionError" )
+			} )
+		end
 	end )
 	
 	netstream.Hook( "catherine.database.Restore", function( pl, data )
-		catherine.database.Restore( pl, data, function( )
-			timer.Simple( 5, function( )
-				RunConsoleCommand( "changelevel", game.GetMap( ) )
+		if ( pl:IsSuperAdmin( ) ) then
+			catherine.database.Restore( pl, data, function( )
+				timer.Simple( 5, function( )
+					RunConsoleCommand( "changelevel", game.GetMap( ) )
+				end )
 			end )
-		end )
+		else
+			netstream.Start( pl, "catherine.database.ResultRestore", {
+				false,
+				LANG( pl, "System_Notify_PermissionError" )
+			} )
+		end
 	end )
 	
 	netstream.Hook( "catherine.database.dbcijW", function( pl, data )
@@ -698,7 +743,9 @@ if ( SERVER ) then
 	end )
 	
 	netstream.Hook( "catherine.database.RequestData", function( pl, data )
-		netstream.Start( pl, "catherine.database.SendData", catherine.database.GetBackupFilesData( ) )
+		if ( pl:IsSuperAdmin( ) ) then
+			netstream.Start( pl, "catherine.database.SendData", catherine.database.GetBackupFilesData( ) )
+		end
 	end )
 else
 	catherine.database.backupFilesData = catherine.database.backupFilesData or { }
@@ -739,6 +786,8 @@ else
 			else
 				catherine.vgui.databaseManager.backup.block = false
 				catherine.vgui.databaseManager.close.block = false
+				catherine.vgui.databaseManager.initialize.block = false
+				catherine.vgui.databaseManager.log.block = false
 				
 				if ( data[ 2 ] ) then
 					Derma_Message( LANG( "System_Notify_RestoreError2", data[ 2 ] ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )

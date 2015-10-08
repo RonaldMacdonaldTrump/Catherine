@@ -593,7 +593,28 @@ function PANEL:Init( )
 		self.databaseManager.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 			
-			draw.SimpleText( LANG( "System_UI_DB_ManagerTitle" ), "catherine_normal25", 10, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			surface.SetFont( "catherine_normal25" )
+			
+			local title = LANG( "System_UI_DB_ManagerTitle" )
+			local tw, th = surface.GetTextSize( title )
+			
+			draw.SimpleText( title, "catherine_normal25", 10, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			
+			local status = catherine.database.GetStatus( )
+			
+			surface.SetFont( "catherine_normal20" )
+			
+			local statusText = LANG( "System_UI_DB_Status" .. status )
+			local tw2, th2 = surface.GetTextSize( statusText )
+			
+			surface.SetDrawColor( 0, 0, 0, 150 )
+			surface.DrawOutlinedRect( 45 + tw, 3, tw2 + 53, 37 )
+			
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface.SetMaterial( Material( "cat/ui/db_" .. status .. ".png", "smooth" ) )
+			surface.DrawTexturedRect( 50 + tw, 7, 30, 30 )
+			
+			draw.SimpleText( statusText, "catherine_normal20", 92 + tw, 22, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 		end
 		
 		self.databaseManager.Close = function( pnl )
@@ -697,9 +718,7 @@ function PANEL:Init( )
 			Derma_Query( LANG( "System_Notify_BackupQ" ), "", LANG( "Basic_UI_YES" ), function( )
 				self.databaseManager.backup.status = true
 				
-				timer.Simple( 1, function( )
-					netstream.Start( "catherine.database.Backup" )
-				end )
+				netstream.Start( "catherine.database.Backup" )
 			end, LANG( "Basic_UI_NO" ), function( ) end )
 		end
 		self.databaseManager.backup.run.PaintBackground = function( pnl, w, h )
@@ -831,10 +850,10 @@ function PANEL:Init( )
 						self.databaseManager.restore.status = true
 						self.databaseManager.backup.block = true
 						self.databaseManager.close.block = true
+						self.databaseManager.initialize.block = true
+						self.databaseManager.log.block = true
 						
-						timer.Simple( 1, function( )
-							netstream.Start( "catherine.database.Restore", self.databaseManager.restore.selectedFile )
-						end )
+						netstream.Start( "catherine.database.Restore", self.databaseManager.restore.selectedFile )
 					end, LANG( "Basic_UI_NO" ), function( ) end )
 				end, LANG( "Basic_UI_NO" ), function( ) end )
 			else
@@ -855,10 +874,101 @@ function PANEL:Init( )
 		
 		self.databaseManager.restore:Refresh( )
 		
+		self.databaseManager.log = vgui.Create( "DPanel", self.databaseManager )
+		
+		self.databaseManager.log.w, self.databaseManager.log.h = self.w * 0.5 - 20, self.h * 0.45 + 25
+		self.databaseManager.log.x, self.databaseManager.log.y = 10, 55 + self.databaseManager.backup:GetTall( )
+		self.databaseManager.log.block = false
+		
+		self.databaseManager.log:SetSize( self.databaseManager.log.w, self.databaseManager.log.h )
+		self.databaseManager.log:SetPos( self.databaseManager.log.x, self.databaseManager.log.y )
+		self.databaseManager.log.Paint = function( pnl, w, h )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 150 ) )
+			
+			surface.SetDrawColor( 0, 0, 0, 90 )
+			surface.DrawOutlinedRect( 0, 0, w, h )
+			
+			draw.RoundedBox( 0, 0, 30, w, 1, Color( 0, 0, 0, 90 ) )
+			
+			draw.SimpleText( LANG( "System_UI_DB_Manager_LogTitle" ), "catherine_normal20", 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			
+			if ( pnl.block ) then
+				pnl:SetAlpha( 100 )
+			else
+				pnl:SetAlpha( 255 )
+			end
+			
+			draw.SimpleText( LANG( "System_UI_DB_Manager_LogDeving" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+		end
+		
+		self.databaseManager.initialize = vgui.Create( "DPanel", self.databaseManager )
+		
+		self.databaseManager.initialize.w, self.databaseManager.initialize.h = self.w * 0.5 - 10, self.h * 0.45 + 25
+		self.databaseManager.initialize.x, self.databaseManager.initialize.y = self.w * 0.5, 55 + self.databaseManager.restore:GetTall( )
+		self.databaseManager.initialize.block = false
+		self.databaseManager.initialize.initCount = -1
+		
+		self.databaseManager.initialize:SetSize( self.databaseManager.initialize.w, self.databaseManager.initialize.h )
+		self.databaseManager.initialize:SetPos( self.databaseManager.initialize.x, self.databaseManager.initialize.y )
+		self.databaseManager.initialize.Paint = function( pnl, w, h )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 150 ) )
+			
+			surface.SetDrawColor( 255, 0, 0, 150 )
+			surface.DrawOutlinedRect( 0, 0, w, h )
+			
+			local x, y = pnl.run:GetPos( )
+			local runW, runH = pnl.run:GetSize( )
+			
+			catherine.geometry.SlickBackground( x - 15, y - 15, runW + 30, runH + 30, true, Color( 0, 0, 0, 0 ), Color( 255, 0, 0, 255 ) )
+			
+			surface.SetDrawColor( 255, 150, 150, 255 )
+			surface.DrawOutlinedRect( x - 15, y - 15, runW + 30, runH + 30 )
+			
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface.SetMaterial( Material( "CAT/ui/icon_warning2.png", "smooth" ) )
+			surface.DrawTexturedRect( w / 2 - 64 / 2, y - 30 - 64, 64, 64 )
+			
+			if ( pnl.block ) then
+				pnl:SetAlpha( 100 )
+			else
+				pnl:SetAlpha( 255 )
+			end
+			
+			if ( pnl.initCount != -1 and 5 - pnl.initCount > 0 ) then
+				draw.SimpleText( LANG( "System_UI_DB_Manager_InitializeCount", 5 - pnl.initCount ), "catherine_normal20", w / 2, y + runH + 40, Color( 0, 0, 0, 255 ), 1, 1 )
+			end
+		end
+		
+		self.databaseManager.initialize.run = vgui.Create( "catherine.vgui.button", self.databaseManager.initialize )
+		self.databaseManager.initialize.run:SetPos( self.databaseManager.initialize.w / 2 - ( self.databaseManager.initialize.w * 0.5 / 2 ), self.databaseManager.initialize.h / 2 - 50 / 2 )
+		self.databaseManager.initialize.run:SetSize( self.databaseManager.initialize.w * 0.5, 50 )
+		self.databaseManager.initialize.run:SetStr( LANG( "System_UI_DB_Manager_InitializeButton" ) )
+		self.databaseManager.initialize.run:SetStrFont( "catherine_normal25" )
+		self.databaseManager.initialize.run:SetStrColor( Color( 255, 255, 255, 255 ) )
+		self.databaseManager.initialize.run:SetGradientColor( Color( 255, 0, 0, 150 ) )
+		self.databaseManager.initialize.run.Click = function( )
+			if ( self.databaseManager.initialize.block ) then return end
+			
+			if ( self.databaseManager.initialize.initCount > 4 ) then
+				Derma_Query( LANG( "System_Notify_InitializeQ" ), "", LANG( "Basic_UI_YES" ), function( )
+					
+					end, LANG( "Basic_UI_NO" ), function( )
+						if ( IsValid( catherine.vgui.databaseManager ) and IsValid( self.databaseManager.initialize ) ) then
+							self.databaseManager.initialize.initCount = -1
+						end
+				end )
+			else
+				self.databaseManager.initialize.initCount = self.databaseManager.initialize.initCount + 1
+			end
+		end
+		self.databaseManager.initialize.run.PaintBackground = function( pnl, w, h )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 90, 90, 255 ) )
+		end
+		
 		self.databaseManager.close = vgui.Create( "catherine.vgui.button", self.databaseManager )
 		self.databaseManager.close.block = false
-		self.databaseManager.close:SetPos( 10, self.databaseManager.h - 35 )
-		self.databaseManager.close:SetSize( self.databaseManager.w * 0.2, 25 )
+		self.databaseManager.close:SetPos( self.databaseManager.w - ( self.databaseManager.w * 0.1 ) - 20, 10 )
+		self.databaseManager.close:SetSize( self.databaseManager.w * 0.1, 25 )
 		self.databaseManager.close:SetStr( LANG( "System_UI_Close" ) )
 		self.databaseManager.close:SetStrColor( Color( 50, 50, 50, 255 ) )
 		self.databaseManager.close:SetGradientColor( Color( 255, 255, 255, 150 ) )

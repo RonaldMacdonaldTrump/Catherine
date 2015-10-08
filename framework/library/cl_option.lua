@@ -96,7 +96,6 @@ catherine.option.Register( "CONVAR_LANGUAGE", "cat_convar_language", "^Option_St
 				catherine.menu.Rebuild( )
 				
 				timer.Simple( 0, function( )
-					catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )
 					hook.Run( "LanguageChanged" )
 				end )
 			end,

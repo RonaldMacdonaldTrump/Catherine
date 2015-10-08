@@ -497,6 +497,14 @@ if ( SERVER ) then
 		netstream.Start( pl, "catherine.util.StopMotionBlur", fadeTime )
 	end
 	
+	function catherine.util.SendDermaMessage( pl, msg, okStr, sound )
+		netstream.Start( pl, "catherine.util.SendDermaMessage", {
+			msg,
+			okStr or false,
+			sound
+		} )
+	end
+	
 	function catherine.util.StringReceiver( pl, id, msg, defV, func )
 		local steamID = pl:SteamID( )
 		
@@ -557,6 +565,10 @@ else
 	catherine.util.motionBlur = catherine.util.motionBlur or nil
 	catherine.util.dermaMenuTitle = catherine.util.dermaMenuTitle or nil
 	local blurMat = Material( "pp/blurscreen" )
+	
+	netstream.Hook( "catherine.util.SendDermaMessage", function( data )
+		Derma_Message( data[ 1 ], nil, data[ 2 ] or LANG( "Basic_UI_OK" ), data[ 3 ] )
+	end )
 	
 	netstream.Hook( "catherine.util.StringReceiver", function( data )
 		Derma_StringRequest( "", catherine.util.StuffLanguage( data[ 2 ] ), data[ 3 ] or "", function( val )

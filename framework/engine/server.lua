@@ -71,7 +71,7 @@ function GM:DatabaseError( query, err )
 	local time = os.date( "*t" )
 	local today = time.year .. "-" .. time.month .. "-" .. time.day
 	
-	file.Append( "catherine/database/log/" .. today .. ".txt", "[" .. os.date( "%X" ) .. "] DATABASE ERROR > " .. ( query or "UNKNOWN" ) .. " -> " .. ( err or "Unknown" ) .. "\r\n" )
+	file.Append( "catherine/database/error/" .. today .. ".txt", "[" .. os.date( "%X" ) .. "] DATABASE ERROR > " .. ( query or "UNKNOWN" ) .. " -> " .. ( err or "Unknown" ) .. "\r\n" )
 end
 
 function GM:PlayerShouldOpenInformationMenu( pl )
@@ -854,7 +854,7 @@ function GM:PlayerDeath( pl )
 	
 	catherine.util.TopNotify( pl, false )
 	
-	catherine.attribute.ClearBoost( pl )
+	catherine.attribute.ClearTemporaryProgress( pl )
 	catherine.recognize.Initialize( pl )
 	
 	pl:SetNetVar( "nextSpawnTime", CurTime( ) + respawnTime )

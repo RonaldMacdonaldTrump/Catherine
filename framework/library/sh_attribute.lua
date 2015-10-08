@@ -75,20 +75,19 @@ if ( SERVER ) then
 		
 		if ( attribute[ uniqueID ] ) then
 			local temporaryTable = catherine.character.GetCharVar( pl, "attribute_temporary", { increase = { }, decrease = { } } )
-			local progress = attribute[ uniqueID ].progress
 			
-			if ( progress < amount ) then
-				amount = progress
+			if ( attributeTable.max < attribute[ uniqueID ].progress + amount ) then
+				return
 			end
 			
-			local decreaseTable = temporaryTable.increase[ uniqueID ]
+			local increaseTable = temporaryTable.increase[ uniqueID ]
 			
-			decreaseTable = {
+			increaseTable = {
 				amount = amount,
 				removeTime = removeTime
 			}
 			
-			temporaryTable.increase[ uniqueID ] = decreaseTable
+			temporaryTable.increase[ uniqueID ] = increaseTable
 			
 			catherine.character.SetCharVar( pl, "attribute_temporary", temporaryTable )
 			
@@ -104,7 +103,7 @@ if ( SERVER ) then
 				end
 				
 				if ( removeTime2 - 3 <= 0 ) then
-					catherine.attribute.RemoveTemporaryDecreaseProgress( pl, uniqueID )
+					catherine.attribute.RemoveTemporaryIncreaseProgress( pl, uniqueID )
 					timer.Remove( timerID )
 					return
 				end
@@ -116,25 +115,25 @@ if ( SERVER ) then
 					return
 				end
 				
-				local attribute = catherine.character.GetVar( pl, "_att", { } )
+				local temporaryTable = catherine.character.GetCharVar( pl, "attribute_temporary", { increase = { }, decrease = { } } )
 				
-				if ( attribute[ uniqueID ] ) then
-					if ( !attribute[ uniqueID ].removeTime or !attribute[ uniqueID ].boost ) then
+				if ( temporaryTable.increase[ uniqueID ] ) then
+					if ( !temporaryTable.increase[ uniqueID ].removeTime or !temporaryTable.increase[ uniqueID ].amount ) then
 						timer.Remove( timerID )
 						return
 					end
 						
-					attribute[ uniqueID ].removeTime = removeTime2 - 3
+					temporaryTable.increase[ uniqueID ].removeTime = removeTime2 - 3
 					removeTime2 = removeTime2 - 3
 					
-					catherine.character.SetVar( pl, "_att", attribute )
+					catherine.character.SetCharVar( pl, "attribute_temporary", temporaryTable )
 				else
 					timer.Remove( timerID )
 				end
 			end )
 		end
 		
-		hook.Run( "AttributeBoosted", pl, uniqueID )
+		hook.Run( "AttributeIncreased", pl, uniqueID, amount, removeTime )
 	end
 	
 	function catherine.attribute.AddTemporaryDecreaseProgress( pl, uniqueID, amount, removeTime )
@@ -189,25 +188,25 @@ if ( SERVER ) then
 					return
 				end
 				
-				local attribute = catherine.character.GetVar( pl, "_att", { } )
+				local temporaryTable = catherine.character.GetCharVar( pl, "attribute_temporary", { increase = { }, decrease = { } } )
 				
-				if ( attribute[ uniqueID ] ) then
-					if ( !attribute[ uniqueID ].removeTime or !attribute[ uniqueID ].boost ) then
+				if ( temporaryTable.decrease[ uniqueID ] ) then
+					if ( !temporaryTable.decrease[ uniqueID ].removeTime or !temporaryTable.decrease[ uniqueID ].amount ) then
 						timer.Remove( timerID )
 						return
 					end
 						
-					attribute[ uniqueID ].removeTime = removeTime2 - 3
+					temporaryTable.decrease[ uniqueID ].removeTime = removeTime2 - 3
 					removeTime2 = removeTime2 - 3
 					
-					catherine.character.SetVar( pl, "_att", attribute )
+					catherine.character.SetCharVar( pl, "attribute_temporary", temporaryTable )
 				else
 					timer.Remove( timerID )
 				end
 			end )
 		end
 		
-		hook.Run( "AttributeBoosted", pl, uniqueID )
+		hook.Run( "AttributeDecreased", pl, uniqueID, amount, removeTime )
 	end
 	
 	function catherine.attribute.RemoveTemporaryIncreaseProgress( pl, uniqueID )
@@ -250,23 +249,9 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.attribute.ClearBoost( pl )
-		local attribute = catherine.character.GetVar( pl, "_att", { } )
-		local changed = false
-		
-		for k, v in pairs( attribute ) do
-			local attributeTable = catherine.attribute.FindByID( k )
-			
-			if ( !attributeTable ) then continue end
-
-			attribute[ k ].boost = nil
-			attribute[ k ].removeTime = nil
-			
-			changed = true
-		end
-		
-		if ( changed ) then
-			catherine.character.SetVar( pl, "_att", attribute )
+	function catherine.attribute.ClearTemporaryProgress( pl )
+		if ( catherine.character.GetCharVar( pl, "attribute_temporary" ) ) then
+			catherine.character.SetCharVar( pl, "attribute_temporary", nil )
 		end
 	end
 	
@@ -331,12 +316,23 @@ if ( SERVER ) then
 		local attribute = catherine.character.GetVar( pl, "_att", { } )
 
 		if ( attribute[ uniqueID ] ) then
-			return attribute[ uniqueID ].progress + ( attribute[ uniqueID ].boost or 0 )
+			local progress = attribute[ uniqueID ].progress
+			local temporaryTable = catherine.character.GetCharVar( pl, "attribute_temporary", { increase = { }, decrease = { } } )
+			
+			if ( temporaryTable.increase[ uniqueID ] ) then
+				progress = progress + temporaryTable.increase[ uniqueID ].amount
+			end
+			
+			if ( temporaryTable.decrease[ uniqueID ] ) then
+				progress = progress - temporaryTable.decrease[ uniqueID ].amount
+			end
+			
+			return progress
 		else
 			return 0
 		end
 	end
-
+	
 	function catherine.attribute.CreateNetworkRegistry( pl, charVars )
 		if ( !charVars._att ) then return end
 		local attribute = charVars._att
@@ -368,13 +364,12 @@ if ( SERVER ) then
 		end
 		
 		timer.Simple( 1, function( )
+			local temporaryTable = catherine.character.GetCharVar( pl, "attribute_temporary", { increase = { }, decrease = { } } )
 			local charID = pl:GetCharacterID( )
 			local steamID = pl:SteamID( )
-
-			for k, v in pairs( catherine.character.GetVar( pl, "_att", { } ) ) do
-				if ( !v.boost or !v.removeTime ) then continue end
-				
-				local timerID = "Catherine.timer.attribute.AutoBoostRemove." .. steamID .. "." .. k .. "." .. charID
+			
+			for k, v in pairs( temporaryTable.increase ) do
+				local timerID = "Catherine.timer.attribute.TemporaryIncreaseRemove." .. steamID .. "." .. k .. "." .. charID
 				local removeTime = v.removeTime
 				
 				timer.Remove( timerID )
@@ -383,9 +378,9 @@ if ( SERVER ) then
 						timer.Remove( timerID )
 						return
 					end
-
+					
 					if ( removeTime - 3 <= 0 ) then
-						catherine.attribute.RemoveBoost( pl, k )
+						catherine.attribute.RemoveTemporaryIncreaseProgress( pl, k )
 						timer.Remove( timerID )
 						return
 					end
@@ -396,25 +391,61 @@ if ( SERVER ) then
 						timer.Remove( timerID )
 						return
 					end
-
-					local attribute = catherine.character.GetVar( pl, "_att", { } )
 					
-					if ( attributeTable.max < attribute[ k ].progress + v.boost ) then
-						catherine.attribute.RemoveBoost( pl, k )
+					local temporaryTable = catherine.character.GetCharVar( pl, "attribute_temporary", { increase = { }, decrease = { } } )
+					
+					if ( temporaryTable.increase[ k ] ) then
+						if ( !temporaryTable.increase[ k ].removeTime or !temporaryTable.increase[ k ].amount ) then
+							timer.Remove( timerID )
+							return
+						end
+							
+						temporaryTable.increase[ k ].removeTime = removeTime - 3
+						removeTime = removeTime - 3
+						
+						catherine.character.SetCharVar( pl, "attribute_temporary", temporaryTable )
+					else
+						timer.Remove( timerID )
+					end
+				end )
+			end
+			
+			for k, v in pairs( temporaryTable.decrease ) do
+				local timerID = "Catherine.timer.attribute.TemporaryDecreaseRemove." .. steamID .. "." .. k .. "." .. charID
+				local removeTime = v.removeTime
+				
+				timer.Remove( timerID )
+				timer.Create( timerID, 3, 0, function( )
+					if ( !IsValid( pl ) or charID != pl:GetCharacterID( ) ) then
 						timer.Remove( timerID )
 						return
 					end
 					
-					if ( attribute[ k ] ) then
-						if ( !attribute[ k ].removeTime or !attribute[ k ].boost ) then
+					if ( removeTime - 3 <= 0 ) then
+						catherine.attribute.RemoveTemporaryDecreaseProgress( pl, k )
+						timer.Remove( timerID )
+						return
+					end
+					
+					local attributeTable = catherine.attribute.FindByID( k )
+					
+					if ( !attributeTable ) then
+						timer.Remove( timerID )
+						return
+					end
+					
+					local temporaryTable = catherine.character.GetCharVar( pl, "attribute_temporary", { increase = { }, decrease = { } } )
+					
+					if ( temporaryTable.decrease[ k ] ) then
+						if ( !temporaryTable.decrease[ k ].removeTime or !temporaryTable.decrease[ k ].amount ) then
 							timer.Remove( timerID )
 							return
 						end
-						
-						attribute[ k ].removeTime = removeTime - 3
+							
+						temporaryTable.decrease[ k ].removeTime = removeTime - 3
 						removeTime = removeTime - 3
 						
-						catherine.character.SetVar( pl, "_att", attribute )
+						catherine.character.SetCharVar( pl, "attribute_temporary", temporaryTable )
 					else
 						timer.Remove( timerID )
 					end
@@ -431,9 +462,18 @@ else
 		return attribute[ uniqueID ] and attribute[ uniqueID ].progress or 0
 	end
 	
-	function catherine.attribute.GetBoostProgress( uniqueID )
-		local attribute = catherine.character.GetVar( catherine.pl, "_att", { } )
-
-		return attribute[ uniqueID ] and attribute[ uniqueID ].boost or 0
+	function catherine.attribute.GetTemporaryProgress( uniqueID )
+		local temporaryTable = catherine.character.GetCharVar( catherine.pl, "attribute_temporary", { increase = { }, decrease = { } } )
+		local result = { 0, 0 }
+		
+		if ( temporaryTable.increase[ uniqueID ] ) then
+			result[ 1 ] = temporaryTable.increase[ uniqueID ].amount
+		end
+		
+		if ( temporaryTable.decrease[ uniqueID ] ) then
+			result[ 2 ] = temporaryTable.decrease[ uniqueID ].amount
+		end
+		
+		return unpack( result )
 	end
 end
