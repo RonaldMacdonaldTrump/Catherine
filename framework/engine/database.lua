@@ -674,6 +674,7 @@ if ( SERVER ) then
 	function catherine.database.FrameworkInitialized( )
 		file.CreateDir( "catherine" )
 		file.CreateDir( "catherine/database" )
+		file.CreateDir( "catherine/database/log" )
 		file.CreateDir( "catherine/database/backup" )
 	end
 	
@@ -685,7 +686,7 @@ if ( SERVER ) then
 	
 	netstream.Hook( "catherine.database.Restore", function( pl, data )
 		catherine.database.Restore( pl, data, function( )
-			timer.Simple( 3, function( )
+			timer.Simple( 5, function( )
 				RunConsoleCommand( "changelevel", game.GetMap( ) )
 			end )
 		end )
