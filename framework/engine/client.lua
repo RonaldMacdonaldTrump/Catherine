@@ -89,7 +89,7 @@ function GM:HUDShouldDraw( name )
 end
 
 function GM:ContextMenuOpen( )
-	return false
+	return catherine.pl:IsAdmin( )
 end
 
 function GM:OnReloaded( )
