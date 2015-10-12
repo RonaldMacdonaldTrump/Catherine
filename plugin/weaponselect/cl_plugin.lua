@@ -17,208 +17,191 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PLUGIN = PLUGIN
-PLUGIN.curSlot = 1
-PLUGIN.weapons = PLUGIN.weapons or { }
-PLUGIN.showTime = 0
-PLUGIN.fadeTime = 0
-PLUGIN.maxHighX = 0
-PLUGIN.curSlotY = 0
-PLUGIN.curSlotX = 0
+PLUGIN.slotData = PLUGIN.slotData or { }
+PLUGIN.currSlot = PLUGIN.currSlot or 1
+PLUGIN.nextBind = PLUGIN.nextBind or 0
+PLUGIN.canSelect = PLUGIN.canSelect or true
+PLUGIN.maxX = PLUGIN.maxX or 0
+
+local catherine_util_stuffLanguage = catherine.util.StuffLanguage
 local gradient_left = Material( "gui/gradient" )
 
 catherine.hud.RegisterBlockModule( "CHudWeaponSelection" )
 
 function PLUGIN:PlayerBindPress( pl, bind, pressed )
-	local wep = pl:GetActiveWeapon( )
-	if ( pl:InVehicle( ) or ( IsValid( wep ) and wep:GetClass( ) == "weapon_physgun" and pl:KeyDown( IN_ATTACK ) ) ) then return end
-	local weps = pl:GetWeapons( )
-	if ( #weps == 0 ) then return end
-	local wepsCount = #weps
+	if ( hook.Run( "ShouldChangeWeapon", pl ) == false ) then return end
+	local weaponsCount = #pl:GetWeapons( )
+	
+	if ( weaponsCount == 0 ) then return end
 	
 	if ( bind == "+attack" and pressed ) then
-		if ( self.fadeTime > CurTime( ) ) then
-			local selectWeapon = self.weapons[ self.curSlot ]
+		if ( self.canSelect ) then
+			local selectWeapon = self.slotData[ self.currSlot ]
 			
 			if ( selectWeapon and pl:HasWeapon( selectWeapon.uniqueID ) ) then
+				for k, v in pairs( self.slotData ) do
+					v.targetA = 0
+					v.autoFade = CurTime( )
+				end
+			
 				RunConsoleCommand( "cat_plugin_ws_select", selectWeapon.uniqueID )
 				
 				surface.PlaySound( "ui/buttonclickrelease.wav" )
-				
-				self.showTime = CurTime( )
-				self.fadeTime = CurTime( )
 			end
-		
+			
+			self.canSelect = false
+			
 			return true
 		end
 	end
 	
-	if ( ( self.nextBind or 0 ) <= CurTime( ) ) then
+	if ( self.nextBind <= CurTime( ) ) then
 		if ( bind == "invnext" or bind == "slot1" ) then
-			if ( self.curSlot < wepsCount ) then
-				self.curSlot = self.curSlot + 1
-			elseif ( self.curSlot >= wepsCount ) then
-				self.curSlot = 1
+			if ( self.currSlot < weaponsCount ) then
+				self.currSlot = self.currSlot + 1
+			elseif ( self.currSlot >= weaponsCount ) then
+				self.currSlot = 1
 			end
 			
 			surface.PlaySound( "common/talk.wav" )
 			
-			self.nextBind = CurTime( ) + 0.1
-			self.showTime = CurTime( )
-			self.fadeTime = CurTime( ) + 3
+			hook.Run( "WeaponSlotChanged", pl, self.currSlot )
 			
-			hook.Run( "OnWeaponSlotChanged", pl, self.curSlot )
+			self.nextBind = CurTime( ) + 0.08
+			
+			for k, v in pairs( self.slotData ) do
+				v.a = 255
+				v.targetA = 255
+				v.autoFade = CurTime( ) + 3
+			end
+			
+			self.canSelect = true
 			
 			return true
 		elseif ( bind == "invprev" or bind == "slot2" ) then
-			if ( self.curSlot > 1 ) then
-				self.curSlot = self.curSlot - 1
-			elseif ( self.curSlot <= 1 ) then
-				self.curSlot = wepsCount
+			if ( self.currSlot > 1 ) then
+				self.currSlot = self.currSlot - 1
+			elseif ( self.currSlot <= 1 ) then
+				self.currSlot = weaponsCount
 			end
 			
 			surface.PlaySound( "common/talk.wav" )
 			
-			self.nextBind = CurTime( ) + 0.1
-			self.showTime = CurTime( )
-			self.fadeTime = CurTime( ) + 3
+			hook.Run( "WeaponSlotChanged", pl, self.currSlot )
 			
-			hook.Run( "OnWeaponSlotChanged", pl, self.curSlot )
+			self.nextBind = CurTime( ) + 0.08
+			
+			for k, v in pairs( self.slotData ) do
+				v.a = 255
+				v.targetA = 255
+				v.autoFade = CurTime( ) + 3
+			end
+			
+			self.canSelect = true
 			
 			return true
 		end
+	end
+end
+
+function PLUGIN:ShouldChangeWeapon( pl )
+	if ( pl:InVehicle( ) ) then
+		return false
+	end
+	
+	local wep = pl:GetActiveWeapon( )
+	
+	if ( IsValid( wep ) and wep:GetClass( ) == "weapon_physgun" and pl:KeyDown( IN_ATTACK ) ) then
+		return false
+	end
+end
+
+function PLUGIN:ShouldDrawWeaponSelect( pl )
+	if ( !catherine.pl:IsCharacterLoaded( ) or !catherine.pl:Alive( ) ) then
+		return false
 	end
 end
 
 function PLUGIN:HUDDraw( )
-	if ( !catherine.pl:IsCharacterLoaded( ) or !catherine.pl:Alive( ) ) then return end
 	if ( hook.Run( "ShouldDrawWeaponSelect", catherine.pl ) == false ) then return end
-	local scrW, scrH = ScrW( ), ScrH( )
+	if ( #self.slotData == 0 ) then return end
 	
-	for k, v in pairs( self.weapons ) do
-		if ( self.showTime <= CurTime( ) ) then
-			if ( self.fadeTime <= CurTime( ) ) then
-				v.a = Lerp( 0.03, v.a, 0 )
-				v.x = Lerp( 0.05, v.x, 0 - ScrW( ) * 0.2 )
-				
-				self.curSlotX = v.x
-				self.maxHighX = v.x
-			else
-				v.a = Lerp( 0.03, v.a, 255 )
-				v.x = Lerp( 0.05, v.x, ScrW( ) * 0.2 )
-				
-				self.curSlotX = v.x
-			end
+	local scrW, scrH = ScrW( ), ScrH( )
+	local x = scrW * 0.25
+	local y = scrH * 0.5 - ( #self.slotData * 30 ) / 2
+	
+	for k, v in pairs( self.slotData ) do
+		if ( v.autoFade <= CurTime( ) ) then
+			v.targetA = 0
 		end
+		
+		v.a = Lerp( 0.5, v.a, v.targetA )
 		
 		if ( math.Round( v.a ) <= 0 ) then continue end
 		
-		surface.SetFont( "catherine_normal25" )
-		local tw, th = surface.GetTextSize( v.name )
-		local x = v.x - 5 + ( tw + 10 )
-		local y = scrH * 0.3 + ( k * 30 )
+		surface.SetFont( "catherine_normal20" )
 		
-		if ( self.curSlot == k ) then
-			self.curSlotY = Lerp( 0.08, self.curSlotY, y )
-			
+		local tw, th = surface.GetTextSize( v.name )
+		
+		draw.RoundedBox( 0, x - 5, y - th / 2, tw + 10, th, Color( 255, 255, 255, v.a ) )
+		draw.SimpleText( v.name, "catherine_normal20", x, y, Color( 0, 0, 0, v.a ), TEXT_ALIGN_LEFT, 1 )
+		
+		if ( self.currSlot == k ) then
 			local markupObject = v.markupObject
-			
+				
 			if ( markupObject ) then
-				surface.SetDrawColor( 80, 80, 80, v.a )
+				local y2 = ( scrH * 0.5 - ( #self.slotData * 30 ) / 2 ) - 10
+				
+				surface.SetDrawColor( 50, 50, 50, v.a )
 				surface.SetMaterial( gradient_left )
-				surface.DrawTexturedRect( self.maxHighX + 20, scrH * 0.3 + 20, 230, markupObject:GetHeight( ) + 10 )
-	
-				markupObject:Draw( self.maxHighX + 30, scrH * 0.3 + 25, 0, TEXT_ALIGN_LEFT, v.a )
+				surface.DrawTexturedRect( self.maxX + 20, y2, 230, markupObject:GetHeight( ) + 10 )
+				
+				markupObject:Draw( self.maxX + 30, y2 + 5, 0, TEXT_ALIGN_LEFT, v.a )
 			end
 		end
-
-		if ( self.maxHighX < x ) then
-			self.maxHighX = x
+		
+		if ( self.maxX < x + tw ) then
+			self.maxX = x + tw
 		end
 		
-		draw.RoundedBox( 0, v.x - 5, y - th / 2 + 1, tw + 10, th, Color( 80, 80, 80, v.a / 2 ) )
-		draw.SimpleText( v.name, "catherine_normal25", v.x, y, Color( 255, 255, 255, v.a ), TEXT_ALIGN_LEFT, 1 )
+		y = y + 30
 	end
 	
-	if ( #self.weapons != 0 ) then
-		draw.RoundedBox( 0, self.curSlotX - 15, self.curSlotY - 22 / 2, 10, 25, Color( 255, 255, 255, self.weapons[ #self.weapons ].a ) )
-	end
-end
-
-local languageStuff = catherine.util.StuffLanguage
-
-function PLUGIN:LanguageChanged( )
-	self.curSlot = 1
-	self.weapons = { }
-		
-	for k, v in pairs( catherine.pl:GetWeapons( ) ) do
-		if ( !v or !IsValid( v ) ) then return end
-		
-		local markupText = "<font=catherine_normal20>"
-		local markupObject = nil
-		local markupFound = false
-		
-		if ( v.Instructions and v.Instructions != "" ) then
-			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Instructions_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( v.Instructions ) .. "</font>\n\n"
-			markupFound = true
-		end
-		
-		if ( v.Author and v.Author != "" ) then
-			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Author_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( v.Author ) .. "</font>\n\n"
-			markupFound = true
-		end
-		
-		if ( v.Purpose and v.Purpose != "" ) then
-			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Purpose_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( v.Purpose ) .. "</font>\n\n"
-			markupFound = true
-		end
-		
-		if ( markupFound ) then
-			markupObject = markup.Parse( markupText .. "</font>", 230 )
-		end
-
-		self.weapons[ #self.weapons + 1 ] = {
-			name = v:GetPrintName( ),
-			uniqueID = v:GetClass( ),
-			x = ScrW( ) * 0.25,
-			a = 0,
-			xMinus = 0,
-			markupObject = markupObject
-		}
-	end
-end
-
-netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
-	if ( !IsValid( catherine.pl ) ) then return end
-	local id = data[ 1 ]
-	local uniqueID = data[ 2 ]
+	y = ( scrH * 0.5 - ( #self.slotData * 30 ) / 2 ) - 40
 	
+	local lastSlot = self.slotData[ #self.slotData ]
+	
+	draw.RoundedBox( 0, x - 20, y + ( self.currSlot * 30 ), 10, 20, Color( 255, 255, 255, lastSlot.a ) )
+end
+
+function PLUGIN:Refresh( pl, id, uniqueID )
 	if ( id == 1 ) then
-		for k, v in pairs( PLUGIN.weapons ) do
+		for k, v in pairs( self.slotData ) do
 			if ( v.uniqueID == uniqueID ) then
 				return
 			end
 		end
 		
-		local wep = catherine.pl:GetWeapon( uniqueID )
+		local wep = pl:GetWeapon( uniqueID )
 		
-		if ( !wep or !IsValid( wep ) ) then return end
-
+		if ( !IsValid( wep ) ) then return end
+		
 		local markupText = "<font=catherine_normal20>"
 		local markupObject = nil
 		local markupFound = false
 		
 		if ( wep.Instructions and wep.Instructions != "" ) then
-			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Instructions_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( wep.Instructions ) .. "</font>\n\n"
+			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Instructions_Title" ) .. "</color>\n<font=catherine_normal15>" .. catherine_util_stuffLanguage( wep.Instructions ) .. "</font>\n\n"
 			markupFound = true
 		end
 		
 		if ( wep.Author and wep.Author != "" ) then
-			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Author_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( wep.Author ) .. "</font>\n\n"
+			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Author_Title" ) .. "</color>\n<font=catherine_normal15>" .. catherine_util_stuffLanguage( wep.Author ) .. "</font>\n\n"
 			markupFound = true
 		end
 		
 		if ( wep.Purpose and wep.Purpose != "" ) then
-			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Purpose_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( wep.Purpose ) .. "</font>\n\n"
+			markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Purpose_Title" ) .. "</color>\n<font=catherine_normal15>" .. catherine_util_stuffLanguage( wep.Purpose ) .. "</font>\n\n"
 			markupFound = true
 		end
 		
@@ -226,48 +209,47 @@ netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
 			markupObject = markup.Parse( markupText .. "</font>", 230 )
 		end
 
-		PLUGIN.weapons[ #PLUGIN.weapons + 1 ] = {
+		self.slotData[ #self.slotData + 1 ] = {
 			name = wep:GetPrintName( ),
-			uniqueID = uniqueID,
-			x = ScrW( ) * 0.25,
+			uniqueID = wep:GetClass( ),
+			markupObject = markupObject,
 			a = 0,
-			xMinus = 0,
-			markupObject = markupObject
+			targetA = 0,
+			autoFade = CurTime( ) + 3
 		}
 	elseif ( id == 2 ) then
-		for k, v in pairs( PLUGIN.weapons ) do
+		for k, v in pairs( self.slotData ) do
 			if ( v.uniqueID == uniqueID ) then
-				table.remove( PLUGIN.weapons, k )
+				table.remove( self.slotData, k )
 				
 				return
 			end
 		end
 	elseif ( id == 3 ) then
-		PLUGIN.curSlot = 1
-		PLUGIN.weapons = { }
+		self.currSlot = 1
+		self.slotData = { }
 	elseif ( id == 4 ) then
-		PLUGIN.curSlot = 1
-		PLUGIN.weapons = { }
+		self.currSlot = 1
+		self.slotData = { }
 		
-		for k, v in pairs( catherine.pl:GetWeapons( ) ) do
-			if ( !v or !IsValid( v ) ) then return end
-			
+		for k, v in pairs( pl:GetWeapons( ) ) do
+			if ( !IsValid( v ) ) then continue end
 			local markupText = "<font=catherine_normal20>"
 			local markupObject = nil
 			local markupFound = false
 			
 			if ( v.Instructions and v.Instructions != "" ) then
-				markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Instructions_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( v.Instructions ) .. "</font>\n\n"
+				markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Instructions_Title" ) .. "</color>\n<font=catherine_normal15>" .. catherine_util_stuffLanguage( v.Instructions ) .. "</font>\n\n"
 				markupFound = true
 			end
 			
 			if ( v.Author and v.Author != "" ) then
-				markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Author_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( v.Author ) .. "</font>\n\n"
+				markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Author_Title" ) .. "</color>\n<font=catherine_normal15>" .. catherine_util_stuffLanguage( v.Author ) .. "</font>\n\n"
 				markupFound = true
 			end
 			
 			if ( v.Purpose and v.Purpose != "" ) then
-				markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Purpose_Title" ) .. "</color>\n<font=catherine_normal15>" .. languageStuff( v.Purpose ) .. "</font>\n\n"
+				markupText = markupText .. "<color=220,220,220,255>" .. LANG( "Weapon_Purpose_Title" ) .. "</color>\n<font=catherine_normal15>" .. catherine_util_stuffLanguage( v.Purpose ) .. "</font>\n\n"
 				markupFound = true
 			end
 			
@@ -275,14 +257,20 @@ netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
 				markupObject = markup.Parse( markupText .. "</font>", 230 )
 			end
 
-			PLUGIN.weapons[ #PLUGIN.weapons + 1 ] = {
+			self.slotData[ #self.slotData + 1 ] = {
 				name = v:GetPrintName( ),
 				uniqueID = v:GetClass( ),
-				x = ScrW( ) * 0.25,
+				markupObject = markupObject,
 				a = 0,
-				xMinus = 0,
-				markupObject = markupObject
+				targetA = 0,
+				autoFade = CurTime( ) + 3
 			}
 		end
 	end
+end
+
+netstream.Hook( "catherine.plugin.weaponselect.Refresh", function( data )
+	if ( !IsValid( catherine.pl ) ) then return end
+	
+	PLUGIN:Refresh( catherine.pl, data[ 1 ], data[ 2 ] )
 end )
