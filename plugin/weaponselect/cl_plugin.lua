@@ -91,6 +91,7 @@ end
 
 function PLUGIN:HUDDraw( )
 	if ( !catherine.pl:IsCharacterLoaded( ) or !catherine.pl:Alive( ) ) then return end
+	if ( hook.Run( "ShouldDrawWeaponSelect", catherine.pl ) == false ) then return end
 	local scrW, scrH = ScrW( ), ScrH( )
 	
 	for k, v in pairs( self.weapons ) do
