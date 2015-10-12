@@ -86,11 +86,9 @@ if ( SERVER ) then
 						local steamName, steamID = v:SteamName( ), v:SteamID( )
 
 						if ( receiveData[ v ].sendTime - SysTime( ) >= 15 ) then
-							local kickMessage = LANG( v, "AntiHaX_KickMessage_TimeOut" )
-							
 							MsgC( Color( 255, 255, 0 ), "[CAT Lime] Kicked time out player.[" .. steamName .. "/" .. steamID	.. "]\n" )
 							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked time out player.[" .. steamName .. "/" .. steamID .. "]", true )
-							v:Kick( kickMessage )
+							v:Kick( LANG( v, "AntiHaX_KickMessage_TimeOut" ) )
 							receiveData[ v ] = nil
 							continue
 						end
@@ -108,8 +106,6 @@ if ( SERVER ) then
 						end
 						
 						if ( isHack ) then
-							local kickMessage = LANG( v, "AntiHaX_KickMessage" )
-							
 							MsgC( Color( 255, 0, 0 ), "[CAT Lime] Kicked hack player.[" .. steamName .. "/" .. steamID .. "]\n" )
 							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked hack player.[" .. steamName .. "/" .. steamID .. "]", true )
 							
@@ -118,7 +114,7 @@ if ( SERVER ) then
 								v:ChatPrint( LANG( v, "AntiHaX_KickMessageNotifyAdmin", steamName, steamID ) )
 							end
 							
-							v:Kick( kickMessage )
+							v:Kick( LANG( v, "AntiHaX_KickMessage" ) )
 							receiveData[ v ] = nil
 							continue
 						else
