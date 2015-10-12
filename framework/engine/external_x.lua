@@ -271,13 +271,20 @@ if ( SERVER ) then
 		else
 			netstream.Start( pl, "catherine.externalX.ResultInstallPatch", {
 				false,
-				"Permission ERROR"
+				LANG( pl, "System_Notify_PermissionError" )
 			} )
 		end
 	end )
 	
 	netstream.Hook( "catherine.externalX.CheckNewPatch", function( pl, data )
-		catherine.externalX.CheckNewPatch( pl, true, false )
+		if ( pl:IsSuperAdmin( ) ) then
+			catherine.externalX.CheckNewPatch( pl, true, false )
+		else
+			netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", {
+				false,
+				LANG( pl, "System_Notify_PermissionError" )
+			} )
+		end
 	end )
 else
 	catherine.externalX.applied = catherine.externalX.applied or false
