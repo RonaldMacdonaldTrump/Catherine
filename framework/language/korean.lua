@@ -113,7 +113,7 @@ LANGUAGE.data = {
 	[ "Cash_UI_TargetHasStr" ] = "이 사람은 %s 을(를) 가지고 있습니다.",
 	[ "Cash_Notify_Set" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 설정하셨습니다.",
 	[ "Cash_Notify_Give" ] = "%s 님이 %s 만큼의 돈을 %s 님에게 주셨습니다.",
-	[ "Cash_Notify_Take" ] = "%s 님이 %s 만큼의 돈을 %s 님에게서 빼았었습니다.",
+	[ "Cash_Notify_Take" ] = "%s 님이 %s 만큼의 돈을 %s 님에게서 빼앗었습니다.",
 	[ "Cash_Notify_HasNot" ] = "당신은 충분한 %s 이(가) 없습니다!",
 	[ "Cash_Notify_NotValidAmount" ] = "올바른 금액을 입력하세요!",
 	[ "Cash_Notify_Salary" ] = "당신은 %s 을(를) 월급으로 받았습니다.",
@@ -174,7 +174,7 @@ LANGUAGE.data = {
 	// Faction
 	[ "Faction_UI_Title" ] = "팩션",
 	[ "Faction_Notify_Give" ] = "%s 님이 %s 팩션에 대한 권한을 %s 님에게 부여했습니다.",
-	[ "Faction_Notify_Take" ] = "%s 님이 %s 팩션에 대한 권한을 %s 님에게서 빼았었습니다.",
+	[ "Faction_Notify_Take" ] = "%s 님이 %s 팩션에 대한 권한을 %s 님에게서 빼앗었습니다.",
 	[ "Faction_Notify_NotValid" ] = "%s 는 올바르지 않은 팩션 입니다!",
 	[ "Faction_Notify_NotWhitelist" ] = "%s 는 화이트리스트가 아닙니다!",
 	[ "Faction_Notify_AlreadyHas" ] = "%s 님이 이미 %s 화이트리스트를 가지고 있습니다!",
@@ -183,7 +183,7 @@ LANGUAGE.data = {
 	
 	// Flag
 	[ "Flag_Notify_Give" ] = "%s 님이 %s 플래그를 %s 님에게 주셨습니다.",
-	[ "Flag_Notify_Take" ] = "%s 님이 %s 플래그를 %s 님에게서 빼았았습니다.",
+	[ "Flag_Notify_Take" ] = "%s 님이 %s 플래그를 %s 님에게서 빼앗았습니다.",
 	[ "Flag_Notify_AlreadyHas" ] = "%s 님은 이미 %s 플래그를 가지고 있습니다!",
 	[ "Flag_Notify_HasNot" ] = "%s 님은 %s 플래그를 가지고 있지 않습니다!",
 	[ "Flag_Notify_NotValid" ] = "%s 는 올바르지 않은 플래그 입니다!",
