@@ -75,9 +75,9 @@ function PLUGIN:RemoveText( pos, rad )
 	local i = 0
 	
 	for k, v in pairs( self.textLists ) do
-		if ( catherine.util.CalcDistanceByPos( v.pos, pos ) <= rad ) then
+		if ( pos:Distance( v.pos ) <= rad ) then
 			netstream.Start( nil, "catherine.plugin.walltext.RemoveText", v.index )
-			table.remove( self.textLists, k )
+			self.textLists[ k ] = nil
 			i = i + 1
 		end
 	end

@@ -39,6 +39,14 @@ end
 
 function catherine.command.FindByCMD( command )
 	for k, v in pairs( catherine.command.GetAll( ) ) do
+		if ( v.otherCommand and type ( v.otherCommand ) == "table" and #v.otherCommand != 0 ) then
+			for k1, v1 in pairs( v.otherCommand ) do
+				if ( v1 == command ) then
+					return v
+				end
+			end
+		end
+		
 		if ( v.command == command ) then
 			return v
 		end
@@ -61,7 +69,7 @@ function catherine.command.TransferToArgsTab( text )
 	for i = 1, #text do
 		if ( i <= skip ) then continue end
 		local k = text:sub( i, i )
-
+		
 		if ( k == "\"" or k == "'" ) then
 			local match = text:sub( i ):match( "%b" .. k .. k )
 			
@@ -108,7 +116,7 @@ if ( SERVER ) then
 		if ( !commandTable.runFunc ) then
 			return
 		end
-
+		
 		local success, result = pcall( commandTable.runFunc, pl, args )
 		
 		if ( success ) then
@@ -123,7 +131,7 @@ if ( SERVER ) then
 		local id = args[ 1 ]:sub( 2, #args[ 1 ] )
 		
 		table.remove( args, 1 )
-
+		
 		catherine.command.Run( pl, id, args )
 	end
 	
@@ -174,7 +182,7 @@ else
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	]]
-
+	
 	local function rebuildCommand( )
 		local title_command = LANG( "Help_Category_Command" )
 		local html = Format( command_htmlValue, title_command, LANG( "Help_Desc_Command" ) )
@@ -221,6 +229,15 @@ else
 		text = text:sub( 2 )
 		
 		for k, v in pairs( catherine.command.GetAll( ) ) do
+			if ( v.otherCommand and type ( v.otherCommand ) == "table" and #v.otherCommand != 0 ) then
+				for k1, v1 in pairs( v.otherCommand ) do
+					if ( v1 == text ) then
+						commands[ #commands + 1 ] = v
+						sub = text:utf8len( )
+					end
+				end
+			end
+			
 			if ( catherine.util.CheckStringMatch( v.command, text ) ) then
 				commands[ #commands + 1 ] = v
 				sub = text:utf8len( )
