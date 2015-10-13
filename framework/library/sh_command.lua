@@ -226,7 +226,7 @@ else
 	function catherine.command.GetMatchCommands( text )
 		local commands = { }
 		local sub = 0
-		text = text:sub( 2 )
+		text = text:utf8sub( 2 )
 		
 		for k, v in pairs( catherine.command.GetAll( ) ) do
 			if ( v.otherCommand and type ( v.otherCommand ) == "table" and #v.otherCommand != 0 ) then
