@@ -79,7 +79,11 @@ function PLUGIN:SaveVendors( )
 			items = vendorData.items,
 			model = vendorData.model,
 			pos = v:GetPos( ),
-			ang = v:GetAngles( )
+			ang = v:GetAngles( ),
+			mat = v:GetMaterial( ),
+			col = v:GetColor( ),
+			skin = v:GetSkin( ),
+			bodyGroup = v:GetBodyGroups( )
 		}
 	end
 	
@@ -95,17 +99,25 @@ function PLUGIN:LoadVendors( )
 		ent:SetAngles( v.ang )
 		ent:Spawn( )
 		ent:Activate( )
-
+		
 		self:MakeVendor( ent, v )
 		
 		ent:SetModel( v.model )
+		ent:SetSkin( v.skin )
+		ent:SetColor( v.col )
+		ent:SetMaterial( v.mat )
+		
+		for k, v in ipairs( v.bodyGroup ) do
+			ent:SetBodygroup( v.id, ent:GetBodygroup( v.id ) )
+		end
+		
 		ent:InitializeAnimation( )
 	end
 end
 
 function PLUGIN:MakeVendor( ent, data )
 	if ( !IsValid( ent ) or !data ) then return end
-
+	
 	ent.vendorData = { }
 	
 	for k, v in pairs( vars ) do
@@ -120,7 +132,7 @@ end
 
 function PLUGIN:SetVendorData( ent, id, data, noSync )
 	if ( !IsValid( ent ) or !id or !data ) then return end
-
+	
 	ent.vendorData[ id ] = data
 	ent:SetNetVar( id, data )
 	
