@@ -234,14 +234,6 @@ function GM:PlayerSpawn( pl )
 		end
 	end
 	
-	if ( pl.CAT_isDeadFunc ) then
-		pl:KillSilent( )
-		pl:Spawn( )
-		
-		pl.CAT_isDeadFunc = nil
-		return
-	end
-	
 	pl.CAT_deathSoundPlayed = nil
 	
 	pl:SetNetVar( "noDrawOriginal", nil )
@@ -263,6 +255,7 @@ function GM:PlayerSpawn( pl )
 	pl:CrosshairDisable( )
 	pl:SetMaterial( "" )
 	pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
+	pl:SetHealth( pl:GetMaxHealth( ) ) // BUG?
 	
 	if ( pl:FlashlightIsOn( ) ) then
 		pl:Flashlight( false )
