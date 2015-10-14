@@ -22,8 +22,7 @@ local monthLen = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
 
 function catherine.environment.GetDateString( )
 	local d = catherine.environment.buffer
-	local t = d.hour >= 12 and "PM" or "AM"
-
+	
 	return Format( "%s-%s-%s", d.year, d.month, d.day )
 end
 
@@ -34,13 +33,12 @@ end
 function catherine.environment.GetTimeString( )
 	local d = table.Copy( catherine.environment.buffer )
 	local hour = d.hour
-	local t = hour >= 12 and "PM" or "AM"
 	
 	if ( #tostring( d.minute ) == 1 ) then
 		d.minute = "0" .. d.minute
 	end
 	
-	return Format( "%s %s:%s", t, hour > 12 and hour - 12 or hour, d.minute )
+	return Format( "%s %s:%s", hour >= 12 and "PM" or "AM", hour > 12 and hour - 12 or hour, d.minute )
 end
 
 if ( SERVER ) then

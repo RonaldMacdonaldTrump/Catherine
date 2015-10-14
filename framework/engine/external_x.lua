@@ -59,10 +59,7 @@ if ( SERVER ) then
 					timer.Remove( "Catherine.timer.externalX.CheckNewPatch.Retry" )
 					
 					if ( isManual and IsValid( pl ) ) then
-						netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", {
-							false,
-							"404 ERROR"
-						} )
+						netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", "404 ERROR" )
 					end
 					return
 				elseif ( isErrorData == 2 ) then
@@ -100,9 +97,7 @@ if ( SERVER ) then
 				timer.Remove( "Catherine.timer.externalX.CheckNewPatch.Retry" )
 				
 				if ( isManual and IsValid( pl ) ) then
-					netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", {
-						true
-					} )
+					netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch" )
 				end
 				
 				catherine.externalX.nextCheckable = CurTime( ) + 150
@@ -110,10 +105,7 @@ if ( SERVER ) then
 				MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to check for new patch! [" .. err .. "]\n" )
 				
 				if ( isManual and IsValid( pl ) ) then
-					netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", {
-						false,
-						err
-					} )
+					netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", err )
 				end
 			end
 		)
@@ -280,10 +272,7 @@ if ( SERVER ) then
 		if ( pl:IsSuperAdmin( ) ) then
 			catherine.externalX.CheckNewPatch( pl, true, false )
 		else
-			netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", {
-				false,
-				LANG( pl, "System_Notify_PermissionError" )
-			} )
+			netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", LANG( pl, "System_Notify_PermissionError" ) )
 		end
 	end )
 else
@@ -328,8 +317,8 @@ else
 		if ( IsValid( catherine.vgui.system ) ) then
 			catherine.vgui.system.externalXPanel.status = false
 			
-			if ( data[ 2 ] ) then
-				catherine.vgui.system.externalXPanel:SetErrorMessage( data[ 2 ] )
+			if ( data and type( data ) == "string" ) then
+				catherine.vgui.system.externalXPanel:SetErrorMessage( LANG( "System_Notify_ExternalXError", data ) )
 			end
 		end
 	end )
@@ -344,8 +333,8 @@ else
 			catherine.vgui.system.externalXPanel.status = false
 			catherine.vgui.system.externalXPanel.hideAll = false
 			
-			if ( data[ 2 ] ) then
-				catherine.vgui.system.externalXPanel:SetErrorMessage( data[ 2 ] )
+			if ( data[ 2 ] and type( data[ 2 ] ) == "string" ) then
+				catherine.vgui.system.externalXPanel:SetErrorMessage( LANG( "System_Notify_ExternalXError2", data[ 2 ] ) )
 			end
 		end
 	end )

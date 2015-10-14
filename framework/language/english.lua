@@ -217,6 +217,7 @@ LANGUAGE.data = {
 	[ "System_UI_Update_OpenUpdateLog" ] = "Update History",
 	[ "System_UI_Update_CheckingUpdate" ] = "Checking update ...",
 	[ "System_Notify_Update_NextTime" ] = "Too often unable to check the version, try again later!",
+	[ "System_Notify_UpdateError" ] = "Failed to checking update. [%s]",
 	[ "System_UI_Plugin_Title" ] = "Plugin",
 	[ "System_UI_Plugin_ManagerButton" ] = "Plugin Management",
 	[ "System_UI_Plugin_ManagerAllPluginCount" ] = "Total Plugins %s's.",
@@ -274,6 +275,8 @@ LANGUAGE.data = {
 	[ "System_UI_ExternalX_Installing" ] = "Download and Installing the patch ...",
 	[ "System_UI_ExternalX_RestartServer" ] = "WARNING : Server is restart after a while :>",
 	[ "System_Notify_ExternalX_NextTime" ] = "Too often unable to check the patch, try again later!",
+	[ "System_Notify_ExternalXError" ] = "Failed to checking patch. [%s]",
+	[ "System_Notify_ExternalXError2" ] = "Failed to installing patch. [%s]",
 	[ "System_Notify_InstallQ" ] = "Are you want to install this patch?, automatic 'RESTART SERVER' after the install!",
 	
 	// Attribute

@@ -53,9 +53,8 @@ if ( SERVER ) then
 		end
 		
 		if ( #answers != #questionTable ) then
-			local kickMessage = LANG( pl, "Question_KickMessage" )
-				
-			pl:Kick( kickMessage )
+			pl:Kick( LANG( pl, "Question_KickMessage" ) )
+			
 			return
 		end
 		
@@ -67,9 +66,8 @@ if ( SERVER ) then
 		
 		for k, v in pairs( answers ) do
 			if ( v != answerIndexes[ k ] ) then
-				local kickMessage = LANG( pl, "Question_KickMessage" )
+				pl:Kick( LANG( pl, "Question_KickMessage" ) )
 				
-				pl:Kick( kickMessage )
 				return
 			end
 		end
@@ -113,7 +111,7 @@ else
 			catherine.vgui.character:MoveToBack( )
 		end
 	end
-
+	
 	function catherine.question.CanQuestion( )
 		if ( !catherine.configs.enableQuiz or catherine.catData.GetVar( "question" ) or #catherine.question.GetAll( ) == 0 ) then
 			return false

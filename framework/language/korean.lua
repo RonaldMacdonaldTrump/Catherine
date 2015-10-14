@@ -212,7 +212,8 @@ LANGUAGE.data = {
 	[ "System_UI_Update_CheckButton" ] = "업데이트 확인",
 	[ "System_UI_Update_OpenUpdateLog" ] = "업데이트 기록",
 	[ "System_UI_Update_CheckingUpdate" ] = "업데이트 확인 중 ...",
-	[ "System_Notify_Update_NextTime" ] = "너무 자주 버전을 확인할 수 없습니다, 나중에 다시 시도하세요!",
+	[ "System_Notify_Update_NextTime" ] = "너무 자주 업데이트를 확인할 수 없습니다, 나중에 다시 시도하세요!",
+	[ "System_Notify_UpdateError" ] = "업데이트를 확인할 수 없습니다. [%s]",
 	[ "System_UI_Plugin_Title" ] = "플러그인",
 	[ "System_UI_Plugin_ManagerButton" ] = "플러그인 관리",
 	[ "System_UI_Plugin_ManagerAllPluginCount" ] = "%s개의 모든 플러그인.",
@@ -270,6 +271,8 @@ LANGUAGE.data = {
 	[ "System_UI_ExternalX_Installing" ] = "패치를 다운로드하고 설치하는 중 입니다 ...",
 	[ "System_UI_ExternalX_RestartServer" ] = "경고 : 서버가 잠시 후에 다시 시작됩니다 :>",
 	[ "System_Notify_ExternalX_NextTime" ] = "너무 자주 패치를 확인할 수 없습니다, 나중에 다시 시도하세요!",
+	[ "System_Notify_ExternalXError" ] = "패치를 확인할 수 없습니다. [%s]",
+	[ "System_Notify_ExternalXError2" ] = "패치를 설치할 수 없습니다. [%s]",
 	[ "System_Notify_InstallQ" ] = "새로운 패치를 설치하시겠습니까?, 설치가 완료된 후 자동으로 서버를 다시 시작합니다!",
 	
 	// Attribute

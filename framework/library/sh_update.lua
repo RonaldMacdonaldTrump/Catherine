@@ -29,10 +29,7 @@ if ( SERVER ) then
 						MsgC( Color( 255, 0, 0 ), "[CAT Update ERROR] Failed to checking update! [404 ERROR]\n" )
 						
 						if ( IsValid( pl ) ) then
-							netstream.Start( pl, "catherine.update.CheckResult", {
-								false,
-								"404 ERROR"
-							} )
+							netstream.Start( pl, "catherine.update.ResultCheck", "404 ERROR" )
 						end
 						
 						return
@@ -42,10 +39,7 @@ if ( SERVER ) then
 						MsgC( Color( 255, 0, 0 ), "[CAT Update ERROR] Failed to checking update! [Unknown ERROR]\n" )
 						
 						if ( IsValid( pl ) ) then
-							netstream.Start( pl, "catherine.update.CheckResult", {
-								false,
-								"Unknown Error"
-							} )
+							netstream.Start( pl, "catherine.update.ResultCheck", "Unknown Error" )
 						end
 						
 						return
@@ -60,18 +54,13 @@ if ( SERVER ) then
 					catherine.net.SetNetGlobalVar( "cat_updateData", data )
 					
 					if ( IsValid( pl ) ) then
-						netstream.Start( pl, "catherine.update.CheckResult", {
-							false
-						} )
+						netstream.Start( pl, "catherine.update.ResultCheck" )
 					end
 				end, function( err )
 					MsgC( Color( 255, 0, 0 ), "[CAT Update ERROR] Failed to checking update! [" .. err .. "]\n" )
 					
 					if ( IsValid( pl ) ) then
-						netstream.Start( pl, "catherine.update.CheckResult", {
-							false,
-							err
-						} )
+						netstream.Start( pl, "catherine.update.ResultCheck", err )
 					end
 				end
 			)
@@ -79,17 +68,14 @@ if ( SERVER ) then
 			catherine.update.nextCheckable = CurTime( ) + 500
 		else
 			if ( IsValid( pl ) ) then
-				netstream.Start( pl, "catherine.update.CheckResult", {
-					false,
-					LANG( pl, "System_Notify_Update_NextTime" )
-				} )
+				netstream.Start( pl, "catherine.update.ResultCheck", LANG( pl, "System_Notify_Update_NextTime" ) )
 			end
 		end
 	end
 	
 	function catherine.update.PlayerLoadFinished( )
 		if ( catherine.update.checked ) then return end
-
+		
 		catherine.update.Check( )
 		catherine.update.checked = true
 	end
@@ -97,18 +83,20 @@ if ( SERVER ) then
 	hook.Add( "PlayerLoadFinished", "catherine.update.PlayerLoadFinished", catherine.update.PlayerLoadFinished )
 	
 	netstream.Hook( "catherine.update.Check", function( pl )
-		if ( !pl:IsSuperAdmin( ) ) then return end
-		
-		catherine.update.Check( pl )
+		if ( pl:IsSuperAdmin( ) ) then
+			catherine.update.Check( pl )
+		else
+			netstream.Start( pl, "catherine.update.ResultCheck", LANG( pl, "System_Notify_PermissionError" ) )
+		end
 	end )
 else
-	netstream.Hook( "catherine.update.CheckResult", function( data )
+	netstream.Hook( "catherine.update.ResultCheck", function( data )
 		if ( IsValid( catherine.vgui.system ) ) then
-			catherine.vgui.system.updatePanel.status = data[ 1 ]
+			catherine.vgui.system.updatePanel.status = false
 			catherine.vgui.system.updatePanel:RefreshHistory( )
 			
-			if ( data[ 2 ] ) then
-				catherine.vgui.system.updatePanel:SetErrorMessage( data[ 2 ] )
+			if ( data and type( data ) == "string" ) then
+				catherine.vgui.system.updatePanel:SetErrorMessage( LANG( "System_Notify_UpdateError", data ) )
 			end
 		end
 	end )

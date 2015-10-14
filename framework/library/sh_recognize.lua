@@ -21,16 +21,16 @@ catherine.recognize = catherine.recognize or { }
 if ( SERVER ) then
 	function catherine.recognize.DoKnow( pl, code, target )
 		target = { target } or nil
-
+		
 		if ( code == 0 ) then
 			target = target or catherine.chat.GetListener( pl, "ic" )
 		else
 			target = catherine.chat.GetListener( pl, code == 1 and "whisper" or "yell" )
 		end
-
+		
 		for k, v in pairs( target or { } ) do
-			if ( !IsValid( v ) ) then continue end
 			if ( pl == v ) then continue end
+			if ( !IsValid( v ) ) then continue end
 			
 			catherine.recognize.RegisterKnow( pl, v )
 		end
@@ -99,7 +99,7 @@ end
 
 function catherine.recognize.IsKnowTarget( pl, target )
 	local factionTable = catherine.faction.FindByIndex( target:Team( ) )
-
+	
 	return ( factionTable and factionTable.alwaysRecognized ) and true or table.HasValue( catherine.character.GetCharVar( pl, "recognize", { } ), target:GetCharacterID( ) )
 end
 
@@ -107,6 +107,6 @@ local META = FindMetaTable( "Player" )
 
 function META:IsKnow( target )
 	local factionTable = catherine.faction.FindByIndex( target:Team( ) )
-
+	
 	return ( factionTable and factionTable.alwaysRecognized ) and true or table.HasValue( catherine.character.GetCharVar( self, "recognize", { } ), target:GetCharacterID( ) )
 end
