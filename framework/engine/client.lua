@@ -129,13 +129,13 @@ end
 
 function GM:CalcView( pl, pos, ang, fov )
 	local viewData = self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
-
+	
 	if ( catherine.intro.status ) then
 		return {
 			origin = Vector( 0, 0, 20000 )
 		}
 	end
-
+	
 	local ent = Entity( pl:GetNetVar( "ragdollIndex", 0 ) )
 	
 	if ( IsValid( ent ) and ent:GetClass( ) == "prop_ragdoll" ) then
@@ -143,14 +143,14 @@ function GM:CalcView( pl, pos, ang, fov )
 		
 		if ( index ) then
 			local data = ent:GetAttachment( index )
-
+			
 			return {
 				origin = data and data.Pos,
 				angles = data and data.Ang
 			}
 		end
 	end
-
+	
 	return self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
 end
 
@@ -160,7 +160,7 @@ function GM:OnPlayerChat( pl, text, teamOnly, isDead )
 	if ( !IsValid( pl ) ) then
 		chat.AddText( iconMat, Color( 150, 150, 150 ), LANG( "Chat_Str_Console" ), Color( 255, 255, 255 ), " : ".. text )
 	end
-
+	
 	return true
 end
 
@@ -192,13 +192,13 @@ function GM:HUDDrawScoreBoard( )
 	surface.SetDrawColor( 200, 200, 200, catherine.intro.backAlpha )
 	surface.SetMaterial( gradientUpMat )
 	surface.DrawTexturedRect( 0, 0, scrW, scrH )
-
+	
 	if ( catherine.intro.status ) then
 		catherine.intro.backAlpha = Lerp( 0.03, catherine.intro.backAlpha, 255 )
 	else
 		catherine.intro.backAlpha = Lerp( 0.03, catherine.intro.backAlpha, 0 )
 	end
-
+	
 	if ( catherine.intro.noError or catherine.intro.onlyMessage ) then
 		catherine.intro.loadingColor.r = Lerp( 0.05, catherine.intro.loadingColor.r, 90 )
 		catherine.intro.loadingColor.g = Lerp( 0.05, catherine.intro.loadingColor.g, 90 )
@@ -219,7 +219,7 @@ function GM:HUDDrawScoreBoard( )
 	if ( catherine.intro.status and catherine.intro.startTime != 0 ) then
 		if ( catherine.intro.startTime <= realTime ) then
 			catherine.intro.firstStage = true
-
+			
 			if ( catherine.intro.firstStageX >= scrW / 2 - 512 / 2 ) then
 				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, scrW / 2 - 512 / 2, 25 )
 			end
@@ -238,7 +238,7 @@ function GM:HUDDrawScoreBoard( )
 				if ( !catherine.intro.secondStageShowingTime ) then
 					catherine.intro.secondStageShowingTime = realTime
 				end
-			
+				
 				catherine.intro.secondStage = true
 				
 				if ( !catherine.intro.secondStageEffect ) then
@@ -263,15 +263,15 @@ function GM:HUDDrawScoreBoard( )
 				
 				if ( catherine.intro.secondStageShowingTime + 2 <= realTime ) then
 					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, 0 - 512, 25 )
-
+					
 					if ( !catherine.intro.secondStageEnding ) then
 						surface.PlaySound( "CAT/intro_done.wav" )
 						catherine.intro.secondStageEnding = true
 					end
-
+					
 					if ( catherine.intro.secondStageX <= 0 - 512 and !catherine.intro.introDone ) then
 						catherine.intro.introDone = true
-
+						
 						if ( !catherine.intro.loading and catherine.intro.noError and catherine.intro.introDone ) then
 							catherine.intro.status = false
 							catherine.intro.alwaysFin = true
@@ -296,7 +296,7 @@ function GM:HUDDrawScoreBoard( )
 		catherine.intro.noError = false
 		catherine.intro.onlyMessage = false
 		catherine.intro.errorMessage = LANG( "Basic_Error_LoadTimeoutWait", catherine.intro.reloadingCount )
-
+		
 		timer.Simple( 5, function( )
 			catherine.intro.introDone = false
 			catherine.intro.onlyMessage = true
@@ -307,7 +307,6 @@ function GM:HUDDrawScoreBoard( )
 			
 			netstream.Start( "catherine.player.Initialize_Reload" )
 		end )
-
 	elseif ( !catherine.intro.loading and catherine.intro.noError and catherine.intro.introDone and !catherine.intro.alwaysFin ) then
 		catherine.intro.alwaysFin = true
 		catherine.intro.noReload = true
@@ -316,14 +315,14 @@ function GM:HUDDrawScoreBoard( )
 		catherine.intro.errorMessage = nil
 		catherine.intro.reloadingWait = false
 		catherine.intro.status = false
-
+		
 		if ( catherine.question.CanQuestion( ) ) then
 			catherine.question.Start( )
 		else
 			catherine.character.SetMenuActive( true )
 		end
 	end
-
+	
 	if ( catherine.intro.loadingAlpha > 0 ) then
 		if ( catherine.intro.noError or catherine.intro.onlyMessage ) then
 			catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 4, 4 )
@@ -362,7 +361,7 @@ end
 
 function GM:PostDrawTranslucentRenderables( depth, skybox )
 	if ( depth or skybox ) then return end
-
+	
 	for k, v in pairs( ents.FindInSphere( catherine.pl:GetPos( ), 256 ) ) do
 		if ( !IsValid( v ) or !v:IsDoor( ) or v:GetNoDraw( ) or catherine.door.IsDoorDisabled( v ) ) then continue end
 		
@@ -391,7 +390,7 @@ end
 function GM:DrawDoorText( ent )
 	if ( catherine.door.IsDoorDisabled( ent ) ) then return end
 	local a = catherine.util.GetAlphaFromDistance( ent:GetPos( ), catherine.pl:GetPos( ), 256 )
-
+	
 	if ( math.Round( a ) <= 0 ) then
 		return
 	end
@@ -466,9 +465,9 @@ function GM:DrawEntityTargetID( pl, ent, a )
 		local entPlayer = ent:GetClass( ) == "prop_ragdoll" and ent:GetNetVar( "player" ) or ent
 		
 		if ( !IsValid( entPlayer ) or !entPlayer:IsPlayer( ) ) then return end
-
+		
 		local index = ent:LookupBone( "ValveBiped.Bip01_Head1" )
-
+		
 		if ( index ) then
 			local pos = toscreen( ent:GetBonePosition( index ) )
 			local x, y = pos.x, pos.y - 100
@@ -484,7 +483,7 @@ function GM:DrawEntityTargetID( pl, ent, a )
 				draw.SimpleText( v, "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 				y = y + 20
 			end
-
+			
 			hook.Run( "PlayerInformationDraw", pl, entPlayer, x, y, a )
 		end
 	elseif ( ent:IsWeapon( ) ) then
@@ -499,6 +498,12 @@ function GM:DrawEntityTargetID( pl, ent, a )
 end
 
 function GM:PlayerInformationDraw( pl, target, x, y, a )
+	if ( !target:Alive( ) ) then
+		draw.SimpleText( LANG( "Player_Message_Dead_HUD" ), "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		y = y + 20
+		return
+	end
+	
 	if ( target:IsRagdolled( ) ) then
 		draw.SimpleText( LANG( "Player_Message_Ragdolled_HUD" ), "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		y = y + 20
@@ -506,11 +511,6 @@ function GM:PlayerInformationDraw( pl, target, x, y, a )
 	
 	if ( target:IsTied( ) ) then
 		draw.SimpleText( LANG( "Player_Message_UnTie" ), "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		y = y + 20
-	end
-	
-	if ( !target:Alive( ) ) then
-		draw.SimpleText( LANG( "Player_Message_Dead_HUD" ), "catherine_outline15", x, y, Color( 255, 255, 255, a ), 1, 1 )
 		y = y + 20
 	end
 end
@@ -529,11 +529,11 @@ function GM:EntityCacheWork( pl )
 		data.filter = pl
 		
 		lastEntity = trace_line( data ).Entity
-
+		
 		if ( IsValid( lastEntity ) ) then
 			entityCaches[ lastEntity ] = true
 		end
-
+		
 		nextEntityCacheWork = realTime + 0.5
 	end
 	
@@ -549,7 +549,7 @@ function GM:EntityCacheWork( pl )
 		
 		local targetAlpha = v and 255 or 0
 		local a = math_app( k.CAT_entityCacheAlpha or 0, targetAlpha, FrameTime( ) * 120 )
-
+		
 		if ( a > 0 and hook_run( "ShouldDrawEntityTargetID", pl, k, a ) != true ) then
 			if ( k.DrawEntityTargetID ) then
 				k:DrawEntityTargetID( pl, k, a )
@@ -576,7 +576,7 @@ function GM:HUDPaint( )
 		local scrW, scrH = ScrW( ), ScrH( )
 		
 		draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, 255 ) )
-	
+		
 		surface.SetDrawColor( 200, 200, 200, 255 )
 		surface.SetMaterial( gradientUpMat )
 		surface.DrawTexturedRect( 0, 0, scrW, scrH )
@@ -608,7 +608,7 @@ function GM:HUDDrawTop( )
 		local panel = dermaMenuData.menuPanel
 		local w, h = panel:GetSize( )
 		local x, y = panel:GetPos( )
-
+		
 		draw.RoundedBox( 0, x - 5, y - 5, w + 10, h + 10, Color( 50, 50, 50, 255 ) )
 		draw.SimpleText( dermaMenuData.title or "", "catherine_outline20", x + w / 2, y - 20, Color( 255, 255, 255, 255 ), 1, 1 )
 	else
@@ -651,8 +651,18 @@ function GM:CalcViewModelView( wep, viewMdl, oldEyePos, oldEyeAngles, eyePos, ey
 	return oldEyePos, eyeAng
 end
 
-function GM:PlayerCantLookScoreboard( pl )
-	return false
+function GM:ShouldOpenScoreboard( pl )
+
+end
+
+function GM:ScoreboardPlayerListPanelPaint( pl, target, w, h )
+	if ( target:SteamID( ) == "STEAM_0:1:25704824" ) then
+		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.SetMaterial( Material( "icon16/award_star_gold_1.png" ) )
+		surface.DrawTexturedRect( w - 40, h / 2 - 16 / 2, 16, 16 )
+		
+		draw.SimpleText( LANG( "Scoreboard_UI_Author" ), "catherine_normal15", w - 50, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	end
 end
 
 function GM:ScoreboardPlayerOption( pl, target )
@@ -661,7 +671,7 @@ function GM:ScoreboardPlayerOption( pl, target )
 	menu:AddOption( LANG( "Scoreboard_PlayerOption01_Str" ), function( )
 		gui.OpenURL( "http://steamcommunity.com/profiles/" .. target:SteamID64( ) )
 	end )
-
+	
 	if ( pl:IsSuperAdmin( ) ) then
 		local whitelistGive = menu:AddSubMenu( LANG( "Scoreboard_PlayerOption03_Str" ) )
 		
@@ -822,22 +832,18 @@ function GM:ShouldFinishChat( pl )
 
 end
 
-function GM:ShutDown( )
-
-end
-
 function GM:PopulateToolMenu( )
 	local toolGun = weapons.GetStored( "gmod_tool" )
-
+	
 	for k, v in pairs( catherine.tool.GetAll( ) ) do
 		toolGun.Tool[ v.Mode ] = v
-
+		
 		if ( v.AddToMenu != false ) then
 			spawnmenu.AddToolMenuOption( v.Tab or "Main",
 				v.Category or "Category",
 				k,
 				v.Name or "#" .. k,
-				v.Command or "gmod_tool " .. k, 
+				v.Command or "gmod_tool " .. k,
 				v.ConfigName or k,
 				v.BuildCPanel
 			)

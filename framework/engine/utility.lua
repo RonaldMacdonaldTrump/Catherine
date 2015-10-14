@@ -358,12 +358,17 @@ if ( SERVER ) then
 		end
 	end
 	
+	local resourceBlockFolders = {
+		".svn",
+		".git"
+	}
+	
 	function catherine.util.AddResourceInFolder( dir )
 		local files, folders = file.Find( dir .. "/*", "GAME" )
 		
-		table.RemoveByValue( folders, ".svn" )
-		
 		for k, v in pairs( folders ) do
+			if ( table.HasValue( resourceBlockFolders, v ) ) then continue end
+			
 			catherine.util.AddResourceInFolder( dir .. "/" .. v )
 		end
 		

@@ -247,7 +247,8 @@ function GM:PlayerSpawn( pl )
 	pl:SetNetVar( "noDrawOriginal", nil )
 	pl:SetNetVar( "nextSpawnTime", nil )
 	pl:SetNetVar( "deathTime", nil )
-	pl:SetNetVar( "isTied", false )
+	pl:SetNetVar( "isTied", nil )
+	pl:SetNetVar( "isRagdolled", nil )
 	
 	pl:Freeze( false )
 	pl:SetNoDraw( false )
@@ -567,9 +568,7 @@ function GM:KeyPress( pl, key )
 		data.filter = pl
 		local ent = util.TraceLine( data ).Entity
 		
-		if ( !IsValid( ent ) or ent.CAT_ignoreUse ) then
-			return
-		end
+		if ( !IsValid( ent ) or ent.CAT_ignoreUse ) then return end
 		
 		if ( ent:GetClass( ) == "prop_ragdoll" ) then
 			ent = catherine.entity.GetPlayer( ent )
@@ -647,9 +646,9 @@ function GM:PlayerInitialSpawn( pl )
 		catherine.player.Initialize( pl )
 	end )
 	
-	timer.Create( "Catherine.player.Initialize.Reload", 6, 0, function( )
+	timer.Create( "Catherine.timer.player.Initialize.Reload", 6, 0, function( )
 		if ( !IsValid( pl ) ) then
-			timer.Remove( "Catherine.player.Initialize.Reload" )
+			timer.Remove( "Catherine.timer.player.Initialize.Reload" )
 			return
 		end
 		
@@ -834,6 +833,8 @@ function GM:PlayerDeath( pl )
 	
 	pl:SetViewEntity( NULL )
 	pl:UnSpectate( )
+	pl:SetNetVar( "isTied", nil )
+	pl:SetNetVar( "isRagdolled", nil )
 	
 	pl.CAT_isDeadFunc = true
 	

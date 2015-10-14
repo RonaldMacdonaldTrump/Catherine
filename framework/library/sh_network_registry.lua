@@ -78,17 +78,16 @@ if ( SERVER ) then
 		} )
 	end
 	
-	local function scanErrorInTable( tab )
+	local function removeDummyInTable( tab )
 		for k, v in pairs( tab ) do
-			local keyType = type( k )
-			local valueType = type( v )
+			local keyType, valueType = type( k ), type( v )
 			
 			if ( ( keyType == "Entity" or keyType == "Player" ) and !IsValid( k ) ) then
 				tab[ k ] = nil
 			end
-
-			if ( type( v ) == "table" ) then
-				scanErrorInTable( v )
+			
+			if ( valueType == "table" ) then
+				removeDummyInTable( v )
 			else
 				if ( ( valueType == "Entity" or valueType == "Player" ) and !IsValid( v ) ) then
 					tab[ k ] = nil
@@ -97,7 +96,7 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.net.ScanErrorInNetworkRegistry( send, pl )
+	function catherine.net.RemoveDummy( send, pl )
 		for k, v in pairs( catherine.net.entityRegistry ) do
 			local keyType = type( k )
 			
@@ -106,7 +105,7 @@ if ( SERVER ) then
 			end
 			
 			if ( type( v ) == "table" ) then
-				scanErrorInTable( v )
+				removeDummyInTable( v )
 			end
 		end
 		
@@ -114,18 +113,18 @@ if ( SERVER ) then
 			catherine.net.SendAllNetworkRegistries( pl )
 		end
 	end
-
+	
 	function META:SetNetVar( key, value, noSync )
 		catherine.net.SetNetVar( self, key, value, noSync )
 	end
 	
 	META2.SetNetVar = META.SetNetVar
 	
-	timer.Create( "Catherine.timer.net.AutoScanError", 1, 0, function( )
+	timer.Create( "Catherine.timer.net.RemoveDummy", 1, 0, function( )
 		if ( table.Count( catherine.net.entityRegistry ) == 0 ) then return end
 		
 		if ( catherine.net.nextOptimizeTick <= 0 ) then
-			catherine.net.ScanErrorInNetworkRegistry( )
+			catherine.net.RemoveDummy( true )
 			catherine.net.nextOptimizeTick = catherine.configs.netRegistryOptimizeInterval
 		else
 			catherine.net.nextOptimizeTick = catherine.net.nextOptimizeTick - 1

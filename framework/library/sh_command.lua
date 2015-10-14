@@ -113,9 +113,7 @@ if ( SERVER ) then
 			return
 		end
 		
-		if ( !commandTable.runFunc ) then
-			return
-		end
+		if ( !commandTable.runFunc ) then return end
 		
 		local success, result = pcall( commandTable.runFunc, pl, args )
 		

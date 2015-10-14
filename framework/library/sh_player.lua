@@ -31,24 +31,25 @@ if ( SERVER ) then
 		{ libName = "character", funcName = "SendPlayerCharacterList" },
 		{ libName = "catData", funcName = "SendAllNetworkRegistries" }
 	}
-			
+	
 	function catherine.player.Initialize( pl, isReloading )
 		if ( !IsValid( pl ) ) then return end
 		
 		local function Initializing( )
 			if ( !IsValid( pl ) ) then return end
-
+			
 			if ( !Schema ) then
-				timer.Remove( "Catherine.player.Initialize.Reload" )
+				timer.Remove( "Catherine.timer.player.Initialize.Reload" )
 				netstream.Start( pl, "catherine.loadingError", {
 					LANG( pl, "Basic_Error_NoSchema" ),
 					true
 				} )
+				
 				return
 			end
-
+			
 			if ( !catherine.database.connected ) then
-				timer.Remove( "Catherine.player.Initialize.Reload" )
+				timer.Remove( "Catherine.timer.player.Initialize.Reload" )
 				netstream.Start( pl, "catherine.loadingError", {
 					LANG( pl, "Basic_Error_NoDatabase", catherine.database.errorMsg ),
 					true
@@ -58,9 +59,9 @@ if ( SERVER ) then
 			end
 			
 			--[[ Initializing a Catherine ... :> ]]--
-
-			catherine.net.ScanErrorInNetworkRegistry( )
-			catherine.character.ScanErrorInNetworkRegistry( )
+			
+			catherine.net.RemoveDummy( )
+			catherine.character.RemoveDummy( )
 			
 			for i = 1, #initFunctions do
 				local libName, funcName = initFunctions[ i ].libName, initFunctions[ i ].funcName
@@ -72,16 +73,17 @@ if ( SERVER ) then
 						false
 					} )
 					MsgC( Color( 255, 0, 0 ), "[CAT ERROR] Failed to initialize Catherine! ( Player : " .. pl:Name( ) .. "/" .. pl:SteamID( ) .. " ) ( Function : catherine." .. libName .. "." .. funcName .. " )\n" .. result .. "\n" )
+					
 					return
 				end
 			end
 			
-			timer.Remove( "Catherine.player.Initialize.Reload" )
+			timer.Remove( "Catherine.timer.player.Initialize.Reload" )
 			
 			if ( !catherine.catData.GetVar( pl, "language" ) ) then
 				catherine.player.UpdateLanguageSetting( pl )
 			end
-
+			
 			timer.Simple( 1, function( )
 				netstream.Start( pl, "catherine.loadingFinished" )
 				
@@ -98,7 +100,7 @@ if ( SERVER ) then
 				if ( !IsValid( pl ) ) then return end
 				
 				netstream.Start( pl, "catherine.introStart" )
-
+				
 				timer.Simple( 1, function( )
 					Initializing( )
 				end )
@@ -137,7 +139,7 @@ if ( SERVER ) then
 			if ( !IsValid( pl ) ) then return end
 			
 			if ( catherine.configs.OWNER != "" and steamID == catherine.configs.OWNER ) then
-				if ( pl:GetNWString( "usergroup" ):lower( ) == "user" ) then
+				if ( table.HasValue( { "user", "guest" }, pl:GetNWString( "usergroup" ):lower( ) ) ) then
 					local doDef = true
 					
 					for k, v in pairs( adminModule_func ) do
@@ -197,7 +199,7 @@ if ( SERVER ) then
 				catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 				return
 			end
-		
+			
 			if ( target:IsTied( ) ) then
 				catherine.util.NotifyLang( pl, "Item_Notify01_ZT" )
 				return
@@ -209,7 +211,7 @@ if ( SERVER ) then
 			end
 			
 			if ( hook.Run( "PlayerShouldTie", pl, target, time ) == false ) then return end
-
+			
 			catherine.util.ProgressBar( pl, LANG( pl, "Item_Message01_ZT" ), hook.Run( "GetTieingTime", pl, target, bool ) or time or 2, function( )
 				local tr = { }
 				tr.start = pl:GetShootPos( )
@@ -217,19 +219,19 @@ if ( SERVER ) then
 				tr.filter = pl
 				
 				local newTarget = util.TraceLine( tr ).Entity
-
+				
 				if ( !IsValid( target ) or !IsValid( newTarget ) ) then return end
 				
 				if ( newTarget:GetClass( ) == "prop_ragdoll" ) then
 					newTarget = catherine.entity.GetPlayer( newTarget )
 				end
-
+				
 				if ( IsValid( newTarget ) and newTarget:IsPlayer( ) ) then
 					if ( pl:IsTied( ) and !force ) then
 						catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 						return
 					end
-				
+					
 					if ( newTarget:IsTied( ) ) then
 						catherine.util.NotifyLang( pl, "Item_Notify01_ZT" )
 						return
@@ -247,7 +249,7 @@ if ( SERVER ) then
 							uniqueID = "zip_tie"
 						} )
 					end
-				
+					
 					newTarget:SetWeaponRaised( false )
 					newTarget:SetNetVar( "isTied", true )
 					
@@ -278,11 +280,11 @@ if ( SERVER ) then
 				local newTarget = util.TraceLine( tr ).Entity
 				
 				if ( !IsValid( target ) or !IsValid( newTarget ) ) then return end
-
+				
 				if ( newTarget:GetClass( ) == "prop_ragdoll" ) then
 					newTarget = catherine.entity.GetPlayer( newTarget )
 				end
-		
+				
 				if ( IsValid( newTarget ) and newTarget:IsPlayer( ) ) then
 					if ( pl:IsTied( ) and !force ) then
 						catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
@@ -295,8 +297,8 @@ if ( SERVER ) then
 					end
 					
 					if ( hook.Run( "PlayerShouldUnTie", pl, target, time ) == false ) then return end
-				
-					newTarget:SetNetVar( "isTied", false )
+					
+					newTarget:SetNetVar( "isTied", nil )
 					
 					hook.Run( "PlayerUnTied", pl, newTarget )
 					
@@ -337,7 +339,7 @@ if ( SERVER ) then
 	function catherine.player.IsCharacterBanned( pl )
 		return catherine.character.GetCharVar( pl, "charBanned" )
 	end
-
+	
 	function catherine.player.BunnyHopProtection( pl )
 		if ( pl:KeyPressed( IN_JUMP ) and ( pl.CAT_nextBunnyCheck or CurTime( ) ) <= CurTime( ) ) then
 			if ( hook.Run( "PlayerShouldCheckBunnyHop", pl ) == false ) then return end

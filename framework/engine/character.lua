@@ -490,17 +490,16 @@ if ( SERVER ) then
 		netstream.Start( nil, "catherine.character.DeleteNetworkRegistry", steamID )
 	end
 	
-	local function scanErrorInTable( tab )
+	local function removeDummyInTable( tab )
 		for k, v in pairs( tab ) do
-			local keyType = type( k )
-			local valueType = type( v )
+			local keyType, valueType = type( k ), type( v )
 			
 			if ( ( keyType == "Entity" or keyType == "Player" ) and !IsValid( k ) ) then
 				tab[ k ] = nil
 			end
-
-			if ( type( v ) == "table" ) then
-				scanErrorInTable( v )
+			
+			if ( valueType == "table" ) then
+				removeDummyInTable( v )
 			else
 				if ( ( valueType == "Entity" or valueType == "Player" ) and !IsValid( v ) ) then
 					tab[ k ] = nil
@@ -509,7 +508,7 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.character.ScanErrorInNetworkRegistry( send, pl )
+	function catherine.character.RemoveDummy( send, pl )
 		for k, v in pairs( catherine.character.networkRegistry ) do
 			local keyType = type( k )
 			
@@ -518,7 +517,7 @@ if ( SERVER ) then
 			end
 			
 			if ( type( v ) == "table" ) then
-				scanErrorInTable( v )
+				removeDummyInTable( v )
 			end
 		end
 		
