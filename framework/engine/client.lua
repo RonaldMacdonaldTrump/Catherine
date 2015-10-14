@@ -101,9 +101,7 @@ function GM:AddHint( name, delay )
 end
 
 function GM:AddNotify( message, _, time )
-	if ( message:sub( 1, 6 ) == "#Hint_" ) then
-		return
-	end
+	if ( message:sub( 1, 6 ) == "#Hint_" ) then return end
 	
 	catherine.notify.Add( message, time, false )
 end
@@ -154,11 +152,11 @@ function GM:CalcView( pl, pos, ang, fov )
 	return self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
 end
 
-local iconMat = Material( "icon16/server.png" )
+local serverIconMat = Material( "icon16/server.png" )
 
 function GM:OnPlayerChat( pl, text, teamOnly, isDead )
 	if ( !IsValid( pl ) ) then
-		chat.AddText( iconMat, Color( 150, 150, 150 ), LANG( "Chat_Str_Console" ), Color( 255, 255, 255 ), " : ".. text )
+		chat.AddText( serverIconMat, Color( 150, 150, 150 ), LANG( "Chat_Str_Console" ), Color( 255, 255, 255 ), " : ".. text )
 	end
 	
 	return true
@@ -166,7 +164,7 @@ end
 
 function GM:ChatText( index, name, text )
 	if ( index == 0 ) then
-		chat.AddText( iconMat, Color( 255, 255, 255 ), text )
+		chat.AddText( serverIconMat, Color( 255, 255, 255 ), text )
 	end
 end
 
@@ -391,9 +389,7 @@ function GM:DrawDoorText( ent )
 	if ( catherine.door.IsDoorDisabled( ent ) ) then return end
 	local a = catherine.util.GetAlphaFromDistance( ent:GetPos( ), catherine.pl:GetPos( ), 256 )
 	
-	if ( math.Round( a ) <= 0 ) then
-		return
-	end
+	if ( a <= 0 ) then return end
 	
 	local data = catherine.door.CalcDoorTextPos( ent )
 	local title = ent:GetNetVar( "title", LANG( "Door_UI_Default" ) )
