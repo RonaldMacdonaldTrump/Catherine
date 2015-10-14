@@ -148,21 +148,21 @@ end
 
 function SWEP:CanMoveable( pl, ent )
 	if ( CLIENT ) then return end
-
+	
 	if ( ent:IsPlayerHolding( ) ) then
 		return false
 	end
 	
 	local physObject = ent:GetPhysicsObject( )
-
+	
 	if ( !IsValid( physObject ) ) then
 		return false
 	end
-
+	
 	if ( physObject:GetMass( ) > 90 or !physObject:IsMoveable( ) ) then
 		return false
 	end
-
+	
 	return true
 end
 
@@ -170,17 +170,15 @@ function SWEP:DoPickup( pl, ent, stamina )
 	if ( ent:IsPlayerHolding( ) ) then
 		return
 	end
-
+	
 	timer.Simple( FrameTime( ) * 10, function( )
-		if ( !IsValid( ent ) or ent:IsPlayerHolding( ) ) then
-			return
-		end
-
+		if ( !IsValid( ent ) or ent:IsPlayerHolding( ) ) then return end
+		
 		pl:PickupObject( ent )
 		pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 3 ) .. ".wav", 75 )
 		catherine.character.SetCharVar( pl, "stamina", stamina - 5 )
 	end )
-
+	
 	self:SetNextSecondaryFire( CurTime( ) + self.Secondary.Delay )
 end
 
@@ -189,9 +187,7 @@ function SWEP:SecondaryAttack( )
 	local pl = self.Owner
 	local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
 	
-	if ( stamina < 10 ) then
-		return
-	end
+	if ( stamina < 10 ) then return end
 	
 	local data = { }
 	data.start = pl:GetShootPos( )
@@ -206,7 +202,7 @@ function SWEP:SecondaryAttack( )
 			local physObject = ent:GetPhysicsObject( )
 			
 			physObject:Wake( )
-
+			
 			self:DoPickup( pl, ent, stamina )
 		end
 	end
