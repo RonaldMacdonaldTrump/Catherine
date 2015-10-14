@@ -307,18 +307,16 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.ProgressBar( pl, message, time, func )
-		if ( func ) then
-			local timerID = pl:SteamID( )
-			
-			timer.Remove( timerID )
-			
-			if ( message != false ) then
-				timer.Create( timerID, time, 1, function( )
-					if ( IsValid( pl ) ) then
-						func( pl )
-					end
-				end )
-			end
+		local timerID = pl:SteamID( )
+		
+		timer.Remove( timerID )
+		
+		if ( message != false and func ) then
+			timer.Create( timerID, time, 1, function( )
+				if ( IsValid( pl ) ) then
+					func( pl )
+				end
+			end )
 		end
 		
 		netstream.Start( pl, "catherine.util.ProgressBar", {
