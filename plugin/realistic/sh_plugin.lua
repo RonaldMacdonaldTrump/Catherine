@@ -112,7 +112,7 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 			self.targetPos = Vector( 0, 0, ( math.sin( realTime * ( walkSpeed / 8 ) ) * 0.5 ) * perc )
 		end
 	else
-		if ( pl:IsNoclipping( ) ) then
+		if ( pl:IsNoclipping( ) or !pl:OnGround( ) ) then
 			self.targetPos = Vector( 0, 0, 0 )
 			self.targetAng = Angle( 0, 0, 0 )
 		else

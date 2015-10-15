@@ -214,6 +214,7 @@ function GM:PlayerNoClip( pl, status )
 		pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
 		
 		if ( SERVER ) then
+			pl:SetNoTarget( true )
 			pl:DrawWorldModel( false )
 			pl:SetNetVar( "nocliping", true )
 		end
@@ -226,6 +227,7 @@ function GM:PlayerNoClip( pl, status )
 		pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
 		
 		if ( SERVER ) then
+			pl:SetNoTarget( false )
 			pl:DrawWorldModel( true )
 			pl:SetNetVar( "nocliping", false )
 		end

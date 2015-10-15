@@ -49,7 +49,8 @@ function META:CanOverrideView( )
 		!IsValid( Entity( self:GetNetVar( "ragdollIndex", 0 ) ) ) and
 		self:IsCharacterLoaded( ) and
 		!self:IsActioning( ) and
-		self:Alive( )
+		self:Alive( ) and
+		( self:IsOnGround( ) or !self:IsNoclipping( ) )
 	) then
 		return true
 	end
