@@ -255,7 +255,7 @@ function GM:PlayerSpawn( pl )
 	pl:CrosshairDisable( )
 	pl:SetMaterial( "" )
 	pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
-	pl:SetHealth( pl:GetMaxHealth( ) ) // BUG?
+	pl:SetHealth( pl:GetMaxHealth( ) )
 	
 	if ( pl:FlashlightIsOn( ) ) then
 		pl:Flashlight( false )
