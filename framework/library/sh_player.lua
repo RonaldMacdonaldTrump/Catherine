@@ -569,8 +569,11 @@ if ( SERVER ) then
 		self:SetNetVar( "weaponRaised", bool )
 		
 		if ( IsValid( wep ) ) then
-			wep:SetNextPrimaryFire( CurTime( ) + 1 )
-			wep:SetNextSecondaryFire( CurTime( ) + 1 )
+			if ( bool and wep.OnRaised ) then
+				wep:OnRaised( )
+			elseif ( !bool and wep.OnLowered ) then
+				wep:OnLowered( )
+			end
 		end
 	end
 
