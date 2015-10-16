@@ -107,7 +107,7 @@ function PLUGIN:LoadVendors( )
 		ent:SetColor( v.col )
 		ent:SetMaterial( v.mat )
 		
-		for k1, v1 in ipairs( v.bodyGroup ) do
+		for k1, v1 in pairs( v.bodyGroup ) do
 			ent:SetBodygroup( v1.id, ent:GetBodygroup( v1.id ) )
 		end
 		

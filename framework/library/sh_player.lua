@@ -439,7 +439,7 @@ if ( SERVER ) then
 					pl:SetMoveType( MOVETYPE_WALK )
 					pl:SetLocalVelocity( vector_origin )
 
-					for k, v in ipairs( ent.CAT_weaponsBuffer ) do
+					for k, v in pairs( ent.CAT_weaponsBuffer ) do
 						pl:Give( v )
 					end
 					
@@ -453,11 +453,11 @@ if ( SERVER ) then
 			ent.CAT_weaponsBuffer = { }
 			ent.CAT_player = pl
 
-			for k, v in ipairs( pl:GetWeapons( ) ) do
+			for k, v in pairs( pl:GetWeapons( ) ) do
 				ent.CAT_weaponsBuffer[ #ent.CAT_weaponsBuffer + 1 ] = v:GetClass( )
 			end
 			
-			for k, v in ipairs( pl:GetBodyGroups( ) ) do
+			for k, v in pairs( pl:GetBodyGroups( ) ) do
 				ent:SetBodygroup( v.id, pl:GetBodygroup( v.id ) )
 			end
 			

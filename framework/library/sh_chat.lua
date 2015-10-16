@@ -348,7 +348,7 @@ if ( SERVER ) then
 		local commandTable = classTable.command or { }
 		local noSpace = classTable.noSpace
 		
-		for k, v in ipairs( type( commandTable ) == "table" and commandTable or { commandTable } ) do
+		for k, v in pairs( type( commandTable ) == "table" and commandTable or { commandTable } ) do
 			if ( text:sub( 1, #v + ( noSpace and 0 or 1 ) ) == v .. ( noSpace and "" or " " ) ) then
 				text = text:sub( #( v .. ( noSpace and "" or " " ) ) + 1 )
 			
@@ -555,7 +555,7 @@ else
 		
 		surface.PlaySound( "common/talk.wav" )
 
-		for k, v in ipairs( data ) do
+		for k, v in pairs( data ) do
 			if ( type( v ) != "Player" ) then continue end
 			local pl = v
 			local index = k

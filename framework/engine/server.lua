@@ -811,7 +811,7 @@ function GM:DoPlayerDeath( pl )
 		ent.player = self
 		ent:SetNetVar( "player", pl )
 		
-		for k, v in ipairs( pl:GetBodyGroups( ) ) do
+		for k, v in pairs( pl:GetBodyGroups( ) ) do
 			ent:SetBodygroup( v.id, pl:GetBodygroup( v.id ) )
 		end
 		

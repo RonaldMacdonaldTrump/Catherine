@@ -431,11 +431,11 @@ if ( SERVER ) then
 		ent.CAT_doorDummy = dummyEnt
 		ent.CAT_ignoreUse = true
 		
-		for k, v in ipairs( ent:GetBodyGroups( ) ) do
+		for k, v in pairs( ent:GetBodyGroups( ) ) do
 			dummyEnt:SetBodygroup( v.id, ent:GetBodygroup( v.id ) )
 		end
 		
-		for k, v in ipairs( ents.GetAll( ) ) do
+		for k, v in pairs( ents.GetAll( ) ) do
 			if ( v:GetParent( ) != ent ) then continue end
 			
 			v:SetNotSolid( true )

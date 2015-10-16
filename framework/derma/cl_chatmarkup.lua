@@ -41,7 +41,7 @@ function PANEL:Run( ... )
 		data = "<font=" .. self.font .. ">"
 	end
 
-	for k, v in ipairs( { ... } ) do
+	for k, v in pairs( { ... } ) do
 		local types = type( v )
 		
 		if ( types == "table" and v.r and v.g and v.b ) then

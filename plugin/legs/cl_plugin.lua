@@ -107,7 +107,7 @@ function PLUGIN:CreateLegs( )
 	legEnt:SetMaterial( pl:GetMaterial( ) )
 	legEnt:SetColor( pl:GetColor( ) )
 	
-	for k, v in ipairs( pl:GetBodyGroups( ) ) do
+	for k, v in pairs( pl:GetBodyGroups( ) ) do
 		legEnt:SetBodygroup( v.id, pl:GetBodygroup( v.id ) )
 	end
 	
@@ -198,7 +198,7 @@ function PLUGIN:LegsWork( pl, speed )
 		legEnt:SetSkin( pl:GetSkin( ) )
 	end
 	
-	for k, v in ipairs( pl:GetBodyGroups( ) ) do
+	for k, v in pairs( pl:GetBodyGroups( ) ) do
 		legEnt:SetBodygroup( v.id, pl:GetBodygroup( v.id ) )
 	end
 	
