@@ -437,6 +437,8 @@ function GM:PlayerShouldDamage( pl, dmgInfo )
 	end
 end
 
+local allowDoorBreach = catherine.configs.doorBreach
+
 function GM:EntityTakeDamage( ent, dmgInfo )
 	if ( ent:GetClass( ) == "prop_ragdoll" ) then
 		local pl = catherine.entity.GetPlayer( ent )
@@ -478,44 +480,46 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 		hook.Run( "PlayerTakeDamage", ent, dmgInfo:GetAttacker( ), dmgInfo )
 	end
 	
-	if ( catherine.configs.doorBreach ) then
-		local pl = dmgInfo:GetAttacker( )
-
-		if ( IsValid( pl ) and ent:GetClass( ) == "prop_door_rotating" and dmgInfo:IsBulletDamage( ) and !pl:IsNoclipping( ) and ( ent.CAT_nextDoorBreach or 0 ) <= CurTime( ) ) then
-			local partner = catherine.util.GetDoorPartner( ent )
+	if ( allowDoorBreach ) then
+		if ( ent:GetClass( ) == "prop_door_rotating" and dmgInfo:IsBulletDamage( ) ) then
+			local pl = dmgInfo:GetAttacker( )
 			
-			if ( IsValid( ent.lock ) or ( IsValid( partner ) and IsValid( partner.lock ) ) ) then return end
-			
-			local index = ent:LookupBone( "handle" )
-			
-			if ( index ) then
-				local pos = dmgInfo:GetDamagePosition( )
-
-				if ( pl:GetEyeTrace( ).Entity != ent or pl:GetPos( ):Distance( pos ) < 130 and pos:Distance( ent:GetBonePosition( index ) ) <= 5 ) then
-					ent:EmitSound( "physics/wood/wood_crate_break" .. math.random( 1, 5 ) .. ".wav", 150 )
+			if ( IsValid( pl ) and pl:IsPlayer( ) and !pl:IsNoclipping( ) and ( ent.CAT_nextDoorBreach or 0 ) <= CurTime( ) ) then
+				local partner = catherine.util.GetDoorPartner( ent )
+				
+				if ( IsValid( ent.lock ) or ( IsValid( partner ) and IsValid( partner.lock ) ) ) then return end
+				
+				local index = ent:LookupBone( "handle" )
+				
+				if ( index ) then
+					local pos = dmgInfo:GetDamagePosition( )
 					
-					local effect = EffectData( )
-					effect:SetStart( pos )
-					effect:SetOrigin( pos )
-					effect:SetScale( 10 )
-					util.Effect( "GlassImpact", effect, true, true )
-					
-					local dummyName = pl:SteamID( ) .. CurTime( )
-					pl:SetName( dummyName )
-					
-					ent:Fire( "SetSpeed", 100 )
-					ent:Fire( "UnLock" )
-					ent:Fire( "OpenAwayFrom", dummyName )
-					
-					if ( IsValid( partner ) ) then
-						partner:Fire( "SetSpeed", 100 )
-						partner:Fire( "UnLock" )
-						partner:Fire( "OpenAwayFrom", dummyName )
+					if ( pl:GetEyeTrace( ).Entity != ent or pl:GetPos( ):Distance( pos ) < 130 and pos:Distance( ent:GetBonePosition( index ) ) <= 5 ) then
+						ent:EmitSound( "physics/wood/wood_crate_break" .. math.random( 1, 5 ) .. ".wav", 150 )
+						
+						local effect = EffectData( )
+						effect:SetStart( pos )
+						effect:SetOrigin( pos )
+						effect:SetScale( 10 )
+						util.Effect( "GlassImpact", effect, true, true )
+						
+						local dummyName = pl:SteamID( ) .. CurTime( )
+						pl:SetName( dummyName )
+						
+						ent:Fire( "SetSpeed", 100 )
+						ent:Fire( "UnLock" )
+						ent:Fire( "OpenAwayFrom", dummyName )
+						
+						if ( IsValid( partner ) ) then
+							partner:Fire( "SetSpeed", 100 )
+							partner:Fire( "UnLock" )
+							partner:Fire( "OpenAwayFrom", dummyName )
+						end
+						
+						ent:EmitSound( "physics/wood/wood_plank_break" .. math.random( 1, 4 ) .. ".wav", 100, 120 )
+						
+						ent.CAT_nextDoorBreach = CurTime( ) + 3
 					end
-					
-					ent:EmitSound( "physics/wood/wood_plank_break" .. math.random( 1, 4 ) .. ".wav", 100, 120 )
-					
-					ent.CAT_nextDoorBreach = CurTime( ) + 3
 				end
 			end
 		end
