@@ -85,7 +85,7 @@ function PANEL:Init( )
 	
 	self.TopPanel.Lists = vgui.Create( "DPanelList", self.TopPanel )
 	self.TopPanel.Lists:SetPos( 15, 130 )
-	self.TopPanel.Lists:SetSize( self.TopPanel.w - 30, self.TopPanel.h - 220 )
+	self.TopPanel.Lists:SetSize( self.TopPanel.w - 30, self.TopPanel.h - 145 )
 	self.TopPanel.Lists:SetSpacing( 5 )
 	self.TopPanel.Lists:EnableHorizontal( false )
 	self.TopPanel.Lists:EnableVerticalScrollbar( true )	
