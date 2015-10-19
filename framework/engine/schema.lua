@@ -29,7 +29,7 @@ function catherine.schema.Initialization( )
 		IntroTitle = "Example",
 		IntroDesc = "A schema."
 	}
-
+	
 	local schemaFolderName = Schema.FolderName
 	
 	if ( SERVER ) then

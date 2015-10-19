@@ -23,7 +23,7 @@ if ( SERVER ) then
 	catherine.database.connected = catherine.database.connected or false
 	catherine.database.errorMsg = catherine.database.errorMsg or "Connection Error"
 	catherine.database.object = catherine.database.object or nil
-
+	
 	local CAT_DATABASE_CREATE_TABLES_NON_SQLITE = [[
 	CREATE TABLE IF NOT EXISTS `catherine_characters` (
 		`_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -51,7 +51,7 @@ if ( SERVER ) then
 		PRIMARY KEY (`_id`)
 	);
 	]]
-
+	
 	local CAT_DATABASE_CREATE_TABLES_SQLITE = [[
 	CREATE TABLE IF NOT EXISTS `catherine_characters` (
 		`_id` INTEGER PRIMARY KEY,
@@ -82,7 +82,7 @@ if ( SERVER ) then
 		"catherine_characters",
 		"catherine_players"
 	}
-
+	
 	local CAT_DATABASE_DROP_TABLE = [[
 		DROP TABLE IF EXISTS `catherine_characters`;
 		DROP TABLE IF EXISTS `catherine_players`;
