@@ -103,11 +103,11 @@ function PLUGIN:LoadVendors( )
 		self:MakeVendor( ent, v )
 		
 		ent:SetModel( v.model )
-		ent:SetSkin( v.skin )
-		ent:SetColor( v.col )
-		ent:SetMaterial( v.mat )
+		ent:SetSkin( v.skin or 0 )
+		ent:SetColor( v.col or Color( 255, 255, 255, 255 ) )
+		ent:SetMaterial( v.mat or "" )
 		
-		for k1, v1 in pairs( v.bodyGroup ) do
+		for k1, v1 in pairs( v.bodyGroup or { } ) do
 			ent:SetBodygroup( v1.id, ent:GetBodygroup( v1.id ) )
 		end
 		
