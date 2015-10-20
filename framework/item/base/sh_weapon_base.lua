@@ -15,6 +15,30 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
+local Ammo_Types = {
+	"ar2",
+	"alyxgun",
+	"pistol",
+	"smg1",
+	"357",
+	"xbowbolt",
+	"buckshot",
+	"rpg_round",
+	"smg1_grenade",
+	"sniperround",
+	"sniperpenetratedround",
+	"grenade",
+	"thumper",
+	"gravity",
+	"battery",
+	"gaussenergy",
+	"combinecannon",
+	"airboatgun",
+	"striderminigun",
+	"helicoptergun",
+	"ar2altfire",
+	"slam"
+}
 
 local BASE = catherine.item.New( "WEAPON", nil, true )
 BASE.name = "Weapon Base"
@@ -26,7 +50,8 @@ BASE.isWeapon = true
 BASE.weaponClass = "weapon_smg1"
 BASE.itemData = {
 	equiped = false,
-	clip1 = 0
+	clip1 = 0,
+	clip2 = 0
 }
 BASE.useDynamicItemData = true
 BASE.weaponType = "primary"
@@ -49,7 +74,7 @@ BASE.func.equip = {
 		
 		local playerWeaponType = catherine.character.GetCharVar( pl, "equippingWeaponTypes", { } )
 		local itemWeaponType = itemTable.weaponType
-
+		
 		if (
 			playerWeaponType[ itemWeaponType ] and
 			( !itemTable.attachmentLimit[ itemWeaponType ] or
@@ -72,16 +97,25 @@ BASE.func.equip = {
 			pl:StripWeapon( itemTable.weaponClass )
 		end
 		
+		local saveAmmos = { }
+		
+		for k, v in pairs( Ammo_Types ) do
+			saveAmmos[ #saveAmmos + 1 ] = { v, pl:GetAmmoCount( v ) }
+		end
+		
 		local wep = pl:Give( itemTable.weaponClass )
 		
 		if ( IsValid( wep ) ) then
-			pl:SelectWeapon( itemTable.weaponClass )
-			
-			if ( pl:GetAmmoCount( wep:GetPrimaryAmmoType( ) ) == wep:Clip1( ) and catherine.inventory.GetItemData( pl, itemTable.uniqueID, "clip1", 0 ) == 0 ) then
-				pl:RemoveAmmo( wep:Clip1( ), wep:GetPrimaryAmmoType( ) )
+			for k, v in pairs( saveAmmos ) do
+				if ( v[ 2 ] != pl:GetAmmoCount( v[ 1 ] ) ) then
+					pl:RemoveAmmo( pl:GetAmmoCount( v[ 1 ] ) - v[ 2 ], v[ 1 ] )
+				end
 			end
 			
+			pl:SelectWeapon( itemTable.weaponClass )
+			
 			wep:SetClip1( catherine.inventory.GetItemData( pl, itemTable.uniqueID, "clip1", 0 ) )
+			wep:SetClip2( catherine.inventory.GetItemData( pl, itemTable.uniqueID, "clip2", 0 ) )
 			
 			if ( playerWeaponType[ itemWeaponType ] ) then
 				playerWeaponType[ itemWeaponType ] = playerWeaponType[ itemWeaponType ] + 1
@@ -112,6 +146,7 @@ BASE.func.unequip = {
 			
 			if ( IsValid( wep ) ) then
 				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "clip1", wep:Clip1( ) )
+				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "clip2", wep:Clip2( ) )
 				pl:StripWeapon( itemTable.weaponClass )
 			end
 		end
@@ -169,6 +204,7 @@ if ( SERVER ) then
 		
 			if ( IsValid( wep ) ) then
 				catherine.inventory.SetItemData( pl, k, "clip1", wep:Clip1( ) )
+				catherine.inventory.SetItemData( pl, k, "clip2", wep:Clip2( ) )
 			end
 		end
 		
@@ -183,6 +219,7 @@ if ( SERVER ) then
 			
 			catherine.item.Work( pl, k, "unequip" )
 			catherine.inventory.SetItemData( pl, k, "clip1", 0 )
+			catherine.inventory.SetItemData( pl, k, "clip2", 0 )
 			catherine.item.Spawn( k, pl:GetPos( ) )
 			catherine.item.Take( pl, k )
 		end
@@ -223,6 +260,7 @@ if ( SERVER ) then
 			
 				if ( IsValid( wep ) ) then
 					catherine.inventory.SetItemData( v, k1, "clip1", wep:Clip1( ) )
+					catherine.inventory.SetItemData( v, k1, "clip2", wep:Clip2( ) )
 				end
 			end
 		end

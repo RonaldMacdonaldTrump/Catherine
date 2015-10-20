@@ -22,8 +22,6 @@ catherine.hud = catherine.hud or {
 	progressBar = nil,
 	topNotify = nil,
 	welcomeIntro = nil,
-	clip1 = 0,
-	pre = 0,
 	vAlpha = 0,
 	vAlphaTarget = 255
 }
@@ -127,11 +125,8 @@ function catherine.hud.Ammo( pl, w, h )
 	local pre = pl:GetAmmoCount( wep:GetPrimaryAmmoType( ) )
 	//local sec = catherine.pl:GetAmmoCount( wep:GetSecondaryAmmoType( ) )
 	
-	catherine.hud.clip1 = Lerp( 0.03, catherine.hud.clip1, clip1 )
-	catherine.hud.pre = Lerp( 0.03, catherine.hud.pre, pre )
-	
 	if ( clip1 > 0 or pre > 0 ) then
-		drawText( clip1 == -1 and pre or mathR( catherine.hud.clip1 ) .. " / " .. mathR( catherine.hud.pre ), "catherine_normal25", w - 30, h - 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		drawText( clip1 == -1 and pre or mathR( clip1 ) .. " / " .. mathR( pre ), "catherine_normal25", w - 30, h - 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	end
 end
 

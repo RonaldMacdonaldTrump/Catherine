@@ -42,10 +42,7 @@ if ( SERVER ) then
 	function catherine.externalX.CheckNewPatch( pl, isManual, runFunc )
 		if ( isManual and IsValid( pl ) ) then
 			if ( ( catherine.externalX.nextCheckable or 0 ) >= CurTime( ) ) then
-				netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", {
-					false,
-					LANG( pl, "System_Notify_ExternalX_NextTime" )
-				} )
+				netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", LANG( pl, "System_Notify_ExternalX_NextTime" ) )
 				return
 			end
 		end
@@ -318,7 +315,7 @@ else
 			catherine.vgui.system.externalXPanel.status = false
 			
 			if ( data and type( data ) == "string" ) then
-				catherine.vgui.system.externalXPanel:SetErrorMessage( LANG( "System_Notify_ExternalXError", data ) )
+				Derma_Message( LANG( "System_Notify_ExternalXError", data ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 			end
 		end
 	end )
@@ -334,7 +331,7 @@ else
 			catherine.vgui.system.externalXPanel.hideAll = false
 			
 			if ( data[ 2 ] and type( data[ 2 ] ) == "string" ) then
-				catherine.vgui.system.externalXPanel:SetErrorMessage( LANG( "System_Notify_ExternalXError2", data[ 2 ] ) )
+				Derma_Message( LANG( "System_Notify_ExternalXError2", data[ 2 ] ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 			end
 		end
 	end )

@@ -235,6 +235,7 @@ function GM:PlayerSpawn( pl )
 	end
 	
 	pl.CAT_deathSoundPlayed = nil
+	pl.CAT_isDeadFunc = nil
 	
 	pl:SetNetVar( "noDrawOriginal", nil )
 	pl:SetNetVar( "nextSpawnTime", nil )

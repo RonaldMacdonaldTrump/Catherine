@@ -405,7 +405,32 @@ if ( SERVER ) then
 	function catherine.player.GetPlayerDefaultJumpPower( pl )
 		return hook.Run( "GetCustomPlayerDefaultJumpPower", pl ) or catherine.configs.playerDefaultJumpPower
 	end
-
+	
+	local Ammo_Types = {
+		"ar2",
+		"alyxgun",
+		"pistol",
+		"smg1",
+		"357",
+		"xbowbolt",
+		"buckshot",
+		"rpg_round",
+		"smg1_grenade",
+		"sniperround",
+		"sniperpenetratedround",
+		"grenade",
+		"thumper",
+		"gravity",
+		"battery",
+		"gaussenergy",
+		"combinecannon",
+		"airboatgun",
+		"striderminigun",
+		"helicoptergun",
+		"ar2altfire",
+		"slam"
+	}
+	
 	function catherine.player.RagdollWork( pl, status, time )
 		if ( hook.Run( "PlayerShouldWorkRagdoll", pl, status, time ) == false ) then return end
 		
@@ -430,7 +455,7 @@ if ( SERVER ) then
 				
 				pl:SetNetVar( "ragdollIndex", nil )
 				pl:SetNetVar( "isRagdolled", nil )
-
+				
 				if ( !pl.CAT_isDeadFunc ) then
 					pl:SetPos( ent:GetPos( ) )
 					pl:SetNotSolid( false )
@@ -438,9 +463,21 @@ if ( SERVER ) then
 					pl:Freeze( false )
 					pl:SetMoveType( MOVETYPE_WALK )
 					pl:SetLocalVelocity( vector_origin )
-
+					
+					local saveAmmos = { }
+					
+					for k, v in pairs( Ammo_Types ) do
+						saveAmmos[ #saveAmmos + 1 ] = { v, pl:GetAmmoCount( v ) }
+					end
+					
 					for k, v in pairs( ent.CAT_weaponsBuffer ) do
 						pl:Give( v )
+					end
+					
+					for k, v in pairs( saveAmmos ) do
+						if ( v[ 2 ] != pl:GetAmmoCount( v[ 1 ] ) ) then
+							pl:RemoveAmmo( pl:GetAmmoCount( v[ 1 ] ) - v[ 2 ], v[ 1 ] )
+						end
 					end
 					
 					catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )

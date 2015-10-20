@@ -96,7 +96,7 @@ else
 			catherine.vgui.system.updatePanel:RefreshHistory( )
 			
 			if ( data and type( data ) == "string" ) then
-				catherine.vgui.system.updatePanel:SetErrorMessage( LANG( "System_Notify_UpdateError", data ) )
+				Derma_Message( LANG( "System_Notify_UpdateError", data ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 			end
 		end
 	end )

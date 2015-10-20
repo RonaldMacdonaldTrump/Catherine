@@ -44,7 +44,6 @@ function PANEL:Init( )
 	self.updatePanel.x, self.updatePanel.y = 20, 45
 	self.updatePanel.status = false
 	self.updatePanel.loadingAni = 0
-	self.updatePanel.errorMessage = nil
 	
 	self.updatePanel:SetSize( self.updatePanel.w, self.updatePanel.h )
 	self.updatePanel:SetPos( self.updatePanel.x, self.updatePanel.y )
@@ -80,43 +79,23 @@ function PANEL:Init( )
 				pnl.Lists:SetVisible( true )
 			end
 			
-			if ( pnl.errorMessage ) then
+			local data = catherine.net.GetNetGlobalVar( "cat_updateData", { } )
+			
+			if ( data.version != catherine.GetVersion( ) ) then
 				surface.SetDrawColor( 255, 255, 255, 255 )
-				surface.SetMaterial( errorMat )
+				surface.SetMaterial( foundNewMat )
 				surface.DrawTexturedRect( 10, h - 97, 16, 16 )
 				
-				draw.SimpleText( pnl.errorMessage, "catherine_normal15", 33, h - 90, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+				draw.SimpleText( LANG( "System_UI_Update_FoundNew" ), "catherine_normal15", 33, h - 90, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			else
-				local data = catherine.net.GetNetGlobalVar( "cat_updateData", { } )
+				surface.SetDrawColor( 255, 255, 255, 255 )
+				surface.SetMaterial( alreadyNewMat )
+				surface.DrawTexturedRect( 10, h - 97, 16, 16 )
 				
-				if ( data.version != catherine.GetVersion( ) ) then
-					surface.SetDrawColor( 255, 255, 255, 255 )
-					surface.SetMaterial( foundNewMat )
-					surface.DrawTexturedRect( 10, h - 97, 16, 16 )
-					
-					draw.SimpleText( LANG( "System_UI_Update_FoundNew" ), "catherine_normal15", 33, h - 90, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-				else
-					surface.SetDrawColor( 255, 255, 255, 255 )
-					surface.SetMaterial( alreadyNewMat )
-					surface.DrawTexturedRect( 10, h - 97, 16, 16 )
-					
-					draw.SimpleText( LANG( "System_UI_Update_AlreadyNew" ), "catherine_normal15", 33, h - 90, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-				end
+				draw.SimpleText( LANG( "System_UI_Update_AlreadyNew" ), "catherine_normal15", 33, h - 90, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			end
 		end
 	end
-	
-	self.updatePanel.SetErrorMessage = function( pnl, text )
-		pnl.errorMessage = text
-		
-		timer.Remove( "Catherine.timer.system.ErrorMessageRemove" )
-		timer.Create( "Catherine.timer.system.ErrorMessageRemove", 5, 1, function( )
-			if ( IsValid( catherine.vgui.system ) ) then
-				pnl.errorMessage = nil
-			end
-		end )
-	end
-	
 	self.updatePanel.RefreshHistory = function( pnl )
 		pnl.Lists:Clear( )
 		local data = catherine.net.GetNetGlobalVar( "cat_updateData", { } )
@@ -1007,7 +986,6 @@ function PANEL:Init( )
 	self.externalXPanel.w, self.externalXPanel.h = panelWSize, self.h * 0.45 + 5
 	self.externalXPanel.x, self.externalXPanel.y = 20, self.h * 0.5 + 20
 	self.externalXPanel.loadingAni = 0
-	self.externalXPanel.errorMessage = nil
 	self.externalXPanel.hideAll = false
 	self.externalXPanel.restartDelay = false
 	
@@ -1059,46 +1037,27 @@ function PANEL:Init( )
 		
 		local textH = pnl.install:IsVisible( ) and h - 95 or h - 60
 		
-		if ( pnl.errorMessage ) then
+		if ( catherine.externalX.foundNewPatch ) then
+			pnl.install:SetVisible( true )
+		else
+			pnl.install:SetVisible( false )
+		end
+		
+		if ( catherine.externalX.foundNewPatch ) then
 			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.SetMaterial( errorMat )
+			surface.SetMaterial( foundNewMat )
 			surface.DrawTexturedRect( 10, textH - 7, 16, 16 )
 			
-			draw.SimpleText( pnl.errorMessage, "catherine_normal15", 35, textH, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( LANG( "System_UI_ExternalX_FoundNewPatch", catherine.externalX.newPatchVersion or "INIT" ), "catherine_normal15", 35, textH, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 		else
-			if ( catherine.externalX.foundNewPatch ) then
-				pnl.install:SetVisible( true )
-			else
-				pnl.install:SetVisible( false )
-			end
+			if ( pnl.restartDelay ) then return end
 			
-			if ( catherine.externalX.foundNewPatch ) then
-				surface.SetDrawColor( 255, 255, 255, 255 )
-				surface.SetMaterial( foundNewMat )
-				surface.DrawTexturedRect( 10, textH - 7, 16, 16 )
-				
-				draw.SimpleText( LANG( "System_UI_ExternalX_FoundNewPatch", catherine.externalX.newPatchVersion or "INIT" ), "catherine_normal15", 35, textH, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			else
-				if ( pnl.restartDelay ) then return end
-				
-				surface.SetDrawColor( 255, 255, 255, 255 )
-				surface.SetMaterial( alreadyNewMat )
-				surface.DrawTexturedRect( 10, textH - 7, 16, 16 )
-				
-				draw.SimpleText( LANG( "System_UI_ExternalX_AlreadyNewPatch" ), "catherine_normal15", 35, textH, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			end
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface.SetMaterial( alreadyNewMat )
+			surface.DrawTexturedRect( 10, textH - 7, 16, 16 )
+			
+			draw.SimpleText( LANG( "System_UI_ExternalX_AlreadyNewPatch" ), "catherine_normal15", 35, textH, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 		end
-	end
-	
-	self.externalXPanel.SetErrorMessage = function( pnl, text )
-		pnl.errorMessage = text
-		
-		timer.Remove( "Catherine.timer.system.ErrorMessageRemove2" )
-		timer.Create( "Catherine.timer.system.ErrorMessageRemove2", 5, 1, function( )
-			if ( IsValid( catherine.vgui.system ) ) then
-				pnl.errorMessage = nil
-			end
-		end )
 	end
 	
 	self.externalXPanel.check = vgui.Create( "catherine.vgui.button", self.externalXPanel )

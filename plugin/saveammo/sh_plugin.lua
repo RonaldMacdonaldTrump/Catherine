@@ -72,9 +72,14 @@ function PLUGIN:PostCharacterSave( pl )
 	catherine.character.SetCharVar( pl, "ammos", tab )
 end
 
+function PLUGIN:PlayerDeath( pl )
+	pl:RemoveAllAmmo( )
+	catherine.character.SetCharVar( pl, "ammos", nil )
+end
+
 function PLUGIN:PlayerSpawnedInCharacter( pl )
 	pl:RemoveAllAmmo( )
-
+	
 	for k, v in pairs( catherine.character.GetCharVar( pl, "ammos", { } ) ) do
 		pl:SetAmmo( tonumber( v ) or 0, k )
 	end
