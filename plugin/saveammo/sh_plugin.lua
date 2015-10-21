@@ -33,7 +33,7 @@ catherine.language.Merge( "korean", {
 
 if ( CLIENT ) then return end
 
-local Ammo_Types = {
+local ammoTypes = {
 	"ar2",
 	"alyxgun",
 	"pistol",
@@ -61,7 +61,7 @@ local Ammo_Types = {
 function PLUGIN:PostCharacterSave( pl )
 	local tab = { }
 	
-	for k, v in pairs( Ammo_Types ) do
+	for k, v in pairs( ammoTypes ) do
 		local ammoCount = pl:GetAmmoCount( v )
 		
 		if ( ammoCount > 0 ) then

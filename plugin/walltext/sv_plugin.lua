@@ -34,7 +34,7 @@ function PLUGIN:PreCleanupMap( )
 	self:SaveTexts( )
 end
 
-function PLUGIN:PostCleanupMap( )
+function PLUGIN:PostCleanupMapDelayed( )
 	self:LoadTexts( )
 end
 

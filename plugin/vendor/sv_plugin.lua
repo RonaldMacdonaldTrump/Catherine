@@ -370,7 +370,7 @@ function PLUGIN:PreCleanupMap( )
 	self:SaveVendors( )
 end
 
-function PLUGIN:PostCleanupMap( )
+function PLUGIN:PostCleanupMapDelayed( )
 	self:LoadVendors( )
 end
 

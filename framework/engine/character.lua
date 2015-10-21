@@ -525,7 +525,7 @@ if ( SERVER ) then
 			catherine.character.SendAllNetworkRegistries( pl )
 		end
 	end
-
+	
 	function catherine.character.Save( pl )
 		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
 		if ( hook.Run( "PlayerShouldSaveCharacter", pl ) == false ) then return end
@@ -538,7 +538,7 @@ if ( SERVER ) then
 		local steamID = getSteamID( pl )
 		
 		for k, v in pairs( networkRegistry ) do
-			if ( type( v ) == "Entity" and IsValid( v ) ) then
+			if ( type( v ) == "Entity" ) then
 				catherine.character.networkRegistry[ steamID ][ k ] = nil
 			end
 		end
@@ -546,10 +546,10 @@ if ( SERVER ) then
 		local id = pl:GetCharacterID( )
 		
 		if ( !id ) then return end
-
+		
 		catherine.database.UpdateDatas( "catherine_characters", "_id = '" .. tostring( id ) .. "' AND _steamID = '" .. steamID .. "'", networkRegistry, function( )
 			if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
-		
+			
 			catherine.character.RefreshCharacterBuffer( pl )
 			catherine.util.Print( Color( 0, 255, 0 ), pl:SteamName( ) .. "'s [" .. id .. "] character has been saved." )
 		end )

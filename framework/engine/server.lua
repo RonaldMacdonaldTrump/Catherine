@@ -993,6 +993,16 @@ function GM:InitPostEntity( )
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has been loaded." )
 end
 
+function GM:PostCleanupMap( )
+	for k, v in pairs( ents.GetAll( ) ) do
+		if ( IsValid( v ) and v:GetModel( ) ) then
+			catherine.entity.SetMapEntity( v, true )
+		end
+	end
+	
+	hook.Run( "PostCleanupMapDelayed" )
+end
+
 function GM:ShutDown( )
 	catherine.shuttingDown = true
 	

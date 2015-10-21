@@ -406,31 +406,6 @@ if ( SERVER ) then
 		return hook.Run( "GetCustomPlayerDefaultJumpPower", pl ) or catherine.configs.playerDefaultJumpPower
 	end
 	
-	local Ammo_Types = {
-		"ar2",
-		"alyxgun",
-		"pistol",
-		"smg1",
-		"357",
-		"xbowbolt",
-		"buckshot",
-		"rpg_round",
-		"smg1_grenade",
-		"sniperround",
-		"sniperpenetratedround",
-		"grenade",
-		"thumper",
-		"gravity",
-		"battery",
-		"gaussenergy",
-		"combinecannon",
-		"airboatgun",
-		"striderminigun",
-		"helicoptergun",
-		"ar2altfire",
-		"slam"
-	}
-	
 	function catherine.player.RagdollWork( pl, status, time )
 		if ( hook.Run( "PlayerShouldWorkRagdoll", pl, status, time ) == false ) then return end
 		

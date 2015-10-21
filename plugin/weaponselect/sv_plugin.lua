@@ -26,6 +26,12 @@ concommand.Add( "cat_plugin_ws_select", function( pl, _, args )
 	end
 end )
 
+concommand.Add( "cat_plugin_ws_refresh", function( pl, _, args )
+	netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
+		4
+	} )
+end )
+
 function PLUGIN:PlayerSpawnedInCharacter( pl )
 	timer.Simple( 1, function( )
 		netstream.Start( pl, "catherine.plugin.weaponselect.Refresh", {
