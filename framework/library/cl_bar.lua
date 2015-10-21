@@ -74,18 +74,19 @@ function catherine.bar.Draw( )
 	end
 	
 	local i = 0
+	local curTime = CurTime( )
 	
 	for k, v in pairs( catherine.bar.lists ) do
 		local per = math_min( v.getFunc( pl ) / v.maxFunc( pl ), 1 )
 		
 		if ( v.prevValue != per ) then
-			v.lifeTime = CurTime( ) + ( v.lifeTimeFade or 5 )
+			v.lifeTime = curTime + ( v.lifeTimeFade or 5 )
 		end
-
+		
 		v.prevValue = per
 		
 		if ( !v.alwaysShowing ) then
-			if ( v.lifeTime <= CurTime( ) ) then
+			if ( v.lifeTime <= curTime ) then
 				v.a = lerp( 0.03, v.a, 0 )
 			else
 				if ( per != 0 ) then
@@ -103,7 +104,7 @@ function catherine.bar.Draw( )
 				v.a = lerp( 0.03, v.a, 0 )
 			end
 		end
-
+		
 		v.w = math_approach( v.w, barW * per, 1 )
 		v.y = lerp( 0.09, v.y, -barH + i * barH * 2 )
 		

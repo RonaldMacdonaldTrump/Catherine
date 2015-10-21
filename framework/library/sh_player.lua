@@ -134,7 +134,7 @@ if ( SERVER ) then
 	
 	function catherine.player.UpdateInformation( pl )
 		local steamID = pl:SteamID( )
-
+		
 		catherine.database.GetDatas( "catherine_players", "_steamID = '" .. steamID .. "'", function( data )
 			if ( !IsValid( pl ) ) then return end
 			
@@ -393,7 +393,7 @@ if ( SERVER ) then
 	function catherine.player.IsIgnoreGiveFlagWeapon( pl )
 		return pl.CAT_ignoreGiveFlagWeapon
 	end
-
+	
 	function catherine.player.IsIgnoreScreenColor( pl )
 		return pl.CAT_ignoreScreenColor
 	end
@@ -401,7 +401,7 @@ if ( SERVER ) then
 	function catherine.player.GetPlayerDefaultRunSpeed( pl )
 		return hook.Run( "GetCustomPlayerDefaultRunSpeed", pl ) or catherine.configs.playerDefaultRunSpeed
 	end
-
+	
 	function catherine.player.GetPlayerDefaultJumpPower( pl )
 		return hook.Run( "GetCustomPlayerDefaultJumpPower", pl ) or catherine.configs.playerDefaultJumpPower
 	end
@@ -464,46 +464,36 @@ if ( SERVER ) then
 					pl:SetMoveType( MOVETYPE_WALK )
 					pl:SetLocalVelocity( vector_origin )
 					
-					local saveAmmos = { }
-					
-					for k, v in pairs( Ammo_Types ) do
-						saveAmmos[ #saveAmmos + 1 ] = { v, pl:GetAmmoCount( v ) }
-					end
-					
 					for k, v in pairs( ent.CAT_weaponsBuffer ) do
-						pl:Give( v )
-					end
-					
-					for k, v in pairs( saveAmmos ) do
-						if ( v[ 2 ] != pl:GetAmmoCount( v[ 1 ] ) ) then
-							pl:RemoveAmmo( pl:GetAmmoCount( v[ 1 ] ) - v[ 2 ], v[ 1 ] )
-						end
+						pl:Give( v, true )
 					end
 					
 					catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
 					hook.Run( "PlayerRagdollExited", pl )
 				end
 			end )
-
-			pl.CAT_ragdoll = ent
-
-			ent.CAT_weaponsBuffer = { }
-			ent.CAT_player = pl
-
-			for k, v in pairs( pl:GetWeapons( ) ) do
-				ent.CAT_weaponsBuffer[ #ent.CAT_weaponsBuffer + 1 ] = v:GetClass( )
-			end
 			
 			for k, v in pairs( pl:GetBodyGroups( ) ) do
 				ent:SetBodygroup( v.id, pl:GetBodygroup( v.id ) )
 			end
+			
+			pl.CAT_ragdoll = ent
+			ent.CAT_player = pl
+			
+			local equippedWeapons = { }
+			
+			for k, v in pairs( pl:GetWeapons( ) ) do
+				equippedWeapons[ #equippedWeapons + 1 ] = v:GetClass( )
+			end
+			
+			ent.CAT_weaponsBuffer = equippedWeapons
 			
 			pl:StripWeapons( )
 			pl:GodDisable( )
 			pl:Freeze( true )
 			pl:SetNotSolid( true )
 			pl:SetNoDraw( true )
-
+			
 			pl:SetNetVar( "ragdollIndex", ent:EntIndex( ) )
 			pl:SetNetVar( "isRagdolled", true )
 			
@@ -514,7 +504,7 @@ if ( SERVER ) then
 					timer.Remove( timerID1 )
 					return
 				end
-
+				
 				pl:SetPos( ent:GetPos( ) )
 			end )
 			
@@ -532,10 +522,10 @@ if ( SERVER ) then
 					timer.Remove( timerID1 )
 					timer.Remove( timerID2 )
 				end )
-
+				
 				timer.Create( timerID2, 1, 0, function( )
 					if ( !IsValid( pl ) ) then return end
-
+					
 					if ( !pl:Alive( ) ) then
 						timer.Remove( timerID1 )
 						timer.Remove( timerID2 )
@@ -544,7 +534,7 @@ if ( SERVER ) then
 					end
 					
 					local ragdoll = pl.CAT_ragdoll
-
+					
 					if ( IsValid( ragdoll ) ) then
 						time2 = time2 - 1
 						
@@ -553,7 +543,7 @@ if ( SERVER ) then
 								ragdoll.CAT_paused = true
 								catherine.util.ProgressBar( pl, false )
 							end
-
+							
 							return
 						elseif ( ragdoll.CAT_paused ) then
 							if ( time2 > 0 ) then
@@ -591,7 +581,7 @@ if ( SERVER ) then
 			pl.CAT_ragdoll:Remove( )
 		end
 	end
-
+	
 	function META:SetWeaponRaised( bool, wep )
 		if ( self:IsTied( ) ) then
 			if ( self:GetWeaponRaised( ) ) then
@@ -613,7 +603,7 @@ if ( SERVER ) then
 			end
 		end
 	end
-
+	
 	function META:ToggleWeaponRaised( )
 		local bool = self:GetWeaponRaised( )
 		
@@ -638,7 +628,7 @@ if ( SERVER ) then
 	META.CATSetArmor = META.CATSetArmor or META.SetArmor
 	META.CATSetUserGroup = META.CATSetUserGroup or META.SetUserGroup
 	META.CATLastHitGroup = META.CATLastHitGroup or META.LastHitGroup
-
+	
 	function META:LastHitGroup( )
 		return pl.CAT_lastHitGroup or self:CATLastHitGroup( )
 	end
@@ -666,13 +656,55 @@ if ( SERVER ) then
 		
 		hook.Run( "PlayerArmorSet", self, armor, oldArmor )
 	end
-
-	function META:Give( uniqueID )
+	
+	local ammoTypes = {
+		"ar2",
+		"alyxgun",
+		"pistol",
+		"smg1",
+		"357",
+		"xbowbolt",
+		"buckshot",
+		"rpg_round",
+		"smg1_grenade",
+		"sniperround",
+		"sniperpenetratedround",
+		"grenade",
+		"thumper",
+		"gravity",
+		"battery",
+		"gaussenergy",
+		"combinecannon",
+		"airboatgun",
+		"striderminigun",
+		"helicoptergun",
+		"ar2altfire",
+		"slam"
+	}
+	
+	function META:Give( uniqueID, noGiveDefaultAmmo )
 		if ( hook.Run( "PlayerShouldGiveWeapon", self, uniqueID ) == false ) then return end
+		local ammoStack = nil
 		
 		self.CAT_isForceGiveWeapon = true
 		
+		if ( noGiveDefaultAmmo ) then
+			ammoStack = { }
+			
+			for k, v in pairs( ammoTypes ) do
+				ammoStack[ #ammoStack + 1 ] = { v, self:GetAmmoCount( v ) }
+			end
+		end
+		
 		local wep = self:CATGiveWeapon( uniqueID )
+		
+		if ( noGiveDefaultAmmo ) then
+			for k, v in pairs( ammoStack ) do
+				if ( v[ 2 ] != self:GetAmmoCount( v[ 1 ] ) ) then
+					self:RemoveAmmo( self:GetAmmoCount( v[ 1 ] ) - v[ 2 ], v[ 1 ] )
+				end
+			end
+		end
 		
 		self.CAT_isForceGiveWeapon = nil
 		
@@ -752,7 +784,7 @@ function catherine.player.GetHitGroup( pl, pos )
 			end
 		end
 	end
-
+	
 	return hitGroup
 end
 
@@ -787,7 +819,7 @@ end
 
 function META:IsFemale( )
 	local model = self:GetModel( ):lower( )
-
+	
 	if ( model:find( "female" ) or model:find( "alyx" ) or model:find( "mossman" ) ) then
 		return true
 	end

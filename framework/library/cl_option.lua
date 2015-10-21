@@ -102,6 +102,6 @@ catherine.option.Register( "CONVAR_LANGUAGE", "cat_convar_language", "^Option_St
 			name = v.name
 		}
 	end
-
+	
 	return lang
 end )

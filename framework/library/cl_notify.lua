@@ -19,6 +19,15 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.notify = catherine.notify or { }
 catherine.notify.lists = { }
 
+--[[ Function Optimize :> ]]--
+local math_round = math.Round
+local lerp = Lerp
+local draw_simpleText = draw.SimpleText
+local draw_roundedBox = draw.RoundedBox
+local table_remove = table.remove
+local math_clamp = math.Clamp
+local color = Color
+
 function catherine.notify.Add( message, time, sound )
 	local index = #catherine.notify.lists + 1
 	
@@ -32,11 +41,11 @@ function catherine.notify.Add( message, time, sound )
 	if ( sound != false ) then
 		surface.PlaySound( sound or "buttons/button24.wav" )
 	end
-
+	
 	local w = ScrW( ) * 0.4
 	
 	if ( tw >= ScrW( ) * 0.4 ) then
-		w = math.Clamp( w + ( tw - w ) + 50, 0, ScrW( ) - 10 )
+		w = math_clamp( w + ( tw - w ) + 50, 0, ScrW( ) - 10 )
 	end
 	
 	catherine.notify.lists[ index ] = {
@@ -65,39 +74,39 @@ end
 function catherine.notify.Draw( )
 	for k, v in pairs( catherine.notify.lists ) do
 		if ( v.endTime <= CurTime( ) ) then
-			v.a = Lerp( 0.05, v.a, 0 )
+			v.a = lerp( 0.05, v.a, 0 )
 			
-			if ( math.Round( v.a ) <= 0 ) then
-				table.remove( catherine.notify.lists, k )
+			if ( math_round( v.a ) <= 0 ) then
+				table_remove( catherine.notify.lists, k )
 				continue
 			end
 		else
-			v.a = Lerp( 0.05, v.a, 255 )
+			v.a = lerp( 0.05, v.a, 255 )
 		end
 		
-		v.y = Lerp( 0.05, v.y, ( ScrH( ) - 10 ) - ( k * 25 ) )
+		v.y = lerp( 0.05, v.y, ( ScrH( ) - 10 ) - ( k * 25 ) )
 		
-		draw.RoundedBox( 0, v.x, v.y, v.w, v.h, Color( 235, 235, 235, v.a ) )
-		draw.SimpleText( v.message, "catherine_normal15", v.x + v.w / 2, v.y + v.h / 2, Color( 50, 50, 50, v.a ), 1, 1 )
+		draw_roundedBox( 0, v.x, v.y, v.w, v.h, color( 235, 235, 235, v.a ) )
+		draw_simpleText( v.message, "catherine_normal15", v.x + v.w / 2, v.y + v.h / 2, color( 50, 50, 50, v.a ), 1, 1 )
 	end
 end
 
 function catherine.notify.DrawMenuType( )
 	for k, v in pairs( catherine.notify.lists ) do
 		if ( v.endTime <= CurTime( ) ) then
-			v.a = Lerp( 0.05, v.a, 0 )
+			v.a = lerp( 0.05, v.a, 0 )
 			
-			if ( math.Round( v.a ) <= 0 ) then
-				table.remove( catherine.notify.lists, k )
+			if ( math_round( v.a ) <= 0 ) then
+				table_remove( catherine.notify.lists, k )
 				continue
 			end
 		else
-			v.a = Lerp( 0.05, v.a, 255 )
+			v.a = lerp( 0.05, v.a, 255 )
 		end
 		
-		v.y = Lerp( 0.05, v.y, -10 + ( k * 25 ) )
+		v.y = lerp( 0.05, v.y, -10 + ( k * 25 ) )
 		
-		draw.RoundedBox( 0, v.x, v.y, v.w, v.h, Color( 235, 235, 235, v.a ) )
-		draw.SimpleText( v.message, "catherine_normal15", v.x + v.w / 2, v.y + v.h / 2, Color( 50, 50, 50, v.a ), 1, 1 )
+		draw_roundedBox( 0, v.x, v.y, v.w, v.h, color( 235, 235, 235, v.a ) )
+		draw_simpleText( v.message, "catherine_normal15", v.x + v.w / 2, v.y + v.h / 2, color( 50, 50, 50, v.a ), 1, 1 )
 	end
 end

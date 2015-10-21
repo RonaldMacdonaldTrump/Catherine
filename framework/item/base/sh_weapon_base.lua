@@ -15,30 +15,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
-local Ammo_Types = {
-	"ar2",
-	"alyxgun",
-	"pistol",
-	"smg1",
-	"357",
-	"xbowbolt",
-	"buckshot",
-	"rpg_round",
-	"smg1_grenade",
-	"sniperround",
-	"sniperpenetratedround",
-	"grenade",
-	"thumper",
-	"gravity",
-	"battery",
-	"gaussenergy",
-	"combinecannon",
-	"airboatgun",
-	"striderminigun",
-	"helicoptergun",
-	"ar2altfire",
-	"slam"
-}
 
 local BASE = catherine.item.New( "WEAPON", nil, true )
 BASE.name = "Weapon Base"
@@ -97,21 +73,9 @@ BASE.func.equip = {
 			pl:StripWeapon( itemTable.weaponClass )
 		end
 		
-		local saveAmmos = { }
-		
-		for k, v in pairs( Ammo_Types ) do
-			saveAmmos[ #saveAmmos + 1 ] = { v, pl:GetAmmoCount( v ) }
-		end
-		
-		local wep = pl:Give( itemTable.weaponClass )
+		local wep = pl:Give( itemTable.weaponClass, true )
 		
 		if ( IsValid( wep ) ) then
-			for k, v in pairs( saveAmmos ) do
-				if ( v[ 2 ] != pl:GetAmmoCount( v[ 1 ] ) ) then
-					pl:RemoveAmmo( pl:GetAmmoCount( v[ 1 ] ) - v[ 2 ], v[ 1 ] )
-				end
-			end
-			
 			pl:SelectWeapon( itemTable.weaponClass )
 			
 			wep:SetClip1( catherine.inventory.GetItemData( pl, itemTable.uniqueID, "clip1", 0 ) )
@@ -153,7 +117,7 @@ BASE.func.unequip = {
 		
 		local playerWeaponType = catherine.character.GetCharVar( pl, "equippingWeaponTypes", { } )
 		local itemWeaponType = itemTable.weaponType
-
+		
 		if ( playerWeaponType[ itemWeaponType ] ) then
 			playerWeaponType[ itemWeaponType ] = playerWeaponType[ itemWeaponType ] - 1
 			
@@ -181,7 +145,7 @@ if ( SERVER ) then
 			local itemTable = catherine.item.FindByID( k )
 			
 			if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( pl, k ) ) then continue end
-
+			
 			catherine.item.Work( pl, k, "equip" )
 		end
 		
@@ -201,7 +165,7 @@ if ( SERVER ) then
 			if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( pl, k ) ) then continue end
 			
 			local wep = pl:GetWeapon( itemTable.weaponClass )
-		
+			
 			if ( IsValid( wep ) ) then
 				catherine.inventory.SetItemData( pl, k, "clip1", wep:Clip1( ) )
 				catherine.inventory.SetItemData( pl, k, "clip2", wep:Clip2( ) )
@@ -257,7 +221,7 @@ if ( SERVER ) then
 				if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( v, k1 ) ) then continue end
 				
 				local wep = v:GetWeapon( itemTable.weaponClass )
-			
+				
 				if ( IsValid( wep ) ) then
 					catherine.inventory.SetItemData( v, k1, "clip1", wep:Clip1( ) )
 					catherine.inventory.SetItemData( v, k1, "clip2", wep:Clip2( ) )
