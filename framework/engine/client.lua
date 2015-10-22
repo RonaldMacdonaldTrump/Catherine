@@ -142,10 +142,12 @@ function GM:CalcView( pl, pos, ang, fov )
 		if ( index ) then
 			local data = ent:GetAttachment( index )
 			
-			return {
-				origin = data and data.Pos,
-				angles = data and data.Ang
-			}
+			if ( data ) then
+				return {
+					origin = data.Pos,
+					angles = data.Ang
+				}
+			end
 		end
 	end
 	
@@ -362,6 +364,7 @@ function GM:PostDrawTranslucentRenderables( depth, skybox )
 	
 	for k, v in pairs( ents.FindInSphere( catherine.pl:GetPos( ), 256 ) ) do
 		if ( !IsValid( v ) or !v:IsDoor( ) or v:GetNoDraw( ) or catherine.door.IsDoorDisabled( v ) ) then continue end
+		if ( hook.Run( "ShouldDrawDoorText", v ) == false ) then continue end
 		
 		hook.Run( "DrawDoorText", v )
 	end
@@ -386,7 +389,6 @@ function GM:PlayerBindPress( pl, code, pressed )
 end
 
 function GM:DrawDoorText( ent )
-	if ( catherine.door.IsDoorDisabled( ent ) ) then return end
 	local a = catherine.util.GetAlphaFromDistance( ent:GetPos( ), catherine.pl:GetPos( ), 256 )
 	
 	if ( a <= 0 ) then return end
