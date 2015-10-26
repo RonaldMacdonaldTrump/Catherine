@@ -197,7 +197,7 @@ if ( SERVER ) then
 		if ( !character ) then
 			return false, "^Character_Notify_IsNotValid"
 		end
-
+		
 		local prevID = pl:GetCharacterID( )
 		
 		if ( prevID == id ) then
@@ -212,15 +212,15 @@ if ( SERVER ) then
 			pl:Freeze( false )
 			pl:UnLock( )
 		end
-		 
+		
 		local factionTable = catherine.faction.FindByID( character._faction )
-
+		
 		if ( !factionTable ) then
 			return false, "^Character_Notify_IsNotValidFaction"
 		end
 		
 		hook.Run( "CharacterLoadingStart", pl, prevID, id )
-
+		
 		if ( prevID != nil ) then
 			catherine.character.Save( pl )
 			catherine.character.DeleteNetworkRegistry( pl )
@@ -266,7 +266,7 @@ if ( SERVER ) then
 		
 		return true
 	end
-
+	
 	function catherine.character.Create( pl, data )
 		local steamID = getSteamID( pl )
 		
@@ -295,7 +295,7 @@ if ( SERVER ) then
 			
 			charVars[ v.field ] = var
 		end
-
+		
 		catherine.database.InsertDatas( "catherine_characters", charVars, function( )
 			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. steamID .. " has created a '" .. charVars._name .. "' character.", true )
 			netstream.Start( pl, "catherine.character.CreateResult", true )
@@ -363,7 +363,7 @@ if ( SERVER ) then
 		
 		hook.Run( "CharacterVarChanged", pl, key, value )
 	end
-
+	
 	function catherine.character.SetCharVar( pl, key, value, noSync )
 		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
 		local steamID = getSteamID( pl )
@@ -382,7 +382,7 @@ if ( SERVER ) then
 	function META:SetVar( key, value, noSync )
 		catherine.character.SetVar( self, key, value, noSync )
 	end
-
+	
 	function META:SetCharVar( key, value, noSync )
 		catherine.character.SetCharVar( self, key, value, noSync )
 	end
@@ -404,7 +404,7 @@ if ( SERVER ) then
 				end
 				return
 			end
-
+			
 			for k, v in pairs( catherine.character.GetVarAll( ) ) do
 				for k1, v1 in pairs( data ) do
 					if ( !v.doConversion ) then continue end
@@ -432,7 +432,7 @@ if ( SERVER ) then
 			catherine.character.buffers[ steamID ] = data
 		end )
 	end
-
+	
 	function catherine.character.GetTargetCharacterByID( pl, id )
 		for k, v in pairs( catherine.character.buffers[ getSteamID( pl ) ] or { } ) do
 			for k1, v1 in pairs( v ) do
@@ -454,7 +454,7 @@ if ( SERVER ) then
 		
 		return data
 	end
-
+	
 	function catherine.character.CreateNetworkRegistry( pl, id, data )
 		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
 		local steamID = getSteamID( pl )
@@ -473,15 +473,15 @@ if ( SERVER ) then
 		
 		hook.Run( "CreateNetworkRegistry", pl, catherine.character.networkRegistry[ steamID ] )
 	end
-
+	
 	function catherine.character.SendAllNetworkRegistries( pl )
 		netstream.Start( pl, "catherine.character.SendAllNetworkRegistries", catherine.character.networkRegistry )
 	end
-
+	
 	function catherine.character.GetNetworkRegistry( pl )
 		return catherine.character.networkRegistry[ getSteamID( pl ) ]
 	end
-
+	
 	function catherine.character.DeleteNetworkRegistry( pl )
 		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
 		local steamID = getSteamID( pl )
@@ -588,7 +588,7 @@ if ( SERVER ) then
 	
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected", catherine.character.PlayerDisconnected )
 	hook.Add( "ServerShutDown", "catherine.character.ServerShutDown", catherine.character.ServerShutDown )
-
+	
 	netstream.Hook( "catherine.character.Create", function( pl, data )
 		catherine.character.Create( pl, data )
 	end )
@@ -657,11 +657,11 @@ else
 		
 		hook.Run( "CreateNetworkRegistry", pl, registry )
 	end )
-
+	
 	netstream.Hook( "catherine.character.DeleteNetworkRegistry", function( data )
 		catherine.character.networkRegistry[ data ] = nil
 	end )
-
+	
 	netstream.Hook( "catherine.character.SendAllNetworkRegistries", function( data )
 		catherine.character.networkRegistry = data
 	end )
@@ -681,7 +681,7 @@ else
 		
 		hook.Run( "CharacterVarChanged", pl, key, value )
 	end )
-
+	
 	netstream.Hook( "catherine.character.SetCharVar", function( data )
 		local pl = data[ 1 ]
 		
@@ -697,7 +697,7 @@ else
 		
 		hook.Run( "CharacterCharVarChanged", pl, key, value )
 	end )
-
+	
 	netstream.Hook( "catherine.character.SendPlayerCharacterList", function( data )
 		catherine.character.localCharacters = data
 	end )

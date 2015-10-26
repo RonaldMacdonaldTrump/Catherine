@@ -18,53 +18,53 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 if ( CLIENT ) then return end
 
-catherine.crypto = catherine.crypto or { libVersion = "2015-08-10" }
-local se = string.Explode
-local sc = string.char
-local mr = math.random
-local tc = table.concat
+catherine.crypto = catherine.crypto or { libVersion = "2015-10-26" }
 
-function catherine.crypto.Encode( text )
-	local toTable = se( "", text )
-	local k = 0
-	
-	for i = 1, #toTable do
-		local randStr = ""
-		
-		if ( k != 0 ) then
-			for i2 = 1, k do
-				local charRand = sc( mr( 65, 90 ) )
-				
-				randStr = randStr .. ( mr( 0, 1 ) == 1 and charRand:lower( ) or charRand )
-			end
-		end
-		
-		k = k + 1
-		toTable[ i ] = toTable[ i ] .. randStr
-	end
-
-	return tc( toTable, "" )
+if ( !catherine.crypto.str and !catherine.crypto.mth and !catherine.crypto.tab ) then
+	catherine.crypto.str = table.Copy( string )
+	catherine.crypto.mth = table.Copy( table )
+	catherine.crypto.tab = table.Copy( table )
 end
 
-function catherine.crypto.Decode( text )
-	local tab = { }
-	local a = 1
-	local b = 1
-	local ap = 0
-	local bp = 1
-	
-	for i = 1, #text do
-		local find = text:sub( a, b )
+if ( !catherine.crypto.Encode ) then
+	catherine.crypto.Encode = function( str )
+		local e, k = catherine.crypto.str.Explode( "", str ), 0
 		
-		if ( find == "" ) then break end
+		for i = 1, #e do
+			local rs = ""
+			
+			if ( k != 0 ) then
+				for i2 = 1, k do
+					local cr = catherine.crypto.str.char( catherine.crypto.mth.random( 65, 90 ) )
+					
+					rs = rs .. ( catherine.crypto.mth.random( 0, 1 ) == 1 and cr:lower( ) or cr )
+				end
+			end
+			
+			k = k + 1
+			e[ i ] = e[ i ] .. rs
+		end
 		
-		ap = ap + 1
-		bp = bp + 1
-		a = a + ap
-		b = b + bp
-		
-		tab[ #tab + 1 ] = find:sub( 1, 1 )
+		return catherine.crypto.tab.concat( e, "" )
 	end
-	
-	return tc( tab, "" )
+end
+
+if ( !catherine.crypto.Decode ) then
+	catherine.crypto.Decode = function( str )
+		local r, s, e, p = { }, 1, 1, 1
+		
+		for i = 1, #str do
+			local f = str:sub( s, e )
+			
+			if ( f == "" ) then break end
+			
+			p = p + 1
+			s = s + ( p - 1 )
+			e = e + p
+			
+			r[ #r + 1 ] = f:sub( 1, 1 )
+		end
+		
+		return catherine.crypto.tab.concat( r, "" )
+	end
 end
