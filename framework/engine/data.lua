@@ -36,7 +36,7 @@ function catherine.data.Get( key, default, ignoreMap, isGlobal, isBuffer )
 	local data = file.Read( dir, "DATA" )
 	
 	if ( !data ) then return default end
-
+	
 	return isBuffer and catherine.data.buffer[ key ] or util.JSONToTable( data )
 end
 

@@ -33,7 +33,7 @@ function catherine.schema.Initialization( )
 	local schemaFolderName = Schema.FolderName
 	
 	if ( SERVER ) then
-		catherine.plugin.LoadActive( )
+		catherine.plugin.LoadActiveList( )
 	end
 	
 	catherine.faction.Include( schemaFolderName .. "/schema" )

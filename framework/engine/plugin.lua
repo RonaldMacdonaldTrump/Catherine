@@ -45,7 +45,7 @@ local plugin_htmlValue = [[
 	<div class="page-header">
 		<h1>%s&nbsp&nbsp<small>%s</small></h1>
 	</div>
-
+	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 ]]
@@ -344,7 +344,7 @@ if ( SERVER ) then
 		end
 		
 		catherine.net.SetNetGlobalVar( "plugin_deactiveList", globalVar )
-		catherine.plugin.SaveActive( )
+		catherine.plugin.SaveActiveList( )
 		
 		if ( doRefresh ) then
 			catherine.plugin.Refresh( )
@@ -363,14 +363,14 @@ if ( SERVER ) then
 		end
 		
 		catherine.net.SetNetGlobalVar( "plugin_deactiveList", globalVar )
-		catherine.plugin.SaveActive( )
+		catherine.plugin.SaveActiveList( )
 	end
 	
-	function catherine.plugin.SaveActive( )
+	function catherine.plugin.SaveActiveList( )
 		catherine.data.Set( "plugin_deactive_list", catherine.net.GetNetGlobalVar( "plugin_deactiveList", { } ) )
 	end
 	
-	function catherine.plugin.LoadActive( )
+	function catherine.plugin.LoadActiveList( )
 		local data = catherine.data.Get( "plugin_deactive_list", { } )
 		
 		catherine.plugin.deactiveList = data
