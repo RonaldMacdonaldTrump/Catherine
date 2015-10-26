@@ -56,7 +56,7 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 	end
 	
 	if ( self.nextBind <= CurTime( ) ) then
-		if ( bind == "invnext" or bind == "slot1" ) then
+		if ( ( bind == "invnext" or bind == "slot1" ) and pressed ) then
 			if ( self.currSlot < weaponsCount ) then
 				self.currSlot = self.currSlot + 1
 			elseif ( self.currSlot >= weaponsCount ) then
@@ -78,7 +78,7 @@ function PLUGIN:PlayerBindPress( pl, bind, pressed )
 			self.canSelect = true
 			
 			return true
-		elseif ( bind == "invprev" or bind == "slot2" ) then
+		elseif ( ( bind == "invprev" or bind == "slot2" ) and pressed ) then
 			if ( self.currSlot > 1 ) then
 				self.currSlot = self.currSlot - 1
 			elseif ( self.currSlot <= 1 ) then
