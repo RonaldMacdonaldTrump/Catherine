@@ -296,6 +296,7 @@ if ( SERVER ) then
 			local desc = v:GetNetVar( "forceDesc" )
 			local cantBuy = v:GetNetVar( "cantBuy", false )
 			local doorDisabled = v:GetNetVar( "disabled" )
+			
 			if ( !title and !desc and !cantBuy and !doorDisabled ) then continue end
 			
 			data[ #data + 1 ] = {
