@@ -183,7 +183,7 @@ LANGUAGE.data = {
 	
 	// Flag
 	[ "Flag_Notify_Give" ] = "%s 님이 %s 플래그를 %s 님에게 주셨습니다.",
-	[ "Flag_Notify_Take" ] = "%s 님이 %s 플래그를 %s 님에게서 빼앗았습니다.",
+	[ "Flag_Notify_Take" ] = "%s 님이 %s 플래그를 %s 님에게서 빼앗었습니다.",
 	[ "Flag_Notify_AlreadyHas" ] = "%s 님은 이미 %s 플래그를 가지고 있습니다!",
 	[ "Flag_Notify_HasNot" ] = "%s 님은 %s 플래그를 가지고 있지 않습니다!",
 	[ "Flag_Notify_NotValid" ] = "%s 는 올바르지 않은 플래그 입니다!",
