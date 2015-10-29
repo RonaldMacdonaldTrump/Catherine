@@ -166,7 +166,7 @@ catherine.character.NewVar( "faction", {
 		if ( SERVER and factionTable and ( ( factionTable.isWhitelist and catherine.faction.HasWhiteList( pl, data ) ) or ( !factionTable.isWhitelist ) ) ) then
 			return true
 		end
-
+		
 		return false, "^Character_Notify_CantUseThisFaction"
 	end
 } )
