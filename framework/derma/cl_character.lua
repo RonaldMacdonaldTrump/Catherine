@@ -339,7 +339,7 @@ function PANEL:UseCharacterPanel( )
 		v.panel.useCharacter:SetToolTip( LANG( "Character_UI_UseCharacter" ) )
 		v.panel.useCharacter.Paint = function( pnl, w, h )
 			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.SetMaterial( Material( "icon16/accept.png" ) )
+			surface.SetMaterial( Material( "cat/ui/accept.png" ) )
 			surface.DrawTexturedRect( 0, 0, w, h )
 		end
 		v.panel.useCharacter.DoClick = function( )
@@ -363,13 +363,13 @@ function PANEL:UseCharacterPanel( )
 		end
 		
 		v.panel.model = vgui.Create( "DModelPanel", v.panel )
-		v.panel.model:SetSize( v.panel:GetWide( ) / 1.5, v.panel:GetTall( ) / 1.5 )
-		v.panel.model:SetPos( v.panel:GetWide( ) / 2 - v.panel.model:GetWide( ) / 2, 60 )
+		v.panel.model:SetSize( v.panel:GetWide( ), v.panel:GetTall( ) - 160 )
+		v.panel.model:SetPos( v.panel:GetWide( ) / 2 - v.panel.model:GetWide( ) / 2, 40 )
 		v.panel.model:MoveToBack( )
 		v.panel.model:SetModel( overrideModel )
 		v.panel.model:SetDrawBackground( false )
 		v.panel.model:SetDisabled( true )
-		v.panel.model:SetFOV( 30 )
+		v.panel.model:SetFOV( 40 )
 		v.panel.model.LayoutEntity = function( pnl, ent )
 			ent:SetAngles( Angle( 0, 45, 0 ) )
 			ent:SetIK( false )
@@ -377,6 +377,13 @@ function PANEL:UseCharacterPanel( )
 			if ( k == self.loadCharacter.curr ) then
 				pnl:RunAnimation( )
 			end
+		end
+		
+		if ( IsValid( v.panel.model.Entity ) ) then
+			local min, max = v.panel.model.Entity:GetRenderBounds( )
+			
+			v.panel.model:SetCamPos( min:Distance( max ) * Vector( 0.5, 0.5, 0.5 ) )
+			v.panel.model:SetLookAt( ( max + min ) / 2 )
 		end
 		
 		hook.Run( "PostInitLoadCharacterList", pl, v.panel, v.characterDatas )

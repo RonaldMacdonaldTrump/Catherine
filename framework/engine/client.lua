@@ -818,6 +818,8 @@ function GM:RenderScreenspaceEffects( )
 end
 
 function GM:CharacterMenuJoined( pl )
+	catherine.character.SendPlayerCharacterListRequest( )
+	
 	if ( IsValid( catherine.chat.backPanel ) ) then
 		catherine.chat.backPanel:SetVisible( false )
 	end

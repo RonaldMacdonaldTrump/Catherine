@@ -600,6 +600,10 @@ if ( SERVER ) then
 	netstream.Hook( "catherine.character.Delete", function( pl, data )
 		catherine.character.Delete( pl, data )
 	end )
+	
+	netstream.Hook( "catherine.character.SendPlayerCharacterListRequest", function( pl, data )
+		catherine.character.SendPlayerCharacterList( pl )
+	end )
 else
 	catherine.character.panelMusic = catherine.character.panelMusic or nil
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
@@ -726,6 +730,10 @@ else
 	
 	function catherine.character.IsMenuActive( )
 		return IsValid( catherine.vgui.character )
+	end
+	
+	function catherine.character.SendPlayerCharacterListRequest( )
+		netstream.Start( "catherine.character.SendPlayerCharacterListRequest" )
 	end
 end
 

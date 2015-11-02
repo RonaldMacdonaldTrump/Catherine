@@ -66,6 +66,11 @@ function PLUGIN:SaveVendors( )
 	for k, v in pairs( ents.FindByClass( "cat_vendor" ) ) do
 		if ( !v.vendorData ) then continue end
 		local vendorData = v.vendorData
+		local bodyGroupResult = { }
+		
+		for k1, v1 in pairs( v:GetBodyGroups( ) ) do
+			bodyGroupResult[ #bodyGroupResult + 1 ] = v:GetBodygroup( v1.id )
+		end
 		
 		data[ #data + 1 ] = {
 			name = vendorData.name,
@@ -83,7 +88,7 @@ function PLUGIN:SaveVendors( )
 			mat = v:GetMaterial( ),
 			col = v:GetColor( ),
 			skin = v:GetSkin( ),
-			bodyGroup = v:GetBodyGroups( )
+			bodyGroup = bodyGroupResult
 		}
 	end
 	
@@ -107,8 +112,8 @@ function PLUGIN:LoadVendors( )
 		ent:SetColor( v.col or Color( 255, 255, 255, 255 ) )
 		ent:SetMaterial( v.mat or "" )
 		
-		for k1, v1 in pairs( v.bodyGroup or { } ) do
-			ent:SetBodygroup( v1.id, ent:GetBodygroup( v1.id ) )
+		if ( v.bodyGroup and type( v.bodyGroup ) == "table" and #v.bodyGroup > 0 ) then
+			ent:SetBodyGroups( table.concat( v.bodyGroup, "" ) )
 		end
 		
 		ent:InitializeAnimation( )
