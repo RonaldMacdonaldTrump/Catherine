@@ -255,16 +255,20 @@ end
 
 function PANEL:UseCharacterPanel( )
 	self.loadCharacter = { Lists = { }, curr = 1 }
-
+	
 	local baseW, baseH, errMsg = 300, self.h * 0.85, nil
+	local pl = LocalPlayer( )
 	
 	for k, v in pairs( catherine.character.localCharacters ) do
-		self.loadCharacter.Lists[ #self.loadCharacter.Lists + 1 ] = { characterDatas = v, panel = nil }
+		self.loadCharacter.Lists[ #self.loadCharacter.Lists + 1 ] = {
+			characterDatas = v,
+			panel = nil
+		}
 	end
 	
 	self.CharacterPanel = vgui.Create( "DPanel", self )
 	self.CharacterPanel:SetPos( 0, 90 )
-	self.CharacterPanel:SetSize( self.w - 20, self.h - ( 120 ) )
+	self.CharacterPanel:SetSize( self.w - 20, self.h - 120 )
 	self.CharacterPanel:SetAlpha( 0 )
 	self.CharacterPanel:AlphaTo( 255, 0.2, 0 )
 	self.CharacterPanel:SetDrawBackground( false )
@@ -278,7 +282,7 @@ function PANEL:UseCharacterPanel( )
 			draw.SimpleText( LANG( "Character_UI_DontHaveAny" ), "catherine_normal30", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
-
+	
 	local function SetTargetPanelPos( pnl, pos, a )
 		if ( !IsValid( pnl ) ) then return end
 		
@@ -293,9 +297,10 @@ function PANEL:UseCharacterPanel( )
 		pnl:SetPos( pnl.targetPos, 0 )
 		pnl:SetAlpha( pnl.targetA )
 	end
-
+	
 	for k, v in pairs( self.loadCharacter.Lists ) do
 		local factionData = catherine.faction.FindByID( v.characterDatas._faction )
+		
 		if ( !factionData ) then return end
 		
 		local name = v.characterDatas._name
@@ -312,7 +317,7 @@ function PANEL:UseCharacterPanel( )
 			surface.SetDrawColor( 255, 255, 255, 255 )
 			surface.SetMaterial( Material( "gui/gradient_up" ) )
 			surface.DrawTexturedRect( 0, 0, w, h )
-		
+			
 			draw.SimpleText( name, "catherine_normal20", w / 2, h - 100, Color( 0, 0, 0, 255 ), 1, 1 )
 			draw.SimpleText( desc, "catherine_normal15", w / 2, h - 70, Color( 50, 50, 50, 255 ), 1, 1 )
 			draw.SimpleText( factionName, "catherine_normal25", w / 2, 20, Color( 255, 255, 255, 255 ), 1, 1 )
@@ -373,8 +378,10 @@ function PANEL:UseCharacterPanel( )
 				pnl:RunAnimation( )
 			end
 		end
+		
+		hook.Run( "PostInitLoadCharacterList", pl, v.panel, v.characterDatas )
 	end
-
+	
 	self.CharacterPanel.Think = function( )
 		if ( !self.loadCharacter ) then return end
 		
@@ -387,7 +394,7 @@ function PANEL:UseCharacterPanel( )
 		local uniquePanel = self.loadCharacter.Lists[ self.loadCharacter.curr ].panel
 		
 		SetTargetPanelPos( uniquePanel, self.CharacterPanel:GetWide( ) / 2 - uniquePanel:GetWide( ) / 2, 255 )
-			
+		
 		local right, left = uniquePanel.x + uniquePanel:GetWide( ) + 24, uniquePanel.x - 24
 		
 		for i = self.loadCharacter.curr - 1, 1, -1 do

@@ -374,6 +374,26 @@ function GM:GetCharacterPanelLoadModel( characterDatas )
 	return characterDatas._model
 end
 
+function GM:PostInitLoadCharacterList( pl, pnl, characterDatas )
+	local modelPanel = pnl.model
+	
+	if ( IsValid( modelPanel ) and IsValid( modelPanel.Entity ) ) then
+		if ( characterDatas._charVar and characterDatas._charVar[ "skin" ] ) then
+			modelPanel.Entity:SetSkin( tonumber( characterDatas._charVar[ "skin" ] ) or 0 )
+		end
+		
+		if ( characterDatas._inv ) then
+			for k, v in pairs( characterDatas._inv ) do
+				local itemTable = catherine.item.FindByID( k )
+				
+				if ( !itemTable.isBodygroupCloth or !v.itemData[ "wearing" ] ) then continue end
+				
+				modelPanel.Entity:SetBodygroup( itemTable.bodyGroup, itemTable.bodyGroupSubModelIndex )
+			end
+		end
+	end
+end
+
 function GM:PlayerBindPress( pl, code, pressed )
 	if ( code:find( "messagemode" ) and pressed ) then
 		catherine.chat.Show( )

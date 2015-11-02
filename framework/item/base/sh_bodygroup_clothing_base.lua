@@ -38,7 +38,7 @@ BASE.func.wear = {
 	func = function( pl, itemTable, ent )
 		local bodygroups = catherine.character.GetCharVar( pl, "bodygroups", { } )
 		local bodygroupID = itemTable.bodyGroup
-
+		
 		if ( bodygroupID < pl:GetNumBodyGroups( ) ) then
 			local wearingBodyGroups = catherine.character.GetCharVar( pl, "wearing_bodyGroups", { } )
 			
@@ -46,7 +46,7 @@ BASE.func.wear = {
 				catherine.item.Give( pl, itemTable.uniqueID )
 				ent:Remove( )
 			end
-
+			
 			if ( !bodygroups[ bodygroupID ] and pl:GetBodygroup( bodygroupID ) == 0 ) then
 				bodygroups[ bodygroupID ] = itemTable.bodyGroupSubModelIndex
 				
@@ -144,7 +144,7 @@ if ( SERVER ) then
 				local itemTable = catherine.item.FindByID( k )
 				
 				if ( !itemTable.isBodygroupCloth or !catherine.inventory.GetItemData( pl, k, "wearing" ) or pl:GetBodygroup( itemTable.bodyGroup ) == itemTable.bodyGroupSubModelIndex ) then continue end
-
+				
 				catherine.item.Work( pl, k, "wear" )
 			end
 		end )
