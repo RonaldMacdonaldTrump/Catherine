@@ -80,7 +80,7 @@ BASE.func.drink = {
 			stack = stack + 1
 			stackTable[ itemTable.uniqueID ] = stack
 		end
-
+		
 		catherine.character.SetCharVar( pl, "alcohol_stack", stackTable )
 	end
 }

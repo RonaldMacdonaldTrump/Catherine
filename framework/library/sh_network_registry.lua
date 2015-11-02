@@ -16,10 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-if ( !catherine.system ) then
-	catherine.util.Include( "catherine/framework/engine/system.lua", "SHARED" )
-end
-
 catherine.net = catherine.net or { globalRegistry = { }, entityRegistry = { } }
 local META = FindMetaTable( "Entity" )
 local META2 = FindMetaTable( "Player" )

@@ -137,7 +137,7 @@ if ( SERVER ) then
 	function catherine.entity.GetIgnoreUse( ent )
 		return ent.CAT_ignoreUse
 	end
-
+	
 	function catherine.entity.RegisterUseMenu( ent, menuTable )
 		local forServer = { }
 		local forClient = { }
@@ -153,7 +153,7 @@ if ( SERVER ) then
 		
 		ent.isCustomUse = true
 		catherine.entity.customUse[ ent:EntIndex( ) ] = forServer
-
+		
 		ent:SetNetVar( "customUseClient", forClient )
 	end
 	
@@ -178,9 +178,9 @@ if ( SERVER ) then
 	function catherine.entity.EntityRemoved( ent )
 		catherine.entity.customUse[ ent:EntIndex( ) ] = nil
 	end
-
+	
 	hook.Add( "EntityRemoved", "catherine.entity.EntityRemoved", catherine.entity.EntityRemoved )
-
+	
 	netstream.Hook( "catherine.entity.customUseMenu_Receive", function( pl, data )
 		catherine.entity.RunUseMenu( pl, data[ 1 ], data[ 2 ] )
 	end )
@@ -209,7 +209,7 @@ else
 		
 		menu:Open( )
 		menu:Center( )
-
+		
 		if ( isAv ) then
 			catherine.util.SetDermaMenuTitle( menu, LANG( "Basic_UI_EntityMenuOptionTitle" ) )
 		end

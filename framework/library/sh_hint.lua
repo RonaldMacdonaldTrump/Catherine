@@ -87,6 +87,7 @@ if ( SERVER ) then
 	end )
 else
 	catherine.hint.currHint = catherine.hint.currHint or nil
+	local gradient_right = Material( "VGUI/gradient-r" )
 	
 	netstream.Hook( "catherine.hint.Receive", function( data )
 		local hintTable = catherine.hint.FindByIndex( data )
@@ -112,8 +113,6 @@ else
 		catherine.hint.currHint = hintData
 	end )
 	
-	local gradient_right = Material( "VGUI/gradient-r" )
-	
 	function catherine.hint.Draw( )
 		if ( !catherine.hint.currHint or GetConVarString( "cat_convar_hint" ) == "0" ) then return end
 		if ( hook.Run( "ShouldDrawHint", catherine.pl, catherine.hint.currHint ) == false ) then return end
@@ -133,7 +132,7 @@ else
 		surface.SetDrawColor( 50, 50, 50, t.a / 2 )
 		surface.SetMaterial( gradient_right )
 		surface.DrawTexturedRect( ScrW( ) - t.tw, 0, t.tw, 30 )
-	
+		
 		draw.SimpleText( t.message, "catherine_normal20", ScrW( ) - 10, 15, Color( 255, 255, 255, t.a ), TEXT_ALIGN_RIGHT, 1 )
 	end
 end

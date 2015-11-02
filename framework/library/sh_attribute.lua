@@ -19,17 +19,15 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.attribute = catherine.attribute or { lists = { } }
 
 function catherine.attribute.Register( attributeTable )
-	if ( !attributeTable or !attributeTable.index ) then
-		return
-	end
+	if ( !attributeTable or !attributeTable.index ) then return end
 	
 	attributeTable.default = attributeTable.default or 0
 	attributeTable.max = attributeTable.max or 100
-
+	
 	if ( SERVER and attributeTable.image ) then
 		resource.AddFile( attributeTable.image )
 	end
-
+	
 	catherine.attribute.lists[ attributeTable.uniqueID ] = attributeTable
 	
 	return attributeTable.uniqueID
@@ -76,9 +74,7 @@ if ( SERVER ) then
 		if ( attribute[ uniqueID ] ) then
 			local temporaryTable = catherine.character.GetCharVar( pl, "attribute_temporary", { increase = { }, decrease = { } } )
 			
-			if ( attributeTable.max < attribute[ uniqueID ].progress + amount ) then
-				return
-			end
+			if ( attributeTable.max < attribute[ uniqueID ].progress + amount ) then return end
 			
 			local increaseTable = temporaryTable.increase[ uniqueID ]
 			
@@ -122,7 +118,7 @@ if ( SERVER ) then
 						timer.Remove( timerID )
 						return
 					end
-						
+					
 					temporaryTable.increase[ uniqueID ].removeTime = removeTime2 - 3
 					removeTime2 = removeTime2 - 3
 					
@@ -195,7 +191,7 @@ if ( SERVER ) then
 						timer.Remove( timerID )
 						return
 					end
-						
+					
 					temporaryTable.decrease[ uniqueID ].removeTime = removeTime2 - 3
 					removeTime2 = removeTime2 - 3
 					
@@ -275,7 +271,7 @@ if ( SERVER ) then
 		
 		hook.Run( "AttributeChanged", pl, uniqueID )
 	end
-
+	
 	function catherine.attribute.AddProgress( pl, uniqueID, progress )
 		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		local attributeTable = catherine.attribute.FindByID( uniqueID )
@@ -290,7 +286,7 @@ if ( SERVER ) then
 				progress = attributeTable.default
 			}
 		end
-
+		
 		catherine.character.SetVar( pl, "_att", attribute )
 		
 		hook.Run( "AttributeChanged", pl, uniqueID )
@@ -307,14 +303,14 @@ if ( SERVER ) then
 			attribute[ uniqueID ].progress = math.Clamp( attribute[ uniqueID ].progress - progress, 0, attributeTable.max )
 			
 			catherine.character.SetVar( pl, "_att", attribute )
-		
+			
 			hook.Run( "AttributeChanged", pl, uniqueID )
 		end
 	end
-
+	
 	function catherine.attribute.GetProgress( pl, uniqueID )
 		local attribute = catherine.character.GetVar( pl, "_att", { } )
-
+		
 		if ( attribute[ uniqueID ] ) then
 			local progress = attribute[ uniqueID ].progress
 			local temporaryTable = catherine.character.GetCharVar( pl, "attribute_temporary", { increase = { }, decrease = { } } )
@@ -346,7 +342,7 @@ if ( SERVER ) then
 			attribute[ k ] = nil
 			changed = true
 		end
-
+		
 		if ( count != table.Count( attributeAll ) ) then
 			for k, v in pairs( attributeAll ) do
 				if ( attribute[ k ] ) then continue end
@@ -358,7 +354,7 @@ if ( SERVER ) then
 				changed = true
 			end
 		end
-
+		
 		if ( changed ) then
 			catherine.character.SetVar( pl, "_att", attribute )
 		end
@@ -399,7 +395,7 @@ if ( SERVER ) then
 							timer.Remove( timerID )
 							return
 						end
-							
+						
 						temporaryTable.increase[ k ].removeTime = removeTime - 3
 						removeTime = removeTime - 3
 						
@@ -441,7 +437,7 @@ if ( SERVER ) then
 							timer.Remove( timerID )
 							return
 						end
-							
+						
 						temporaryTable.decrease[ k ].removeTime = removeTime - 3
 						removeTime = removeTime - 3
 						
@@ -453,12 +449,12 @@ if ( SERVER ) then
 			end
 		end )
 	end
-
+	
 	hook.Add( "CreateNetworkRegistry", "catherine.attribute.CreateNetworkRegistry", catherine.attribute.CreateNetworkRegistry )
 else
 	function catherine.attribute.GetProgress( uniqueID )
 		local attribute = catherine.character.GetVar( catherine.pl, "_att", { } )
-
+		
 		return attribute[ uniqueID ] and attribute[ uniqueID ].progress or 0
 	end
 	

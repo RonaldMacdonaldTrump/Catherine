@@ -81,9 +81,7 @@ function catherine.hud.DeathScreen( pl, w, h )
 	
 	if ( deathTime == 0 or nextSpawnTime == 0 ) then return end
 	
-	local per = timeFrac( deathTime, nextSpawnTime, CurTime( ) )
-	
-	drawBox( 0, 0, 0, w, h, Color( 20, 20, 20, per * 255 ) )
+	drawBox( 0, 0, 0, w, h, Color( 20, 20, 20, timeFrac( deathTime, nextSpawnTime, CurTime( ) ) * 255 ) )
 end
 
 timer.Create( "catherine.hud.VignetteCheck", 2, 0, function( )
@@ -92,7 +90,6 @@ timer.Create( "catherine.hud.VignetteCheck", 2, 0, function( )
 	
 	if ( !IsValid( pl ) ) then return end
 	if ( hook.Run( "ShouldCheckVignette", pl ) == false ) then return end
-	
 	
 	local data = { start = pl:GetPos( ) }
 	data.endpos = data.start + Vector( 0, 0, 2000 )
@@ -118,9 +115,9 @@ function catherine.hud.ScreenDamage( pl, w, h )
 end
 
 function catherine.hud.Ammo( pl, w, h )
-	if ( hook.Run( "ShouldDrawAmmo", pl ) == false ) then return end
 	local wep = pl:GetActiveWeapon( )
 	if ( !IsValid( wep ) or wep.DrawHUD == false ) then return end
+	if ( hook.Run( "ShouldDrawAmmo", pl ) == false ) then return end
 	local clip1 = wep:Clip1( )
 	local pre = pl:GetAmmoCount( wep:GetPrimaryAmmoType( ) )
 	//local sec = catherine.pl:GetAmmoCount( wep:GetSecondaryAmmoType( ) )
@@ -133,23 +130,23 @@ end
 function catherine.hud.WelcomeIntroInitialize( noRun )
 	local scrW, scrH = ScrW( ), ScrH( )
 	local information = hook.Run( "GetSchemaInformation" )
-
+	
 	catherine.hud.RegisterWelcomeIntroAnimation( 1, function( )
 		return information.title
 	end, "catherine_normal25", 2, 9, nil, scrW * 0.8, scrH * 0.55, TEXT_ALIGN_RIGHT )
-
+	
 	catherine.hud.RegisterWelcomeIntroAnimation( 2, function( )
 		return information.desc
 	end, "catherine_normal15", 6, 8, nil, scrW * 0.8, scrH * 0.55 + 35, TEXT_ALIGN_RIGHT )
-
+	
 	catherine.hud.RegisterWelcomeIntroAnimation( 3, function( )
 		return catherine.environment.GetDateString( ) .. " : " .. catherine.environment.GetTimeString( )
 	end, "catherine_normal15", 8, 10, nil, scrW * 0.8, scrH * 0.55 + 55, TEXT_ALIGN_RIGHT )
-
+	
 	catherine.hud.RegisterWelcomeIntroAnimation( 4, function( )
 		return information.author
 	end, "catherine_normal20", 7, 9, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
-
+	
 	if ( !noRun ) then
 		catherine.hud.welcomeIntroWorkingData = { initStartTime = CurTime( ) }
 	end
@@ -185,7 +182,7 @@ function catherine.hud.WelcomeIntro( pl, w, h )
 			if ( !v.initStartTime ) then
 				v.initStartTime = curTime
 			end
-
+			
 			if ( v.initStartTime + v.showingTime - 1 <= curTime ) then
 				if ( v.a <= 0 ) then
 					continue
@@ -232,7 +229,7 @@ end
 function catherine.hud.TopNotify( pl, w, h )
 	if ( !catherine.hud.topNotify ) then return end
 	if ( hook.Run( "ShouldDrawTopNotify", pl ) == false ) then return end
-
+	
 	setColor( 50, 50, 50, 150 )
 	setMat( gradient_center )
 	drawMat( 0, h / 2 - 80, w, 110 )
@@ -249,7 +246,7 @@ function catherine.hud.ProgressBar( pl, w, h )
 		catherine.hud.progressBar = nil
 		return
 	end
-
+	
 	local frac = 1 - timeFrac( data.startTime, data.endTime, CurTime( ) )
 	
 	setColor( 50, 50, 50, 150 )

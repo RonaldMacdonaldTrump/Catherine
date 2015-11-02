@@ -333,7 +333,7 @@ if ( SERVER ) then
 		end
 		
 		pl:SetNetVar( "seqAni", seqID )
-
+		
 		if ( preFunc ) then
 			preFunc( )
 		end
@@ -346,7 +346,7 @@ if ( SERVER ) then
 				if ( !IsValid( pl ) ) then return end
 				
 				catherine.animation.StopSequence( pl )
-
+				
 				if ( postFunc ) then
 					postFunc( )
 				end
@@ -355,7 +355,7 @@ if ( SERVER ) then
 		
 		return time, valid
 	end
-
+	
 	function catherine.animation.StopSequence( pl )
 		timer.Remove( "Catherine.timer.animation.Sequence." .. pl:SteamID( ) )
 		pl:SetNetVar( "seqAni", false )

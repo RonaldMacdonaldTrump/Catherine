@@ -53,9 +53,6 @@ function catherine.Boot( )
 	AddCSLuaFile( baseDir .. "/engine/hook.lua" )
 	include( baseDir .. "/engine/hook.lua" )
 	
-	AddCSLuaFile( baseDir .. "/engine/system.lua" )
-	include( baseDir .. "/engine/system.lua" )
-	
 	AddCSLuaFile( baseDir .. "/engine/schema.lua" )
 	include( baseDir .. "/engine/schema.lua" )
 	

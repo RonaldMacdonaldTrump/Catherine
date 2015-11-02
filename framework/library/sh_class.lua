@@ -20,9 +20,7 @@ catherine.class = catherine.class or { }
 catherine.class.lists = { }
 
 function catherine.class.Register( classTable )
-	if ( !classTable or !classTable.index ) then
-		return
-	end
+	if ( !classTable or !classTable.index ) then return end
 	
 	if ( !classTable.onCanJoin ) then
 		function classTable:onCanJoin( pl )
@@ -65,11 +63,11 @@ function catherine.class.CanJoin( pl, index, isMenu )
 	if ( classTable.cantJoinUsingMenu and isMenu ) then
 		return false, "Class_UI_CantJoinable"
 	end
-
+	
 	if ( pl:Team( ) != classTable.faction ) then
 		return false, "Class_UI_TeamError"
 	end
-
+	
 	if ( catherine.character.GetCharVar( pl, "class", "" ) == index ) then
 		return false, "Class_UI_AlreadyJoined"
 	end
@@ -77,7 +75,7 @@ function catherine.class.CanJoin( pl, index, isMenu )
 	if ( classTable.limit and ( #catherine.class.GetPlayers( index ) >= classTable.limit ) ) then
 		return false, "Class_UI_HitLimit"
 	end
-
+	
 	return classTable:onCanJoin( pl )
 end
 
@@ -89,7 +87,7 @@ function catherine.class.GetPlayers( index )
 		
 		players[ #players + 1 ] = v
 	end
-
+	
 	return players
 end
 
@@ -117,7 +115,7 @@ if ( SERVER ) then
 		end
 		
 		local success, reason = catherine.class.CanJoin( pl, index, isMenu )
-
+		
 		if ( !success ) then
 			catherine.util.NotifyLang( pl, reason )
 			return
@@ -131,7 +129,7 @@ if ( SERVER ) then
 		
 		catherine.character.SetCharVar( pl, "class", index )
 	end
-
+	
 	function catherine.class.GetDefaultClass( factionID )
 		for k, v in pairs( catherine.class.GetAll( ) ) do
 			if ( v.faction == factionID and v.isDefault ) then
@@ -139,7 +137,7 @@ if ( SERVER ) then
 			end
 		end
 	end
-
+	
 	netstream.Hook( "catherine.class.Set", function( pl, data )
 		catherine.class.Set( pl, data[ 1 ], data[ 2 ] )
 	end )
@@ -152,7 +150,7 @@ else
 		
 		for k, v in pairs( catherine.class.GetAll( ) ) do
 			local classTable = catherine.class.FindByIndex( k )
-
+			
 			if ( !v.cantJoinUsingMenu and ( ( v.faction == team and class != k ) or ( class != nil and v.isDefault and k != class ) ) ) then
 				classes[ #classes + 1 ] = v
 			end

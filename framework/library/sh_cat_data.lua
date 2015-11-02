@@ -41,7 +41,7 @@ if ( SERVER ) then
 			catherine.catData.Save( pl )
 		end
 	end
-
+	
 	function catherine.catData.GetVar( pl, key, default )
 		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
 		local steamID = getSteamID( pl )
@@ -72,7 +72,7 @@ if ( SERVER ) then
 			netstream.Start( pl, "catherine.catData.SendAllNetworkRegistries", catherine.catData.networkRegistry[ steamID ] )
 		end )
 	end
-
+	
 	function catherine.catData.PlayerDisconnected( pl )
 		catherine.catData.Save( pl )
 		catherine.catData.networkRegistry[ getSteamID( pl ) ] = nil

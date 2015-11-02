@@ -34,13 +34,9 @@ BASE.func.wear = {
 	canShowIsWorld = true,
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
-		if ( catherine.character.GetCharVar( pl, "clothWearing" ) ) then
-			return
-		end
+		if ( catherine.character.GetCharVar( pl, "clothWearing" ) ) then return end
 		
-		local originalModel = catherine.character.GetCharVar( pl, "originalModel" )
-		
-		if ( !originalModel ) then
+		if ( !catherine.character.GetCharVar( pl, "originalModel" ) ) then
 			catherine.character.SetCharVar( pl, "originalModel", pl:GetModel( ) )
 		end
 		
@@ -51,7 +47,7 @@ BASE.func.wear = {
 		if ( newModel:find( "female" ) or catherine.animation.Get( newModel ) == "citizen_female" and itemTable.femaleModel ) then
 			newModel = itemTable.femaleModel
 		end
-
+		
 		if ( replacement and #replacement == 2 ) then
 			newModel = playerModel:gsub( replacement[ 1 ], replacement[ 2 ] )
 		end
@@ -60,7 +56,7 @@ BASE.func.wear = {
 			catherine.item.Give( pl, itemTable.uniqueID )
 			ent:Remove( )
 		end
-
+		
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 100 )
 		pl:SetModel( newModel )
 		pl:SetupHands( )

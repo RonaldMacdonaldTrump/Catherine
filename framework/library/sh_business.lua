@@ -38,7 +38,7 @@ if ( SERVER ) then
 			catherine.util.NotifyLang( pl, "Cash_Notify_HasNot" )
 			return
 		end
-
+		
 		local ent = ents.Create( "cat_shipment" )
 		ent:SetPos( catherine.util.GetItemDropPos( pl ) )
 		ent:SetAngles( Angle( ) )

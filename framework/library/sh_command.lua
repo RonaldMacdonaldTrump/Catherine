@@ -19,9 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.command = catherine.command or { lists = { } }
 
 function catherine.command.Register( commandTable )
-	if ( !commandTable or !commandTable.uniqueID or !commandTable.command ) then
-		return
-	end
+	if ( !commandTable or !commandTable.uniqueID or !commandTable.command ) then return end
 	
 	commandTable.syntax = commandTable.syntax or "[None]"
 	commandTable.desc = commandTable.desc or "^Command_DefDesc"
@@ -176,7 +174,7 @@ else
 		<div class="page-header">
 			<h1>%s&nbsp&nbsp<small>%s</small></h1>
 		</div>
-
+		
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	]]
