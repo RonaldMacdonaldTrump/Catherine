@@ -98,7 +98,13 @@ if ( SERVER ) then
 		end
 	end
 	catherine.configs.forceAllowLOOC = function( pl )
-	
+		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
+			return true
+		end
+		
+		if ( pl:IsAdmin( ) ) then
+			return true
+		end
 	end
 	catherine.configs.oocDelay = 60 --[[ Setting a OOC delay. ]]--
 	catherine.configs.loocDelay = 2 --[[ Setting a LOOC delay. ]]--
