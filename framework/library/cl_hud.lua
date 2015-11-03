@@ -120,10 +120,31 @@ function catherine.hud.Ammo( pl, w, h )
 	if ( hook.Run( "ShouldDrawAmmo", pl ) == false ) then return end
 	local clip1 = wep:Clip1( )
 	local pre = pl:GetAmmoCount( wep:GetPrimaryAmmoType( ) )
-	//local sec = catherine.pl:GetAmmoCount( wep:GetSecondaryAmmoType( ) )
+	local sec = pl:GetAmmoCount( wep:GetSecondaryAmmoType( ) )
 	
 	if ( clip1 > 0 or pre > 0 ) then
-		drawText( clip1 == -1 and pre or mathR( clip1 ) .. " / " .. mathR( pre ), "catherine_normal25", w - 30, h - 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		clip1 = mathR( clip1 )
+		pre = mathR( pre )
+		
+		surface.SetFont( "catherine_normal20" )
+		
+		local clip1MaxW, clip1MaxH = surface.GetTextSize( wep:GetMaxClip1( ) )
+		local circleSize = math.max( clip1MaxW, 15 )
+		
+		noTex( )
+		setColor( 255, 255, 255, 255 )
+		drawCircle( w - 80 - ( circleSize / 2 ), h - 20 - ( circleSize / 2 ), circleSize, 3, 90, 360, 100 )
+		
+		noTex( )
+		setColor( 255, 50, 50, 255 )
+		drawCircle( w - 80 - ( circleSize / 2 ), h - 20 - ( circleSize / 2 ), circleSize, 3, 90, clip1 / wep:GetMaxClip1( ) * 360, 100 )
+		
+		drawText( clip1, "catherine_normal20", w - 80 - ( circleSize / 2 ), h - 20 - ( circleSize / 2 ), Color( 255, 255, 255, 255 ), 1, 1 )
+		drawText( pre, "catherine_normal25", w - 20, h - 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		
+		if ( sec > 0 ) then
+			drawText( "★" .. mathR( sec ), "catherine_normal35", w - 20, h - 70, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		end
 	end
 end
 
