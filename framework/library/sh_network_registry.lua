@@ -20,17 +20,7 @@ catherine.net = catherine.net or { globalRegistry = { }, entityRegistry = { } }
 local META = FindMetaTable( "Entity" )
 local META2 = FindMetaTable( "Player" )
 
-function catherine.net.GetNetGlobalVar( key, default )
-	return catherine.net.globalRegistry[ key ] or default
-end
-
-function META:GetNetVar( key, default )
-	return catherine.net.GetNetVar( self, key, default )
-end
-
 if ( SERVER ) then
-	catherine.net.nextOptimizeTick = catherine.net.nextOptimizeTick or catherine.configs.netRegistryOptimizeInterval
-	
 	function catherine.net.SetNetVar( ent, key, value, noSync )
 		catherine.net.entityRegistry[ ent ] = catherine.net.entityRegistry[ ent ] or { }
 		catherine.net.entityRegistry[ ent ][ key ] = value
@@ -44,10 +34,6 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.net.GetNetVar( ent, key, default )
-		return catherine.net.entityRegistry[ ent ] and catherine.net.entityRegistry[ ent ][ key ] or default
-	end
-	
 	function catherine.net.SetNetGlobalVar( key, value, noSync )
 		catherine.net.globalRegistry[ key ] = value
 		
@@ -58,7 +44,49 @@ if ( SERVER ) then
 			} )
 		end
 	end
-
+	
+	function META:SetNetVar( key, value, noSync )
+		catherine.net.entityRegistry[ self ] = catherine.net.entityRegistry[ self ] or { }
+		catherine.net.entityRegistry[ self ][ key ] = value
+		
+		if ( !noSync ) then
+			netstream.Start( nil, "catherine.net.SetNetVar", {
+				self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( ),
+				key,
+				value
+			} )
+		end
+	end
+	
+	function META2:SetNetVar( key, value, noSync )
+		catherine.net.entityRegistry[ self ] = catherine.net.entityRegistry[ self ] or { }
+		catherine.net.entityRegistry[ self ][ key ] = value
+		
+		if ( !noSync ) then
+			netstream.Start( nil, "catherine.net.SetNetVar", {
+				self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( ),
+				key,
+				value
+			} )
+		end
+	end
+	
+	function catherine.net.GetNetVar( ent, key, default )
+		return catherine.net.entityRegistry[ ent ] and catherine.net.entityRegistry[ ent ][ key ] or default
+	end
+	
+	function catherine.net.GetNetGlobalVar( key, default )
+		return catherine.net.globalRegistry[ key ] or default
+	end
+	
+	function META:GetNetVar( key, default )
+		return catherine.net.entityRegistry[ self ] and catherine.net.entityRegistry[ self ][ key ] or default
+	end
+	
+	function META2:GetNetVar( key, default )
+		return catherine.net.entityRegistry[ self ] and catherine.net.entityRegistry[ self ][ key ] or default
+	end
+	
 	function catherine.net.SendAllNetworkRegistries( pl )
 		local convert = { }
 		
@@ -67,7 +95,7 @@ if ( SERVER ) then
 			
 			convert[ k:IsPlayer( ) and k:SteamID( ) or k:EntIndex( ) ] = v
 		end
-
+		
 		netstream.Start( pl, "catherine.net.SendAllNetworkRegistries", {
 			convert,
 			catherine.net.globalRegistry
@@ -110,28 +138,18 @@ if ( SERVER ) then
 		end
 	end
 	
-	function META:SetNetVar( key, value, noSync )
-		catherine.net.SetNetVar( self, key, value, noSync )
-	end
-	
-	META2.SetNetVar = META.SetNetVar
-	
-	timer.Create( "Catherine.timer.net.RemoveDummy", 1, 0, function( )
+	timer.Remove( "Catherine.timer.net.AutoRemoveDummy" )
+	timer.Create( "Catherine.timer.net.AutoRemoveDummy", catherine.configs.netRegistryOptimizeInterval, 0, function( )
 		if ( table.Count( catherine.net.entityRegistry ) == 0 ) then return end
 		
-		if ( catherine.net.nextOptimizeTick <= 0 ) then
-			catherine.net.RemoveDummy( true )
-			catherine.net.nextOptimizeTick = catherine.configs.netRegistryOptimizeInterval
-		else
-			catherine.net.nextOptimizeTick = catherine.net.nextOptimizeTick - 1
-		end
+		catherine.net.RemoveDummy( true )
 	end )
 	
 	function catherine.net.EntityRemoved( ent )
 		catherine.net.entityRegistry[ ent ] = nil
 		netstream.Start( nil, "catherine.net.ClearNetVar", ent:EntIndex( ) )
 	end
-
+	
 	function catherine.net.PlayerDisconnected( pl )
 		catherine.net.entityRegistry[ pl ] = nil
 		netstream.Start( nil, "catherine.net.ClearNetVar", pl:SteamID( ) )
@@ -150,7 +168,7 @@ else
 	netstream.Hook( "catherine.net.SetNetGlobalVar", function( data )
 		catherine.net.globalRegistry[ data[ 1 ] ] = data[ 2 ]
 	end )
-
+	
 	netstream.Hook( "catherine.net.ClearNetVar", function( data )
 		catherine.net.entityRegistry[ data ] = nil
 	end )
@@ -166,6 +184,22 @@ else
 	
 	function catherine.net.GetNetVar( ent, key, default )
 		local id = ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( )
+		
+		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
+	end
+	
+	function catherine.net.GetNetGlobalVar( key, default )
+		return catherine.net.globalRegistry[ key ] or default
+	end
+	
+	function META:GetNetVar( key, default )
+		local id = self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( )
+		
+		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
+	end
+	
+	function META2:GetNetVar( key, default )
+		local id = self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( )
 		
 		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
 	end
