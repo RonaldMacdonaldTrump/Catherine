@@ -112,7 +112,7 @@ catherine.animation.RegisterDataTable( "citizen_female", {
 		idle = { ACT_IDLE_PISTOL, ACT_IDLE_ANGRY_PISTOL },
 		idle_crouch = { ACT_COVER_LOW, ACT_COVER_LOW },
 		walk = { ACT_WALK, ACT_WALK_AIM_PISTOL },
-		walk_crouch = { ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_PISTOL },
+		walk_crouch = { ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE },
 		run = { ACT_RUN, ACT_RUN_AIM_PISTOL },
 		attack = ACT_GESTURE_RANGE_ATTACK_PISTOL,
 		reload = ACT_RELOAD_PISTOL
