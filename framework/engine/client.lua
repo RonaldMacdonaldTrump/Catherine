@@ -29,6 +29,7 @@ local entityCaches = { }
 local nextEntityCacheWork = RealTime( )
 local lastEntity = nil
 local toscreen = FindMetaTable( "Vector" ).ToScreen
+local catSymbolMat = Material( "cat/symbol/cat.png", "smooth" )
 local gradientUpMat = Material( "gui/gradient_up" )
 local gradientCenterMat = Material( "gui/center_gradient" )
 local math_app = math.Approach
