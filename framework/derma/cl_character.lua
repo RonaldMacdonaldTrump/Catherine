@@ -29,6 +29,7 @@ function PANEL:Init( )
 	self.mainAlpha = 0
 	self.mainButtons = { }
 	self.mode = 0
+	self.backgroundPanelH = 0
 	
 	local schemaTitle = catherine.util.StuffLanguage( Schema and Schema.Title or "Example" )
 	local schemaDesc = catherine.util.StuffLanguage( Schema and Schema.Desc or "Test" )
@@ -39,6 +40,8 @@ function PANEL:Init( )
 	self:ShowCloseButton( false )
 	self:SetDraggable( false )
 	self:MakePopup( )
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.3, 0 )
 	self.Paint = function( pnl, w, h )
 		if ( self.mode == 0 ) then
 			self.mainAlpha = Lerp( 0.03, self.mainAlpha, 255 )
@@ -47,11 +50,11 @@ function PANEL:Init( )
 		end
 		
 		if ( !catherine.character.IsCustomBackground( ) ) then
-			draw.RoundedBox( 0, 0, 0, w, h, Color( 30, 30, 30, 255 ) )
-
-			surface.SetDrawColor( 50, 50, 50, math.max( math.sin( CurTime( ) / 2 ) * 255, 200 ) )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 200, 200, 200, 255 ) )
+			
+			surface.SetDrawColor( 235, 235, 235, 255 )
 			surface.SetMaterial( Material( "gui/gradient_up" ) )
-			surface.DrawTexturedRect( 0, 0, w, h )
+			surface.DrawTexturedRect( 0, pnl.backgroundPanelH, w, h - pnl.backgroundPanelH )
 		else
 			if ( catherine.configs.enableCharacterPanelBlur ) then
 				if ( self.closing ) then
@@ -63,28 +66,26 @@ function PANEL:Init( )
 				catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 			end
 		end
-
-		surface.SetDrawColor( 110, 110, 110, self.mainAlpha / 3 )
-		surface.SetMaterial( Material( "gui/gradient" ) )
-		surface.DrawTexturedRect( 0, h * 0.7 - 35, w * 0.3, 70 )
 		
-		surface.SetDrawColor( 80, 80, 80, self.mainAlpha / 6 )
-		surface.SetMaterial( Material( "gui/gradient" ) )
-		surface.DrawTexturedRect( 0, h * 0.75 - 10, w * 0.3, 170 )
+		if ( pnl.closing ) then
+			pnl.backgroundPanelH = Lerp( 0.05, pnl.backgroundPanelH, 0 )
+		else
+			pnl.backgroundPanelH = Lerp( 0.05, pnl.backgroundPanelH, h * 0.1 )
+		end
 		
-		surface.SetDrawColor( 90, 90, 90, self.mainAlpha )
-		surface.SetMaterial( Material( "vgui/gradient-r" ) )
-		surface.DrawTexturedRect( w - ( w * 0.3 ), h - 55, w * 0.3, 40 )
+		draw.RoundedBox( 0, 0, 0, w, pnl.backgroundPanelH, Color( 235, 235, 235, 255 ) )
+		draw.RoundedBox( 0, 0, h - ( pnl.backgroundPanelH ), w, pnl.backgroundPanelH, Color( 235, 235, 235, 255 ) )
 		
-		draw.SimpleText( schemaTitle, "catherine_normal25", 30, h * 0.75 - 70, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-		draw.SimpleText( schemaDesc, "catherine_normal15", 30, h * 0.75 - 35, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+		draw.SimpleText( schemaTitle, "catherine_normal25", 30, h * 0.1 / 3, Color( 0, 0, 0, self.mainAlpha ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( schemaDesc, "catherine_normal15", 30, h * 0.1 / 3 + 25, Color( 50, 50, 50, self.mainAlpha ), TEXT_ALIGN_LEFT, 1 )
 	end
 	
 	self.changeLanguage = vgui.Create( "catherine.vgui.button", self )
-	self.changeLanguage:SetPos( self.w - ( self.w * 0.2 ) - 20, self.h - 50 )
+	self.changeLanguage:SetPos( self.w - ( self.w * 0.2 ) - 30, self.h * 0.1 / 2 - 30 / 2 )
 	self.changeLanguage:SetSize( self.w * 0.2, 30 )
 	self.changeLanguage:SetStr( "" )
-	self.changeLanguage:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.changeLanguage:SetStrColor( Color( 0, 0, 0, 255 ) )
+	self.changeLanguage:SetGradientColor( Color( 50, 50, 50, 150 ) )
 	self.changeLanguage.PaintOverAll = function( pnl )
 		local languageTable = catherine.language.FindByID( GetConVarString( "cat_convar_language" ) )
 		
@@ -108,7 +109,7 @@ function PANEL:Init( )
 					
 					self.createCharacter:SetStr( LANG( "Character_UI_CreateCharStr" ) )
 					self.useCharacter:SetStr( LANG( "Character_UI_LoadCharStr" ) )
-					self.changeLog:SetStr( LANG( "Character_UI_ChangeLogStr" ) )
+					//self.changeLog:SetStr( LANG( "Character_UI_ChangeLogStr" ) )
 					self.back:SetStr( LANG( "Character_UI_BackStr" ) )
 				end )
 			end )
@@ -119,10 +120,11 @@ function PANEL:Init( )
 	self.mainButtons[ #self.mainButtons + 1 ] = self.changeLanguage
 
 	self.createCharacter = vgui.Create( "catherine.vgui.button", self )
-	self.createCharacter:SetPos( 30, self.h * 0.75 )
+	self.createCharacter:SetPos( 30, self.h - self.h * 0.1 / 2 - 30 / 2 )
 	self.createCharacter:SetSize( self.w * 0.2, 30 )
 	self.createCharacter:SetStr( LANG( "Character_UI_CreateCharStr" ) )
-	self.createCharacter:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.createCharacter:SetStrColor( Color( 0, 0, 0, 255 ) )
+	self.createCharacter:SetGradientColor( Color( 50, 50, 50, 150 ) )
 	self.createCharacter.Click = function( )
 		if ( #catherine.character.localCharacters >= catherine.configs.maxCharacters ) then
 			Derma_Message( LANG( "Character_Notify_MaxLimitHit" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
@@ -136,31 +138,33 @@ function PANEL:Init( )
 	self.mainButtons[ #self.mainButtons + 1 ] = self.createCharacter
 	
 	self.useCharacter = vgui.Create( "catherine.vgui.button", self )
-	self.useCharacter:SetPos( 30, self.h * 0.75 + 40 )
+	self.useCharacter:SetPos( 60 + self.w * 0.2, self.h - self.h * 0.1 / 2 - 30 / 2 )
 	self.useCharacter:SetSize( self.w * 0.2, 30 )
 	self.useCharacter:SetStr( LANG( "Character_UI_LoadCharStr" ) )
-	self.useCharacter:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.useCharacter:SetStrColor( Color( 0, 0, 0, 255 ) )
+	self.useCharacter:SetGradientColor( Color( 50, 50, 50, 150 ) )
 	self.useCharacter.Click = function( )
 		self:JoinMenu( function( )
 			self:UseCharacterPanel( )
 		end )
 	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.useCharacter
-	
+	--[[
 	self.changeLog = vgui.Create( "catherine.vgui.button", self )
 	self.changeLog:SetPos( 30, self.h * 0.75 + 80 )
 	self.changeLog:SetSize( self.w * 0.2, 30 )
 	self.changeLog:SetStr( LANG( "Character_UI_ChangeLogStr" ) )
-	self.changeLog:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.changeLog:SetStrColor( Color( 0, 0, 0, 255 ) )
+	self.changeLog:SetGradientColor( Color( 50, 50, 50, 150 ) )
 	self.changeLog.Click = function( )
 		self:JoinMenu( function( )
 			self:UpdateLogPanel( )
 		end )
 	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.changeLog
-	
+	--]]
 	self.disconnect = vgui.Create( "catherine.vgui.button", self )
-	self.disconnect:SetPos( 30, self.h * 0.75 + 120 )
+	self.disconnect:SetPos( self.w - self.w * 0.2 - 30, self.h - self.h * 0.1 / 2 - 30 / 2 )
 	self.disconnect:SetSize( self.w * 0.2, 30 )
 	self.disconnect:SetStr( "" )
 	self.disconnect.PaintOverAll = function( pnl )
@@ -170,7 +174,8 @@ function PANEL:Init( )
 			pnl:SetStr( LANG( "Character_UI_ExitServerStr" ) )
 		end
 	end
-	self.disconnect:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.disconnect:SetStrColor( Color( 0, 0, 0, 255 ) )
+	self.disconnect:SetGradientColor( Color( 50, 50, 50, 150 ) )
 	self.disconnect.Click = function( )
 		if ( self.player:IsCharacterLoaded( ) ) then
 			self:Close( )
@@ -185,10 +190,11 @@ function PANEL:Init( )
 	self.mainButtons[ #self.mainButtons + 1 ] = self.disconnect
 	
 	self.back = vgui.Create( "catherine.vgui.button", self )
-	self.back:SetPos( 30, 30 )
+	self.back:SetPos( 30, self.h * 0.1 / 2 - 30 / 2 )
 	self.back:SetSize( self.w * 0.2, 30 )
 	self.back:SetStr( LANG( "Character_UI_BackStr" ) )
-	self.back:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.back:SetStrColor( Color( 0, 0, 0, 255 ) )
+	self.back:SetGradientColor( Color( 50, 50, 50, 150 ) )
 	self.back:SetVisible( false )
 	self.back:SetAlpha( 0 )
 	self.back.Click = function( )
@@ -256,7 +262,7 @@ end
 function PANEL:UseCharacterPanel( )
 	self.loadCharacter = { Lists = { }, curr = 1 }
 	
-	local baseW, baseH, errMsg = 300, self.h * 0.85, nil
+	local baseW, errMsg = 300, nil
 	local pl = LocalPlayer( )
 	
 	for k, v in pairs( catherine.character.localCharacters ) do
@@ -267,8 +273,8 @@ function PANEL:UseCharacterPanel( )
 	end
 	
 	self.CharacterPanel = vgui.Create( "DPanel", self )
-	self.CharacterPanel:SetPos( 0, 90 )
-	self.CharacterPanel:SetSize( self.w - 20, self.h - 120 )
+	self.CharacterPanel:SetPos( 0, self.h * 0.1 )
+	self.CharacterPanel:SetSize( self.w, self.h - ( self.h * 0.2 ) )
 	self.CharacterPanel:SetAlpha( 0 )
 	self.CharacterPanel:AlphaTo( 255, 0.2, 0 )
 	self.CharacterPanel:SetDrawBackground( false )
@@ -286,16 +292,13 @@ function PANEL:UseCharacterPanel( )
 	local function SetTargetPanelPos( pnl, pos, a )
 		if ( !IsValid( pnl ) ) then return end
 		
-		if ( !pnl.targetPos or !pnl.targetA ) then
+		if ( !pnl.targetPos ) then
 			pnl.targetPos = pos
-			pnl.targetA = a
 		end
 		
 		pnl.targetPos = Lerp( 0.2, pnl.targetPos, pos )
-		pnl.targetA = Lerp( 0.5, pnl.targetA, a )
 		
-		pnl:SetPos( pnl.targetPos, 0 )
-		pnl:SetAlpha( pnl.targetA )
+		pnl:SetPos( pnl.targetPos, 30 )
 	end
 	
 	for k, v in pairs( self.loadCharacter.Lists ) do
@@ -309,18 +312,16 @@ function PANEL:UseCharacterPanel( )
 		local overrideModel = hook.Run( "GetCharacterPanelLoadModel", v.characterDatas ) or v.characterDatas._model
 		
 		v.panel = vgui.Create( "DPanel", self.CharacterPanel )
-		v.panel:SetSize( baseW, baseH )
+		v.panel:SetSize( baseW, self.CharacterPanel:GetTall( ) - 60 )
 		v.panel.x = 0
 		v.panel.y = 0
 		v.panel:Center( )
 		v.panel.Paint = function( pnl, w, h )
-			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.SetMaterial( Material( "gui/gradient_up" ) )
-			surface.DrawTexturedRect( 0, 0, w, h )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 			
 			draw.SimpleText( name, "catherine_normal20", w / 2, h - 100, Color( 0, 0, 0, 255 ), 1, 1 )
 			draw.SimpleText( desc, "catherine_normal15", w / 2, h - 70, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( factionName, "catherine_normal25", w / 2, 20, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( factionName, "catherine_normal25", w / 2, 20, Color( 0, 0, 0, 255 ), 1, 1 )
 		end
 		
 		v.panel.button = vgui.Create( "DButton", v.panel )

@@ -78,12 +78,11 @@ if ( SERVER ) then
 				catherine.player.UpdateLanguageSetting( pl )
 			end
 			
-			netstream.Start( pl, "catherine.loadingPercent", 0.8 )
+			netstream.Start( pl, "catherine.loadingPercent", 1 )
 			
 			timer.Simple( 1, function( )
 				if ( !IsValid( pl ) ) then return end
 				
-				netstream.Start( pl, "catherine.loadingPercent", 1 )
 				netstream.Start( pl, "catherine.loadingFinished" )
 				
 				--[[ Finish! ]]--

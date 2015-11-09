@@ -72,7 +72,18 @@ function GM:HUDDrawScoreBoard( )
 	surface.SetMaterial( gradientUpMat )
 	surface.DrawTexturedRect( 0, 0, w, h )
 	
-	// Intro codes ...
+	local symbolW, symbolH = 270 / 2, 512 / 2
+	
+	surface.SetDrawColor( 168, 168, 168, 255 )
+	surface.SetMaterial( catSymbolMat )
+	surface.DrawTexturedRect( w / 2 - symbolW / 2, h * 0.4 - symbolH / 2, symbolW, symbolH )
+	
+	if ( data.errorMessage ) then
+		draw.SimpleText( data.errorMessage, "catherine_normal20", w / 2, h * 0.7, Color( 50, 50, 50, 255 ), 1, 1 )
+	else
+		draw.RoundedBox( 0, w * 0.3, h * 0.7, w * 0.4, 5, Color( 168, 168, 168, 255 ) )
+		draw.RoundedBox( 0, w * 0.3, h * 0.7, data.loadingW, 5, Color( 50, 50, 50, 255 ) )
+	end
 end
 
 function GM:HUDShouldDraw( name )
