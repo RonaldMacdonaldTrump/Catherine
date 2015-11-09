@@ -24,12 +24,12 @@ local twoD = FindMetaTable( "Vector" ).Length2D
 
 if ( SERVER ) then
 	local initFunctions = {
-		{ libName = "player", funcName = "UpdateInformation" },
-		{ libName = "net", funcName = "SendAllNetworkRegistries" },
-		{ libName = "character", funcName = "SendAllNetworkRegistries" },
-		{ libName = "environment", funcName = "SendAllEnvironmentConfig" },
-		{ libName = "character", funcName = "SendPlayerCharacterList" },
-		{ libName = "catData", funcName = "SendAllNetworkRegistries" }
+		{ "player", "UpdateInformation" },
+		{ "net", "SendAllNetworkRegistries" },
+		{ "character", "SendAllNetworkRegistries" },
+		{ "environment", "SendAllEnvironmentConfig" },
+		{ "character", "SendPlayerCharacterList" },
+		{ "catData", "SendAllNetworkRegistries" }
 	}
 	
 	function catherine.player.Initialize( pl, isReloading )
@@ -40,23 +40,19 @@ if ( SERVER ) then
 			
 			if ( !Schema ) then
 				timer.Remove( "Catherine.timer.player.Initialize.Reload" )
-				netstream.Start( pl, "catherine.loadingError", {
-					LANG( pl, "Basic_Error_NoSchema" ),
-					true
-				} )
-				
+				netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_NoSchema" ) )
 				return
 			end
 			
+			netstream.Start( pl, "catherine.loadingPercent", 0.3 )
+			
 			if ( !catherine.database.connected ) then
 				timer.Remove( "Catherine.timer.player.Initialize.Reload" )
-				netstream.Start( pl, "catherine.loadingError", {
-					LANG( pl, "Basic_Error_NoDatabase", catherine.database.errorMsg ),
-					true
-				} )
-				
+				netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_NoDatabase", catherine.database.errorMsg ) )
 				return
 			end
+			
+			netstream.Start( pl, "catherine.loadingPercent", 0.4 )
 			
 			--[[ Initializing a Catherine ... :> ]]--
 			
@@ -64,19 +60,17 @@ if ( SERVER ) then
 			catherine.character.RemoveDummy( )
 			
 			for i = 1, #initFunctions do
-				local libName, funcName = initFunctions[ i ].libName, initFunctions[ i ].funcName
+				local libName, funcName = initFunctions[ i ][ 1 ], initFunctions[ i ][ 2 ]
 				local success, result = pcall( catherine[ libName ][ funcName ], pl )
 				
 				if ( !success ) then
-					netstream.Start( pl, "catherine.loadingError", {
-						LANG( pl, "Basic_Error_LibraryLoad", "catherine." .. libName .. "." .. funcName ),
-						false
-					} )
+					netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_LibraryLoad", "catherine." .. libName .. "." .. funcName ) )
 					MsgC( Color( 255, 0, 0 ), "[CAT ERROR] Failed to initialize Catherine! ( Player : " .. pl:Name( ) .. "/" .. pl:SteamID( ) .. " ) ( Function : catherine." .. libName .. "." .. funcName .. " )\n" .. result .. "\n" )
-					
 					return
 				end
 			end
+			
+			netstream.Start( pl, "catherine.loadingPercent", 0.7 )
 			
 			timer.Remove( "Catherine.timer.player.Initialize.Reload" )
 			
@@ -84,7 +78,12 @@ if ( SERVER ) then
 				catherine.player.UpdateLanguageSetting( pl )
 			end
 			
+			netstream.Start( pl, "catherine.loadingPercent", 0.8 )
+			
 			timer.Simple( 1, function( )
+				if ( !IsValid( pl ) ) then return end
+				
+				netstream.Start( pl, "catherine.loadingPercent", 1 )
 				netstream.Start( pl, "catherine.loadingFinished" )
 				
 				--[[ Finish! ]]--
@@ -96,16 +95,18 @@ if ( SERVER ) then
 				Initializing( )
 			end )
 		else
-			netstream.Hook( "catherine.player.CheckLocalPlayer_Receive", function( )
+			netstream.Hook( "catherine.player.CheckLocalPlayer.Receive", function( )
 				if ( !IsValid( pl ) ) then return end
 				
-				netstream.Start( pl, "catherine.introStart" )
+				netstream.Start( pl, "catherine.loadingPercent", 0.2 )
 				
 				timer.Simple( 1, function( )
 					Initializing( )
 				end )
 			end )
 			
+			netstream.Start( pl, "catherine.introStart" )
+			netstream.Start( pl, "catherine.loadingPercent", 0 )
 			netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
 		end
 	end
@@ -716,24 +717,16 @@ if ( SERVER ) then
 		return self.CAT_godMode
 	end
 	
-	netstream.Hook( "catherine.player.Initialize_Reload", function( pl )
+	netstream.Hook( "catherine.player.Initialize.Reload", function( pl )
 		catherine.player.Initialize( pl, true )
 	end )
 else
-	catherine.player.nextLocalPlayerCheck = catherine.player.nextLocalPlayerCheck or CurTime( ) + 0.05
-	
 	netstream.Hook( "catherine.player.CheckLocalPlayer", function( )
-		hook.Remove( "Tick", "catherine.player.CheckLocalPlayer.Tick" )
-		hook.Add( "Tick", "catherine.player.CheckLocalPlayer.Tick", function( )
-			if ( ( catherine.player.nextLocalPlayerCheck or 0 ) <= CurTime( ) ) then
-				if ( IsValid( catherine.pl ) ) then
-					netstream.Start( "catherine.player.CheckLocalPlayer_Receive" )
-					hook.Remove( "Tick", "catherine.player.CheckLocalPlayer.Tick" )
-					catherine.player.nextLocalPlayerCheck = nil
-					return
-				end
-				
-				catherine.player.nextLocalPlayerCheck = CurTime( ) + 0.05
+		timer.Remove( "Catherine.timer.player.CheckLocalPlayer" )
+		timer.Create( "Catherine.timer.player.CheckLocalPlayer", 0.1, 0, function( )
+			if ( IsValid( catherine.pl ) ) then
+				netstream.Start( "catherine.player.CheckLocalPlayer.Receive" )
+				timer.Remove( "Catherine.timer.player.CheckLocalPlayer" )
 			end
 		end )
 	end )

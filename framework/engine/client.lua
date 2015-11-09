@@ -19,48 +19,18 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.intro = catherine.intro or {
 	status = true,
 	loading = true,
-	noError = true,
-	errorMessage = nil,
-	loadingColor = Color( 90, 90, 90 ),
-	backAlpha = 255,
-	loadingAlpha = 0,
-	rotate = 0,
-	startTime = 0,
-	sysTime = 0,
-	reloadingWait = false,
-	reloadingCount = 0,
-	noReload = false,
-	onlyMessage = false,
-	alwaysFin = false,
-	
-	firstStageShowingTime = nil,
-	firstStage = false,
-	firstStageEnding = false,
-	firstStageX = ScrW( ),
-	firstStageEffect = false,
-	
-	secondStageShowingTime = nil,
-	secondStage = false,
-	secondStageEnding = false,
-	secondStageX = ScrW( ),
-	secondStageAlpha = 255,
-	secondStageEffect = false,
-	
-	introDone = false
+	loadingPer = 0,
+	loadingW = 0,
+	errorMessage = nil
 }
 catherine.deathColAlpha = catherine.deathColAlpha or 0
 catherine.screenResolution = catherine.screenResolution or { w = ScrW( ), h = ScrH( ) }
 local entityCaches = { }
 local nextEntityCacheWork = RealTime( )
 local lastEntity = nil
-local rpInformation_backgroundblurA = 0
 local toscreen = FindMetaTable( "Vector" ).ToScreen
-local OFFSET_PLAYER = Vector( 0, 0, 30 )
-local OFFSET_AD_ESP = Vector( 0, 0, 50 )
-local frameworkLogoMat = Material( catherine.configs.frameworkLogo )
 local gradientUpMat = Material( "gui/gradient_up" )
 local gradientCenterMat = Material( "gui/center_gradient" )
-local introBooA = 0
 local math_app = math.Approach
 local hook_run = hook.Run
 local trace_line = util.TraceLine
@@ -76,6 +46,32 @@ function GM:Initialize( )
 	CAT_CONVAR_BAR = CreateClientConVar( "cat_convar_bar", "1", true, true )
 	CAT_CONVAR_CHAT_TIMESTAMP = CreateClientConVar( "cat_convar_chat_timestamp", "1", true, true )
 	CAT_CONVAR_HINT = CreateClientConVar( "cat_convar_hint", "1", true, true )
+end
+
+function GM:HUDDrawScoreBoard( )
+	if ( !catherine.intro.status ) then return end
+	local w, h = ScrW( ), ScrH( )
+	local data = catherine.intro
+	
+	if ( data.loading ) then
+		data.loadingW = Lerp( 0.03, data.loadingW, ( w * 0.4 ) * data.loadingPer )
+	else
+		data.status = false
+		
+		if ( catherine.question.CanQuestion( ) ) then
+			catherine.question.Start( )
+		else
+			catherine.character.SetMenuActive( true )
+		end
+	end
+	
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+	
+	surface.SetDrawColor( 200, 200, 200, 255 )
+	surface.SetMaterial( gradientUpMat )
+	surface.DrawTexturedRect( 0, 0, w, h )
+	
+	// Intro codes ...
 end
 
 function GM:HUDShouldDraw( name )
@@ -113,7 +109,7 @@ function GM:HUDPaintBackground( )
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( pl == v ) then continue end
-		local pos = toscreen( v:LocalToWorld( v:OBBCenter( ) + OFFSET_AD_ESP ) )
+		local pos = toscreen( v:LocalToWorld( v:OBBCenter( ) + Vector( 0, 0, 50 ) ) )
 
 		draw.SimpleText( v:Name( ), "catherine_normal15", pos.x, pos.y, team.GetColor( v:Team( ) ), 1, 1 )
 
@@ -180,183 +176,6 @@ end
 
 function GM:GetChatIcon( pl, chatClass, text )
 
-end
-
-function GM:HUDDrawScoreBoard( )
-	if ( catherine.pl:IsCharacterLoaded( ) or ( catherine.intro.introDone and catherine.intro.backAlpha <= 0 ) ) then return end
-	local scrW, scrH = ScrW( ), ScrH( )
-	local realTime = RealTime( )
-	
-	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, catherine.intro.backAlpha ) )
-	
-	surface.SetDrawColor( 200, 200, 200, catherine.intro.backAlpha )
-	surface.SetMaterial( gradientUpMat )
-	surface.DrawTexturedRect( 0, 0, scrW, scrH )
-	
-	if ( catherine.intro.status ) then
-		catherine.intro.backAlpha = Lerp( 0.03, catherine.intro.backAlpha, 255 )
-	else
-		catherine.intro.backAlpha = Lerp( 0.03, catherine.intro.backAlpha, 0 )
-	end
-	
-	if ( catherine.intro.noError or catherine.intro.onlyMessage ) then
-		catherine.intro.loadingColor.r = Lerp( 0.05, catherine.intro.loadingColor.r, 90 )
-		catherine.intro.loadingColor.g = Lerp( 0.05, catherine.intro.loadingColor.g, 90 )
-		catherine.intro.loadingColor.b = Lerp( 0.05, catherine.intro.loadingColor.b, 90 )
-	else
-		catherine.intro.backAlpha = 255
-		catherine.intro.loadingColor.r = Lerp( 0.05, catherine.intro.loadingColor.r, 255 )
-		catherine.intro.loadingColor.g = Lerp( 0.05, catherine.intro.loadingColor.g, 0 )
-		catherine.intro.loadingColor.b = Lerp( 0.05, catherine.intro.loadingColor.b, 0 )
-	end
-	
-	if ( catherine.intro.loading ) then
-		catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 255 )
-	else
-		catherine.intro.loadingAlpha = Lerp( 0.03, catherine.intro.loadingAlpha, 0 )
-	end
-	
-	if ( catherine.intro.status and catherine.intro.startTime != 0 ) then
-		if ( catherine.intro.startTime <= realTime ) then
-			catherine.intro.firstStage = true
-			
-			if ( catherine.intro.firstStageX >= scrW / 2 - 512 / 2 ) then
-				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, scrW / 2 - 512 / 2, 25 )
-			end
-			
-			if ( !catherine.intro.firstStageEffect ) then
-				introBooA = 255
-				surface.PlaySound( "CAT/intro_slide_2.wav" )
-				catherine.intro.firstStageEffect = true
-			end
-			
-			if ( !catherine.intro.firstStageShowingTime ) then
-				catherine.intro.firstStageShowingTime = realTime
-			end
-			
-			if ( catherine.intro.firstStageShowingTime + 3 <= realTime ) then
-				if ( !catherine.intro.secondStageShowingTime ) then
-					catherine.intro.secondStageShowingTime = realTime
-				end
-				
-				catherine.intro.secondStage = true
-				
-				if ( !catherine.intro.secondStageEffect ) then
-					introBooA = 255
-					surface.PlaySound( "CAT/intro_slide_2.wav" )
-					catherine.intro.secondStageEffect = true
-				end
-				
-				catherine.intro.firstStageX = math.Approach( catherine.intro.firstStageX, 0 - 512, 25 )
-				
-				if ( !catherine.intro.secondStageEnding ) then
-					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, scrW / 2 - 512 / 2, 25 )
-				end
-				
-				if ( catherine.intro.firstStageEnding ) then
-					catherine.intro.firstStage = false
-				else
-					if ( catherine.intro.firstStageX <= 0 - 512 ) then
-						catherine.intro.firstStageEnding = true
-					end
-				end
-				
-				if ( catherine.intro.secondStageShowingTime + 2 <= realTime ) then
-					catherine.intro.secondStageX = math.Approach( catherine.intro.secondStageX, 0 - 512, 25 )
-					
-					if ( !catherine.intro.secondStageEnding ) then
-						surface.PlaySound( "CAT/intro_done.wav" )
-						catherine.intro.secondStageEnding = true
-					end
-					
-					if ( catherine.intro.secondStageX <= 0 - 512 and !catherine.intro.introDone ) then
-						catherine.intro.introDone = true
-						
-						if ( !catherine.intro.loading and catherine.intro.noError and catherine.intro.introDone ) then
-							catherine.intro.status = false
-							catherine.intro.alwaysFin = true
-							
-							if ( catherine.question.CanQuestion( ) ) then
-								catherine.question.Start( )
-							else
-								catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
-							end
-						end
-					end
-				end
-			end
-		end
-		
-		introBooA = Lerp( 0.02, introBooA, 0 )
-	end
-	
-	if ( !catherine.intro.alwaysFin and !catherine.intro.noReload and !catherine.intro.reloadingWait and catherine.intro.loading and catherine.intro.noError and catherine.intro.introDone and catherine.intro.sysTime + 10 <= SysTime( ) ) then
-		catherine.intro.reloadingWait = true
-		catherine.intro.reloadingCount = catherine.intro.reloadingCount + 1
-		catherine.intro.noError = false
-		catherine.intro.onlyMessage = false
-		catherine.intro.errorMessage = LANG( "Basic_Error_LoadTimeoutWait", catherine.intro.reloadingCount )
-		
-		timer.Simple( 5, function( )
-			catherine.intro.introDone = false
-			catherine.intro.onlyMessage = true
-			catherine.intro.noError = true
-			catherine.intro.errorMessage = LANG( "Basic_Error_Reloading" )
-			catherine.intro.sysTime = SysTime( )
-			catherine.intro.reloadingWait = false
-			
-			netstream.Start( "catherine.player.Initialize_Reload" )
-		end )
-	elseif ( !catherine.intro.loading and catherine.intro.noError and catherine.intro.introDone and !catherine.intro.alwaysFin ) then
-		catherine.intro.alwaysFin = true
-		catherine.intro.noReload = true
-		catherine.intro.noError = true
-		catherine.intro.onlyMessage = false
-		catherine.intro.errorMessage = nil
-		catherine.intro.reloadingWait = false
-		catherine.intro.status = false
-		
-		if ( catherine.question.CanQuestion( ) ) then
-			catherine.question.Start( )
-		else
-			catherine.character.SetMenuActive( true )
-		end
-	end
-	
-	if ( catherine.intro.loadingAlpha > 0 ) then
-		if ( catherine.intro.noError or catherine.intro.onlyMessage ) then
-			catherine.intro.rotate = math.Approach( catherine.intro.rotate, catherine.intro.rotate - 4, 4 )
-			
-			draw.NoTexture( )
-			surface.SetDrawColor( catherine.intro.loadingColor.r / 2, catherine.intro.loadingColor.g / 2, catherine.intro.loadingColor.b / 2, catherine.intro.loadingAlpha / 3 )
-			catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, 90, 360, 100 )
-			
-			draw.NoTexture( )
-			surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
-			catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 70, 100 )
-		else
-			draw.NoTexture( )
-			surface.SetDrawColor( catherine.intro.loadingColor.r, catherine.intro.loadingColor.g, catherine.intro.loadingColor.b, catherine.intro.loadingAlpha )
-			catherine.geometry.DrawCircle( 40, scrH - 40, 15, 5, catherine.intro.rotate, 360, 100 )
-		end
-	end
-	
-	surface.SetDrawColor( 255, 255, 255, 255 )
-	surface.SetMaterial( frameworkLogoMat )
-	surface.DrawTexturedRect( catherine.intro.firstStageX, scrH / 2 - 256 / 2, 512, 256 )
-	
-	surface.SetDrawColor( 255, 255, 255, catherine.intro.secondStageAlpha )
-	surface.SetMaterial( Material( catherine.configs.schemaLogo ) )
-	surface.DrawTexturedRect( catherine.intro.secondStageX, scrH / 2 - 256 / 2, 512, 256 )
-	
-	draw.SimpleText( LANG( "System_UI_Update_CoreVer", catherine.GetVersion( ), catherine.GetBuild( ) ), "catherine_normal15", 15, 20, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
-	
-	if ( ( !catherine.intro.noError or catherine.intro.onlyMessage ) and catherine.intro.errorMessage ) then
-		draw.SimpleText( LANG( "Basic_Sorry" ), "catherine_normal20", 85, scrH - 55, Color( 0, 0, 0, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
-		draw.SimpleText( catherine.intro.errorMessage, "catherine_normal15", 85, scrH - 25, Color( 50, 50, 50, catherine.intro.backAlpha ), TEXT_ALIGN_LEFT, 1 )
-	end
-	
-	draw.RoundedBox( 0, 0, 0, scrW, scrH, Color( 255, 255, 255, introBooA ) )
 end
 
 function GM:PostDrawTranslucentRenderables( depth, skybox )
@@ -908,10 +727,8 @@ netstream.Hook( "catherine.SetModel", function( data )
 end )
 
 netstream.Hook( "catherine.introStart", function( )
-	catherine.intro.loading = true
 	catherine.intro.status = true
-	catherine.intro.startTime = RealTime( )
-	catherine.intro.sysTime = SysTime( )
+	catherine.intro.loading = true
 end )
 
 netstream.Hook( "catherine.introStop", function( )
@@ -922,13 +739,13 @@ netstream.Hook( "catherine.loadingFinished", function( )
 	catherine.intro.loading = false
 end )
 
+netstream.Hook( "catherine.loadingPercent", function( data )
+	catherine.intro.loadingPer = data
+end )
+
 netstream.Hook( "catherine.loadingError", function( data )
-	local message = data[ 1 ]
+	catherine.intro.loading = true
+	catherine.intro.errorMessage = data
 	
-	catherine.intro.loading = false
-	catherine.intro.noError = false
-	catherine.intro.errorMessage = message
-	catherine.intro.noReload = data[ 2 ] or false
-	
-	MsgC( Color( 255, 0, 0 ), "[CAT ERROR] " .. message .. "\n" )
+	MsgC( Color( 255, 0, 0 ), "[CAT ERROR] " .. data .. "\n" )
 end )
