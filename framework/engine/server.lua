@@ -191,7 +191,9 @@ function GM:PlayerCharacterLoaded( pl )
 	local health = catherine.character.GetCharVar( pl, "char_health", pl:Health( ) )
 	local armor = catherine.character.GetCharVar( pl, "char_armor", 0 )
 	
-	pl:SetHealth( health )
+	if ( math.Round( health ) > 0 ) then
+		pl:SetHealth( health )
+	end
 	
 	if ( armor != 0 ) then
 		pl:SetArmor( armor )
@@ -419,10 +421,12 @@ function GM:PlayerCanHearPlayersVoice( pl, target )
 end
 
 function GM:PostCharacterSave( pl )
-	catherine.character.SetCharVar( pl, "char_health", pl:Health( ) )
-	
-	if ( pl:Armor( ) != 0 ) then
-		catherine.character.SetCharVar( pl, "char_armor", pl:Armor( ) )
+	if ( pl:Alive( ) ) then
+		catherine.character.SetCharVar( pl, "char_health", pl:Health( ) )
+		
+		if ( pl:Armor( ) != 0 ) then
+			catherine.character.SetCharVar( pl, "char_armor", pl:Armor( ) )
+		end
 	end
 end
 
