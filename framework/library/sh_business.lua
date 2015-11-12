@@ -35,7 +35,7 @@ if ( SERVER ) then
 		end
 		
 		if ( !catherine.cash.Has( pl, cost ) ) then
-			catherine.util.NotifyLang( pl, "Cash_Notify_HasNot" )
+			catherine.util.NotifyLang( pl, "Cash_Notify_HasNot", catherine.cash.GetOnlySingular( ) )
 			return
 		end
 		

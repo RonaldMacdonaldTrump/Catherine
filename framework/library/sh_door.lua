@@ -121,7 +121,7 @@ if ( SERVER ) then
 		local cost = catherine.door.GetDoorCost( pl, ent )
 		
 		if ( !catherine.cash.Has( pl, cost ) ) then
-			return false, "Cash_Notify_HasNot"
+			return false, "Cash_Notify_HasNot", { catherine.cash.GetOnlySingular( ) }
 		end
 		
 		local id = pl:GetCharacterID( )

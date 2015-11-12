@@ -255,7 +255,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		local itemCost = vendorInv[ uniqueID ].cost * count
 		
 		if ( itemCost > playerCash ) then
-			catherine.util.NotifyLang( pl, "Cash_Notify_HasNot" )
+			catherine.util.NotifyLang( pl, "Cash_Notify_HasNot", catherine.cash.GetOnlySingular( ) )
 			return 
 		end
 		
