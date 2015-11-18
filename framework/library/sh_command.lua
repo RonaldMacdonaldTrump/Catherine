@@ -224,8 +224,25 @@ else
 		local sub = 0
 		text = text:utf8sub( 2 )
 		
+		for k, v in pairs( catherine.chat.lists ) do
+			if ( v.command ) then
+				local command = type( v.command ) == "table" and v.command or { v.command }
+				
+				for k1, v1 in pairs( command ) do
+					if ( v1:sub( 2 ) == text ) then
+						commands[ #commands + 1 ] = {
+							command = v1:sub( 2 ),
+							syntax = "[None]",
+							desc = "^Command_DefDesc"
+						}
+						sub = text:utf8len( )
+					end
+				end
+			end
+		end
+		
 		for k, v in pairs( catherine.command.GetAll( ) ) do
-			if ( v.otherCommand and type ( v.otherCommand ) == "table" and #v.otherCommand != 0 ) then
+			if ( v.otherCommand and type( v.otherCommand ) == "table" and #v.otherCommand != 0 ) then
 				for k1, v1 in pairs( v.otherCommand ) do
 					if ( v1 == text ) then
 						commands[ #commands + 1 ] = v

@@ -739,13 +739,13 @@ else
 						local yPos = chatY - ( 20 * k )
 						
 						if ( yPos <= 10 ) then continue end
-
-						draw.SimpleText( "/" .. v.command, "catherine_normal20", 15, yPos, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+						
+						draw.SimpleText( "/" .. v.command, "catherine_outline20", 15, yPos, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 					end
 				end
 				
-				if ( pnl.history.alpha > 10 ) then
-					pnl.history.alpha = Lerp( 0.05, pnl.history.alpha, 100 )
+				if ( pnl.history.alpha > 50 ) then
+					pnl.history.alpha = Lerp( 0.05, pnl.history.alpha, 50 )
 					pnl.history:SetAlpha( pnl.history.alpha )
 				end
 			else
@@ -768,9 +768,9 @@ else
 		end
 		textEnt:SetAllowNonAsciiCharacters( true )
 		textEnt.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 200 ) )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 			
-			surface.SetDrawColor( 0, 0, 0, 200 )
+			surface.SetDrawColor( 0, 0, 0, 255 )
 			surface.DrawOutlinedRect( 0, 0, w, h )
 			
 			pnl:DrawTextEntryText( color_black, color_black, color_black )

@@ -930,7 +930,7 @@ function PANEL:Init( )
 			
 			if ( self.databaseManager.initialize.initCount > 4 ) then
 				Derma_Query( LANG( "System_Notify_InitializeQ" ), "", LANG( "Basic_UI_YES" ), function( )
-					
+						Derma_Message( LANG( "System_Notify_SecurityError" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 					end, LANG( "Basic_UI_NO" ), function( )
 						if ( IsValid( catherine.vgui.databaseManager ) and IsValid( self.databaseManager.initialize ) ) then
 							self.databaseManager.initialize.initCount = -1
