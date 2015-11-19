@@ -372,6 +372,11 @@ if ( SERVER ) then
 			end
 		end
 		
+		if ( text == "" ) then
+			catherine.util.NotifyLang( pl, "Basic_Notify_InputText" )
+			return
+		end
+		
 		local chatInformation = {
 			text = text,
 			uniqueID = classTable.uniqueID,
