@@ -693,6 +693,47 @@ if ( SERVER ) then
 		catherine.database.Backup( )
 	end )
 	
+	concommand.Add( "cat_db_convert_from_sqlite", function( pl )
+		if ( game.IsDedicated( ) and IsValid( pl ) ) then
+			catherine.util.SendDermaMessage( pl, LANG( pl, "System_Notify_SecurityError" ) )
+			return
+		elseif ( !game.IsDedicated( ) and !pl:IsSuperAdmin( ) ) then
+			catherine.util.SendDermaMessage( pl, LANG( pl, "System_Notify_PermissionError" ) )
+			return
+		end
+		
+		if ( catherine.database.moduleName != "sqlite" ) then
+			// Block a Database progress.
+			hook.Add( "PlayerShouldSaveCharacter", "catherine.database.PlayerShouldSaveCharacter", function( pl )
+				return false
+			end )
+			
+			hook.Add( "PlayerShouldSaveCatData", "catherine.database.PlayerShouldSaveCatData", function( pl )
+				return false
+			end )
+			
+			for k, v in pairs( CAT_DATABASE_TABLES ) do
+				local result = sql.Query( "SELECT * FROM `" .. v .. "`" )
+				
+				if ( type( result ) == "table" ) then
+					for k1, v1 in pairs( result ) do
+						catherine.database.InsertDatas( v, v1, function( )
+							
+						end )
+					end
+				end
+			end
+			
+			timer.Simple( 3, function( )
+				RunConsoleCommand( "changelevel", game.GetMap( ) )
+			end )
+			
+			MsgC( Color( 0, 255, 0 ), "[CAT DB] Finished the Convert from SQLite, Restarting the server ...\n" )
+		else
+			MsgC( Color( 255, 0, 0 ), "[CAT DB ERROR] Couldn't do convert from SQLite, You are using SQLite, need to change to other module!\n" )
+		end
+	end )
+	
 	function catherine.database.FrameworkInitialized( )
 		file.CreateDir( "catherine" )
 		file.CreateDir( "catherine/database" )

@@ -48,7 +48,7 @@ function catherine.character.FindVarByField( field )
 	end
 end
 
-local tableJSONDefault = util.TableToJSON( { } )
+local emptyTableToJSON = util.TableToJSON( { } )
 
 catherine.character.NewVar( "id", {
 	field = "_id",
@@ -105,7 +105,7 @@ catherine.character.NewVar( "model", {
 catherine.character.NewVar( "att", {
 	field = "_att",
 	doNetworking = true,
-	default = tableJSONDefault,
+	default = emptyTableToJSON,
 	doConversion = true,
 	doLocal = true
 } )
@@ -137,7 +137,7 @@ catherine.character.NewVar( "steamID", {
 catherine.character.NewVar( "charVar", {
 	field = "_charVar",
 	doNetworking = true,
-	default = tableJSONDefault,
+	default = emptyTableToJSON,
 	doConversion = true,
 	doLocal = true
 } )
@@ -145,7 +145,7 @@ catherine.character.NewVar( "charVar", {
 catherine.character.NewVar( "inventory", {
 	field = "_inv",
 	doNetworking = true,
-	default = tableJSONDefault,
+	default = emptyTableToJSON,
 	doConversion = true,
 	doLocal = true
 } )

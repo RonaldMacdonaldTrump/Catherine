@@ -19,7 +19,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local DeriveGamemode = DeriveGamemode
 local AddCSLuaFile = AddCSLuaFile
 local include = include
-local baseDir = "catherine/framework"
 
 DeriveGamemode( "sandbox" )
 
@@ -36,62 +35,63 @@ catherine.FolderName = GM.FolderName
 function catherine.Boot( )
 	local sysTime = SysTime( )
 	
-	AddCSLuaFile( baseDir .. "/engine/utility.lua" )
-	include( baseDir .. "/engine/utility.lua" )
+	AddCSLuaFile( "catherine/framework/engine/utility.lua" )
+	include( "catherine/framework/engine/utility.lua" )
 	
-	AddCSLuaFile( baseDir .. "/config/framework_config.lua" )
-	include( baseDir .. "/config/framework_config.lua" )
+	AddCSLuaFile( "catherine/framework/config/framework_config.lua" )
+	include( "catherine/framework/config/framework_config.lua" )
 	
-	AddCSLuaFile( baseDir .. "/engine/character.lua" )
-	include( baseDir .. "/engine/character.lua" )
+	AddCSLuaFile( "catherine/framework/engine/character.lua" )
+	include( "catherine/framework/engine/character.lua" )
 	
-	AddCSLuaFile( baseDir .. "/engine/plugin.lua" )
-	include( baseDir .. "/engine/plugin.lua" )
+	AddCSLuaFile( "catherine/framework/engine/plugin.lua" )
+	include( "catherine/framework/engine/plugin.lua" )
 	
 	catherine.util.IncludeInDir( "library" )
 	
-	AddCSLuaFile( baseDir .. "/engine/hook.lua" )
-	include( baseDir .. "/engine/hook.lua" )
+	AddCSLuaFile( "catherine/framework/engine/hook.lua" )
+	include( "catherine/framework/engine/hook.lua" )
 	
-	AddCSLuaFile( baseDir .. "/engine/schema.lua" )
-	include( baseDir .. "/engine/schema.lua" )
+	AddCSLuaFile( "catherine/framework/engine/schema.lua" )
+	include( "catherine/framework/engine/schema.lua" )
 	
 	if ( SERVER ) then
-		AddCSLuaFile( baseDir .. "/engine/client.lua" )
-		AddCSLuaFile( baseDir .. "/engine/shared.lua" )
-		AddCSLuaFile( baseDir .. "/engine/lime.lua" )
-		AddCSLuaFile( baseDir .. "/engine/external_x.lua" )
-		AddCSLuaFile( baseDir .. "/engine/database.lua" )
-		include( baseDir .. "/engine/server.lua" )
-		include( baseDir .. "/engine/shared.lua" )
-		include( baseDir .. "/engine/crypto.lua" )
-		include( baseDir .. "/engine/data.lua" )
-		include( baseDir .. "/engine/database.lua" )
-		include( baseDir .. "/engine/resource.lua" )
-		include( baseDir .. "/engine/external_x.lua" )
-		include( baseDir .. "/engine/lime.lua" )
+		AddCSLuaFile( "catherine/framework/engine/client.lua" )
+		AddCSLuaFile( "catherine/framework/engine/shared.lua" )
+		AddCSLuaFile( "catherine/framework/engine/lime.lua" )
+		AddCSLuaFile( "catherine/framework/engine/external_x.lua" )
+		AddCSLuaFile( "catherine/framework/engine/database.lua" )
+		
+		include( "catherine/framework/engine/server.lua" )
+		include( "catherine/framework/engine/shared.lua" )
+		include( "catherine/framework/engine/crypto.lua" )
+		include( "catherine/framework/engine/data.lua" )
+		include( "catherine/framework/engine/database.lua" )
+		include( "catherine/framework/engine/resource.lua" )
+		include( "catherine/framework/engine/external_x.lua" )
+		include( "catherine/framework/engine/lime.lua" )
 	else
-		include( baseDir .. "/engine/client.lua" )
-		include( baseDir .. "/engine/shared.lua" )
-		include( baseDir .. "/engine/lime.lua" )
-		include( baseDir .. "/engine/external_x.lua" )
-		include( baseDir .. "/engine/database.lua" )
+		include( "catherine/framework/engine/client.lua" )
+		include( "catherine/framework/engine/shared.lua" )
+		include( "catherine/framework/engine/lime.lua" )
+		include( "catherine/framework/engine/external_x.lua" )
+		include( "catherine/framework/engine/database.lua" )
 	end
 	
 	catherine.util.IncludeInDir( "derma" )
 	
-	AddCSLuaFile( baseDir .. "/command/commands.lua" )
-	include( baseDir .. "/command/commands.lua" )
-	
-	if ( SERVER and !catherine.database.connected ) then
-		catherine.database.Connect( )
-	end
+	AddCSLuaFile( "catherine/framework/command/commands.lua" )
+	include( "catherine/framework/command/commands.lua" )
 	
 	if ( !catherine.isInitialized ) then
 		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are loaded at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
 		catherine.isInitialized = true
 	else
 		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are refreshed at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
+	end
+	
+	if ( SERVER and !catherine.database.connected ) then
+		catherine.database.Connect( )
 	end
 end
 
