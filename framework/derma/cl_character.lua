@@ -74,7 +74,7 @@ function PANEL:Init( )
 		end
 		
 		draw.RoundedBox( 0, 0, 0, w, pnl.backgroundPanelH, Color( 235, 235, 235, 255 ) )
-		draw.RoundedBox( 0, 0, h - ( pnl.backgroundPanelH ), w, pnl.backgroundPanelH, Color( 235, 235, 235, 255 ) )
+		draw.RoundedBox( 0, 0, h - pnl.backgroundPanelH, w, pnl.backgroundPanelH, Color( 235, 235, 235, 255 ) )
 		
 		draw.SimpleText( schemaTitle, "catherine_normal25", 30, h * 0.1 / 3, Color( 0, 0, 0, self.mainAlpha ), TEXT_ALIGN_LEFT, 1 )
 		draw.SimpleText( schemaDesc, "catherine_normal15", 30, h * 0.1 / 3 + 25, Color( 50, 50, 50, self.mainAlpha ), TEXT_ALIGN_LEFT, 1 )
@@ -285,7 +285,7 @@ function PANEL:UseCharacterPanel( )
 		end
 		
 		if ( #self.loadCharacter.Lists == 0 ) then
-			draw.SimpleText( LANG( "Character_UI_DontHaveAny" ), "catherine_normal30", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Character_UI_DontHaveAny" ), "catherine_normal30", w / 2, h / 2, catherine.character.IsCustomBackground( ) and Color( 255, 255, 255, 255 ) or Color( 0, 0, 0, 255 ), 1, 1 )
 		end
 	end
 	

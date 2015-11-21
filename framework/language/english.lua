@@ -521,6 +521,7 @@ LANGUAGE.data = {
 	[ "Question_UI_Continue" ] = "Continue",
 	[ "Question_UI_Disconnect" ] = "Disconnect",
 	[ "Question_Notify_DisconnectQ" ] = "Are you sure you want to disconnect from the server?",
+	[ "Question_Notify_ContinueQ" ] = "Are you sure you want to check this answers?, if your answers wrong you are kicked from this server!",
 	
 	// Basic
 	[ "Basic_UI_StringRequest" ] = "Request",

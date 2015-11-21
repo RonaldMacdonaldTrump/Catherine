@@ -23,6 +23,8 @@ function PANEL:Init( )
 
 	self.answers = { }
 	self.player = catherine.pl
+	self.backgroundPanelH = 0
+	self.blurAmount = 0
 	self.w, self.h = ScrW( ), ScrH( )
 	self.questionTitle = LANG( "Question_UIStr" )
 	
@@ -42,23 +44,36 @@ function PANEL:Init( )
 	end
 	
 	self.start = vgui.Create( "catherine.vgui.button", self )
-	self.start:SetPos( self.w * 0.7, self.h * 0.9 )
+	self.start:SetPos( self.w * 0.7, self.h - self.h * 0.1 / 2 - 30 / 2 )
 	self.start:SetSize( self.w * 0.2, 30 )
 	self.start:SetStr( LANG( "Question_UI_Continue" ) )
-	self.start:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.start:SetStrColor( Color( 0, 0, 0, 255 ) )
+	self.start:SetGradientColor( Color( 50, 50, 50, 150 ) )
+	self.start:SetAlpha( 0 )
+	self.start:AlphaTo( 100, 1, 1 )
 	self.start.Click = function( pnl )
-		if ( table.Count( self.answers ) == 0 ) then
-			return
-		end
+		if ( table.Count( self.answers ) != #catherine.question.GetAll( ) ) then return end
 		
-		netstream.Start( "catherine.question.Check", self.answers )
+		Derma_Query( LANG( "Question_Notify_ContinueQ" ), "", LANG( "Basic_UI_YES" ), function( )
+			netstream.Start( "catherine.question.Check", self.answers )
+		end, LANG( "Basic_UI_NO" ), function( ) end )
+	end
+	self.start.PaintOverAll = function( pnl )
+		if ( table.Count( self.answers ) != #catherine.question.GetAll( ) ) then
+			pnl:SetAlpha( 100 )
+		else
+			pnl:SetAlpha( 255 )
+		end
 	end
 	
 	self.changeLanguage = vgui.Create( "catherine.vgui.button", self )
-	self.changeLanguage:SetPos( self.w - ( self.w * 0.2 ) - 50, 20 )
+	self.changeLanguage:SetPos( self.w - ( self.w * 0.2 ) - 50, self.h * 0.1 / 2 - 30 / 2 )
 	self.changeLanguage:SetSize( self.w * 0.2, 30 )
 	self.changeLanguage:SetStr( "" )
-	self.changeLanguage:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.changeLanguage:SetStrColor( Color( 0, 0, 0, 255 ) )
+	self.changeLanguage:SetGradientColor( Color( 50, 50, 50, 150 ) )
+	self.changeLanguage:SetAlpha( 0 )
+	self.changeLanguage:AlphaTo( 255, 1, 1 )
 	self.changeLanguage.PaintOverAll = function( pnl )
 		local languageTable = catherine.language.FindByID( GetConVarString( "cat_convar_language" ) )
 		
@@ -92,10 +107,13 @@ function PANEL:Init( )
 	end
 	
 	self.disconnect = vgui.Create( "catherine.vgui.button", self )
-	self.disconnect:SetPos( self.w * 0.1, self.h * 0.9 )
+	self.disconnect:SetPos( self.w * 0.1, self.h - self.h * 0.1 / 2 - 30 / 2 )
 	self.disconnect:SetSize( self.w * 0.2, 30 )
 	self.disconnect:SetStr( LANG( "Question_UI_Disconnect" ) )
-	self.disconnect:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.disconnect:SetStrColor( Color( 0, 0, 0, 255 ) )
+	self.disconnect:SetGradientColor( Color( 50, 50, 50, 150 ) )
+	self.disconnect:SetAlpha( 0 )
+	self.disconnect:AlphaTo( 255, 1, 1 )
 	self.disconnect.Click = function( )
 		Derma_Query( LANG( "Question_Notify_DisconnectQ" ), "", LANG( "Basic_UI_YES" ), function( )
 			RunConsoleCommand( "disconnect" )
@@ -107,10 +125,10 @@ end
 
 function PANEL:RebuildQuestion( )
 	local questionTable = catherine.question.GetAll( )
-		
-	self.List:SetSize( self.w * 0.7, 60 * #questionTable )
-	self.List:SetPos( self.w / 2 - self.List:GetWide( ) / 2, self.h * 0.45 - self.List:GetTall( ) / 2 )
-		
+	
+	self.List:SetSize( self.w * 0.7, math.min( 60 * #questionTable, self.h - self.h * 0.2 ) )
+	self.List:SetPos( self.w / 2 - self.List:GetWide( ) / 2, self.h / 2 - self.List:GetTall( ) / 2 )
+	
 	self.List:Clear( )
 	
 	for k, v in pairs( questionTable ) do
@@ -119,10 +137,10 @@ function PANEL:RebuildQuestion( )
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.List:GetWide( ), 60 )
 		panel.Paint = function( pnl, w, h )
-			draw.SimpleText( k .. ".", "catherine_normal30", 10, 5, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			draw.SimpleText( k .. ".", "catherine_normal25", 10, 5, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 			draw.SimpleText( title, "catherine_normal20", 40, 10, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 			
-			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
+			draw.RoundedBox( 0, 5, h - 1, w - 10, 1, Color( 50, 50, 50, 255 ) )
 		end
 		
 		local button = vgui.Create( "DButton", panel )
@@ -154,23 +172,26 @@ function PANEL:RebuildQuestion( )
 end
 
 function PANEL:Paint( w, h )
-	local sin = math.sin( CurTime( ) / 2 )
-
-	surface.SetDrawColor( 90, 90, 90, 100 )
-	surface.SetMaterial( Material( "gui/gradient_down" ) )
-	surface.DrawTexturedRect( 0, 0, w, h )
+	self.backgroundPanelH = Lerp( 0.05, self.backgroundPanelH, h * 0.1 )
 	
-	surface.SetDrawColor( 0, 0, 0, math.max( sin * 255, 50 ) )
-	surface.SetMaterial( Material( "gui/gradient_up" ) )
-	surface.DrawTexturedRect( 0, 0, w, h )
+	if ( catherine.character.IsCustomBackground( ) ) then
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 200, 200, 200, 255 ) )
+		
+		surface.SetDrawColor( 235, 235, 235, 255 )
+		surface.SetMaterial( Material( "gui/gradient_up" ) )
+		surface.DrawTexturedRect( 0, self.backgroundPanelH, w, h - self.backgroundPanelH )
+	else
+		if ( catherine.configs.enableCharacterPanelBlur ) then
+			self.blurAmount = Lerp( 0.03, self.blurAmount, 3 )
+			
+			catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
+		end
+	end
 	
-	surface.SetDrawColor( 80, 80, 80, 255 )
-	surface.SetMaterial( Material( "vgui/gradient-r" ) )
-	surface.DrawTexturedRect( w - ( w * 0.3 ), 15, w * 0.3, 40 )
+	draw.RoundedBox( 0, 0, 0, w, self.backgroundPanelH, Color( 235, 235, 235, 255 ) )
+	draw.RoundedBox( 0, 0, h - self.backgroundPanelH, w, self.backgroundPanelH, Color( 235, 235, 235, 255 ) )
 	
-	local x, y = self.List:GetPos( )
-	
-	draw.SimpleText( self.questionTitle, "catherine_normal25", w * 0.15, y - 25, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+	draw.SimpleText( self.questionTitle, "catherine_normal25", 25, self.backgroundPanelH / 2, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
 end
 
 function PANEL:Close( )

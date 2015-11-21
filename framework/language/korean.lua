@@ -513,12 +513,13 @@ LANGUAGE.data = {
 	[ "Chat_Str_Disconnect" ] = "%s 님이 서버에서 나가셨습니다.",
 	
 	// Question
-	[ "Question_UIStr" ] = "질문",
+	[ "Question_UIStr" ] = "서버 질문",
 	[ "Question_KickMessage" ] = "답변중에 틀린 항목이 있습니다!",
 	
 	[ "Question_UI_Continue" ] = "진행하기",
 	[ "Question_UI_Disconnect" ] = "서버에서 나가기",
 	[ "Question_Notify_DisconnectQ" ] = "이 서버에서 정말로 나가시겠습니까?",
+	[ "Question_Notify_ContinueQ" ] = "이 질문의 답을 맞추시겠습니까?, 답이 틀릴 경우 서버에서 강제 퇴장 처리됩니다.",
 	
 	// Basic
 	[ "Basic_UI_StringRequest" ] = "요청",
