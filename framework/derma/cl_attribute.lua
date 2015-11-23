@@ -156,6 +156,6 @@ vgui.Register( "catherine.vgui.attributeItem", PANEL, "DPanel" )
 
 catherine.menu.Register( function( )
 	return LANG( "Attribute_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "att", function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.attribute ) and catherine.vgui.attribute or vgui.Create( "catherine.vgui.attribute", menuPnl )
 end )

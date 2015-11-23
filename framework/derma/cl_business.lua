@@ -404,6 +404,6 @@ vgui.Register( "catherine.vgui.shipment", PANEL, "DFrame" )
 
 catherine.menu.Register( function( )
 	return LANG( "Business_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "business", function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.business ) and catherine.vgui.business or vgui.Create( "catherine.vgui.business", menuPnl )
 end )

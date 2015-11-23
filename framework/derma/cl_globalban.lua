@@ -111,7 +111,7 @@ vgui.Register( "catherine.vgui.globalban", PANEL, "catherine.vgui.menuBase" )
 
 catherine.menu.Register( function( )
 	return LANG( "GlobalBan_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "globalban", function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.globalban ) and catherine.vgui.globalban or vgui.Create( "catherine.vgui.globalban", menuPnl )
 end, function( pl )
 	return pl:IsAdmin( )

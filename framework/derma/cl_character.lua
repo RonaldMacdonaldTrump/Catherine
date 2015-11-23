@@ -842,7 +842,7 @@ vgui.Register( "catherine.character.stageTwo", PANEL, "DPanel" )
 
 catherine.menu.Register( function( )
 	return LANG( "Character_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "character", function( menuPnl, itemPnl )
 	vgui.Create( "catherine.vgui.character" )
 	menuPnl:Close( )
 end )

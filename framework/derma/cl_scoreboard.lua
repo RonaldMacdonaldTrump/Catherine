@@ -84,7 +84,7 @@ function PANEL:RefreshPlayerLists( )
 	
 	self.Lists:Clear( )
 	
-	for k, v in pairs( self.playerLists or { } ) do
+	for k, v in SortedPairs( self.playerLists or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
@@ -95,7 +95,7 @@ function PANEL:RefreshPlayerLists( )
 		form.Header:SetFont( "catherine_normal15" )
 		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
 		
-		for k1, v1 in pairs( v ) do
+		for k1, v1 in SortedPairs( v ) do
 			local know = pl == v1 and true or pl:IsKnow( v1 )
 			
 			local panel = vgui.Create( "DPanel" )
@@ -170,7 +170,7 @@ vgui.Register( "catherine.vgui.scoreboard", PANEL, "catherine.vgui.menuBase" )
 
 catherine.menu.Register( function( )
 	return LANG( "Scoreboard_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "scoreboard", function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.scoreboard ) and catherine.vgui.scoreboard or vgui.Create( "catherine.vgui.scoreboard", menuPnl )
 end, function( pl )
 	if ( hook.Run( "ShouldOpenScoreboard", pl ) == false ) then

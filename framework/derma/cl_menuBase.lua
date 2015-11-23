@@ -25,11 +25,13 @@ function PANEL:Init( )
 	self.player = catherine.pl
 	
 	self:SetSize( self.w, self.h )
-	self:SetPos( 0 - self.w * 3, 80 )
+	self:Center( )
 	self:SetTitle( "" )
 	self:ShowCloseButton( false )
 	self:SetDraggable( false )
-
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.3, 0 )
+	
 	self:PanelCalled( )
 end
 
@@ -40,8 +42,9 @@ function PANEL:OnMenuRecovered( ) end
 function PANEL:SetMenuSize( w, h )
 	self.w, self.h = w, h
 	self:SetSize( w, h )
-	self:SetPos( 0 - w, ScrH( ) / 2 - h / 2 )
-	self:MoveTo( ScrW( ) / 2 - w / 2, ScrH( ) / 2 - h / 2, 0.2, 0 )
+	self:Center( )
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.3, 0 )
 	
 	self:OnMenuSizeChanged( w, h )
 end
@@ -59,21 +62,20 @@ function PANEL:FakeHide( )
 	
 	self.isHiding = true
 	
-	self:MoveTo( ScrW( ), ScrH( ) / 2 - self.h / 2, 0.2, 0, nil, function( )
+	self:AlphaTo( 0, 0.3, 0, nil, function( )
 		self:SetVisible( false )
 	end )
 end
 
 function PANEL:Show( )
-	if ( !self.isHiding ) then return end
+	// if ( !self.isHiding ) then return end -- Why? -_-
 	local w, h = self:GetWide( ), self:GetTall( )
 	
 	self.isHiding = false
 	
 	self:SetVisible( true )
-	self:SetAlpha( 255 )
-	self:SetPos( 0 - w, ScrH( ) / 2 - self.h / 2 )
-	self:MoveTo( ScrW( ) / 2 - w / 2, ScrH( ) / 2 - self.h / 2, 0.2 )
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.3, 0 )
 end
 
 function PANEL:MenuPaint( w, h ) end
@@ -81,13 +83,13 @@ function PANEL:MenuPaint( w, h ) end
 function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
 	
-	draw.SimpleText( self.name, "catherine_normal20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	draw.SimpleText( self.name, "catherine_outline20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 	
 	self:MenuPaint( w, h )
 end
 
 function PANEL:Close( )
-	self:MoveTo( ScrW( ), ScrH( ) / 2 - self.h / 2, 0.2, 0, nil, function( )
+	self:AlphaTo( 0, 0.3, 0, nil, function( )
 		self:Remove( )
 		self = nil
 	end )

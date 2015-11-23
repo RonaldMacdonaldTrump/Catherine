@@ -244,7 +244,7 @@ vgui.Register( "catherine.vgui.news", PANEL, "catherine.vgui.menuBase" )
 
 catherine.menu.Register( function( )
 	return LANG( "News_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "news", function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.news ) and catherine.vgui.news or vgui.Create( "catherine.vgui.news", menuPnl )
 end, function( )
 	local news = catherine.net.GetNetGlobalVar( "cat_news" )

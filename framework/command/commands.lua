@@ -689,6 +689,8 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					if ( pl != target ) then
+						target.CAT_lastSender = pl
+						
 						local text = table.concat( args, " ", 2, #args )
 						
 						catherine.chat.Send( pl, "pm", text, { pl, target }, target )
@@ -703,6 +705,32 @@ catherine.command.Register( {
 			end
 		else
 			catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+		end
+	end
+} )
+
+catherine.command.Register( {
+	uniqueID = "&uniqueID_reply",
+	command = "reply",
+	desc = "Send PM (Private Message) to last received PM (Private Message) message sender.",
+	syntax = "[Text]",
+	runFunc = function( pl, args )
+		if ( pl.CAT_lastSender and IsValid( pl.CAT_lastSender ) and pl.CAT_lastSender:IsPlayer( ) ) then
+			if ( args[ 1 ] ) then
+				local target = pl.CAT_lastSender
+				
+				if ( pl != target ) then
+					local text = table.concat( args, " " )
+					
+					catherine.chat.Send( pl, "pm", text, { pl, target }, target )
+				else
+					catherine.util.NotifyLang( pl, "Command_PM_Error01" )
+				end
+			else
+				catherine.util.NotifyLang( pl, "Basic_Notify_NoArg", 1 )
+			end
+		else
+			catherine.util.NotifyLang( pl, "Command_Reply_Error01" )
 		end
 	end
 } )

@@ -521,6 +521,15 @@ function GM:ScoreboardPlayerOption( pl, target )
 		gui.OpenURL( "http://steamcommunity.com/profiles/" .. target:SteamID64( ) )
 	end )
 	
+	if ( pl != target ) then
+		menu:AddOption( LANG( "Scoreboard_PlayerOption08_Str" ), function( )
+			Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption08_Q" ), "", function( val )
+					catherine.command.Run( "&uniqueID_pm", target:Name( ), val )
+				end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
+			)
+		end )
+	end
+	
 	if ( pl:IsSuperAdmin( ) ) then
 		local whitelistGive = menu:AddSubMenu( LANG( "Scoreboard_PlayerOption03_Str" ) )
 		

@@ -322,6 +322,8 @@ LANGUAGE.data = {
 	[ "Scoreboard_PlayerOption07_Str" ] = "Give Item",
 	[ "Scoreboard_PlayerOption07_Q1" ] = "What are you want to give item?",
 	[ "Scoreboard_PlayerOption07_Q2" ] = "What are you want to giving item count?",
+	[ "Scoreboard_PlayerOption08_Str" ] = "Send PM to Player",
+	[ "Scoreboard_PlayerOption08_Q" ] = "Type a message.",
 	
 	// Help
 	[ "Help_UI_Title" ] = "Help",
@@ -555,6 +557,7 @@ LANGUAGE.data = {
 	[ "Command_SetTimeHour_Fin" ] = "You have set the roleplay time to %s(hour).",
 	[ "Command_PrintBodyGroup_Fin" ] = "Printed target player Body groups on the Console.",
 	[ "Command_PM_Error01" ] = "You can't send PM chat to yourself!",
+	[ "Command_Reply_Error01" ] = "You don't have last PM chat history!",
 	
 	// AntiHaX
 	[ "AntiHaX_KickMessageNotifyAdmin" ] = "%s/%s user are using the Cheat programes, So kicked the player.",

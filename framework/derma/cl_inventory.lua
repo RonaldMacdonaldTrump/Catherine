@@ -150,6 +150,6 @@ vgui.Register( "catherine.vgui.inventory", PANEL, "catherine.vgui.menuBase" )
 
 catherine.menu.Register( function( )
 	return LANG( "Inventory_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "inv", function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.inventory ) and catherine.vgui.inventory or vgui.Create( "catherine.vgui.inventory", menuPnl )
 end )

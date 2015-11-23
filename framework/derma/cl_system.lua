@@ -1144,7 +1144,7 @@ vgui.Register( "catherine.vgui.system", PANEL, "DFrame" )
 
 catherine.menu.Register( function( )
 	return LANG( "System_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "system", function( menuPnl, itemPnl )
 	vgui.Create( "catherine.vgui.system" )
 	menuPnl:Close( )
 end, function( pl )

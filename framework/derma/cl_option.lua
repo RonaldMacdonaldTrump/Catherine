@@ -182,6 +182,6 @@ vgui.Register( "catherine.vgui.optionItem", PANEL, "DPanel" )
 
 catherine.menu.Register( function( )
 	return LANG( "Option_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "option", function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.option ) and catherine.vgui.option or vgui.Create( "catherine.vgui.option", menuPnl )
 end )

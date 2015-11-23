@@ -135,6 +135,6 @@ vgui.Register( "catherine.vgui.help", PANEL, "catherine.vgui.menuBase" )
 
 catherine.menu.Register( function( )
 	return LANG( "Help_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "help", function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.help ) and catherine.vgui.help or vgui.Create( "catherine.vgui.help", menuPnl )
 end )

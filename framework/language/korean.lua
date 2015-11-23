@@ -318,6 +318,8 @@ LANGUAGE.data = {
 	[ "Scoreboard_PlayerOption07_Str" ] = "아이템 주기",
 	[ "Scoreboard_PlayerOption07_Q1" ] = "어떤 아이템을 주시겠습니까?",
 	[ "Scoreboard_PlayerOption07_Q2" ] = "해당 아이템을 몇개 주시겠습니까?",
+	[ "Scoreboard_PlayerOption08_Str" ] = "PM 채팅 보내기",
+	[ "Scoreboard_PlayerOption08_Q" ] = "메세지를 입력하세요.",
 	
 	// Help
 	[ "Help_UI_Title" ] = "도움말",
@@ -553,6 +555,7 @@ LANGUAGE.data = {
 	[ "Command_SetTimeHour_Fin" ] = "당신은 RP 시간을 %s시로 설정하셨습니다.",
 	[ "Command_PrintBodyGroup_Fin" ] = "해당 사람의 바디그룹 테이블 구조가 콘솔에 표시됩니다.",
 	[ "Command_PM_Error01" ] = "자기 자신에게 PM 채팅을 보낼 수 없습니다!",
+	[ "Command_Reply_Error01" ] = "최근 PM 채팅 내역이 없습니다!",
 	
 	// AntiHaX
 	[ "AntiHaX_KickMessageNotifyAdmin" ] = "%s/%s 유저가 치트 프로그램을 사용하였습니다, 그래서 킥 처리를 하였습니다.",
