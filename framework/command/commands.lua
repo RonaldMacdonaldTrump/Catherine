@@ -689,11 +689,15 @@ catherine.command.Register( {
 				
 				if ( IsValid( target ) and target:IsPlayer( ) ) then
 					if ( pl != target ) then
-						target.CAT_lastSender = pl
-						
-						local text = table.concat( args, " ", 2, #args )
-						
-						catherine.chat.Send( pl, "pm", text, { pl, target }, target )
+						if ( !catherine.block.IsBlocked( pl, target, CAT_BLOCK_TYPE_PM_CHAT ) ) then
+							target.CAT_lastSender = pl
+							
+							local text = table.concat( args, " ", 2, #args )
+							
+							catherine.chat.Send( pl, "pm", text, { pl, target }, target )
+						else
+							catherine.util.NotifyLang( pl, "Block_Notify_IsBlocked" )
+						end
 					else
 						catherine.util.NotifyLang( pl, "Command_PM_Error01" )
 					end
@@ -720,9 +724,13 @@ catherine.command.Register( {
 				local target = pl.CAT_lastSender
 				
 				if ( pl != target ) then
-					local text = table.concat( args, " " )
-					
-					catherine.chat.Send( pl, "pm", text, { pl, target }, target )
+					if ( !catherine.block.IsBlocked( pl, target, CAT_BLOCK_TYPE_PM_CHAT ) ) then
+						local text = table.concat( args, " " )
+						
+						catherine.chat.Send( pl, "pm", text, { pl, target }, target )
+					else
+						catherine.util.NotifyLang( pl, "Block_Notify_IsBlocked" )
+					end
 				else
 					catherine.util.NotifyLang( pl, "Command_PM_Error01" )
 				end

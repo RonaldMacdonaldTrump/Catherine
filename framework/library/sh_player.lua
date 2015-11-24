@@ -79,6 +79,7 @@ if ( SERVER ) then
 			end
 			
 			netstream.Start( pl, "catherine.loadingPercent", 1 )
+			hook.Run( "PlayerLoadFinished", pl )
 			
 			timer.Simple( 1, function( )
 				if ( !IsValid( pl ) ) then return end

@@ -278,6 +278,10 @@ LANGUAGE.data = {
 	// Attribute
 	[ "Attribute_UI_Title" ] = "능력치",
 	
+	// Block
+	[ "Block_UI_Title" ] = "사용자 차단",
+	[ "Block_Notify_IsBlocked" ] = "당신은 이 플레이어를 차단했습니다!",
+	
 	// Business
 	[ "Business_UI_Title" ] = "사업",
 	[ "Business_UI_NoBuyable" ] = "당신이 살 수 있는 물건이 없습니다!",

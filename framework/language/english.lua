@@ -282,6 +282,10 @@ LANGUAGE.data = {
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",
 	
+	// Block
+	[ "Block_UI_Title" ] = "User Block",
+	[ "Block_Notify_IsBlocked" ] = "You have been blocked this player!",
+	
 	// Business
 	[ "Business_UI_Title" ] = "Business",
 	[ "Business_UI_NoBuyable" ] = "You can not buy this!",

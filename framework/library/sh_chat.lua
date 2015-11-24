@@ -412,12 +412,17 @@ if ( SERVER ) then
 			} )
 		else
 			if ( type( forceTarget ) == "table" and #forceTarget > 0 ) then
-				netstream.Start( forceTarget, "catherine.chat.Post", {
-					pl,
-					uniqueID,
-					text,
-					{ ... }
-				} )
+				for k, v in pairs( forceTarget ) do
+					if ( catherine.block.IsBlocked( pl, v, CAT_BLOCK_TYPE_ALL_CHAT ) or catherine.block.IsBlocked( v, pl, CAT_BLOCK_TYPE_ALL_CHAT ) ) then continue end
+					if ( catherine.block.IsBlocked( pl, v, CAT_BLOCK_TYPE_PM_CHAT ) or catherine.block.IsBlocked( v, pl, CAT_BLOCK_TYPE_PM_CHAT ) ) then continue end
+					
+					netstream.Start( v, "catherine.chat.Post", {
+						pl,
+						uniqueID,
+						text,
+						{ ... }
+					} )
+				end
 			else
 				netstream.Start( catherine.chat.GetListener( pl, classTable ), "catherine.chat.Post", {
 					pl,
@@ -440,6 +445,7 @@ if ( SERVER ) then
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			if ( classTable.canHear and classTable.canHear( pl ) == false ) then continue end
 			if ( pl == v ) then continue end
+			if ( catherine.block.IsBlocked( pl, v, CAT_BLOCK_TYPE_ALL_CHAT ) or catherine.block.IsBlocked( v, pl, CAT_BLOCK_TYPE_ALL_CHAT ) ) then continue end
 			
 			if ( catherine.util.CalcDistanceByPos( pl, v ) <= range ) then
 				target[ #target + 1 ] = v
