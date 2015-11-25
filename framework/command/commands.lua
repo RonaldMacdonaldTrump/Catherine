@@ -433,7 +433,7 @@ catherine.command.Register( {
 					local success = catherine.cash.Set( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Cash_Notify_Set", pl:Name( ), catherine.cash.GetCompleteName( args[ 2 ] ), target:Name( ) )
+						catherine.util.NotifyAllLang( "Cash_Notify_Set", pl:Name( ), catherine.cash.GetCompleteName( tonumber( args[ 2 ] ) ), target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
 					end
@@ -464,7 +464,7 @@ catherine.command.Register( {
 					local success = catherine.cash.Give( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Cash_Notify_Give", pl:Name( ), catherine.cash.GetCompleteName( args[ 2 ] ), target:Name( ) )
+						catherine.util.NotifyAllLang( "Cash_Notify_Give", pl:Name( ), catherine.cash.GetCompleteName( tonumber( args[ 2 ] ) ), target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
 					end
@@ -495,7 +495,7 @@ catherine.command.Register( {
 					local success = catherine.cash.Take( target, args[ 2 ] )
 					
 					if ( success ) then
-						catherine.util.NotifyAllLang( "Cash_Notify_Take", pl:Name( ), catherine.cash.GetCompleteName( args[ 2 ] ), target:Name( ) )
+						catherine.util.NotifyAllLang( "Cash_Notify_Take", pl:Name( ), catherine.cash.GetCompleteName( tonumber( args[ 2 ] ) ), target:Name( ) )
 					else
 						catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
 					end

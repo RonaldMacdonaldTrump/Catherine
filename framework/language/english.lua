@@ -284,7 +284,18 @@ LANGUAGE.data = {
 	
 	// Block
 	[ "Block_UI_Title" ] = "User Block",
+	[ "Block_UI_Add" ] = "Add",
+	[ "Block_UI_AddBySteamID" ] = "Add by SteamID",
+	[ "Block_UI_AddByPlayer" ] = "Add",
+	[ "Block_UI_AddBySteamID_Q" ] = "Please type Steam ID.",
 	[ "Block_Notify_IsBlocked" ] = "You have been blocked this player!",
+	[ "Block_Notify_IsAlreadyBlocked" ] = "You are already blocked this player!",
+	[ "Block_UI_AllChat" ] = "Chat Block",
+	[ "Block_UI_PM" ] = "PM Block",
+	[ "Block_UI_AllChatDis" ] = "Disable Chat Block",
+	[ "Block_UI_PMDis" ] = "Disable PM Block",
+	[ "Block_UI_ChangeType" ] = "Change Block List",
+	[ "Block_UI_Dis" ] = "Remove Block",
 	
 	// Business
 	[ "Business_UI_Title" ] = "Business",
@@ -430,6 +441,7 @@ LANGUAGE.data = {
 	[ "Player_Message_HasNotPermission" ] = "You do not have permission!",
 	[ "Player_Message_UnTie" ] = "Press 'Use' to untie.",
 	[ "Player_Message_TiedBlock" ] = "You can not do this when tied.",
+	[ "Player_Message_IsNotSteamID" ] = "This is not a Steam ID!",
 	
 	// Recognize
 	[ "Recognize_UI_Option_LookingPlayer" ] = "Recognize for looking player.",

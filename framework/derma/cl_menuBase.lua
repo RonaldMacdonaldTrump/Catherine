@@ -41,6 +41,7 @@ function PANEL:OnMenuRecovered( ) end
 
 function PANEL:SetMenuSize( w, h )
 	self.w, self.h = w, h
+	
 	self:SetSize( w, h )
 	self:Center( )
 	self:SetAlpha( 0 )
@@ -62,7 +63,7 @@ function PANEL:FakeHide( )
 	
 	self.isHiding = true
 	
-	self:AlphaTo( 0, 0.3, 0, nil, function( )
+	self:AlphaTo( 0, 0.3, 0, function( )
 		self:SetVisible( false )
 	end )
 end
@@ -89,7 +90,7 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:Close( )
-	self:AlphaTo( 0, 0.3, 0, nil, function( )
+	self:AlphaTo( 0, 0.3, 0, function( )
 		self:Remove( )
 		self = nil
 	end )

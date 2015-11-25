@@ -413,7 +413,7 @@ if ( SERVER ) then
 		else
 			if ( type( forceTarget ) == "table" and #forceTarget > 0 ) then
 				for k, v in pairs( forceTarget ) do
-					if ( catherine.block.IsBlocked( pl, v, CAT_BLOCK_TYPE_ALL_CHAT ) or catherine.block.IsBlocked( v, pl, CAT_BLOCK_TYPE_ALL_CHAT ) ) then continue end
+					if ( uniqueID != "pm" and ( catherine.block.IsBlocked( pl, v, CAT_BLOCK_TYPE_ALL_CHAT ) or catherine.block.IsBlocked( v, pl, CAT_BLOCK_TYPE_ALL_CHAT ) ) ) then continue end
 					if ( catherine.block.IsBlocked( pl, v, CAT_BLOCK_TYPE_PM_CHAT ) or catherine.block.IsBlocked( v, pl, CAT_BLOCK_TYPE_PM_CHAT ) ) then continue end
 					
 					netstream.Start( v, "catherine.chat.Post", {

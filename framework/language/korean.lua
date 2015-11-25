@@ -280,7 +280,18 @@ LANGUAGE.data = {
 	
 	// Block
 	[ "Block_UI_Title" ] = "사용자 차단",
+	[ "Block_UI_Add" ] = "추가",
+	[ "Block_UI_AddBySteamID" ] = "스팀 ID 로 추가",
+	[ "Block_UI_AddByPlayer" ] = "추가",
+	[ "Block_UI_AddBySteamID_Q" ] = "스팀 ID 를 입력하세요.",
 	[ "Block_Notify_IsBlocked" ] = "당신은 이 플레이어를 차단했습니다!",
+	[ "Block_Notify_IsAlreadyBlocked" ] = "당신은 이미 플레이어를 차단했습니다!",
+	[ "Block_UI_AllChat" ] = "채팅 차단",
+	[ "Block_UI_PM" ] = "PM 차단",
+	[ "Block_UI_AllChatDis" ] = "채팅 차단 해제",
+	[ "Block_UI_PMDis" ] = "PM 차단 해제",
+	[ "Block_UI_ChangeType" ] = "차단 항목 변경",
+	[ "Block_UI_Dis" ] = "차단 해제",
 	
 	// Business
 	[ "Business_UI_Title" ] = "사업",
@@ -428,6 +439,7 @@ LANGUAGE.data = {
 	[ "Player_Message_HasNotPermission" ] = "당신은 권한이 없습니다!",
 	[ "Player_Message_UnTie" ] = "'사용' 키를 눌러 수갑을 풀 수 있습니다.",
 	[ "Player_Message_TiedBlock" ] = "수갑에 묶인 상태에서는 할 수 없습니다.",
+	[ "Player_Message_IsNotSteamID" ] = "Steam ID가 아닙니다!",
 	
 	// Recognize
 	[ "Recognize_UI_Option_LookingPlayer" ] = "보고 있는 사람에게 자신의 정보를 알려주기.",
