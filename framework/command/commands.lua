@@ -885,6 +885,17 @@ catherine.command.Register( {
 } )
 
 catherine.command.Register( {
+	uniqueID = "&uniqueID_printItems",
+	command = "printitems",
+	desc = "Print items on the Console.",
+	canRun = function( pl ) return pl:HasFlag( "i" ) end,
+	runFunc = function( pl, args )
+		netstream.Start( pl, "catherine.command.printitems" )
+		catherine.util.NotifyLang( pl, "Command_PrintItems_Fin" )
+	end
+} )
+
+catherine.command.Register( {
 	command = "storagesetpwd",
 	uniqueID = "&uniqueID_storageSetPwd",
 	desc = "Setting a Storage Password. (If you are change to 'None' does it change to default value.)",
@@ -922,5 +933,24 @@ if ( CLIENT ) then
 		else
 			MsgC( Color( 255, 255, 0 ), "[CAT]This player doesn't have any Body groups!\n" )
 		end
+	end )
+	
+	netstream.Hook( "catherine.command.printitems", function( )
+		local convert = { }
+		
+		for k, v in pairs( catherine.item.GetAll( ) ) do
+			local category = catherine.util.StuffLanguage( v.category )
+			
+			convert[ category ] = convert[ category ] or { }
+			convert[ category ][ #convert[ category ] + 1 ] = {
+				Item_Name = catherine.util.StuffLanguage( v.name ),
+				Item_Description = catherine.util.StuffLanguage( v.desc ),
+				Item_UniqueID = v.uniqueID,
+				Item_Cost = v.cost,
+				Item_Weight = v.weight
+			}
+		end
+		
+		PrintTable( convert )
 	end )
 end

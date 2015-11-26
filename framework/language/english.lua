@@ -574,6 +574,7 @@ LANGUAGE.data = {
 	[ "Command_PrintBodyGroup_Fin" ] = "Printed target player Body groups on the Console.",
 	[ "Command_PM_Error01" ] = "You can't send PM chat to yourself!",
 	[ "Command_Reply_Error01" ] = "You don't have last PM chat history!",
+	[ "Command_PrintItems_Fin" ] = "Printed all item Datas on the Console.",
 	
 	// AntiHaX
 	[ "AntiHaX_KickMessageNotifyAdmin" ] = "%s/%s user are using the Cheat programes, So kicked the player.",

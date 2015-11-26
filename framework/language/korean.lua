@@ -572,6 +572,7 @@ LANGUAGE.data = {
 	[ "Command_PrintBodyGroup_Fin" ] = "해당 사람의 바디그룹 테이블 구조가 콘솔에 표시됩니다.",
 	[ "Command_PM_Error01" ] = "자기 자신에게 PM 채팅을 보낼 수 없습니다!",
 	[ "Command_Reply_Error01" ] = "최근 PM 채팅 내역이 없습니다!",
+	[ "Command_PrintItems_Fin" ] = "모든 아이템 데이터가 콘솔에 표시됩니다.",
 	
 	// AntiHaX
 	[ "AntiHaX_KickMessageNotifyAdmin" ] = "%s/%s 유저가 치트 프로그램을 사용하였습니다, 그래서 킥 처리를 하였습니다.",
