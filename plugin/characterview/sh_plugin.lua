@@ -62,8 +62,8 @@ catherine.command.Register( {
 		local i = 0
 		
 		for k, v in pairs( PLUGIN.charViews ) do
-			if ( catherine.util.CalcDistanceByPos( v.pos, pos ) <= 256 ) then
-				table.remove( PLUGIN.charViews, k )
+			if ( pos:Distance( v.pos ) <= 256 ) then
+				PLUGIN.charViews[ k ] = nil
 				i = i + 1
 			end
 		end

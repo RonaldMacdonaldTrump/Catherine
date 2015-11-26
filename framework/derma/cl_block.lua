@@ -32,6 +32,11 @@ function PANEL:Init( )
 	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
+		
+		if ( #catherine.block.GetList( ) == 0 ) then
+			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Block_UI_Zero" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+		end
 	end
 	
 	self.addBlock = vgui.Create( "catherine.vgui.button", self )
@@ -46,21 +51,27 @@ function PANEL:Init( )
 		local subMenu = menu:AddSubMenu( LANG( "Block_UI_AddByPlayer" ) )
 		
 		for k, v in pairs( player.GetAll( ) ) do
-			subMenu:AddOption( v:Name( ), function( )
-				netstream.Start( "catherine.block.RegisterBySteamID", {
-					v:SteamID( ),
-					{ CAT_BLOCK_TYPE_ALL_CHAT, CAT_BLOCK_TYPE_PM_CHAT }
-				} )
-			end )
+			if ( catherine.pl != v ) then
+				subMenu:AddOption( v:Name( ), function( )
+					netstream.Start( "catherine.block.RegisterBySteamID", {
+						v:SteamID( ),
+						{ CAT_BLOCK_TYPE_ALL_CHAT, CAT_BLOCK_TYPE_PM_CHAT }
+					} )
+				end )
+			end
 		end
 		
 		menu:AddOption( LANG( "Block_UI_AddBySteamID" ), function( )
 			Derma_StringRequest( "", LANG( "Block_UI_AddBySteamID_Q" ), "", function( val )
 					if ( val:match( "STEAM_[0-5]:[0-9]:[0-9]+" ) ) then
-						netstream.Start( "catherine.block.RegisterBySteamID", {
-							val,
-							{ CAT_BLOCK_TYPE_ALL_CHAT, CAT_BLOCK_TYPE_PM_CHAT }
-						} )
+						if ( val != catherine.pl:SteamID( ) ) then
+							netstream.Start( "catherine.block.RegisterBySteamID", {
+								val,
+								{ CAT_BLOCK_TYPE_ALL_CHAT, CAT_BLOCK_TYPE_PM_CHAT }
+							} )
+						else
+							Derma_Message( LANG( "Player_Message_IsNotSteamID" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+						end
 					else
 						Derma_Message( LANG( "Player_Message_IsNotSteamID" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 					end
@@ -85,6 +96,8 @@ function PANEL:BuildBlock( )
 	self.Lists:Clear( )
 	
 	for k, v in pairs( catherine.block.GetList( ) ) do
+		local blockType = v.blockType
+		
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Lists:GetWide( ), 70 )
 		panel.Paint = function( pnl, w, h )
@@ -92,8 +105,6 @@ function PANEL:BuildBlock( )
 			
 			draw.SimpleText( v.steamID, "catherine_normal20", 80, 20, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( v.time, "catherine_normal15", 80, 50, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
-			
-			local blockType = v.blockType
 			
 			if ( table.HasValue( blockType, CAT_BLOCK_TYPE_ALL_CHAT ) and table.HasValue( blockType, CAT_BLOCK_TYPE_PM_CHAT ) ) then
 				draw.SimpleText( LANG( "Block_UI_AllChat" ) .. ", " .. LANG( "Block_UI_PM" ), "catherine_normal15", w - 170, h / 2, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
@@ -136,7 +147,6 @@ function PANEL:BuildBlock( )
 		changeBlockType:SetGradientColor( Color( 255, 255, 255, 150 ) )
 		changeBlockType.Click = function( )
 			local menu = DermaMenu( )
-			local blockType = v.blockType
 			
 			if ( table.HasValue( blockType, CAT_BLOCK_TYPE_ALL_CHAT ) and table.HasValue( blockType, CAT_BLOCK_TYPE_PM_CHAT ) ) then
 				menu:AddOption( LANG( "Block_UI_AllChatDis" ), function( )
@@ -180,8 +190,6 @@ function PANEL:BuildBlock( )
 						{ CAT_BLOCK_TYPE_ALL_CHAT }
 					} )
 				end )
-			else
-				
 			end
 			
 			menu:Open( )

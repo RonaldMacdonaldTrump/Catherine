@@ -26,6 +26,7 @@ if ( SERVER ) then
 	catherine.externalX.patchVersion = catherine.externalX.patchVersion or nil
 	catherine.externalX.newPatchVersion = catherine.externalX.newPatchVersion or nil
 	catherine.externalX.foundNewPatch = catherine.externalX.foundNewPatch or false
+	catherine.externalX.notifyPlayers = catherine.externalX.notifyPlayers or { }
 	
 	local function isErrorData( data )
 		if ( data:find( "Error 404</p>" ) ) then
@@ -247,10 +248,23 @@ if ( SERVER ) then
 			} )
 			
 			catherine.externalX.StartInitApplyRequestClientPatch( pl )
+			
+			
 		end
 	end
 	
+	function catherine.externalX.PlayerSpawnedInCharacter( pl )
+		if ( !pl:IsSuperAdmin( ) or catherine.externalX.notifyPlayers[ pl:SteamID( ) ] ) then return end
+		
+		if ( catherine.externalX.foundNewPatch ) then
+			catherine.util.SendDermaMessage( pl, LANG( pl, "System_Notify_ExternalXUpdateNeed" ) )
+		end
+		
+		catherine.externalX.notifyPlayers[ pl:SteamID( ) ] = true
+	end
+	
 	hook.Add( "PlayerLoadFinished", "catherine.externalX.PlayerLoadFinished", catherine.externalX.PlayerLoadFinished )
+	hook.Add( "PlayerSpawnedInCharacter", "catherine.externalX.PlayerSpawnedInCharacter", catherine.externalX.PlayerSpawnedInCharacter )
 	
 	catherine.externalX.Initialize( )
 	

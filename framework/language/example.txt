@@ -212,6 +212,7 @@ LANGUAGE.data = {
 	[ "System_UI_Update_CheckButton" ] = "Check Update",
 	[ "System_UI_Update_OpenUpdateLog" ] = "Update History",
 	[ "System_UI_Update_CheckingUpdate" ] = "Checking update ...",
+	[ "System_Notify_NewVersionUpdateNeed" ] = "Released a new version for Catherine, recommend update.",
 	[ "System_Notify_Update_NextTime" ] = "Too often unable to check the version, try again later!",
 	[ "System_Notify_UpdateError" ] = "Failed to checking update. [%s]",
 	[ "System_UI_Plugin_Title" ] = "Plugin",
@@ -270,6 +271,7 @@ LANGUAGE.data = {
 	[ "System_UI_ExternalX_InstallButton" ] = "Download / Install Patch",
 	[ "System_UI_ExternalX_Installing" ] = "Download and Installing the patch ...",
 	[ "System_UI_ExternalX_RestartServer" ] = "WARNING : Server is restart after a while :>",
+	[ "System_Notify_ExternalXUpdateNeed" ] = "Released a new patch for Catherine, if you want install open the System menu.",
 	[ "System_Notify_ExternalX_NextTime" ] = "Too often unable to check the patch, try again later!",
 	[ "System_Notify_ExternalXError" ] = "Failed to checking patch. [%s]",
 	[ "System_Notify_ExternalXError2" ] = "Failed to installing patch. [%s]",
@@ -280,7 +282,19 @@ LANGUAGE.data = {
 	
 	// Block
 	[ "Block_UI_Title" ] = "User Block",
+	[ "Block_UI_Add" ] = "User Add",
+	[ "Block_UI_AddBySteamID" ] = "Add by SteamID",
+	[ "Block_UI_AddByPlayer" ] = "User Add",
+	[ "Block_UI_AddBySteamID_Q" ] = "Please type Steam ID.",
 	[ "Block_Notify_IsBlocked" ] = "You have been blocked this player!",
+	[ "Block_Notify_IsAlreadyBlocked" ] = "You are already blocked this player!",
+	[ "Block_UI_AllChat" ] = "Chat Block",
+	[ "Block_UI_PM" ] = "PM Message Block",
+	[ "Block_UI_AllChatDis" ] = "Disable Chat Block",
+	[ "Block_UI_PMDis" ] = "Disable Message PM Block",
+	[ "Block_UI_ChangeType" ] = "Change Block List",
+	[ "Block_UI_Dis" ] = "Remove Block",
+	[ "Block_UI_Zero" ] = "Doesn't have blocked users.",
 	
 	// Business
 	[ "Business_UI_Title" ] = "Business",
@@ -426,6 +440,7 @@ LANGUAGE.data = {
 	[ "Player_Message_HasNotPermission" ] = "You do not have permission!",
 	[ "Player_Message_UnTie" ] = "Press 'Use' to untie.",
 	[ "Player_Message_TiedBlock" ] = "You can not do this when tied.",
+	[ "Player_Message_IsNotSteamID" ] = "This is not a Steam ID!",
 	
 	// Recognize
 	[ "Recognize_UI_Option_LookingPlayer" ] = "Recognize for looking player.",
@@ -558,6 +573,7 @@ LANGUAGE.data = {
 	[ "Command_PrintBodyGroup_Fin" ] = "Printed target player Body groups on the Console.",
 	[ "Command_PM_Error01" ] = "You can't send PM chat to yourself!",
 	[ "Command_Reply_Error01" ] = "You don't have last PM chat history!",
+	[ "Command_PrintItems_Fin" ] = "Printed all item Datas on the Console.",
 	
 	// AntiHaX
 	[ "AntiHaX_KickMessageNotifyAdmin" ] = "%s/%s user are using the Cheat programes, So kicked the player.",
