@@ -40,6 +40,7 @@ function PLUGIN:PostPlayerDraw( pl )
 	local lp = catherine.pl
 	
 	if ( !pl:Alive( ) or pl:IsNoclipping( ) ) then return end
+	if ( catherine.block.IsBlocked( pl, CAT_BLOCK_TYPE_ALL_CHAT ) ) then return end
 	
 	local a = catherine.util.GetAlphaFromDistance( lp:GetPos( ), pl:GetPos( ), 312 )
 	

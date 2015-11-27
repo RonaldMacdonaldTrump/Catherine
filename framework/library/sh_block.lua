@@ -194,4 +194,16 @@ else
 	function catherine.block.GetList( )
 		return catherine.catData.GetVar( "block", { } )
 	end
+	
+	function catherine.block.IsBlocked( target, blockType )
+		local data = catherine.block.GetList( )
+		
+		for k, v in pairs( data ) do
+			if ( v.steamID == target:SteamID( ) and ( blockType and table.HasValue( v.blockType, blockType ) ) ) then
+				return true
+			end
+		end
+		
+		return false
+	end
 end
