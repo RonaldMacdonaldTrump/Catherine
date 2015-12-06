@@ -23,9 +23,6 @@ function Derma_Message( strText, _, strButtonText, sound )
 		surface.PlaySound( "CAT/notify02.wav" )
 	end
 	
-	local imageWAni = 0
-	local imageHAni = 0
-	
 	local Window = vgui.Create( "DFrame" )
 	Window:SetTitle( "" )
 	Window:SetSize( ScrW( ), ScrH( ) * 0.15 )
@@ -38,18 +35,12 @@ function Derma_Message( strText, _, strButtonText, sound )
 	Window.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
 		
-		local sin = math.sin( CurTime( ) * 5 )
-		local imageW, imageH = 64 + ( 5 * sin ), 64 + ( 5 * sin )
-		
-		imageWAni = Lerp( 0.06, imageWAni, imageW )
-		imageHAni = Lerp( 0.06, imageHAni, imageH )
-		
 		surface.SetDrawColor( 255, 255, 255, 255 )
-		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png", "smooth" ) )
-		surface.DrawTexturedRect( 50 - imageWAni / 2 / 2, ( h / 2 - imageHAni / 2 ), imageWAni, imageHAni )
+		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png" ) )
+		surface.DrawTexturedRect( 30, h / 2 - 64 / 2, 64, 64 )
 		
 		local wrapTexts = catherine.util.GetWrapTextData( strText, w / 3, "catherine_normal20" )
-
+		
 		if ( #wrapTexts == 1 ) then
 			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		else
@@ -60,11 +51,11 @@ function Derma_Message( strText, _, strButtonText, sound )
 			end
 		end
 	end
-
+	
 	local ButtonPanel = vgui.Create( "DPanel", Window )
 	ButtonPanel:SetTall( 30 )
 	ButtonPanel:SetDrawBackground( false )
-
+	
 	local Okay = vgui.Create( "catherine.vgui.button", ButtonPanel )
 	Okay:SetPos( 5, 5 )
 	Okay:SetSize( 100, 25 )
@@ -83,14 +74,12 @@ function Derma_Message( strText, _, strButtonText, sound )
 	ButtonPanel:SetWide( Okay:GetWide( ) + 10 )
 	ButtonPanel:CenterHorizontal( )
 	ButtonPanel:AlignBottom( 8 )
-
+	
 	return Window
 end
 
 function Derma_Query( strText, _, ... )
 	surface.PlaySound( "CAT/notify02.wav" )
-	local imageWAni = 0
-	local imageHAni = 0
 	
 	local Window = vgui.Create( "DFrame" )
 	Window:SetTitle( "" )
@@ -104,18 +93,12 @@ function Derma_Query( strText, _, ... )
 	Window.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
 		
-		local sin = math.sin( CurTime( ) * 5 )
-		local imageW, imageH = 64 + ( 5 * sin ), 64 + ( 5 * sin )
-		
-		imageWAni = Lerp( 0.06, imageWAni, imageW )
-		imageHAni = Lerp( 0.06, imageHAni, imageH )
-		
 		surface.SetDrawColor( 255, 255, 255, 255 )
-		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png", "smooth" ) )
-		surface.DrawTexturedRect( 50 - imageWAni / 2 / 2, ( h / 2 - imageHAni / 2 ), imageWAni, imageHAni )
-
+		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png" ) )
+		surface.DrawTexturedRect( 30, h / 2 - 64 / 2, 64, 64 )
+		
 		local wrapTexts = catherine.util.GetWrapTextData( strText, w / 3, "catherine_normal20" )
-
+		
 		if ( #wrapTexts == 1 ) then
 			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
 		else
@@ -126,11 +109,11 @@ function Derma_Query( strText, _, ... )
 			end
 		end
 	end
-
+	
 	local ButtonPanel = vgui.Create( "DPanel", Window )
 	ButtonPanel:SetTall( 30 )
 	ButtonPanel:SetDrawBackground( false )
-
+	
 	local NumOptions = 0
 	local x = 5
 	local delta = 0.2
@@ -140,7 +123,7 @@ function Derma_Query( strText, _, ... )
 		if ( Text == nil ) then break end
 		
 		local Func = select( k + 1, ... ) or function( ) end
-	
+		
 		local Button = vgui.Create( "catherine.vgui.button", ButtonPanel )
 		Button:SetSize( 100, 20 )
 		Button:SetStr( Text or LANG( "Basic_UI_OK" ) )
@@ -163,10 +146,10 @@ function Derma_Query( strText, _, ... )
 		ButtonPanel:SetWide( x ) 
 		NumOptions = NumOptions + 1
 	end
-
+	
 	ButtonPanel:CenterHorizontal( )
 	ButtonPanel:AlignBottom( 8 )
-
+	
 	if ( NumOptions == 0 ) then
 		Window:Close( )
 		
@@ -178,8 +161,6 @@ end
 
 function Derma_StringRequest( _, strText, strDefaultText, fnEnter, fnCancel, strButtonText, strButtonCancelText )
 	surface.PlaySound( "CAT/notify02.wav" )
-	local imageWAni = 0
-	local imageHAni = 0
 	
 	local Window = vgui.Create( "DFrame" )
 	Window:SetTitle( "" )
@@ -193,30 +174,26 @@ function Derma_StringRequest( _, strText, strDefaultText, fnEnter, fnCancel, str
 	Window.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
 		
-		local sin = math.sin( CurTime( ) * 5 )
-		local imageW, imageH = 64 + ( 5 * sin ), 64 + ( 5 * sin )
-		
-		imageWAni = Lerp( 0.06, imageWAni, imageW )
-		imageHAni = Lerp( 0.06, imageHAni, imageH )
-		
 		surface.SetDrawColor( 255, 255, 255, 255 )
-		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png", "smooth" ) )
-		surface.DrawTexturedRect( 50 - imageWAni / 2 / 2, ( h / 2 - imageHAni / 2 ), imageWAni, imageHAni )
-
+		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png" ) )
+		surface.DrawTexturedRect( 30, h / 2 - 64 / 2, 64, 64 )
+		
 		draw.SimpleText( strText, "catherine_normal20", w / 2, h * 0.2, Color( 50, 50, 50, 255 ), 1, 1 )
 	end
-
+	
 	local TextEntry = vgui.Create( "DTextEntry", Window )
 	TextEntry:SetText( strDefaultText or "" )
 	TextEntry.OnEnter = function( pnl )
-		Window:Close( )
-		fnEnter( pnl:GetText( ) )
+		Window:AlphaTo( 0, 0.1, 0, function( )
+			Window:Close( )
+			fnEnter( TextEntry:GetText( ) )
+		end )
 	end
 	TextEntry.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
 		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
 	end
-	TextEntry:SetSize( ScrW( ) * 0.7, 30 )
+	TextEntry:SetSize( ScrW( ) * 0.5, 20 )
 	TextEntry:SetPos( Window:GetWide( ) / 2 - TextEntry:GetWide( ) / 2, Window:GetTall( ) / 2 - TextEntry:GetTall( ) / 2 )
 	TextEntry:SetFont( "catherine_normal15" )
 	
@@ -257,14 +234,14 @@ function Derma_StringRequest( _, strText, strDefaultText, fnEnter, fnCancel, str
 		end )
 	end
 	ButtonCancel:MoveRightOf( Button, 5 )
-
+	
 	ButtonPanel:SetWide( Button:GetWide( ) + 5 + ButtonCancel:GetWide( ) + 10 )
-
+	
 	TextEntry:RequestFocus( )
 	TextEntry:SelectAllText( true )
 	
 	ButtonPanel:CenterHorizontal( )
 	ButtonPanel:AlignBottom( 8 )
-
+	
 	return Window
 end
