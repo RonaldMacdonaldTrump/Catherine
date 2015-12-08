@@ -28,7 +28,7 @@ GM.Author = "L7D"
 GM.Website = "https://github.com/L7D/Catherine"
 GM.Email = "smhjyh2009@gmail.com"
 GM.Version = "0.9"
-GM.Build = "DEV 2.0"
+GM.Build = "DEV"
 
 catherine.FolderName = GM.FolderName
 

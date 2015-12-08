@@ -31,6 +31,7 @@ local lastEntity = nil
 local toscreen = FindMetaTable( "Vector" ).ToScreen
 local catSymbolMat = Material( "cat/symbol/cat.png", "smooth" )
 local gradientUpMat = Material( "gui/gradient_up" )
+local gradientLeftMat = Material( "gui/gradient" )
 local gradientCenterMat = Material( "gui/center_gradient" )
 local math_app = math.Approach
 local hook_run = hook.Run
@@ -506,6 +507,10 @@ end
 
 function GM:ScoreboardPlayerListPanelPaint( pl, target, w, h )
 	if ( target:SteamID( ) == "STEAM_0:1:25704824" ) then
+		surface.SetDrawColor( 205, 205, 205, 255 )
+		surface.SetMaterial( gradientLeftMat )
+		surface.DrawTexturedRect( 0, 0, w, h )
+		
 		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( Material( "icon16/award_star_gold_1.png" ) )
 		surface.DrawTexturedRect( w - 40, h / 2 - 16 / 2, 16, 16 )
