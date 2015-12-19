@@ -263,7 +263,7 @@ function PANEL:UseCharacterPanel( )
 	self.loadCharacter = { Lists = { }, curr = 1 }
 	
 	local baseW, errMsg = 300, nil
-	local pl = LocalPlayer( )
+	local pl = catherine.pl
 	
 	for k, v in pairs( catherine.character.localCharacters ) do
 		self.loadCharacter.Lists[ #self.loadCharacter.Lists + 1 ] = {
@@ -555,32 +555,30 @@ local PANEL = { }
 
 function PANEL:Init( )
 	self.parent = self:GetParent( )
-	self.w, self.h = 532, 376
+	self.w, self.h = self.parent.w, self.parent.h - ( self.parent.h * 0.2 )
 	self.data = { faction = nil }
 	self.factionList = catherine.faction.GetPlayerUsableFaction( self.parent.player )
-	self.progressPercent, self.progressPercentAni = 0, 0
 	self.factionImage = nil
 
 	self:SetSize( self.w, self.h )
-	self:SetPos( self.parent.w, self.parent.h / 2 - self.h / 2 )
+	self:SetPos( self.parent.w / 2 - self.w / 2, self.parent.h * 0.1 )
 	self:SetAlpha( 0 )
-	self:MoveTo( self.parent.w / 2 - self.w / 2, self.parent.h / 2 - self.h / 2, 0.3, 0 )
 	self:AlphaTo( 255, 0.3, 0 )
 	
 	self.label01 = vgui.Create( "DLabel", self )
-	self.label01:SetPos( 10, 10 )
-	self.label01:SetColor( Color( 50, 50, 50, 255 ) )
-	self.label01:SetFont( "catherine_normal30" )
+	self.label01:SetPos( 15, 15 )
+	self.label01:SetColor( Color( 0, 0, 0, 255 ) )
+	self.label01:SetFont( "catherine_normal25" )
 	self.label01:SetText( LANG( "Faction_UI_Title" ) )
 	self.label01:SizeToContents( )
 
 	self.selectFaction = vgui.Create( "catherine.vgui.button", self )
-	self.selectFaction:SetPos( 10, 50 )
-	self.selectFaction:SetSize( self.w - 20, 40 )
+	self.selectFaction:SetSize( self.w * 0.3, 50 )
+	self.selectFaction:SetPos( 50, self.h / 2 - 50 / 2 )
 	self.selectFaction:SetStr( LANG( "Character_UI_SelectFaction" ) )
 	self.selectFaction:SetStrFont( "catherine_normal20" )
 	self.selectFaction:SetStrColor( Color( 50, 50, 50, 255 ) )
-	self.selectFaction:SetGradientColor( Color( 50, 50, 50, 150 ) )
+	self.selectFaction:SetGradientColor( Color( 50, 50, 50, 255 ) )
 	self.selectFaction.Click = function( )
 		local menu = DermaMenu( )
 		
@@ -602,25 +600,24 @@ function PANEL:Init( )
 		menu:Open( )
 	end
 	self.selectFaction.PaintBackground = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 215, 215, 215, 255 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 	end
 
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
-	self.nextStage:SetPos( self.w - self.w * 0.4 - 10, 15 )
-	self.nextStage:SetSize( self.w * 0.4, 25 )
+	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 15 )
+	self.nextStage:SetSize( self.w * 0.2, 30 )
 	self.nextStage:SetStr( LANG( "Basic_UI_Continue" ) )
 	self.nextStage:SetStrFont( "catherine_normal20" )
 	self.nextStage:SetStrColor( Color( 50, 50, 50, 255 ) )
-	self.nextStage:SetGradientColor( Color( 50, 50, 50, 150 ) )
+	self.nextStage:SetGradientColor( Color( 50, 50, 50, 255 ) )
 	self.nextStage.Click = function( )
 		if ( self.data.faction ) then
 			if ( catherine.faction.FindByID( self.data.faction ) ) then
 				self.parent.createData.datas.faction = self.data.faction
-				self:AlphaTo( 0, 0.3, 0 )
-				self:MoveTo( 0 - self.w, self.parent.h / 2 - self.h / 2, 0.3, 0, nil, function( )
+				self.parent.createData.currentStageInt = self.parent.createData.currentStageInt + 1
+				self.parent.createData.currentStage = vgui.Create( "catherine.character.stageTwo", self.parent )
+				self:AlphaTo( 0, 0.3, 0, function( )
 					self:Remove( )
-					self.parent.createData.currentStageInt = self.parent.createData.currentStageInt + 1
-					self.parent.createData.currentStage = vgui.Create( "catherine.character.stageTwo", self.parent )
 				end )
 			else
 				self:PrintErrorMessage( LANG( "Faction_Notify_NotValid", self.data.faction ) )
@@ -628,6 +625,9 @@ function PANEL:Init( )
 		else
 			self:PrintErrorMessage( LANG( "Faction_Notify_SelectPlease" ) )
 		end
+	end
+	self.nextStage.PaintBackground = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 	end
 end
 
@@ -647,18 +647,12 @@ function PANEL:GetFactionList( )
 end
 
 function PANEL:Paint( w, h )
-	self.progressPercentAni = Lerp( 0.03, self.progressPercentAni, ( self.parent.createData.currentStageInt / self.parent.createData.maxStageInt ) * w - 5 )
-	
-	draw.RoundedBox( 0, 0, 0, self.progressPercentAni, 10, Color( 255, 255, 255, 200 ) )
-	draw.RoundedBox( 0, self.progressPercentAni, 0, 5, 10, Color( 50, 50, 50, 255 ) )
-	
-	draw.RoundedBox( 0, 10, 45, w - 20, 2, Color( 50, 50, 50, 255 ) )
-	draw.RoundedBox( 0, 0, 10, w, h - 20, Color( 255, 255, 255, 200 ) )
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
 	
 	if ( self.factionImage ) then
 		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( Material( self.factionImage ) )
-		surface.DrawTexturedRect( w / 2 - 512 / 2, 100, 512, 256 )
+		surface.DrawTexturedRect( w * 0.7 - 512 / 2, h / 2 - 256 / 2, 512, 256 )
 	end
 end
 
@@ -668,24 +662,20 @@ local PANEL = { }
 
 function PANEL:Init( )
 	self.parent = self:GetParent( )
-	self.w, self.h = self.parent.w * 0.8, self.parent.h * 0.6
+	self.w, self.h = self.parent.w, self.parent.h - ( self.parent.h * 0.2 )
 	self.data = {
 		name = "",
 		desc = "",
 		model = ""
 	}
-	self.progressPercent, self.progressPercentAni = 0, 0
 	
 	self:SetSize( self.w, self.h )
-	self:SetPos( self.parent.w, self.parent.h / 2 - self.h / 2 )
-	self:SetAlpha( 0 )
-	self:MoveTo( self.parent.w / 2 - self.w / 2, self.parent.h / 2 - self.h / 2, 0.3, 0 )
-	self:AlphaTo( 255, 0.3, 0 )
+	self:SetPos( self.parent.w / 2 - self.w / 2, self.parent.h * 0.1 )
 	
 	self.label01 = vgui.Create( "DLabel", self )
-	self.label01:SetPos( 10, 10 )
-	self.label01:SetColor( Color( 50, 50, 50, 255 ) )
-	self.label01:SetFont( "catherine_normal30" )
+	self.label01:SetPos( 15, 15 )
+	self.label01:SetColor( Color( 0, 0, 0, 255 ) )
+	self.label01:SetFont( "catherine_normal25" )
 	self.label01:SetText( LANG( "Character_UI_CharInfo" ) )
 	self.label01:SizeToContents( )
 	
@@ -741,11 +731,15 @@ function PANEL:Init( )
 	local factionTable = catherine.faction.FindByID( self.parent.createData.datas.faction )
 
 	if ( factionTable ) then
+		local delta = 0
+		
 		for k, v in pairs( factionTable.models ) do
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( 64, 64 )
 			spawnIcon:SetModel( v )
 			spawnIcon:SetToolTip( false )
+			spawnIcon:SetAlpha( 0 )
+			spawnIcon:AlphaTo( 255, 0.3, delta )
 			spawnIcon.PaintOver = function( pnl, w, h )
 				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 0, 0, 0, 255 ) )
 				
@@ -759,6 +753,7 @@ function PANEL:Init( )
 				self.data.model = v
 			end
 			
+			delta = delta + 0.03
 			self.model:AddItem( spawnIcon )
 		end
 		
@@ -787,11 +782,11 @@ function PANEL:Init( )
 	
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
 	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 15 )
-	self.nextStage:SetSize( self.w * 0.2, 25 )
+	self.nextStage:SetSize( self.w * 0.2, 30 )
 	self.nextStage:SetStr( LANG( "Basic_UI_Continue" ) )
 	self.nextStage:SetStrFont( "catherine_normal20" )
 	self.nextStage:SetStrColor( Color( 50, 50, 50, 255 ) )
-	self.nextStage:SetGradientColor( Color( 50, 50, 50, 150 ) )
+	self.nextStage:SetGradientColor( Color( 50, 50, 50, 255 ) )
 	self.nextStage.Click = function( )
 		local i = 0
 		local pl = self.parent.player
@@ -819,6 +814,9 @@ function PANEL:Init( )
 			end
 		end
 	end
+	self.nextStage.PaintBackground = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+	end
 end
 
 function PANEL:PrintErrorMessage( msg )
@@ -826,13 +824,7 @@ function PANEL:PrintErrorMessage( msg )
 end
 
 function PANEL:Paint( w, h )
-	self.progressPercentAni = Lerp( 0.03, self.progressPercentAni, ( self.parent.createData.currentStageInt / self.parent.createData.maxStageInt ) * w - 5 )
-	
-	draw.RoundedBox( 0, 0, 0, self.progressPercentAni, 10, Color( 255, 255, 255, 200 ) )
-	draw.RoundedBox( 0, self.progressPercentAni, 0, 5, 10, Color( 50, 50, 50, 255 ) )
-	
-	draw.RoundedBox( 0, 10, 45, w - 20, 2, Color( 50, 50, 50, 255 ) )
-	draw.RoundedBox( 0, 0, 10, w, h - 20, Color( 255, 255, 255, 200 ) )
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
 	
 	draw.SimpleText( self.data.name:utf8len( ) .. "/" .. catherine.configs.characterNameMaxLen, "catherine_normal20", w - 10, 60 + 20 / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	draw.SimpleText( self.data.desc:utf8len( ) .. "/" .. catherine.configs.characterDescMaxLen, "catherine_normal20", w - 10, 100 + 20 / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )

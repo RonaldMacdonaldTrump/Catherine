@@ -296,10 +296,17 @@ if ( SERVER ) then
 			charVars[ v.field ] = var
 		end
 		
+		hook.Add( "DatabaseError", "catherine.database.DatabaseError." .. steamID, function( query, err )
+			netstream.Start( pl, "catherine.character.CreateResult", LANG( pl, "Character_Error_DBErrorBasic", err ) )
+			hook.Remove( "DatabaseError", "catherine.database.DatabaseError." .. steamID )
+		end )
+		
 		catherine.database.InsertDatas( "catherine_characters", charVars, function( )
 			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. steamID .. " has created a '" .. charVars._name .. "' character.", true )
 			netstream.Start( pl, "catherine.character.CreateResult", true )
 			catherine.character.SendPlayerCharacterList( pl )
+			
+			hook.Remove( "DatabaseError", "catherine.database.DatabaseError." .. steamID )
 		end )
 	end
 	

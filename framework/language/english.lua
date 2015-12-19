@@ -168,6 +168,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_SelectModel" ] = "Please select a character model!",
 	[ "Character_Notify_NameLimitHit" ] = "The character name must be at least " .. catherine.configs.characterNameMinLen .." characters long with a maximum of " .. catherine.configs.characterNameMaxLen .. " characters!",
 	[ "Character_Notify_DescLimitHit" ] = "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long with a maximum of " .. catherine.configs.characterDescMaxLen .. " characters!",
+	[ "Character_Error_DBErrorBasic" ] = "Database error. [%s]",
 	
 	// Faction
 	[ "Faction_UI_Title" ] = "Faction",

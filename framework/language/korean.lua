@@ -164,6 +164,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_SelectModel" ] = "캐릭터 모델을 선택하세요!",
 	[ "Character_Notify_NameLimitHit" ] = "캐릭터 이름은 " .. catherine.configs.characterNameMinLen .." 자 이상 " .. catherine.configs.characterNameMaxLen .. " 자 이하 되어야 합니다!",
 	[ "Character_Notify_DescLimitHit" ] = "캐릭터 설명은 " .. catherine.configs.characterDescMinLen .."자 이상 " .. catherine.configs.characterDescMaxLen .. "자 이하 되어야 합니다!",
+	[ "Character_Error_DBErrorBasic" ] = "캐릭터 생성중 데이터베이스 오류가 발생했습니다. [%s]",
 	
 	// Accessory
 	[ "Accessory_Wear_ModelError" ] = "모델 오류가 있습니다.",
