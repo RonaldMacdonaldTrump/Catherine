@@ -28,7 +28,7 @@ if ( SERVER ) then
 	CREATE TABLE IF NOT EXISTS `catherine_characters` (
 		`_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 		`_name` varchar(70) NOT NULL,
-		`_desc` tinytext NOT NULL,
+		`_desc` text NOT NULL,
 		`_model` varchar(160) NOT NULL,
 		`_att` varchar(180) DEFAULT NULL,
 		`_schema` varchar(24) NOT NULL,
