@@ -180,7 +180,7 @@ if ( SERVER ) then
 			return false, "^Character_Notify_CantSwitchTied"
 		end
 		
-		if ( !pl:Alive( ) ) then
+		if ( pl:GetCharacterID( ) and !pl:Alive( ) ) then
 			return false, "^Character_Notify_CantSwitchDeath"
 		end
 		
