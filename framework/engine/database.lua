@@ -27,15 +27,15 @@ if ( SERVER ) then
 	local CAT_DATABASE_CREATE_TABLES_NON_SQLITE = [[
 	CREATE TABLE IF NOT EXISTS `catherine_characters` (
 		`_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-		`_name` varchar(70) NOT NULL,
-		`_desc` text NOT NULL,
+		`_name` text NOT NULL,
+		`_desc` mediumtext NOT NULL,
 		`_model` varchar(160) NOT NULL,
 		`_att` varchar(180) DEFAULT NULL,
 		`_schema` varchar(24) NOT NULL,
 		`_registerTime` text,
 		`_steamID` varchar(20) NOT NULL,
-		`_charVar` text,
-		`_inv` text,
+		`_charVar` mediumtext,
+		`_inv` mediumtext,
 		`_cash` int(11) unsigned DEFAULT NULL,
 		`_faction` varchar(50) NOT NULL,
 		PRIMARY KEY (`_id`)
@@ -44,7 +44,7 @@ if ( SERVER ) then
 		`_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 		`_steamName` varchar(70) NOT NULL,
 		`_steamID` varchar(20) NOT NULL,
-		`_catData` text,
+		`_catData` mediumtext,
 		`_steamID64` text,
 		`_ipAddress` varchar(50) DEFAULT NULL,
 		`_lastConnect` text,
