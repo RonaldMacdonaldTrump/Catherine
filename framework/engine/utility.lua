@@ -143,13 +143,13 @@ function catherine.util.FolderDirectoryTranslate( dir )
 end
 
 function catherine.util.GetItemDropPos( pl )
-	local tr = util.TraceLine( {
-		start = pl:GetShootPos( ) - pl:GetAimVector( ) * 64,
-		endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * 86,
-		filter = pl
-	} )
+	local tr = pl:GetEyeTraceNoCursor( )
 	
-	return tr.HitPos + tr.HitNormal * 36
+	if ( pl:GetShootPos( ):Distance( tr.HitPos ) < 100 ) then
+		return tr.HitPos
+	end
+	
+	return pl:GetShootPos( ) + pl:GetAimVector( ) * 100
 end
 
 function catherine.util.RemoveEntityByClass( class )
