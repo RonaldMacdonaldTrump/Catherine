@@ -104,7 +104,7 @@ function PANEL:BuildGlobalBan( )
 		self.Lists:AddItem( panel )
 	end
 	
-	scrollBar:AnimateTo( scroll, 0, 0, 0 )
+	scrollBar:SetScroll( scroll, 0, 0, 0 )
 end
 
 vgui.Register( "catherine.vgui.globalban", PANEL, "catherine.vgui.menuBase" )

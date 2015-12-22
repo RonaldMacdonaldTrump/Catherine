@@ -84,7 +84,7 @@ function PANEL:BuildOption( )
 		self.Lists:AddItem( form )
 	end
 	
-	scrollBar:AnimateTo( scroll, 0, 0, 0 )
+	scrollBar:SetScroll( scroll, 0, 0, 0 )
 end
 
 vgui.Register( "catherine.vgui.option", PANEL, "catherine.vgui.menuBase" )

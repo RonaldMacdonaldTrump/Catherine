@@ -298,8 +298,8 @@ function PANEL:BuildStorage( )
 		self.playerLists:AddItem( form )
 	end
 	
-	storageLists_scrollBar:AnimateTo( storageLists_scroll, 0, 0, 0 )
-	playerLists_scrollBar:AnimateTo( playerLists_scroll, 0, 0, 0 )
+	storageLists_scrollBar:SetScroll( storageLists_scroll, 0, 0, 0 )
+	playerLists_scrollBar:SetScroll( playerLists_scroll, 0, 0, 0 )
 end
 
 function PANEL:Close( )

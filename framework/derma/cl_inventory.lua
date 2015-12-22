@@ -143,7 +143,7 @@ function PANEL:BuildInventory( )
 		self.Lists:AddItem( form )
 	end
 
-	scrollBar:AnimateTo( scroll, 0, 0, 0 )
+	scrollBar:SetScroll( scroll, 0, 0, 0 )
 end
 
 vgui.Register( "catherine.vgui.inventory", PANEL, "catherine.vgui.menuBase" )

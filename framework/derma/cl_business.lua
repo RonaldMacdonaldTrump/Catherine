@@ -181,7 +181,7 @@ function PANEL:BuildShoppingCart( )
 		self.Cart:AddItem( panel )
 	end
 	
-	scrollBar:AnimateTo( scroll, 0, 0, 0 )
+	scrollBar:SetScroll( scroll, 0, 0, 0 )
 end
 
 function PANEL:BuildBusiness( )
@@ -251,7 +251,7 @@ function PANEL:BuildBusiness( )
 		self.Lists:AddItem( form )
 	end
 	
-	scrollBar:AnimateTo( scroll, 0, 0, 0 )
+	scrollBar:SetScroll( scroll, 0, 0, 0 )
 end
 
 vgui.Register( "catherine.vgui.business", PANEL, "catherine.vgui.menuBase" )
