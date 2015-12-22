@@ -217,6 +217,12 @@ function GM:PlayerNoClip( pl, status )
 			pl:SetNoTarget( true )
 			pl:DrawWorldModel( false )
 			pl:SetNetVar( "nocliping", true )
+			
+			if ( pl:HasGodMode( ) ) then
+				pl.CAT_godmodeAlready = true
+			else
+				pl:GodEnable( )
+			end
 		end
 		
 		hook.Run( "PlayerNoclipJoined", pl )
@@ -230,6 +236,11 @@ function GM:PlayerNoClip( pl, status )
 			pl:SetNoTarget( false )
 			pl:DrawWorldModel( true )
 			pl:SetNetVar( "nocliping", false )
+			
+			if ( !pl.CAT_godmodeAlready ) then
+				pl:GodDisable( )
+				pl.CAT_godmodeAlready = nil
+			end
 		end
 		
 		hook.Run( "PlayerNoclipExited", pl )

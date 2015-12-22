@@ -209,6 +209,7 @@ if ( SERVER ) then
 		end
 		
 		if ( !prevID ) then
+			pl:GodDisable( )
 			pl:Freeze( false )
 			pl:UnLock( )
 		end
