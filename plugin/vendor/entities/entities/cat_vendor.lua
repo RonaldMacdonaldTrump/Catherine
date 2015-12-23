@@ -74,6 +74,12 @@ if ( SERVER ) then
 		pl:SetNetVar( "vendorWorkingID", index )
 		netstream.Start( pl, "catherine.plugin.vendor.VendorUse", index )
 	end
+	
+	function ENT:OnRemove( )
+		if ( catherine.shuttingDown ) then return end
+		
+		catherine.cash.Spawn( self:GetPos( ), self:GetAngles( ), PLUGIN:GetVendorData( self, "cash", 0 ) )
+	end
 else
 	local toscreen = FindMetaTable( "Vector" ).ToScreen
 	

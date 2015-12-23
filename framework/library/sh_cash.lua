@@ -82,10 +82,10 @@ if ( SERVER ) then
 		return true
 	end
 	
-	function catherine.cash.Spawn( pl, pos, ang, amount )
+	function catherine.cash.Spawn( pos, ang, amount )
 		amount = tonumber( amount )
 		
-		if ( !amount ) then return false end
+		if ( !amount or amount <= 0 ) then return false end
 		
 		catherine.item.Spawn( "wallet", pos, ang, { amount = amount } )
 	end

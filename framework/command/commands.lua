@@ -775,7 +775,7 @@ catherine.command.Register( {
 			end
 			
 			catherine.cash.Take( pl, amount )
-			catherine.cash.Spawn( pl, catherine.util.GetItemDropPos( pl ), nil, amount )
+			catherine.cash.Spawn( catherine.util.GetItemDropPos( pl ), nil, amount )
 			
 			catherine.util.NotifyLang( pl, "Cash_Notify_Drop", catherine.cash.GetCompleteName( amount ) )
 		else

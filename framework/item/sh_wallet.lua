@@ -72,7 +72,7 @@ ITEM.func.drop = {
 			end
 			
 			catherine.cash.Take( pl, val )
-			catherine.cash.Spawn( pl, catherine.util.GetItemDropPos( pl ), nil, val )
+			catherine.cash.Spawn( catherine.util.GetItemDropPos( pl ), nil, val )
 			
 			catherine.util.NotifyLang( pl, "Cash_Notify_Drop", catherine.cash.GetCompleteName( val ) )
 		end )

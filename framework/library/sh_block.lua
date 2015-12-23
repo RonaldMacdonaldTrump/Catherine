@@ -124,6 +124,8 @@ if ( SERVER ) then
 	end
 	
 	function catherine.block.IsBlocked( pl, target, blockType )
+		if ( !IsValid( pl ) or !IsValid( target ) ) then return false end
+		
 		local data = catherine.block.lists[ pl:SteamID( ) ] or { }
 		
 		for k, v in pairs( data ) do
