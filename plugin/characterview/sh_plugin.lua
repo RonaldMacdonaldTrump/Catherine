@@ -81,6 +81,7 @@ catherine.command.Register( {
 if ( SERVER ) then return end
 
 PLUGIN.nextViewChange = PLUGIN.nextViewChange or RealTime( ) + 5
+PLUGIN.thirdPersonChange = PLUGIN.thirdPersonChange or false
 
 netstream.Hook( "catherine.plugin.characterview.SyncViews", function( data )
 	PLUGIN.charViews = data
@@ -89,9 +90,21 @@ netstream.Hook( "catherine.plugin.characterview.SyncViews", function( data )
 end )
 
 function PLUGIN:ShouldDrawLocalPlayer( pl )
-	if ( pl:IsActioning( ) or GetConVarString( "cat_convar_thirdperson" ) == "1" ) then return end
+	if ( pl:IsActioning( ) ) then return end
 	
-	return ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and catherine.character.IsCustomBackground( )
+	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and catherine.character.IsCustomBackground( ) ) then
+		if ( GetConVarString( "cat_convar_thirdperson" ) == "1" ) then
+			RunConsoleCommand( "cat_convar_thirdperson", "0" )
+			self.thirdPersonChange = true
+		end
+		
+		return true
+	end
+	
+	if ( self.thirdPersonChange ) then
+		RunConsoleCommand( "cat_convar_thirdperson", "1" )
+		self.thirdPersonChange = false
+	end
 end
 
 function PLUGIN:CalcView( pl, pos, ang, fov )
