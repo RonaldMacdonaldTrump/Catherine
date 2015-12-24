@@ -534,7 +534,7 @@ if ( SERVER ) then
 		end
 	end
 	
-	function catherine.character.Save( pl )
+	function catherine.character.Save( pl, deleteNetRegistry )
 		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
 		if ( hook.Run( "PlayerShouldSaveCharacter", pl ) == false ) then return end
 		local networkRegistry = catherine.character.GetNetworkRegistry( pl )
@@ -560,6 +560,10 @@ if ( SERVER ) then
 			
 			catherine.character.RefreshCharacterBuffer( pl )
 			catherine.util.Print( Color( 0, 255, 0 ), pl:SteamName( ) .. "'s [" .. id .. "] character has been saved." )
+			
+			if ( deleteNetRegistry ) then
+				catherine.character.DeleteNetworkRegistry( pl )
+			end
 		end )
 	end
 	
@@ -584,8 +588,7 @@ if ( SERVER ) then
 	end )
 	
 	function catherine.character.PlayerDisconnected( pl )
-		catherine.character.Save( pl )
-		catherine.character.DeleteNetworkRegistry( pl )
+		catherine.character.Save( pl, true )
 	end
 	
 	function catherine.character.ServerShutDown( )
@@ -596,6 +599,14 @@ if ( SERVER ) then
 	
 	hook.Add( "PlayerDisconnected", "catherine.character.PlayerDisconnected", catherine.character.PlayerDisconnected )
 	hook.Add( "ServerShutDown", "catherine.character.ServerShutDown", catherine.character.ServerShutDown )
+	
+	concommand.Add( "cat_saveallchar", function( pl )
+		if ( !pl:IsSuperAdmin( ) ) then return end
+		
+		for k, v in pairs( player.GetAllByLoaded( ) ) do
+			catherine.character.Save( v )
+		end
+	end )
 	
 	netstream.Hook( "catherine.character.Create", function( pl, data )
 		catherine.character.Create( pl, data )

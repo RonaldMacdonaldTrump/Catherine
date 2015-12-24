@@ -402,7 +402,7 @@ function GM:PlayerDisconnected( pl )
 	
 	timer.Remove( "Catherine.timer.AutoSalary." .. pl:SteamID( ) )
 	
-	catherine.chat.Send( pl, "disconnect" )
+	//catherine.chat.Send( pl, "disconnect" )
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. pl:SteamID( ) .. " has disconnected a server." )
 	
 	if ( pl:IsCharacterLoaded( ) ) then
