@@ -33,9 +33,12 @@ end
 
 function PLAYER:GetHandsModel( )
 	local model = self.Player:GetModel( ):lower( )
+	local aniClass = catherine.animation.Get( model )
 	
-	if ( model:find( "police" ) ) then
+	if ( aniClass == "overwatch" ) then
 		model = "combine"
+	elseif ( aniClass == "metrocop" ) then
+		model = "police"
 	else
 		local modelConvert = model:gsub( "_", "" )
 		
@@ -47,6 +50,8 @@ function PLAYER:GetHandsModel( )
 			end
 		end
 	end
+	
+	model = hook.Run( "GetCustomHandsModel", self.Player, model, aniClass ) or model
 	
 	return player_manager.TranslatePlayerHands( model )
 end
