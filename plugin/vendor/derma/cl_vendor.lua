@@ -519,7 +519,7 @@ function PANEL:Refresh_List( id )
 			self.buyPanel.Lists:AddItem( form )
 		end
 		
-		buyLists_scrollBar:SetScroll( buyLists_scroll, 0, 0, 0 )
+		buyLists_scrollBar:AnimateTo( buyLists_scroll, 0.3, 0, 0.1 )
 	elseif ( id == 2 ) then
 		local sellLists_scrollBar = self.sellPanel.Lists.VBar
 		local sellLists_scroll = sellLists_scrollBar.Scroll
@@ -597,7 +597,7 @@ function PANEL:Refresh_List( id )
 			self.sellPanel.Lists:AddItem( form )
 		end
 		
-		sellLists_scrollBar:SetScroll( sellLists_scroll, 0, 0, 0 )
+		sellLists_scrollBar:AnimateTo( sellLists_scroll, 0.3, 0, 0.1 )
 	elseif ( id == 4 ) then
 		local manageItemLists_scrollBar = self.manageItemPanel.Lists.VBar
 		local manageItemLists_scroll = manageItemLists_scrollBar.Scroll
@@ -682,7 +682,7 @@ function PANEL:Refresh_List( id )
 			self.manageItemPanel.Lists:AddItem( form )
 		end
 		
-		manageItemLists_scrollBar:SetScroll( manageItemLists_scroll, 0, 0, 0 )
+		manageItemLists_scrollBar:AnimateTo( manageItemLists_scroll, 0.3, 0, 0.1 )
 	end
 end
 
