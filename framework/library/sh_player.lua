@@ -74,10 +74,6 @@ if ( SERVER ) then
 			
 			timer.Remove( "Catherine.timer.player.Initialize.Reload" )
 			
-			if ( !catherine.catData.GetVar( pl, "language" ) ) then
-				catherine.player.UpdateLanguageSetting( pl )
-			end
-			
 			netstream.Start( pl, "catherine.loadingPercent", 1 )
 			hook.Run( "PlayerLoadFinished", pl )
 			

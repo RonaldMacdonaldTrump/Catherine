@@ -49,7 +49,7 @@ if ( SERVER ) then
 		return catherine.catData.networkRegistry[ steamID ] and catherine.catData.networkRegistry[ steamID ][ key ] or default
 	end
 	
-	function catherine.catData.Save( pl )
+	function catherine.catData.Save( pl, removeData )
 		if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
 		if ( hook.Run( "PlayerShouldSaveCatData", pl ) == false ) then return end
 		local steamID = getSteamID( pl )
@@ -59,6 +59,10 @@ if ( SERVER ) then
 		catherine.database.UpdateDatas( "catherine_players", "_steamID = '" .. steamID .. "'", {
 			_catData = util.TableToJSON( catherine.catData.networkRegistry[ steamID ] ) or "[]"
 		} )
+		
+		if ( removeData ) then
+			catherine.catData.networkRegistry[ steamID ] = nil
+		end
 	end
 	
 	function catherine.catData.SendAllNetworkRegistries( pl )
@@ -70,12 +74,15 @@ if ( SERVER ) then
 			
 			catherine.catData.networkRegistry[ steamID ] = util.JSONToTable( data[ 1 ][ "_catData" ] ) or { }
 			netstream.Start( pl, "catherine.catData.SendAllNetworkRegistries", catherine.catData.networkRegistry[ steamID ] )
+		
+			if ( !catherine.catData.GetVar( pl, "language" ) ) then
+				catherine.player.UpdateLanguageSetting( pl )
+			end
 		end )
 	end
 	
 	function catherine.catData.PlayerDisconnected( pl )
-		catherine.catData.Save( pl )
-		catherine.catData.networkRegistry[ getSteamID( pl ) ] = nil
+		catherine.catData.Save( pl, true )
 	end
 	
 	hook.Add( "PlayerDisconnected", "catherine.catData.PlayerDisconnected", catherine.catData.PlayerDisconnected )

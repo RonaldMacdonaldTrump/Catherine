@@ -81,7 +81,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.question.IsQuestionComplete( pl )
-		return catherine.catData.GetVar( pl, "question" )
+		return catherine.catData.GetVar( pl, "question" ) == "1"
 	end
 	
 	netstream.Hook( "catherine.question.Check", function( pl, data )
@@ -117,7 +117,7 @@ else
 	end
 	
 	function catherine.question.CanQuestion( )
-		if ( !catherine.configs.enableQuiz or catherine.catData.GetVar( "question" ) or #catherine.question.GetAll( ) == 0 ) then
+		if ( !catherine.configs.enableQuiz or catherine.catData.GetVar( "question" ) == "1" or #catherine.question.GetAll( ) == 0 ) then
 			return false
 		else
 			return true
