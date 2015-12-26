@@ -218,6 +218,7 @@ function GM:PostInitLoadCharacterList( pl, pnl, characterDatas )
 			for k, v in pairs( characterDatas._inv ) do
 				local itemTable = catherine.item.FindByID( k )
 				
+				if ( !itemTable ) then continue end
 				if ( !itemTable.isBodygroupCloth or !v.itemData[ "wearing" ] ) then continue end
 				
 				modelPanel.Entity:SetBodygroup( itemTable.bodyGroup, itemTable.bodyGroupSubModelIndex )
