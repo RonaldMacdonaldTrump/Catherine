@@ -111,7 +111,7 @@ function PANEL:InitializeBusiness( )
 	
 	for k, v in pairs( catherine.item.GetAll( ) ) do
 		if ( v.ShowOnBusiness and v:ShowOnBusiness( pl ) == false ) then continue end
-		if ( !table.HasValue( v.onBusinessFactions or { }, team ) ) then continue end
+		if ( ( !v.ShowOnBusiness or v:ShowOnBusiness( pl ) == false ) and !table.HasValue( v.onBusinessFactions or { }, team ) ) then continue end
 		local category = v.category
 		
 		items[ category ] = items[ category ] or { }

@@ -31,7 +31,22 @@ if ( SERVER ) then
 				continue
 			end
 			
+			if ( itemTable.ShowOnBusiness and itemTable:ShowOnBusiness( pl ) == false ) then
+				table.remove( shipLists, k )
+				continue
+			end
+			
+			if ( ( !itemTable.ShowOnBusiness or itemTable:ShowOnBusiness( pl ) == false ) and !table.HasValue( itemTable.onBusinessFactions or { }, pl:Team( ) ) ) then
+				table.remove( shipLists, k )
+				continue
+			end
+			
 			cost = cost + ( itemTable.cost * v )
+		end
+		
+		if ( table.Count( shipLists ) <= 0 ) then
+			// Need to add Notify code
+			return
 		end
 		
 		if ( !catherine.cash.Has( pl, cost ) ) then
