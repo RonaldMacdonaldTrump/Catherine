@@ -903,7 +903,7 @@ function GM:PlayerThink( pl )
 	
 	if ( pl:Alive( ) ) then
 		if ( pl:WaterLevel( ) >= 3 ) then
-			if ( !pl.CAT_drowningTick ) then
+			if ( !pl.CAT_drowningTick or !pl.CAT_drownDamage ) then
 				pl.CAT_drowningTick = CurTime( ) + 30
 				pl.CAT_drownDamage = pl.CAT_drownDamage or 0
 			end
@@ -929,7 +929,7 @@ function GM:PlayerThink( pl )
 			end
 			
 			if ( pl.CAT_nextDrownDamageRecoverTick and pl.CAT_nextDrownDamageRecoverTick <= CurTime( ) ) then
-				if ( pl.CAT_drownDamage > 0 ) then
+				if ( pl.CAT_drownDamage and pl.CAT_drownDamage > 0 ) then
 					pl.CAT_drownDamage = pl.CAT_drownDamage - 1
 					pl:SetHealth( math.Clamp( pl:Health( ) + 1, 0, pl:GetMaxHealth( ) ) )
 					pl.CAT_nextDrownDamageRecoverTick = CurTime( ) + 0.2
