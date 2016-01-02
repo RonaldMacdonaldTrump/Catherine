@@ -62,6 +62,15 @@ function PLUGIN:DataLoad( )
 	local i = 1
 	
 	for k, v in pairs( ents ) do
+		if ( v:GetClass( ) == "gmod_lamp" or v:GetClass( ) == "gmod_light" ) then
+			local physObject = v:GetPhysicsObject( )
+		
+			if ( IsValid( physObject ) ) then
+				physObject:EnableMotion( false )
+				physObject:Sleep( )
+			end
+		end
+		
 		v:SetNetVar( "isStatic", true )
 		v.CAT_staticIndex = i
 		i = i + 1
