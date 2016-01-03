@@ -997,6 +997,8 @@ function GM:InitPostEntity( )
 	
 	hook.Run( "DataLoad" )
 	
+	catherine.door.DataLoad( )
+	
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has been loaded." )
 end
 
