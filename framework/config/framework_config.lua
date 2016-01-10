@@ -82,7 +82,7 @@ if ( SERVER ) then
 	catherine.configs.fadeOutDeathBody = true --[[ Enabled the Fade out the Death body. ]]--
 	catherine.configs.voiceAllow = false --[[ Allow a Voice chat. ]]--
 	catherine.configs.voice3D = true --[[ Enabled the Voice 3D system. ]]--
-	catherine.configs.spawnTime = 60 --[[ Setting a Spawn time. ]]--
+	catherine.configs.spawnTime = 10 --[[ Setting a Spawn time. ]]--
 	catherine.configs.clearMap = true --[[ Enabled a Map Clear system. (Remove a map HL2 HP, Armor station and Vehicles(Chair) ) ]]--
 	catherine.configs.doorBreach = true --[[ Enabled a Door Breach system. (Shoot the door handle to open) ]]--
 	

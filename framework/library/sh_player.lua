@@ -56,7 +56,6 @@ if ( SERVER ) then
 			
 			--[[ Initializing a Catherine ... :> ]]--
 			
-			catherine.net.RemoveDummy( )
 			catherine.character.RemoveDummy( )
 			
 			for i = 1, #initFunctions do

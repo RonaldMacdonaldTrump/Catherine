@@ -321,14 +321,12 @@ if ( SERVER ) then
 					ent.CAT_isStorageCustom = true
 					
 					ent:SetNetVar( "isStatic", true )
-					plugin:DataSave( )
 				end
 			end
 		end )
 	end
 
 	hook.Add( "DataSave", "catherine.storage.DataSave", catherine.storage.DataSave )
-	hook.Add( "DataLoad", "catherine.storage.DataLoad", catherine.storage.DataLoad )
 	hook.Add( "PlayerSpawnedProp", "catherine.storage.PlayerSpawnedProp", catherine.storage.PlayerSpawnedProp )
 	
 	netstream.Hook( "catherine.storage.Work", function( pl, data )

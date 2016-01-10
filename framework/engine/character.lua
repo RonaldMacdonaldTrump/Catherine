@@ -559,7 +559,7 @@ if ( SERVER ) then
 			if ( !IsValid( pl ) or !isPlayer( pl ) ) then return end
 			
 			catherine.character.RefreshCharacterBuffer( pl )
-			catherine.util.Print( Color( 0, 255, 0 ), pl:SteamName( ) .. "'s [" .. id .. "] character has been saved." )
+			catherine.util.Print( Color( 0, 255, 0 ), pl:SteamName( ) .. "'s character has been saved. [ ID : " .. id .. " ]" )
 			
 			if ( deleteNetRegistry ) then
 				catherine.character.DeleteNetworkRegistry( pl )

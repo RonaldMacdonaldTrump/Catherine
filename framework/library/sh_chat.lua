@@ -299,27 +299,11 @@ catherine.chat.Register( "connect", {
 } )
 
 catherine.chat.Register( "disconnect", {
-	func = function( pl, text )
-		local icon = Material( "icon16/user.png" )
-		
-		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
-			icon = Material( "icon16/thumb_up.png" )
-		elseif ( pl:IsSuperAdmin( ) ) then
-			icon = Material( "icon16/shield.png" )
-		elseif ( pl:IsAdmin( ) ) then
-			icon = Material( "icon16/star.png" )
-		end
-		
-		local override = hook.Run( "GetChatIcon", pl, "disconnect", text )
-		
-		if ( override ) then
-			icon = Material( override )
-		end
-		
+	func = function( pl, text, ex )
 		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
-			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
+			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", Material( "icon16/server.png" ), Color( 238, 232, 170 ), LANG( "Chat_Str_Disconnect", ex[ 1 ] ) )
 		else
-			chat.AddText( icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
+			chat.AddText( icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Disconnect", ex[ 1 ] ) )
 		end
 	end,
 	isGlobal = true
@@ -407,7 +391,7 @@ if ( SERVER ) then
 			netstream.Start( nil, "catherine.chat.Post", {
 				pl,
 				uniqueID,
-				text,
+				text or "",
 				{ ... }
 			} )
 		else
@@ -419,7 +403,7 @@ if ( SERVER ) then
 					netstream.Start( v, "catherine.chat.Post", {
 						pl,
 						uniqueID,
-						text,
+						text or "",
 						{ ... }
 					} )
 				end
@@ -427,7 +411,7 @@ if ( SERVER ) then
 				netstream.Start( catherine.chat.GetListener( pl, classTable ), "catherine.chat.Post", {
 					pl,
 					uniqueID,
-					text,
+					text or "",
 					{ ... }
 				} )
 			end
@@ -531,8 +515,8 @@ else
 	netstream.Hook( "catherine.chat.Post", function( data )
 		local speaker = data[ 1 ]
 		local classTable = catherine.chat.FindByID( data[ 2 ] )
-
-		if ( classTable and IsValid( speaker ) ) then
+		
+		if ( classTable ) then
 			if ( classTable.font ) then
 				catherine.chat.SetOverrideFont( classTable.font )
 				

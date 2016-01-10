@@ -54,8 +54,6 @@ catherine.command.Register( {
 				ent:SetNetVar( "isStatic", !curStatus )
 				
 				catherine.util.NotifyLang( pl, !curStatus and "PermanentE_Notify_Add" or "PermanentE_Notify_Remove" )
-				
-				PLUGIN:DataSave( )
 			else
 				catherine.util.NotifyLang( pl, "PermanentE_Notify_Cant" )
 			end

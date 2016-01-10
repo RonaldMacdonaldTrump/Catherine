@@ -22,12 +22,14 @@ local META2 = FindMetaTable( "Player" )
 
 if ( SERVER ) then
 	function catherine.net.SetNetVar( ent, key, value, noSync )
-		catherine.net.entityRegistry[ ent ] = catherine.net.entityRegistry[ ent ] or { }
-		catherine.net.entityRegistry[ ent ][ key ] = value
+		local id = ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( )
+		
+		catherine.net.entityRegistry[ id ] = catherine.net.entityRegistry[ id ] or { }
+		catherine.net.entityRegistry[ id ][ key ] = value
 		
 		if ( !noSync ) then
 			netstream.Start( nil, "catherine.net.SetNetVar", {
-				ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( ),
+				id,
 				key,
 				value
 			} )
@@ -46,12 +48,14 @@ if ( SERVER ) then
 	end
 	
 	function META:SetNetVar( key, value, noSync )
-		catherine.net.entityRegistry[ self ] = catherine.net.entityRegistry[ self ] or { }
-		catherine.net.entityRegistry[ self ][ key ] = value
+		local id = self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( )
+		
+		catherine.net.entityRegistry[ id ] = catherine.net.entityRegistry[ id ] or { }
+		catherine.net.entityRegistry[ id ][ key ] = value
 		
 		if ( !noSync ) then
 			netstream.Start( nil, "catherine.net.SetNetVar", {
-				self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( ),
+				id,
 				key,
 				value
 			} )
@@ -59,12 +63,14 @@ if ( SERVER ) then
 	end
 	
 	function META2:SetNetVar( key, value, noSync )
-		catherine.net.entityRegistry[ self ] = catherine.net.entityRegistry[ self ] or { }
-		catherine.net.entityRegistry[ self ][ key ] = value
+		local id = self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( )
+		
+		catherine.net.entityRegistry[ id ] = catherine.net.entityRegistry[ id ] or { }
+		catherine.net.entityRegistry[ id ][ key ] = value
 		
 		if ( !noSync ) then
 			netstream.Start( nil, "catherine.net.SetNetVar", {
-				self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( ),
+				id,
 				key,
 				value
 			} )
@@ -72,7 +78,9 @@ if ( SERVER ) then
 	end
 	
 	function catherine.net.GetNetVar( ent, key, default )
-		return catherine.net.entityRegistry[ ent ] and catherine.net.entityRegistry[ ent ][ key ] or default
+		local id = ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( )
+		
+		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
 	end
 	
 	function catherine.net.GetNetGlobalVar( key, default )
@@ -80,79 +88,39 @@ if ( SERVER ) then
 	end
 	
 	function META:GetNetVar( key, default )
-		return catherine.net.entityRegistry[ self ] and catherine.net.entityRegistry[ self ][ key ] or default
+		local id = self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( )
+		
+		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
 	end
 	
 	function META2:GetNetVar( key, default )
-		return catherine.net.entityRegistry[ self ] and catherine.net.entityRegistry[ self ][ key ] or default
+		local id = self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( )
+		
+		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
 	end
 	
 	function catherine.net.SendAllNetworkRegistries( pl )
-		local convert = { }
-		
-		for k, v in pairs( catherine.net.entityRegistry ) do
-			if ( !IsValid( k ) ) then continue end
-			
-			convert[ k:IsPlayer( ) and k:SteamID( ) or k:EntIndex( ) ] = v
-		end
-		
 		netstream.Start( pl, "catherine.net.SendAllNetworkRegistries", {
-			convert,
+			catherine.net.entityRegistry,
 			catherine.net.globalRegistry
 		} )
 	end
 	
-	local function removeDummyInTable( tab )
-		for k, v in pairs( tab ) do
-			local keyType, valueType = type( k ), type( v )
-			
-			if ( ( keyType == "Entity" or keyType == "Player" ) and !IsValid( k ) ) then
-				tab[ k ] = nil
-			end
-			
-			if ( valueType == "table" ) then
-				removeDummyInTable( v )
-			else
-				if ( ( valueType == "Entity" or valueType == "Player" ) and !IsValid( v ) ) then
-					tab[ k ] = nil
-				end
-			end
-		end
-	end
-	
-	function catherine.net.RemoveDummy( send, pl )
-		for k, v in pairs( catherine.net.entityRegistry ) do
-			local keyType = type( k )
-			
-			if ( ( keyType == "Entity" or keyType == "Player" ) and !IsValid( k ) ) then
-				catherine.net.entityRegistry[ k ] = nil
-			end
-			
-			if ( type( v ) == "table" ) then
-				removeDummyInTable( v )
-			end
-		end
-		
-		if ( send ) then
-			catherine.net.SendAllNetworkRegistries( pl )
-		end
-	end
-	
-	timer.Remove( "Catherine.timer.net.AutoRemoveDummy" )
-	timer.Create( "Catherine.timer.net.AutoRemoveDummy", catherine.configs.netRegistryOptimizeInterval, 0, function( )
-		if ( table.Count( catherine.net.entityRegistry ) == 0 ) then return end
-		
-		catherine.net.RemoveDummy( true )
-	end )
-	
 	function catherine.net.EntityRemoved( ent )
-		catherine.net.entityRegistry[ ent ] = nil
-		netstream.Start( nil, "catherine.net.ClearNetVar", ent:EntIndex( ) )
+		local id = ent:EntIndex( )
+		
+		catherine.net.entityRegistry[ id ] = nil
+		netstream.Start( nil, "catherine.net.ClearNetVar", id )
 	end
 	
 	function catherine.net.PlayerDisconnected( pl )
-		catherine.net.entityRegistry[ pl ] = nil
-		netstream.Start( nil, "catherine.net.ClearNetVar", pl:SteamID( ) )
+		-- 네트워크 레지스트리가 바로 삭제되면 일부 데이터저장에서 문제가 발생합니다.
+		local id = pl:SteamID( )
+		
+		timer.Simple( 2, function( )
+			catherine.net.entityRegistry[ id ] = nil
+			netstream.Start( nil, "catherine.net.ClearNetVar", id )
+		end )
 	end
 	
 	hook.Add( "EntityRemoved", "catherine.net.EntityRemoved", catherine.net.EntityRemoved )

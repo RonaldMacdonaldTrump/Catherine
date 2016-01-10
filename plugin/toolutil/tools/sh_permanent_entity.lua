@@ -41,8 +41,6 @@ function TOOL:LeftClick( trace )
 
 				catherine.util.NotifyLang( pl, !curStatus and "PermanentE_Notify_Add" or "PermanentE_Notify_Remove" )
 				
-				plugin:DataSave( )
-				
 				return true
 			else
 				catherine.util.NotifyLang( pl, "PermanentE_Notify_Cant" )

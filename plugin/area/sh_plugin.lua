@@ -57,7 +57,13 @@ catherine.command.Register( {
 	command = "areaadd",
 	syntax = "[Area Name]",
 	desc = "Add the Area.",
-	canRun = function( pl ) return pl:IsAdmin( ) end,
+	canRun = function( pl )
+		if ( IsValid( pl ) ) then
+			return pl:IsAdmin( )
+		end
+		
+		return false
+	end,
 	runFunc = function( pl, args )
 		if ( args[ 1 ] ) then
 			local areaName = table.concat( args, " " ) or "Basic Area"

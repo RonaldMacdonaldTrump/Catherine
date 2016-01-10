@@ -404,7 +404,7 @@ function GM:PlayerDisconnected( pl )
 	
 	timer.Remove( "Catherine.timer.AutoSalary." .. pl:SteamID( ) )
 	
-	//catherine.chat.Send( pl, "disconnect" )
+	catherine.chat.Send( pl, "disconnect", nil, nil, pl:SteamName( ) )
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. pl:SteamID( ) .. " has disconnected a server." )
 	
 	if ( pl:IsCharacterLoaded( ) ) then
@@ -998,6 +998,7 @@ function GM:InitPostEntity( )
 	hook.Run( "DataLoad" )
 	
 	catherine.door.DataLoad( )
+	catherine.storage.DataLoad( )
 	
 	catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has been loaded." )
 end

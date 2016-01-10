@@ -342,7 +342,6 @@ if ( SERVER ) then
 	end
 	
 	hook.Add( "DataSave", "catherine.door.DataSave", catherine.door.DataSave )
-	hook.Add( "DataLoad", "catherine.door.DataLoad", catherine.door.DataLoad )
 	
 	netstream.Hook( "catherine.door.Work", function( pl, data )
 		catherine.door.Work( pl, data[ 1 ], data[ 2 ], data[ 3 ] )
