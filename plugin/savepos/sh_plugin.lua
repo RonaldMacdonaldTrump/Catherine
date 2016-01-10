@@ -56,7 +56,7 @@ function PLUGIN:PlayerDeath( pl )
 end
 
 function PLUGIN:PostCharacterSave( pl )
-	if ( !pl:IsCharacterLoaded( ) or pl:IsStuck( ) or pl:IsNoclipping( ) ) then return end
+	if ( !pl:IsCharacterLoaded( ) or pl:IsStuck( ) or pl:IsNoclipping( ) or pl:IsRagdolled( ) or !pl:Alive( ) ) then return end
 	
 	catherine.character.SetCharVar( pl, "lastPos", {
 		pos = pl:GetPos( ),
