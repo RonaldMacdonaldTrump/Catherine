@@ -32,7 +32,7 @@ if ( SERVER ) then
 		{ "catData", "SendAllNetworkRegistries" }
 	}
 	
-	function catherine.player.Initialize( pl, isReloading )
+	function catherine.player.Initialize( pl )
 		if ( !IsValid( pl ) ) then return end
 		
 		local function Initializing( )
@@ -44,15 +44,11 @@ if ( SERVER ) then
 				return
 			end
 			
-			netstream.Start( pl, "catherine.loadingPercent", 0.3 )
-			
 			if ( !catherine.database.connected ) then
 				timer.Remove( "Catherine.timer.player.Initialize.Reload" )
 				netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_NoDatabase", catherine.database.errorMsg ) )
 				return
 			end
-			
-			netstream.Start( pl, "catherine.loadingPercent", 0.4 )
 			
 			--[[ Initializing a Catherine ... :> ]]--
 			
@@ -69,11 +65,8 @@ if ( SERVER ) then
 				end
 			end
 			
-			netstream.Start( pl, "catherine.loadingPercent", 0.7 )
-			
 			timer.Remove( "Catherine.timer.player.Initialize.Reload" )
 			
-			netstream.Start( pl, "catherine.loadingPercent", 1 )
 			hook.Run( "PlayerLoadFinished", pl )
 			
 			timer.Simple( 1, function( )
@@ -85,25 +78,14 @@ if ( SERVER ) then
 			end )
 		end
 		
-		if ( isReloading ) then
-			timer.Simple( 1, function( )
-				Initializing( )
-			end )
-		else
-			netstream.Hook( "catherine.player.CheckLocalPlayer.Receive", function( )
-				if ( !IsValid( pl ) ) then return end
-				
-				netstream.Start( pl, "catherine.loadingPercent", 0.2 )
-				
-				timer.Simple( 1, function( )
-					Initializing( )
-				end )
-			end )
+		netstream.Hook( "catherine.player.CheckLocalPlayer.Receive", function( )
+			if ( !IsValid( pl ) ) then return end
 			
-			netstream.Start( pl, "catherine.introStart" )
-			netstream.Start( pl, "catherine.loadingPercent", 0 )
-			netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
-		end
+			Initializing( )
+		end )
+		
+		netstream.Start( pl, "catherine.introStart" )
+		netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
 	end
 	
 	function catherine.player.UpdateLanguageSetting( pl )
@@ -711,10 +693,6 @@ if ( SERVER ) then
 	function META:IsInGod( )
 		return self.CAT_godMode
 	end
-	
-	netstream.Hook( "catherine.player.Initialize.Reload", function( pl )
-		catherine.player.Initialize( pl, true )
-	end )
 else
 	netstream.Hook( "catherine.player.CheckLocalPlayer", function( )
 		timer.Remove( "Catherine.timer.player.CheckLocalPlayer" )

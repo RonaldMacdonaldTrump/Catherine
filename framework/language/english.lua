@@ -564,6 +564,7 @@ LANGUAGE.data = {
 	[ "Basic_Error_NoDatabase" ] = "Catherine has not connected to Database. (CAT_ERR 0x2) : %s",
 	[ "Basic_Error_LibraryLoad" ] = "Failed to load Library. (CAT_ERR 0x3) ( Function : %s )",
 	[ "Basic_Error_LoadTimeoutWait" ] = "Failed to at loading the Catherine, Reloading the Catherine ... (CAT_ERR 0x4) ( %s attempts. )",
+	[ "Basic_Info_Loading" ] = "Loading for Perfect Catherine ...",
 	[ "Basic_Error_Reloading" ] = "Reloading the Catherine ...",
 	[ "Basic_Framework_Author" ] = "Development and design by %s.",
 	[ "Basic_Notify_BunnyHop" ] = "Do not Bunny-hop!",

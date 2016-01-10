@@ -19,9 +19,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.intro = catherine.intro or {
 	status = true,
 	loading = true,
-	loadingPer = 0,
-	loadingW = 0,
-	errorMessage = nil
+	errorMessage = nil,
+	loadingR = 0
 }
 catherine.deathColAlpha = catherine.deathColAlpha or 0
 catherine.screenResolution = catherine.screenResolution or { w = ScrW( ), h = ScrH( ) }
@@ -56,7 +55,7 @@ function GM:HUDDrawScoreBoard( )
 	local data = catherine.intro
 	
 	if ( data.loading ) then
-		data.loadingW = Lerp( 0.03, data.loadingW, ( w * 0.4 ) * data.loadingPer )
+		data.loadingR = data.loadingR + 3
 	else
 		data.status = false
 		
@@ -80,10 +79,11 @@ function GM:HUDDrawScoreBoard( )
 	surface.DrawTexturedRect( w / 2 - symbolW / 2, h * 0.4 - symbolH / 2, symbolW, symbolH )
 	
 	if ( data.errorMessage ) then
-		draw.SimpleText( data.errorMessage, "catherine_normal20", w / 2, h * 0.7, Color( 50, 50, 50, 255 ), 1, 1 )
+		draw.RoundedBox( 0, 0, h * 0.7 - 30 / 2, w, 30, Color( 90, 90, 90, 255 ) )
+		draw.SimpleText( data.errorMessage, "catherine_normal20", w / 2, h * 0.7, Color( 255, 255, 255, 255 ), 1, 1 )
 	else
-		draw.RoundedBox( 0, w * 0.3, h * 0.7, w * 0.4, 5, Color( 168, 168, 168, 255 ) )
-		draw.RoundedBox( 0, w * 0.3, h * 0.7, data.loadingW, 5, Color( 50, 50, 50, 255 ) )
+		draw.RoundedBox( 0, 0, h * 0.7 - 30 / 2, w, 30, Color( 90, 90, 90, 255 ) )
+		draw.SimpleText( LANG( "Basic_Info_Loading" ), "catherine_normal20", w / 2, h * 0.7, Color( 255, 255, 255, 255 ), 1, 1 )
 	end
 end
 
@@ -764,10 +764,6 @@ end )
 
 netstream.Hook( "catherine.loadingFinished", function( )
 	catherine.intro.loading = false
-end )
-
-netstream.Hook( "catherine.loadingPercent", function( data )
-	catherine.intro.loadingPer = data
 end )
 
 netstream.Hook( "catherine.loadingError", function( data )
