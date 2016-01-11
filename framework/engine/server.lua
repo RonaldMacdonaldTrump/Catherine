@@ -223,17 +223,8 @@ function GM:PlayerSpawn( pl )
 	if ( IsValid( pl.CAT_deathBody ) ) then
 		pl:SetNetVar( "ragdollIndex", nil )
 		
-		if ( catherine.configs.fadeOutDeathBody ) then
-			catherine.entity.StartFadeOut( pl.CAT_deathBody, 20, function( ent )
-				if ( IsValid( pl.CAT_deathBody ) ) then
-					pl.CAT_deathBody:Remove( )
-					pl.CAT_deathBody = nil
-				end
-			end )
-		else
-			pl.CAT_deathBody:Remove( )
-			pl.CAT_deathBody = nil
-		end
+		pl.CAT_deathBody:Remove( )
+		pl.CAT_deathBody = nil
 	end
 	
 	pl.CAT_deathSoundPlayed = nil
@@ -831,6 +822,18 @@ function GM:DoPlayerDeath( pl )
 	pl:SetNetVar( "isRagdolled", nil )
 end
 
+function GM:PlayerDeathThink( pl )
+	-- 가끔 플레이어가 자동으로 스폰되지 않는 경우를 방지.
+	if ( pl:IsCharacterLoaded( ) and !pl.CAT_isSilentDeath ) then
+		self:DoPlayerDeath( pl )
+		self:PlayerDeath( pl )
+		
+		pl.CAT_isSilentDeath = true
+		
+		return false
+	end
+end
+
 function GM:PlayerDeath( pl )
 	pl.CAT_healthRecover = nil
 	
@@ -846,20 +849,12 @@ function GM:PlayerDeath( pl )
 	catherine.util.ProgressBar( pl, false )
 	catherine.util.ProgressBar( pl, LANG( pl, "Player_Message_Dead_01" ), respawnTime, function( )
 		if ( IsValid( pl.CAT_ragdoll ) ) then
-			if ( catherine.configs.fadeOutDeathBody ) then
-				catherine.entity.StartFadeOut( pl.CAT_ragdoll, 20, function( ent )
-					if ( IsValid( pl.CAT_ragdoll ) ) then
-						pl.CAT_ragdoll:Remove( )
-						pl.CAT_ragdoll = nil
-					end
-				end )
-			else
-				pl.CAT_ragdoll:Remove( )
-				pl.CAT_ragdoll = nil
-			end
+			pl.CAT_ragdoll:Remove( )
+			pl.CAT_ragdoll = nil
 		end
 		
 		pl.CAT_isDeadFunc = nil
+		pl.CAT_isSilentDeath = nil
 		
 		pl:Spawn( )
 	end )

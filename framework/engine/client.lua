@@ -42,6 +42,7 @@ end
 
 function GM:Initialize( )
 	CAT_CONVAR_ADMIN_ESP = CreateClientConVar( "cat_convar_adminesp", "1", true, true )
+	CAT_CONVAR_ITEM_ESP = CreateClientConVar( "cat_convar_itemesp", "0", true, true )
 	CAT_CONVAR_ALWAYS_ADMIN_ESP = CreateClientConVar( "cat_convar_alwaysadminesp", "0", true, true )
 	CAT_CONVAR_HUD = CreateClientConVar( "cat_convar_hud", "1", true, true )
 	CAT_CONVAR_BAR = CreateClientConVar( "cat_convar_bar", "1", true, true )
@@ -128,6 +129,23 @@ function GM:HUDPaintBackground( )
 
 		hook.Run( "AdminESPDrawed", pl, v, pos.x, pos.y )
 	end
+	
+	if ( GetConVarString( "cat_convar_itemesp" ) == "1" ) then
+		if ( !catherine.itemESPName ) then
+			catherine.itemESPName = LANG( "Basic_ItemESP_Name" )
+		end
+		
+		for k, v in pairs( ents.FindByClass( "cat_item" ) ) do
+			if ( !IsValid( v ) ) then continue end
+			local pos = toscreen( v:LocalToWorld( v:OBBCenter( ) ) )
+			
+			draw.SimpleText( catherine.itemESPName .. " - " .. ( v:GetItemUniqueID( ) or "Unknown" ) .. "", "catherine_normal15", pos.x, pos.y, Color( 0, 255, 255, 255 ), 1, 1 )
+		end
+	end
+end
+
+function GM:LanguageChanged( )
+	catherine.itemESPName = LANG( "Basic_ItemESP_Name" )
 end
 
 function GM:SpawnMenuOpen( )

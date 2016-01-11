@@ -79,7 +79,6 @@ if ( SERVER ) then
 	catherine.configs.netRegistryOptimizeInterval = 350
 	catherine.configs.characterSaveInterval = 300
 	catherine.configs.dataSaveInterval = 300
-	catherine.configs.fadeOutDeathBody = true --[[ Enabled the Fade out the Death body. ]]--
 	catherine.configs.voiceAllow = false --[[ Allow a Voice chat. ]]--
 	catherine.configs.voice3D = true --[[ Enabled the Voice 3D system. ]]--
 	catherine.configs.spawnTime = 60 --[[ Setting a Spawn time. ]]--

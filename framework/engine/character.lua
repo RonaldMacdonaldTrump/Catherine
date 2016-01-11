@@ -312,15 +312,12 @@ if ( SERVER ) then
 	end
 	
 	function catherine.character.Use( pl, id )
-		local steamName = pl:SteamName( )
-		local charName = pl:Name( )
-		local prevName = steamName == charName and "No Character" or charName
 		local success, reason = catherine.character.New( pl, id )
 		
 		if ( success ) then
 			netstream.Start( pl, "catherine.character.UseResult", true )
 			
-			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, steamName .. ", " .. getSteamID( pl ) .. " has loaded a '" .. charName .. "' character. [Previous Character Name : " .. prevName .. "]", true )
+			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. getSteamID( pl ) .. " has loaded a '" .. pl:Name( ) .. "' character.", true )
 		else
 			netstream.Start( pl, "catherine.character.UseResult", reason )
 		end

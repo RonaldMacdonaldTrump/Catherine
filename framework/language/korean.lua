@@ -525,6 +525,9 @@ LANGUAGE.data = {
 	[ "Option_Str_HINT_Name" ] = "RP 힌트 표시",
 	[ "Option_Str_HINT_Desc" ] = "RP 에 도움이 되는 힌트를 표시합니다.",
 	
+	[ "Option_Str_ITEM_ESP_Name" ] = "아이템 ESP 표시",
+	[ "Option_Str_ITEM_ESP_Desc" ] = "노클립을 했을 때 아이템의 정보를 뜨게 합니다.",
+	
 	// Chat
 	[ "Chat_Str_IC" ] = "%s 님의 말 %s",
 	[ "Chat_Str_Yell" ] = "%s 님의 소리치기 %s",
@@ -567,6 +570,7 @@ LANGUAGE.data = {
 	[ "Basic_Framework_Author" ] = "프레임워크 개발 및 디자인 - %s.",
 	[ "Basic_Notify_BunnyHop" ] = "버니합을 하지 마십시오!",
 	[ "Basic_Notify_RestoreDatabaseKick" ] = "죄송합니다, 서버 데이터베이스 복구 작업으로 인해 강퇴 처리되셨습니다.",
+	[ "Basic_ItemESP_Name" ] = "아이템",
 	
 	// Command
 	[ "Command_ChangeLevel_Fin" ] = "%s초 후 맵이 %s 로 바뀝니다.",
