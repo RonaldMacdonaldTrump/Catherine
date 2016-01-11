@@ -40,6 +40,32 @@ function catherine.data.Get( key, default, ignoreMap, isGlobal, isBuffer )
 	return isBuffer and catherine.data.buffer[ key ] or util.JSONToTable( data )
 end
 
+function catherine.data.AutoBackup( )
+	MsgC( Color( 255, 255, 0 ), "[CAT DATA] Starting Auto data backup ...\n" )
+	
+	local time = os.date( "*t" )
+	local today = time.year .. "-" .. time.month .. "-" .. time.day
+	
+	file.CreateDir( "catherine/backup" )
+	file.CreateDir( "catherine/backup/" .. today )
+	
+	local schemaDataFiles, schemaDataFolders = file.Find( "catherine/" .. catherine.schema.GetUniqueID( ) .. "/*", "DATA" )
+	
+	for k, v in pairs( schemaDataFolders ) do
+		local pluginDataFiles, pluginDataFolders = file.Find( "catherine/" .. catherine.schema.GetUniqueID( ) .. "/" .. v .. "/*", "DATA" )
+		
+		for k1, v1 in pairs( pluginDataFolders ) do
+			local pluginDataFilesData = file.Read( "catherine/" .. catherine.schema.GetUniqueID( ) .. "/" .. v .. "/" .. v1 .. "/data.txt", "DATA" )
+			
+			file.CreateDir( "catherine/backup/" .. today .. "/" .. v )
+			file.CreateDir( "catherine/backup/" .. today .. "/" .. v .. "/" .. v1 )
+			file.Write( "catherine/backup/" .. today .. "/" .. v .. "/" .. v1 .. "/databackup.txt", pluginDataFilesData )
+		end
+	end
+	
+	MsgC( Color( 0, 255, 0 ), "[CAT DATA] Finished Auto data backup.\n" )
+end
+
 timer.Create( "Catherine.timer.data.AutoSaveData", 1, 0, function( )
 	if ( catherine.data.saveTick <= 0 ) then
 		hook.Run( "DataSave" )
@@ -47,6 +73,11 @@ timer.Create( "Catherine.timer.data.AutoSaveData", 1, 0, function( )
 		catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has been saved." )
 		
 		catherine.data.saveTick = catherine.configs.dataSaveInterval
+		
+		timer.Simple( 10, function( )
+			catherine.data.AutoBackup( )
+			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Catherine (Framework, Schema, Plugin) data has been backup." )
+		end )
 	else
 		catherine.data.saveTick = catherine.data.saveTick - 1
 	end

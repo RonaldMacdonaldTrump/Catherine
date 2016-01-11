@@ -20,7 +20,7 @@ local PLUGIN = PLUGIN
 PLUGIN.slotData = PLUGIN.slotData or { }
 PLUGIN.currSlot = PLUGIN.currSlot or 1
 PLUGIN.nextBind = PLUGIN.nextBind or 0
-PLUGIN.canSelect = PLUGIN.canSelect or true
+PLUGIN.canSelect = false
 PLUGIN.maxX = PLUGIN.maxX or 0
 
 local catherine_util_stuffLanguage = catherine.util.StuffLanguage

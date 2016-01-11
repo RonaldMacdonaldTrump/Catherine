@@ -359,6 +359,8 @@ LANGUAGE.data = {
 	
 	// Storage
 	[ "Storage_UI_YourInv" ] = "당신의 인벤토리",
+	[ "Storage_UI_StorageCash" ] = "이 저장소는 %s 가 저장되어 있습니다.",
+	[ "Storage_UI_PlayerCash" ] = "당신은 %s 를(을) 가지고 있습니다.",
 	[ "Storage_UI_StorageNoHaveItem" ] = "이 저장소는 비어있습니다.",
 	[ "Storage_UI_PlayerNoHaveItem" ] = "당신은 아무것도 가지고 있지 않습니다.",
 	[ "Storage_Notify_HasNotSpace" ] = "이 저장소에는 공간이 없습니다!",
@@ -396,10 +398,12 @@ LANGUAGE.data = {
 	
 	[ "Item_Category_Wallet" ] = "지갑",
 	[ "Item_Name_Wallet" ] = "지갑",
-	[ "Item_Desc_Wallet" ] = "당신의 지갑 입니다.",
+	[ "Item_Desc_Wallet" ] = "돈이 저장되어 있습니다.",
 	[ "Item_Desc_World_Wallet" ] = "%s 이(가) 쌓여있습니다.",
 	[ "Item_FuncStr01_Wallet" ] = "%s 가지기",
 	[ "Item_FuncStr02_Wallet" ] = "%s 떨어트리기",
+	[ "Item_StoreQ_Wallet" ] = "저장할 %s 의 액수를 입력하세요.",
+	[ "Item_GetQ_Wallet" ] = "가질 %s 의 액수를 입력하세요.",
 	[ "Item_DropQ_Wallet" ] = "떨어트릴 %s 의 액수를 입력하세요.",
 	
 	[ "Item_Notify01_ZT" ] = "이 사람은 이미 묶여있습니다!",

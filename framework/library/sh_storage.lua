@@ -20,6 +20,8 @@ catherine.storage = catherine.storage or { }
 CAT_STORAGE_ACTION_ADD = 1
 CAT_STORAGE_ACTION_REMOVE = 2
 CAT_STORAGE_ACTION_SETPASSWORD = 3
+CAT_STORAGE_ACTION_SAVECASH = 4
+CAT_STORAGE_ACTION_GETCASH = 5
 
 if ( SERVER ) then
 	catherine.storage.lists = { }
@@ -54,7 +56,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.storage.Work( pl, ent, workID, data )
-		ent = Entity( ent )
+		ent = type( ent ) == "number" and Entity( ent ) or ent
 		
 		if ( !IsValid( pl ) or !IsValid( ent ) or !workID or !data ) then return end
 		
@@ -75,8 +77,26 @@ if ( SERVER ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_DontHave" )
 				return
 			end
-
+			
 			if ( itemTable.isPersistent ) then
+				if ( uniqueID == "wallet" ) then
+					catherine.util.StringReceiver( pl, "Storage_WalletAmountQ", LANG( pl, "Item_StoreQ_Wallet", catherine.cash.GetOnlySingular( ) ), catherine.cash.Get( pl ), function( _, amount )
+						amount = tonumber( amount )
+						
+						if ( amount ) then
+							if ( catherine.cash.Has( pl, amount ) ) then
+								catherine.storage.Work( pl, ent, CAT_STORAGE_ACTION_SAVECASH, amount )
+							else
+								catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+							end
+						else
+							catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+						end
+					end )
+					
+					return
+				end
+				
 				catherine.util.NotifyLang( pl, "Inventory_Notify_isPersistent" )
 				return
 			end
@@ -125,7 +145,28 @@ if ( SERVER ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 				return
 			end
-
+			
+			if ( itemTable.isPersistent ) then
+				if ( data == "wallet" ) then
+					local haveCash = inventory[ data ].itemData.amount
+					
+					catherine.util.StringReceiver( pl, "Storage_WalletAmountQ", LANG( pl, "Item_GetQ_Wallet", catherine.cash.GetOnlySingular( ) ), haveCash or 0, function( _, amount )
+						amount = tonumber( amount )
+						
+						if ( amount ) then
+							catherine.storage.Work( pl, ent, CAT_STORAGE_ACTION_GETCASH, amount )
+						else
+							catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+						end
+					end )
+					
+					return
+				end
+				
+				catherine.util.NotifyLang( pl, "Inventory_Notify_isPersistent" )
+				return
+			end
+			
 			if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 				return
@@ -156,6 +197,55 @@ if ( SERVER ) then
 			hook.Run( "PostItemStorageTake", pl, ent, itemTable, data )
 		elseif ( workID == CAT_STORAGE_ACTION_SETPASSWORD ) then
 			ent.password = data != "" and data or nil
+		elseif ( workID == CAT_STORAGE_ACTION_SAVECASH ) then
+			if ( type( data ) == "number" ) then
+				if ( catherine.cash.Has( pl, data ) ) then
+					local resultAmount = catherine.storage.GetCash( ent ) + data
+					
+					catherine.cash.Take( pl, data )
+					catherine.storage.SetCash( ent, resultAmount )
+					
+					local inventory = catherine.storage.GetInv( ent )
+					
+					inventory[ "wallet" ] = {
+						uniqueID = "wallet",
+						itemCount = 1,
+						itemData = {
+							amount = resultAmount
+						}
+					}
+					
+					catherine.storage.SetInv( ent, inventory )
+				else
+					catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+				end
+			end
+		elseif ( workID == CAT_STORAGE_ACTION_GETCASH ) then
+			if ( type( data ) == "number" ) then
+				local cash = catherine.storage.GetCash( ent )
+				
+				if ( cash >= data and data > 0 ) then
+					local inventory = catherine.storage.GetInv( ent )
+					local resultAmount = math.max( cash - data, 0 )
+					
+					if ( inventory[ "wallet" ] ) then
+						inventory[ "wallet" ] = {
+							uniqueID = "wallet",
+							itemCount = 1,
+							itemData = {
+								amount = resultAmount
+							}
+						}
+						
+						catherine.storage.SetInv( ent, inventory )
+					end
+					
+					catherine.cash.Give( pl, data )
+					catherine.storage.SetCash( ent, resultAmount )
+				else
+					catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+				end
+			end
 		end
 		
 		netstream.Start( pl, "catherine.storage.RefreshPanel", ent:EntIndex( ) )
@@ -178,10 +268,12 @@ if ( SERVER ) then
 		ent.isStorage = true
 		ent.maxWeight = data.maxWeight or originalData.maxWeight
 		ent.password = data.password
+		ent.cash = data.cash or 0
 
 		ent:SetNetVar( "name", ent.name )
 		ent:SetNetVar( "desc", ent.desc )
 		ent:SetNetVar( "inv", ent.inv )
+		ent:SetNetVar( "cash", ent.cash )
 		ent:SetNetVar( "maxWeight", ent.maxWeight )
 		ent:SetNetVar( "isStorage", true )
 
@@ -227,8 +319,17 @@ if ( SERVER ) then
 		ent:SetNetVar( "inv", data )
 	end
 	
+	function catherine.storage.SetCash( ent, amount )
+		ent.cash = amount
+		ent:SetNetVar( "cash", amount )
+	end
+	
 	function catherine.storage.GetInv( ent )
 		return table.Copy( ent.inv or { } )
+	end
+	
+	function catherine.storage.GetCash( ent )
+		return ent.cash or 0
 	end
 	
 	function catherine.storage.GetWeights( ent, customAdd )
@@ -371,6 +472,10 @@ else
 		return table.Copy( ent:GetNetVar( "inv", { } ) )
 	end
 	
+	function catherine.storage.GetCash( ent )
+		return ent:GetNetVar( "cash", 0 )
+	end
+	
 	function catherine.storage.GetWeights( ent, customAdd )
 		local inventory = catherine.storage.GetInv( ent )
 		local weight = 0
@@ -391,9 +496,9 @@ else
 		
 		return inventory[ uniqueID ] and inventory[ uniqueID ].itemCount or 0
 	end
-
+	
 	local toscreen = FindMetaTable( "Vector" ).ToScreen
-
+	
 	function catherine.storage.DrawEntityTargetID( pl, ent, a )
 		if ( !ent:GetNetVar( "isStorage", false ) ) then return end
 		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )

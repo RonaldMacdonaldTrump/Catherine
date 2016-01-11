@@ -42,6 +42,7 @@ ITEM.func.take = {
 		catherine.cash.Give( pl, itemData.amount )
 		catherine.util.NotifyLang( pl, "Cash_Notify_Get", catherine.cash.GetCompleteName( itemData.amount ) )
 		
+		ent:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )
 		ent:Remove( )
 	end,
 	preSetText = function( pl, itemTable )
@@ -52,7 +53,7 @@ ITEM.func.drop = {
 	text = "DROP",
 	icon = "icon16/money_delete.png",
 	canShowIsMenu = true,
-	func = function( pl, itemTable, isMenu )
+	func = function( pl, itemTable, ent )
 		if ( pl:IsTied( ) ) then
 			catherine.util.NotifyLang( pl, "Item_Notify03_ZT" )
 			return
@@ -73,6 +74,7 @@ ITEM.func.drop = {
 			
 			catherine.cash.Take( pl, val )
 			catherine.cash.Spawn( catherine.util.GetItemDropPos( pl ), nil, val )
+			pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav", 70 )
 			
 			catherine.util.NotifyLang( pl, "Cash_Notify_Drop", catherine.cash.GetCompleteName( val ) )
 		end )

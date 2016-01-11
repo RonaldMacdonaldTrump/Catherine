@@ -87,6 +87,8 @@ catherine.option.Register( "CONVAR_LANGUAGE", "cat_convar_language", "^Option_St
 	
 	if ( languageTable ) then
 		lang.curVal = languageTable.name
+	else
+		lang.curVal = "Unknown"
 	end
 	
 	for k, v in pairs( catherine.language.GetAll( ) ) do

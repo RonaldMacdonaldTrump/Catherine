@@ -84,7 +84,7 @@ local credit_htmlValue = [[
 local LANGUAGE = catherine.language.New( "example" ) --[[ Create language object( Language unique ID ) ]]--
 LANGUAGE.name = "Example Language" --[[ Setting language name. ]]--
 LANGUAGE.data = {
-	// Class
+		// Class
 	[ "Class_UI_Title" ] = "Class",
 	[ "Class_UI_LimitStr" ] = "%s / %s",
 	[ "Class_UI_SalaryStr" ] = "%s per hour",
@@ -359,6 +359,8 @@ LANGUAGE.data = {
 	
 	// Storage
 	[ "Storage_UI_YourInv" ] = "Your Inventory",
+	[ "Storage_UI_StorageCash" ] = "This storage have a %s.",
+	[ "Storage_UI_PlayerCash" ] = "You have a %s.",
 	[ "Storage_UI_StorageNoHaveItem" ] = "This storage is empty.",
 	[ "Storage_UI_PlayerNoHaveItem" ] = "You do not have any items.",
 	[ "Storage_Notify_HasNotSpace" ] = "This storage does not have enough inventory space!",
@@ -394,11 +396,13 @@ LANGUAGE.data = {
 	
 	[ "Item_Category_Wallet" ] = "Wallet",
 	[ "Item_Name_Wallet" ] = "Wallet",
-	[ "Item_Desc_Wallet" ] = "It is your wallet.",
+	[ "Item_Desc_Wallet" ] = "Cash is stored.",
 	[ "Item_Desc_World_Wallet" ] = "%s in a small stack.",
 	[ "Item_FuncStr01_Wallet" ] = "Take %s",
 	[ "Item_FuncStr02_Wallet" ] = "Drop %s",
-	[ "Item_DropQ_Wallet" ] = "How much money would you like to drop?",
+	[ "Item_StoreQ_Wallet" ] = "How much %s world you like to store?",
+	[ "Item_GetQ_Wallet" ] = "How much %s world you like to get?",
+	[ "Item_DropQ_Wallet" ] = "How much %s would you like to drop?",
 	
 	[ "Item_Notify01_ZT" ] = "This player is already tied!",
 	[ "Item_Notify02_ZT" ] = "You do not have Zip Tie!",

@@ -34,8 +34,8 @@ function PANEL:Init( )
 	self:MoveTo( ScrW( ) / 2 - self.w / 2, self.y, 0.2, 0 )
 	
 	self.storageLists = vgui.Create( "DPanelList", self )
-	self.storageLists:SetPos( 10, 35 )
-	self.storageLists:SetSize( self.w / 2 - 20, self.h - 85 )
+	self.storageLists:SetPos( 10, 60 )
+	self.storageLists:SetSize( self.w / 2 - 20, self.h - 110 )
 	self.storageLists:SetSpacing( 5 )
 	self.storageLists:EnableHorizontal( false )
 	self.storageLists:EnableVerticalScrollbar( true )	
@@ -48,8 +48,8 @@ function PANEL:Init( )
 	end
 	
 	self.playerLists = vgui.Create( "DPanelList", self )
-	self.playerLists:SetPos( self.w / 2, 35 )
-	self.playerLists:SetSize( self.w / 2 - 10, self.h - 85 )
+	self.playerLists:SetPos( self.w / 2, 60 )
+	self.playerLists:SetSize( self.w / 2 - 10, self.h - 110 )
 	self.playerLists:SetSpacing( 5 )
 	self.playerLists:EnableHorizontal( false )
 	self.playerLists:EnableVerticalScrollbar( true )	
@@ -77,7 +77,7 @@ function PANEL:Init( )
 	self.close:SetPos( self.w - 30, 0 )
 	self.close:SetSize( 30, 25 )
 	self.close:SetStr( "X" )
-	self.close:SetStrFont( "catherine_normal35" )
+	self.close:SetStrFont( "catherine_outline35" )
 	self.close:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.close.Click = function( )
@@ -92,10 +92,12 @@ function PANEL:Paint( w, h )
 		local name = self.ent:GetNetVar( "name" )
 		
 		if ( name ) then
-			draw.SimpleText( name, "catherine_normal20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+			draw.SimpleText( name, "catherine_outline20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+			draw.SimpleText( LANG( "Storage_UI_StorageCash", catherine.cash.GetCompleteName( catherine.storage.GetCash( self.ent ) ) ), "catherine_normal20", 10, 45, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
 		end
 		
-		draw.SimpleText( LANG( "Storage_UI_YourInv" ), "catherine_normal20", w / 2, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		draw.SimpleText( LANG( "Storage_UI_YourInv" ), "catherine_outline20", w / 2, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		draw.SimpleText( LANG( "Storage_UI_PlayerCash", catherine.cash.GetCompleteName( catherine.cash.Get( self.player ) ) ), "catherine_normal20", w / 2, 45, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
 	end
 end
 
@@ -178,7 +180,7 @@ function PANEL:BuildStorage( )
 		for k1, v1 in SortedPairsByMemberValue( v, "uniqueID" ) do
 			local w, h = 54, 54
 			local itemTable = catherine.item.FindByID( k1 )
-			local itemData = pl:GetInvItemDatas( k1 )
+			local itemData = v1.itemData
 			local overrideItemDesc = itemTable.GetOverrideItemDesc and itemTable:GetOverrideItemDesc( pl, itemData, CAT_ITEM_OVERRIDE_DESC_TYPE_STORAGE ) or nil
 			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemData, false ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
@@ -298,8 +300,8 @@ function PANEL:BuildStorage( )
 		self.playerLists:AddItem( form )
 	end
 	
-	storageLists_scrollBar:SetScroll( storageLists_scroll, 0, 0, 0 )
-	playerLists_scrollBar:SetScroll( playerLists_scroll, 0, 0, 0 )
+	storageLists_scrollBar:AnimateTo( storageLists_scroll, 0.3, 0, 0.1 )
+	playerLists_scrollBar:AnimateTo( playerLists_scroll, 0.3, 0, 0.1 )
 end
 
 function PANEL:Close( )

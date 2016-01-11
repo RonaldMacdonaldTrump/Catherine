@@ -54,7 +54,7 @@ end
 
 function PANEL:MenuPaint( w, h )
 	if ( self.globalBan ) then
-		draw.SimpleText( LANG( "GlobalBan_UI_Users", #self.globalBan ), "catherine_normal20", w, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
+		draw.SimpleText( LANG( "GlobalBan_UI_Users", #self.globalBan ), "catherine_outline20", w, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
 	end
 end
 

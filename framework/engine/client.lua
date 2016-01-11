@@ -80,11 +80,9 @@ function GM:HUDDrawScoreBoard( )
 	surface.DrawTexturedRect( w / 2 - symbolW / 2, h * 0.4 - symbolH / 2, symbolW, symbolH )
 	
 	if ( data.errorMessage ) then
-		draw.RoundedBox( 0, 0, h * 0.7 - 30 / 2, w, 30, Color( 90, 90, 90, 255 ) )
-		draw.SimpleText( data.errorMessage, "catherine_normal20", w / 2, h * 0.7, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.SimpleText( data.errorMessage, "catherine_normal20", w / 2, h * 0.7, Color( 50, 50, 50, 255 ), 1, 1 )
 	else
-		draw.RoundedBox( 0, 0, h * 0.7 - 30 / 2, w, 30, Color( 90, 90, 90, 255 ) )
-		draw.SimpleText( LANG( "Basic_Info_Loading" ), "catherine_normal20", w / 2, h * 0.7, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.SimpleText( LANG( "Basic_Info_Loading" ), "catherine_normal20", w / 2, h * 0.7, Color( 50, 50, 50, 255 ), 1, 1 )
 	end
 end
 
@@ -125,7 +123,7 @@ function GM:HUDPaintBackground( )
 		if ( pl == v ) then continue end
 		local pos = toscreen( v:LocalToWorld( v:OBBCenter( ) + Vector( 0, 0, 50 ) ) )
 
-		draw.SimpleText( v:Name( ), "catherine_normal15", pos.x, pos.y, team.GetColor( v:Team( ) ), 1, 1 )
+		draw.SimpleText( v:Name( ), "catherine_outline15", pos.x, pos.y, team.GetColor( v:Team( ) ), 1, 1 )
 
 		hook.Run( "AdminESPDrawed", pl, v, pos.x, pos.y )
 	end
@@ -139,7 +137,7 @@ function GM:HUDPaintBackground( )
 			if ( !IsValid( v ) ) then continue end
 			local pos = toscreen( v:LocalToWorld( v:OBBCenter( ) ) )
 			
-			draw.SimpleText( catherine.itemESPName .. " - " .. ( v:GetItemUniqueID( ) or "Unknown" ) .. "", "catherine_normal15", pos.x, pos.y, Color( 0, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( catherine.itemESPName .. " - " .. ( v:GetItemUniqueID( ) or "Unknown" ) .. "", "catherine_outline15", pos.x, pos.y, Color( 0, 255, 255, 255 ), 1, 1 )
 		end
 	end
 end
