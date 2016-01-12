@@ -27,8 +27,8 @@ GM.Description = "A neat and beautiful role-play framework for Garry's Mod."
 GM.Author = "L7D"
 GM.Website = "https://github.com/L7D/Catherine"
 GM.Email = "smhjyh2009@gmail.com"
-GM.Version = "0.9"
-GM.Build = "DEV"
+GM.Version = "0.95"
+GM.Build = "CAT"
 
 catherine.FolderName = GM.FolderName
 
@@ -87,7 +87,7 @@ function catherine.Boot( )
 		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are loaded at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
 		catherine.isInitialized = true
 	else
-		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are refreshed at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
+		MsgC( Color( 0, 255, 255 ), "[CAT] Catherine framework are refreshed at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
 	end
 	
 	if ( SERVER and !catherine.database.connected ) then

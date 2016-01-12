@@ -43,7 +43,7 @@ function PLUGIN:Initialize( )
 	CAT_CONVAR_FPS = CreateClientConVar( "cat_convar_showfps", "0", true, true )
 end
 
-function PLUGIN:HUDPaint( )
+function PLUGIN:HUDDrawScoreBoard( )
 	if ( GetConVarString( "cat_convar_showfps" ) == "0" ) then return end
 	local curFPS = math.Round( 1 / FrameTime( ) )
 	local minFPS = self.minFPS or 60
@@ -53,7 +53,7 @@ function PLUGIN:HUDPaint( )
 		self.barH = 1
 	end
 	
-	self.barH = math.Approach( self.barH, ( curFPS / maxFPS ) * 100, 0.5 )
+	self.barH = math.Approach( self.barH, ( curFPS / maxFPS ) * 100, 1 )
 	
 	local barH = self.barH
 	
