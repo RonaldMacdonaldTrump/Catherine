@@ -51,7 +51,7 @@ catherine.animation.RegisterDataTable( "citizen_male", {
 	},
 	pistol = {
 		idle = { ACT_IDLE, ACT_IDLE_ANGRY_SMG1 },
-		idle_crouch = { ACT_COVER_LOW, ACT_COVER_LOW },
+		idle_crouch = { ACT_COVER_LOW, ACT_RANGE_AIM_SMG1_LOW },
 		walk = { ACT_WALK, ACT_WALK_AIM_RIFLE_STIMULATED },
 		walk_crouch = { ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE },
 		run = { ACT_RUN, ACT_RUN_AIM_RIFLE_STIMULATED },
@@ -60,7 +60,7 @@ catherine.animation.RegisterDataTable( "citizen_male", {
 	},
 	smg = {
 		idle = { ACT_IDLE_SMG1_RELAXED, ACT_IDLE_ANGRY_SMG1 },
-		idle_crouch = { ACT_COVER_LOW, ACT_COVER_LOW },
+		idle_crouch = { ACT_COVER_LOW, ACT_RANGE_AIM_SMG1_LOW },
 		walk = { ACT_WALK_RIFLE_RELAXED, ACT_WALK_AIM_RIFLE_STIMULATED },
 		walk_crouch = { ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE },
 		run = { ACT_RUN_RIFLE_RELAXED, ACT_RUN_AIM_RIFLE_STIMULATED },
@@ -69,7 +69,7 @@ catherine.animation.RegisterDataTable( "citizen_male", {
 	},
 	shotgun = {
 		idle = { ACT_IDLE_SHOTGUN_RELAXED, ACT_IDLE_ANGRY_SMG1 },
-		idle_crouch = { ACT_COVER_LOW, ACT_COVER_LOW },
+		idle_crouch = { ACT_COVER_LOW, ACT_RANGE_AIM_SMG1_LOW },
 		walk = { ACT_WALK_RIFLE_RELAXED, ACT_WALK_AIM_RIFLE_STIMULATED },
 		walk_crouch = { ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE },
 		run = { ACT_RUN_RIFLE_RELAXED, ACT_RUN_AIM_RIFLE_STIMULATED },
@@ -110,7 +110,7 @@ catherine.animation.RegisterDataTable( "citizen_female", {
 	},
 	pistol = {
 		idle = { ACT_IDLE_PISTOL, ACT_IDLE_ANGRY_PISTOL },
-		idle_crouch = { ACT_COVER_LOW, ACT_COVER_LOW },
+		idle_crouch = { ACT_COVER_LOW, ACT_RANGE_AIM_SMG1_LOW },
 		walk = { ACT_WALK, ACT_WALK_AIM_PISTOL },
 		walk_crouch = { ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE },
 		run = { ACT_RUN, ACT_RUN_AIM_PISTOL },
@@ -119,7 +119,7 @@ catherine.animation.RegisterDataTable( "citizen_female", {
 	},
 	smg = {
 		idle = { ACT_IDLE_SMG1_RELAXED, ACT_IDLE_ANGRY_SMG1 },
-		idle_crouch = { ACT_COVER_LOW, ACT_COVER_LOW },
+		idle_crouch = { ACT_COVER_LOW, ACT_RANGE_AIM_SMG1_LOW },
 		walk = { ACT_WALK_RIFLE_RELAXED, ACT_WALK_AIM_RIFLE_STIMULATED },
 		walk_crouch = { ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE },
 		run = { ACT_RUN_RIFLE_RELAXED, ACT_RUN_AIM_RIFLE_STIMULATED },
@@ -128,7 +128,7 @@ catherine.animation.RegisterDataTable( "citizen_female", {
 	},
 	shotgun = {
 		idle = { ACT_IDLE_SHOTGUN_RELAXED, ACT_IDLE_ANGRY_SMG1 },
-		idle_crouch = { ACT_COVER_LOW, ACT_COVER_LOW },
+		idle_crouch = { ACT_COVER_LOW, ACT_RANGE_AIM_SMG1_LOW },
 		walk = { ACT_WALK_RIFLE_RELAXED, ACT_WALK_AIM_RIFLE_STIMULATED },
 		walk_crouch = { ACT_WALK_CROUCH, ACT_WALK_CROUCH_AIM_RIFLE },
 		run = { ACT_RUN_RIFLE_RELAXED, ACT_RUN_AIM_RIFLE_STIMULATED },

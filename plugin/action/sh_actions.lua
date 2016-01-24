@@ -51,15 +51,11 @@ PLUGIN.actions = {
 		actions = {
 			citizen_male = {
 				seq = "sit_ground",
-				noAutoExit = true,
-				doStartSeq = "Idle_to_Sit_Ground",
-				doExitSeq = "Sit_Ground_to_Idle"
+				noAutoExit = true
 			},
 			citizen_felame = {
 				seq = "sit_ground",
-				noAutoExit = true,
-				doStartSeq = "Idle_to_Sit_Ground",
-				doExitSeq = "Sit_Ground_to_Idle"
+				noAutoExit = true
 			}
 		}
 	},
@@ -78,6 +74,65 @@ PLUGIN.actions = {
 			}
 		}
 	},
+	[ "lying" ] = {
+		text = "Lying!",
+		actions = {
+			citizen_male = {
+				seq = "Lying_Down",
+				noAutoExit = true
+			},
+			citizen_felame = {
+				seq = "Lying_Down",
+				noAutoExit = true
+			}
+		}
+	},
+	[ "standpockets" ] = {
+		text = "Stand Pockets!",
+		actions = {
+			citizen_male = {
+				seq = "d1_t02_playground_cit2_pockets",
+				noAutoExit = true
+			},
+			citizen_felame = {
+				seq = "d1_t02_playground_cit2_pockets",
+				noAutoExit = true
+			}
+		}
+	},
+	[ "pant" ] = {
+		text = "Pant!",
+		actions = {
+			citizen_male = {
+				seq = "d2_coast03_postbattle_idle02",
+				noAutoExit = true
+			},
+			citizen_felame = {
+				seq = "d2_coast03_postbattle_idle02",
+				noAutoExit = true
+			}
+		}
+	},
+	[ "leanback" ] = {
+		text = "Lean Back!",
+		actions = {
+			citizen_male = {
+				seq = "lean_back",
+				noAutoExit = true,
+				OnCheck = facingWallBack
+			},
+			citizen_felame = {
+				seq = "lean_back",
+				noAutoExit = true,
+				OnCheck = facingWallBack
+			},
+			metrocop = {
+				seq = "plazalean",
+				noAutoExit = true,
+				OnCheck = facingWallBack
+			}
+		}
+	},
 	[ "cheer" ] = {
 		text = "Cheer!",
 		actions = {
@@ -86,6 +141,17 @@ PLUGIN.actions = {
 			},
 			citizen_felame = {
 				seq = "cheer1"
+			}
+		}
+	},
+	[ "clap" ] = {
+		text = "Clap!",
+		actions = {
+			citizen_male = {
+				seq = "cheer2",
+			},
+			citizen_felame = {
+				seq = "cheer2"
 			}
 		}
 	},
@@ -135,6 +201,52 @@ PLUGIN.actions = {
 				seq = "apcarrestidle",
 				noAutoExit = true,
 				OnCheck = facingWall
+			}
+		}
+	},
+	[ "arrestlow" ] = {
+		text = "Arrest!",
+		actions = {
+			citizen_male = {
+				seq = "arrestidle",
+				noAutoExit = true
+			}
+		}
+	},
+	[ "injured" ] = {
+		text = "Injured!",
+		actions = {
+			citizen_male = {
+				seq = "d1_town05_Wounded_Idle_1",
+				noAutoExit = true
+			},
+			citizen_female = {
+				seq = "d1_town05_Wounded_Idle_1",
+				noAutoExit = true
+			}
+		}
+	},
+	[ "injured2" ] = {
+		text = "Injured!",
+		actions = {
+			citizen_male = {
+				seq = "d1_town05_Wounded_Idle_2",
+				noAutoExit = true
+			}
+		}
+	},
+	[ "injuredwall" ] = {
+		text = "Injured!",
+		actions = {
+			citizen_male = {
+				seq = "injured1",
+				noAutoExit = true,
+				OnCheck = facingWallBack
+			},
+			citizen_female = {
+				seq = "injured1",
+				noAutoExit = true,
+				OnCheck = facingWallBack
 			}
 		}
 	}

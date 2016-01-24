@@ -311,7 +311,7 @@ else
 		local pl = catherine.pl
 		local ent = Entity( data[ 1 ] )
 		local uniqueID = data[ 2 ]
-
+		
 		if ( !IsValid( ent ) or !IsValid( pl:GetEyeTrace( ).Entity ) or pl:GetActiveWeapon( ) == "weapon_physgun" ) then return end
 		
 		local itemTable = catherine.item.FindByID( uniqueID )
@@ -326,7 +326,11 @@ else
 			
 			menu:AddOption( v.preSetText and v.preSetText( pl, itemTable ) or catherine.util.StuffLanguage( v.text or "ERROR" ),
 				function( )
-					catherine.item.Work( uniqueID, k, ent )
+					if ( IsValid( ent ) ) then
+						catherine.item.Work( uniqueID, k, ent )
+					else
+						print("lol")
+					end
 				end ):SetImage( v.icon or "icon16/information.png" )
 			
 			isAv = true

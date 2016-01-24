@@ -84,6 +84,7 @@ if ( SERVER ) then
 		
 		pl:SetNetVar( "isActioning", true )
 		pl:SetNetVar( "actionAngles", pl:GetAngles( ) )
+		pl:SetNetVar( "seq", seq )
 		pl:SetMoveType( MOVETYPE_NONE )
 
 		if ( actionData.doStartSeq ) then
@@ -115,28 +116,42 @@ if ( SERVER ) then
 		end
 		
 		local class = catherine.animation.Get( pl:GetModel( ):lower( ) )
+		local seq = pl:GetNetVar( "seq" )
 		
-		for k, v in pairs( self.actions ) do
-			if ( v.actions ) then
-				if ( v.actions[ class ] ) then
-					local exitSeq = v.actions[ class ].doExitSeq
-
-					if ( exitSeq ) then
-						catherine.animation.StartSequence( pl, exitSeq, pl:SequenceDuration( exitSeq ), nil, function( )
-							catherine.animation.StopSequence( pl )
-							pl:SetMoveType( MOVETYPE_WALK )
-							pl:SetNetVar( "isActioning", nil )
-							pl:SetNetVar( "actionAngles", nil )
-						end )
-					end
+		if ( seq and self.actions[ seq ] ) then
+			local seqData = self.actions[ seq ]
+			
+			if ( seqData.actions and seqData.actions[ class ] ) then
+				local exitSeq = seqData.actions[ class ].doExitSeq
+				
+				if ( exitSeq ) then
+					catherine.animation.StartSequence( pl, exitSeq, pl:SequenceDuration( exitSeq ), nil, function( )
+						catherine.animation.StopSequence( pl )
+						pl:SetMoveType( MOVETYPE_WALK )
+						pl:SetNetVar( "isActioning", nil )
+						pl:SetNetVar( "actionAngles", nil )
+						pl:SetNetVar( "seq", nil )
+					end )
 				else
 					catherine.animation.StopSequence( pl )
 					pl:SetMoveType( MOVETYPE_WALK )
 					pl:SetNetVar( "isActioning", nil )
 					pl:SetNetVar( "actionAngles", nil )
-					return
+					pl:SetNetVar( "seq", nil )
 				end
+			else
+				catherine.animation.StopSequence( pl )
+				pl:SetMoveType( MOVETYPE_WALK )
+				pl:SetNetVar( "isActioning", nil )
+				pl:SetNetVar( "actionAngles", nil )
+				pl:SetNetVar( "seq", nil )
 			end
+		else
+			catherine.animation.StopSequence( pl )
+			pl:SetMoveType( MOVETYPE_WALK )
+			pl:SetNetVar( "isActioning", nil )
+			pl:SetNetVar( "actionAngles", nil )
+			pl:SetNetVar( "seq", nil )
 		end
 	end
 	
@@ -156,14 +171,13 @@ else
 		if ( !pl:IsActioning( ) ) then return end
 		
 		if ( bind == "+jump" ) then
-			if ( !pl:GetNetVar( "doingAction" ) and !pl.CAT_leavingAction ) then // NEED TO CHECK;
+			if ( !pl:GetNetVar( "doingAction" ) and !pl.CAT_leavingAction ) then
 				pl.CAT_leavingAction = true
+				RunConsoleCommand( "cat_plugin_action_exit" )
 				
-				timer.Remove( "Catherine.timer.WaitActionExit" )
-				timer.Create( "Catherine.timer.WaitActionExit", 1, 1, function( )
+				timer.Simple( 1, function( )
 					if ( IsValid( pl ) ) then
 						pl.CAT_leavingAction = nil
-						RunConsoleCommand( "cat_plugin_action_exit" )
 					end
 				end )
 				
