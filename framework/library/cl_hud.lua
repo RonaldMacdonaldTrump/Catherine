@@ -18,13 +18,13 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 
 catherine.hud = catherine.hud or {
 	welcomeIntroWorkingData = nil,
-	welcomeIntroAnimations = { },
 	progressBar = nil,
 	topNotify = nil,
 	welcomeIntro = nil,
 	vAlpha = 0,
 	vAlphaTarget = 255
 }
+catherine.hud.welcomeIntroAnimations = { }
 local blockedModules = { }
 
 --[[ Function Optimize :> ]]--
@@ -150,37 +150,37 @@ end
 
 function catherine.hud.WelcomeIntroInitialize( noRun )
 	local scrW, scrH = ScrW( ), ScrH( )
-	local information = hook.Run( "GetSchemaInformation" )
+	local gm_information = GAMEMODE:GetSchemaInformation( )
+	local schema_information = hook.Run( "GetSchemaInformation" )
 	
-	catherine.hud.RegisterWelcomeIntroAnimation( 1, function( )
-		return information.title
-	end, "catherine_normal25", 2, 9, nil, scrW * 0.8, scrH * 0.55, TEXT_ALIGN_RIGHT )
+	catherine.hud.RegisterWelcomeIntroAnimation( function( )
+		return schema_information.title
+	end, "catherine_outline35", 10, nil, scrW * 0.8, scrH / 2, TEXT_ALIGN_RIGHT )
 	
-	catherine.hud.RegisterWelcomeIntroAnimation( 2, function( )
-		return information.desc
-	end, "catherine_normal15", 6, 8, nil, scrW * 0.8, scrH * 0.55 + 35, TEXT_ALIGN_RIGHT )
+	catherine.hud.RegisterWelcomeIntroAnimation( function( )
+		return gm_information.author
+	end, "catherine_outline25", 10, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
 	
-	catherine.hud.RegisterWelcomeIntroAnimation( 3, function( )
-		return catherine.environment.GetDateString( ) .. " : " .. catherine.environment.GetTimeString( )
-	end, "catherine_normal15", 8, 10, nil, scrW * 0.8, scrH * 0.55 + 55, TEXT_ALIGN_RIGHT )
-	
-	catherine.hud.RegisterWelcomeIntroAnimation( 4, function( )
-		return information.author
-	end, "catherine_normal20", 7, 9, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
+	catherine.hud.RegisterWelcomeIntroAnimation( function( )
+		return schema_information.author
+	end, "catherine_outline25", 10, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
 	
 	if ( !noRun ) then
-		catherine.hud.welcomeIntroWorkingData = { initStartTime = CurTime( ) }
+		catherine.hud.welcomeIntroWorkingData = { initStartTime = CurTime( ), runID = 1 }
 	end
 end
 
-function catherine.hud.RegisterWelcomeIntroAnimation( key, text, font, startTime, showingTime, col, startX, startY, xAlign, yAlign )
-	catherine.hud.welcomeIntroAnimations[ key ] = {
+catherine.hud.welcomeIntroAnimations={}
+catherine.hud.WelcomeIntroInitialize( )
+
+function catherine.hud.RegisterWelcomeIntroAnimation( text, font, showingTime, col, startX, startY, xAlign, yAlign )
+	catherine.hud.welcomeIntroAnimations[ #catherine.hud.welcomeIntroAnimations + 1 ] = {
 		text = "",
 		font = font,
 		targetText = text,
 		startX = startX,
 		startY = startY,
-		startTime = startTime,
+		startTime = CurTime( ),
 		showingTime = showingTime,
 		a = 0,
 		xAlign = xAlign,
@@ -192,47 +192,49 @@ function catherine.hud.RegisterWelcomeIntroAnimation( key, text, font, startTime
 end
 
 function catherine.hud.WelcomeIntro( pl, w, h )
-	if ( !catherine.hud.welcomeIntroWorkingData ) then return end
+	if ( !catherine.hud.welcomeIntroWorkingData or !catherine.hud.welcomeIntroAnimations ) then return end
 	if ( hook.Run( "ShouldDrawWelcomeIntro", pl ) == false ) then return end
 	local data = catherine.hud.welcomeIntroWorkingData
+	local runningData = catherine.hud.welcomeIntroAnimations[ data.runID ]
 	
-	for k, v in pairs( catherine.hud.welcomeIntroAnimations ) do
-		local curTime = CurTime( )
-		
-		if ( data.initStartTime + v.startTime <= curTime ) then
-			if ( !v.initStartTime ) then
-				v.initStartTime = curTime
-			end
-			
-			if ( v.initStartTime + v.showingTime - 1 <= curTime ) then
-				if ( v.a <= 0 ) then
-					continue
-				else
-					v.a = Lerp( 0.03, v.a, 0 )
-				end
-			else
-				v.a = Lerp( 0.03, v.a, 255 )
-			end
-			
-			local targetText = type( v.targetText ) == "function" and v.targetText( ) or v.targetText
-			
-			if ( v.textTime <= curTime and v.text:utf8len( ) < targetText:utf8len( ) ) then
-				local text = targetText:utf8sub( v.textSubCount, v.textSubCount )
-				
-				v.text = v.text .. text
-				v.textSubCount = v.textSubCount + 1
-				v.textTime = curTime + v.textTimeDelay
-			end
-			
-			local col = v.col or Color( 255, 255, 255 )
-			
-			drawText( v.text, v.font, v.startX, v.startY, Color( col.r, col.g, col.b, v.a ), v.xAlign or 1, v.yAlign or 1 )
-		end
-		
-		if ( data.initStartTime + 60 <= curTime ) then
-			catherine.hud.welcomeIntroWorkingData = nil
-		end
+	if ( !runningData ) then
+		return
 	end
+	
+	local curTime = CurTime( )
+		
+	if ( runningData.startTime + runningData.showingTime - 1 <= curTime ) then
+		if ( math.Round( runningData.a ) <= 0 ) then
+			data.runID = data.runID + 1
+			runningData = catherine.hud.welcomeIntroAnimations[ data.runID ]
+			
+			if ( !runningData ) then
+				catherine.hud.welcomeIntroWorkingData = nil
+				return
+			end
+			runningData.startTime = curTime
+		else
+			runningData.a = Lerp( 0.03, runningData.a, 0 )
+		end
+	else
+		runningData.a = Lerp( 0.03, runningData.a, 255 )
+	end
+	
+	local targetText = type( runningData.targetText ) == "function" and runningData.targetText( ) or runningData.targetText
+	
+	if ( runningData.textTime <= curTime and runningData.text:utf8len( ) < targetText:utf8len( ) ) then
+		local text = targetText:utf8sub( runningData.textSubCount, runningData.textSubCount )
+		
+		runningData.text = runningData.text .. text
+		runningData.textSubCount = runningData.textSubCount + 1
+		runningData.textTime = curTime + runningData.textTimeDelay
+		
+		surface.PlaySound( "common/talk.wav" )
+	end
+	
+	local col = runningData.col or Color( 255, 255, 255 )
+	
+	drawText( runningData.text, runningData.font, runningData.startX, runningData.startY, Color( col.r, col.g, col.b, runningData.a ), runningData.xAlign or 1, runningData.yAlign or 1 )
 end
 
 function catherine.hud.ProgressBarAdd( message, endTime )

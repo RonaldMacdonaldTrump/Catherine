@@ -608,9 +608,9 @@ end
 
 function GM:GetSchemaInformation( )
 	return {
-		title = catherine.Name,
-		desc = catherine.Desc,
-		author = LANG( "Basic_Framework_Author", catherine.Author )
+		title = GAMEMODE.Name,
+		desc = GAMEMODE.Desc,
+		author = LANG( "Basic_Framework_Author", GAMEMODE.Author )
 	}
 end
 
