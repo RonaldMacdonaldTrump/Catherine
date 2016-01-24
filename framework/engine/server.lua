@@ -342,10 +342,10 @@ function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
 	
 	if ( !catherine.player.IsIgnoreScreenColor( pl ) ) then
 		if ( ( pl.CAT_nextDamageScreenColorEffect or 0 ) <= CurTime( ) ) then
-			catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+			catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.1, 0.05 )
 			
 			if ( hitGroup == CAT_BODY_ID_HEAD ) then
-				catherine.util.ScreenColorEffect( pl, nil, 1, 0.005 )
+				catherine.util.ScreenColorEffect( pl, nil, 0.2, 0.05 )
 			end
 			
 			pl.CAT_nextDamageScreenColorEffect = CurTime( ) + 1
@@ -355,7 +355,7 @@ end
 
 function GM:PlayerSpawnedInCharacter( pl )
 	catherine.util.StopMotionBlur( pl )
-	catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.01 )
+	catherine.util.ScreenColorEffect( pl, nil, 0.5, 0.1 )
 	
 	hook.Run( "OnSpawnedInCharacter", pl )
 	
@@ -715,7 +715,7 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 	catherine.character.SetCharVar( pl, "isHealthRecover", true )
 	
 	if ( !catherine.player.IsIgnoreScreenColor( pl ) and ( pl.CAT_nextDamageScreenColorEffect or 0 ) <= CurTime( ) ) then
-		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
+		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.2, 0.05 )
 		
 		pl.CAT_nextDamageScreenColorEffect = CurTime( ) + 1
 	end
@@ -909,8 +909,8 @@ function GM:PlayerThink( pl )
 			if ( pl.CAT_drowningTick <= CurTime( ) ) then
 				if ( ( pl.CAT_nextDrowning or 0 ) <= CurTime( ) ) then
 					catherine.player.SetIgnoreScreenColor( pl, true )
+					catherine.util.ScreenColorEffect( pl, Color( 50, 50, 255 ), 0.2, 0.05 )
 					
-					catherine.util.ScreenColorEffect( pl, Color( 50, 50, 255 ), 0.2, 0.01 )
 					pl:TakeDamage( 10 )
 					
 					catherine.player.SetIgnoreScreenColor( pl, nil )
@@ -1018,6 +1018,10 @@ function GM:ShutDown( )
 	
 	hook.Run( "ServerShutDown" )
 	hook.Run( "DataSave" )
+	
+	if ( Schema and Schema.DataSave ) then
+		Schema:DataSave( )
+	end
 end
 
 function GM:Initialize( )

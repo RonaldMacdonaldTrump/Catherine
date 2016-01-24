@@ -84,7 +84,7 @@ local credit_htmlValue = [[
 local LANGUAGE = catherine.language.New( "example" ) --[[ Create language object( Language unique ID ) ]]--
 LANGUAGE.name = "Example Language" --[[ Setting language name. ]]--
 LANGUAGE.data = {
-		// Class
+	// Class
 	[ "Class_UI_Title" ] = "Class",
 	[ "Class_UI_LimitStr" ] = "%s / %s",
 	[ "Class_UI_SalaryStr" ] = "%s per hour",
@@ -569,7 +569,7 @@ LANGUAGE.data = {
 	[ "Basic_Error_LoadTimeoutWait" ] = "Failed to at loading the Catherine, Reloading the Catherine ... (CAT_ERR 0x4) ( %s attempts. )",
 	[ "Basic_Info_Loading" ] = "Loading for Perfect Catherine ...",
 	[ "Basic_Error_Reloading" ] = "Reloading the Catherine ...",
-	[ "Basic_Framework_Author" ] = "Roleplaying framework development and design by '%s'",
+	[ "Basic_Framework_Author" ] = "Catherine framework development and design by '%s'",
 	[ "Basic_Notify_BunnyHop" ] = "Do not Bunny-hop!",
 	[ "Basic_Notify_RestoreDatabaseKick" ] = "SORRY, You have been kicked from this server, because server are working Database restore.",
 	[ "Basic_ItemESP_Name" ] = "ITEM",

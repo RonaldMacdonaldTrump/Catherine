@@ -150,28 +150,25 @@ end
 
 function catherine.hud.WelcomeIntroInitialize( noRun )
 	local scrW, scrH = ScrW( ), ScrH( )
-	local gm_information = GAMEMODE:GetSchemaInformation( )
+	local gm_information = hook.Run( "GetFrameworkInformation" )
 	local schema_information = hook.Run( "GetSchemaInformation" )
 	
 	catherine.hud.RegisterWelcomeIntroAnimation( function( )
 		return schema_information.title
-	end, "catherine_outline35", 10, nil, scrW * 0.8, scrH / 2, TEXT_ALIGN_RIGHT )
+	end, "catherine_outline35", 8, nil, scrW * 0.8, scrH / 2, TEXT_ALIGN_RIGHT )
 	
 	catherine.hud.RegisterWelcomeIntroAnimation( function( )
 		return gm_information.author
-	end, "catherine_outline25", 10, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
+	end, "catherine_outline20", 8, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
 	
 	catherine.hud.RegisterWelcomeIntroAnimation( function( )
 		return schema_information.author
-	end, "catherine_outline25", 10, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
+	end, "catherine_outline20", 8, nil, scrW * 0.85, scrH * 0.8, TEXT_ALIGN_RIGHT )
 	
 	if ( !noRun ) then
 		catherine.hud.welcomeIntroWorkingData = { initStartTime = CurTime( ), runID = 1 }
 	end
 end
-
-catherine.hud.welcomeIntroAnimations={}
-catherine.hud.WelcomeIntroInitialize( )
 
 function catherine.hud.RegisterWelcomeIntroAnimation( text, font, showingTime, col, startX, startY, xAlign, yAlign )
 	catherine.hud.welcomeIntroAnimations[ #catherine.hud.welcomeIntroAnimations + 1 ] = {

@@ -606,6 +606,14 @@ function GM:ScoreboardPlayerOption( pl, target )
 	menu:Open( )
 end
 
+function GM:GetFrameworkInformation( )
+	return {
+		title = GAMEMODE.Name,
+		desc = GAMEMODE.Desc,
+		author = LANG( "Basic_Framework_Author", GAMEMODE.Author )
+	}
+end
+
 function GM:GetSchemaInformation( )
 	return {
 		title = GAMEMODE.Name,
