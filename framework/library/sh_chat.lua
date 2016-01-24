@@ -272,27 +272,11 @@ catherine.chat.Register( "looc", {
 } )
 
 catherine.chat.Register( "connect", {
-	func = function( pl, text )
-		local icon = Material( "icon16/user.png" )
-		
-		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
-			icon = Material( "icon16/thumb_up.png" )
-		elseif ( pl:IsSuperAdmin( ) ) then
-			icon = Material( "icon16/shield.png" )
-		elseif ( pl:IsAdmin( ) ) then
-			icon = Material( "icon16/star.png" )
-		end
-		
-		local override = hook.Run( "GetChatIcon", pl, "connect", text )
-		
-		if ( override ) then
-			icon = Material( override )
-		end
-		
+	func = function( pl, text, ex )
 		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
-			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Connect", pl:Name( ) ) )
+			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", Material( "icon16/server.png" ), Color( 238, 232, 170 ), LANG( "Chat_Str_Connect", ex[ 1 ] ) )
 		else
-			chat.AddText( icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Connect", pl:Name( ) ) )
+			chat.AddText( icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Connect", ex[ 1 ] ) )
 		end
 	end,
 	isGlobal = true

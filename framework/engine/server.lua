@@ -374,7 +374,7 @@ end
 
 function GM:PlayerAuthed( pl )
 	timer.Simple( 2, function( )
-		catherine.chat.Send( pl, "connect" )
+		catherine.chat.Send( pl, "connect", nil, nil, pl:Name( ) )
 		catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. pl:SteamID( ) .. " has connected a server." )
 	end )
 end
