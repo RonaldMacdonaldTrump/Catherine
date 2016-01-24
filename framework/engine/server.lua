@@ -243,13 +243,16 @@ function GM:PlayerSpawn( pl )
 	pl:ConCommand( "-duck" )
 	pl:SetColor( Color( 255, 255, 255, 255 ) )
 	pl:SetCanZoom( false )
-	pl:RemoveAllDecals( )
 	pl:Extinguish( )
 	pl:SetupHands( )
 	pl:CrosshairDisable( )
 	pl:SetMaterial( "" )
 	pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
 	pl:SetHealth( pl:GetMaxHealth( ) )
+	
+	for k, v in pairs( player.GetAll( ) ) do
+		v:ConCommand( "r_cleardecals" )
+	end
 	
 	if ( pl:FlashlightIsOn( ) ) then
 		pl:Flashlight( false )
