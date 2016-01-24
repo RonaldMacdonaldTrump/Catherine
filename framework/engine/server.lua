@@ -152,7 +152,7 @@ function GM:PlayerHealthSet( pl, newHealth, oldHealth )
 	
 	if ( newHealth > oldHealth ) then
 		catherine.limb.HealBody( pl, ( newHealth - oldHealth ) / 2.2 )
-		pl.CAT_healthRecover = true
+		catherine.character.SetCharVar( pl, "isHealthRecover", true )
 	end
 	
 	if ( newHealth >= maxHealth ) then
@@ -712,7 +712,7 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 		return true
 	end
 	
-	pl.CAT_healthRecover = true
+	catherine.character.SetCharVar( pl, "isHealthRecover", true )
 	
 	if ( !catherine.player.IsIgnoreScreenColor( pl ) and ( pl.CAT_nextDamageScreenColorEffect or 0 ) <= CurTime( ) ) then
 		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.5, 0.01 )
@@ -838,7 +838,7 @@ function GM:PlayerDeathThink( pl )
 end
 
 function GM:PlayerDeath( pl )
-	pl.CAT_healthRecover = nil
+	catherine.character.SetCharVar( pl, "isHealthRecover", nil )
 	
 	local respawnTime = hook.Run( "GetRespawnTime", pl ) or catherine.configs.spawnTime
 	

@@ -154,13 +154,13 @@ if ( SERVER ) then
 	end
 	
 	function catherine.player.HealthRecoverTick( pl )
-		if ( !pl.CAT_healthRecover ) then return end
+		if ( !catherine.character.GetCharVar( pl, "isHealthRecover" ) ) then return end
 		
 		if ( ( pl.CAT_healthRecoverTick or 0 ) <= CurTime( ) ) then
 			if ( hook.Run( "PlayerShouldRecoverHealth", pl ) == false ) then return end
 			
 			if ( pl:Health( ) >= pl:GetMaxHealth( ) ) then
-				pl.CAT_healthRecover = nil
+				catherine.character.SetCharVar( pl, "isHealthRecover", nil )
 				hook.Run( "HealthFullRecovered", pl )
 				return
 			end
