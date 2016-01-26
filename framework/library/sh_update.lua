@@ -22,7 +22,7 @@ if ( SERVER ) then
 	catherine.update.checked = catherine.update.checked or false
 	catherine.update.notifyPlayers = catherine.update.notifyPlayers or { }
 	
-	function catherine.update.Check( pl )
+	function catherine.update.Check( pl, noCoolTime )
 		if ( ( catherine.update.nextCheckable or 0 ) <= CurTime( ) ) then
 			http.Fetch( catherine.crypto.Decode( "htotGApRdN:wATs/YQKJg/XtOgVftAXxLUwFeMMhRpleExWNbNiTrJstohuyKzdZeHujcGUyTMqBYqpSRXadbpeUSbmlubthnlZWPyugIodLsJqNkBaRXyLZajDcvhnniIvcAiHgdHSeooxCamnSLegPLeWcgdyWhIGLREnDZkmrRblOmgSizuCZIyyOeV.SDooHdMGkDsRGvRbOwbcBuUWqcSotDEQjqZdfEBAohSaFItJJowFCJrwDZFSJSmfrGNIhPwYcPFFWwmkXHyer/RyEQoDDCSiqzaHNjLILtqMRaepMupiAyJIfYeMrAOWOiZzhcgigzOgkpiEjPJcFynrjGryPCcN0mlKMGTEQpExZnVkvYOmBGgvXzy1nMjcFNiqaUzgMJMTlSFOgnFZgJCypuDfGIJPNJTysnZEPsZvmtSfPTVa/XcTwLdYZthgmRqEwvEVJSMXvuLOBwrCvOgupleZRXRAnEDxTRbXBZtmVtvPHaMhsTHECdzyjpLnExgUiCJrZldFTQfROwAaXFzWlnQOdRBbAWTwbeFbNlWIhzgIcY" ),
 				function( body )
@@ -66,7 +66,9 @@ if ( SERVER ) then
 				end
 			)
 			
-			catherine.update.nextCheckable = CurTime( ) + 500
+			if ( !noCoolTime ) then
+				catherine.update.nextCheckable = CurTime( ) + 500
+			end
 		else
 			if ( IsValid( pl ) ) then
 				netstream.Start( pl, "catherine.update.ResultCheck", LANG( pl, "System_Notify_Update_NextTime" ) )
@@ -77,7 +79,7 @@ if ( SERVER ) then
 	function catherine.update.PlayerLoadFinished( )
 		if ( catherine.update.checked ) then return end
 		
-		catherine.update.Check( )
+		catherine.update.Check( nil, true )
 		catherine.update.checked = true
 	end
 	

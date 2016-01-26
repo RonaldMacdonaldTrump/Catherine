@@ -40,7 +40,7 @@ if ( SERVER ) then
 		return 0
 	end
 	
-	function catherine.externalX.CheckNewPatch( pl, isManual, runFunc )
+	function catherine.externalX.CheckNewPatch( pl, isManual, runFunc, noCoolTime )
 		if ( isManual and IsValid( pl ) ) then
 			if ( ( catherine.externalX.nextCheckable or 0 ) >= CurTime( ) ) then
 				netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", LANG( pl, "System_Notify_ExternalX_NextTime" ) )
@@ -66,7 +66,7 @@ if ( SERVER ) then
 					timer.Remove( "Catherine.timer.externalX.CheckNewPatch.Retry" )
 					timer.Create( "Catherine.timer.externalX.CheckNewPatch.Retry", 15, 0, function( )
 						MsgC( Color( 255, 255, 0 ), "[CAT ExX] Rechecking new patch ...\n" )
-						catherine.externalX.CheckNewPatch( pl, isManual, runFunc )
+						catherine.externalX.CheckNewPatch( pl, isManual, runFunc, noCoolTime )
 					end )
 					return
 				end
@@ -98,7 +98,9 @@ if ( SERVER ) then
 					netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch" )
 				end
 				
-				catherine.externalX.nextCheckable = CurTime( ) + 150
+				if ( !noCoolTime ) then
+					catherine.externalX.nextCheckable = CurTime( ) + 150
+				end
 			end, function( err )
 				MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to check for new patch! [" .. err .. "]\n" )
 				
@@ -239,7 +241,7 @@ if ( SERVER ) then
 	
 	function catherine.externalX.PlayerLoadFinished( pl )
 		if ( !catherine.externalX.isInitialized ) then
-			catherine.externalX.CheckNewPatch( pl, false, true )
+			catherine.externalX.CheckNewPatch( pl, false, true, true )
 		else
 			netstream.Start( pl, "catherine.externalX.SendData", {
 				catherine.externalX.foundNewPatch,
@@ -248,8 +250,6 @@ if ( SERVER ) then
 			} )
 			
 			catherine.externalX.StartInitApplyRequestClientPatch( pl )
-			
-			
 		end
 	end
 	
@@ -351,7 +351,7 @@ else
 	end )
 	
 	function catherine.externalX.StartApplyClientPatch( )
-		if ( catherine.externalX.applied ) then return end
+		//if ( catherine.externalX.applied ) then return end
 		local clientPatchCodes = catherine.externalX.clientPatchCodes or ""
 		
 		if ( !clientPatchCodes or clientPatchCodes == "nil" or clientPatchCodes == "" or clientPatchCodes == "INIT" ) then return end

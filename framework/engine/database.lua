@@ -397,50 +397,69 @@ if ( SERVER ) then
 		MsgC( Color( 0, 255, 0 ), "[CAT DB Backup] Ready for database backup ...\n" )
 		
 		local backUp = { }
+		local isFinData = { }
 		
 		for i = 1, #CAT_DATABASE_TABLES do
 			backUp[ CAT_DATABASE_TABLES[ i ] ] = { }
+			isFinData[ i ] = false
 			
 			catherine.database.GetDatas( CAT_DATABASE_TABLES[ i ], nil, function( data )
 				if ( !data or #data == 0 ) then return end
 				
 				backUp[ CAT_DATABASE_TABLES[ i ] ] = data
+				isFinData[ i ] = true
 			end )
 		end
 		
-		local convert = util.TableToJSON( backUp )
+		timer.Remove( "catherine.database.Backup.TimeoutCheck" )
+		timer.Create( "catherine.database.Backup.TimeoutCheck", 60, 1, function( )
+			timer.Remove( "catherine.database.Backup.Wait" )
+			timer.Remove( "catherine.database.Backup.TimeoutCheck" )
+			MsgC( Color( 255, 0, 0 ), "[CAT DB Backup ERROR] Failed to Backup database! [Time out]\n" )
+			
+			if ( IsValid( pl ) ) then
+				netstream.Start( pl, "catherine.database.ResultBackup", "Time out" )
+			end
+		end )
 		
-		if ( convert ) then
-			local time = os.date( "*t" )
-			local today = time.year .. "-" .. time.month .. "-" .. time.day
-			
-			file.CreateDir( "catherine/database/backup/" .. today )
-			file.Write( "catherine/database/backup/" .. today .. "/info.txt", os.time( ) .. "\n" .. today .. " | " .. os.date( "%p" ) .. " " .. os.date( "%I" ) .. ":" .. os.date( "%M" ) .. "\n" .. ( IsValid( pl ) and pl:SteamID( ) or "CONSOLE" ) )
-			file.Write( "catherine/database/backup/" .. today .. "/data.txt", convert )
-			
-			MsgC( Color( 0, 255, 0 ), "[CAT DB Backup] Finished for database backup!\n" )
-			
-			if ( IsValid( pl ) ) then
-				netstream.Start( pl, "catherine.database.ResultBackup", {
-					true
-				} )
-				netstream.Start( pl, "catherine.database.SendData", catherine.database.GetBackupFilesData( ) )
-			else
-				netstream.Start( nil, "catherine.database.SendData", catherine.database.GetBackupFilesData( ) )
-				return true
+		timer.Remove( "catherine.database.Backup.Wait" )
+		timer.Create( "catherine.database.Backup.Wait", 1, 0, function( )
+			for i = 1, #isFinData do
+				if ( isFinData[ i ] == false ) then
+					return
+				end
 			end
-		else
-			MsgC( Color( 255, 0, 0 ), "[CAT DB Backup ERROR] Failed to Backup database! [Convert Error]\n" )
 			
-			if ( IsValid( pl ) ) then
-				netstream.Start( pl, "catherine.database.ResultBackup", {
-					false,
-					"Convert Error"
-				} )
+			local convert = util.TableToJSON( backUp )
+			
+			if ( convert ) then
+				local time = os.date( "*t" )
+				local today = time.year .. "-" .. time.month .. "-" .. time.day
+				
+				file.CreateDir( "catherine/database/backup/" .. today )
+				file.Write( "catherine/database/backup/" .. today .. "/info.txt", os.time( ) .. "\n" .. today .. " | " .. os.date( "%p" ) .. " " .. os.date( "%I" ) .. ":" .. os.date( "%M" ) .. "\n" .. ( IsValid( pl ) and pl:SteamID( ) or "CONSOLE" ) )
+				file.Write( "catherine/database/backup/" .. today .. "/data.txt", convert )
+				
+				MsgC( Color( 0, 255, 0 ), "[CAT DB Backup] Finished for database backup!\n" )
+				
+				if ( IsValid( pl ) ) then
+					netstream.Start( pl, "catherine.database.ResultBackup", true )
+					netstream.Start( nil, "catherine.database.SendData", catherine.database.GetBackupFilesData( ) )
+				end
+				
+				timer.Remove( "catherine.database.Backup.Wait" )
+				timer.Remove( "catherine.database.Backup.TimeoutCheck" )
 			else
-				return false
+				MsgC( Color( 255, 0, 0 ), "[CAT DB Backup ERROR] Failed to Backup database! [Convert Error]\n" )
+				
+				if ( IsValid( pl ) ) then
+					netstream.Start( pl, "catherine.database.ResultBackup", "Convert Error" )
+				end
+				
+				timer.Remove( "catherine.database.Backup.TimeoutCheck" )
 			end
-		end
+			
+		end )
 	end
 	
 	function catherine.database.Restore( pl, folderName, func )
@@ -494,7 +513,7 @@ if ( SERVER ) then
 							per = k1 / count
 							
 							catherine.database.InsertDatas( k, v1, function( )
-								MsgC( Color( 0, 255, 0 ), "[CAT DB Restore] Working database restore ... [" .. k .. "/" .. per * 100 .. "%]\n" )
+								MsgC( Color( 0, 255, 0 ), "[CAT DB Restore] Working database restore ... [" .. k .. " / " .. math.Round( per * 100 ) .. "%]\n" )
 							end )
 						end
 					end
@@ -506,48 +525,27 @@ if ( SERVER ) then
 					end
 					
 					if ( IsValid( pl ) ) then
-						netstream.Start( pl, "catherine.database.ResultRestore", {
-							true
-						} )
-					else
-						return true
+						netstream.Start( pl, "catherine.database.ResultRestore", true )
 					end
-					
-					// Finished.
 				else
 					MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to restore database! [Convert Error]\n" )
 					
 					if ( IsValid( pl ) ) then
-						netstream.Start( pl, "catherine.database.ResultRestore", {
-							false,
-							"Convert Error"
-						} )
-					else
-						return false
+						netstream.Start( pl, "catherine.database.ResultRestore", "Convert Error" )
 					end
 				end
 			else
 				MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to restore database! [File is not exist]\n" )
 				
 				if ( IsValid( pl ) ) then
-					netstream.Start( pl, "catherine.database.ResultRestore", {
-						false,
-						"File is not exist"
-					} )
-				else
-					return false
+					netstream.Start( pl, "catherine.database.ResultRestore", "File is not exist" )
 				end
 			end
 		else
 			MsgC( Color( 255, 0, 0 ), "[CAT DB Restore ERROR] Failed to Restore database! [Folder is not exist]\n" )
 			
 			if ( IsValid( pl ) ) then
-				netstream.Start( pl, "catherine.database.ResultRestore", {
-					false,
-					"Folder is not exist"
-				} )
-			else
-				return false
+				netstream.Start( pl, "catherine.database.ResultRestore", "Folder is not exist" )
 			end
 		end
 	end
@@ -747,10 +745,7 @@ if ( SERVER ) then
 		if ( pl:IsSuperAdmin( ) ) then
 			catherine.database.Backup( pl )
 		else
-			netstream.Start( pl, "catherine.database.ResultBackup", {
-				false,
-				LANG( pl, "System_Notify_PermissionError" )
-			} )
+			netstream.Start( pl, "catherine.database.ResultBackup", LANG( pl, "System_Notify_PermissionError" ) )
 		end
 	end )
 	
@@ -762,10 +757,7 @@ if ( SERVER ) then
 				end )
 			end )
 		else
-			netstream.Start( pl, "catherine.database.ResultRestore", {
-				false,
-				LANG( pl, "System_Notify_PermissionError" )
-			} )
+			netstream.Start( pl, "catherine.database.ResultRestore", LANG( pl, "System_Notify_PermissionError" ) )
 		end
 	end )
 	
@@ -788,42 +780,32 @@ else
 		if ( IsValid( catherine.vgui.databaseManager ) ) then
 			catherine.vgui.databaseManager.backupFilesData = data
 			
-			catherine.vgui.databaseManager.backup:Refresh( )
-			catherine.vgui.databaseManager.restore:Refresh( )
+			catherine.vgui.databaseManager.main:Refresh( )
 		end
 	end )
 	
 	netstream.Hook( "catherine.database.ResultBackup", function( data )
 		if ( IsValid( catherine.vgui.databaseManager ) ) then
-			catherine.vgui.databaseManager.backup.status = false
+			catherine.vgui.databaseManager.main.status = "none"
 			
-			if ( data[ 1 ] == true ) then
+			if ( data == true ) then
 				Derma_Message( LANG( "System_Notify_BackupFinish" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 			else
-				if ( data[ 2 ] ) then
-					Derma_Message( LANG( "System_Notify_BackupError", data[ 2 ] ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
-				end
+				Derma_Message( LANG( "System_Notify_BackupError", data ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 			end
 		end
 	end )
 	
 	netstream.Hook( "catherine.database.ResultRestore", function( data )
 		if ( IsValid( catherine.vgui.databaseManager ) ) then
-			catherine.vgui.databaseManager.restore.status = false
+			catherine.vgui.databaseManager.main.status = "none"
 			
-			if ( data[ 1 ] == true ) then
-				catherine.vgui.databaseManager.restore.restartDelay = true
+			if ( data == true ) then
+				catherine.vgui.databaseManager.main.restartDelay = true
 				
 				Derma_Message( LANG( "System_Notify_RestoreFinish" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 			else
-				catherine.vgui.databaseManager.backup.block = false
-				catherine.vgui.databaseManager.close.block = false
-				catherine.vgui.databaseManager.initialize.block = false
-				catherine.vgui.databaseManager.log.block = false
-				
-				if ( data[ 2 ] ) then
-					Derma_Message( LANG( "System_Notify_RestoreError2", data[ 2 ] ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
-				end
+				Derma_Message( LANG( "System_Notify_RestoreError2", data ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 			end
 		end
 	end )

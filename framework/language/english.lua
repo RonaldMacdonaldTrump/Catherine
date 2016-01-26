@@ -209,6 +209,7 @@ LANGUAGE.data = {
 
 	// System
 	[ "System_UI_Title" ] = "System",
+	[ "System_UI_Welcome" ] = "Welcome, %s",
 	[ "System_UI_Close" ] = "Close",
 	[ "System_UI_Update_Title" ] = "Update",
 	[ "System_UI_Update_CoreVer" ] = "%s %s",
@@ -248,6 +249,7 @@ LANGUAGE.data = {
 	[ "System_UI_DB_Manager_BackupLoading" ] = "Backing up Database ...",
 	[ "System_UI_DB_Manager_BackupButton" ] = "Backup Database",
 	[ "System_UI_DB_Manager_BackingupButton" ] = "Backing up Database ...",
+	[ "System_UI_DB_Manager_FileTitle" ] = "Backup file #%s",
 	[ "System_Notify_BackupQ" ] = "Are you want to backup Database?, Do not attempt other works in to the Backing progress.",
 	[ "System_Notify_BackupFinish" ] = "Complete the Database backups.",
 	[ "System_Notify_BackupError" ] = "Failed to backup progress. [%s]",
@@ -269,6 +271,7 @@ LANGUAGE.data = {
 	[ "System_Notify_PermissionError" ] = "Authentication Failure [00]",
 	[ "System_Notify_SecurityError" ] = "Denied by security policy [01]",
 	[ "System_UI_ExternalX_Title" ] = "Patch",
+	[ "System_UI_ExternalX_UsingVer" ] = "Applied the patch of %s version.",
 	[ "System_UI_ExternalX_CheckButton" ] = "Check New Patch",
 	[ "System_UI_ExternalX_CheckingButton" ] = "Checking new patch ...",
 	[ "System_UI_ExternalX_FoundNewPatch" ] = "New patch (%s) has available, please install.",
