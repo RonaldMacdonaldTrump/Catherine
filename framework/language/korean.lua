@@ -280,6 +280,9 @@ LANGUAGE.data = {
 	[ "System_Notify_ExternalXError" ] = "패치를 확인할 수 없습니다. [%s]",
 	[ "System_Notify_ExternalXError2" ] = "패치를 설치할 수 없습니다. [%s]",
 	[ "System_Notify_InstallQ" ] = "새로운 패치를 설치하시겠습니까?, 설치가 완료된 후 자동으로 서버를 다시 시작합니다!",
+	[ "System_UI_Config_Title" ] = "설정값",
+	[ "System_UI_Config_BooleanTrue" ] = "활성화",
+	[ "System_UI_Config_BooleanFalse" ] = "비활성",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "능력치",

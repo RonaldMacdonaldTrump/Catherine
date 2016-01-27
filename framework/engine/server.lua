@@ -1035,3 +1035,17 @@ netstream.Hook( "catherine.IsTyping", function( pl, data )
 	
 	hook.Run( "ChatTypingChanged", pl, data )
 end )
+
+netstream.Hook( "catherine.requestConfigTable", function( pl, data )
+	if ( IsValid( pl ) and pl:IsSuperAdmin( ) ) then
+		local sendOnly = { }
+		
+		for k, v in pairs( table.Copy( catherine.configs ) ) do
+			if ( type( v ) == "function" ) then continue end
+			
+			sendOnly[ k ] = v
+		end
+		
+		netstream.Start( pl, "catherine.sendConfigTable", sendOnly )
+	end
+end )

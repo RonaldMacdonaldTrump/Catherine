@@ -919,6 +919,79 @@ function PANEL:Init( )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 	end
 	
+	self.configPanel = vgui.Create( "DPanel", self )
+	
+	self.configPanel.w, self.configPanel.h = panelWSize * 2 + 25, self.h * 0.45 + 5
+	self.configPanel.x, self.configPanel.y = self.w / 2 - panelWSize / 2, self.h * 0.5 + 20
+	
+	self.configPanel:SetSize( self.configPanel.w, self.configPanel.h )
+	self.configPanel:SetPos( self.configPanel.x, self.configPanel.y )
+	self.configPanel:SetAlpha( 0 )
+	self.configPanel:AlphaTo( 255, 0.5, firstMenuDelta )
+	
+	firstMenuDelta = firstMenuDelta + 0.1
+	self.configPanel.Paint = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 150 ) )
+		
+		surface.SetDrawColor( 0, 0, 0, 90 )
+		surface.DrawOutlinedRect( 0, 0, w, h )
+		
+		draw.RoundedBox( 0, 0, 30, w, 1, Color( 0, 0, 0, 90 ) )
+		
+		draw.SimpleText( LANG( "System_UI_Config_Title" ), "catherine_normal20", 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+	end
+	
+	self.configPanel.Lists = vgui.Create( "DPanelList", self.configPanel )
+	self.configPanel.Lists:SetPos( 10, 40 )
+	self.configPanel.Lists:SetSize( self.configPanel.w - 20, self.configPanel.h - 50 )
+	self.configPanel.Lists:SetSpacing( 5 )
+	self.configPanel.Lists:EnableHorizontal( false )
+	self.configPanel.Lists:EnableVerticalScrollbar( true )
+	self.configPanel.Lists:SetDrawBackground( false )
+	
+	self.configPanel.RefreshConfigs = function( pnl, configTable )
+		pnl.Lists:Clear( )
+		
+		local resultTable = table.Copy( configTable )
+		
+		for k, v in pairs( catherine.configs ) do
+			if ( !resultTable[ k ] ) then
+				resultTable[ k ] = v
+			end
+		end
+		
+		for k, v in SortedPairs( resultTable ) do
+			if ( type( v ) == "table" ) then continue end
+			
+			local panel = vgui.Create( "DPanel" )
+			panel:SetSize( pnl.Lists:GetWide( ), 30 )
+			panel.Paint = function( pnl2, w, h )
+				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
+				
+				draw.SimpleText( k, "catherine_normal15", 10, h / 2, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+				
+				if ( type( v ) == "boolean" ) then
+					if ( v == true ) then
+						draw.SimpleText( LANG( "System_UI_Config_BooleanTrue" ), "catherine_normal15", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					else
+						draw.SimpleText( LANG( "System_UI_Config_BooleanFalse" ), "catherine_normal15", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					end
+					
+				else
+					draw.SimpleText( v, "catherine_normal15", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+				end
+			end
+			
+			pnl.Lists:AddItem( panel )
+		end
+	end
+	
+	self.configPanel.RequestConfigs = function( pnl )
+		netstream.Start( "catherine.requestConfigTable" )
+	end
+	
+	self.configPanel:RequestConfigs( )
+	
 	self.close = vgui.Create( "catherine.vgui.button", self )
 	self.close:SetPos( self.w - ( self.w * 0.1 ) - 20, 10 )
 	self.close:SetSize( self.w * 0.1, 25 )
@@ -937,7 +1010,7 @@ function PANEL:Paint( w, h )
 	draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 	
 	draw.SimpleText( LANG( "System_UI_Title" ), "catherine_normal25", 20, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( LANG( "System_UI_Welcome", catherine.pl:Name( ) ), "catherine_normal15", w - 20, h - 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( LANG( "System_UI_Welcome", catherine.pl:Name( ) ), "catherine_italic20", w - self.close:GetWide( ) - 40, 23, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 function PANEL:Close( )

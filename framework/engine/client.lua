@@ -796,3 +796,11 @@ netstream.Hook( "catherine.loadingError", function( data )
 	
 	MsgC( Color( 255, 0, 0 ), "[CAT ERROR] " .. data .. "\n" )
 end )
+
+netstream.Hook( "catherine.sendConfigTable", function( data )
+	local ui = catherine.vgui.system
+	
+	if ( IsValid( ui ) and IsValid( ui.configPanel ) ) then
+		ui.configPanel:RefreshConfigs( data )
+	end
+end )

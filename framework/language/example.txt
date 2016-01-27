@@ -280,6 +280,9 @@ LANGUAGE.data = {
 	[ "System_Notify_ExternalXError" ] = "Failed to checking patch. [%s]",
 	[ "System_Notify_ExternalXError2" ] = "Failed to installing patch. [%s]",
 	[ "System_Notify_InstallQ" ] = "Are you want to install this patch?, automatic 'RESTART SERVER' after the install!",
+	[ "System_UI_Config_Title" ] = "Configs",
+	[ "System_UI_Config_BooleanTrue" ] = "Enabled",
+	[ "System_UI_Config_BooleanFalse" ] = "Disabled",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",
