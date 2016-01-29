@@ -82,7 +82,13 @@ function PANEL:BuildClasses( )
 		local spawnIcon = vgui.Create( "SpawnIcon", panel )
 		spawnIcon:SetSize( 60, 60 )
 		spawnIcon:SetPos( 5, 5 )
-		spawnIcon:SetModel( table.Random( v.model or { self.player:GetModel( ) } ) )
+		
+		if ( type( v.model ) == "table" ) then
+			spawnIcon:SetModel( table.Random( v.model ) )
+		else
+			spawnIcon:SetModel( v.model )
+		end
+		
 		spawnIcon.PaintOver = function( pnl, w, h )
 			surface.SetDrawColor( 50, 50, 50, 255 )
 			surface.DrawOutlinedRect( 0, 0, w, h )
