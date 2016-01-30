@@ -56,6 +56,12 @@ function catherine.bar.Register( uniqueID, alwaysShowing, getFunc, maxFunc, col,
 	}
 end
 
+function catherine.bar.InitializeWide( )
+	for k, v in pairs( catherine.bar.lists ) do
+		v.w = 0
+	end
+end
+
 function catherine.bar.Remove( uniqueID )
 	for k, v in pairs( catherine.bar.lists ) do
 		if ( v.uniqueID and v.uniqueID == uniqueID ) then

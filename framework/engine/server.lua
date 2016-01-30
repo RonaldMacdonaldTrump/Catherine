@@ -217,6 +217,8 @@ function GM:PlayerCharacterLoaded( pl )
 			catherine.util.NotifyLang( pl, "Cash_Notify_Salary", catherine.cash.GetCompleteName( amount ) )
 		end )
 	end
+	
+	pl:SendLua( "catherine.bar.InitializeWide( )" )
 end
 
 function GM:PlayerSpawn( pl )
@@ -871,6 +873,8 @@ function GM:PlayerDeath( pl )
 	pl:SetNetVar( "deathTime", CurTime( ) )
 	
 	catherine.log.Add( nil, pl:SteamName( ) .. ", " .. pl:SteamID( ) .. " has a died [Character Name : " .. pl:Name( ) .. "]", true )
+	
+	pl:SendLua( "catherine.bar.InitializeWide( )" )
 end
 
 function GM:PlayerThink( pl )

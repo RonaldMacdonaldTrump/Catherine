@@ -218,7 +218,7 @@ end
 function PANEL:PlayMusic( )
 	local musicDir = catherine.configs.characterMenuMusic
 	musicDir = type( musicDir ) == "table" and table.Random( musicDir ) or musicDir
-
+	
 	if ( musicDir and type( musicDir ) == "string" ) then
 		if ( musicDir:find( "http://" ) or musicDir:find( "https://" ) ) then
 			sound.PlayURL( musicDir, "noblock", function( musicEnt, errorID, errorCode )

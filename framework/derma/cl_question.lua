@@ -174,19 +174,11 @@ end
 function PANEL:Paint( w, h )
 	self.backgroundPanelH = Lerp( 0.05, self.backgroundPanelH, h * 0.1 )
 	
-	if ( catherine.character.IsCustomBackground( ) ) then
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 200, 200, 200, 255 ) )
-		
-		surface.SetDrawColor( 235, 235, 235, 255 )
-		surface.SetMaterial( Material( "gui/gradient_up" ) )
-		surface.DrawTexturedRect( 0, self.backgroundPanelH, w, h - self.backgroundPanelH )
-	else
-		if ( catherine.configs.enableCharacterPanelBlur ) then
-			self.blurAmount = Lerp( 0.03, self.blurAmount, 3 )
-			
-			catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
-		end
-	end
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 200, 200, 200, 255 ) )
+	
+	surface.SetDrawColor( 235, 235, 235, 255 )
+	surface.SetMaterial( Material( "gui/gradient_up" ) )
+	surface.DrawTexturedRect( 0, self.backgroundPanelH, w, h - self.backgroundPanelH )
 	
 	draw.RoundedBox( 0, 0, 0, w, self.backgroundPanelH, Color( 235, 235, 235, 255 ) )
 	draw.RoundedBox( 0, 0, h - self.backgroundPanelH, w, self.backgroundPanelH, Color( 235, 235, 235, 255 ) )

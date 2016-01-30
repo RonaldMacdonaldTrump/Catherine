@@ -43,8 +43,8 @@ function PANEL:Init( )
 	egg:SetPos( self.w - 15, 0 )
 	egg:SetDrawBackground( false )
 	egg.DoClick = function( pnl )
-		Derma_StringRequest( "", "^^... EGG", "....", function( val )
-				if ( val == "L7D_BestFriend_Catherine_0903" ) then
+		Derma_StringRequest( "", "eg_pw.png", "....", function( val )
+				if ( val == "2015.07.22-Catherine-Birthday" ) then
 					gui.OpenURL( "http://i.imgur.com/gSuoPgI.jpg" )
 				else
 					http.Fetch( "http://textuploader.com/a5m9q/raw", function( body )

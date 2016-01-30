@@ -20,7 +20,10 @@ catherine.intro = catherine.intro or {
 	status = true,
 	loading = true,
 	errorMessage = nil,
-	loadingR = 0
+	loadingR = 0,
+	startTime = SysTime( ),
+	isReloadNotify = nil,
+	reloadCount = 0
 }
 catherine.deathColAlpha = catherine.deathColAlpha or 0
 catherine.screenResolution = catherine.screenResolution or { w = ScrW( ), h = ScrH( ) }
@@ -28,7 +31,8 @@ local entityCaches = { }
 local nextEntityCacheWork = RealTime( )
 local lastEntity = nil
 local toscreen = FindMetaTable( "Vector" ).ToScreen
-local catSymbolMat = Material( "cat/symbol/cat.png", "smooth" )
+local catherine_framework_symbol = Material( catherine.configs.frameworkLogo, "smooth" ) or "__error_material"
+local schema_symbol = Material( catherine.configs.schemaLogo, "smooth" ) or "__error_material"
 local gradientUpMat = Material( "gui/gradient_up" )
 local gradientLeftMat = Material( "gui/gradient" )
 local gradientCenterMat = Material( "gui/center_gradient" )
@@ -38,6 +42,8 @@ local trace_line = util.TraceLine
 
 function GM:InitPostEntity( )
 	catherine.pl = LocalPlayer( )
+	catherine.intro.startTime = SysTime( )
+	schema_symbol = Material( catherine.configs.schemaLogo, "smooth" ) or "__error_material"
 end
 
 function GM:Initialize( )
@@ -66,23 +72,81 @@ function GM:HUDDrawScoreBoard( )
 			catherine.character.SetMenuActive( true )
 		end
 	end
+
+	if ( !data.isReloadNotify and SysTime( ) - data.startTime > 10 ) then
+		data.isReloadNotify = true
+		data.reloadCount = data.reloadCount + 1
+		
+		if ( data.reloadCount > 3 ) then
+			surface.PlaySound( "buttons/button2.wav" )
+			
+			data.isReloadNotify = true
+			data.isRetryConnect = true
+			data.startTime = SysTime( )
+			
+			timer.Simple( 5, function( )
+				RunConsoleCommand( "retry" )
+			end )
+		else
+			timer.Simple( 5, function( )
+				netstream.Start( "catherine.player.Initialize.IsRetry" )
+				
+				data.isReloadNotify = false
+				data.startTime = SysTime( )
+			end )
+		end
+	end
 	
 	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
 	
-	surface.SetDrawColor( 200, 200, 200, 255 )
+	surface.SetDrawColor( 225, 225, 225, 255 )
 	surface.SetMaterial( gradientUpMat )
 	surface.DrawTexturedRect( 0, 0, w, h )
 	
-	local symbolW, symbolH = 270 / 2, 512 / 2
+	if ( catherine_framework_symbol != "__error_material" ) then
+		local catherine_framework_symbol_w, catherine_framework_symbol_h = catherine_framework_symbol:Width( ) / 2, catherine_framework_symbol:Height( ) / 2
+		
+		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.SetMaterial( catherine_framework_symbol )
+		surface.DrawTexturedRect( w * 0.2, h / 2 - catherine_framework_symbol_h / 2, catherine_framework_symbol_w, catherine_framework_symbol_h )
+	end
 	
-	surface.SetDrawColor( 168, 168, 168, 255 )
-	surface.SetMaterial( catSymbolMat )
-	surface.DrawTexturedRect( w / 2 - symbolW / 2, h * 0.4 - symbolH / 2, symbolW, symbolH )
+	if ( schema_symbol != "__error_material" ) then
+		local schema_symbol_w, schema_symbol_h = schema_symbol:Width( ) / 2, schema_symbol:Height( ) / 2
+		
+		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.SetMaterial( schema_symbol )
+		surface.DrawTexturedRect( w * 0.7 - schema_symbol_w / 2, h / 2 - schema_symbol_h / 2, schema_symbol_w, schema_symbol_h )
+	end
 	
-	if ( data.errorMessage ) then
-		draw.SimpleText( data.errorMessage, "catherine_normal20", w / 2, h * 0.7, Color( 50, 50, 50, 255 ), 1, 1 )
+	if ( data.isReloadNotify ) then
+		if ( data.isRetryConnect ) then
+			draw.NoTexture( )
+			surface.SetDrawColor( 255, 0, 0, 255 )
+			catherine.geometry.DrawCircle( 30, 25, 10, 5, 90, 360, 100 )
+			
+			draw.SimpleText( LANG( "Basic_Error_LoadCantRetry" ), "catherine_normal15", 60, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		else
+			draw.NoTexture( )
+			surface.SetDrawColor( 90, 255, 255, 255 )
+			catherine.geometry.DrawCircle( 30, 25, 10, 5, 90, 360, 100 )
+			
+			draw.SimpleText( LANG( "Basic_Error_LoadTimeoutWait", data.reloadCount ), "catherine_normal15", 60, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		end
 	else
-		draw.SimpleText( LANG( "Basic_Info_Loading" ), "catherine_normal20", w / 2, h * 0.7, Color( 50, 50, 50, 255 ), 1, 1 )
+		if ( data.errorMessage ) then
+			draw.NoTexture( )
+			surface.SetDrawColor( 255, 90, 90, 255 )
+			catherine.geometry.DrawCircle( 30, 25, 10, 5, 90, 360, 100 )
+			
+			draw.SimpleText( data.errorMessage, "catherine_normal15", 60, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		else
+			draw.NoTexture( )
+			surface.SetDrawColor( 90, 90, 90, 255 )
+			catherine.geometry.DrawCircle( 30, 25, 10, 5, data.loadingR, 70, 100 )
+			
+			draw.SimpleText( LANG( "Basic_Info_Loading" ), "catherine_normal15", 60, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		end
 	end
 end
 
@@ -147,7 +211,7 @@ function GM:LanguageChanged( )
 end
 
 function GM:SpawnMenuOpen( )
-	return catherine.pl:IsAdmin( )
+	return catherine.pl:IsAdmin( ) and catherine.pl:IsCharacterLoaded( )
 end
 
 function GM:CalcView( pl, pos, ang, fov )
@@ -777,9 +841,12 @@ netstream.Hook( "catherine.SetModel", function( data )
 	end
 end )
 
-netstream.Hook( "catherine.introStart", function( )
-	catherine.intro.status = true
-	catherine.intro.loading = true
+netstream.Hook( "catherine.sendConfigTable", function( data )
+	local ui = catherine.vgui.system
+	
+	if ( IsValid( ui ) and IsValid( ui.configPanel ) ) then
+		ui.configPanel:RefreshConfigs( data )
+	end
 end )
 
 netstream.Hook( "catherine.introStop", function( )
@@ -795,12 +862,4 @@ netstream.Hook( "catherine.loadingError", function( data )
 	catherine.intro.errorMessage = data
 	
 	MsgC( Color( 255, 0, 0 ), "[CAT ERROR] " .. data .. "\n" )
-end )
-
-netstream.Hook( "catherine.sendConfigTable", function( data )
-	local ui = catherine.vgui.system
-	
-	if ( IsValid( ui ) and IsValid( ui.configPanel ) ) then
-		ui.configPanel:RefreshConfigs( data )
-	end
 end )

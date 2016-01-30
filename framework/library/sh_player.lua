@@ -32,7 +32,7 @@ if ( SERVER ) then
 		{ "catData", "SendAllNetworkRegistries" }
 	}
 	
-	function catherine.player.Initialize( pl )
+	function catherine.player.Initialize( pl, isRetry )
 		if ( !IsValid( pl ) ) then return end
 		
 		local function Initializing( )
@@ -49,8 +49,6 @@ if ( SERVER ) then
 				netstream.Start( pl, "catherine.loadingError", LANG( pl, "Basic_Error_NoDatabase", catherine.database.errorMsg ) )
 				return
 			end
-			
-			--[[ Initializing a Catherine ... :> ]]--
 			
 			catherine.character.RemoveDummy( )
 			
@@ -73,19 +71,20 @@ if ( SERVER ) then
 				if ( !IsValid( pl ) ) then return end
 				
 				netstream.Start( pl, "catherine.loadingFinished" )
-				
-				--[[ Finish! ]]--
 			end )
 		end
 		
-		netstream.Hook( "catherine.player.CheckLocalPlayer.Receive", function( )
-			if ( !IsValid( pl ) ) then return end
+		if ( !isRetry ) then
+			netstream.Hook( "catherine.player.CheckLocalPlayer.Receive", function( )
+				if ( !IsValid( pl ) ) then return end
+				
+				Initializing( )
+			end )
 			
+			netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
+		else
 			Initializing( )
-		end )
-		
-		netstream.Start( pl, "catherine.introStart" )
-		netstream.Start( pl, "catherine.player.CheckLocalPlayer" )
+		end
 	end
 	
 	function catherine.player.UpdateLanguageSetting( pl )
@@ -693,6 +692,10 @@ if ( SERVER ) then
 	function META:IsInGod( )
 		return self.CAT_godMode
 	end
+	
+	netstream.Hook( "catherine.player.Initialize.IsRetry", function( pl )
+		catherine.player.Initialize( pl, true )
+	end )
 else
 	netstream.Hook( "catherine.player.CheckLocalPlayer", function( )
 		timer.Remove( "Catherine.timer.player.CheckLocalPlayer" )
