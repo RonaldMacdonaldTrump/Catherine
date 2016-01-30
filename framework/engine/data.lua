@@ -44,7 +44,7 @@ function catherine.data.AutoBackup( )
 	MsgC( Color( 255, 255, 0 ), "[CAT DATA] Starting Auto data backup ...\n" )
 	
 	local time = os.date( "*t" )
-	local today = time.year .. "-" .. time.month .. "-" .. time.day
+	local today = time.year .. "-" .. time.month .. "-" .. time.day .. "-BACK_UP"
 	
 	file.CreateDir( "catherine/backup" )
 	file.CreateDir( "catherine/backup/" .. today )
@@ -59,7 +59,7 @@ function catherine.data.AutoBackup( )
 			
 			file.CreateDir( "catherine/backup/" .. today .. "/" .. v )
 			file.CreateDir( "catherine/backup/" .. today .. "/" .. v .. "/" .. v1 )
-			file.Write( "catherine/backup/" .. today .. "/" .. v .. "/" .. v1 .. "/databackup.txt", pluginDataFilesData )
+			file.Write( "catherine/backup/" .. today .. "/" .. v .. "/" .. v1 .. "/data.txt", pluginDataFilesData )
 		end
 	end
 	
