@@ -438,6 +438,28 @@ if ( SERVER ) then
 		end )
 	end
 	
+	function catherine.character.GetTargetCharacterFromQuery( steamID, func )
+		catherine.database.GetDatas( "catherine_characters", "_steamID = '" .. steamID .. "' AND _schema = '" .. catherine.schema.GetUniqueID( ) .. "'", function( data )
+			if ( !data ) then
+				if ( func ) then
+					func( false )
+				end
+				
+				return
+			end
+			
+			if ( func ) then
+				local buffer = table.Copy( data )
+				
+				for k, v in pairs( buffer ) do
+					buffer[ k ] = catherine.character.ConvertDataTable( v )
+				end
+				
+				func( true, buffer )
+			end
+		end )
+	end
+	
 	function catherine.character.GetTargetCharacterByID( pl, id )
 		for k, v in pairs( catherine.character.buffers[ getSteamID( pl ) ] or { } ) do
 			for k1, v1 in pairs( v ) do

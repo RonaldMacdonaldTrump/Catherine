@@ -653,6 +653,20 @@ function GM:ScoreboardPlayerOption( pl, target )
 				end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
 			)
 		end )
+		
+		menu:AddOption( LANG( "Scoreboard_PlayerOption09_Str" ), function( )
+			Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption09_Q" ), "0", function( val )
+					Derma_StringRequest( "", LANG( "Scoreboard_PlayerOption09_Q2" ), "No reason.", function( val2 )
+							netstream.Start( "catherine.BAN", {
+								target,
+								val,
+								val2
+							} )
+						end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
+					)
+				end, function( ) end, LANG( "Basic_UI_OK" ), LANG( "Basic_UI_NO" )
+			)
+		end )
 	end
 	
 	if ( pl:HasFlag( "i" ) ) then

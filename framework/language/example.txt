@@ -152,6 +152,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_MaxLimitHit" ] = "You can not create any more characters!",
 	[ "Character_Notify_CharBan" ] = "%s has banned the character %s.",
 	[ "Character_Notify_CharUnBan" ] = "%s has unbanned the character %s.",
+	[ "Character_Notify_CharSetBan" ] = "%s has changed the banned status for character %s. [%s]",
 	[ "Character_Notify_CantCharBan_UnBan" ] = "You can't ban / unban this character!",
 	[ "Character_Notify_SetName" ] = "%s has set the name of %s to %s.",
 	[ "Character_Notify_SetNameError" ] = "Can't type # in the character name!",
@@ -200,6 +201,7 @@ LANGUAGE.data = {
 	
 	[ "UnknownError" ] = "Unknown Error!",
 	[ "Basic_Notify_UnknownPlayer" ] = "You have not given a valid character name!",
+	[ "Basic_Notify_CantFindCharacter" ] = "Can't found character!",
 	[ "Basic_Notify_NoArg" ] = "Please enter the %s argument!",
 	[ "Basic_Notify_InputText" ] = "Please enter the text!",
 
@@ -345,6 +347,9 @@ LANGUAGE.data = {
 	[ "Scoreboard_PlayerOption07_Q2" ] = "What are you want to giving item count?",
 	[ "Scoreboard_PlayerOption08_Str" ] = "Send PM to Player",
 	[ "Scoreboard_PlayerOption08_Q" ] = "Type a message.",
+	[ "Scoreboard_PlayerOption09_Str" ] = "BAN",
+	[ "Scoreboard_PlayerOption09_Q" ] = "What are you want to banned time?",
+	[ "Scoreboard_PlayerOption09_Q2" ] = "What are you want to ban reason?",
 	
 	// Help
 	[ "Help_UI_Title" ] = "Help",

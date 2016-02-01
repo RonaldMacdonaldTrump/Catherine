@@ -53,6 +53,10 @@ function catherine.util.CalcDistanceByPos( loc, target )
 	return loc:GetPos( ):Distance( target:GetPos( ) )
 end
 
+function catherine.util.IsSteamID( steamID )
+	return steamID:match( "STEAM_[0-5]:[0-9]:[0-9]+" )
+end
+
 function catherine.util.FindPlayerByName( name )
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		if ( catherine.util.CheckStringMatch( v:Name( ), name ) ) then

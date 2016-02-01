@@ -1053,3 +1053,11 @@ netstream.Hook( "catherine.requestConfigTable", function( pl, data )
 		netstream.Start( pl, "catherine.sendConfigTable", sendOnly )
 	end
 end )
+
+netstream.Hook( "catherine.BAN", function( pl, data )
+	if ( !pl:IsAdmin( ) ) then return end
+	
+	if ( IsValid( data[ 1 ] ) and data[ 1 ]:IsPlayer( ) ) then
+		data[ 1 ]:Ban( tonumber( data[ 2 ] ) or 0, data[ 3 ] or "No reason." ) // Bug;
+	end
+end )

@@ -152,6 +152,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_MaxLimitHit" ] = "당신은 더 이상 캐릭터를 만드실 수 없습니다!",
 	[ "Character_Notify_CharBan" ] = "%s 님이 %s 님의 캐릭터 를 밴하셨습니다.",
 	[ "Character_Notify_CharUnBan" ] = "%s 님이 %s 님의 캐릭터 밴을 푸셨습니다.",
+	[ "Character_Notify_CharSetBan" ] = "%s 님이 %s 님의 캐릭터 밴 상태를 %s 로 하셨습니다.",
 	[ "Character_Notify_CantCharBan_UnBan" ] = "이 사람을 캐릭터 밴 / 해제 할 수 없습니다!",
 	[ "Character_Notify_SetName" ] = "%s 님이 '%s' 로 %s 의 캐릭터 이름을 바꾸셨습니다.",
 	[ "Character_Notify_SetNameError" ] = "캐릭터 이름에 # 이 들어갈 수 없습니다!",
@@ -200,6 +201,7 @@ LANGUAGE.data = {
 	
 	[ "UnknownError" ] = "알 수 없는 오류가 발생하였습니다, 죄송합니다!",
 	[ "Basic_Notify_UnknownPlayer" ] = "올바른 캐릭터의 이름을 입력하세요!",
+	[ "Basic_Notify_CantFindCharacter" ] = "캐릭터를 찾을 수 없습니다!",
 	[ "Basic_Notify_NoArg" ] = "%s 번째 인수를 입력하세요!",
 	[ "Basic_Notify_InputText" ] = "문자를 입력하세요!",
 
@@ -345,6 +347,9 @@ LANGUAGE.data = {
 	[ "Scoreboard_PlayerOption07_Q2" ] = "해당 아이템을 몇개 주시겠습니까?",
 	[ "Scoreboard_PlayerOption08_Str" ] = "PM 채팅 보내기",
 	[ "Scoreboard_PlayerOption08_Q" ] = "메세지를 입력하세요.",
+	[ "Scoreboard_PlayerOption09_Str" ] = "밴",
+	[ "Scoreboard_PlayerOption09_Q" ] = "밴 시간을 입력하세요.",
+	[ "Scoreboard_PlayerOption09_Q2" ] = "밴 이유를 입력하세요.",
 	
 	// Help
 	[ "Help_UI_Title" ] = "도움말",
