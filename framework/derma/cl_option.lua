@@ -21,7 +21,7 @@ local PANEL = { }
 function PANEL:Init( )
 	catherine.vgui.option = self
 
-	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
+	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.9 )
 	self:SetMenuName( LANG( "Option_UI_Title" ) )
 
 	self.Lists = vgui.Create( "DPanelList", self )
@@ -35,6 +35,10 @@ function PANEL:Init( )
 	end
 	
 	self:InitializeOption( )
+end
+
+function PANEL:OnMenuSizeChanged( )
+	self:SetPos( ScrW( ) / 2 - self:GetWide( ) / 2, ( ScrH( ) - 45 ) / 2 - self:GetTall( ) / 2 )
 end
 
 function PANEL:OnMenuRecovered( )
@@ -75,7 +79,7 @@ function PANEL:BuildOption( )
 		
 		for k1, v1 in SortedPairs( v ) do
 			local item = vgui.Create( "catherine.vgui.optionItem" )
-			item:SetSize( self.Lists:GetWide( ), 60 )
+			item:SetSize( self.Lists:GetWide( ), 40 )
 			item:SetOption( v1 )
 			
 			form:AddItem( item )
@@ -84,7 +88,7 @@ function PANEL:BuildOption( )
 		self.Lists:AddItem( form )
 	end
 	
-	scrollBar:SetScroll( scroll, 0, 0, 0 )
+	scrollBar:AnimateTo( scroll, 0.3, 0, 0.1 )
 end
 
 vgui.Register( "catherine.vgui.option", PANEL, "catherine.vgui.menuBase" )
@@ -94,8 +98,11 @@ local PANEL = { }
 function PANEL:Init( )
 	self.a = 0
 	
+	local optionBackgroundMaterial = Material( "CAT/ui/option_sw_background01.png", "smooth" )
+	local optionCoreMaterial = Material( "CAT/ui/option_sw_core01.png", "smooth" )
+	
 	self.Button = vgui.Create( "DButton", self )
-	self.Button:SetSize( 45, 45 )
+	self.Button:SetSize( 25, 25 )
 	self.Button:SetPos( self:GetWide( ) - self.Button:GetWide( ) - 20, self:GetTall( ) / 2 - self.Button:GetTall( ) / 2 )
 	self.Button:SetText( "" )
 	self.Button.Paint = function( pnl, w, h )
@@ -104,17 +111,17 @@ function PANEL:Init( )
 		self.val = catherine.option.Get( self.optionTable.uniqueID )
 		
 		if ( tobool( self.val ) == true ) then
-			self.a = Lerp( 0.09, self.a, 255 )
+			self.a = Lerp( 0.3, self.a, 255 )
 		else
-			self.a = Lerp( 0.09, self.a, 0 )
+			self.a = Lerp( 0.3, self.a, 0 )
 		end
 		
 		surface.SetDrawColor( 255, 255, 255, 255 )
-		surface.SetMaterial( Material( "CAT/ui/option_sw_background01.png", "smooth" ) )
+		surface.SetMaterial( optionBackgroundMaterial )
 		surface.DrawTexturedRect( 0, 0, w, h )
 		
 		surface.SetDrawColor( 255, 255, 255, self.a )
-		surface.SetMaterial( Material( "CAT/ui/option_sw_core01.png", "smooth" ) )
+		surface.SetMaterial( optionCoreMaterial )
 		surface.DrawTexturedRect( 0, 0, w, h )
 	end
 	self.Button.DoClick = function( pnl )
@@ -126,7 +133,7 @@ function PANEL:Init( )
 	self.List:SetSize( self:GetWide( ) * 0.3, 30 )
 	self.List:SetPos( self:GetWide( ) - self.List:GetWide( ) - 20, self:GetTall( ) / 2 - self.List:GetTall( ) / 2 )
 	self.List:SetVisible( false )
-	self.List:SetFont( "catherine_normal20" )
+	self.List:SetFont( "catherine_normal15" )
 	self.List:SetTextColor( Color( 50, 50, 50 ) )
 	self.List.Paint = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
@@ -135,18 +142,18 @@ end
 
 function PANEL:Paint( w, h )
 	if ( !self.optionTable ) then return end
-
+	
 	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 	
-	draw.SimpleText( self.name, "catherine_normal20", 15, 15, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( self.desc, "catherine_normal15", 15, 40, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( "< " .. self.name .. " >", "catherine_normal15", 15, 5, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.desc, "catherine_normal15", 15, 25, Color( 120, 120, 120, 255 ), TEXT_ALIGN_LEFT, 1 )
 end
 
-function PANEL:PerformLayout( w, h )
-	self.Button:SetSize( 45, 45 )
+function PANEL:PerformLayout( w, h, optionData )
+	self.Button:SetSize( 25, 25 )
 	self.Button:SetPos( w - self.Button:GetWide( ) - 20, h / 2 - self.Button:GetTall( ) / 2 )
 	
-	self.List:SetSize( self:GetWide( ) * 0.3, 30 )
+	self.List:SetSize( self:GetWide( ) * 0.4, 25 )
 	self.List:SetPos( self:GetWide( ) - self.List:GetWide( ) - 20, self:GetTall( ) / 2 - self.List:GetTall( ) / 2 )
 end
 
@@ -158,11 +165,11 @@ function PANEL:SetOption( optionTable )
 	if ( optionTable.typ == CAT_OPTION_LIST ) then
 		self.Button:SetVisible( false )
 		self.List:SetVisible( true )
-
+		
 		local data = optionTable.data( )
 		
 		self.List:SetText( data.curVal )
-
+		
 		self.List.DoClick = function( )
 			local menu = DermaMenu( )
 			

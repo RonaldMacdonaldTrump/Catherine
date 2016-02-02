@@ -548,7 +548,7 @@ function GM:PlayerSwitchFlashlight( pl, bool )
 	return true
 end
 
-function GM:AttributeChanged( pl, uniqueID )
+function GM:AttributeChanged( pl, uniqueID, attributeData, action )
 
 end
 

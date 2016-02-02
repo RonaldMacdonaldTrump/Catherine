@@ -163,7 +163,7 @@ function PANEL:RefreshPlayerLists( )
 		self.Lists:AddItem( form )
 	end
 	
-	scrollBar:SetScroll( scroll, 0, 0, 0 )
+	scrollBar:AnimateTo( scroll, 0.3, 0, 0.1 )
 end
 
 vgui.Register( "catherine.vgui.scoreboard", PANEL, "catherine.vgui.menuBase" )

@@ -63,6 +63,7 @@ catherine.attribute.Include( catherine.FolderName .. "/framework" )
 
 if ( SERVER ) then
 	function catherine.attribute.AddTemporaryIncreaseProgress( pl, uniqueID, amount, removeTime )
+		if ( hook.Run( "PlayerShouldAttributeIncreased", pl, uniqueID, amount, removeTime ) == false ) then return end
 		local attributeTable = catherine.attribute.FindByID( uniqueID )
 		
 		if ( !attributeTable ) then return end
@@ -133,6 +134,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.attribute.AddTemporaryDecreaseProgress( pl, uniqueID, amount, removeTime )
+		if ( hook.Run( "PlayerShouldAttributeDecreased", pl, uniqueID, amount, removeTime ) == false ) then return end
 		local attributeTable = catherine.attribute.FindByID( uniqueID )
 		
 		if ( !attributeTable ) then return end
@@ -206,6 +208,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.attribute.RemoveTemporaryIncreaseProgress( pl, uniqueID )
+		if ( hook.Run( "PlayerShouldAttributeRemoveTemporaryIncrease", pl, uniqueID ) == false ) then return end
 		local attributeTable = catherine.attribute.FindByID( uniqueID )
 		
 		if ( !attributeTable ) then return end
@@ -226,6 +229,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.attribute.RemoveTemporaryDecreaseProgress( pl, uniqueID )
+		if ( hook.Run( "PlayerShouldAttributeRemoveTemporaryDecrease", pl, uniqueID ) == false ) then return end
 		local attributeTable = catherine.attribute.FindByID( uniqueID )
 		
 		if ( !attributeTable ) then return end
@@ -269,7 +273,7 @@ if ( SERVER ) then
 		
 		catherine.character.SetVar( pl, "_att", attribute )
 		
-		hook.Run( "AttributeChanged", pl, uniqueID )
+		hook.Run( "AttributeChanged", pl, uniqueID, attribute[ uniqueID ], "set" )
 	end
 	
 	function catherine.attribute.AddProgress( pl, uniqueID, progress )
@@ -289,7 +293,7 @@ if ( SERVER ) then
 		
 		catherine.character.SetVar( pl, "_att", attribute )
 		
-		hook.Run( "AttributeChanged", pl, uniqueID )
+		hook.Run( "AttributeChanged", pl, uniqueID, attribute[ uniqueID ], "add" )
 	end
 	
 	function catherine.attribute.RemoveProgress( pl, uniqueID, progress )
@@ -304,7 +308,7 @@ if ( SERVER ) then
 			
 			catherine.character.SetVar( pl, "_att", attribute )
 			
-			hook.Run( "AttributeChanged", pl, uniqueID )
+			hook.Run( "AttributeChanged", pl, uniqueID, attribute[ uniqueID ], "remove" )
 		end
 	end
 	
@@ -312,6 +316,12 @@ if ( SERVER ) then
 		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		
 		if ( attribute[ uniqueID ] ) then
+			local forceProgress = hook.Run( "AttributeAdjustGetProgress", pl, uniqueID )
+			
+			if ( forceProgress and type( forceProgress ) == "number" ) then
+				return forceProgress
+			end
+			
 			local progress = attribute[ uniqueID ].progress
 			local temporaryTable = catherine.character.GetCharVar( pl, "attribute_temporary", { increase = { }, decrease = { } } )
 			
@@ -453,12 +463,24 @@ if ( SERVER ) then
 	hook.Add( "CreateNetworkRegistry", "catherine.attribute.CreateNetworkRegistry", catherine.attribute.CreateNetworkRegistry )
 else
 	function catherine.attribute.GetProgress( uniqueID )
+		local forceProgress = hook.Run( "AttributeAdjustGetProgress", uniqueID )
+		
+		if ( forceProgress and type( forceProgress ) == "number" ) then
+			return forceProgress
+		end
+		
 		local attribute = catherine.character.GetVar( catherine.pl, "_att", { } )
 		
 		return attribute[ uniqueID ] and attribute[ uniqueID ].progress or 0
 	end
 	
 	function catherine.attribute.GetTemporaryProgress( uniqueID )
+		local forceProgress = { hook.Run( "AttributeAdjustGetTemporaryProgress", uniqueID ) }
+		
+		if ( forceProgress and type( forceProgress[ 1 ] ) == "number" and type( forceProgress[ 2 ] ) == "number" ) then
+			return unpack( forceProgress )
+		end
+		
 		local temporaryTable = catherine.character.GetCharVar( catherine.pl, "attribute_temporary", { increase = { }, decrease = { } } )
 		local result = { 0, 0 }
 		
