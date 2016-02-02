@@ -360,6 +360,15 @@ function PANEL:UseCharacterPanel( )
 			end
 		end
 		
+		panel.button = vgui.Create( "DButton", panel )
+		panel.button:SetSize( panel_w, panel_h )
+		panel.button:Center( )
+		panel.button:SetText( "" )
+		panel.button:SetDrawBackground( false )
+		panel.button.DoClick = function( )
+			self.loadCharacter.curr = k
+		end
+		
 		local acceptMaterial = Material( "CAT/ui/accept_2_32.png" )
 		
 		panel.useCharacter = vgui.Create( "DButton", panel )
@@ -411,21 +420,15 @@ function PANEL:UseCharacterPanel( )
 			end
 		end
 		
-		panel.button = vgui.Create( "DButton", panel )
-		panel.button:SetSize( panel_w, panel_h )
-		panel.button:Center( )
-		panel.button:SetText( "" )
-		panel.button:SetDrawBackground( false )
-		panel.button.DoClick = function( )
-			self.loadCharacter.curr = k
-		end
-		
 		if ( IsValid( panel.model.Entity ) ) then
 			local min, max = panel.model.Entity:GetRenderBounds( )
 			
 			panel.model:SetCamPos( min:Distance( max ) * Vector( 0.5, 0.5, 0.5 ) )
 			panel.model:SetLookAt( ( max + min ) / 2 )
 		end
+		
+		panel.useCharacter:MoveToFront( )
+		panel.deleteCharacter:MoveToFront( )
 		
 		hook.Run( "PostInitLoadCharacterList", pl, panel, v.characterDatas )
 	end
