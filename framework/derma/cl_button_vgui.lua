@@ -140,7 +140,7 @@ function PANEL:Paint( w, h )
 		self.gradientColor.a = Lerp( 0.05, self.gradientColor.a, 0 )
 	end
 	
-	surface.SetDrawColor( Color( self.gradientColor.r, self.gradientColor.g, self.gradientColor.b, self.gradientColor.a ) )
+	surface.SetDrawColor( self.gradientColor.r, self.gradientColor.g, self.gradientColor.b, self.gradientColor.a )
 	surface.SetMaterial( Material( "gui/center_gradient" ) )
 	surface.DrawTexturedRect( 0, h - 2, w, 2 )
 	

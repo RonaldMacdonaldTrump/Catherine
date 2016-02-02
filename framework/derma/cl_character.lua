@@ -85,23 +85,16 @@ function PANEL:Init( )
 	self.changeLanguage:SetSize( self.w * 0.2, 30 )
 	self.changeLanguage:SetStr( "" )
 	self.changeLanguage:SetStrColor( Color( 0, 0, 0, 255 ) )
-	self.changeLanguage:SetGradientColor( Color( 50, 50, 50, 150 ) )
-	self.changeLanguage.PaintOverAll = function( pnl )
-		local languageTable = catherine.language.FindByID( GetConVarString( "cat_convar_language" ) )
-		
-		if ( languageTable ) then
-			pnl:SetStr( languageTable.name )
-		end
-	end
+	self.changeLanguage:SetGradientColor( Color( 0, 0, 0, 255 ) )
 	self.changeLanguage.Click = function( pnl )
 		local menu = DermaMenu( )
-			
+		
 		for k, v in pairs( catherine.language.GetAll( ) ) do
 			menu:AddOption( v.name, function( )
 				RunConsoleCommand( "cat_convar_language", k )
 				catherine.help.lists = { }
 				catherine.menu.Rebuild( )
-
+				
 				timer.Simple( 0, function( )
 					hook.Run( "LanguageChanged" )
 					schemaTitle = catherine.util.StuffLanguage( Schema and Schema.Title or "Example" )
@@ -109,7 +102,7 @@ function PANEL:Init( )
 					
 					self.createCharacter:SetStr( LANG( "Character_UI_CreateCharStr" ) )
 					self.useCharacter:SetStr( LANG( "Character_UI_LoadCharStr" ) )
-					//self.changeLog:SetStr( LANG( "Character_UI_ChangeLogStr" ) )
+					self.changeLog:SetStr( LANG( "Character_UI_ChangeLogStr" ) )
 					self.back:SetStr( LANG( "Character_UI_BackStr" ) )
 				end )
 			end )
@@ -117,14 +110,25 @@ function PANEL:Init( )
 		
 		menu:Open( )
 	end
+	self.changeLanguage.PaintOverAll = function( pnl, w, h )
+		surface.SetDrawColor( 50, 50, 50, 100 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0, h - 2, w, 2 )
+		
+		local languageTable = catherine.language.FindByID( GetConVarString( "cat_convar_language" ) )
+		
+		if ( languageTable ) then
+			pnl:SetStr( languageTable.name )
+		end
+	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.changeLanguage
-
+	
 	self.createCharacter = vgui.Create( "catherine.vgui.button", self )
 	self.createCharacter:SetPos( 30, self.h - self.h * 0.1 / 2 - 30 / 2 )
 	self.createCharacter:SetSize( self.w * 0.2, 30 )
 	self.createCharacter:SetStr( LANG( "Character_UI_CreateCharStr" ) )
 	self.createCharacter:SetStrColor( Color( 0, 0, 0, 255 ) )
-	self.createCharacter:SetGradientColor( Color( 50, 50, 50, 150 ) )
+	self.createCharacter:SetGradientColor( Color( 0, 0, 0, 255 ) )
 	self.createCharacter.Click = function( )
 		if ( #catherine.character.localCharacters >= catherine.configs.maxCharacters ) then
 			Derma_Message( LANG( "Character_Notify_MaxLimitHit" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
@@ -135,6 +139,11 @@ function PANEL:Init( )
 			self:CreateCharacterPanel( )
 		end )
 	end
+	self.createCharacter.PaintOverAll = function( pnl, w, h )
+		surface.SetDrawColor( 50, 50, 50, 100 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0, h - 2, w, 2 )
+	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.createCharacter
 	
 	self.useCharacter = vgui.Create( "catherine.vgui.button", self )
@@ -142,40 +151,43 @@ function PANEL:Init( )
 	self.useCharacter:SetSize( self.w * 0.2, 30 )
 	self.useCharacter:SetStr( LANG( "Character_UI_LoadCharStr" ) )
 	self.useCharacter:SetStrColor( Color( 0, 0, 0, 255 ) )
-	self.useCharacter:SetGradientColor( Color( 50, 50, 50, 150 ) )
+	self.useCharacter:SetGradientColor( Color( 0, 0, 0, 255 ) )
 	self.useCharacter.Click = function( )
 		self:JoinMenu( function( )
 			self:UseCharacterPanel( )
 		end )
 	end
+	self.useCharacter.PaintOverAll = function( pnl, w, h )
+		surface.SetDrawColor( 50, 50, 50, 100 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0, h - 2, w, 2 )
+	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.useCharacter
-	--[[
+	
 	self.changeLog = vgui.Create( "catherine.vgui.button", self )
-	self.changeLog:SetPos( 30, self.h * 0.75 + 80 )
+	self.changeLog:SetPos( self.w - ( self.w * 0.4 ) - 60, self.h * 0.1 / 2 - 30 / 2 )
 	self.changeLog:SetSize( self.w * 0.2, 30 )
 	self.changeLog:SetStr( LANG( "Character_UI_ChangeLogStr" ) )
 	self.changeLog:SetStrColor( Color( 0, 0, 0, 255 ) )
-	self.changeLog:SetGradientColor( Color( 50, 50, 50, 150 ) )
+	self.changeLog:SetGradientColor( Color( 0, 0, 0, 255 ) )
 	self.changeLog.Click = function( )
 		self:JoinMenu( function( )
 			self:UpdateLogPanel( )
 		end )
 	end
+	self.changeLog.PaintOverAll = function( pnl, w, h )
+		surface.SetDrawColor( 50, 50, 50, 100 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0, h - 2, w, 2 )
+	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.changeLog
-	--]]
+	
 	self.disconnect = vgui.Create( "catherine.vgui.button", self )
 	self.disconnect:SetPos( self.w - self.w * 0.2 - 30, self.h - self.h * 0.1 / 2 - 30 / 2 )
 	self.disconnect:SetSize( self.w * 0.2, 30 )
 	self.disconnect:SetStr( "" )
-	self.disconnect.PaintOverAll = function( pnl )
-		if ( self.player:IsCharacterLoaded( ) ) then
-			pnl:SetStr( LANG( "Character_UI_Close" ) )
-		else
-			pnl:SetStr( LANG( "Character_UI_ExitServerStr" ) )
-		end
-	end
 	self.disconnect:SetStrColor( Color( 0, 0, 0, 255 ) )
-	self.disconnect:SetGradientColor( Color( 50, 50, 50, 150 ) )
+	self.disconnect:SetGradientColor( Color( 255, 0, 0, 255 ) )
 	self.disconnect.Click = function( )
 		if ( self.player:IsCharacterLoaded( ) ) then
 			self:Close( )
@@ -186,6 +198,17 @@ function PANEL:Init( )
 				end )
 			end, LANG( "Basic_UI_NO" ), function( ) end )
 		end
+	end
+	self.disconnect.PaintOverAll = function( pnl, w, h )
+		if ( self.player:IsCharacterLoaded( ) ) then
+			pnl:SetStr( LANG( "Character_UI_Close" ) )
+		else
+			pnl:SetStr( LANG( "Character_UI_ExitServerStr" ) )
+		end
+		
+		surface.SetDrawColor( 255, 50, 50, 100 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0, h - 2, w, 2 )
 	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.disconnect
 	
@@ -468,8 +491,8 @@ end
 
 function PANEL:UpdateLogPanel( )
 	self.UpdatePanel = vgui.Create( "DPanel", self )
-	self.UpdatePanel:SetPos( self.w * 0.1, 90 )
-	self.UpdatePanel:SetSize( self.w - ( self.w * 0.2 ), self.h - ( 120 ) )
+	self.UpdatePanel:SetPos( 0, self.h * 0.1 )
+	self.UpdatePanel:SetSize( self.w, self.h - ( self.h * 0.2 ) )
 	self.UpdatePanel:SetAlpha( 0 )
 	self.UpdatePanel:AlphaTo( 255, 0.2, 0 )
 	self.UpdatePanel:SetDrawBackground( false )
@@ -495,7 +518,7 @@ function PANEL:UpdateLogPanel( )
 	
 	self.UpdatePanel.html = vgui.Create( "DHTML", self.UpdatePanel )
 	self.UpdatePanel.html:Dock( FILL )
-	self.UpdatePanel.html:OpenURL( "http://github.com/L7D/Catherine/commits" )
+	self.UpdatePanel.html:SetHTML( Format( catherine.UpdateLog, self.w * 0.6, self.w * 0.6, catherine.GetVersion( ) ) )
 end
 
 function PANEL:BackToMainMenu( )

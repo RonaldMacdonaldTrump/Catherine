@@ -27,10 +27,82 @@ GM.Description = "A neat and beautiful role-play framework for Garry's Mod."
 GM.Author = "L7D"
 GM.Website = "https://github.com/L7D/Catherine"
 GM.Email = "smhjyh2009@gmail.com"
-GM.Version = "0.95.1"
+GM.Version = "0.95.2"
 GM.Build = "CAT"
 
 catherine.FolderName = GM.FolderName
+catherine.UpdateLog = [[
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<style>
+		@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+		body {
+			font-family: "Open Sans", "나눔고딕", "NanumGothic", "맑은 고딕", "Malgun Gothic", "serif", "sans-serif"; 
+			-webkit-font-smoothing: antialiased;
+			width: %spx;
+			max-width: %spx;
+			margin: 0 auto;
+		}
+	</style>
+</head>
+<body>
+	<div class="page-header">
+		<h2><center>Catherine Update Log</center><small>Version %s</small></h2>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<h3 class="panel-title">Added the Lot a hooks.</h3>
+		</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<h3 class="panel-title">Added the Query Character ban command</h3>
+		</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<h3 class="panel-title">Added the ban command in the Scoreboard UI.</h3>
+		</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<h3 class="panel-title">Added the Config Viewer in the System UI.</h3>
+		</div>
+	</div>
+	<div class="panel panel-danger">
+		<div class="panel-body">
+			<h3 class="panel-title">Fixed the Scoreboard, Option UI scroll bug.</h3>
+		</div>
+	</div>
+	
+	<div class="panel panel-danger">
+		<div class="panel-body">
+			<h3 class="panel-title">Fixed the Data Backup system.</h3>
+		</div>
+	</div>
+	
+	<div class="panel panel-danger">
+		<div class="panel-body">
+			<h3 class="panel-title">Fixed the Class UI bug.</h3>
+		</div>
+	</div>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	</body>
+</html>
+]]
 
 function catherine.Boot( )
 	local sysTime = SysTime( )
