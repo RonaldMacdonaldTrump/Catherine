@@ -304,10 +304,8 @@ function PANEL:UseCharacterPanel( )
 	for k, v in pairs( self.loadCharacter.Lists ) do
 		local factionData = catherine.faction.FindByID( v.characterDatas._faction )
 		
-		if ( !factionData ) then return end
+		if ( !factionData ) then continue end
 		
-		local name = v.characterDatas._name
-		local desc = v.characterDatas._desc
 		local factionName = catherine.util.StuffLanguage( factionData.name )
 		local overrideModel = hook.Run( "GetCharacterPanelLoadModel", v.characterDatas ) or v.characterDatas._model
 		
@@ -318,60 +316,93 @@ function PANEL:UseCharacterPanel( )
 		v.panel:Center( )
 		v.panel.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
-			
-			draw.SimpleText( name, "catherine_normal20", w / 2, h - 100, Color( 0, 0, 0, 255 ), 1, 1 )
-			draw.SimpleText( desc, "catherine_normal15", w / 2, h - 70, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( factionName, "catherine_normal25", w / 2, 20, Color( 0, 0, 0, 255 ), 1, 1 )
 		end
 		
-		v.panel.button = vgui.Create( "DButton", v.panel )
-		v.panel.button:SetSize( v.panel:GetWide( ), v.panel:GetTall( ) )
-		v.panel.button:Center( )
-		v.panel.button:SetText( "" )
-		v.panel.button:SetDrawBackground( false )
-		v.panel.button.DoClick = function( )
-			self.loadCharacter.curr = k
+		local panel = v.panel
+		local panel_w, panel_h = panel:GetWide( ), panel:GetTall( )
+		
+		panel.factionName = vgui.Create( "DLabel", panel )
+		panel.factionName:SetTextColor( Color( 0, 0, 0 ) )
+		panel.factionName:SetFont( "catherine_normal20" )
+		panel.factionName:SetText( factionName )
+		panel.factionName:SizeToContents( )
+		panel.factionName:SetPos( panel_w / 2 - panel.factionName:GetWide( ) / 2, 10 )
+		panel.factionName.PerformLayout = function( pnl, w, h )
+			if ( w >= panel_w ) then
+				pnl:SetWide( panel_w - 15 )
+				pnl:SetPos( panel_w / 2 - pnl:GetWide( ) / 2, 10 )
+			end
 		end
 		
-		v.panel.useCharacter = vgui.Create( "DButton", v.panel )
-		v.panel.useCharacter:SetSize( 16, 16 )
-		v.panel.useCharacter:SetPos( v.panel:GetWide( ) * 0.3, v.panel:GetTall( ) * 0.95 )
-		v.panel.useCharacter:SetText( "" )
-		v.panel.useCharacter:SetToolTip( LANG( "Character_UI_UseCharacter" ) )
-		v.panel.useCharacter.Paint = function( pnl, w, h )
+		panel.charName = vgui.Create( "DLabel", panel )
+		panel.charName:SetTextColor( Color( 0, 0, 0 ) )
+		panel.charName:SetFont( "catherine_normal25" )
+		panel.charName:SetText( v.characterDatas._name )
+		panel.charName:SizeToContents( )
+		panel.charName:SetPos( panel_w / 2 - panel.charName:GetWide( ) / 2, panel_h - 110 )
+		panel.charName.PerformLayout = function( pnl, w, h )
+			if ( w >= panel_w ) then
+				pnl:SetWide( panel_w - 15 )
+				pnl:SetPos( panel_w / 2 - pnl:GetWide( ) / 2, panel_h - 110 )
+			end
+		end
+		
+		panel.charDesc = vgui.Create( "DLabel", panel )
+		panel.charDesc:SetTextColor( Color( 60, 60, 60 ) )
+		panel.charDesc:SetFont( "catherine_normal15" )
+		panel.charDesc:SetText( v.characterDatas._desc )
+		panel.charDesc:SizeToContents( )
+		panel.charDesc:SetPos( panel_w / 2 - panel.charDesc:GetWide( ) / 2, panel_h - 70 )
+		panel.charDesc.PerformLayout = function( pnl, w, h )
+			if ( w >= panel_w ) then
+				pnl:SetWide( panel_w - 15 )
+				pnl:SetPos( panel_w / 2 - pnl:GetWide( ) / 2, panel_h - 70 )
+			end
+		end
+		
+		local acceptMaterial = Material( "CAT/ui/accept_2_32.png" )
+		
+		panel.useCharacter = vgui.Create( "DButton", panel )
+		panel.useCharacter:SetSize( 32, 32 )
+		panel.useCharacter:SetPos( panel_w * 0.3, panel_h - 39 )
+		panel.useCharacter:SetText( "" )
+		panel.useCharacter:SetToolTip( LANG( "Character_UI_UseCharacter" ) )
+		panel.useCharacter.Paint = function( pnl, w, h )
 			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.SetMaterial( Material( "cat/ui/accept.png" ) )
+			surface.SetMaterial( acceptMaterial )
 			surface.DrawTexturedRect( 0, 0, w, h )
 		end
-		v.panel.useCharacter.DoClick = function( )
+		panel.useCharacter.DoClick = function( )
 			netstream.Start( "catherine.character.Use", v.characterDatas._id )
 		end
 		
-		v.panel.deleteCharacter = vgui.Create( "DButton", v.panel )
-		v.panel.deleteCharacter:SetSize( 16, 16 )
-		v.panel.deleteCharacter:SetPos( v.panel:GetWide( ) * 0.6, v.panel:GetTall( ) * 0.95 )
-		v.panel.deleteCharacter:SetText( "" )
-		v.panel.deleteCharacter:SetToolTip( LANG( "Character_UI_DeleteCharacter" ) )
-		v.panel.deleteCharacter.Paint = function( pnl, w, h )
+		local deleteMaterial = Material( "CAT/ui/x_32.png" )
+		
+		panel.deleteCharacter = vgui.Create( "DButton", panel )
+		panel.deleteCharacter:SetSize( 32, 32 )
+		panel.deleteCharacter:SetPos( panel_w * 0.6, panel_h - 39 )
+		panel.deleteCharacter:SetText( "" )
+		panel.deleteCharacter:SetToolTip( LANG( "Character_UI_DeleteCharacter" ) )
+		panel.deleteCharacter.Paint = function( pnl, w, h )
 			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.SetMaterial( Material( "icon16/delete.png" ) )
+			surface.SetMaterial( deleteMaterial )
 			surface.DrawTexturedRect( 0, 0, w, h )
 		end
-		v.panel.deleteCharacter.DoClick = function( )
+		panel.deleteCharacter.DoClick = function( )
 			Derma_Query( LANG( "Character_Notify_DeleteQ" ), "", LANG( "Basic_UI_YES" ), function( )
 				netstream.Start( "catherine.character.Delete", v.characterDatas._id )
 			end, LANG( "Basic_UI_NO" ), function( ) end )
 		end
 		
-		v.panel.model = vgui.Create( "DModelPanel", v.panel )
-		v.panel.model:SetSize( v.panel:GetWide( ), v.panel:GetTall( ) - 160 )
-		v.panel.model:SetPos( v.panel:GetWide( ) / 2 - v.panel.model:GetWide( ) / 2, 40 )
-		v.panel.model:MoveToBack( )
-		v.panel.model:SetModel( overrideModel )
-		v.panel.model:SetDrawBackground( false )
-		v.panel.model:SetDisabled( true )
-		v.panel.model:SetFOV( 40 )
-		v.panel.model.LayoutEntity = function( pnl, ent )
+		panel.model = vgui.Create( "DModelPanel", panel )
+		panel.model:SetSize( panel_w, panel_h - 160 )
+		panel.model:SetPos( panel_w / 2 - panel.model:GetWide( ) / 2, 40 )
+		panel.model:MoveToBack( )
+		panel.model:SetModel( overrideModel )
+		panel.model:SetDrawBackground( false )
+		panel.model:SetDisabled( true )
+		panel.model:SetFOV( 40 )
+		panel.model.LayoutEntity = function( pnl, ent )
 			ent:SetAngles( Angle( 0, 45, 0 ) )
 			ent:SetIK( false )
 			
@@ -380,14 +411,23 @@ function PANEL:UseCharacterPanel( )
 			end
 		end
 		
-		if ( IsValid( v.panel.model.Entity ) ) then
-			local min, max = v.panel.model.Entity:GetRenderBounds( )
-			
-			v.panel.model:SetCamPos( min:Distance( max ) * Vector( 0.5, 0.5, 0.5 ) )
-			v.panel.model:SetLookAt( ( max + min ) / 2 )
+		panel.button = vgui.Create( "DButton", panel )
+		panel.button:SetSize( panel_w, panel_h )
+		panel.button:Center( )
+		panel.button:SetText( "" )
+		panel.button:SetDrawBackground( false )
+		panel.button.DoClick = function( )
+			self.loadCharacter.curr = k
 		end
 		
-		hook.Run( "PostInitLoadCharacterList", pl, v.panel, v.characterDatas )
+		if ( IsValid( panel.model.Entity ) ) then
+			local min, max = panel.model.Entity:GetRenderBounds( )
+			
+			panel.model:SetCamPos( min:Distance( max ) * Vector( 0.5, 0.5, 0.5 ) )
+			panel.model:SetLookAt( ( max + min ) / 2 )
+		end
+		
+		hook.Run( "PostInitLoadCharacterList", pl, panel, v.characterDatas )
 	end
 	
 	self.CharacterPanel.Think = function( )
