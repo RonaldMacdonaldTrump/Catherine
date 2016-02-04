@@ -277,12 +277,15 @@ if ( SERVER ) then
 	end
 	
 	function catherine.attribute.AddProgress( pl, uniqueID, progress )
-		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		local attributeTable = catherine.attribute.FindByID( uniqueID )
 		
-		if ( !attributeTable or attribute[ uniqueID ].progress >= attributeTable.max ) then return end
+		if ( !attributeTable ) then return end
+		
+		local attribute = catherine.character.GetVar( pl, "_att", { } )
 		
 		if ( attribute[ uniqueID ] ) then
+			if ( attribute[ uniqueID ].progress >= attributeTable.max ) then return end
+			
 			attribute[ uniqueID ].progress = math.Clamp( attribute[ uniqueID ].progress + progress, 0, attributeTable.max )
 		else
 			attribute[ uniqueID ] = {

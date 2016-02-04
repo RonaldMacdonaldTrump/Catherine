@@ -40,6 +40,10 @@ if ( SERVER ) then
 		catherine.character.SetCharVar( pl, "stamina", 100 )
 	end
 	
+	function PLUGIN:GetPunchStaminaDecreaseAmount( pl, stamina )
+		return math.Clamp( 15 * ( 1 - ( catherine.attribute.GetProgress( pl, CAT_ATT_STAMINA ) / 100 ) ), 6, 15 )
+	end
+	
 	function PLUGIN:GetCustomPlayerDefaultRunSpeed( pl )
 		local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
 		

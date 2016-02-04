@@ -165,8 +165,9 @@ function PANEL:Init( )
 	self.mainButtons[ #self.mainButtons + 1 ] = self.useCharacter
 	
 	self.changeLog = vgui.Create( "catherine.vgui.button", self )
-	self.changeLog:SetPos( self.w - ( self.w * 0.4 ) - 60, self.h * 0.1 / 2 - 30 / 2 )
-	self.changeLog:SetSize( self.w * 0.2, 30 )
+	self.changeLog.animationIconAlpha = 0
+	self.changeLog:SetPos( self.w - ( self.w * 0.35 ) - 60, self.h * 0.1 / 2 - 30 / 2 )
+	self.changeLog:SetSize( self.w * 0.15, 30 )
 	self.changeLog:SetStr( LANG( "Character_UI_ChangeLogStr" ) )
 	self.changeLog:SetStrColor( Color( 0, 0, 0, 255 ) )
 	self.changeLog:SetGradientColor( Color( 0, 0, 0, 255 ) )
@@ -179,6 +180,10 @@ function PANEL:Init( )
 		surface.SetDrawColor( 50, 50, 50, 100 )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
 		surface.DrawTexturedRect( 0, h - 2, w, 2 )
+		
+		surface.SetDrawColor( 255, 255, 255, math.max( math.sin( CurTime( ) * 7 ) * 255, 50 ) )
+		surface.SetMaterial( Material( "icon16/star.png" ) )
+		surface.DrawTexturedRect( 5, h / 2 - 16 / 2, 16, 16 )
 	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.changeLog
 	
