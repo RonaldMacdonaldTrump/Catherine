@@ -173,7 +173,6 @@ catherine.character.NewVar( "faction", {
 
 if ( SERVER ) then
 	catherine.character.buffers = catherine.character.buffers or { }
-	catherine.character.saveTick = catherine.character.saveTick or catherine.configs.characterSaveInterval
 	
 	function catherine.character.New( pl, id )
 		if ( pl:IsTied( ) ) then
@@ -586,23 +585,24 @@ if ( SERVER ) then
 		end )
 	end
 	
-	timer.Create( "Catherine.timer.character.AutoSaveCharacter", 1, 0, function( )
+	timer.Create( "Catherine.timer.character.AutoSaveCharacter", catherine.configs.characterSaveInterval, 0, function( )
 		if ( table.Count( catherine.character.buffers ) == 0 ) then return end
+		local players = player.GetAllByLoaded( )
 		
-		if ( catherine.character.saveTick <= 0 ) then
-			local players = player.GetAllByLoaded( )
+		if ( #players > 0 ) then
+			local delta = 0
 			
-			if ( #players > 0 ) then
-				for k, v in pairs( players ) do
+			for k, v in pairs( players ) do
+				timer.Simple( delta, function( )
 					catherine.character.Save( v )
-				end
+				end )
 				
-				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, #players .. "'s characters has been saved.", true )
+				delta = delta + 1
 			end
 			
-			catherine.character.saveTick = catherine.configs.characterSaveInterval
-		else
-			catherine.character.saveTick = catherine.character.saveTick - 1
+			timer.Simple( delta + 3, function( )
+				catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, #players .. "'s characters has been saved.", true )
+			end )
 		end
 	end )
 	

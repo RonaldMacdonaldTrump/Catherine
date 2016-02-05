@@ -452,17 +452,37 @@ end
 
 function GM:EntityCacheWork( pl )
 	local realTime = RealTime( )
+	local ignoreDefault = false
 	
 	if ( nextEntityCacheWork <= realTime ) then
-		local data = { }
-		data.start = pl:GetShootPos( )
-		data.endpos = data.start + pl:GetAimVector( ) * 160
-		data.filter = pl
+		for k, v in pairs( ents.FindInSphere( pl:GetPos( ), 160 ) ) do
+			if ( IsValid( v ) and v:IsPlayer( ) and v:Alive( ) and !v:IsRagdolled( ) and v:InVehicle( ) and !v:GetNoDraw( ) and v:IsSolid( ) ) then
+				if ( pl:GetEyeTraceNoCursor( ).HitPos:Distance( v:GetPos( ) ) <= 80 ) then
+					ignoreDefault = true
+					lastEntity = v
+					
+					if ( IsValid( lastEntity ) ) then
+						entityCaches[ lastEntity ] = true
+					end
+				else
+					if ( IsValid( lastEntity ) and lastEntity == v ) then
+						lastEntity = nil
+					end
+				end
+			end
+		end
 		
-		lastEntity = trace_line( data ).Entity
-		
-		if ( IsValid( lastEntity ) ) then
-			entityCaches[ lastEntity ] = true
+		if ( !ignoreDefault ) then
+			local data = { }
+			data.start = pl:GetShootPos( )
+			data.endpos = data.start + pl:GetAimVector( ) * 160
+			data.filter = pl
+			
+			lastEntity = trace_line( data ).Entity
+			
+			if ( IsValid( lastEntity ) ) then
+				entityCaches[ lastEntity ] = true
+			end
 		end
 		
 		nextEntityCacheWork = realTime + 0.5

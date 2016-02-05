@@ -26,8 +26,7 @@ _G[ catherine.lime.XCode ] = _G[ catherine.lime.XCode ] or GetConVarString
 if ( SERVER ) then
 	catherine.lime.masterData = catherine.lime.masterData or { }
 	catherine.lime.doing = catherine.lime.doing or false
-	catherine.lime.nextCheckTick = catherine.lime.nextCheckTick or catherine.configs.limeCheckInterval
-
+	
 	function catherine.lime.Work( )
 		if ( !catherine.lime or catherine.lime.doing ) then return end
 		local masterData = {
@@ -140,18 +139,12 @@ if ( SERVER ) then
 		end )
 	end
 	
-	timer.Create( "Catherine.timer.lime.AutoCheck", 1, 0, function( )
+	timer.Create( "Catherine.timer.lime.AutoCheck", catherine.configs.limeCheckInterval, 0, function( )
 		if ( !catherine.configs.enable_Lime ) then return end
 		if ( !catherine.lime or catherine.lime.doing ) then return end
 		
-		if ( catherine.lime.nextCheckTick <= 0 ) then
-			MsgC( Color( 255, 255, 0 ), "[CAT Lime] Checking the players ...\n" )
-			catherine.lime.Work( )
-			
-			catherine.lime.nextCheckTick = catherine.configs.limeCheckInterval
-		else
-			catherine.lime.nextCheckTick = catherine.lime.nextCheckTick - 1
-		end
+		MsgC( Color( 255, 255, 0 ), "[CAT Lime] Checking the players ...\n" )
+		catherine.lime.Work( )
 	end )
 
 	netstream.Hook( "catherine.lime.CheckRequest_Receive", function( pl, data )

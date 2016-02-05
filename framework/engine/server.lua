@@ -459,6 +459,8 @@ function GM:EntityTakeDamage( ent, dmgInfo )
 				
 				pl:TakeDamage( amount, attacker, inflictor )
 				
+				catherine.log.Add( CAT_LOG_FLAG_BASIC, pl:Name( ) .. ", " .. pl:SteamName( ) .. " has taked a damage < ATTACKER : " .. attacker:Name( ) .. ">< AMOUNT : " .. amount .. " >", true )
+				
 				catherine.effect.Create( "BLOOD", {
 					ent = ent,
 					pos = dmgInfo:GetDamagePosition( ),
@@ -734,6 +736,8 @@ function GM:PlayerTakeDamage( pl, attacker, dmgInfo, ragdollEntity )
 			catherine.limb.TakeDamage( pl, hitGroup, dmgInfo:GetDamage( ) )
 		end
 	end
+	
+	catherine.log.Add( CAT_LOG_FLAG_BASIC, pl:Name( ) .. ", " .. pl:SteamName( ) .. " has taked a damage < ATTACKER : " .. ( attacker:IsPlayer( ) and ( attacker:Name( ) .. ", " .. attacker:SteamName( ) .. ", " .. attacker:SteamID( ) ) or attacker:GetClass( ) ) .. ">< AMOUNT : " .. dmgInfo:GetDamage( ) .. " >", true )
 	
 	if ( !catherine.player.IsIgnoreHurtSound( pl ) and !dataTable[ 2 ] and ( pl.CAT_nextHurtDelay or 0 ) <= CurTime( ) ) then
 		pl.CAT_nextHurtDelay = CurTime( ) + 2

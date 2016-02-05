@@ -107,6 +107,23 @@ function PLUGIN:ShouldDrawLocalPlayer( pl )
 	end
 end
 
+function PLUGIN:RenderScreenspaceEffects( )
+	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and catherine.character.IsCustomBackground( ) ) then
+		local tab = { }
+		tab[ "$pp_colour_addr" ] = 0
+		tab[ "$pp_colour_addg" ] = 0
+		tab[ "$pp_colour_addb" ] = 0
+		tab[ "$pp_colour_brightness" ] = 0
+		tab[ "$pp_colour_contrast" ] = 1
+		tab[ "$pp_colour_colour" ] = 0
+		tab[ "$pp_colour_mulr" ] = 0
+		tab[ "$pp_colour_mulg" ] = 0
+		tab[ "$pp_colour_mulb" ] = 0
+		
+		DrawColorModify( tab )
+	end
+end
+
 function PLUGIN:CalcView( pl, pos, ang, fov )
 	if ( !catherine.character.IsCustomBackground( ) ) then return end
 	if ( #self.charViews <= 0 ) then return end
