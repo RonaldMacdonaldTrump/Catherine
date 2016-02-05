@@ -27,9 +27,12 @@ BASE.itemData = {
 }
 BASE.isCloth = true
 BASE.useDynamicItemData = false
+--[[
 BASE.replacement = {
 	{ "group(%d+)", "group03m" }
 }
+BASE.model = ""
+--]]
 BASE.func = { }
 BASE.func.wear = {
 	text = "^Item_FuncStr01_Clothing",
