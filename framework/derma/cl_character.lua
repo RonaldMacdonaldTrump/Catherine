@@ -523,7 +523,7 @@ function PANEL:UpdateLogPanel( )
 	
 	self.UpdatePanel.html = vgui.Create( "DHTML", self.UpdatePanel )
 	self.UpdatePanel.html:Dock( FILL )
-	self.UpdatePanel.html:SetHTML( Format( catherine.UpdateLog, self.w * 0.6, self.w * 0.6, catherine.GetVersion( ) ) )
+	self.UpdatePanel.html:SetHTML( Format( catherine.UpdateLog, self.w * 0.6, self.w * 0.6 ) )
 end
 
 function PANEL:BackToMainMenu( )

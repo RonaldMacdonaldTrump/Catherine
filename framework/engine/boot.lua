@@ -54,7 +54,7 @@ catherine.UpdateLog = [[
 </head>
 <body>
 	<div class="page-header">
-		<h2><center>Catherine Update Log</center><small>Version %s</small></h2>
+		<h2><center>Catherine Update Log</center><small>Version ]] .. GM.Version .. [[</small></h2>
 	</div>
 	
 	<div class="panel panel-default">
