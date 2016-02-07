@@ -290,7 +290,16 @@ local modules = {
 	"CHudAmmo",
 	"CHudSecondaryAmmo",
 	"CHudCrosshair",
-	"CHudDamageIndicator"
+	"CHudDamageIndicator",
+	"CHudCloseCaption",
+	"CHudGeiger",
+	"CHudHintDisplay",
+	"CHudMessage",
+	"CHudPoisonDamageIndicator",
+	"CHudGameMessage",
+	"CHudDeathNotice",
+	"CHudSquadStatus",
+	"CHudVoiceStatus"
 }
 
 for i = 1, #modules do

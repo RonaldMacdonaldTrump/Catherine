@@ -38,10 +38,16 @@ if ( SERVER ) then
 	end
 
 	catherine.storage.Register( "Wardrobe", "The Wardrobe to put clothes.", "models/props_c17/FurnitureDresser001a.mdl", 8, "physics/wood/wood_box_impact_soft2.wav", "physics/wood/wood_box_impact_soft3.wav" )
-	catherine.storage.Register( "Desk", "A Desk.", "models/props_interiors/Furniture_Desk01a.mdl", 7, "physics/wood/wood_box_impact_soft2.wav", "physics/wood/wood_box_impact_soft3.wav" )
-	catherine.storage.Register( "Oil drum", "A Oil drum.", "models/props_c17/oildrum001.mdl", 5 )
-	catherine.storage.Register( "Lockers", "A Lockers.", "models/props_c17/Lockers001a.mdl", 12, "physics/metal/metal_sheet_impact_hard6.wav", "physics/metal/metal_sheet_impact_hard8.wav" )
-	catherine.storage.Register( "Fridge", "A Fridge.", "models/props_c17/FurnitureFridge001a.mdl", 7, "physics/plastic/plastic_box_impact_soft2.wav", "physics/plastic/plastic_box_impact_soft4.wav" )
+	catherine.storage.Register( "Desk", "A Desk to put books.", "models/props_interiors/Furniture_Desk01a.mdl", 7, "physics/wood/wood_box_impact_soft2.wav", "physics/wood/wood_box_impact_soft3.wav" )
+	catherine.storage.Register( "Oil drum", "A Oil drum to put Oil.", "models/props_c17/oildrum001.mdl", 5 )
+	catherine.storage.Register( "Lockers", "A Lockers to put clothes.", "models/props_c17/Lockers001a.mdl", 12, "physics/metal/metal_sheet_impact_hard6.wav", "physics/metal/metal_sheet_impact_hard8.wav" )
+	catherine.storage.Register( "Fridge", "A Fridge to put foods.", "models/props_c17/FurnitureFridge001a.mdl", 7, "physics/plastic/plastic_box_impact_soft2.wav", "physics/plastic/plastic_box_impact_soft4.wav" )
+	catherine.storage.Register( "Storage", "A Storage to put anythings.", "models/props_wasteland/controlroom_filecabinet002a.mdl", 7, "physics/metal/metal_sheet_impact_hard6.wav", "physics/metal/metal_sheet_impact_hard8.wav" )
+	catherine.storage.Register( "Desk", "A Desk.", "models/props_c17/FurnitureDrawer002a.mdl", 4, "physics/plastic/plastic_box_impact_soft2.wav", "physics/plastic/plastic_box_impact_soft4.wav" )
+	catherine.storage.Register( "Small storage", "A Small storage to put anythings.", "models/props_wasteland/controlroom_filecabinet001a.mdl", 3, "physics/metal/metal_sheet_impact_hard6.wav", "physics/metal/metal_sheet_impact_hard8.wav" )
+	catherine.storage.Register( "Small storage", "A Small storage to put anythings.", "models/props_lab/filecabinet02.mdl", 3, "physics/metal/metal_sheet_impact_hard6.wav", "physics/metal/metal_sheet_impact_hard8.wav" )
+	catherine.storage.Register( "Trash bin", "A Trash bin to put garbage.", "models/props_junk/TrashBin01a.mdl", 5, "physics/wood/wood_box_impact_soft2.wav", "physics/wood/wood_box_impact_soft3.wav" )
+	catherine.storage.Register( "Desk", "A Desk to put books.", "models/props_interiors/Furniture_Vanity01a.mdl", 7, "physics/wood/wood_box_impact_soft2.wav", "physics/wood/wood_box_impact_soft3.wav" )
 	
 	function catherine.storage.GetAll( )
 		return catherine.storage.lists
@@ -504,8 +510,8 @@ else
 		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		
-		draw.SimpleText( ent:GetNetVar( "name", "" ), "catherine_outline20", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( ent:GetNetVar( "desc", "" ), "catherine_outline15", x, y + 20, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent:GetNetVar( "name", "" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent:GetNetVar( "desc", "" ), "catherine_outline20", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
 	end
 	
 	hook.Add( "DrawEntityTargetID", "catherine.storage.DrawEntityTargetID", catherine.storage.DrawEntityTargetID )
