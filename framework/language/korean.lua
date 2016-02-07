@@ -216,7 +216,7 @@ LANGUAGE.data = {
 	[ "System_UI_Update_CheckButton" ] = "업데이트 확인",
 	[ "System_UI_Update_OpenUpdateLog" ] = "업데이트 기록",
 	[ "System_UI_Update_CheckingUpdate" ] = "업데이트 확인 중 ...",
-	[ "System_Notify_NewVersionUpdateNeed" ] = "캐서린의 새로운 버전이 발표되었습니다, 업데이트를 추천합니다.",
+	[ "System_Notify_NewVersionUpdateNeed" ] = "캐서린의 새로운 업데이트가 있습니다, 업데이트 하시면 새로운 기능을 만나실 수 있습니다.",
 	[ "System_Notify_Update_NextTime" ] = "너무 자주 업데이트를 확인할 수 없습니다, 나중에 다시 시도하세요!",
 	[ "System_Notify_UpdateError" ] = "업데이트를 확인할 수 없습니다. [%s]",
 	[ "System_UI_Plugin_Title" ] = "플러그인",
@@ -277,7 +277,7 @@ LANGUAGE.data = {
 	[ "System_UI_ExternalX_InstallButton" ] = "패치 다운로드 / 설치",
 	[ "System_UI_ExternalX_Installing" ] = "패치를 다운로드하고 설치하는 중 입니다 ...",
 	[ "System_UI_ExternalX_RestartServer" ] = "경고 : 서버가 잠시 후에 다시 시작됩니다 :>",
-	[ "System_Notify_ExternalXUpdateNeed" ] = "캐서린의 새로운 패치가 발표되었습니다, 설치하시는 것을 권장합니다, 설치하시려면 시스템 메뉴에 들어가세요.",
+	[ "System_Notify_ExternalXUpdateNeed" ] = "캐서린의 새로운 패치가 발표되었습니다, 설치하시려면 시스템 메뉴에 들어가세요.",
 	[ "System_Notify_ExternalX_NextTime" ] = "너무 자주 패치를 확인할 수 없습니다, 나중에 다시 시도하세요!",
 	[ "System_Notify_ExternalXError" ] = "패치를 확인할 수 없습니다. [%s]",
 	[ "System_Notify_ExternalXError2" ] = "패치를 설치할 수 없습니다. [%s]",
@@ -586,6 +586,7 @@ LANGUAGE.data = {
 	[ "Basic_Notify_BunnyHop" ] = "버니합을 하지 마십시오!",
 	[ "Basic_Notify_RestoreDatabaseKick" ] = "죄송합니다, 서버 데이터베이스 복구 작업으로 인해 강퇴 처리되셨습니다.",
 	[ "Basic_ItemESP_Name" ] = "아이템",
+	[ "Basic_PopNotify_Title" ] = "중요 알림 메세지",
 	
 	// Command
 	[ "Command_ChangeLevel_Fin" ] = "%s초 후 맵이 %s 로 바뀝니다.",

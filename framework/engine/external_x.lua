@@ -26,7 +26,6 @@ if ( SERVER ) then
 	catherine.externalX.patchVersion = catherine.externalX.patchVersion or nil
 	catherine.externalX.newPatchVersion = catherine.externalX.newPatchVersion or nil
 	catherine.externalX.foundNewPatch = catherine.externalX.foundNewPatch or false
-	catherine.externalX.notifyPlayers = catherine.externalX.notifyPlayers or { }
 	
 	local function isErrorData( data )
 		if ( data:find( "Error 404</p>" ) ) then
@@ -254,17 +253,23 @@ if ( SERVER ) then
 	end
 	
 	function catherine.externalX.PlayerSpawnedInCharacter( pl )
-		if ( !pl:IsSuperAdmin( ) or catherine.externalX.notifyPlayers[ pl:SteamID( ) ] ) then return end
+		if ( !pl:IsSuperAdmin( ) ) then return end
 		
 		if ( catherine.externalX.foundNewPatch ) then
-			catherine.util.SendDermaMessage( pl, LANG( pl, "System_Notify_ExternalXUpdateNeed" ) )
+			catherine.popNotify.Send( pl, LANG( pl, "System_Notify_ExternalXUpdateNeed" ), 10, "CAT/notify03.wav" )
 		end
-		
-		catherine.externalX.notifyPlayers[ pl:SteamID( ) ] = true
 	end
 	
 	hook.Add( "PlayerLoadFinished", "catherine.externalX.PlayerLoadFinished", catherine.externalX.PlayerLoadFinished )
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.externalX.PlayerSpawnedInCharacter", catherine.externalX.PlayerSpawnedInCharacter )
+	
+	timer.Create( "catherine.externalX.NotifyAuto", 900, 0, function( )
+		if ( !catherine.externalX.foundNewPatch ) then return end
+		
+		for k, v in pairs( catherine.util.GetAdmins( true ) ) do
+			catherine.popNotify.Send( v, LANG( v, "System_Notify_ExternalXUpdateNeed" ), 10, "CAT/notify03.wav" )
+		end
+	end )
 	
 	catherine.externalX.Initialize( )
 	
@@ -351,7 +356,7 @@ else
 	end )
 	
 	function catherine.externalX.StartApplyClientPatch( )
-		//if ( catherine.externalX.applied ) then return end
+		if ( catherine.externalX.applied ) then return end
 		local clientPatchCodes = catherine.externalX.clientPatchCodes or ""
 		
 		if ( !clientPatchCodes or clientPatchCodes == "nil" or clientPatchCodes == "" or clientPatchCodes == "INIT" ) then return end

@@ -53,7 +53,7 @@ PLUGIN.actions = {
 				seq = "sit_ground",
 				noAutoExit = true
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "sit_ground",
 				noAutoExit = true
 			}
@@ -67,7 +67,7 @@ PLUGIN.actions = {
 				noAutoExit = true,
 				OnCheck = facingWallBack
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "plazaidle4",
 				noAutoExit = true,
 				OnCheck = facingWallBack
@@ -81,7 +81,7 @@ PLUGIN.actions = {
 				seq = "Lying_Down",
 				noAutoExit = true
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "Lying_Down",
 				noAutoExit = true
 			}
@@ -94,7 +94,7 @@ PLUGIN.actions = {
 				seq = "d1_t02_playground_cit2_pockets",
 				noAutoExit = true
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "d1_t02_playground_cit2_pockets",
 				noAutoExit = true
 			}
@@ -107,7 +107,7 @@ PLUGIN.actions = {
 				seq = "d2_coast03_postbattle_idle02",
 				noAutoExit = true
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "d2_coast03_postbattle_idle02",
 				noAutoExit = true
 			}
@@ -121,7 +121,7 @@ PLUGIN.actions = {
 				noAutoExit = true,
 				OnCheck = facingWallBack
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "lean_back",
 				noAutoExit = true,
 				OnCheck = facingWallBack
@@ -139,7 +139,7 @@ PLUGIN.actions = {
 			citizen_male = {
 				seq = "cheer1"
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "cheer1"
 			}
 		}
@@ -150,7 +150,7 @@ PLUGIN.actions = {
 			citizen_male = {
 				seq = "cheer2",
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "cheer2"
 			}
 		}
@@ -162,7 +162,7 @@ PLUGIN.actions = {
 				seq = "lineidle01",
 				noAutoExit = true
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "lineidle01",
 				noAutoExit = true
 			},
@@ -178,7 +178,7 @@ PLUGIN.actions = {
 			citizen_male = {
 				seq = "wave"
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "wave"
 			}
 		}
@@ -189,7 +189,7 @@ PLUGIN.actions = {
 			citizen_male = {
 				seq = "wave_close"
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "wave_close"
 			}
 		}

@@ -65,7 +65,7 @@ catherine.UpdateLog = [[
 	
 	<div class="panel panel-default">
 		<div class="panel-body">
-			<h3 class="panel-title">Added the Query Character ban command</h3>
+			<h3 class="panel-title">Added the Query Character ban command.</h3>
 		</div>
 	</div>
 	
@@ -80,6 +80,13 @@ catherine.UpdateLog = [[
 			<h3 class="panel-title">Added the Config Viewer in the System UI.</h3>
 		</div>
 	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<h3 class="panel-title">Added the new Library 'popNotify'.</h3>
+		</div>
+	</div>
+	
 	<div class="panel panel-danger">
 		<div class="panel-body">
 			<h3 class="panel-title">Fixed the Scoreboard, Option UI scroll bug.</h3>
@@ -95,6 +102,12 @@ catherine.UpdateLog = [[
 	<div class="panel panel-danger">
 		<div class="panel-body">
 			<h3 class="panel-title">Fixed the Class UI bug.</h3>
+		</div>
+	</div>
+	
+	<div class="panel panel-danger">
+		<div class="panel-body">
+			<h3 class="panel-title">Fixed the 'Action' plugin bug.</h3>
 		</div>
 	</div>
 	

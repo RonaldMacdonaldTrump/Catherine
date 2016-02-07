@@ -20,7 +20,6 @@ catherine.update = catherine.update or { }
 
 if ( SERVER ) then
 	catherine.update.checked = catherine.update.checked or false
-	catherine.update.notifyPlayers = catherine.update.notifyPlayers or { }
 	
 	function catherine.update.Check( pl, noCoolTime )
 		if ( ( catherine.update.nextCheckable or 0 ) <= CurTime( ) ) then
@@ -84,18 +83,28 @@ if ( SERVER ) then
 	end
 	
 	function catherine.update.PlayerSpawnedInCharacter( pl )
-		if ( !pl:IsSuperAdmin( ) or catherine.update.notifyPlayers[ pl:SteamID( ) ] ) then return end
+		if ( !pl:IsSuperAdmin( ) ) then return end
 		local data = catherine.net.GetNetGlobalVar( "cat_updateData", { version = catherine.GetVersion( ) } )
 		
 		if ( data.version != catherine.GetVersion( ) ) then
-			catherine.util.SendDermaMessage( pl, LANG( pl, "System_Notify_NewVersionUpdateNeed" ) )
+			catherine.popNotify.Send( pl, LANG( pl, "System_Notify_NewVersionUpdateNeed" ), 10, "CAT/notify03.wav" )
 		end
-		
-		catherine.update.notifyPlayers[ pl:SteamID( ) ] = true
 	end
 	
 	hook.Add( "PlayerLoadFinished", "catherine.update.PlayerLoadFinished", catherine.update.PlayerLoadFinished )
 	hook.Add( "PlayerSpawnedInCharacter", "catherine.update.PlayerSpawnedInCharacter", catherine.update.PlayerSpawnedInCharacter )
+	
+	timer.Create( "catherine.update.NotifyAuto", 900, 0, function( )
+		local data = catherine.net.GetNetGlobalVar( "cat_updateData", { version = catherine.GetVersion( ) } )
+		
+		if ( data.version == catherine.GetVersion( ) ) then
+			return
+		end
+		
+		for k, v in pairs( catherine.util.GetAdmins( true ) ) do
+			catherine.popNotify.Send( v, LANG( v, "System_Notify_NewVersionUpdateNeed" ), 10, "CAT/notify03.wav" )
+		end
+	end )
 	
 	netstream.Hook( "catherine.update.Check", function( pl )
 		if ( pl:IsSuperAdmin( ) ) then

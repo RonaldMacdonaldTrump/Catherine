@@ -40,7 +40,7 @@ end
 
 local function rebuildHelp( )
 	catherine.help.Register( CAT_HELP_HTML, LANG( "Help_Category_Credit" ), LANG( "Help_HTMLValue_Credit" ), true )
-	catherine.help.Register( CAT_HELP_WEBPAGE, LANG( "Help_Category_Changelog" ), "http://github.com/L7D/Catherine/commits/master" )
+	catherine.help.Register( CAT_HELP_HTML, LANG( "Help_Category_Changelog" ), Format( catherine.UpdateLog, ScrW( ) / 2, ScrW( ) / 2, catherine.GetVersion( ) ) )
 end
 
 function catherine.help.LanguageChanged( )
