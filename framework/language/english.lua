@@ -289,6 +289,7 @@ LANGUAGE.data = {
 	[ "System_UI_Config_Title" ] = "Configs",
 	[ "System_UI_Config_BooleanTrue" ] = "Enabled",
 	[ "System_UI_Config_BooleanFalse" ] = "Disabled",
+	[ "System_UI_Info_Title" ] = "Information",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "Attribute",

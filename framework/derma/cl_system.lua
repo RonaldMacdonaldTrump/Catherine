@@ -23,6 +23,8 @@ function PANEL:Init( )
 	
 	self.w, self.h = ScrW( ), ScrH( )
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
+	self.frameworkMaterial = Material( catherine.configs.frameworkLogo, "smooth" ) or "__error_material"
+	self.frameworkMaterialA = 0
 	
 	self:SetSize( self.w, self.h )
 	self:SetPos( self.x, self.y )
@@ -31,11 +33,17 @@ function PANEL:Init( )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	
+	if ( self.frameworkMaterial == "__error_material" ) then
+		self:InstallModules( )
+	end
+end
+
+function PANEL:InstallModules( )
+	if ( self.moduleInstalled ) then return end
 	local foundNewMat = Material( "icon16/asterisk_orange.png" )
 	local errorMat = Material( "icon16/exclamation.png" )
 	local alreadyNewMat = Material( "CAT/ui/accept.png" )
 	local firstMenuDelta = 0
-	
 	local panelWSize = ( self.w / 3 ) - ( 20 * 1.5 )
 	
 	self.updatePanel = vgui.Create( "DPanel", self )
@@ -46,9 +54,8 @@ function PANEL:Init( )
 	self.updatePanel.loadingAni = 0
 	
 	self.updatePanel:SetSize( self.updatePanel.w, self.updatePanel.h )
-	self.updatePanel:SetPos( self.updatePanel.x, self.updatePanel.y )
-	self.updatePanel:SetAlpha( 0 )
-	self.updatePanel:AlphaTo( 255, 0.5, firstMenuDelta )
+	self.updatePanel:SetPos( 0 - self.updatePanel.w, self.updatePanel.y )
+	self.updatePanel:MoveTo( 20, self.updatePanel.y, 0.5, firstMenuDelta )
 	
 	firstMenuDelta = firstMenuDelta + 0.1
 	self.updatePanel.Paint = function( pnl, w, h )
@@ -179,12 +186,11 @@ function PANEL:Init( )
 	self.pluginPanel = vgui.Create( "DPanel", self )
 	
 	self.pluginPanel.w, self.pluginPanel.h = panelWSize, self.h * 0.45
-	self.pluginPanel.x, self.pluginPanel.y = self.w / 2 - self.updatePanel.w / 2, 45
+	self.pluginPanel.x, self.pluginPanel.y = self.w / 2 - self.pluginPanel.w / 2, 45
 	
 	self.pluginPanel:SetSize( self.pluginPanel.w, self.pluginPanel.h )
-	self.pluginPanel:SetPos( self.pluginPanel.x, self.pluginPanel.y )
-	self.pluginPanel:SetAlpha( 0 )
-	self.pluginPanel:AlphaTo( 255, 0.5, firstMenuDelta )
+	self.pluginPanel:SetPos( self.pluginPanel.x, 0 - self.pluginPanel.h )
+	self.pluginPanel:MoveTo( self.pluginPanel.x, 45, 0.5, firstMenuDelta )
 	
 	firstMenuDelta = firstMenuDelta + 0.1
 	self.pluginPanel.Paint = function( pnl, w, h )
@@ -516,9 +522,8 @@ function PANEL:Init( )
 	self.databasePanel.loadingAni = 0
 	
 	self.databasePanel:SetSize( self.databasePanel.w, self.databasePanel.h )
-	self.databasePanel:SetPos( self.databasePanel.x, self.databasePanel.y )
-	self.databasePanel:SetAlpha( 0 )
-	self.databasePanel:AlphaTo( 255, 0.5, firstMenuDelta )
+	self.databasePanel:SetPos( self.w, self.databasePanel.y )
+	self.databasePanel:MoveTo( self.w - self.databasePanel.w - 20, self.databasePanel.y, 0.5, firstMenuDelta )
 	
 	firstMenuDelta = firstMenuDelta + 0.1
 	self.databasePanel.Paint = function( pnl, w, h )
@@ -798,9 +803,8 @@ function PANEL:Init( )
 	self.externalXPanel.restartDelay = false
 	
 	self.externalXPanel:SetSize( self.externalXPanel.w, self.externalXPanel.h )
-	self.externalXPanel:SetPos( self.externalXPanel.x, self.externalXPanel.y )
-	self.externalXPanel:SetAlpha( 0 )
-	self.externalXPanel:AlphaTo( 255, 0.5, firstMenuDelta )
+	self.externalXPanel:SetPos( 0 - self.externalXPanel.w, self.externalXPanel.y )
+	self.externalXPanel:MoveTo( 20, self.externalXPanel.y, 0.5, firstMenuDelta )
 	
 	firstMenuDelta = firstMenuDelta + 0.1
 	self.externalXPanel.Paint = function( pnl, w, h )
@@ -919,15 +923,45 @@ function PANEL:Init( )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 	end
 	
+	local frameworkInfo = hook.Run( "GetFrameworkInformation" )
+	local schemaInfo = hook.Run( "GetSchemaInformation" )
+	
+	self.infoPanel = vgui.Create( "DPanel", self )
+	
+	self.infoPanel.w, self.infoPanel.h = panelWSize, self.h * 0.45 + 5
+	self.infoPanel.x, self.infoPanel.y = self.w / 2 - self.infoPanel.w / 2, self.h * 0.5 + 20
+	
+	self.infoPanel:SetSize( self.infoPanel.w, self.infoPanel.h )
+	self.infoPanel:SetPos( self.infoPanel.x, self.h )
+	self.infoPanel:MoveTo( self.infoPanel.x, self.h * 0.5 + 20, 0.5, firstMenuDelta )
+	
+	firstMenuDelta = firstMenuDelta + 0.1
+	self.infoPanel.Paint = function( pnl, w, h )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 150 ) )
+		
+		surface.SetDrawColor( 0, 0, 0, 90 )
+		surface.DrawOutlinedRect( 0, 0, w, h )
+		
+		draw.RoundedBox( 0, 0, 30, w, 1, Color( 0, 0, 0, 90 ) )
+		
+		draw.SimpleText( LANG( "System_UI_Info_Title" ), "catherine_normal20", 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+		
+		draw.SimpleText( frameworkInfo.author, "catherine_normal15", w / 2, h / 2 - 15, Color( 0, 0, 0, 255 ), 1, 1 )
+		draw.SimpleText( schemaInfo.author, "catherine_normal15", w / 2, h / 2 + 15, Color( 0, 0, 0, 255 ), 1, 1 )
+		
+		if ( Schema and Schema.Name ) then
+			draw.SimpleText( Schema.Name, "catherine_normal20", w / 2, h * 0.3, Color( 0, 0, 0, 255 ), 1, 1 )
+		end
+	end
+	
 	self.configPanel = vgui.Create( "DPanel", self )
 	
-	self.configPanel.w, self.configPanel.h = panelWSize * 2 + 25, self.h * 0.45 + 5
-	self.configPanel.x, self.configPanel.y = self.w / 2 - panelWSize / 2, self.h * 0.5 + 20
+	self.configPanel.w, self.configPanel.h = panelWSize, self.h * 0.45 + 5
+	self.configPanel.x, self.configPanel.y = self.w - self.configPanel.w - 20, self.h * 0.5 + 20
 	
 	self.configPanel:SetSize( self.configPanel.w, self.configPanel.h )
-	self.configPanel:SetPos( self.configPanel.x, self.configPanel.y )
-	self.configPanel:SetAlpha( 0 )
-	self.configPanel:AlphaTo( 255, 0.5, firstMenuDelta )
+	self.configPanel:SetPos( self.w, self.configPanel.y )
+	self.configPanel:MoveTo( self.w - self.configPanel.w - 20, self.configPanel.y, 0.5, firstMenuDelta )
 	
 	firstMenuDelta = firstMenuDelta + 0.1
 	self.configPanel.Paint = function( pnl, w, h )
@@ -1004,13 +1038,28 @@ function PANEL:Init( )
 	self.close.PaintBackground = function( pnl, w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 200, 200, 255 ) )
 	end
+	
+	self.moduleInstalled = true
 end
 
 function PANEL:Paint( w, h )
 	draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
-	
 	draw.SimpleText( LANG( "System_UI_Title" ), "catherine_normal25", 20, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( LANG( "System_UI_Welcome", catherine.pl:Name( ) ), "catherine_italic20", w - self.close:GetWide( ) - 40, 23, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	
+	if ( self.frameworkMaterial != "__error_material" ) then
+		self.frameworkMaterialA = Lerp( 0.03, self.frameworkMaterialA, 255 )
+		
+		if ( !self.moduleInstalled and math.Round( self.frameworkMaterialA ) >= 250 ) then
+			self:InstallModules( )
+			self.moduleInstalled = true
+		end
+		
+		local frameworkMaterial_w, frameworkMaterial_h = self.frameworkMaterial:Width( ) / 2, self.frameworkMaterial:Height( ) / 2
+		
+		surface.SetDrawColor( 255, 255, 255, self.frameworkMaterialA )
+		surface.SetMaterial( self.frameworkMaterial )
+		surface.DrawTexturedRect( w / 2 - frameworkMaterial_w / 2, h / 2 - frameworkMaterial_h / 2, frameworkMaterial_w, frameworkMaterial_h )
+	end
 end
 
 function PANEL:Close( )

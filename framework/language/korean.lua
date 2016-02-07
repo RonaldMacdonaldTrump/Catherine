@@ -285,6 +285,7 @@ LANGUAGE.data = {
 	[ "System_UI_Config_Title" ] = "설정값",
 	[ "System_UI_Config_BooleanTrue" ] = "활성화",
 	[ "System_UI_Config_BooleanFalse" ] = "비활성",
+	[ "System_UI_Info_Title" ] = "정보",
 	
 	// Attribute
 	[ "Attribute_UI_Title" ] = "능력치",
