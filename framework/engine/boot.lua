@@ -146,6 +146,7 @@ function catherine.Boot( )
 		AddCSLuaFile( "catherine/framework/engine/lime.lua" )
 		AddCSLuaFile( "catherine/framework/engine/external_x.lua" )
 		AddCSLuaFile( "catherine/framework/engine/database.lua" )
+		AddCSLuaFile( "catherine/framework/engine/dev.lua" )
 		
 		include( "catherine/framework/engine/server.lua" )
 		include( "catherine/framework/engine/shared.lua" )
@@ -155,12 +156,14 @@ function catherine.Boot( )
 		include( "catherine/framework/engine/resource.lua" )
 		include( "catherine/framework/engine/external_x.lua" )
 		include( "catherine/framework/engine/lime.lua" )
+		include( "catherine/framework/engine/dev.lua" )
 	else
 		include( "catherine/framework/engine/client.lua" )
 		include( "catherine/framework/engine/shared.lua" )
 		include( "catherine/framework/engine/lime.lua" )
 		include( "catherine/framework/engine/external_x.lua" )
 		include( "catherine/framework/engine/database.lua" )
+		include( "catherine/framework/engine/dev.lua" )
 	end
 	
 	catherine.util.IncludeInDir( "derma" )

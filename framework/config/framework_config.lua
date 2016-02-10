@@ -127,7 +127,7 @@ else
 	catherine.configs.mainColor = Color( 50, 50, 50 )
 	
 	catherine.configs.mainBarWideScale = 0.2
-	catherine.configs.mainBarTallSize = 6
+	catherine.configs.mainBarTallSize = 5
 	catherine.configs.maxChatboxLine = 50
 	catherine.configs.enableCharacterPanelBlur = true
 end

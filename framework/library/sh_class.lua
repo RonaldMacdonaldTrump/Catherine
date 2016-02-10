@@ -121,13 +121,17 @@ if ( SERVER ) then
 			return
 		end
 		
-		local classTable = catherine.class.FindByIndex( index )
+		local classTable = table.Copy( catherine.class.FindByIndex( index ) )
+		
+		classTable = hook.Run( "AdjustSetClassTable", pl, classTable, isMenu ) or classTable
 		
 		if ( classTable.model ) then
 			pl:SetModel( type( classTable.model ) == "table" and table.Random( classTable.model ) or classTable.model )
 		end
 		
 		catherine.character.SetCharVar( pl, "class", index )
+		
+		hook.Run( "PostSetClass", pl, classTable, isMenu )
 	end
 	
 	function catherine.class.GetDefaultClass( factionID )

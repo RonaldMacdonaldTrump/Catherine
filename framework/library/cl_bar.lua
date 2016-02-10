@@ -70,9 +70,8 @@ function catherine.bar.Remove( uniqueID )
 	end
 end
 
-function catherine.bar.Draw( )
+function catherine.bar.Draw( pl )
 	if ( #catherine.bar.lists == 0 or getconVar( "cat_convar_bar" ) == "0" ) then return end
-	local pl = catherine.pl
 	
 	if ( hook_run( "ShouldDrawBar", pl ) == false ) then
 		hook_run( "HUDDrawBarBottom", 5, 5 )
@@ -117,7 +116,7 @@ function catherine.bar.Draw( )
 		if ( math_round( v.a ) > 0 ) then
 			local col = v.col
 			
-			draw_roundedBox( 0, 5, v.y, barW, barH, color( 255, 255, 255, v.a / 1.5 ) )
+			draw_roundedBox( 0, 5, v.y, barW, barH, color( 245, 245, 245, v.a ) )
 			draw_roundedBox( 0, 5, v.y, v.w, barH, color( col.r, col.g, col.b, v.a ) )
 		end
 	end

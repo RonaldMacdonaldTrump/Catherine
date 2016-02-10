@@ -55,7 +55,10 @@ end
 function PANEL:BuildClasses( )
 	self.Lists:Clear( )
 	
+	local unknownMaterial = Material( "CAT/ui/icon_idk.png", "smooth" )
+	
 	for k, v in pairs( self.classes or { } ) do
+		local noModel = false
 		local name = catherine.util.StuffLanguage( v.name )
 		local desc = catherine.util.StuffLanguage( v.desc )
 		
@@ -68,6 +71,12 @@ function PANEL:BuildClasses( )
 			draw.SimpleText( desc, "catherine_normal15", 80, 50, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 			draw.SimpleText( LANG( "Class_UI_LimitStr", #catherine.class.GetPlayers( v.uniqueID ), v.limit or LANG( "Class_UI_Unlimited" ) ), "catherine_normal20", w - 10, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			draw.SimpleText( LANG( "Class_UI_SalaryStr", catherine.cash.GetCompleteName( v.salary or 0 ) ), "catherine_normal20", w - 10, 50, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			
+			if ( noModel ) then
+				surface.SetDrawColor( 255, 255, 255, 255 )
+				surface.SetMaterial( unknownMaterial )
+				surface.DrawTexturedRect( 5, 5, 60, 60 )
+			end
 		end
 		
 		local button = vgui.Create( "DButton", panel )
@@ -83,10 +92,22 @@ function PANEL:BuildClasses( )
 		spawnIcon:SetSize( 60, 60 )
 		spawnIcon:SetPos( 5, 5 )
 		
-		if ( type( v.model ) == "table" ) then
-			spawnIcon:SetModel( table.Random( v.model ) )
+		if ( v.model ) then
+			if ( type( v.model ) == "table" ) then
+				local model = table.Random( v.model )
+				
+				if ( model and type( model ) == "string" ) then
+					spawnIcon:SetModel( model )
+				else
+					spawnIcon:SetVisible( false )
+					noModel = true
+				end
+			else
+				spawnIcon:SetModel( v.model )
+			end
 		else
-			spawnIcon:SetModel( v.model )
+			spawnIcon:SetVisible( false )
+			noModel = true
 		end
 		
 		spawnIcon.PaintOver = function( pnl, w, h )

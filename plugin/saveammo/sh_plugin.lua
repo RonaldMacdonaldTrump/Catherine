@@ -59,17 +59,17 @@ local ammoTypes = {
 }
 
 function PLUGIN:PostCharacterSave( pl )
-	local tab = { }
+	local data = { }
 	
 	for k, v in pairs( ammoTypes ) do
 		local ammoCount = pl:GetAmmoCount( v )
 		
 		if ( ammoCount > 0 ) then
-			tab[ v ] = ammoCount
+			data[ v ] = ammoCount
 		end
 	end
 	
-	catherine.character.SetCharVar( pl, "ammos", tab )
+	catherine.character.SetCharVar( pl, "ammos", data )
 end
 
 function PLUGIN:PlayerDeath( pl )
@@ -77,12 +77,14 @@ function PLUGIN:PlayerDeath( pl )
 	catherine.character.SetCharVar( pl, "ammos", nil )
 end
 
-function PLUGIN:PlayerSpawnedInCharacter( pl )
-	pl:RemoveAllAmmo( )
-	
-	for k, v in pairs( catherine.character.GetCharVar( pl, "ammos", { } ) ) do
-		pl:SetAmmo( tonumber( v ) or 0, k )
-	end
-	
-	catherine.character.SetCharVar( pl, "ammos", nil )
+function PLUGIN:OnSpawnedInCharacter( pl )
+	timer.Simple( 1, function( )
+		pl:RemoveAllAmmo( )
+		
+		for k, v in pairs( catherine.character.GetCharVar( pl, "ammos", { } ) ) do
+			pl:SetAmmo( tonumber( v ) or 0, tostring( k ) )
+		end
+		
+		catherine.character.SetCharVar( pl, "ammos", nil )
+	end )
 end

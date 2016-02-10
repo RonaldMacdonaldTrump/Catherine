@@ -341,17 +341,16 @@ end
 
 function GM:ScalePlayerDamage( pl, hitGroup, dmgInfo )
 	if ( !pl:IsPlayer( ) ) then return end
+	if ( hook.Run( "PlayerShouldDamage", pl, dmgInfo ) == false ) then return end
 	
-	if ( !catherine.player.IsIgnoreScreenColor( pl ) ) then
-		if ( ( pl.CAT_nextDamageScreenColorEffect or 0 ) <= CurTime( ) ) then
-			catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.1, 0.05 )
-			
-			if ( hitGroup == CAT_BODY_ID_HEAD ) then
-				catherine.util.ScreenColorEffect( pl, nil, 0.2, 0.05 )
-			end
-			
-			pl.CAT_nextDamageScreenColorEffect = CurTime( ) + 1
+	if ( !catherine.player.IsIgnoreScreenColor( pl ) and ( pl.CAT_nextDamageScreenColorEffect or 0 ) <= CurTime( ) ) then
+		catherine.util.ScreenColorEffect( pl, Color( 255, 150, 150 ), 0.1, 0.05 )
+		
+		if ( hitGroup == CAT_BODY_ID_HEAD ) then
+			catherine.util.ScreenColorEffect( pl, nil, 0.2, 0.05 )
 		end
+		
+		pl.CAT_nextDamageScreenColorEffect = CurTime( ) + 1
 	end
 end
 
@@ -432,7 +431,17 @@ function GM:PlayerShouldRagdollDamage( pl, ent, dmgInfo )
 	end
 end
 
+function GM:PlayerGodMode( pl, status )
+	if ( !status and pl.CAT_godmodeAlready ) then
+		pl.CAT_godmodeAlready = nil
+	end
+end
+
 function GM:PlayerShouldDamage( pl, dmgInfo )
+	if ( pl:HasGodMode( ) ) then
+		return false
+	end
+	
 	if ( pl:IsNoclipping( ) ) then
 		return false
 	end

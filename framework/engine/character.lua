@@ -211,6 +211,8 @@ if ( SERVER ) then
 			pl:GodDisable( )
 			pl:Freeze( false )
 			pl:UnLock( )
+		else
+			isGodMode = pl:HasGodMode( )
 		end
 		
 		local factionTable = catherine.faction.FindByID( character._faction )
@@ -236,6 +238,10 @@ if ( SERVER ) then
 		pl:SetModel( character._model )
 		pl:SetWalkSpeed( catherine.configs.playerDefaultWalkSpeed )
 		pl:SetRunSpeed( catherine.player.GetPlayerDefaultRunSpeed( pl ) )
+		
+		if ( isGodMode ) then
+			pl:GodEnable( )
+		end
 		
 		catherine.character.CreateNetworkRegistry( pl, id, character )
 		catherine.character.SetCharVar( pl, "class", nil )
