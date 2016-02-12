@@ -22,7 +22,7 @@ catherine.crypto = catherine.crypto or { libVersion = "2015-10-26" }
 
 if ( !catherine.crypto.str and !catherine.crypto.mth and !catherine.crypto.tab ) then
 	catherine.crypto.str = table.Copy( string )
-	catherine.crypto.mth = table.Copy( table )
+	catherine.crypto.mth = table.Copy( math )
 	catherine.crypto.tab = table.Copy( table )
 end
 
