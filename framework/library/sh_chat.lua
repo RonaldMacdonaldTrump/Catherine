@@ -82,7 +82,7 @@ catherine.chat.Register( "ic", {
 
 catherine.chat.Register( "me", {
 	func = function( pl, text )
-		chat.AddText( Color( 193, 255, 193 ), "** " .. pl:Name( ) .. " - " .. catherine.util.StuffLanguage( text ) )
+		chat.AddText( Color( 193, 255, 193 ), "** " .. pl:Name( ) .. " - " .. text )
 	end,
 	font = "catherine_chat_italic",
 	command = { "/me", "/ME", "/Me", "/mE" },
@@ -92,7 +92,7 @@ catherine.chat.Register( "me", {
 
 catherine.chat.Register( "it", {
 	func = function( pl, text )
-		chat.AddText( Color( 193, 255, 193 ), "*** " .. pl:Name( ) .. " - " .. catherine.util.StuffLanguage( text ) )
+		chat.AddText( Color( 193, 255, 193 ), "*** " .. pl:Name( ) .. " - " .. text )
 	end,
 	font = "catherine_chat_italic",
 	command = { "/it", "/It", "/iT" },
