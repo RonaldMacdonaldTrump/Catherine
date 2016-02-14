@@ -36,6 +36,7 @@ function PANEL:Init( )
 	self:ShowCloseButton( false )
 	self:SetAlpha( 0 )
 	self:AlphaTo( 255, 0.2, 0 )
+	self:SetDraggable( false )
 	
 	self.leftPanel = vgui.Create( "DPanel", self )
 	self.leftPanel:SetSize( self.w * 0.3, self.h )

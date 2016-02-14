@@ -771,14 +771,31 @@ if ( SERVER ) then
 			netstream.Start( pl, "catherine.database.SendData", catherine.database.GetBackupFilesData( ) )
 		end
 	end )
+	
+	netstream.Hook( "catherine.database.RequestDatabaseErrorData", function( pl, data )
+		if ( pl:IsSuperAdmin( ) ) then
+			netstream.Start( pl, "catherine.database.SendDatabaseErrorData", { } )
+		end
+	end )
 else
 	catherine.database.backupFilesData = catherine.database.backupFilesData or { }
+	catherine.database.databaseErrorData = catherine.database.databaseErrorData or { }
 	
 	netstream.Hook( "catherine.database.SendData", function( data )
 		catherine.database.backupFilesData = data
 		
 		if ( IsValid( catherine.vgui.databaseManager ) ) then
 			catherine.vgui.databaseManager.backupFilesData = data
+			
+			catherine.vgui.databaseManager.main:Refresh( )
+		end
+	end )
+	
+	netstream.Hook( "catherine.database.SendDatabaseErrorData", function( data )
+		catherine.database.databaseErrorData = data
+		
+		if ( IsValid( catherine.vgui.databaseManager ) ) then
+			catherine.vgui.databaseManager.databaseErrorData = data
 			
 			catherine.vgui.databaseManager.main:Refresh( )
 		end

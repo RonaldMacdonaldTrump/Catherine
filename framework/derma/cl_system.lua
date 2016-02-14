@@ -755,10 +755,32 @@ function PANEL:InstallModules( )
 			draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 150, 150, 255 ) )
 		end
 		
+		--[[
+		self.databaseManager.errPanel = vgui.Create( "catherine.vgui.button", self.databaseManager )
+		self.databaseManager.errPanel:SetSize( self.databaseManager.w * 0.1, 30 )
+		self.databaseManager.errPanel:SetPos( self.databaseManager.w - ( self.databaseManager.w * 0.2 ) - 20, 10 )
+		self.databaseManager.errPanel:SetStr( LANG( "System_UI_DB_Manager_RestoreButton" ) )
+		self.databaseManager.errPanel:SetStrFont( "catherine_normal20" )
+		self.databaseManager.errPanel:SetStrColor( Color( 50, 50, 50, 255 ) )
+		self.databaseManager.errPanel:SetGradientColor( Color( 255, 255, 255, 150 ) )
+		self.databaseManager.errPanel.Click = function( pnl )
+			if ( self.databaseManager.main.status != "none" ) then return end
+			
+		end
+		self.databaseManager.errPanel.PaintBackground = function( pnl, w, h )
+			if ( self.databaseManager.main.status == "none" ) then
+				pnl:SetAlpha( 255 )
+			else
+				pnl:SetAlpha( 100 )
+			end
+			
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 150, 150, 255 ) )
+		end
+		--]]
+		
 		self.databaseManager.main:Refresh( )
 		
 		self.databaseManager.close = vgui.Create( "catherine.vgui.button", self.databaseManager )
-		self.databaseManager.close.block = false
 		self.databaseManager.close:SetPos( self.databaseManager.w - ( self.databaseManager.w * 0.1 ) - 10, 10 )
 		self.databaseManager.close:SetSize( self.databaseManager.w * 0.1, 25 )
 		self.databaseManager.close:SetStr( LANG( "System_UI_Close" ) )

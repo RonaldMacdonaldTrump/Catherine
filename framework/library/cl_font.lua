@@ -46,6 +46,12 @@ for i = 1, 8 do
 		weight = 1000,
 		italic = true
 	} )
+	
+	catherine.font.Register( "catherine_lightUI" .. size, {
+		font = "Segoe UI Light",
+		size = size,
+		weight = 1000
+	} )
 end
 
 catherine.font.Register( "catherine_chat", {

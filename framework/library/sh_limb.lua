@@ -115,13 +115,13 @@ if ( SERVER ) then
 	hook.Add( "PlayerThink", "catherine.limb.PlayerThink", catherine.limb.PlayerThink )
 else
 	catherine.limb.materials = {
-		[ HITGROUP_HEAD ] = Material( "CAT/Limb/head.png" ),
-		[ HITGROUP_CHEST ] = Material( "CAT/Limb/chest.png" ),
-		[ HITGROUP_STOMACH ] = Material( "CAT/Limb/stomach.png" ),
-		[ HITGROUP_RIGHTARM ] = Material( "CAT/Limb/right_arm.png" ),
-		[ HITGROUP_LEFTARM ] = Material( "CAT/Limb/left_arm.png" ),
-		[ HITGROUP_LEFTLEG ] = Material( "CAT/Limb/left_leg.png" ),
-		[ HITGROUP_RIGHTLEG ] = Material( "CAT/Limb/right_leg.png" )
+		[ HITGROUP_HEAD ] = Material( "CAT/Limb/head.png", "smooth" ),
+		[ HITGROUP_CHEST ] = Material( "CAT/Limb/chest.png", "smooth" ),
+		[ HITGROUP_STOMACH ] = Material( "CAT/Limb/stomach.png", "smooth" ),
+		[ HITGROUP_RIGHTARM ] = Material( "CAT/Limb/right_arm.png", "smooth" ),
+		[ HITGROUP_LEFTARM ] = Material( "CAT/Limb/left_arm.png", "smooth" ),
+		[ HITGROUP_LEFTLEG ] = Material( "CAT/Limb/left_leg.png", "smooth" ),
+		[ HITGROUP_RIGHTLEG ] = Material( "CAT/Limb/right_leg.png", "smooth" )
 	}
 	
 	function catherine.limb.GetColor( damage )

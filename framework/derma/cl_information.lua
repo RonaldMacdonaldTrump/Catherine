@@ -33,8 +33,8 @@ function PANEL:Init( )
 	self:ShowCloseButton( false )
 	self:MakePopup( )
 	self:SetAlpha( 0 )
-	self:AlphaTo( 255, 0.1, 0 )
-	
+	self:AlphaTo( 255, 0.3, 0 )
+	--[[
 	local pl = self.player
 	local maxDescLen = catherine.configs.characterDescMaxLen
 	
@@ -193,25 +193,144 @@ function PANEL:Init( )
 	
 	for k, v in pairs( data ) do
 		self:AddRPInformation( v )
+	end--]]
+	
+	self.limbBaseMaterial = Material( "CAT/limb/body.png", "smooth" ) or "__error_material"
+	
+	local limbBaseMaterial_w, limbBaseMaterial_h = 150, 341
+	
+	if ( self.limbBaseMaterial != "__error_material" ) then
+		limbBaseMaterial_w, limbBaseMaterial_h = self.limbBaseMaterial:Width( ) / 1.7, self.limbBaseMaterial:Height( ) / 1.5 // 150, 341
+	end
+	
+	surface.SetFont( "catherine_lightUI50" )
+	local pl = catherine.pl
+	local tw, th = surface.GetTextSize( pl:Name( ) )
+	
+	self.name = vgui.Create( "DLabel", self )
+	self.name:SetSize( self.w / 2 - limbBaseMaterial_w / 2 - 20, 50 )
+	self.name:SetTextColor( Color( 255, 255, 255 ) )
+	self.name:SetPos( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 - 10 )
+	self.name:SetFont( "catherine_lightUI50" )
+	self.name:SetText( pl:Name( ) )
+	self.name.Think = function( pnl )
+		if ( tw > pnl:GetWide( ) ) then
+			for i = 1, 7 do
+				surface.SetFont( "catherine_lightUI" .. math.Clamp( 50 - ( 5 * i ), 15, 50 ) )
+				tw, th = surface.GetTextSize( pl:Name( ) )
+				
+				if ( tw <= pnl:GetWide( ) ) then
+					self.name:SetSize( self.w / 2 - limbBaseMaterial_w / 2 - 20, math.Clamp( 50 - ( 5 * i ), 15, 50 ) )
+					self.name:SetFont( "catherine_lightUI" .. math.Clamp( 50 - ( 5 * i ), 15, 50 ) )
+					break
+				end
+			end
+		end
+	end
+	
+	self.desc = vgui.Create( "DLabel", self )
+	self.desc:SetSize( self.w / 2 - limbBaseMaterial_w / 2 - 20, 50 )
+	self.desc:SetPos( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) )
+	self.desc:SetTextColor( Color( 255, 255, 255 ) )
+	self.desc:SetFont( "catherine_normal15" )
+	self.desc:SetText( pl:Desc( ) )
+	self.desc.PerformLayout = function( pnl )
+		self.desc:SetPos( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) )
+	end
+	
+	self.factionName = vgui.Create( "DLabel", self )
+	self.factionName:SetSize( self.w / 2 - limbBaseMaterial_w / 2 - 20, 50 )
+	self.factionName:SetPos( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) )
+	self.factionName:SetTextColor( Color( 255, 255, 255 ) )
+	self.factionName:SetFont( "catherine_normal20" )
+	self.factionName:SetText( pl:FactionName( ) )
+	self.factionName.PerformLayout = function( pnl )
+		self.factionName:SetPos( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) + ( self.desc:GetTall( ) / 2 ) )
+	end
+	
+	self.playerModel = vgui.Create( "DModelPanel", self )
+	self.playerModel:SetSize( 150, 150 )
+	self.playerModel:SetPos( self.w / 2 - limbBaseMaterial_w / 2 - 40 - self.playerModel:GetWide( ), self.h / 2 - limbBaseMaterial_h / 2 )
+	self.playerModel:MoveToBack( )
+	self.playerModel:SetModel( pl:GetModel( ) )
+	self.playerModel:SetDrawBackground( false )
+	self.playerModel:SetDisabled( true )
+	self.playerModel:SetFOV( 15 )
+	self.playerModel:SetLookAt( Vector( 0, 0, 65 ) )
+	self.playerModel.LayoutEntity = function( pnl, ent )
+		draw.RoundedBox( 0, 0, 0, pnl:GetWide( ), pnl:GetTall( ), Color( 255, 255, 255, 255 ) )
+		
+		ent:SetAngles( Angle( 0, 45, 0 ) )
+		ent:SetIK( false )
+	end
+	
+	local x, y = self.factionName:GetPos( )
+	
+	self.rpInformations = vgui.Create( "DPanelList", self )
+	self.rpInformations.init = false
+	self.rpInformations:SetSpacing( 5 )
+	self.rpInformations:EnableHorizontal( false )
+	self.rpInformations:EnableVerticalScrollbar( true )
+	self.rpInformations.Think = function( pnl )
+		if ( !pnl.init ) then
+			local x, y = self.factionName:GetPos( )
+			
+			self.rpInformations:SetPos( x, y + 40 )
+			self.rpInformations:SetSize( self.w - x - 20, limbBaseMaterial_h - 90 )
+			pnl.init = true
+		end
+	end
+	
+	local data = { }
+	local rpInformation = hook.Run( "AddRPInformation", self, data, pl )
+	
+	for k, v in pairs( data ) do
+		self:AddRPInformation( v )
 	end
 end
 
 function PANEL:AddRPInformation( text )
 	local panel = vgui.Create( "DPanel" )
-	panel:SetSize( self.TopPanel.Lists:GetWide( ), 20 )
+	panel:SetSize( self.rpInformations:GetWide( ), 15 )
 	panel.Paint = function( pnl, w, h )
-		draw.SimpleText( text, "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+		draw.SimpleText( text, "catherine_normal15", 0, h / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 	end
 	
-	self.TopPanel.Lists:AddItem( panel )
+	self.rpInformations:AddItem( panel )
 end
 
 function PANEL:Paint( w, h )
 	if ( !self.closing ) then
-		self.blurAmount = Lerp( 0.03, self.blurAmount, 3 )
+		self.blurAmount = Lerp( 0.03, self.blurAmount, 7 )
 	end
-
+	
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 150 ) )
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
+	
+	if ( self.limbBaseMaterial != "__error_material" ) then
+		local limbBaseMaterial_w, limbBaseMaterial_h = self.limbBaseMaterial:Width( ) / 1.7, self.limbBaseMaterial:Height( ) / 1.5
+		
+		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.SetMaterial( self.limbBaseMaterial )
+		surface.DrawTexturedRect( w / 2 - limbBaseMaterial_w / 2, h / 2 - limbBaseMaterial_h / 2, limbBaseMaterial_w, limbBaseMaterial_h )
+		
+		for k, v in pairs( catherine.limb.GetTable( ) ) do
+			local mat = catherine.limb.materials[ k ]
+			
+			if ( mat ) then
+				surface.SetDrawColor( catherine.limb.GetColor( v ) )
+				surface.SetMaterial( mat )
+				surface.DrawTexturedRect( w / 2 - limbBaseMaterial_w / 2, h / 2 - limbBaseMaterial_h / 2, limbBaseMaterial_w, limbBaseMaterial_h )
+			end
+		end
+	end
+	
+	if ( catherine.configs.enable_rpTime ) then
+		local x, y = self.playerModel:GetPos( )
+		
+		draw.SimpleText( catherine.environment.GetDateString( ), "catherine_normal40", x, y + 150, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+		draw.SimpleText( catherine.environment.GetTimeString( ), "catherine_normal25", x, y + 190, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+	end
 end
 
 function PANEL:OnKeyCodePressed( key )
@@ -234,10 +353,6 @@ function PANEL:Close( )
 	end
 	
 	self.closing = true
-	
-	self.TopPanel:MoveTo( self.TopPanel.x, 0 - self.TopPanel.h, 0.3, 0 )
-	self.LeftPanel:MoveTo( 0 - self.LeftPanel.w, self.LeftPanel.y, 0.3, 0 )
-	self.RightPanel:MoveTo( self.w, self.RightPanel.y, 0.2, 0 )
 	
 	self:AlphaTo( 0, 0.3, 0, function( )
 		self:Remove( )
