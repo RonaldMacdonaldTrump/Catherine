@@ -32,9 +32,9 @@ local drawTexturedRect = surface.DrawTexturedRect
 
 local themes = {
 	[ CAT_THEME_MENU_BACKGROUND ] = function( w, h )
-		draw_roundedBox( 0, 0, 25, w, h, color( 255, 255, 255, 235 ) )
+		draw_roundedBox( 0, 0, 25, w, h, color( 50, 50, 50, 235 ) )
 		
-		setDrawColor( 200, 200, 200, 235 )
+		setDrawColor( 20, 20, 20, 235 )
 		setMaterial( gradient_up )
 		drawTexturedRect( 0, 25, w, h )
 	end,
@@ -42,8 +42,8 @@ local themes = {
 		draw_roundedBox( 0, 0, 0, w, h, color( 235, 235, 235, 255 ) )
 	end,
 	[ CAT_THEME_FORM ] = function( w, h )
-		draw_roundedBox( 0, 0, 0, w, 20, color( 225, 225, 225, 255 ) )
-		draw_roundedBox( 0, 0, 20, w, 1, color( 50, 50, 50, 90 ) )
+		//draw_roundedBox( 0, 0, 0, w, h, color( 20, 20, 20, 255 ) )
+		draw_roundedBox( 0, 0, 25, w, 1, color( 255, 255, 255, 255 ) )
 	end,
 	[ CAT_THEME_TEXTENT ] = function( w, h )
 		draw_roundedBox( 0, 0, 0, w, 2, color( 50, 50, 50, 150 ) )

@@ -44,8 +44,7 @@ function PANEL:SetMenuSize( w, h )
 	
 	self:SetSize( w, h )
 	self:Center( )
-	self:SetAlpha( 0 )
-	self:AlphaTo( 255, 0.3, 0 )
+	self:MoveTo( ScrW( ) / 2 - self.w / 2, ( ScrH( ) + 45 ) / 2 - self.h / 2, 0.2, 0 )
 	
 	self:OnMenuSizeChanged( w, h )
 end
@@ -60,37 +59,34 @@ end
 
 function PANEL:FakeHide( )
 	if ( self.isHiding ) then return end
-	
 	self.isHiding = true
-	
-	self:AlphaTo( 0, 0.3, 0, function( )
+	self:MoveTo( ScrW( ) / 2 - self.w / 2, ScrH( ), 0.2, 0, nil, function( )
 		self:SetVisible( false )
 	end )
 end
 
 function PANEL:Show( )
-	// if ( !self.isHiding ) then return end -- Why? -_-
+	//if ( !self.isHiding ) then return end -- Why? -_-
 	local w, h = self:GetWide( ), self:GetTall( )
 	
 	self.isHiding = false
-	
 	self:SetVisible( true )
-	self:SetAlpha( 0 )
-	self:AlphaTo( 255, 0.3, 0 )
+	self:MoveTo( ScrW( ) / 2 - self.w / 2, ( ScrH( ) + 45 ) / 2 - self.h / 2, 0.2, 0 )
 end
 
 function PANEL:MenuPaint( w, h ) end
 
 function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
+	draw.RoundedBox( 0, 0, 0, w, 25, Color( 255, 255, 255, 255 ) )
 	
-	draw.SimpleText( self.name, "catherine_outline20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	draw.SimpleText( self.name:upper( ), "catherine_lightUI20", 10, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
 	
 	self:MenuPaint( w, h )
 end
 
 function PANEL:Close( )
-	self:AlphaTo( 0, 0.3, 0, function( )
+	self:MoveTo( ScrW( ) / 2 - self.w / 2, ScrH( ), 0.2, 0, nil, function( )
 		self:Remove( )
 		self = nil
 	end )

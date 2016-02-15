@@ -64,13 +64,11 @@ function PANEL:Init( )
 	self.playerWeight = vgui.Create( "catherine.vgui.weight", self )
 	self.playerWeight:SetPos( self.w - 50, self.h - 45 )
 	self.playerWeight:SetSize( 40, 40 )
-	self.playerWeight:SetCircleSize( 15 )
 	self.playerWeight:SetShowText( false )
 	
 	self.storageWeight = vgui.Create( "catherine.vgui.weight", self )
 	self.storageWeight:SetPos( 10, self.h - 45 )
 	self.storageWeight:SetSize( 40, 40 )
-	self.storageWeight:SetCircleSize( 15 )
 	self.storageWeight:SetShowText( false )
 	
 	self.close = vgui.Create( "catherine.vgui.button", self )

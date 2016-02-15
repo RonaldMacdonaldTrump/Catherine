@@ -26,18 +26,15 @@ function PANEL:Init( )
 
 	self.Lists = vgui.Create( "DPanelList", self )
 	self.Lists:SetPos( 10, 35 )
-	self.Lists:SetSize( self.w - 100, self.h - 45 )
+	self.Lists:SetSize( self.w - 75, self.h - 45 )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
-	self.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-	end
+	self.Lists:SetDrawBackground( true )
 	
 	self.weight = vgui.Create( "catherine.vgui.weight", self )
-	self.weight:SetPos( self.w - 90, self.h - 90 )
-	self.weight:SetSize( 90, 90 )
-	self.weight:SetCircleSize( 30 )
+	self.weight:SetPos( self.w - 60, self.h - 160 )
+	self.weight:SetSize( 50, 150 )
 
 	self:BuildInventory( )
 end
@@ -67,18 +64,17 @@ function PANEL:BuildInventory( )
 	local pl = self.player
 	local scrollBar = self.Lists.VBar
 	local scroll = scrollBar.Scroll
-
+	
 	self.Lists:Clear( )
 
 	for k, v in SortedPairs( self:GetInventory( ) ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
-		form:SetName( catherine.util.StuffLanguage( k ) )
-		form.Paint = function( pnl, w, h )
-			catherine.theme.Draw( CAT_THEME_FORM, w, h )
-		end
-		form.Header:SetFont( "catherine_normal15" )
-		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
+		form:SetName( catherine.util.StuffLanguage( k ):upper( ) )
+		form.Paint = function( pnl, w, h ) end
+		form.Header:SetFont( "catherine_lightUI25" )
+		form.Header:SetTall( 25 )
+		form.Header:SetTextColor( Color( 255, 255, 255, 255 ) )
 
 		local lists = vgui.Create( "DPanelList", form )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
@@ -132,8 +128,8 @@ function PANEL:BuildInventory( )
 					surface.SetFont( "catherine_normal20" )
 					local tw, th = surface.GetTextSize( count )
 					
-					draw.RoundedBox( 0, 5 - tw / 2, h - 20, tw * 2, 20, Color( 50, 50, 50, 200 ) )
-					draw.SimpleText( count, "catherine_normal20", 5, h - 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.RoundedBox( 0, 5 - tw / 2, h - 20, tw * 2, 20, Color( 255, 255, 255, 200 ) )
+					draw.SimpleText( count, "catherine_normal20", 5, h - 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
 			

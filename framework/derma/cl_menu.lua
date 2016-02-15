@@ -17,7 +17,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 local PANEL = { }
-local gradientCenterMat = Material( "gui/center_gradient" )
 
 function PANEL:Init( )
 	hook.Run( "MainMenuJoined", catherine.pl )
@@ -65,46 +64,49 @@ function PANEL:Init( )
 		)
 	end
 	
-	self.ListsBase = vgui.Create( "DPanel", self )
-	self.ListsBase:SetSize( self.w, 45 )
-	self.ListsBase:SetPos( 0, self.h )
-	self.ListsBase:MoveTo( 0, self.h - self.ListsBase:GetTall( ), 0.2, 0.1, nil, function( )
-		local delta = 0
-		local pl = self.player
-		local menuTable = catherine.menu.GetAll( )
+	self.menus = vgui.Create( "DHorizontalScroller", self )
+	self.menus:SetPos( 10, 0 - 35 )
+	self.menus:MoveTo( 10, 10, 0.2, 0 )
+	self.menus:SetSize( self.w - 20, 35 )
+	
+	local delta = 0
+	local pl = self.player
+	local menuTable = catherine.menu.GetAll( )
+	
+	for k, v in pairs( menuTable ) do
+		if ( v.canLook and v.canLook( pl ) == false ) then continue end
 		
-		for k, v in pairs( menuTable ) do
-			if ( v.canLook and v.canLook( pl ) == false ) then continue end
-			
-			local menuItem, itemW = self:AddMenuItem( type( v.name ) == "function" and v.name( pl ) or v.name, v.uniqueID, v.func )
-			menuItem:SetAlpha( 0 )
-			menuItem:AlphaTo( 255, 0.2, delta )
-			
-			delta = delta + 0.05
+		local menuItem = self:AddMenuItem( type( v.name ) == "function" and v.name( pl ) or v.name, v.uniqueID, v.func )
+		menuItem:SetAlpha( 0 )
+		menuItem:AlphaTo( 255, 0.2, delta )
+		
+		delta = delta + 0.05
+	end
+end
+
+function PANEL:Paint( w, h )
+	if ( self:IsVisible( ) ) then
+		if ( !self.closing ) then
+			self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
 		end
 		
-		catherine.menu.RecoverLastActivePanel( self )
-	end )
-	self.ListsBase.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 150 ) )
+		catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 	end
-	
-	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
-	self.ListsBase.Lists:SetSize( 0, self.ListsBase:GetTall( ) )
 end
 
 function PANEL:AddMenuItem( name, uniqueID, func )
-	surface.SetFont( "catherine_normal20" )
+	surface.SetFont( "catherine_lightUI25" )
 	
 	local tw, th = surface.GetTextSize( name )
 	local mainCol = catherine.configs.mainColor
 	
 	local menuItem = vgui.Create( "DButton" )
 	menuItem:SetText( "" )
-	menuItem:SetFont( "catherine_normal20" )
-	menuItem:SetSize( tw + 30, self.ListsBase:GetTall( ) )
+	menuItem:SetFont( "catherine_lightUI25" )
+	menuItem:SetSize( tw + 40, self.menus:GetTall( ) )
 	menuItem:SetDrawBackground( false )
-	menuItem.selectH = 0
+	menuItem.lineAlpha = 0
 	menuItem.DoClick = function( pnl )
 		local activePanel = catherine.menu.GetActivePanel( )
 		local activePanelName = catherine.menu.GetActivePanelName( )
@@ -170,31 +172,18 @@ function PANEL:AddMenuItem( name, uniqueID, func )
 	end
 	menuItem.Paint = function( pnl, w, h )
 		if ( catherine.menu.GetActivePanelUniqueID( ) == uniqueID ) then
-			pnl.selectH = math.Approach( pnl.selectH, h, 5 )
+			pnl.lineAlpha = Lerp( 0.2, pnl.lineAlpha, 255 )
 		else
-			if ( pnl.selectH > 0 ) then
-				pnl.selectH = math.Approach( pnl.selectH, 0, 5 )
-			end
+			pnl.lineAlpha = Lerp( 0.2, pnl.lineAlpha, 0 )
 		end
 		
-		draw.RoundedBox( 0, 0, 0, w, pnl.selectH / 2, Color( mainCol.r, mainCol.g, mainCol.b, 255 ) )
-		draw.RoundedBox( 0, 0, h - pnl.selectH / 2, w, pnl.selectH / 2, Color( mainCol.r, mainCol.g, mainCol.b, 255 ) )
-		
-		if ( catherine.menu.GetActivePanelUniqueID( ) == uniqueID ) then
-			draw.SimpleText( name, "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
-		else
-			draw.SimpleText( name, "catherine_normal20", w / 2, h / 2, Color( 0, 0, 0, 255 ), 1, 1 )
-		end
-			
+		draw.RoundedBox( 0, 0, h - 3, w, 3, Color( 255, 255, 255, pnl.lineAlpha ) )
+		draw.SimpleText( name:upper( ), "catherine_lightUI25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 	end
 	
-	local w = self.ListsBase.Lists:GetWide( )
+	self.menus:AddPanel( menuItem )
 	
-	self.ListsBase.Lists:AddPanel( menuItem )
-	self.ListsBase.Lists:SetWide( math.min( w + menuItem:GetWide( ), self.w ) )
-	self.ListsBase.Lists:SetPos( self.w / 2 - w / 2, 0 )
-	
-	return menuItem, menuItem:GetWide( )
+	return menuItem
 end
 
 function PANEL:OnKeyCodePressed( key )
@@ -203,55 +192,35 @@ function PANEL:OnKeyCodePressed( key )
 	end
 end
 
-function PANEL:Paint( w, h )
-	self.blurAmount = Lerp( 0.05, self.blurAmount, self.closing and 0 or 3 )
-	
-	if ( self:IsVisible( ) ) then
-		catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
-	end
-end
-
 function PANEL:Show( )
 	hook.Run( "MainMenuJoined", self.player )
 	
 	self.closing = false
 	self:SetVisible( true )
+	self:AlphaTo( 255, 0.1, 0 )
 	
 	self.blurAmount = 0
 	
-	local mainCol = catherine.configs.mainColor
-	
-	if ( IsValid( self.ListsBase ) ) then
-		self.ListsBase:Remove( )
-		self.ListsBase.Lists:Remove( )
+	if ( IsValid( self.menus ) ) then
+		self.menus:Remove( )
 	end
 	
-	self.ListsBase = vgui.Create( "DPanel", self )
-	self.ListsBase:SetSize( self.w, 45 )
-	self.ListsBase:SetPos( 0, self.h )
-	self.ListsBase:MoveTo( 0, self.h - self.ListsBase:GetTall( ), 0.2, 0.1, nil, function( )
-		local delta = 0
-		local pl = self.player
-		local menuTable = catherine.menu.GetAll( )
+	self.menus = vgui.Create( "DHorizontalScroller", self )
+	self.menus:SetPos( 10, 0 - 35 )
+	self.menus:MoveTo( 10, 10, 0.2, 0 )
+	self.menus:SetSize( self.w - 20, 35 )
+	
+	local delta = 0
+	local pl = self.player
+	local menuTable = catherine.menu.GetAll( )
+	
+	for k, v in pairs( menuTable ) do
+		if ( v.canLook and v.canLook( pl ) == false ) then continue end
 		
-		for k, v in pairs( menuTable ) do
-			if ( v.canLook and v.canLook( pl ) == false ) then continue end
-			
-			local menuItem, itemW = self:AddMenuItem( type( v.name ) == "function" and v.name( pl ) or v.name, v.uniqueID, v.func )
-			menuItem:SetAlpha( 0 )
-			menuItem:AlphaTo( 255, 0.2, delta )
-			
-			delta = delta + 0.05
-		end
-		
-		catherine.menu.RecoverLastActivePanel( self )
-	end )
-	self.ListsBase.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+		self:AddMenuItem( type( v.name ) == "function" and v.name( pl ) or v.name, v.uniqueID, v.func )
 	end
 	
-	self.ListsBase.Lists = vgui.Create( "DHorizontalScroller", self.ListsBase )
-	self.ListsBase.Lists:SetSize( 0, self.ListsBase:GetTall( ) )
+	catherine.menu.RecoverLastActivePanel( self )
 end
 
 function PANEL:OnRemove( )
@@ -268,7 +237,6 @@ end
 
 function PANEL:Close( )
 	if ( self.closing ) then
-		timer.Remove( "Catherine.timer.MainMenuFix" )
 		timer.Create( "Catherine.timer.MainMenuFix", 0.2, 1, function( )
 			if ( IsValid( self ) and self:IsVisible( ) ) then
 				self:SetVisible( false )
@@ -288,7 +256,8 @@ function PANEL:Close( )
 		activePanel:FakeHide( )
 	end
 	
-	self.ListsBase:MoveTo( self.w / 2 - self.ListsBase:GetWide( ) / 2, self.h, 0.2, 0, nil, function( anim, pnl )
+	self.menus:MoveTo( 10, 0 - 35, 0.2, 0 )
+	self:AlphaTo( 0, 0.2, 0, function( )
 		hook.Run( "MainMenuExited", self.player )
 		self:SetVisible( false )
 	end )

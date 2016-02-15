@@ -38,7 +38,7 @@ function PANEL:Init( )
 end
 
 function PANEL:OnMenuSizeChanged( )
-	self:SetPos( ScrW( ) / 2 - self:GetWide( ) / 2, ( ScrH( ) - 45 ) / 2 - self:GetTall( ) / 2 )
+	self:SetPos( ScrW( ) / 2 - self:GetWide( ) / 2, 0 )
 end
 
 function PANEL:OnMenuRecovered( )

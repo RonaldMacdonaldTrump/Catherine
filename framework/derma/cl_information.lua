@@ -19,6 +19,8 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local PANEL = { }
 
 function PANEL:Init( )
+	hook.Run( "RPInformationMenuJoined", catherine.pl, self )
+	
 	catherine.vgui.information = self
 	
 	self.player = catherine.pl
@@ -208,49 +210,60 @@ function PANEL:Init( )
 	local tw, th = surface.GetTextSize( pl:Name( ) )
 	
 	self.name = vgui.Create( "DLabel", self )
+	self.name.fixed = false
 	self.name:SetSize( self.w / 2 - limbBaseMaterial_w / 2 - 20, 50 )
 	self.name:SetTextColor( Color( 255, 255, 255 ) )
-	self.name:SetPos( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 - 10 )
+	self.name:SetPos( self.w, self.h / 2 - limbBaseMaterial_h / 2 - 10 )
 	self.name:SetFont( "catherine_lightUI50" )
 	self.name:SetText( pl:Name( ) )
-	self.name.Think = function( pnl )
+	self.name.PerformLayout = function( pnl )
 		if ( tw > pnl:GetWide( ) ) then
 			for i = 1, 7 do
-				surface.SetFont( "catherine_lightUI" .. math.Clamp( 50 - ( 5 * i ), 15, 50 ) )
+				local newFontSize = math.Clamp( 50 - ( 5 * i ), 15, 50 )
+				
+				surface.SetFont( "catherine_lightUI" .. newFontSize )
 				tw, th = surface.GetTextSize( pl:Name( ) )
 				
 				if ( tw <= pnl:GetWide( ) ) then
-					self.name:SetSize( self.w / 2 - limbBaseMaterial_w / 2 - 20, math.Clamp( 50 - ( 5 * i ), 15, 50 ) )
-					self.name:SetFont( "catherine_lightUI" .. math.Clamp( 50 - ( 5 * i ), 15, 50 ) )
+					self.name:SetSize( self.w / 2 - limbBaseMaterial_w / 2 - 20, newFontSize )
+					self.name:SetFont( "catherine_lightUI" .. newFontSize )
+					self.name:SetPos( self.w, self.h / 2 - limbBaseMaterial_h / 2 - newFontSize / 2 )
+					self.name:MoveTo( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 - newFontSize / 2, 0.3, 0 )
+					pnl.fixed = true
 					break
 				end
+			end
+		else
+			if ( !pnl.fixed ) then
+				self.name:MoveTo( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 - 10, 0.3, 0 )
 			end
 		end
 	end
 	
 	self.desc = vgui.Create( "DLabel", self )
 	self.desc:SetSize( self.w / 2 - limbBaseMaterial_w / 2 - 20, 50 )
-	self.desc:SetPos( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) )
+	self.desc:SetPos( self.w, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) )
 	self.desc:SetTextColor( Color( 255, 255, 255 ) )
 	self.desc:SetFont( "catherine_normal15" )
 	self.desc:SetText( pl:Desc( ) )
 	self.desc.PerformLayout = function( pnl )
-		self.desc:SetPos( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) )
+		pnl:MoveTo( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ), 0.3, 0.1 )
 	end
 	
 	self.factionName = vgui.Create( "DLabel", self )
 	self.factionName:SetSize( self.w / 2 - limbBaseMaterial_w / 2 - 20, 50 )
-	self.factionName:SetPos( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) )
+	self.factionName:SetPos( self.w, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) + ( self.desc:GetTall( ) / 2 ) )
 	self.factionName:SetTextColor( Color( 255, 255, 255 ) )
 	self.factionName:SetFont( "catherine_normal20" )
 	self.factionName:SetText( pl:FactionName( ) )
 	self.factionName.PerformLayout = function( pnl )
-		self.factionName:SetPos( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) + ( self.desc:GetTall( ) / 2 ) )
+		pnl:MoveTo( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) + ( self.desc:GetTall( ) / 2 ), 0.3, 0.2 )
 	end
 	
 	self.playerModel = vgui.Create( "DModelPanel", self )
 	self.playerModel:SetSize( 150, 150 )
-	self.playerModel:SetPos( self.w / 2 - limbBaseMaterial_w / 2 - 40 - self.playerModel:GetWide( ), self.h / 2 - limbBaseMaterial_h / 2 )
+	self.playerModel:SetPos( 0 - self.playerModel:GetWide( ), self.h / 2 - limbBaseMaterial_h / 2 )
+	self.playerModel:MoveTo( self.w / 2 - limbBaseMaterial_w / 2 - 40 - self.playerModel:GetWide( ), self.h / 2 - limbBaseMaterial_h / 2, 0.3, 0 )
 	self.playerModel:MoveToBack( )
 	self.playerModel:SetModel( pl:GetModel( ) )
 	self.playerModel:SetDrawBackground( false )
@@ -260,38 +273,49 @@ function PANEL:Init( )
 	self.playerModel.LayoutEntity = function( pnl, ent )
 		draw.RoundedBox( 0, 0, 0, pnl:GetWide( ), pnl:GetTall( ), Color( 255, 255, 255, 255 ) )
 		
+		local boneIndex = ent:LookupBone( "ValveBiped.Bip01_Head1" )
+		local entMin, entMax = ent:GetRenderBounds( )
+		
+		if ( boneIndex ) then
+			local pos, ang = ent:GetBonePosition( boneIndex )
+			
+			if ( pos ) then
+				pnl:SetLookAt( pos )
+			end
+		else
+			pnl:SetLookAt( ( entMax + entMin ) / 2 )
+		end
+		
 		ent:SetAngles( Angle( 0, 45, 0 ) )
 		ent:SetIK( false )
+		pnl:RunAnimation( )
 	end
-	
-	local x, y = self.factionName:GetPos( )
 	
 	self.rpInformations = vgui.Create( "DPanelList", self )
 	self.rpInformations.init = false
 	self.rpInformations:SetSpacing( 5 )
+	self.rpInformations:SetPos( self.w, self.h / 2 - limbBaseMaterial_h / 2 + 20 + ( self.name:GetTall( ) / 2 ) + ( self.desc:GetTall( ) / 2 ) + ( self.factionName:GetTall( ) / 2 ) )
+	self.rpInformations:SetSize( self.w - ( self.w / 2 + limbBaseMaterial_w / 2 + 20 ) - 20, limbBaseMaterial_h - 90 )
 	self.rpInformations:EnableHorizontal( false )
 	self.rpInformations:EnableVerticalScrollbar( true )
-	self.rpInformations.Think = function( pnl )
-		if ( !pnl.init ) then
-			local x, y = self.factionName:GetPos( )
+	self.rpInformations:MoveTo( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + 20 + ( self.name:GetTall( ) / 2 ) + ( self.desc:GetTall( ) / 2 ) + ( self.factionName:GetTall( ) / 2 ), 0.3, 0.3, nil, function( )
+		local data = { }
+		local delta = 0
+		local rpInformation = hook.Run( "AddRPInformation", self, data, pl )
+		
+		for k, v in pairs( data ) do
+			self:AddRPInformation( v, delta )
 			
-			self.rpInformations:SetPos( x, y + 40 )
-			self.rpInformations:SetSize( self.w - x - 20, limbBaseMaterial_h - 90 )
-			pnl.init = true
+			delta = delta + 0.03
 		end
-	end
-	
-	local data = { }
-	local rpInformation = hook.Run( "AddRPInformation", self, data, pl )
-	
-	for k, v in pairs( data ) do
-		self:AddRPInformation( v )
-	end
+	end )
 end
 
-function PANEL:AddRPInformation( text )
+function PANEL:AddRPInformation( text, delta )
 	local panel = vgui.Create( "DPanel" )
 	panel:SetSize( self.rpInformations:GetWide( ), 15 )
+	panel:SetAlpha( 0 )
+	panel:AlphaTo( 255, 0.2, delta )
 	panel.Paint = function( pnl, w, h )
 		draw.SimpleText( text, "catherine_normal15", 0, h / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 	end
@@ -300,15 +324,19 @@ function PANEL:AddRPInformation( text )
 end
 
 function PANEL:Paint( w, h )
+	hook.Run( "PreRPInformationPaint", self, w, h )
+	
 	if ( !self.closing ) then
-		self.blurAmount = Lerp( 0.03, self.blurAmount, 7 )
+		self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
 	end
 	
 	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 150 ) )
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 	
+	local limbBaseMaterial_w, limbBaseMaterial_h = 150, 341 // 150, 341
+	
 	if ( self.limbBaseMaterial != "__error_material" ) then
-		local limbBaseMaterial_w, limbBaseMaterial_h = self.limbBaseMaterial:Width( ) / 1.7, self.limbBaseMaterial:Height( ) / 1.5
+		limbBaseMaterial_w, limbBaseMaterial_h = self.limbBaseMaterial:Width( ) / 1.7, self.limbBaseMaterial:Height( ) / 1.5
 		
 		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( self.limbBaseMaterial )
@@ -326,11 +354,11 @@ function PANEL:Paint( w, h )
 	end
 	
 	if ( catherine.configs.enable_rpTime ) then
-		local x, y = self.playerModel:GetPos( )
-		
-		draw.SimpleText( catherine.environment.GetDateString( ), "catherine_normal40", x, y + 150, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
-		draw.SimpleText( catherine.environment.GetTimeString( ), "catherine_normal25", x, y + 190, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+		draw.SimpleText( catherine.environment.GetDateString( ), "catherine_lightUI50", w / 2, h / 2 - limbBaseMaterial_h / 2 - 60, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.SimpleText( catherine.environment.GetTimeString( ), "catherine_lightUI30", w / 2, h / 2 - limbBaseMaterial_h / 2 - 30, Color( 255, 255, 255, 255 ), 1, 1 )
 	end
+	
+	hook.Run( "PostRPInformationPaint", self, w, h )
 end
 
 function PANEL:OnKeyCodePressed( key )
@@ -355,6 +383,8 @@ function PANEL:Close( )
 	self.closing = true
 	
 	self:AlphaTo( 0, 0.3, 0, function( )
+		hook.Run( "RPInformationMenuExited", self.player )
+		
 		self:Remove( )
 		self = nil
 	end )

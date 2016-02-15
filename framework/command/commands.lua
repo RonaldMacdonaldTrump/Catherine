@@ -330,10 +330,10 @@ catherine.command.Register( {
 	command = "charphysdesc",
 	desc = "Change a character description.",
 	runFunc = function( pl, args )
+		local newDesc = table.concat( args, " " )
+		
 		if ( args[ 1 ] ) then
-			if ( !args[ 1 ]:find( "#" ) ) then
-				local newDesc = args[ 1 ]
-				
+			if ( !newDesc:find( "#" ) ) then
 				if ( newDesc:utf8len( ) >= catherine.configs.characterDescMinLen and newDesc:utf8len( ) < catherine.configs.characterDescMaxLen ) then
 					catherine.character.SetVar( pl, "_desc", newDesc, nil, true )
 					catherine.character.SendPlayerCharacterList( pl )
