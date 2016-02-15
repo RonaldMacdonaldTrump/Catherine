@@ -30,9 +30,7 @@ function PANEL:Init( )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )
-	self.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-	end
+	self.Lists:SetDrawBackground( false )
 
 	self:BuildAttribute( )
 end
@@ -93,14 +91,12 @@ function PANEL:Paint( w, h )
 	self.attAni = Lerp( 0.08, self.attAni, perForAni * 360 )
 	self.attTextAni = Lerp( 0.1, self.attTextAni, per + per2 - per3 )
 	
-	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
-	
 	draw.NoTexture( )
-	surface.SetDrawColor( 200, 200, 200, 255 )
+	surface.SetDrawColor( 100, 100, 100, 255 )
 	catherine.geometry.DrawCircle( w - ( h / 3 ) - 15, h / 2, h / 3, 5, 90, 360, 100 )
 	
 	draw.NoTexture( )
-	surface.SetDrawColor( 90, 90, 90, 255 )
+	surface.SetDrawColor( 255, 255, 255, 255 )
 	catherine.geometry.DrawCircle( w - ( h / 3 ) - 15, h / 2, h / 3, 5, 90, self.attAni, 100 )
 	
 	if ( per2 != 0 ) then
@@ -117,24 +113,24 @@ function PANEL:Paint( w, h )
 	
 	if ( self.attributeTable.image ) then
 		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.DrawRect( 10, 10, 70, 70 )
+		
+		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( Material( self.attributeTable.image, "smooth" ) )
 		surface.DrawTexturedRect( 15, 15, 60, 60 )
-		
-		surface.SetDrawColor( 50, 50, 50, 255 )
-		surface.DrawOutlinedRect( 10, 10, 70, 70 )
 	else
+		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.DrawRect( 10, 10, 70, 70 )
+		
 		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( Material( "CAT/ui/icon_idk.png", "smooth" ) )
 		surface.DrawTexturedRect( 15, 15, 60, 60 )
-		
-		surface.SetDrawColor( 50, 50, 50, 255 )
-		surface.DrawOutlinedRect( 10, 10, 70, 70 )
 	end
 	
-	draw.SimpleText( self.attribute_name, "catherine_normal25", 100, 30, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( self.attribute_desc, "catherine_normal15", 100, 60, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.attribute_name, "catherine_normal25", 100, 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.attribute_desc, "catherine_normal15", 100, 60, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
 	
-	draw.SimpleText( math.Round( self.attTextAni * 100 ) .. " %", "catherine_normal20", w - ( h / 3 ) - 15, h / 2, Color( 0, 0, 0, 255 ), 1, 1 )
+	draw.SimpleText( math.Round( self.attTextAni * 100 ) .. " %", "catherine_normal20", w - ( h / 3 ) - 15, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 end
 
 function PANEL:SetAttribute( attributeTable )

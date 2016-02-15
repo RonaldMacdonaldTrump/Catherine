@@ -30,7 +30,7 @@ function PANEL:Init( )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
-	self.Lists:SetDrawBackground( true )
+	self.Lists:SetDrawBackground( false )
 	
 	self.weight = vgui.Create( "catherine.vgui.weight", self )
 	self.weight:SetPos( self.w - 60, self.h - 160 )
