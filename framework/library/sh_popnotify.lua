@@ -68,10 +68,10 @@ else
 				box_w = math.Clamp( tw + 20, 0, w )
 			end
 			
-			draw.RoundedBox( 0, w - box_w, v.y, box_w, 90, Color( 255, 255, 255, v.a ) )
-			draw.SimpleText( LANG( "Basic_PopNotify_Title" ), "catherine_normal20", ( w - box_w ) + 10, v.y + 15, Color( 0, 0, 0, v.a ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( v.message, "catherine_normal15", w - box_w / 2, v.y + 60, Color( 0, 0, 0, v.a ), 1, 1 )
-			draw.SimpleText( math.max( math.floor( v.time - CurTime( ) ), 0 ), "catherine_normal20", w - 15, v.y + 20, Color( 0, 0, 0, v.a ), TEXT_ALIGN_RIGHT, 1 )
+			draw.RoundedBox( 0, w - box_w, v.y, box_w, 90, Color( 50, 50, 50, v.a ) )
+			draw.SimpleText( LANG( "Basic_PopNotify_Title" ), "catherine_normal20", ( w - box_w ) + 10, v.y + 15, Color( 255, 255, 255, v.a ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( v.message, "catherine_normal15", w - box_w / 2, v.y + 60, Color( 255, 255, 255, v.a ), 1, 1 )
+			draw.SimpleText( math.max( math.floor( v.time - CurTime( ) ), 0 ), "catherine_normal20", w - 15, v.y + 20, Color( 255, 255, 255, v.a ), TEXT_ALIGN_RIGHT, 1 )
 		end
 	end
 	

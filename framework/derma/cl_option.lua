@@ -21,7 +21,7 @@ local PANEL = { }
 function PANEL:Init( )
 	catherine.vgui.option = self
 
-	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.9 )
+	self:SetMenuSize( ScrW( ) * 0.6, ScrH( ) * 0.8 )
 	self:SetMenuName( LANG( "Option_UI_Title" ) )
 
 	self.Lists = vgui.Create( "DPanelList", self )
@@ -30,15 +30,13 @@ function PANEL:Init( )
 	self.Lists:SetSpacing( 0 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )
-	self.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-	end
+	self.Lists.Paint = function( pnl, w, h ) end
 	
 	self:InitializeOption( )
 end
 
 function PANEL:OnMenuSizeChanged( )
-	self:SetPos( ScrW( ) / 2 - self:GetWide( ) / 2, 0 )
+
 end
 
 function PANEL:OnMenuRecovered( )
@@ -70,12 +68,10 @@ function PANEL:BuildOption( )
 		local form = vgui.Create( "DForm" )
 		form:SetName( catherine.util.StuffLanguage( k ) )
 		form:SetSpacing( 0 )
-		form:SetAutoSize( true )
-		form.Paint = function( pnl, w, h )
-			catherine.theme.Draw( CAT_THEME_FORM, w, h )
-		end
-		form.Header:SetFont( "catherine_normal15" )
-		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
+		form.Paint = function( pnl, w, h ) end
+		form.Header:SetFont( "catherine_lightUI25" )
+		form.Header:SetTall( 25 )
+		form.Header:SetTextColor( Color( 255, 255, 255, 255 ) )
 		
 		for k1, v1 in SortedPairs( v ) do
 			local item = vgui.Create( "catherine.vgui.optionItem" )
@@ -96,13 +92,8 @@ vgui.Register( "catherine.vgui.option", PANEL, "catherine.vgui.menuBase" )
 local PANEL = { }
 
 function PANEL:Init( )
-	self.a = 0
-	
-	local optionBackgroundMaterial = Material( "CAT/ui/option_sw_background01.png", "smooth" )
-	local optionCoreMaterial = Material( "CAT/ui/option_sw_core01.png", "smooth" )
-	
 	self.Button = vgui.Create( "DButton", self )
-	self.Button:SetSize( 25, 25 )
+	self.Button:SetSize( 40, 40 )
 	self.Button:SetPos( self:GetWide( ) - self.Button:GetWide( ) - 20, self:GetTall( ) / 2 - self.Button:GetTall( ) / 2 )
 	self.Button:SetText( "" )
 	self.Button.Paint = function( pnl, w, h )
@@ -111,18 +102,8 @@ function PANEL:Init( )
 		self.val = catherine.option.Get( self.optionTable.uniqueID )
 		
 		if ( tobool( self.val ) == true ) then
-			self.a = Lerp( 0.3, self.a, 255 )
-		else
-			self.a = Lerp( 0.3, self.a, 0 )
+			draw.SimpleText( "✔", "catherine_normal35", 15, 15, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 		end
-		
-		surface.SetDrawColor( 255, 255, 255, 255 )
-		surface.SetMaterial( optionBackgroundMaterial )
-		surface.DrawTexturedRect( 0, 0, w, h )
-		
-		surface.SetDrawColor( 255, 255, 255, self.a )
-		surface.SetMaterial( optionCoreMaterial )
-		surface.DrawTexturedRect( 0, 0, w, h )
 	end
 	self.Button.DoClick = function( pnl )
 		surface.PlaySound( "common/talk.wav" )
@@ -134,26 +115,24 @@ function PANEL:Init( )
 	self.List:SetPos( self:GetWide( ) - self.List:GetWide( ) - 20, self:GetTall( ) / 2 - self.List:GetTall( ) / 2 )
 	self.List:SetVisible( false )
 	self.List:SetFont( "catherine_normal15" )
-	self.List:SetTextColor( Color( 50, 50, 50 ) )
+	self.List:SetTextColor( Color( 255, 255, 255 ) )
 	self.List.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
+		draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 255, 255, 255 ) )
 	end
 end
 
 function PANEL:Paint( w, h )
 	if ( !self.optionTable ) then return end
 	
-	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
-	
-	draw.SimpleText( "< " .. self.name .. " >", "catherine_normal15", 15, 5, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( self.desc, "catherine_normal15", 15, 25, Color( 120, 120, 120, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( "< " .. self.name .. " >", "catherine_normal15", 15, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.desc, "catherine_normal15", 15, 25, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
 end
 
 function PANEL:PerformLayout( w, h, optionData )
-	self.Button:SetSize( 25, 25 )
+	self.Button:SetSize( 40, 40 )
 	self.Button:SetPos( w - self.Button:GetWide( ) - 20, h / 2 - self.Button:GetTall( ) / 2 )
 	
-	self.List:SetSize( self:GetWide( ) * 0.4, 25 )
+	self.List:SetSize( self:GetWide( ) * 0.4, 20 )
 	self.List:SetPos( self:GetWide( ) - self.List:GetWide( ) - 20, self:GetTall( ) / 2 - self.List:GetTall( ) / 2 )
 end
 

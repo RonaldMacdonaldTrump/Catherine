@@ -35,9 +35,7 @@ function PANEL:Init( )
 	self.categorys:SetSpacing( 5 )
 	self.categorys:EnableHorizontal( false )
 	self.categorys:EnableVerticalScrollbar( true )
-	self.categorys.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-	end
+	self.categorys.Paint = function( pnl, w, h ) end
 	
 	local defTitle = LANG( "Help_UI_DefPageTitle" )
 	local defDesc = LANG( "Help_UI_DefPageDesc" )
@@ -46,11 +44,9 @@ function PANEL:Init( )
 	self.html:SetPos( self.w * 0.2 + 20, 35 )
 	self.html:SetSize( self.w * 0.8 - 60, self.h - 45 )
 	self.html.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
-		
 		if ( self.isDef ) then
-			draw.SimpleText( defTitle, "catherine_normal25", w / 2, h / 2 - 25, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( defDesc, "catherine_normal20", w / 2, h / 2 + 10, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( defTitle, "catherine_normal25", w / 2, h / 2 - 25, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( defDesc, "catherine_normal20", w / 2, h / 2 + 10, Color( 235, 235, 235, 255 ), 1, 1 )
 		end
 	end
 
@@ -72,7 +68,7 @@ function PANEL:MenuPaint( w, h )
 		self.loadingAni = math.Approach( self.loadingAni, self.loadingAni - 5, 5 )
 		
 		draw.NoTexture( )
-		surface.SetDrawColor( 90, 90, 90, self.loadingAlpha )
+		surface.SetDrawColor( 255, 255, 255, self.loadingAlpha )
 		catherine.geometry.DrawCircle( w - 20, 50, 10, 5, self.loadingAni, 70, 100 )
 	end
 end
@@ -117,14 +113,11 @@ function PANEL:BuildHelps( )
 		panel:SetSize( self.categorys:GetWide( ), 30 )
 		panel:SetStr( k )
 		panel:SetStrFont( "catherine_normal15" )
-		panel:SetStrColor( Color( 50, 50, 50, 255 ) )
-		panel:SetGradientColor( Color( 255, 255, 255, 150 ) )
+		panel:SetStrColor( Color( 255, 255, 255, 255 ) )
+		panel:SetGradientColor( Color( 255, 255, 255, 255 ) )
 		panel.Click = function( )
 			self.isDef = false
 			self:DoWork( v )
-		end
-		panel.PaintBackground = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 		end
 		
 		self.categorys:AddItem( panel )

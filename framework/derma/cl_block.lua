@@ -31,11 +31,9 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-		
 		if ( #catherine.block.GetList( ) == 0 ) then
-			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( LANG( "Block_UI_Zero" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Block_UI_Zero" ), "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 	
@@ -44,8 +42,8 @@ function PANEL:Init( )
 	self.addBlock:SetSize( self.w - self.w * 0.8 - 30, 25 )
 	self.addBlock:SetStr( LANG( "Block_UI_Add" ) )
 	self.addBlock:SetStrFont( "catherine_normal20" )
-	self.addBlock:SetStrColor( Color( 50, 50, 50, 255 ) )
-	self.addBlock:SetGradientColor( Color( 255, 255, 255, 150 ) )
+	self.addBlock:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.addBlock:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.addBlock.Click = function( )
 		local menu = DermaMenu( )
 		local subMenu = menu:AddSubMenu( LANG( "Block_UI_AddByPlayer" ) )
@@ -81,9 +79,6 @@ function PANEL:Init( )
 		
 		menu:Open( )
 	end
-	self.addBlock.PaintBackground = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
-	end
 	
 	self:BuildBlock( )
 end
@@ -101,17 +96,15 @@ function PANEL:BuildBlock( )
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Lists:GetWide( ), 70 )
 		panel.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
-			
-			draw.SimpleText( v.steamID, "catherine_normal20", 80, 20, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( v.time, "catherine_normal15", 80, 50, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( v.steamID, "catherine_normal20", 80, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( v.time, "catherine_normal15", 80, 50, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 			
 			if ( table.HasValue( blockType, CAT_BLOCK_TYPE_ALL_CHAT ) and table.HasValue( blockType, CAT_BLOCK_TYPE_PM_CHAT ) ) then
-				draw.SimpleText( LANG( "Block_UI_AllChat" ) .. ", " .. LANG( "Block_UI_PM" ), "catherine_normal15", w - 170, h / 2, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
+				draw.SimpleText( LANG( "Block_UI_AllChat" ) .. ", " .. LANG( "Block_UI_PM" ), "catherine_normal15", w - 170, h / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			elseif ( table.HasValue( blockType, CAT_BLOCK_TYPE_ALL_CHAT ) ) then
-				draw.SimpleText( LANG( "Block_UI_AllChat" ), "catherine_normal15", w - 170, h / 2, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
+				draw.SimpleText( LANG( "Block_UI_AllChat" ), "catherine_normal15", w - 170, h / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			elseif ( table.HasValue( blockType, CAT_BLOCK_TYPE_PM_CHAT ) ) then
-				draw.SimpleText( LANG( "Block_UI_PM" ), "catherine_normal15", w - 170, h / 2, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
+				draw.SimpleText( LANG( "Block_UI_PM" ), "catherine_normal15", w - 170, h / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			end
 		end
 		
@@ -120,7 +113,7 @@ function PANEL:BuildBlock( )
 		avatar:SetSize( 60, 60 )
 		avatar:SetSteamID( util.SteamIDTo64( v.steamID ), 64 )
 		avatar.PaintOver = function( pnl, w, h )
-			surface.SetDrawColor( 50, 50, 50, 150 )
+			surface.SetDrawColor( 255, 255, 255, 255 )
 			surface.DrawOutlinedRect( 0, 0, w, h )
 		end
 		
@@ -129,13 +122,10 @@ function PANEL:BuildBlock( )
 		removeItem:SetSize( 140, 20 )
 		removeItem:SetStr( LANG( "Block_UI_Dis" ) )
 		removeItem:SetStrFont( "catherine_normal15" )
-		removeItem:SetStrColor( Color( 50, 50, 50, 255 ) )
-		removeItem:SetGradientColor( Color( 255, 255, 255, 150 ) )
+		removeItem:SetStrColor( Color( 255, 255, 255, 255 ) )
+		removeItem:SetGradientColor( Color( 255, 0, 0, 255 ) )
 		removeItem.Click = function( )
 			netstream.Start( "catherine.block.RemoveBySteamID", v.steamID )
-		end
-		removeItem.PaintBackground = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, h, Color( 225, 150, 150, 150 ) )
 		end
 		
 		local changeBlockType = vgui.Create( "catherine.vgui.button", panel )
@@ -143,8 +133,8 @@ function PANEL:BuildBlock( )
 		changeBlockType:SetSize( 140, 20 )
 		changeBlockType:SetStr( LANG( "Block_UI_ChangeType" ) )
 		changeBlockType:SetStrFont( "catherine_normal15" )
-		changeBlockType:SetStrColor( Color( 50, 50, 50, 255 ) )
-		changeBlockType:SetGradientColor( Color( 255, 255, 255, 150 ) )
+		changeBlockType:SetStrColor( Color( 255, 255, 255, 255 ) )
+		changeBlockType:SetGradientColor( Color( 255, 0, 0, 255 ) )
 		changeBlockType.Click = function( )
 			local menu = DermaMenu( )
 			
@@ -193,9 +183,6 @@ function PANEL:BuildBlock( )
 			end
 			
 			menu:Open( )
-		end
-		changeBlockType.PaintBackground = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
 		end
 		
 		self.Lists:AddItem( panel )

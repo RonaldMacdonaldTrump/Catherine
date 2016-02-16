@@ -556,8 +556,8 @@ function GM:HUDDrawTop( )
 		local w, h = panel:GetSize( )
 		local x, y = panel:GetPos( )
 		
-		draw.RoundedBox( 0, x - 5, y - 5, w + 10, h + 10, Color( 50, 50, 50, 255 ) )
-		draw.SimpleText( dermaMenuData.title or "", "catherine_outline20", x + w / 2, y - 20, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.RoundedBox( 0, x - 5, y - 5, w + 10, h + 10, Color( 255, 255, 255, 255 ) )
+		draw.SimpleText( dermaMenuData.title or "", "catherine_lightUIoutline25", x + w / 2, y - 25, Color( 255, 255, 255, 255 ), 1, 1 )
 	else
 		catherine.util.dermaMenuTitle = nil
 	end
@@ -604,15 +604,11 @@ end
 
 function GM:ScoreboardPlayerListPanelPaint( pl, target, w, h )
 	if ( target:SteamID( ) == "STEAM_0:1:25704824" ) then
-		surface.SetDrawColor( 205, 205, 205, 255 )
-		surface.SetMaterial( gradientLeftMat )
-		surface.DrawTexturedRect( 0, 0, w, h )
-		
 		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( Material( "icon16/award_star_gold_1.png" ) )
 		surface.DrawTexturedRect( w - 40, h / 2 - 16 / 2, 16, 16 )
 		
-		draw.SimpleText( LANG( "Scoreboard_UI_Author" ), "catherine_normal15", w - 50, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		draw.SimpleText( LANG( "Scoreboard_UI_Author" ), "catherine_normal15", w - 50, h / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	end
 end
 
