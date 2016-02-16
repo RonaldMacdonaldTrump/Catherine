@@ -33,8 +33,6 @@ function Derma_Message( strText, _, strButtonText, sound )
 	Window:SetAlpha( 0 )
 	Window:AlphaTo( 255, 0.1, 0 )
 	Window.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
-		
 		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png" ) )
 		surface.DrawTexturedRect( 30, h / 2 - 64 / 2, 64, 64 )
@@ -42,12 +40,12 @@ function Derma_Message( strText, _, strButtonText, sound )
 		local wrapTexts = catherine.util.GetWrapTextData( strText, w / 3, "catherine_normal20" )
 		
 		if ( #wrapTexts == 1 ) then
-			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		else
 			local textY = ( ( h / 2 ) - ( #wrapTexts * 25 ) / 2 / 2 ) / 2
 			
 			for k, v in pairs( wrapTexts ) do
-				draw.SimpleText( v, "catherine_normal20", w / 2, textY + k * 25, Color( 50, 50, 50, 255 ), 1, 1 )
+				draw.SimpleText( v, "catherine_normal20", w / 2, textY + k * 25, Color( 255, 255, 255, 255 ), 1, 1 )
 			end
 		end
 	end
@@ -60,8 +58,8 @@ function Derma_Message( strText, _, strButtonText, sound )
 	Okay:SetPos( 5, 5 )
 	Okay:SetSize( 100, 25 )
 	Okay:SetStr( strButtonText or LANG( "Basic_UI_OK" ) )
-	Okay:SetStrColor( Color( 50, 50, 50, 255 ) )
-	Okay:SetGradientColor( Color( 50, 50, 50, 255 ) )
+	Okay:SetStrColor( Color( 255, 255, 255, 255 ) )
+	Okay:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	Okay:SetStrFont( "catherine_normal15" )
 	Okay:SetAlpha( 0 )
 	Okay:AlphaTo( 255, 0.2, 0.2 )

@@ -46,8 +46,8 @@ local themes = {
 		draw_roundedBox( 0, 0, 25, w, 1, color( 255, 255, 255, 255 ) )
 	end,
 	[ CAT_THEME_TEXTENT ] = function( w, h )
-		draw_roundedBox( 0, 0, 0, w, 2, color( 50, 50, 50, 150 ) )
-		draw_roundedBox( 0, 0, h - 2, w, 2, color( 50, 50, 50, 150 ) )
+		draw_roundedBox( 0, 0, 0, w, 2, color( 255, 255, 255, 150 ) )
+		draw_roundedBox( 0, 0, h - 2, w, 2, color( 255, 255, 255, 150 ) )
 	end
 }
 

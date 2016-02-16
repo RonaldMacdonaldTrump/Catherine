@@ -48,7 +48,7 @@ function catherine.chat.FindIDByText( text )
 		local command = v.command or ""
 		
 		for k2, v2 in pairs( type( command ) == "table" and command or { } ) do
-			if ( text:sub( 1, #v2 ) != v2 ) then continue end
+			if ( text:sub( 1, #v2 ):lower( ) != v2:lower( ) ) then continue end
 			
 			return k or "ic"
 		end

@@ -36,16 +36,18 @@ function catherine.command.FindByID( uniqueID )
 end
 
 function catherine.command.FindByCMD( command )
+	command = command:lower( )
+	
 	for k, v in pairs( catherine.command.GetAll( ) ) do
 		if ( v.otherCommand and type ( v.otherCommand ) == "table" and #v.otherCommand != 0 ) then
 			for k1, v1 in pairs( v.otherCommand ) do
-				if ( v1 == command ) then
+				if ( v1:lower( ) == command ) then
 					return v
 				end
 			end
 		end
 		
-		if ( v.command == command ) then
+		if ( v.command:lower( ) == command ) then
 			return v
 		end
 	end

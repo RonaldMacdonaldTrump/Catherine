@@ -34,6 +34,7 @@ local toscreen = FindMetaTable( "Vector" ).ToScreen
 local catherine_framework_symbol = Material( catherine.configs.frameworkLogo, "smooth" ) or "__error_material"
 local schema_symbol = Material( catherine.configs.schemaLogo, "smooth" ) or "__error_material"
 local gradientUpMat = Material( "gui/gradient_up" )
+local gradientDownMat = Material( "gui/gradient_down" )
 local gradientLeftMat = Material( "gui/gradient" )
 local gradientCenterMat = Material( "gui/center_gradient" )
 local math_app = math.Approach
@@ -62,7 +63,7 @@ function GM:HUDDrawScoreBoard( )
 	local data = catherine.intro
 	
 	if ( data.loading ) then
-		data.loadingR = data.loadingR + 3
+		data.loadingR = data.loadingR + 15
 	else
 		data.status = false
 		
@@ -97,55 +98,56 @@ function GM:HUDDrawScoreBoard( )
 		end
 	end
 	
-	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
-	
-	surface.SetDrawColor( 225, 225, 225, 255 )
-	surface.SetMaterial( gradientUpMat )
-	surface.DrawTexturedRect( 0, 0, w, h )
-	
-	if ( catherine_framework_symbol != "__error_material" ) then
-		local catherine_framework_symbol_w, catherine_framework_symbol_h = catherine_framework_symbol:Width( ) / 2, catherine_framework_symbol:Height( ) / 2
+	if ( catherine.character.IsCustomBackground( ) ) then
+		catherine.util.BlurDraw( 0, 0, w, h, 10 )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 200 ) )
+	else
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 255 ) )
 		
-		surface.SetDrawColor( 255, 255, 255, 255 )
-		surface.SetMaterial( catherine_framework_symbol )
-		surface.DrawTexturedRect( w * 0.2, h / 2 - catherine_framework_symbol_h / 2, catherine_framework_symbol_w, catherine_framework_symbol_h )
-	end
-	
-	if ( schema_symbol != "__error_material" ) then
-		local schema_symbol_w, schema_symbol_h = schema_symbol:Width( ) / 2, schema_symbol:Height( ) / 2
-		
-		surface.SetDrawColor( 255, 255, 255, 255 )
-		surface.SetMaterial( schema_symbol )
-		surface.DrawTexturedRect( w * 0.7 - schema_symbol_w / 2, h / 2 - schema_symbol_h / 2, schema_symbol_w, schema_symbol_h )
+		surface.SetDrawColor( 90, 90, 90, 255 )
+		surface.SetMaterial( gradientDownMat )
+		surface.DrawTexturedRect( 0, 0, w, h )
 	end
 	
 	if ( data.isReloadNotify ) then
 		if ( data.isRetryConnect ) then
+			surface.SetFont( "catherine_lightUI20" )
+			local tw, th = surface.GetTextSize( LANG( "Basic_Error_LoadCantRetry" ) )
+			
 			draw.NoTexture( )
 			surface.SetDrawColor( 255, 0, 0, 255 )
-			catherine.geometry.DrawCircle( 30, 25, 10, 5, 90, 360, 100 )
+			catherine.geometry.DrawCircle( ( w / 2 - 10 / 2 - tw / 2 ) - 20, h - 30, 7, 5, 0, 360, 100 )
 			
-			draw.SimpleText( LANG( "Basic_Error_LoadCantRetry" ), "catherine_normal15", 60, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( LANG( "Basic_Error_LoadCantRetry" ), "catherine_lightUI20", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
 		else
-			draw.NoTexture( )
-			surface.SetDrawColor( 90, 255, 255, 255 )
-			catherine.geometry.DrawCircle( 30, 25, 10, 5, 90, 360, 100 )
+			surface.SetFont( "catherine_lightUI20" )
+			local tw, th = surface.GetTextSize( LANG( "Basic_Error_LoadTimeoutWait", data.reloadCount ) )
 			
-			draw.SimpleText( LANG( "Basic_Error_LoadTimeoutWait", data.reloadCount ), "catherine_normal15", 60, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.NoTexture( )
+			surface.SetDrawColor( 255, 0, 0, 255 )
+			catherine.geometry.DrawCircle( ( w / 2 - 10 / 2 - tw / 2 ) - 20, h - 30, 7, 5, 0, 360, 100 )
+			
+			draw.SimpleText( LANG( "Basic_Error_LoadTimeoutWait", data.reloadCount ), "catherine_lightUI20", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	else
 		if ( data.errorMessage ) then
-			draw.NoTexture( )
-			surface.SetDrawColor( 255, 90, 90, 255 )
-			catherine.geometry.DrawCircle( 30, 25, 10, 5, 90, 360, 100 )
+			surface.SetFont( "catherine_lightUI20" )
+			local tw, th = surface.GetTextSize( data.errorMessage )
 			
-			draw.SimpleText( data.errorMessage, "catherine_normal15", 60, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.NoTexture( )
+			surface.SetDrawColor( 255, 0, 0, 255 )
+			catherine.geometry.DrawCircle( ( w / 2 - 10 / 2 - tw / 2 ) - 20, h - 30, 7, 5, 0, 360, 100 )
+			
+			draw.SimpleText( data.errorMessage, "catherine_lightUI20", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
 		else
-			draw.NoTexture( )
-			surface.SetDrawColor( 90, 90, 90, 255 )
-			catherine.geometry.DrawCircle( 30, 25, 10, 5, data.loadingR, 70, 100 )
+			surface.SetFont( "catherine_lightUI20" )
+			local tw, th = surface.GetTextSize( LANG( "Basic_Info_Loading" ) )
 			
-			draw.SimpleText( LANG( "Basic_Info_Loading" ), "catherine_normal15", 60, 25, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.NoTexture( )
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			catherine.geometry.DrawCircle( ( w / 2 - 10 / 2 - tw / 2 ) - 20, h - 30, 7, 5, data.loadingR, 70, 100 )
+			
+			draw.SimpleText( LANG( "Basic_Info_Loading" ), "catherine_lightUI20", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 end
@@ -216,12 +218,6 @@ end
 
 function GM:CalcView( pl, pos, ang, fov )
 	local viewData = self.BaseClass.CalcView( self.BaseClass, pl, pos, ang, fov )
-	
-	if ( catherine.intro.status ) then
-		return {
-			origin = Vector( 0, 0, 20000 )
-		}
-	end
 	
 	local ent = Entity( pl:GetNetVar( "ragdollIndex", 0 ) )
 	
@@ -520,7 +516,7 @@ end
 local getCharVar = catherine.character.GetCharVar
 
 function GM:HUDPaint( )
-	if ( IsValid( catherine.vgui.character ) ) then return end
+	if ( IsValid( catherine.vgui.character ) or catherine.intro.status ) then return end
 	local pl = catherine.pl
 	
 	if ( getCharVar( pl, "charBanned" ) ) then

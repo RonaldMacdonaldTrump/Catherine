@@ -92,7 +92,7 @@ end )
 function PLUGIN:ShouldDrawLocalPlayer( pl )
 	if ( pl:IsActioning( ) ) then return end
 	
-	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and catherine.character.IsCustomBackground( ) ) then
+	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or catherine.intro.status ) and catherine.character.IsCustomBackground( ) ) then
 		if ( GetConVarString( "cat_convar_thirdperson" ) == "1" ) then
 			RunConsoleCommand( "cat_convar_thirdperson", "0" )
 			self.thirdPersonChange = true
@@ -108,7 +108,7 @@ function PLUGIN:ShouldDrawLocalPlayer( pl )
 end
 
 function PLUGIN:RenderScreenspaceEffects( )
-	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and catherine.character.IsCustomBackground( ) ) then
+	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or catherine.intro.status ) and catherine.character.IsCustomBackground( ) ) then
 		local tab = { }
 		tab[ "$pp_colour_addr" ] = 0
 		tab[ "$pp_colour_addg" ] = 0
@@ -128,7 +128,7 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 	if ( !catherine.character.IsCustomBackground( ) ) then return end
 	if ( #self.charViews <= 0 ) then return end
 	
-	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and !catherine.intro.status ) then
+	if ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or catherine.intro.status ) then
 		if ( !self.lastView ) then
 			self.lastView = table.Random( self.charViews )
 		end
@@ -147,7 +147,12 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 		end
 		
 		self.lastPos = LerpVector( 0.01, self.lastPos, self.lastView.pos )
-		self.lastAng = LerpAngle( 0.01, self.lastAng, self.lastView.ang + Angle( 2 * angSin2, 4 * angSin, 0 ) )
+		
+		if ( catherine.intro.status ) then
+			self.lastAng = self.lastView.ang
+		else
+			self.lastAng = LerpAngle( 0.01, self.lastAng, self.lastView.ang + Angle( 2 * angSin2, 4 * angSin, 0 ) )
+		end
 		
 		return {
 			origin = self.lastPos,
