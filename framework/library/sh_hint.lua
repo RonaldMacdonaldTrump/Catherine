@@ -74,15 +74,9 @@ if ( SERVER ) then
 		end
 	end
 	
-	timer.Create( "Catherine.timer.hint.AutoSendRandomHintToAllPlayer", 1, 0, function( )
-		if ( #catherine.hint.GetAll( ) == 0 ) then return end
-		
-		if ( catherine.hint.nextHintTick <= 0 ) then
+	timer.Create( "Catherine.timer.hint.AutoSendRandomHintToAllPlayer", catherine.configs.hintInterval, 0, function( )
+		if ( #catherine.hint.GetAll( ) != 0 ) then
 			catherine.hint.SendRandomHintToAllPlayer( )
-			
-			catherine.hint.nextHintTick = catherine.configs.hintInterval
-		else
-			catherine.hint.nextHintTick = catherine.hint.nextHintTick - 1
 		end
 	end )
 else
@@ -129,11 +123,7 @@ else
 			t.a = Lerp( 0.02, t.a, 255 )
 		end
 		
-		surface.SetDrawColor( 50, 50, 50, t.a / 2 )
-		surface.SetMaterial( gradient_right )
-		surface.DrawTexturedRect( ScrW( ) - t.tw, 0, t.tw, 30 )
-		
-		draw.SimpleText( t.message, "catherine_normal20", ScrW( ) - 10, 15, Color( 255, 255, 255, t.a ), TEXT_ALIGN_RIGHT, 1 )
+		draw.SimpleText( t.message, "catherine_outline20", ScrW( ) - 10, 15, Color( 255, 255, 255, t.a ), TEXT_ALIGN_RIGHT, 1 )
 	end
 end
 

@@ -287,6 +287,7 @@ if ( SERVER ) then
 			{
 				uniqueID = "ID_OPEN",
 				text = "^Storage_OpenStr",
+				icon = "icon16/eye.png",
 				func = function( pl, ent )
 					if ( !ent.CAT_storageOpenSound ) then
 						local storageListData = catherine.storage.FindByModel( ent:GetModel( ) )

@@ -78,19 +78,20 @@ function PANEL:Init( )
 	}
 	
 	self:SetSize( self.w, self.h )
-	self:SetPos( ScrW( ), self.y )
-	self:MoveTo( ScrW( ) / 2 - self.w / 2, self.y, 0.2, 0 )
+	self:SetPos( self.x, self.y )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	self:ShowCloseButton( false )
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.2, 0 )
 
 	self.buy = vgui.Create( "catherine.vgui.button", self )
 	self.buy:SetPos( 10, 35 )
 	self.buy:SetSize( self.w * 0.2, 25 )
 	self.buy:SetStr( LANG( "Vendor_UI_BuyFromVendorStr" ) )
 	self.buy:SetStrFont( "catherine_normal15" )
-	self.buy:SetStrColor( Color( 50, 50, 50, 255 ) )
-	self.buy:SetGradientColor( Color( 50, 50, 50, 255 ) )
+	self.buy:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.buy:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.buy.Click = function( )
 		self:ChangeMode( 1 )
 	end
@@ -100,8 +101,8 @@ function PANEL:Init( )
 	self.sell:SetSize( self.w * 0.2, 25 )
 	self.sell:SetStr( LANG( "Vendor_UI_SellToVendorStr" ) )
 	self.sell:SetStrFont( "catherine_normal15" )
-	self.sell:SetStrColor( Color( 50, 50, 50, 255 ) )
-	self.sell:SetGradientColor( Color( 50, 50, 50, 255 ) )
+	self.sell:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.sell:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.sell.Click = function( )
 		self:ChangeMode( 2 )
 	end
@@ -112,8 +113,8 @@ function PANEL:Init( )
 		self.setting:SetSize( self.w * 0.2, 25 )
 		self.setting:SetStr( LANG( "Vendor_UI_SettingStr" ) )
 		self.setting:SetStrFont( "catherine_normal15" )
-		self.setting:SetStrColor( Color( 50, 50, 50, 255 ) )
-		self.setting:SetGradientColor( Color( 50, 50, 50, 255 ) )
+		self.setting:SetStrColor( Color( 255, 255, 255, 255 ) )
+		self.setting:SetGradientColor( Color( 255, 255, 255, 255 ) )
 		self.setting.Click = function( )
 			self:ChangeMode( 3 )
 		end
@@ -123,8 +124,8 @@ function PANEL:Init( )
 		self.manageItem:SetSize( self.w * 0.2, 25 )
 		self.manageItem:SetStr( LANG( "Vendor_UI_ItemStr" ) )
 		self.manageItem:SetStrFont( "catherine_normal15" )
-		self.manageItem:SetStrColor( Color( 50, 50, 50, 255 ) )
-		self.manageItem:SetGradientColor( Color( 50, 50, 50, 255 ) )
+		self.manageItem:SetStrColor( Color( 255, 255, 255, 255 ) )
+		self.manageItem:SetGradientColor( Color( 255, 255, 255, 255 ) )
 		self.manageItem.Click = function( )
 			self:ChangeMode( 4 )
 		end
@@ -134,6 +135,7 @@ function PANEL:Init( )
 	self.buyPanel:SetPos( 10, 65 )
 	self.buyPanel:SetSize( self.w - 20, self.h - 75 )
 	self.buyPanel:SetVisible( false )
+	self.buyPanel:SetDrawBackground( false )
 	
 	self.buyPanel.Lists = vgui.Create( "DPanelList", self.buyPanel )
 	self.buyPanel.Lists:SetPos( 0, 0 )
@@ -142,15 +144,13 @@ function PANEL:Init( )
 	self.buyPanel.Lists:EnableHorizontal( false )
 	self.buyPanel.Lists:EnableVerticalScrollbar( true )	
 	self.buyPanel.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-		
 		if ( !pnl.buyStr ) then
 			pnl.buyStr = LANG( "Vendor_UI_CantBuyStr" )
 		end
 		
 		if ( self.count == 0 ) then
-			draw.SimpleText( ":(", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( pnl.buyStr, "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( ":(", "catherine_normal50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( pnl.buyStr, "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 	
@@ -158,6 +158,7 @@ function PANEL:Init( )
 	self.sellPanel:SetPos( 10, 65 )
 	self.sellPanel:SetSize( self.w - 20, self.h - 75 )
 	self.sellPanel:SetVisible( false )
+	self.sellPanel:SetDrawBackground( false )
 	
 	self.sellPanel.Lists = vgui.Create( "DPanelList", self.sellPanel )
 	self.sellPanel.Lists:SetPos( 0, 0 )
@@ -166,15 +167,13 @@ function PANEL:Init( )
 	self.sellPanel.Lists:EnableHorizontal( false )
 	self.sellPanel.Lists:EnableVerticalScrollbar( true )	
 	self.sellPanel.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-		
 		if ( !pnl.sellStr ) then
 			pnl.sellStr = LANG( "Vendor_UI_CantSellStr" )
 		end
 		
 		if ( self.count == 0 ) then
-			draw.SimpleText( ":(", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( pnl.sellStr, "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( ":(", "catherine_normal50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( pnl.sellStr, "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 	
@@ -182,11 +181,13 @@ function PANEL:Init( )
 	self.settingPanel:SetPos( 10, 65 )
 	self.settingPanel:SetSize( self.w - 20, self.h - 75 )
 	self.settingPanel:SetVisible( false )
-
+	self.settingPanel:SetDrawBackground( false )
+	
 	self.manageItemPanel = vgui.Create( "DPanel", self )
 	self.manageItemPanel:SetPos( 10, 65 )
 	self.manageItemPanel:SetSize( self.w - 20, self.h - 75 )
 	self.manageItemPanel:SetVisible( false )
+	self.manageItemPanel:SetDrawBackground( false )
 	
 	self.manageItemPanel.Lists = vgui.Create( "DPanelList", self.manageItemPanel )
 	self.manageItemPanel.Lists:SetPos( 0, 0 )
@@ -194,17 +195,14 @@ function PANEL:Init( )
 	self.manageItemPanel.Lists:SetSpacing( 5 )
 	self.manageItemPanel.Lists:EnableHorizontal( false )
 	self.manageItemPanel.Lists:EnableVerticalScrollbar( true )	
-	self.manageItemPanel.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-	end
+	self.manageItemPanel.Lists.Paint = function( pnl, w, h ) end
 	
 	self.close = vgui.Create( "catherine.vgui.button", self )
 	self.close:SetPos( self.w - 30, 0 )
-	self.close:SetSize( 30, 25 )
+	self.close:SetSize( 30, 23 )
 	self.close:SetStr( "X" )
-	self.close:SetStrFont( "catherine_normal35" )
-	self.close:SetStrColor( Color( 255, 255, 255, 255 ) )
-	self.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
+	self.close:SetStrFont( "catherine_normal30" )
+	self.close:SetStrColor( Color( 0, 0, 0, 255 ) )
 	self.close.Click = function( )
 		if ( self.closing ) then return end
 		
@@ -240,7 +238,7 @@ function PANEL:Build_Setting( )
 	
 	parentPanel.vendorNameLabel = vgui.Create( "DLabel", parentPanel )
 	parentPanel.vendorNameLabel:SetPos( 10, 10 )
-	parentPanel.vendorNameLabel:SetColor( Color( 50, 50, 50, 255 ) )
+	parentPanel.vendorNameLabel:SetColor( Color( 255, 255, 255, 255 ) )
 	parentPanel.vendorNameLabel:SetFont( "catherine_normal15" )
 	parentPanel.vendorNameLabel:SetText( LANG( "Vendor_UI_VendorNameStr" ) )
 	parentPanel.vendorNameLabel:SizeToContents( )
@@ -253,7 +251,7 @@ function PANEL:Build_Setting( )
 	parentPanel.vendorNameEnt:SetAllowNonAsciiCharacters( true )
 	parentPanel.vendorNameEnt.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
-		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 255, 255, 255 ), Color( 255, 255, 255 ) )
 	end
 	parentPanel.vendorNameEnt.OnTextChanged = function( pnl )
 		parentPanel.vendorName = pnl:GetText( )
@@ -271,7 +269,7 @@ function PANEL:Build_Setting( )
 	
 	parentPanel.vendorDescLabel = vgui.Create( "DLabel", parentPanel )
 	parentPanel.vendorDescLabel:SetPos( 10, 60 )
-	parentPanel.vendorDescLabel:SetColor( Color( 50, 50, 50, 255 ) )
+	parentPanel.vendorDescLabel:SetColor( Color( 255, 255, 255, 255 ) )
 	parentPanel.vendorDescLabel:SetFont( "catherine_normal15" )
 	parentPanel.vendorDescLabel:SetText( LANG( "Vendor_UI_VendorDescriptionStr" ) )
 	parentPanel.vendorDescLabel:SizeToContents( )
@@ -284,7 +282,7 @@ function PANEL:Build_Setting( )
 	parentPanel.vendorDescEnt:SetAllowNonAsciiCharacters( true )
 	parentPanel.vendorDescEnt.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
-		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 255, 255, 255 ), Color( 255, 255, 255 ) )
 	end
 	parentPanel.vendorDescEnt.OnTextChanged = function( pnl )
 		parentPanel.vendorDesc = pnl:GetText( )
@@ -302,7 +300,7 @@ function PANEL:Build_Setting( )
 	
 	parentPanel.vendorModelLabel = vgui.Create( "DLabel", parentPanel )
 	parentPanel.vendorModelLabel:SetPos( 10, 110 )
-	parentPanel.vendorModelLabel:SetColor( Color( 50, 50, 50, 255 ) )
+	parentPanel.vendorModelLabel:SetColor( Color( 255, 255, 255, 255 ) )
 	parentPanel.vendorModelLabel:SetFont( "catherine_normal15" )
 	parentPanel.vendorModelLabel:SetText( LANG( "Vendor_UI_VendorModelStr" ) )
 	parentPanel.vendorModelLabel:SizeToContents( )
@@ -315,7 +313,7 @@ function PANEL:Build_Setting( )
 	parentPanel.vendorModelEnt:SetAllowNonAsciiCharacters( true )
 	parentPanel.vendorModelEnt.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
-		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 255, 255, 255 ), Color( 255, 255, 255 ) )
 	end
 	parentPanel.vendorModelEnt.OnTextChanged = function( pnl )
 		self.vendorNewData.model = pnl:GetText( )
@@ -330,7 +328,7 @@ function PANEL:Build_Setting( )
 	
 	parentPanel.vendorAccFacLabel = vgui.Create( "DLabel", parentPanel )
 	parentPanel.vendorAccFacLabel:SetPos( 10, 170 )
-	parentPanel.vendorAccFacLabel:SetColor( Color( 50, 50, 50, 255 ) )
+	parentPanel.vendorAccFacLabel:SetColor( Color( 255, 255, 255, 255 ) )
 	parentPanel.vendorAccFacLabel:SetFont( "catherine_normal15" )
 	parentPanel.vendorAccFacLabel:SetText( LANG( "Vendor_UI_VendorAllowFactionStr" ) )
 	parentPanel.vendorAccFacLabel:SizeToContents( )
@@ -342,16 +340,12 @@ function PANEL:Build_Setting( )
 	parentPanel.factionLists:EnableHorizontal( false )
 	parentPanel.factionLists:EnableVerticalScrollbar( true )
 	parentPanel.factionLists:SetAutoSize( true )
-	parentPanel.factionLists.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, 1, Color( 50, 50, 50, 255 ) )
-	end
+	parentPanel.factionLists.Paint = function( pnl, w, h ) end
 
 	self:Refresh_SettingList( 1 )
 	self:Refresh_SettingList( 2 )
 	
-	self.settingPanel.panel.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-	end
+	self.settingPanel.panel.Paint = function( pnl, w, h ) end
 end
 
 function PANEL:Refresh_SettingList( id )
@@ -372,8 +366,7 @@ function PANEL:Refresh_SettingList( id )
 			local panel = vgui.Create( "DPanel" )
 			panel:SetSize( parentPanel.factionLists:GetWide( ), 25 )
 			panel.Paint = function( pnl, w, h )
-				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
-				draw.SimpleText( name, "catherine_normal20", 5, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+				draw.SimpleText( name, "catherine_normal20", 5, h / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 				
 				if ( notyetPermission or has ) then
 					surface.SetFont( "catherine_normal15" )
@@ -383,7 +376,7 @@ function PANEL:Refresh_SettingList( id )
 					surface.SetMaterial( Material( "CAT/ui/accept.png" ) )
 					surface.DrawTexturedRect( w - 30 - tw, h / 2 - 16 / 2, 16, 16 )
 					
-					draw.SimpleText( allowed, "catherine_normal15", w - 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					draw.SimpleText( allowed, "catherine_normal15", w - 10, h / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 				end
 			end
 			
@@ -393,7 +386,7 @@ function PANEL:Refresh_SettingList( id )
 			button:SetText( "" )
 			button.DoClick = function( )
 				local menu = DermaMenu( )
-
+				
 				menu:AddOption( LANG( "Vendor_UI_VendorAllowFaction_AllowOptionStr" ), function( )
 					for v2, v2 in pairs( factionData ) do
 						if ( v.uniqueID == v2 ) then
@@ -454,11 +447,10 @@ function PANEL:Refresh_List( id )
 			local form = vgui.Create( "DForm" )
 			form:SetSize( self.buyPanel.Lists:GetWide( ), 64 )
 			form:SetName( catherine.util.StuffLanguage( k ) )
-			form.Paint = function( pnl, w, h )
-				catherine.theme.Draw( CAT_THEME_FORM, w, h )
-			end
-			form.Header:SetFont( "catherine_normal15" )
-			form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
+			form.Paint = function( pnl, w, h ) end
+			form.Header:SetFont( "catherine_lightUI25" )
+			form.Header:SetTall( 25 )
+			form.Header:SetTextColor( Color( 255, 255, 255, 255 ) )
 			
 			for k1, v1 in SortedPairs( v ) do
 				local itemTable = catherine.item.FindByID( k1 )
@@ -473,20 +465,17 @@ function PANEL:Refresh_List( id )
 				panel.Paint = function( pnl, w, h )
 					local cost = newData.cost or itemTable.cost
 					
-					draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
-					draw.SimpleText( name, "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-					draw.SimpleText( desc, "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( name, "catherine_normal20", 60, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( desc, "catherine_normal15", 60, 30, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 					
-					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( cost ), "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( cost ), "catherine_normal20", w - 10, 15, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 					
 					local stock = newData.stock
 					
-					draw.SimpleText( LANG( "Vendor_UI_StockStr", stock or 0 ), "catherine_normal15", w - 10, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( LANG( "Vendor_UI_StockStr", stock or 0 ), "catherine_normal15", w - 10, 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 					
 					if ( !stock or stock == 0 ) then
 						draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 50, 50, 255 ) )
-					else
-						draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 255, 50, 255 ) )
 					end
 				end
 				
@@ -532,11 +521,10 @@ function PANEL:Refresh_List( id )
 			local form = vgui.Create( "DForm" )
 			form:SetSize( self.sellPanel.Lists:GetWide( ), 64 )
 			form:SetName( catherine.util.StuffLanguage( k ) )
-			form.Paint = function( pnl, w, h )
-				catherine.theme.Draw( CAT_THEME_FORM, w, h )
-			end
-			form.Header:SetFont( "catherine_normal15" )
-			form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
+			form.Paint = function( pnl, w, h ) end
+			form.Header:SetFont( "catherine_lightUI25" )
+			form.Header:SetTall( 25 )
+			form.Header:SetTextColor( Color( 255, 255, 255, 255 ) )
 			
 			for k1, v1 in SortedPairs( v ) do
 				local itemTable = catherine.item.FindByID( k1 )
@@ -551,20 +539,17 @@ function PANEL:Refresh_List( id )
 				panel.Paint = function( pnl, w, h )
 					local cost = math.Round( ( newData.cost or itemTable.cost ) / PLUGIN.VENDOR_SOLD_DISCOUNTPER )
 					
-					draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
-					draw.SimpleText( name, "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-					draw.SimpleText( desc, "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( name, "catherine_normal20", 60, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( desc, "catherine_normal15", 60, 30, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 					
-					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( cost ), "catherine_normal20", w - 10, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( cost ), "catherine_normal20", w - 10, 15, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 					
 					local stock = newData.stock
 					
-					draw.SimpleText( LANG( "Vendor_UI_StockStr", stock or 0 ), "catherine_normal15", w - 10, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( LANG( "Vendor_UI_StockStr", stock or 0 ), "catherine_normal15", w - 10, 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 					
 					if ( !stock or stock == 0 ) then
 						draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 50, 50, 255 ) )
-					else
-						draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 255, 50, 255 ) )
 					end
 				end
 				
@@ -608,11 +593,10 @@ function PANEL:Refresh_List( id )
 			local form = vgui.Create( "DForm" )
 			form:SetSize( self.manageItemPanel.Lists:GetWide( ), 64 )
 			form:SetName( catherine.util.StuffLanguage( k ) )
-			form.Paint = function( pnl, w, h )
-				catherine.theme.Draw( CAT_THEME_FORM, w, h )
-			end
-			form.Header:SetFont( "catherine_normal15" )
-			form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
+			form.Paint = function( pnl, w, h ) end
+			form.Header:SetFont( "catherine_lightUI25" )
+			form.Header:SetTall( 25 )
+			form.Header:SetTextColor( Color( 255, 255, 255, 255 ) )
 			
 			for k1, v1 in SortedPairs( v ) do
 				local itemTable = catherine.item.FindByID( k1 )
@@ -627,28 +611,27 @@ function PANEL:Refresh_List( id )
 				panel.Paint = function( pnl, w, h )
 					local cost = newData.cost or itemTable.cost
 					
-					draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
-					draw.SimpleText( name, "catherine_normal20", 60, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-					draw.SimpleText( desc, "catherine_normal15", 60, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( cost ), "catherine_normal15", w - 10, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( name, "catherine_normal20", 60, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( desc, "catherine_normal15", 60, 30, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( cost == 0 and LANG( "Item_Free" ) or catherine.cash.GetCompleteName( cost ), "catherine_normal15", w - 10, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 					
 					local mode = newData.type
 					
 					if ( mode ) then
 						if ( mode == 1 ) then
-							draw.SimpleText( LANG( "Vendor_UI_VendorItemNoneTypeStr" ), "catherine_normal15", w * 0.7, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+							draw.SimpleText( LANG( "Vendor_UI_VendorItemNoneTypeStr" ), "catherine_normal15", w * 0.7, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 						elseif ( mode == 2 ) then
-							draw.SimpleText( LANG( "Vendor_UI_VendorItemBuyOnlyTypeStr" ), "catherine_normal15", w * 0.7, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+							draw.SimpleText( LANG( "Vendor_UI_VendorItemBuyOnlyTypeStr" ), "catherine_normal15", w * 0.7, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 						elseif ( mode == 3 ) then
-							draw.SimpleText( LANG( "Vendor_UI_VendorItemSellOnlyTypeStr" ), "catherine_normal15", w * 0.7, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+							draw.SimpleText( LANG( "Vendor_UI_VendorItemSellOnlyTypeStr" ), "catherine_normal15", w * 0.7, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 						elseif ( mode == 4 ) then
-							draw.SimpleText( LANG( "Vendor_UI_VendorItemBothTypeStr" ), "catherine_normal15", w * 0.7, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+							draw.SimpleText( LANG( "Vendor_UI_VendorItemBothTypeStr" ), "catherine_normal15", w * 0.7, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 						end
 					end
 					
 					local stock = newData.stock
 					
-					draw.SimpleText( LANG( "Vendor_UI_StockStr", stock or 0 ), "catherine_normal15", w - 10, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+					draw.SimpleText( LANG( "Vendor_UI_StockStr", stock or 0 ), "catherine_normal15", w - 10, 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 					
 					if ( !stock ) then
 						draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 255, 50, 50, 255 ) )
@@ -766,12 +749,13 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	self.itemInformationPanel:SetPos( x - self.itemInformationPanel:GetWide( ), ScrH( ) / 2 - self.itemInformationPanel:GetTall( ) / 2 )
 	self.itemInformationPanel.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
+		draw.RoundedBox( 0, 0, 0, w, 25, Color( 255, 255, 255, 255 ) )
 		
-		draw.SimpleText( title, "catherine_normal20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-		draw.SimpleText( name, "catherine_normal15", 10, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		draw.SimpleText( title, "catherine_normal20", 10, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( name, "catherine_normal15", 10, 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 		
-		draw.SimpleText( costTitle, "catherine_normal15", 10, 60, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-		draw.SimpleText( stockTitle, "catherine_normal15", 10, 130, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		draw.SimpleText( costTitle, "catherine_normal15", 10, 60, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		draw.SimpleText( stockTitle, "catherine_normal15", 10, 130, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 	end
 	self.itemInformationPanel:MakePopup( )
 	self.itemInformationPanel:SetDraggable( false )
@@ -783,8 +767,8 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	self.itemInformationPanel.save:SetSize( 90, 25 )
 	self.itemInformationPanel.save:SetStr( LANG( "Vendor_UI_ItemSetting_RegisterStr" ) )
 	self.itemInformationPanel.save:SetStrFont( "catherine_normal15" )
-	self.itemInformationPanel.save:SetStrColor( Color( 50, 50, 50, 255 ) )
-	self.itemInformationPanel.save:SetGradientColor( Color( 50, 50, 50, 255 ) )
+	self.itemInformationPanel.save:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.itemInformationPanel.save:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.itemInformationPanel.save.Click = function( )
 		netstream.Start( "catherine.plugin.vendor.VendorWork", {
 			self.ent,
@@ -808,8 +792,8 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	self.itemInformationPanel.dis:SetSize( 90, 25 )
 	self.itemInformationPanel.dis:SetStr( LANG( "Vendor_UI_ItemSetting_UNRegisterStr" ) )
 	self.itemInformationPanel.dis:SetStrFont( "catherine_normal15" )
-	self.itemInformationPanel.dis:SetStrColor( Color( 255, 50, 50, 255 ) )
-	self.itemInformationPanel.dis:SetGradientColor( Color( 255, 50, 50, 255 ) )
+	self.itemInformationPanel.dis:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.itemInformationPanel.dis:SetGradientColor( Color( 255, 0, 0, 255 ) )
 	self.itemInformationPanel.dis.Click = function( )
 		netstream.Start( "catherine.plugin.vendor.VendorWork", {
 			self.ent,
@@ -828,8 +812,8 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	self.itemInformationPanel.typeChange:SetSize( pnlW - 20, 25 )
 	self.itemInformationPanel.typeChange:SetStr( "" )
 	self.itemInformationPanel.typeChange:SetStrFont( "catherine_normal15" )
-	self.itemInformationPanel.typeChange:SetStrColor( Color( 50, 50, 50, 255 ) )
-	self.itemInformationPanel.typeChange:SetGradientColor( Color( 50, 50, 50, 255 ) )
+	self.itemInformationPanel.typeChange:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.itemInformationPanel.typeChange:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.itemInformationPanel.typeChange.PaintOverAll = function( pnl )
 		local type = newData.type
 		
@@ -912,7 +896,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	self.itemInformationPanel.cost:SetEditable( true )
 	self.itemInformationPanel.cost.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
-		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 255, 255, 255 ), Color( 255, 255, 255 ) )
 	end
 	self.itemInformationPanel.cost.OnTextChanged = function( pnl )
 		local newCost = pnl:GetText( )
@@ -941,7 +925,7 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	self.itemInformationPanel.stock:SetEditable( true )
 	self.itemInformationPanel.stock.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
-		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 255, 255, 255 ), Color( 255, 255, 255 ) )
 	end
 	self.itemInformationPanel.stock.OnTextChanged = function( pnl )
 		local newStock = pnl:GetText( )
@@ -963,11 +947,10 @@ function PANEL:ItemInformationPanel( itemTable, data )
 	
 	self.itemInformationPanel.close = vgui.Create( "catherine.vgui.button", self.itemInformationPanel )
 	self.itemInformationPanel.close:SetPos( self.itemInformationPanel:GetWide( ) - 30, 0 )
-	self.itemInformationPanel.close:SetSize( 30, 25 )
+	self.itemInformationPanel.close:SetSize( 30, 23 )
 	self.itemInformationPanel.close:SetStr( "X" )
 	self.itemInformationPanel.close:SetStrFont( "catherine_normal30" )
-	self.itemInformationPanel.close:SetStrColor( Color( 255, 255, 255, 255 ) )
-	self.itemInformationPanel.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
+	self.itemInformationPanel.close:SetStrColor( Color( 0, 0, 0, 255 ) )
 	self.itemInformationPanel.close.Click = function( )
 		if ( IsValid( self.itemInformationPanel ) ) then
 			self.itemInformationPanel:Remove( )
@@ -978,15 +961,16 @@ end
 
 function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
+	draw.RoundedBox( 0, 0, 0, w, 25, Color( 255, 255, 255, 255 ) )
 	
 	if ( IsValid( self.ent ) ) then
 		local name = self.ent:GetNetVar( "name" )
 		
 		if ( name ) then
-			draw.SimpleText( name, "catherine_normal20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+			draw.SimpleText( name:upper( ), "catherine_lightUI20", 10, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
 		end
 		
-		draw.SimpleText( LANG( "Vendor_UI_HasCash", catherine.cash.GetCompleteName( self.vendorData.cash ) ), "catherine_normal20", w - 35, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+		draw.SimpleText( LANG( "Vendor_UI_HasCash", catherine.cash.GetCompleteName( self.vendorData.cash ) ), "catherine_lightUI15", w - 30, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	end
 end
 
@@ -1003,7 +987,7 @@ function PANEL:Think( )
 			return
 		end
 		
-		self.entCheck = CurTime( ) + 0.5
+		self.entCheck = CurTime( ) + 0.3
 	end
 end
 
@@ -1015,7 +999,7 @@ function PANEL:Close( )
 	
 	self.closing = true
 	
-	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
+	self:AlphaTo( 0, 0.2, 0, function( )
 		self:Remove( )
 		self = nil
 	end )

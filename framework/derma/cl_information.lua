@@ -260,6 +260,8 @@ function PANEL:Init( )
 		pnl:MoveTo( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) + ( self.desc:GetTall( ) / 2 ), 0.3, 0.2 )
 	end
 	
+	local defAng = Angle( 0, 45, 0 )
+	
 	self.playerModel = vgui.Create( "DModelPanel", self )
 	self.playerModel:SetSize( 150, 150 )
 	self.playerModel:SetPos( 0 - self.playerModel:GetWide( ), self.h / 2 - limbBaseMaterial_h / 2 )
@@ -286,7 +288,14 @@ function PANEL:Init( )
 			pnl:SetLookAt( ( entMax + entMin ) / 2 )
 		end
 		
-		ent:SetAngles( Angle( 0, 45, 0 ) )
+		--[[
+			Based from
+			https://github.com/Chessnut/NutScript/blob/master/gamemode/derma/cl_charmenu.lua
+		]]--
+		ent:SetPoseParameter( "head_pitch", gui.MouseY( ) / ScrH( ) * 80 - 40 )
+		ent:SetPoseParameter( "head_yaw", ( gui.MouseX( ) / ScrW( ) - 0.75 ) * 70 + 23 )
+		ent:SetAngles( defAng )
+		
 		ent:SetIK( false )
 		pnl:RunAnimation( )
 	end

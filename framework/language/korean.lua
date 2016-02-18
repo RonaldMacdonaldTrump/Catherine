@@ -318,6 +318,7 @@ LANGUAGE.data = {
 	[ "Business_Notify_BuyQ" ] = "이 물건들을 구매하시겠습니까?",
 	[ "Business_Notify_CantOpenShipment" ] = "당신은 이 주문물을 열 수 없습니다!",
 	[ "Business_Notify_NeedCartAdd" ] = "장바구니에 먼저 물건을 추가하세요!",
+	[ "Business_OpenStr" ] = "열기",
 	
 	// Inventory
 	[ "Inventory_UI_Title" ] = "인벤토리",

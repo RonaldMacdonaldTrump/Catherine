@@ -35,11 +35,9 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-		
 		if ( self.business and table.Count( self.business ) == 0 ) then
-			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( LANG( "Business_UI_NoBuyable" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Business_UI_NoBuyable" ), "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 	
@@ -49,17 +47,15 @@ function PANEL:Init( )
 	self.Cart:SetSpacing( 5 )
 	self.Cart:EnableHorizontal( false )
 	self.Cart:EnableVerticalScrollbar( true )
-	self.Cart.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-	end
+	self.Cart.Paint = function( pnl, w, h ) end
 	
 	self.buyItems = vgui.Create( "catherine.vgui.button", self )
 	self.buyItems:SetPos( self.w * 0.6 + 20, self.h - 40 )
 	self.buyItems:SetSize( self.w * 0.4 - 30, 30 )
 	self.buyItems:SetStr( LANG( "Business_UI_BuyButtonStr", 0 ) )
 	self.buyItems:SetStrFont( "catherine_normal20" )
-	self.buyItems:SetStrColor( Color( 50, 50, 50, 255 ) )
-	self.buyItems:SetGradientColor( Color( 255, 255, 255, 150 ) )
+	self.buyItems:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.buyItems:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.buyItems.Click = function( )
 		if ( self:GetShipmentCount( ) > 0 ) then
 			if ( catherine.cash.Get( self.player ) >= self.shoppingcartInfo ) then
@@ -72,9 +68,6 @@ function PANEL:Init( )
 		else
 			catherine.notify.Add( LANG( "Business_Notify_NeedCartAdd" ), 5 )
 		end
-	end
-	self.buyItems.PaintBackground = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 225, 225, 225, 255 ) )
 	end
 	
 	self:InitializeBusiness( )
@@ -97,10 +90,10 @@ function PANEL:RefreshShoppingCartInfo( )
 end
 
 function PANEL:MenuPaint( w, h )
-	draw.SimpleText( LANG( "Business_UI_ShoppingCartStr" ), "catherine_normal20", w * 0.6 + 20, 45, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( LANG( "Business_UI_ShoppingCartStr" ), "catherine_normal20", w * 0.6 + 20, 45, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 	
 	if ( self.shoppingcartInfo ) then
-		draw.SimpleText( LANG( "Business_UI_TotalStr", catherine.cash.GetCompleteName( self.shoppingcartInfo ) ), "catherine_normal20", w - 10, 45, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		draw.SimpleText( LANG( "Business_UI_TotalStr", catherine.cash.GetCompleteName( self.shoppingcartInfo ) ), "catherine_normal20", w - 10, 45, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	end
 end
 
@@ -150,8 +143,8 @@ function PANEL:BuildShoppingCart( )
 		panel.Paint = function( pnl, w, h )
 			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 			
-			draw.SimpleText( name, "catherine_normal15", 10, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( count .. " / " .. catherine.cash.GetCompleteName( costs ), "catherine_normal15", w - 40, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			draw.SimpleText( name, "catherine_normal15", 10, h / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( count .. " / " .. catherine.cash.GetCompleteName( costs ), "catherine_normal15", w - 40, h / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		end
 		
 		local removeItem = vgui.Create( "catherine.vgui.button", panel )
@@ -159,8 +152,8 @@ function PANEL:BuildShoppingCart( )
 		removeItem:SetSize( 20, 20 )
 		removeItem:SetStr( "X" )
 		removeItem:SetStrFont( "catherine_normal15" )
-		removeItem:SetStrColor( Color( 50, 50, 50, 255 ) )
-		removeItem:SetGradientColor( Color( 255, 255, 255, 150 ) )
+		removeItem:SetStrColor( Color( 255, 255, 255, 255 ) )
+		removeItem:SetGradientColor( Color( 255, 0, 0, 255 ) )
 		removeItem.Click = function( )
 			self.shoppingcart[ k ] = self.shoppingcart[ k ] - 1
 			
@@ -173,9 +166,6 @@ function PANEL:BuildShoppingCart( )
 			self:BuildShoppingCart( )
 			
 			costs = itemTable.cost * v
-		end
-		removeItem.PaintBackground = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, h, Color( 225, 150, 150, 150 ) )
 		end
 		
 		self.Cart:AddItem( panel )
@@ -196,11 +186,10 @@ function PANEL:BuildBusiness( )
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
-		form.Paint = function( pnl, w, h )
-			catherine.theme.Draw( CAT_THEME_FORM, w, h )
-		end
-		form.Header:SetFont( "catherine_normal15" )
-		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
+		form.Paint = function( pnl, w, h ) end
+		form.Header:SetFont( "catherine_lightUI25" )
+		form.Header:SetTall( 25 )
+		form.Header:SetTextColor( Color( 255, 255, 255, 255 ) )
 
 		local lists = vgui.Create( "DPanelList", form )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
@@ -266,29 +255,27 @@ function PANEL:Init( )
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
 	
 	self:SetSize( self.w, self.h )
-	self:SetPos( ScrW( ), self.y )
+	self:SetPos( self.x, self.y )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	self:ShowCloseButton( false )
-	self:MoveTo( ScrW( ) / 2 - self.w / 2, self.y, 0.2, 0 )
-
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.2, 0 )
+	
 	self.Lists = vgui.Create( "DPanelList", self )
 	self.Lists:SetPos( 10, 35 )
 	self.Lists:SetSize( self.w - 20, self.h - 45 )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )
-	self.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-	end
+	self.Lists.Paint = function( pnl, w, h ) end
 	
 	self.close = vgui.Create( "catherine.vgui.button", self )
 	self.close:SetPos( self.w - 30, 0 )
-	self.close:SetSize( 30, 25 )
+	self.close:SetSize( 30, 23 )
 	self.close:SetStr( "X" )
-	self.close:SetStrFont( "catherine_normal35" )
-	self.close:SetStrColor( Color( 255, 255, 255, 255 ) )
-	self.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
+	self.close:SetStrFont( "catherine_normal30" )
+	self.close:SetStrColor( Color( 0, 0, 0, 255 ) )
 	self.close.Click = function( )
 		if ( self.closing ) then return end
 		
@@ -309,10 +296,8 @@ function PANEL:BuildShipment( )
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Lists:GetWide( ), 40 )
 		panel.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
-			
-			draw.SimpleText( name, "catherine_normal15", 50, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( count, "catherine_normal15", w - 80, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			draw.SimpleText( name, "catherine_normal15", 50, h / 2, Color( 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( count, "catherine_normal15", w - 80, h / 2, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 		end
 
 		local spawnIcon = vgui.Create( "SpawnIcon", panel )
@@ -328,8 +313,8 @@ function PANEL:BuildShipment( )
 		takeItem:SetSize( 60, 20 )
 		takeItem:SetStr( LANG( "Business_UI_Take" ) )
 		takeItem:SetStrFont( "catherine_normal15" )
-		takeItem:SetStrColor( Color( 50, 50, 50, 255 ) )
-		takeItem:SetGradientColor( Color( 50, 50, 50, 150 ) )
+		takeItem:SetStrColor( Color( 255, 255, 255 ) )
+		takeItem:SetGradientColor( Color( 255, 255, 255 ) )
 		takeItem.Click = function( )
 			local itemTable = catherine.item.FindByID( k )
 			
@@ -358,9 +343,6 @@ function PANEL:BuildShipment( )
 				netstream.Start( "catherine.business.RemoveShipment", self.ent:EntIndex( ) )
 			end
 		end
-		takeItem.PaintBackground = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
-		end
 		
 		self.Lists:AddItem( panel )
 	end
@@ -368,8 +350,9 @@ end
 
 function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
+	draw.RoundedBox( 0, 0, 0, w, 25, Color( 255, 255, 255, 255 ) )
 	
-	draw.SimpleText( LANG( "Business_UI_Shipment_Title" ), "catherine_normal20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+	draw.SimpleText( LANG( "Business_UI_Shipment_Title" ):upper( ), "catherine_lightUI20", 10, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
 end
 
 function PANEL:InitializeShipment( ent, shipments )
@@ -394,7 +377,7 @@ end
 function PANEL:Close( )
 	self.closing = true
 	
-	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
+	self:AlphaTo( 0, 0.2, 0, function( )
 		self:Remove( )
 		self = nil
 	end )

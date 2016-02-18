@@ -282,6 +282,54 @@ function GM:GetCharacterPanelLoadModel( characterDatas )
 	return characterDatas._model
 end
 
+function GM:Think( )
+	local pl = catherine.pl
+	
+	if ( IsValid( pl ) and pl:IsCharacterLoaded( ) ) then
+		local hp, maxHP = pl:Health( ), pl:GetMaxHealth( )
+		
+		if ( hp <= 30 ) then
+			if ( pl:Alive( ) ) then
+				if ( !self.heartbeatEnt ) then
+					self.heartbeatEnt = CreateSound( pl, "player/heartbeat1.wav" )
+				end
+				
+				self.heartbeatEnt:Play( )
+			else
+				if ( self.heartbeatEnt ) then
+					if ( !self.heartbeatEntFadeOuting ) then
+						self.heartbeatEntFadeOuting = true
+						self.heartbeatEnt:FadeOut( 3 )
+						
+						timer.Simple( 3, function( )
+							if ( self.heartbeatEnt ) then
+								self.heartbeatEnt:Stop( )
+								self.heartbeatEnt = nil
+								self.heartbeatEntFadeOuting = nil
+							end
+						end )
+					end
+				end
+			end
+		else
+			if ( self.heartbeatEnt ) then
+				if ( !self.heartbeatEntFadeOuting ) then
+					self.heartbeatEntFadeOuting = true
+					self.heartbeatEnt:FadeOut( 3 )
+					
+					timer.Simple( 3, function( )
+						if ( self.heartbeatEnt ) then
+							self.heartbeatEnt:Stop( )
+							self.heartbeatEnt = nil
+							self.heartbeatEntFadeOuting = nil
+						end
+					end )
+				end
+			end
+		end
+	end
+end
+
 function GM:PostInitLoadCharacterList( pl, pnl, characterDatas )
 	local modelPanel = pnl.model
 	
@@ -556,8 +604,8 @@ function GM:HUDDrawTop( )
 		local w, h = panel:GetSize( )
 		local x, y = panel:GetPos( )
 		
-		draw.RoundedBox( 0, x - 5, y - 5, w + 10, h + 10, Color( 255, 255, 255, 255 ) )
-		draw.SimpleText( dermaMenuData.title or "", "catherine_lightUIoutline25", x + w / 2, y - 25, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.RoundedBox( 0, x - 2, y - 2, w + 4, h + 4, Color( 255, 255, 255, 255 ) )
+		draw.SimpleText( dermaMenuData.title or "", "catherine_lightUIoutline20", x + w / 2, y - 20, Color( 255, 255, 255, 255 ), 1, 1 )
 	else
 		catherine.util.dermaMenuTitle = nil
 	end
@@ -566,19 +614,15 @@ end
 function GM:PostRenderVGUI( )
 	if ( hook.Run( "ShouldDrawNotify" ) == false or IsValid( catherine.vgui.character ) ) then return end
 	
-	if ( IsValid( catherine.vgui.menu ) and catherine.vgui.menu:IsVisible( ) ) then
-		catherine.notify.DrawMenuType( )
-	else
-		catherine.notify.Draw( )
-	end
+	catherine.notify.Draw( )
 end
 
 function GM:MainMenuJoined( )
-	catherine.notify.ConvertType( true )
+
 end
 
 function GM:MainMenuExited( )
-	catherine.notify.ConvertType( )
+
 end
 
 function GM:CalcViewModelView( wep, viewMdl, oldEyePos, oldEyeAngles, eyePos, eyeAng )

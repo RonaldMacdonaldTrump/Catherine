@@ -111,13 +111,20 @@ function catherine.bar.Draw( pl )
 		end
 		
 		v.w = math_approach( v.w, barW * per, 1 )
-		v.y = lerp( 0.09, v.y, -barH + i * barH * 2 )
+		v.y = lerp( 0.09, v.y, -( barH / 2 ) + ( ( barH + 3 ) * i ) )
 		
 		if ( math_round( v.a ) > 0 ) then
 			local col = v.col
 			
-			draw_roundedBox( 0, 5, v.y, barW, barH, color( 245, 245, 245, v.a ) )
-			draw_roundedBox( 0, 5, v.y, v.w, barH, color( col.r, col.g, col.b, v.a ) )
+			//draw_roundedBox( 0, 5, v.y, barW, barH, color( 245, 245, 245, v.a ) )
+			surface.SetDrawColor( col.r - 150, col.g - 150, col.b - 150, v.a )
+			surface.SetMaterial( Material( "cat/1.png" ) )
+			surface.DrawTexturedRect( 5, v.y, barW, barH )
+			
+			surface.SetDrawColor( col.r, col.g, col.b, v.a )
+			surface.SetMaterial( Material( "cat/1.png" ) )
+			surface.DrawTexturedRect( 5, v.y, v.w, barH )
+			//draw_roundedBox( 0, 5, v.y, v.w, barH, color( col.r, col.g, col.b, v.a ) )
 		end
 	end
 	

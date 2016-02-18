@@ -69,6 +69,10 @@ if ( SERVER ) then
 		data = Entity( data )
 		
 		if ( IsValid( data ) ) then
+			if ( hook.Run( "ShouldPlayShipmentRemoveSound", pl, data ) != false ) then
+				data:EmitSound( hook.Run( "GetShipmentRemoveSound", pl, data ) or "physics/wood/wood_box_impact_hard" .. math.random( 1, 3 ) .. ".wav", 60 )
+			end
+			
 			data:Remove( )
 		end
 	end )

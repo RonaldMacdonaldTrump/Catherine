@@ -27,57 +27,53 @@ function PANEL:Init( )
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
 
 	self:SetSize( self.w, self.h )
-	self:SetPos( ScrW( ), self.y )
+	self:SetPos( self.x, self.y )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	self:ShowCloseButton( false )
-	self:MoveTo( ScrW( ) / 2 - self.w / 2, self.y, 0.2, 0 )
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.2, 0 )
 	
 	self.storageLists = vgui.Create( "DPanelList", self )
-	self.storageLists:SetPos( 10, 60 )
-	self.storageLists:SetSize( self.w / 2 - 20, self.h - 110 )
+	self.storageLists:SetPos( 10, 55 )
+	self.storageLists:SetSize( self.w / 2 - 20, self.h - 115 )
 	self.storageLists:SetSpacing( 5 )
 	self.storageLists:EnableHorizontal( false )
 	self.storageLists:EnableVerticalScrollbar( true )	
 	self.storageLists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-		
 		if ( self.storageInventory and table.Count( self.storageInventory ) == 0 ) then
-			draw.SimpleText( LANG( "Storage_UI_StorageNoHaveItem" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Storage_UI_StorageNoHaveItem" ), "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 	
 	self.playerLists = vgui.Create( "DPanelList", self )
-	self.playerLists:SetPos( self.w / 2, 60 )
-	self.playerLists:SetSize( self.w / 2 - 10, self.h - 110 )
+	self.playerLists:SetPos( self.w / 2, 55 )
+	self.playerLists:SetSize( self.w / 2 - 10, self.h - 115 )
 	self.playerLists:SetSpacing( 5 )
 	self.playerLists:EnableHorizontal( false )
 	self.playerLists:EnableVerticalScrollbar( true )	
 	self.playerLists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-		
 		if ( self.playerInventory and table.Count( self.playerInventory ) == 0 ) then
-			draw.SimpleText( LANG( "Storage_UI_PlayerNoHaveItem" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Storage_UI_PlayerNoHaveItem" ), "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 
 	self.playerWeight = vgui.Create( "catherine.vgui.weight", self )
-	self.playerWeight:SetPos( self.w - 50, self.h - 45 )
+	self.playerWeight:SetPos( self.w - 50, self.h - 50 )
 	self.playerWeight:SetSize( 40, 40 )
-	self.playerWeight:SetShowText( false )
+	self.playerWeight:SetShowText( true )
 	
 	self.storageWeight = vgui.Create( "catherine.vgui.weight", self )
-	self.storageWeight:SetPos( 10, self.h - 45 )
+	self.storageWeight:SetPos( 10, self.h - 50 )
 	self.storageWeight:SetSize( 40, 40 )
-	self.storageWeight:SetShowText( false )
+	self.storageWeight:SetShowText( true )
 	
 	self.close = vgui.Create( "catherine.vgui.button", self )
 	self.close:SetPos( self.w - 30, 0 )
-	self.close:SetSize( 30, 25 )
+	self.close:SetSize( 30, 23 )
 	self.close:SetStr( "X" )
-	self.close:SetStrFont( "catherine_outline35" )
-	self.close:SetStrColor( Color( 255, 255, 255, 255 ) )
-	self.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
+	self.close:SetStrFont( "catherine_normal30" )
+	self.close:SetStrColor( Color( 0, 0, 0, 255 ) )
 	self.close.Click = function( )
 		self:Close( )
 	end
@@ -85,17 +81,18 @@ end
 
 function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
+	draw.RoundedBox( 0, 0, 0, w, 25, Color( 255, 255, 255, 255 ) )
 	
 	if ( IsValid( self.ent ) ) then
 		local name = self.ent:GetNetVar( "name" )
 		
 		if ( name ) then
-			draw.SimpleText( name, "catherine_outline20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-			draw.SimpleText( LANG( "Storage_UI_StorageCash", catherine.cash.GetCompleteName( catherine.storage.GetCash( self.ent ) ) ), "catherine_normal20", 10, 45, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( name:upper( ), "catherine_lightUI20", 10, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( LANG( "Storage_UI_StorageCash", catherine.cash.GetCompleteName( catherine.storage.GetCash( self.ent ) ) ), "catherine_lightUI15", 10, 40, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 		end
 		
-		draw.SimpleText( LANG( "Storage_UI_YourInv" ), "catherine_outline20", w / 2, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-		draw.SimpleText( LANG( "Storage_UI_PlayerCash", catherine.cash.GetCompleteName( catherine.cash.Get( self.player ) ) ), "catherine_normal20", w / 2, 45, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( LANG( "Storage_UI_YourInv" ):upper( ), "catherine_lightUI20", w / 2, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( LANG( "Storage_UI_PlayerCash", catherine.cash.GetCompleteName( catherine.cash.Get( self.player ) ) ), "catherine_lightUI15", w / 2, 40, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 	end
 end
 
@@ -140,7 +137,7 @@ function PANEL:Think( )
 			return
 		end
 		
-		self.entCheck = CurTime( ) + 0.05
+		self.entCheck = CurTime( ) + 0.3
 	end
 end
 
@@ -161,11 +158,10 @@ function PANEL:BuildStorage( )
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.storageLists:GetWide( ), 54 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
-		form.Paint = function( pnl, w, h )
-			catherine.theme.Draw( CAT_THEME_FORM, w, h )
-		end
-		form.Header:SetFont( "catherine_normal15" )
-		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
+		form.Paint = function( pnl, w, h ) end
+		form.Header:SetFont( "catherine_lightUI25" )
+		form.Header:SetTall( 25 )
+		form.Header:SetTextColor( Color( 255, 255, 255, 255 ) )
 
 		local lists = vgui.Create( "DPanelList", form )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
@@ -212,8 +208,8 @@ function PANEL:BuildStorage( )
 					surface.SetFont( "catherine_normal20" )
 					local tw, th = surface.GetTextSize( count )
 					
-					draw.RoundedBox( 0, 5 - tw / 2, h - 20, tw * 2, 20, Color( 50, 50, 50, 200 ) )
-					draw.SimpleText( count, "catherine_normal20", 5, h - 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.RoundedBox( 0, 5 - tw / 2, h - 20, tw * 2, 20, Color( 255, 255, 255, 200 ) )
+					draw.SimpleText( count, "catherine_normal20", 5, h - 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
 			
@@ -227,11 +223,10 @@ function PANEL:BuildStorage( )
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.playerLists:GetWide( ), 54 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
-		form.Paint = function( pnl, w, h )
-			catherine.theme.Draw( CAT_THEME_FORM, w, h )
-		end
-		form.Header:SetFont( "catherine_normal15" )
-		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
+		form.Paint = function( pnl, w, h ) end
+		form.Header:SetFont( "catherine_lightUI25" )
+		form.Header:SetTall( 25 )
+		form.Header:SetTextColor( Color( 255, 255, 255, 255 ) )
 
 		local lists = vgui.Create( "DPanelList", form )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
@@ -287,8 +282,8 @@ function PANEL:BuildStorage( )
 					surface.SetFont( "catherine_normal20" )
 					local tw, th = surface.GetTextSize( count )
 					
-					draw.RoundedBox( 0, 5 - tw / 2, h - 20, tw * 2, 20, Color( 50, 50, 50, 200 ) )
-					draw.SimpleText( count, "catherine_normal20", 5, h - 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.RoundedBox( 0, 5 - tw / 2, h - 20, tw * 2, 20, Color( 255, 255, 255, 200 ) )
+					draw.SimpleText( count, "catherine_normal20", 5, h - 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
 			
@@ -307,7 +302,7 @@ function PANEL:Close( )
 	
 	self.closing = true
 	
-	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
+	self:AlphaTo( 0, 0.2, 0, function( )
 		if ( IsValid( self.ent ) ) then
 			netstream.Start( "catherine.storage.ClosePanel", self.ent )
 		end

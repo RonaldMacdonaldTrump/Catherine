@@ -322,6 +322,7 @@ LANGUAGE.data = {
 	[ "Business_Notify_BuyQ" ] = "Are you sure you want to buy these item(s)?",
 	[ "Business_Notify_CantOpenShipment" ] = "You can not open this shipment!",
 	[ "Business_Notify_NeedCartAdd" ] = "Add an item onto your cart first!",
+	[ "Business_OpenStr" ] = "Open",
 	
 	// Inventory
 	[ "Inventory_UI_Title" ] = "Inventory",

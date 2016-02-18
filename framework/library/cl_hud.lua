@@ -22,7 +22,9 @@ catherine.hud = catherine.hud or {
 	topNotify = nil,
 	welcomeIntro = nil,
 	vAlpha = 0,
-	vAlphaTarget = 255
+	vAlphaTarget = 255,
+	sAlpha = 0,
+	sAlphaTarget = 255
 }
 catherine.hud.welcomeIntroAnimations = { }
 local blockedModules = { }
@@ -112,6 +114,19 @@ end
 function catherine.hud.ScreenDamage( pl, w, h )
 	if ( hook.Run( "ShouldDrawScreenDamage", pl ) == false ) then return end
 	
+	if ( pl:Alive( ) and pl:Health( ) <= 35 ) then
+		catherine.hud.sAlphaTarget = 150 * ( 1 - ( pl:Health( ) / 35 ) )
+	else
+		catherine.hud.sAlphaTarget = 0
+	end
+	
+	catherine.hud.sAlpha = animationApproach( catherine.hud.sAlpha, catherine.hud.sAlphaTarget, FrameTime( ) * 90 )
+	
+	if ( math.Round( catherine.hud.sAlpha ) > 0 ) then
+		setColor( 255, 0, 0, catherine.hud.sAlpha )
+		setMat( Material( "cat/4.png") )
+		drawMat( 0, 0, w, h )
+	end
 end
 
 function catherine.hud.Ammo( pl, w, h )

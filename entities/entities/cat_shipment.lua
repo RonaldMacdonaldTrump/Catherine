@@ -40,30 +40,35 @@ if ( SERVER ) then
 			physObject:EnableMotion( true )
 			physObject:Wake( )
 		end
+		
+		catherine.entity.RegisterUseMenu( self, {
+			{
+				uniqueID = "ID_OPEN",
+				text = "^Business_OpenStr",
+				icon = "icon16/eye.png",
+				func = function( pl, ent )
+					if ( pl:GetCharacterID( ) != self:GetNetVar( "owner", 0 ) ) then
+						catherine.util.NotifyLang( pl, "Business_Notify_CantOpenShipment" )
+						return
+					end
+					
+					netstream.Start( pl, "catherine.business.EntityUseMenu", self:EntIndex( ) )
+				end
+			}
+		} )
 	end
 	
 	function ENT:InitializeShipment( pl, shipLists )
 		self:SetNetVar( "owner", pl:GetCharacterID( ) )
 		self:SetNetVar( "shipLists", shipLists )
 	end
-
-	function ENT:Use( pl )
-		if ( pl:GetCharacterID( ) != self:GetNetVar( "owner", 0 ) ) then
-			catherine.util.NotifyLang( pl, "Business_Notify_CantOpenShipment" )
-			return
-		end
-		
-		netstream.Start( pl, "catherine.business.EntityUseMenu", self:EntIndex( ) )
-	end
-
+	
 	function ENT:OnRemove( )
 		local eff = EffectData( )
 		eff:SetStart( self:GetPos( ) )
 		eff:SetOrigin( self:GetPos( ) )
 		eff:SetScale( 8 )
 		util.Effect( "GlassImpact", eff, true, true )
-		
-		self:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 7 ) .. ".wav" )
 	end
 	
 	function ENT:OnTakeDamage( dmg )

@@ -61,16 +61,6 @@ function catherine.notify.Add( message, time, sound )
 	}
 end
 
-function catherine.notify.ConvertType( isMenu )
-	for k, v in pairs( catherine.notify.lists ) do
-		if ( isMenu ) then
-			v.y = -10 + ( k * 25 )
-		else
-			v.y = ( ScrH( ) - 10 ) - ( k * 25 )
-		end
-	end
-end
-
 function catherine.notify.Draw( )
 	for k, v in pairs( catherine.notify.lists ) do
 		if ( v.endTime <= CurTime( ) ) then
@@ -85,26 +75,6 @@ function catherine.notify.Draw( )
 		end
 		
 		v.y = lerp( 0.05, v.y, ( ScrH( ) - 10 ) - ( k * 25 ) )
-		
-		draw_roundedBox( 0, v.x, v.y, v.w, v.h, color( 50, 50, 50, v.a ) )
-		draw_simpleText( v.message, "catherine_normal15", v.x + v.w / 2, v.y + v.h / 2, color( 255, 255, 255, v.a ), 1, 1 )
-	end
-end
-
-function catherine.notify.DrawMenuType( )
-	for k, v in pairs( catherine.notify.lists ) do
-		if ( v.endTime <= CurTime( ) ) then
-			v.a = lerp( 0.05, v.a, 0 )
-			
-			if ( math_round( v.a ) <= 0 ) then
-				table_remove( catherine.notify.lists, k )
-				continue
-			end
-		else
-			v.a = lerp( 0.05, v.a, 255 )
-		end
-		
-		v.y = lerp( 0.05, v.y, -10 + ( k * 25 ) )
 		
 		draw_roundedBox( 0, v.x, v.y, v.w, v.h, color( 50, 50, 50, v.a ) )
 		draw_simpleText( v.message, "catherine_normal15", v.x + v.w / 2, v.y + v.h / 2, color( 255, 255, 255, v.a ), 1, 1 )
