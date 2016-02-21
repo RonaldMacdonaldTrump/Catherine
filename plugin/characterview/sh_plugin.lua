@@ -56,13 +56,15 @@ catherine.command.Register( {
 	uniqueID = "&uniqueID_charViewRemove",
 	command = "charviewremove",
 	desc = "Remove the Character View.",
+	syntax = "[Range]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		local pos = pl:GetPos( )
 		local i = 0
+		local range = math.max( tonumber( args[ 1 ] or 256 ), 1 )
 		
 		for k, v in pairs( PLUGIN.charViews ) do
-			if ( pos:Distance( v.pos ) <= 256 ) then
+			if ( pos:Distance( v.pos ) <= range ) then
 				PLUGIN.charViews[ k ] = nil
 				i = i + 1
 			end

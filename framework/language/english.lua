@@ -138,6 +138,7 @@ LANGUAGE.data = {
 	[ "Character_UI_CharInfo" ] = "Character Information",
 	[ "Character_UI_CharName" ] = "Character Name",
 	[ "Character_UI_CharDesc" ] = "Character Description",
+	[ "Character_UI_CharModel" ] = "Character Model",
 	[ "Character_UI_MusicError" ] = "Failed to play background music! ( ERROR : %s )",
 	[ "Character_UI_Hint01" ] = "Catherine are supported multi-language system, Click the right top button for change the whatever language you can speak.",
 	[ "Character_UI_SelectFaction" ] = "> Select faction.",

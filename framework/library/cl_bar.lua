@@ -117,7 +117,8 @@ function catherine.bar.Draw( pl )
 			local col = v.col
 			
 			//draw_roundedBox( 0, 5, v.y, barW, barH, color( 245, 245, 245, v.a ) )
-			surface.SetDrawColor( col.r - 150, col.g - 150, col.b - 150, v.a )
+			
+			surface.SetDrawColor( col.r - 100, col.g - 100, col.b - 100, v.a )
 			surface.SetMaterial( Material( "cat/1.png" ) )
 			surface.DrawTexturedRect( 5, v.y, barW, barH )
 			

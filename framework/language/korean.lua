@@ -134,6 +134,7 @@ LANGUAGE.data = {
 	[ "Character_UI_CharInfo" ] = "캐릭터 정보",
 	[ "Character_UI_CharName" ] = "캐릭터 이름",
 	[ "Character_UI_CharDesc" ] = "캐릭터 설명",
+	[ "Character_UI_CharModel" ] = "캐릭터 모델",
 	[ "Character_UI_MusicError" ] = "백그라운드 음악을 재생하는데에 문제가 있습니다! ( 오류 : %s )",
 	[ "Character_UI_Hint01" ] = "캐서린은 다국어를 지원합니다, 오른쪽 위에 있는 버튼을 눌러 자신이 원하는 언어로 바꾸세요.",
 	[ "Character_UI_SelectFaction" ] = "> 팩션을 선택하세요.",

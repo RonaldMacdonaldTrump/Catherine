@@ -21,6 +21,7 @@ CAT_THEME_MENU_BACKGROUND = 1
 CAT_THEME_PNLLIST = 2
 CAT_THEME_FORM = 3
 CAT_THEME_TEXTENT = 4
+CAT_THEME_MENU_BACKGROUND_NOTITLE = 5
 
 --[[ Function Optimize :> ]]--
 local color = Color
@@ -37,6 +38,13 @@ local themes = {
 		setDrawColor( 20, 20, 20, 235 )
 		setMaterial( gradient_up )
 		drawTexturedRect( 0, 25, w, h )
+	end,
+	[ CAT_THEME_MENU_BACKGROUND_NOTITLE ] = function( w, h )
+		draw_roundedBox( 0, 0, 0, w, h, color( 50, 50, 50, 235 ) )
+		
+		setDrawColor( 20, 20, 20, 235 )
+		setMaterial( gradient_up )
+		drawTexturedRect( 0, 0, w, h )
 	end,
 	[ CAT_THEME_PNLLIST ] = function( w, h )
 		draw_roundedBox( 0, 0, 0, w, h, color( 235, 235, 235, 255 ) )
