@@ -389,6 +389,8 @@ function GM:PlayerLoadFinished( pl )
 end
 
 function GM:PlayerDisconnected( pl )
+	if ( catherine.patchx.initializing ) then return end
+	
 	if ( IsValid( pl.CAT_deathBody ) ) then
 		pl.CAT_deathBody:Remove( )
 	end
@@ -647,6 +649,8 @@ function GM:PlayerInitialSpawn( pl )
 	pl:GodEnable( )
 	
 	timer.Simple( 2, function( )
+		if ( !IsValid( pl ) ) then return end
+		
 		pl:SetNoDraw( true )
 		pl:SetNotSolid( true )
 		pl:SetPos( Vector( 0, 0, 10000 ) )
