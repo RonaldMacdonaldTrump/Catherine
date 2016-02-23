@@ -271,7 +271,9 @@ function catherine.util.GetDivideTextData( text, width )
 	return wrapData
 end
 
-catherine.util.IncludeInDir( "engine/external" )
+catherine.util.Include( "catherine/framework/engine/external/sh_netstream2.lua" )
+catherine.util.Include( "catherine/framework/engine/external/sh_pon.lua" )
+catherine.util.Include( "catherine/framework/engine/external/sh_utf8.lua" )
 
 if ( SERVER ) then
 	catherine.util.receiver = catherine.util.receiver or { str = { }, qry = { } }

@@ -159,6 +159,7 @@ function catherine.Boot( )
 		include( "catherine/framework/engine/patchx.lua" )
 		include( "catherine/framework/engine/lime.lua" )
 		include( "catherine/framework/engine/dev.lua" )
+		include( "catherine/framework/engine/external/sv_catherine.lua" )
 	else
 		include( "catherine/framework/engine/client.lua" )
 		include( "catherine/framework/engine/shared.lua" )
