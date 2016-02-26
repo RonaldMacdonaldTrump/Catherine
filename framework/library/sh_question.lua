@@ -107,12 +107,11 @@ else
 			catherine.vgui.character:Remove( )
 		end
 		
-		catherine.vgui.question = vgui.Create( "catherine.vgui.question" )
 		catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+		catherine.vgui.question = vgui.Create( "catherine.vgui.question" )
 		
 		if ( IsValid( catherine.vgui.character ) ) then
 			catherine.vgui.character:SetVisible( false )
-			catherine.vgui.character:MoveToBack( )
 		end
 	end
 	

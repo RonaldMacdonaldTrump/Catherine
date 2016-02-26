@@ -590,6 +590,7 @@ LANGUAGE.data = {
 	[ "Basic_Notify_RestoreDatabaseKick" ] = "죄송합니다, 서버 데이터베이스 복구 작업으로 인해 강퇴 처리되셨습니다.",
 	[ "Basic_ItemESP_Name" ] = "아이템",
 	[ "Basic_PopNotify_Title" ] = "중요 알림 메세지",
+	[ "Basic_DermaUtil_MessageTitle" ] = "알림",
 	
 	// Command
 	[ "Command_ChangeLevel_Fin" ] = "%s초 후 맵이 %s 로 바뀝니다.",

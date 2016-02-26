@@ -112,9 +112,9 @@ function PANEL:Init( )
 		menu:Open( )
 	end
 	self.changeLanguage.PaintOverAll = function( pnl, w, h )
-		surface.SetDrawColor( 255, 255, 255, 100 )
+		surface.SetDrawColor( 255, 255, 255, 30 )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0, h - 2, w, 2 )
+		surface.DrawTexturedRect( 0, h - 1, w, 1 )
 		
 		local languageTable = catherine.language.FindByID( GetConVarString( "cat_convar_language" ) )
 		
@@ -141,9 +141,9 @@ function PANEL:Init( )
 		end )
 	end
 	self.createCharacter.PaintOverAll = function( pnl, w, h )
-		surface.SetDrawColor( 255, 255, 255, 100 )
+		surface.SetDrawColor( 255, 255, 255, 30 )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0, h - 2, w, 2 )
+		surface.DrawTexturedRect( 0, h - 1, w, 1 )
 	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.createCharacter
 	
@@ -159,9 +159,9 @@ function PANEL:Init( )
 		end )
 	end
 	self.useCharacter.PaintOverAll = function( pnl, w, h )
-		surface.SetDrawColor( 255, 255, 255, 100 )
+		surface.SetDrawColor( 255, 255, 255, 30 )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0, h - 2, w, 2 )
+		surface.DrawTexturedRect( 0, h - 1, w, 1 )
 	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.useCharacter
 	
@@ -178,9 +178,9 @@ function PANEL:Init( )
 		end )
 	end
 	self.changeLog.PaintOverAll = function( pnl, w, h )
-		surface.SetDrawColor( 255, 255, 255, 100 )
+		surface.SetDrawColor( 255, 255, 255, 30 )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0, h - 2, w, 2 )
+		surface.DrawTexturedRect( 0, h - 1, w, 1 )
 		
 		surface.SetDrawColor( 255, 255, 255, math.max( math.sin( CurTime( ) * 7 ) * 255, 50 ) )
 		surface.SetMaterial( Material( "icon16/star.png" ) )
@@ -212,9 +212,9 @@ function PANEL:Init( )
 			pnl:SetStr( LANG( "Character_UI_ExitServerStr" ) )
 		end
 		
-		surface.SetDrawColor( 255, 50, 50, 100 )
+		surface.SetDrawColor( 255, 50, 50, 30 )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0, h - 2, w, 2 )
+		surface.DrawTexturedRect( 0, h - 1, w, 1 )
 	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.disconnect
 	

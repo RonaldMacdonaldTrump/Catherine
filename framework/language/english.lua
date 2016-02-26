@@ -592,6 +592,7 @@ LANGUAGE.data = {
 	[ "Basic_Notify_RestoreDatabaseKick" ] = "SORRY, You have been kicked from this server, because server are working Database restore.",
 	[ "Basic_ItemESP_Name" ] = "ITEM",
 	[ "Basic_PopNotify_Title" ] = "Important Notifications",
+	[ "Basic_DermaUtil_MessageTitle" ] = "Notify",
 	
 	// Command
 	[ "Command_ChangeLevel_Fin" ] = "%s(sec) after change map to %s.",

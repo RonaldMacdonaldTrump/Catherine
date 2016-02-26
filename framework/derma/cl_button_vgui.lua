@@ -142,7 +142,7 @@ function PANEL:Paint( w, h )
 	
 	surface.SetDrawColor( self.gradientColor.r, self.gradientColor.g, self.gradientColor.b, self.gradientColor.a )
 	surface.SetMaterial( Material( "gui/center_gradient" ) )
-	surface.DrawTexturedRect( 0, h - 2, w, 2 )
+	surface.DrawTexturedRect( 0, h - 1, w, 1 )
 	
 	draw.SimpleText( self.Text, self.Font, w / 2, h / 2, self.textColor, 1, 1 )
 	

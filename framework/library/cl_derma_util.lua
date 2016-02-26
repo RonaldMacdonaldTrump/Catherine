@@ -25,7 +25,7 @@ function Derma_Message( strText, _, strButtonText, sound )
 	
 	local Window = vgui.Create( "DFrame" )
 	Window:SetTitle( "" )
-	Window:SetSize( ScrW( ), ScrH( ) * 0.15 )
+	Window:SetSize( ScrW( ), 100 )
 	Window:Center( )
 	Window:SetDraggable( false )
 	Window:ShowCloseButton( false )
@@ -33,30 +33,18 @@ function Derma_Message( strText, _, strButtonText, sound )
 	Window:SetAlpha( 0 )
 	Window:AlphaTo( 255, 0.1, 0 )
 	Window.Paint = function( pnl, w, h )
-		surface.SetDrawColor( 255, 255, 255, 255 )
-		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png" ) )
-		surface.DrawTexturedRect( 30, h / 2 - 64 / 2, 64, 64 )
+		catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND_NOTITLE, w, h )
 		
-		local wrapTexts = catherine.util.GetWrapTextData( strText, w / 3, "catherine_normal20" )
+		draw.SimpleText( LANG( "Basic_DermaUtil_MessageTitle" ):upper( ), "catherine_normal25", w / 2, 20, Color( 255, 255, 255, 255 ), 1, 1 )
 		
-		if ( #wrapTexts == 1 ) then
-			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
-		else
-			local textY = ( ( h / 2 ) - ( #wrapTexts * 25 ) / 2 / 2 ) / 2
-			
-			for k, v in pairs( wrapTexts ) do
-				draw.SimpleText( v, "catherine_normal20", w / 2, textY + k * 25, Color( 255, 255, 255, 255 ), 1, 1 )
-			end
-		end
+		draw.SimpleText( strText, "catherine_normal15", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
 	end
 	
-	local ButtonPanel = vgui.Create( "DPanel", Window )
-	ButtonPanel:SetTall( 30 )
-	ButtonPanel:SetDrawBackground( false )
+	local Window_w, Window_h = Window:GetWide( ), Window:GetTall( )
 	
-	local Okay = vgui.Create( "catherine.vgui.button", ButtonPanel )
-	Okay:SetPos( 5, 5 )
-	Okay:SetSize( 100, 25 )
+	local Okay = vgui.Create( "catherine.vgui.button", Window )
+	Okay:SetPos( Window_w - 220, Window_h - 35 )
+	Okay:SetSize( 200, 25 )
 	Okay:SetStr( strButtonText or LANG( "Basic_UI_OK" ) )
 	Okay:SetStrColor( Color( 255, 255, 255, 255 ) )
 	Okay:SetGradientColor( Color( 255, 255, 255, 255 ) )
@@ -68,10 +56,11 @@ function Derma_Message( strText, _, strButtonText, sound )
 			Window:Close( )
 		end )
 	end
-	
-	ButtonPanel:SetWide( Okay:GetWide( ) + 10 )
-	ButtonPanel:CenterHorizontal( )
-	ButtonPanel:AlignBottom( 8 )
+	Okay.PaintOverAll = function( pnl, w, h )
+		surface.SetDrawColor( 255, 255, 255, 30 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0, h - 1, w, 1 )
+	end
 	
 	return Window
 end
@@ -98,12 +87,12 @@ function Derma_Query( strText, _, ... )
 		local wrapTexts = catherine.util.GetWrapTextData( strText, w / 3, "catherine_normal20" )
 		
 		if ( #wrapTexts == 1 ) then
-			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		else
 			local textY = ( ( h / 2 ) - ( #wrapTexts * 25 ) / 2 / 2 ) / 2
 			
 			for k, v in pairs( wrapTexts ) do
-				draw.SimpleText( v, "catherine_normal20", w / 2, textY + k * 25, Color( 50, 50, 50, 255 ), 1, 1 )
+				draw.SimpleText( v, "catherine_normal20", w / 2, textY + k * 25, Color( 255, 255, 255, 255 ), 1, 1 )
 			end
 		end
 	end
@@ -125,8 +114,8 @@ function Derma_Query( strText, _, ... )
 		local Button = vgui.Create( "catherine.vgui.button", ButtonPanel )
 		Button:SetSize( 100, 20 )
 		Button:SetStr( Text or LANG( "Basic_UI_OK" ) )
-		Button:SetStrColor( Color( 50, 50, 50, 255 ) )
-		Button:SetGradientColor( Color( 50, 50, 50, 255 ) )
+		Button:SetStrColor( Color( 255, 255, 255, 255 ) )
+		Button:SetGradientColor( Color( 255, 255, 255, 255 ) )
 		Button:SetStrFont( "catherine_normal15" )
 		Button:SetAlpha( 0 )
 		Button:AlphaTo( 255, 0.2, delta )
@@ -170,13 +159,13 @@ function Derma_StringRequest( _, strText, strDefaultText, fnEnter, fnCancel, str
 	Window:SetAlpha( 0 )
 	Window:AlphaTo( 255, 0.1, 0 )
 	Window.Paint = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 200 ) )
+		catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND_NOTITLE, w, h )
 		
 		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( Material( "CAT/ui/icon_warning2.png" ) )
 		surface.DrawTexturedRect( 30, h / 2 - 64 / 2, 64, 64 )
 		
-		draw.SimpleText( strText, "catherine_normal20", w / 2, h * 0.2, Color( 50, 50, 50, 255 ), 1, 1 )
+		draw.SimpleText( strText, "catherine_normal20", w / 2, h * 0.2, Color( 255, 255, 255, 255 ), 1, 1 )
 	end
 	
 	local TextEntry = vgui.Create( "DTextEntry", Window )
@@ -189,7 +178,7 @@ function Derma_StringRequest( _, strText, strDefaultText, fnEnter, fnCancel, str
 	end
 	TextEntry.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
-		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 110, 110, 110 ), Color( 255, 255, 255 ) )
 	end
 	TextEntry:SetSize( ScrW( ) * 0.5, 20 )
 	TextEntry:SetPos( Window:GetWide( ) / 2 - TextEntry:GetWide( ) / 2, Window:GetTall( ) / 2 - TextEntry:GetTall( ) / 2 )
@@ -202,8 +191,8 @@ function Derma_StringRequest( _, strText, strDefaultText, fnEnter, fnCancel, str
 	local Button = vgui.Create( "catherine.vgui.button", ButtonPanel )
 	Button:SetSize( 100, 20 )
 	Button:SetStr( strButtonText or LANG( "Basic_UI_OK" ) )
-	Button:SetStrColor( Color( 50, 50, 50, 255 ) )
-	Button:SetGradientColor( Color( 50, 50, 50, 255 ) )
+	Button:SetStrColor( Color( 255, 255, 255, 255 ) )
+	Button:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	Button:SetStrFont( "catherine_normal15" )
 	Button:SetAlpha( 0 )
 	Button:AlphaTo( 255, 0.2, 0.2 )
@@ -217,8 +206,8 @@ function Derma_StringRequest( _, strText, strDefaultText, fnEnter, fnCancel, str
 	local ButtonCancel = vgui.Create( "catherine.vgui.button", ButtonPanel )
 	ButtonCancel:SetSize( 100, 20 )
 	ButtonCancel:SetStr( strButtonCancelText or LANG( "Basic_UI_NO" ) )
-	ButtonCancel:SetStrColor( Color( 50, 50, 50, 255 ) )
-	ButtonCancel:SetGradientColor( Color( 50, 50, 50, 255 ) )
+	ButtonCancel:SetStrColor( Color( 255, 255, 255, 255 ) )
+	ButtonCancel:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	ButtonCancel:SetStrFont( "catherine_normal15" )
 	ButtonCancel:SetAlpha( 0 )
 	ButtonCancel:AlphaTo( 255, 0.2, 0.4 )
