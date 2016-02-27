@@ -90,6 +90,45 @@ function PANEL:Init( )
 		pnl:MoveTo( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ), 0.3, 0.1 )
 	end
 	
+	self.descEnt = vgui.Create( "DTextEntry", self )
+	self.descEnt:SetSize( self.w / 2 - limbBaseMaterial_w / 2 - 20, 20 )
+	self.descEnt:SetPos( self.w, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) + 29 / 2 )
+	self.descEnt:SetFont( "catherine_normal15" )
+	self.descEnt:SetText( pl:Desc( ) )
+	self.descEnt:SetAlpha( 0 )
+	self.descEnt:SetAllowNonAsciiCharacters( true )
+	self.descEnt.Paint = function( pnl, w, h )
+		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 255 ) )
+	end
+	self.descEnt.PerformLayout = function( pnl )
+		pnl:MoveTo( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) + 29 / 2, 0.3, 0.1 )
+	end
+	self.descEnt.OnEnter = function( pnl )
+		local newDesc = pnl:GetText( )
+		
+		pnl:SetAlpha( 0 )
+		self.desc:SetVisible( true )
+		
+		catherine.command.Run( "&uniqueID_charPhysDesc", newDesc )
+		
+		if ( !newDesc:find( "#" ) ) then
+			if ( newDesc:utf8len( ) >= catherine.configs.characterDescMinLen and newDesc:utf8len( ) < catherine.configs.characterDescMaxLen ) then
+				self.desc:SetText( newDesc )
+				pnl:SetText( newDesc )
+			else
+				pnl:SetText( pl:Desc( ) )
+			end
+		else
+			pnl:SetText( pl:Desc( ) )
+		end
+	end
+	self.descEnt.OnMousePressed = function( pnl )
+		if ( pnl:GetAlpha( ) == 0 ) then
+			self.desc:SetVisible( false )
+			pnl:SetAlpha( 255 )
+		end
+	end
+	
 	self.factionName = vgui.Create( "DLabel", self )
 	self.factionName:SetSize( self.w / 2 - limbBaseMaterial_w / 2 - 20, 50 )
 	self.factionName:SetPos( self.w, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) + ( self.desc:GetTall( ) / 2 ) )
@@ -117,6 +156,11 @@ function PANEL:Init( )
 		
 		local boneIndex = ent:LookupBone( "ValveBiped.Bip01_Head1" )
 		local entMin, entMax = ent:GetRenderBounds( )
+		local convertBodyGroup = { }
+		
+		for k, v in pairs( pl:GetBodyGroups( ) ) do
+			convertBodyGroup[ #convertBodyGroup + 1 ] = pl:GetBodygroup( v.id )
+		end
 		
 		if ( boneIndex ) then
 			local pos, ang = ent:GetBonePosition( boneIndex )
@@ -137,6 +181,12 @@ function PANEL:Init( )
 		ent:SetAngles( defAng )
 		
 		ent:SetIK( false )
+		ent:SetSkin( pl:GetSkin( ) or 0 )
+		
+		if ( #convertBodyGroup > 0 ) then
+			ent:SetBodyGroups( table.concat( convertBodyGroup, "" ) )
+		end
+		
 		pnl:RunAnimation( )
 	end
 	
