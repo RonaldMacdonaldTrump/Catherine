@@ -22,7 +22,7 @@ if ( SERVER ) then
 	catherine.configs.OWNER = "" --[[ Setting a Owner SteamID. ]]--
 end
 
-catherine.configs.defaultLanguage = "english" --[[ Setting a default Language (english, korean). ]]--
+catherine.configs.defaultLanguage = "" --[[ Setting a default Language (english, korean). ]]--
 
 catherine.configs.doorCost = 50 --[[ Setting a Door cost. ]]--
 catherine.configs.doorSellCost = 25 --[[ Setting a Door sell cost. ]]--
@@ -34,10 +34,10 @@ catherine.configs.cashModel = "models/props_lab/box01a.mdl" --[[ Setting a Cash 
 catherine.configs.characterMenuMusic = "sound/music/hl2_song19.mp3" --[[ Setting a Character menu music. ]]--
 catherine.configs.enabledCharacterMenuMusicLooping = true
 catherine.configs.baseInventoryWeight = 10
-catherine.configs.characterNameMinLen = 4
-catherine.configs.characterNameMaxLen = 25
+catherine.configs.characterNameMinLen = 5
+catherine.configs.characterNameMaxLen = 35
 catherine.configs.characterDescMinLen = 32
-catherine.configs.characterDescMaxLen = 64
+catherine.configs.characterDescMaxLen = 72
 catherine.configs.doorDescMaxLen = 30
 catherine.configs.Font = "Segoe UI" --[[ Setting a default UI font. ]]--
 catherine.configs.enableQuiz = true --[[ Enabled a Quiz system. ]]--
@@ -87,6 +87,9 @@ if ( SERVER ) then
 	
 	catherine.configs.enable_oocDelay = true --[[ Enabled a OOC delay. ]]--
 	catherine.configs.enable_loocDelay = false --[[ Enabled a LOOC delay. ]]--
+	catherine.configs.charMakeRandomAttributeBlacklist = { }
+	catherine.configs.charMakeRandomAttributeMinPoint = 3
+	catherine.configs.charMakeRandomAttributeMaxPoint = 18
 	catherine.configs.forceAllowOOC = function( pl )
 		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
 			return true

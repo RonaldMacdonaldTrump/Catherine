@@ -107,7 +107,10 @@ catherine.character.NewVar( "att", {
 	doNetworking = true,
 	default = emptyTableToJSON,
 	doConversion = true,
-	doLocal = true
+	doLocal = true,
+	checkValid = function( pl, data )
+		return true
+	end
 } )
 
 catherine.character.NewVar( "schema", {
@@ -282,6 +285,21 @@ if ( SERVER ) then
 		end
 		
 		local charVars = { }
+		local backup = { }
+		
+		if ( data[ "att" ] ) then
+			charVars[ "_att" ] = { }
+			
+			for k, v in pairs( table.Copy( data[ "att" ] ) ) do
+				charVars[ "_att" ][ v.uniqueID ] = {
+					per = 0,
+					progress = v.amount
+				}
+			end
+			charVars[ "_att" ] = util.TableToJSON( charVars[ "_att" ] )
+			
+			data[ "att" ] = nil
+		end
 		
 		for k, v in pairs( catherine.character.GetVarAll( ) ) do
 			local var = type( v.default ) == "function" and v.default( pl, data[ k ] ) or v.default
@@ -299,7 +317,9 @@ if ( SERVER ) then
 				end
 			end
 			
-			charVars[ v.field ] = var
+			if ( k != "att" ) then
+				charVars[ v.field ] = var
+			end
 		end
 		
 		hook.Add( "DatabaseError", "catherine.database.DatabaseError." .. steamID, function( query, err )
@@ -311,6 +331,7 @@ if ( SERVER ) then
 			catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, pl:SteamName( ) .. ", " .. steamID .. " has created a '" .. charVars._name .. "' character.", true )
 			netstream.Start( pl, "catherine.character.CreateResult", true )
 			catherine.character.SendPlayerCharacterList( pl )
+			catherine.attribute.ResetRandom( pl )
 			
 			hook.Remove( "DatabaseError", "catherine.database.DatabaseError." .. steamID )
 		end )
@@ -648,9 +669,24 @@ if ( SERVER ) then
 	netstream.Hook( "catherine.character.SendPlayerCharacterListRequest", function( pl, data )
 		catherine.character.SendPlayerCharacterList( pl )
 	end )
+	
+	netstream.Hook( "catherine.character.GetRandomAttribute", function( pl )
+		netstream.Start( pl, "catherine.character.GetRandomAttributeReceive", catherine.attribute.GetRandom( pl ) )
+	end )
 else
 	catherine.character.panelMusic = catherine.character.panelMusic or nil
 	catherine.character.localCharacters = catherine.character.localCharacters or { }
+	
+	netstream.Hook( "catherine.character.GetRandomAttributeReceive", function( data )
+		if ( IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.createData.currentStage ) ) then
+			if ( #data == 0 ) then
+				catherine.vgui.character.createData.currentStage.noAtt = true
+			else
+				catherine.vgui.character.createData.currentStage.data.att = data
+				catherine.vgui.character.createData.currentStage:BuildRandomAttributeList( )
+			end
+		end
+	end )
 	
 	netstream.Hook( "catherine.character.CreateResult", function( data )
 		if ( data == true and IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.createData.currentStage ) ) then
@@ -659,6 +695,8 @@ else
 				pnl = nil
 				catherine.vgui.character:BackToMainMenu( )
 			end )
+			
+			catherine.vgui.character.createData = nil
 		else
 			Derma_Message( catherine.util.StuffLanguage( data ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 		end
@@ -676,6 +714,8 @@ else
 		if ( data == true and IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.CharacterPanel ) ) then
 			catherine.vgui.character.CharacterPanel:Remove( )
 			catherine.vgui.character:UseCharacterPanel( )
+			
+			Derma_Message( LANG( "Character_Notify_DeleteResult" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 		else
 			Derma_Message( catherine.util.StuffLanguage( data ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 		end

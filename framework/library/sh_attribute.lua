@@ -62,6 +62,97 @@ end
 catherine.attribute.Include( catherine.FolderName .. "/framework" )
 
 if ( SERVER ) then
+	catherine.attribute.randomSaver = catherine.attribute.randomSaver or { }
+	
+	function catherine.attribute.GetRandom( pl )
+		local steamID = pl:SteamID( )
+		local data = catherine.attribute.randomSaver[ steamID ]
+		
+		if ( data ) then
+			for k, v in pairs( data ) do
+				local attributeTable = catherine.attribute.FindByID( v.uniqueID )
+				
+				if ( !attributeTable ) then
+					local newData = { }
+			
+					math.randomseed( os.time( ) )
+					
+					for i = 1, 3 do
+						local randomAttCalc, max = catherine.attribute.GetRandomCalc( newData )
+						
+						if ( randomAttCalc ) then
+							newData[ #newData + 1 ] = {
+								uniqueID = randomAttCalc,
+								amount = math.random( catherine.configs.charMakeRandomAttributeMinPoint, math.min( catherine.configs.charMakeRandomAttributeMaxPoint, max ) )
+							}
+						else
+							continue
+						end
+					end
+					
+					catherine.attribute.randomSaver[ steamID ] = newData
+					
+					return newData
+				end
+			end
+			
+			return catherine.attribute.randomSaver[ steamID ]
+		else
+			local newData = { }
+			
+			math.randomseed( os.time( ) )
+			
+			for i = 1, 3 do
+				local randomAttCalc, max = catherine.attribute.GetRandomCalc( newData )
+				
+				if ( randomAttCalc ) then
+					newData[ #newData + 1 ] = {
+						uniqueID = randomAttCalc,
+						amount = math.random( catherine.configs.charMakeRandomAttributeMinPoint, math.min( catherine.configs.charMakeRandomAttributeMaxPoint, max ) )
+					}
+				else
+					continue
+				end
+			end
+			
+			catherine.attribute.randomSaver[ steamID ] = newData
+			
+			return newData
+		end
+	end
+	
+	function catherine.attribute.GetRandomCalc( currentCalcData )
+		local blackList = table.Copy( catherine.configs.charMakeRandomAttributeBlacklist )
+		local attTable = table.Copy( catherine.attribute.lists )
+		local convert = { }
+		
+		for k, v in pairs( currentCalcData ) do
+			blackList[ #blackList + 1 ] = v.uniqueID
+		end
+		
+		for k, v in pairs( blackList ) do
+			attTable[ v ] = nil
+		end
+		
+		if ( table.Count( attTable ) > 0 ) then
+			for k, v in pairs( attTable ) do
+				convert[ #convert + 1 ] = { v.uniqueID, v.max }
+			end
+			
+			local result = convert[ math.random( 1, #convert ) ]
+			
+			return result[ 1 ], result[ 2 ]
+		else
+			return false
+		end
+	end
+	
+	function catherine.attribute.ResetRandom( pl )
+		if ( catherine.attribute.randomSaver[ pl:SteamID( ) ] ) then
+			catherine.attribute.randomSaver[ pl:SteamID( ) ] = nil
+		end
+	end
+	
 	function catherine.attribute.AddTemporaryIncreaseProgress( pl, uniqueID, amount, removeTime )
 		if ( hook.Run( "PlayerShouldAttributeIncreased", pl, uniqueID, amount, removeTime ) == false ) then return end
 		local attributeTable = catherine.attribute.FindByID( uniqueID )

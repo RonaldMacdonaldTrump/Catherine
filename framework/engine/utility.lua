@@ -312,6 +312,14 @@ if ( SERVER ) then
 		return key:Left( 1 ) == "^" and LANG( pl, key:sub( 2 ), ... ) or key
 	end
 	
+	function catherine.util.GetForceClientConVar( pl, convarID, func )
+		netstream.Start( pl, "catherine.util.GetForceClientConVar", convarID )
+		
+		netstream.Hook( "catherine.util.GetForceClientConVarReceive", function( pl, data )
+			func( data )
+		end )
+	end
+	
 	function catherine.util.ProgressBar( pl, message, time, func )
 		local timerID = pl:SteamID( )
 		
@@ -577,6 +585,10 @@ else
 	
 	netstream.Hook( "catherine.util.SendDermaMessage", function( data )
 		Derma_Message( data[ 1 ], nil, data[ 2 ] or LANG( "Basic_UI_OK" ), data[ 3 ] )
+	end )
+	
+	netstream.Hook( "catherine.util.GetForceClientConVar", function( data )
+		netstream.Start( "catherine.util.GetForceClientConVarReceive", GetConVarString( data ) )
 	end )
 	
 	netstream.Hook( "catherine.util.StringReceiver", function( data )

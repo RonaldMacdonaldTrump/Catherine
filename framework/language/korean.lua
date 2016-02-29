@@ -83,6 +83,7 @@ local credit_htmlValue = [[
 
 local LANGUAGE = catherine.language.New( "korean" )
 LANGUAGE.name = "Korean (한국어)"
+LANGUAGE.gmodLangID = "ko"
 LANGUAGE.data = {
 	// Class
 	[ "Class_UI_Title" ] = "클래스",
@@ -135,10 +136,20 @@ LANGUAGE.data = {
 	[ "Character_UI_CharName" ] = "캐릭터 이름",
 	[ "Character_UI_CharDesc" ] = "캐릭터 설명",
 	[ "Character_UI_CharModel" ] = "캐릭터 모델",
+	[ "Character_UI_CharAtt" ] = "캐릭터 능력치",
+	[ "Character_UI_NextStage" ] = "다음 >",
+	[ "Character_UI_CREATE" ] = "캐릭터 생성",
 	[ "Character_UI_MusicError" ] = "백그라운드 음악을 재생하는데에 문제가 있습니다! ( 오류 : %s )",
 	[ "Character_UI_Hint01" ] = "캐서린은 다국어를 지원합니다, 오른쪽 위에 있는 버튼을 눌러 자신이 원하는 언어로 바꾸세요.",
+	[ "Character_UI_Hint01_Short" ] = "언어 변경 가능",
+	[ "Character_UI_CharFaction" ] = "캐릭터 팩션",
 	[ "Character_UI_SelectFaction" ] = "> 팩션을 선택하세요.",
+	[ "Character_UI_WaitAttribute" ] = "당신의 능력치를 정하는 중입니다 ...",
+	[ "Character_UI_ThisisAttribute" ] = "이것이 당신의 능력치 입니다.",
+	[ "Character_UI_NoneAttribute" ] = "정해진 능력치가 없습니다.",
 	[ "Character_Notify_DeleteQ" ] = "이 캐릭터를 정말로 삭제하시겠습니까?",
+	[ "Character_Notify_DeleteResult" ] = "이 캐릭터를 지웠습니다.",
+	[ "Character_Notify_CreateQ" ] = "캐릭터를 만드시겠습니까?",
 	[ "Character_Notify_ExitQ" ] = "이 서버에서 정말로 나가시겠습니까?",
 	[ "Character_Notify_CantDeleteUsing" ] = "사용하고 있는 캐릭터를 지울 수 없습니다!",
 	[ "Character_Notify_CantSwitchRagdolled" ] = "기절한 상태에서는 캐릭터를 바꿀 수 없습니다!",
@@ -166,6 +177,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_SelectModel" ] = "캐릭터 모델을 선택하세요!",
 	[ "Character_Notify_NameLimitHit" ] = "캐릭터 이름은 " .. catherine.configs.characterNameMinLen .." 자 이상 " .. catherine.configs.characterNameMaxLen .. " 자 이하 되어야 합니다!",
 	[ "Character_Notify_DescLimitHit" ] = "캐릭터 설명은 " .. catherine.configs.characterDescMinLen .."자 이상 " .. catherine.configs.characterDescMaxLen .. "자 이하 되어야 합니다!",
+	[ "Character_Notify_IsSelectingAttribute" ] = "능력치를 설정 중입니다, 잠시만 기다려주세요.",
 	[ "Character_Error_DBErrorBasic" ] = "캐릭터 생성중 데이터베이스 오류가 발생했습니다. [%s]",
 	
 	// Accessory
@@ -565,6 +577,7 @@ LANGUAGE.data = {
 	[ "Question_Notify_ContinueQ" ] = "이 질문의 답을 맞추시겠습니까?, 답이 틀릴 경우 서버에서 강제 퇴장 처리됩니다.",
 	
 	// Basic
+	[ "Basic_UI_ReqToServer" ] = "서버에 요청하는 중 ...",
 	[ "Basic_UI_StringRequest" ] = "요청",
 	[ "Basic_UI_Question" ] = "질문",
 	[ "Basic_UI_Notify" ] = "안내",

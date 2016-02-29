@@ -51,6 +51,7 @@ if ( SERVER ) then
 			end
 			
 			catherine.character.RemoveDummy( )
+			catherine.player.UpdateLanguageSetting( pl )
 			
 			for i = 1, #initFunctions do
 				local libName, funcName = initFunctions[ i ][ 1 ], initFunctions[ i ][ 2 ]
@@ -88,10 +89,21 @@ if ( SERVER ) then
 	end
 	
 	function catherine.player.UpdateLanguageSetting( pl )
-		local languageTable = catherine.language.FindByID( catherine.configs.defaultLanguage )
+		if ( catherine.catData.GetVar( pl, "language" ) ) then return end
 		
-		pl:ConCommand( "cat_convar_language " .. ( languageTable and languageTable.uniqueID or "english" ) )
-		catherine.catData.SetVar( pl, "language", true, nil, true )
+		if ( catherine.configs.defaultLanguage == "" ) then
+			catherine.util.GetForceClientConVar( pl, "gmod_language", function( langID )
+				local languageTable = catherine.language.FindByGmodLangID( langID )
+				
+				pl:ConCommand( "cat_convar_language " .. ( languageTable and languageTable.uniqueID or "english" ) )
+				catherine.catData.SetVar( pl, "language", true, nil, true )
+			end )
+		else
+			local languageTable = catherine.language.FindByID( catherine.configs.defaultLanguage )
+			
+			pl:ConCommand( "cat_convar_language " .. ( languageTable and languageTable.uniqueID or "english" ) )
+			catherine.catData.SetVar( pl, "language", true, nil, true )
+		end
 	end
 	
 	local adminModule_func = {

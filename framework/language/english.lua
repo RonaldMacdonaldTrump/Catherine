@@ -87,6 +87,7 @@ local credit_htmlValue = [[
 
 local LANGUAGE = catherine.language.New( "english" )
 LANGUAGE.name = "English"
+LANGUAGE.gmodLangID = "en"
 LANGUAGE.data = {
 	// Class
 	[ "Class_UI_Title" ] = "Class",
@@ -139,10 +140,20 @@ LANGUAGE.data = {
 	[ "Character_UI_CharName" ] = "Character Name",
 	[ "Character_UI_CharDesc" ] = "Character Description",
 	[ "Character_UI_CharModel" ] = "Character Model",
+	[ "Character_UI_CharAtt" ] = "Character Attribute",
+	[ "Character_UI_NextStage" ] = "Next >",
+	[ "Character_UI_CREATE" ] = "Create a Character",
 	[ "Character_UI_MusicError" ] = "Failed to play background music! ( ERROR : %s )",
 	[ "Character_UI_Hint01" ] = "Catherine are supported multi-language system, Click the right top button for change the whatever language you can speak.",
-	[ "Character_UI_SelectFaction" ] = "> Select faction.",
+	[ "Character_UI_Hint01_Short" ] = "Can Change language",
+	[ "Character_UI_CharFaction" ] = "Character Faction",
+	[ "Character_UI_SelectFaction" ] = "> Select a faction.",
+	[ "Character_UI_WaitAttribute" ] = "Choosing your Attribute ...",
+	[ "Character_UI_ThisisAttribute" ] = "This is your Attribute.",
+	[ "Character_UI_NoneAttribute" ] = "There is no selected Attribute.",
 	[ "Character_Notify_DeleteQ" ] = "Are you sure you want to delete this character?",
+	[ "Character_Notify_DeleteResult" ] = "You have been deleted this character.",
+	[ "Character_Notify_CreateQ" ] = "Are you sure want to create character?",
 	[ "Character_Notify_ExitQ" ] = "Are you sure you want to disconnect from the server?",
 	[ "Character_Notify_CantDeleteUsing" ] = "You can not delete the character you are currently using!",
 	[ "Character_Notify_CantSwitchRagdolled" ] = "You can not switch characters while you are unconscious!",
@@ -170,6 +181,7 @@ LANGUAGE.data = {
 	[ "Character_Notify_SelectModel" ] = "Please select a character model!",
 	[ "Character_Notify_NameLimitHit" ] = "The character name must be at least " .. catherine.configs.characterNameMinLen .." characters long with a maximum of " .. catherine.configs.characterNameMaxLen .. " characters!",
 	[ "Character_Notify_DescLimitHit" ] = "The character description must be at least " .. catherine.configs.characterDescMinLen .." characters long with a maximum of " .. catherine.configs.characterDescMaxLen .. " characters!",
+	[ "Character_Notify_IsSelectingAttribute" ] = "Setting a Attribute, Please wait.",
 	[ "Character_Error_DBErrorBasic" ] = "Database error. [%s]",
 	
 	// Faction
@@ -569,6 +581,7 @@ LANGUAGE.data = {
 	[ "Question_Notify_ContinueQ" ] = "Are you sure you want to check this answers?, if your answers wrong you are kicked from this server!",
 	
 	// Basic
+	[ "Basic_UI_ReqToServer" ] = "Requesting to Server ...",
 	[ "Basic_UI_StringRequest" ] = "Request",
 	[ "Basic_UI_Question" ] = "Question",
 	[ "Basic_UI_Notify" ] = "Notify",

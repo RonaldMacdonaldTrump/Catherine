@@ -38,6 +38,14 @@ function catherine.language.FindByID( uniqueID )
 	return catherine.language.lists[ uniqueID ]
 end
 
+function catherine.language.FindByGmodLangID( gmodLangID )
+	for k, v in pairs( catherine.language.lists ) do
+		if ( v.gmodLangID == gmodLangID ) then
+			return v
+		end
+	end
+end
+
 function catherine.language.Include( dir, name )
 	local files = file.Find( dir .. "/language/*.lua", "LUA" )
 	
@@ -73,6 +81,14 @@ if ( SERVER ) then
 		
 		return Format( languageTable.data[ key ], ... )
 	end
+	
+	function FORCE_LANG( pl, langID, key, ... )
+		local languageTable = languageMasterTable[ langID ] or languageMasterTable[ "english" ]
+		
+		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
+		
+		return Format( languageTable.data[ key ], ... )
+	end
 else
 	local getConvarString = GetConVarString
 	local languageTable = catherine.language.FindByID( catherine.configs.defaultLanguage )
@@ -81,6 +97,14 @@ else
 	
 	function LANG( key, ... )
 		local languageTable = languageMasterTable[ getConvarString( "cat_convar_language" ) ] or languageMasterTable[ "english" ]
+		
+		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
+		
+		return Format( languageTable.data[ key ], ... )
+	end
+	
+	function FORCE_LANG( langID, key, ... )
+		local languageTable = languageMasterTable[ langID ] or languageMasterTable[ "english" ]
 		
 		if ( !languageTable or !languageTable.data or !languageTable.data[ key ] ) then return key .. "-Error" end
 		
