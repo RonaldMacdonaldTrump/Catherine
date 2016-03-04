@@ -64,12 +64,13 @@ function PLUGIN:StartAreaDisplay( text )
 	local tw, th = surface.GetTextSize( text )
 	
 	self.currAreaDisplay = {
-		text = text,
-		titleY = ScrH( ) * 0.2 - 80,
-		textY = ScrH( ) * 0.2 + 80,
-		titleA = 0,
-		textA = 0,
-		fadeTime = CurTime( ) + 5
+		text = "",
+		a = 0,
+		targetText = text,
+		textSubCount = 1,
+		textTime = CurTime( ),
+		textTimeDelay = 0.09,
+		endTime = CurTime( ) + 5
 	}
 end
 
@@ -87,26 +88,26 @@ function PLUGIN:HUDPaint( )
 	
 	local areaDisplay = self.currAreaDisplay
 	local w, h = ScrW( ), ScrH( )
+	local curTime = CurTime( )
+	local targetText = areaDisplay.targetText
 	
-	if ( areaDisplay.fadeTime <= CurTime( ) ) then
-		areaDisplay.titleY = Lerp( 0.03, areaDisplay.titleY, h * 0.2 - 80 )
-		areaDisplay.textY = Lerp( 0.03, areaDisplay.textY, h * 0.2 + 80 )
-		areaDisplay.titleA = Lerp( 0.05, areaDisplay.titleA, 0 )
-		areaDisplay.textA = Lerp( 0.05, areaDisplay.textA, 0 )
-		
-		if ( math.Round( areaDisplay.titleA ) <= 0 and math.Round( areaDisplay.textA ) <= 0 ) then
-			self.currAreaDisplay = nil
-			return
-		end
+	if ( areaDisplay.endTime <= CurTime( ) and areaDisplay.text == targetText ) then
+		areaDisplay.a = Lerp( 0.03, areaDisplay.a, 0 )
 	else
-		areaDisplay.titleY = Lerp( 0.03, areaDisplay.titleY, h * 0.2 - 20 )
-		areaDisplay.textY = Lerp( 0.03, areaDisplay.textY, h * 0.2 + 20 )
-		areaDisplay.titleA = Lerp( 0.05, areaDisplay.titleA, 255 )
-		areaDisplay.textA = Lerp( 0.05, areaDisplay.textA, 255 )
+		areaDisplay.a = Lerp( 0.03, areaDisplay.a, 255 )
 	end
-
-	draw.SimpleText( LANG( "Area_UI_JoinedStr" ), "catherine_outline30", w / 2, areaDisplay.titleY, Color( 255, 255, 255, areaDisplay.titleA ), 1, 1 )
-	draw.SimpleText( areaDisplay.text, "catherine_outline25", w / 2, areaDisplay.textY, Color( 255, 255, 255, areaDisplay.textA ), 1, 1 )
+	
+	if ( areaDisplay.textTime <= curTime and areaDisplay.text:utf8len( ) < targetText:utf8len( ) ) then
+		local text = targetText:utf8sub( areaDisplay.textSubCount, areaDisplay.textSubCount )
+		
+		areaDisplay.text = areaDisplay.text .. text
+		areaDisplay.textSubCount = areaDisplay.textSubCount + 1
+		areaDisplay.textTime = curTime + areaDisplay.textTimeDelay
+		
+		surface.PlaySound( "common/talk.wav" )
+	end
+	
+	draw.SimpleText( areaDisplay.text, "catherine_outline25", w * 0.8, h / 2, Color( 255, 255, 255, areaDisplay.a ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 catherine.option.Register( "CONVAR_SHOW_AREA", "cat_convar_showarea", "^Option_Str_Area_Name", "^Option_Str_Area_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )

@@ -192,6 +192,17 @@ function PANEL:Init( )
 		pnl:RunAnimation( )
 	end
 	
+	if ( IsValid( self.playerModel.Entity ) ) then
+		for k, v in pairs( self.playerModel.Entity:GetSequenceList( ) ) do
+			if ( v:find( "idle" ) ) then
+				local seq = self.playerModel.Entity:LookupSequence( v )
+				self.playerModel.Entity:SetSequence( seq )
+				
+				break
+			end
+		end
+	end
+	
 	self.rpInformations = vgui.Create( "DPanelList", self )
 	self.rpInformations.init = false
 	self.rpInformations:SetSpacing( 5 )
@@ -231,7 +242,7 @@ function PANEL:Paint( w, h )
 		self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
 	end
 	
-	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 150 ) )
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 100 ) )
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 	
 	local limbBaseMaterial_w, limbBaseMaterial_h = 150, 341 // 150, 341

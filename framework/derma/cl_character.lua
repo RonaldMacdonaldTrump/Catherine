@@ -458,6 +458,15 @@ function PANEL:UseCharacterPanel( )
 			
 			panel.model:SetCamPos( min:Distance( max ) * Vector( 0.5, 0.5, 0.5 ) )
 			panel.model:SetLookAt( ( max + min ) / 2 )
+			
+			for k, v in pairs( panel.model.Entity:GetSequenceList( ) ) do
+				if ( v:find( "idle" ) ) then
+					local seq = panel.model.Entity:LookupSequence( v )
+					panel.model.Entity:SetSequence( seq )
+					
+					break
+				end
+			end
 		end
 		
 		panel.useCharacter:MoveToFront( )
@@ -738,7 +747,7 @@ function PANEL:Think( )
 	
 	self:SetTargetPanelPos( uniquePanel, self:GetWide( ) / 2 - uniquePanel:GetWide( ) / 2, 255 )
 	
-	local right, left = uniquePanel.x + uniquePanel:GetWide( ) + 24, uniquePanel.x - 24
+	local right, left = uniquePanel.x + uniquePanel:GetWide( ) + 64, uniquePanel.x - 64
 	
 	for i = self.selectedFaction - 1, 1, -1 do
 		local prevPanel = self.factionList[ i ].panel
@@ -746,13 +755,13 @@ function PANEL:Think( )
 		if ( !IsValid( prevPanel ) ) then continue end
 		
 		self:SetTargetPanelPos( prevPanel, left - prevPanel:GetWide( ), ( 30 / self.selectedFaction ) * i )
-		left = prevPanel.x - 24
+		left = prevPanel.x - 64
 	end
 	
 	for k, v in pairs( self.factionList ) do
 		if ( k > self.selectedFaction ) then
 			self:SetTargetPanelPos( v.panel, right, ( 30 / ( ( #self.factionList + 1 ) - self.selectedFaction ) ) * ( ( #self.factionList + 1 ) - k ) )
-			right = v.panel.x + v.panel:GetWide( ) + 24
+			right = v.panel.x + v.panel:GetWide( ) + 64
 		end
 	end
 end
@@ -1027,7 +1036,7 @@ function PANEL:Init( )
 	self.att = vgui.Create( "DPanelList", self )
 	self.att:SetSize( 140, self.h * 0.4 )
 	self.att:SetPos( self.w / 2 - self.att:GetWide( ) / 2, self.h / 2 - self.att:GetTall( ) / 2 )
-	self.att:SetSpacing( 5 )
+	self.att:SetSpacing( 20 )
 	self.att:EnableHorizontal( true )
 	self.att:EnableVerticalScrollbar( false )
 	self.att.Rebuild = function( pnl )
@@ -1075,6 +1084,7 @@ function PANEL:Init( )
 					if ( !self.parent.createData.creating ) then
 						self.parent.createData.creating = true
 						self:AlphaTo( 0, 0.3, 0 )
+						table.Merge( self.parent.createData.datas, self.data )
 						netstream.Start( "catherine.character.Create", self.parent.createData.datas )
 					else
 						self:PrintErrorMessage( LANG( "Basic_UI_ReqToServer" ) )
@@ -1167,7 +1177,7 @@ function PANEL:BuildRandomAttributeList( )
 			end
 			
 			self.att:AddItem( panel )
-			self.att:SetWide( math.Clamp( 145 * k, 0, self.w ) )
+			self.att:SetWide( math.Clamp( 160 * k, 0, self.w ) )
 			self.att:SetPos( self.w / 2 - self.att:GetWide( ) / 2, self.h / 2 - self.att:GetTall( ) / 2 )
 		end )
 		

@@ -90,7 +90,7 @@ function PANEL:Paint( w, h )
 			self.blurAmount = Lerp( 0.03, self.blurAmount, 5 )
 		end
 		
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 150 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 100 ) )
 		catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 	end
 end

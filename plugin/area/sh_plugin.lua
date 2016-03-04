@@ -24,7 +24,6 @@ PLUGIN.desc = "^Area_Plugin_Desc"
 catherine.language.Merge( "english", {
 	[ "Area_Plugin_Name" ] = "Area",
 	[ "Area_Plugin_Desc" ] = "Adding the Area.",
-	[ "Area_UI_JoinedStr" ] = "Area Joined",
 	[ "Area_Notify_AreaIsNotValid" ] = "Area is not a valid!",
 	[ "Area_Notify_PlayerNoInArea" ] = "You are not joined any areas!",
 	[ "Area_Notify_AreaAddStep1" ] = "Now set the end point of the area.",
@@ -38,7 +37,6 @@ catherine.language.Merge( "english", {
 catherine.language.Merge( "korean", {
 	[ "Area_Plugin_Name" ] = "구역",
 	[ "Area_Plugin_Desc" ] = "구역을 추가합니다.",
-	[ "Area_UI_JoinedStr" ] = "구역 입장",
 	[ "Area_Notify_AreaIsNotValid" ] = "구역이 올바르지 않습니다!",
 	[ "Area_Notify_PlayerNoInArea" ] = "당신은 어떠한 구역에도 속해있지 않습니다!",
 	[ "Area_Notify_AreaAddStep1" ] = "이제 구역의 끝점을 설정하세요.",
