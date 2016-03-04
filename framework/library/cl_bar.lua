@@ -92,25 +92,25 @@ function catherine.bar.Draw( pl )
 		
 		if ( !v.alwaysShowing ) then
 			if ( v.lifeTime <= curTime ) then
-				v.a = lerp( 0.03, v.a, 0 )
+				v.a = lerp( FrameTime( ) * 90, v.a, 0 )
 			else
 				if ( per != 0 ) then
 					i = i + 1
-					v.a = lerp( 0.03, v.a, 255 )
+					v.a = lerp( FrameTime( ) * 90, v.a, 255 )
 				else
-					v.a = lerp( 0.03, v.a, 0 )
+					v.a = lerp( FrameTime( ) * 90, v.a, 0 )
 				end
 			end
 		else
 			if ( per != 0 ) then
 				i = i + 1
-				v.a = lerp( 0.03, v.a, 255 )
+				v.a = lerp( FrameTime( ) * 90, v.a, 255 )
 			else
-				v.a = lerp( 0.03, v.a, 0 )
+				v.a = lerp( FrameTime( ) * 90, v.a, 0 )
 			end
 		end
 		
-		v.w = math_approach( v.w, barW * per, 1 )
+		v.w = math_approach( v.w, barW * per, FrameTime( ) * 90 )
 		v.y = lerp( 0.09, v.y, -( barH / 2 ) + ( ( barH + 3 ) * i ) )
 		
 		if ( math_round( v.a ) > 0 ) then

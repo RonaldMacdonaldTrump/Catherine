@@ -176,7 +176,7 @@ if ( SERVER ) then
 				return
 			end
 			
-			pl:SetHealth( math.Clamp( pl:Health( ) + 1, 0, pl:GetMaxHealth( ) ) )
+			pl:SetHealth( math.Clamp( pl:Health( ) + ( hook.Run( "GetHealthRecoverAmount", pl ) or 1 ), 0, pl:GetMaxHealth( ) ) )
 			pl.CAT_healthRecoverTick = CurTime( ) + ( hook.Run( "GetHealthRecoverInterval", pl ) or 5 )
 			hook.Run( "HealthRecovering", pl )
 		end

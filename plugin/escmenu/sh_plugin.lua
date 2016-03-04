@@ -40,15 +40,15 @@ catherine.language.Merge( "korean", {
 if ( CLIENT ) then
 	function PLUGIN:PreRender( )
 		if ( input.IsKeyDown( KEY_ESCAPE ) and gui.IsGameUIVisible( ) ) then
+			gui.HideGameUI( )
+			
 			if ( IsValid( catherine.vgui.escmenu ) ) then
-				gui.HideGameUI( )
-				
 				catherine.vgui.escmenu:Close( )
 			else
-				gui.HideGameUI( )
-				
 				catherine.vgui.escmenu = vgui.Create( "catherine.vgui.escmenu" )
 			end
+			
+			return true
 		end
 	end
 end

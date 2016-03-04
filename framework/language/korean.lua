@@ -137,6 +137,7 @@ LANGUAGE.data = {
 	[ "Character_UI_CharDesc" ] = "캐릭터 설명",
 	[ "Character_UI_CharModel" ] = "캐릭터 모델",
 	[ "Character_UI_CharAtt" ] = "캐릭터 능력치",
+	[ "Character_UI_CharFin" ] = "캐릭터 정보 확인",
 	[ "Character_UI_NextStage" ] = "다음 >",
 	[ "Character_UI_CREATE" ] = "캐릭터 생성",
 	[ "Character_UI_MusicError" ] = "백그라운드 음악을 재생하는데에 문제가 있습니다! ( 오류 : %s )",
@@ -583,8 +584,8 @@ LANGUAGE.data = {
 	[ "Basic_UI_Notify" ] = "안내",
 	[ "Basic_UI_Continue" ] = "진행",
 	[ "Basic_UI_OK" ] = "확인",
-	[ "Basic_UI_YES" ] = "네",
-	[ "Basic_UI_NO" ] = "아니오",
+	[ "Basic_UI_YES" ] = "확인",
+	[ "Basic_UI_NO" ] = "취소",
 	[ "Basic_UI_Count" ] = "%s개",
 	[ "Basic_IDK" ] = "...?",
 	[ "Basic_LangKeyError" ] = "언어 키 오류",
@@ -604,6 +605,7 @@ LANGUAGE.data = {
 	[ "Basic_ItemESP_Name" ] = "아이템",
 	[ "Basic_PopNotify_Title" ] = "중요 알림 메세지",
 	[ "Basic_DermaUtil_MessageTitle" ] = "알림",
+	[ "Basic_DermaUtil_QueryTitle" ] = "확인",
 	
 	// Command
 	[ "Command_ChangeLevel_Fin" ] = "%s초 후 맵이 %s 로 바뀝니다.",

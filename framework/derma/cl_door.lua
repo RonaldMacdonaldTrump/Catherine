@@ -30,11 +30,13 @@ function PANEL:Init( )
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
 	
 	self:SetSize( self.w, self.h )
-	self:SetPos( ScrW( ), self.y )
+	self:SetPos( self.x, self.y )
 	self:SetTitle( "" )
 	self:MakePopup( )
+	self:SetDraggable( false )
 	self:ShowCloseButton( false )
-	self:MoveTo( ScrW( ) / 2 - self.w / 2, self.y, 0.2, 0 )
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.2, 0 )
 	
 	self.playerLists = vgui.Create( "DPanelList", self )
 	self.playerLists:SetPos( 10, 35 )
@@ -43,17 +45,15 @@ function PANEL:Init( )
 	self.playerLists:EnableHorizontal( false )
 	self.playerLists:EnableVerticalScrollbar( true )	
 	self.playerLists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-		
 		if ( self.mode != CAT_DOOR_FLAG_OWNER ) then
-			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( LANG( "Door_Notify_NoOwner" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Door_Notify_NoOwner" ), "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 	
 	self.doorDescLabel = vgui.Create( "DLabel", self )
 	self.doorDescLabel:SetPos( 10, self.h - 60 )
-	self.doorDescLabel:SetColor( Color( 50, 50, 50, 255 ) )
+	self.doorDescLabel:SetColor( Color( 255, 255, 255, 255 ) )
 	self.doorDescLabel:SetFont( "catherine_normal20" )
 	self.doorDescLabel:SetText( LANG( "Door_UI_DoorDescStr" ) )
 	self.doorDescLabel:SizeToContents( )
@@ -66,7 +66,7 @@ function PANEL:Init( )
 	self.doorDescEnt:SetAllowNonAsciiCharacters( true )
 	self.doorDescEnt.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
-		pnl:DrawTextEntryText( Color( 50, 50, 50 ), Color( 45, 45, 45 ), Color( 50, 50, 50 ) )
+		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 110, 110, 110 ), Color( 255, 255, 255 ) )
 	end
 	self.doorDescEnt.OnTextChanged = function( pnl )
 		self.doorDesc = pnl:GetText( )
@@ -99,8 +99,8 @@ function PANEL:Init( )
 	self.sellDoor:SetSize( self.w - self.w * 0.8 - 30, 45 )
 	self.sellDoor:SetStr( LANG( "Door_UI_DoorSellStr" ) )
 	self.sellDoor:SetStrFont( "catherine_normal20" )
-	self.sellDoor:SetStrColor( Color( 50, 50, 50, 255 ) )
-	self.sellDoor:SetGradientColor( Color( 255, 255, 255, 150 ) )
+	self.sellDoor:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.sellDoor:SetGradientColor( Color( 255, 0, 0, 255 ) )
 	self.sellDoor.Click = function( )
 		if ( self.mode != CAT_DOOR_FLAG_OWNER ) then
 			catherine.notify.Add( LANG( "Door_Notify_NoOwner" ) )
@@ -113,20 +113,19 @@ function PANEL:Init( )
 			end, LANG( "Basic_UI_NO" ), function( ) end
 		)
 	end
-	self.sellDoor.PaintBackground = function( pnl, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
+	self.sellDoor.PaintOverAll = function( pnl, w, h )
+		surface.SetDrawColor( 255, 0, 0, 150 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0, h - 1, w, 1 )
 	end
 	
 	self.close = vgui.Create( "catherine.vgui.button", self )
 	self.close:SetPos( self.w - 30, 0 )
-	self.close:SetSize( 30, 25 )
+	self.close:SetSize( 30, 23 )
 	self.close:SetStr( "X" )
-	self.close:SetStrFont( "catherine_normal35" )
-	self.close:SetStrColor( Color( 255, 255, 255, 255 ) )
-	self.close:SetGradientColor( Color( 255, 255, 255, 255 ) )
+	self.close:SetStrFont( "catherine_normal30" )
+	self.close:SetStrColor( Color( 0, 0, 0, 255 ) )
 	self.close.Click = function( )
-		if ( self.closing ) then return end
-		
 		self:Close( )
 	end
 end
@@ -135,24 +134,24 @@ function PANEL:BuildPlayerList( )
 	self.playerLists:Clear( )
 	
 	if ( self.mode != CAT_DOOR_FLAG_OWNER ) then return end
+	local pl = self.player
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
-		local know = self.player == v and true or self.player:IsKnow( v )
+		local know = pl == v and true or pl:IsKnow( v )
 		local has, flag = catherine.door.IsHasDoorPermission( v, self.door )
 
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.playerLists:GetWide( ), 60 )
 		panel.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 255 ) )
-			
 			if ( !know ) then
+				draw.SimpleText( "?", "catherine_lightUI40", 5 + 50 / 2, 5 + 50 / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+					
 				surface.SetDrawColor( 255, 255, 255, 255 )
-				surface.SetMaterial( Material( "CAT/ui/icon_idk.png", "smooth" ) )
-				surface.DrawTexturedRect( 5, 5, 50, 50 )
+				surface.DrawOutlinedRect( 5, 5, 50, 50 )
 			end
 			
-			draw.SimpleText( v:Name( ), "catherine_normal20", 70, 15, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( v:FactionName( ), "catherine_normal20", 70, 45, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( v:Name( ), "catherine_lightUI25", 70, 15, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( v:FactionName( ), "catherine_lightUI15", 70, 45, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
 
 			if ( has ) then
 				local text = LANG( "Door_UI_OwnerStr" )
@@ -163,17 +162,20 @@ function PANEL:BuildPlayerList( )
 					text = LANG( "Door_UI_BasicStr" )
 				end
 				
-				draw.SimpleText( text, "catherine_normal20", w - 20, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+				draw.SimpleText( text, "catherine_lightUI15", w - 20, h / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			end
 		end
 		
 		local spawnIcon = vgui.Create( "SpawnIcon", panel )
 		spawnIcon:SetPos( 5, 5 )
 		spawnIcon:SetSize( 50, 50 )
-		spawnIcon:SetModel( v:GetModel( ) )
+		spawnIcon:SetModel( v:GetModel( ), v:GetSkin( ) or 0 )
 		spawnIcon:SetToolTip( false )
 		spawnIcon:SetDisabled( true )
-		spawnIcon.PaintOver = function( ) end
+		spawnIcon.PaintOver = function( pnl, w, h )
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface.DrawOutlinedRect( 0, 0, w, h )
+		end
 		
 		local button = vgui.Create( "DButton", panel )
 		button:SetSize( panel:GetWide( ), panel:GetTall( ) )
@@ -270,12 +272,13 @@ end
 
 function PANEL:Paint( w, h )
 	catherine.theme.Draw( CAT_THEME_MENU_BACKGROUND, w, h )
+	draw.RoundedBox( 0, 0, 0, w, 25, Color( 255, 255, 255, 255 ) )
 	
 	if ( IsValid( self.door ) ) then
-		draw.SimpleText( self.door:GetNetVar( "title", LANG( "Door_UI_Default" ) ), "catherine_normal20", 0, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+		draw.SimpleText( self.door:GetNetVar( "title", LANG( "Door_UI_Default" ) ), "catherine_lightUI20", 10, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
 		
 		local descLimit = catherine.configs.doorDescMaxLen
-		local col = descLimit <= self.doorCurLen and Color( 255, 0, 0 ) or Color( 50, 50, 50 )
+		local col = descLimit <= self.doorCurLen and Color( 255, 0, 0 ) or Color( 255, 255, 255 )
 
 		draw.SimpleText( self.doorCurLen .. " / " .. descLimit, "catherine_normal20", w * 0.8 + 10, h - 50, col, TEXT_ALIGN_RIGHT, 1 )
 	end
@@ -297,14 +300,16 @@ function PANEL:Think( )
 			return
 		end
 		
-		self.nextPerCheck = CurTime( ) + 1
+		self.nextPerCheck = CurTime( ) + 0.3
 	end
 end
 
 function PANEL:Close( )
+	if ( self.closing ) then return end
+	
 	self.closing = true
 	
-	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
+	self:AlphaTo( 0, 0.2, 0, function( )
 		self:Remove( )
 		self = nil
 	end )

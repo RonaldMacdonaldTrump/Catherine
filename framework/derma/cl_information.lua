@@ -109,17 +109,19 @@ function PANEL:Init( )
 		pnl:SetAlpha( 0 )
 		self.desc:SetVisible( true )
 		
-		catherine.command.Run( "&uniqueID_charPhysDesc", newDesc )
-		
-		if ( !newDesc:find( "#" ) ) then
-			if ( newDesc:utf8len( ) >= catherine.configs.characterDescMinLen and newDesc:utf8len( ) < catherine.configs.characterDescMaxLen ) then
-				self.desc:SetText( newDesc )
-				pnl:SetText( newDesc )
+		if ( pl:Desc( ) != newDesc ) then
+			catherine.command.Run( "&uniqueID_charPhysDesc", newDesc )
+			
+			if ( !newDesc:find( "#" ) ) then
+				if ( newDesc:utf8len( ) >= catherine.configs.characterDescMinLen and newDesc:utf8len( ) < catherine.configs.characterDescMaxLen ) then
+					self.desc:SetText( newDesc )
+					pnl:SetText( newDesc )
+				else
+					pnl:SetText( pl:Desc( ) )
+				end
 			else
 				pnl:SetText( pl:Desc( ) )
 			end
-		else
-			pnl:SetText( pl:Desc( ) )
 		end
 	end
 	self.descEnt.OnMousePressed = function( pnl )

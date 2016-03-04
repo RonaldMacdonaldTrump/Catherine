@@ -137,6 +137,7 @@ LANGUAGE.data = {
 	[ "Character_UI_CharDesc" ] = "Character Description",
 	[ "Character_UI_CharModel" ] = "Character Model",
 	[ "Character_UI_CharAtt" ] = "Character Attribute",
+	[ "Character_UI_CharFin" ] = "Character Information Verify",
 	[ "Character_UI_NextStage" ] = "Next >",
 	[ "Character_UI_CREATE" ] = "Create a Character",
 	[ "Character_UI_MusicError" ] = "Failed to play background music! ( ERROR : %s )",
@@ -604,6 +605,7 @@ LANGUAGE.data = {
 	[ "Basic_ItemESP_Name" ] = "ITEM",
 	[ "Basic_PopNotify_Title" ] = "Important Notifications",
 	[ "Basic_DermaUtil_MessageTitle" ] = "Notify",
+	[ "Basic_DermaUtil_QueryTitle" ] = "Confirm",
 	
 	// Command
 	[ "Command_ChangeLevel_Fin" ] = "%s(sec) after change map to %s.",

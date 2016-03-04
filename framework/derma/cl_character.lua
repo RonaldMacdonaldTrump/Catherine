@@ -753,7 +753,7 @@ function PANEL:Init( )
 	self.nameEnt:SetAllowNonAsciiCharacters( true )
 	self.nameEnt.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
-		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 255, 255, 255 ), Color( 255, 255, 255 ) )
+		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 255 ) )
 	end
 	self.nameEnt.OnTextChanged = function( pnl )
 		self.data.name = pnl:GetText( )
@@ -774,7 +774,7 @@ function PANEL:Init( )
 	self.descEnt:SetAllowNonAsciiCharacters( true )
 	self.descEnt.Paint = function( pnl, w, h )
 		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
-		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 255, 255, 255 ), Color( 255, 255, 255 ) )
+		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 255 ) )
 	end
 	self.descEnt.OnTextChanged = function( pnl )
 		self.data.desc = pnl:GetText( )
@@ -828,13 +828,7 @@ function PANEL:Init( )
 			spawnIcon:SetToolTip( false )
 			spawnIcon:SetAlpha( 0 )
 			spawnIcon:AlphaTo( 255, 0.3, delta )
-			spawnIcon.PaintOver = function( pnl, w, h )
-				if ( self.data.model == v ) then
-					surface.SetDrawColor( 255, 255, 255, 255 )
-					surface.SetMaterial( Material( "icon16/accept.png" ) )
-					surface.DrawTexturedRect( 5, 5, 16, 16 )
-				end
-			end
+			spawnIcon.PaintOver = function( pnl, w, h ) end
 			spawnIcon.DoClick = function( pnl )
 				self.data.model = v
 				self.previewModel:SetModel( v )
@@ -958,26 +952,53 @@ function PANEL:Init( )
 	self.att:SetSpacing( 5 )
 	self.att:EnableHorizontal( true )
 	self.att:EnableVerticalScrollbar( false )
+	self.att.Rebuild = function( pnl )
+		local offset = 0
+		
+		if ( pnl.Horizontal ) then
+			local x, y = 0, 0
+			
+			for k, v in pairs( pnl.Items ) do
+				local w, h = v:GetWide( ), v:GetTall( )
+				
+				if ( x + w  > pnl:GetWide( ) ) then
+					x = 0
+					y = y + h + pnl.Spacing
+				end
+				
+				v:MoveTo( x, y, 0.2, 0 )
+				
+				x = x + w + pnl.Spacing
+				offset = y + h + pnl.Spacing
+			end
+		else
+		
+			for k, v in pairs( pnl.Items ) do
+				v:SetSize( pnl:GetCanvas( ):GetWide( ), v:GetTall( ) )
+				v:MoveTo( 0, offset, 0.2, 0 )
+				offset = offset + v:GetTall( ) + pnl.Spacing
+			end
+		end
+		
+		pnl:GetCanvas( ):SetSize( pnl:GetCanvas( ):GetWide( ), offset + pnl.Padding * 2 - pnl.Spacing ) 
+	end
 	
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
 	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 15 )
 	self.nextStage:SetSize( self.w * 0.2, 30 )
-	self.nextStage:SetStr( LANG( "Character_UI_CREATE" ) )
-	self.nextStage:SetStrFont( "catherine_normal25" )
+	self.nextStage:SetStr( LANG( "Character_UI_NextStage" ) )
+	self.nextStage:SetStrFont( "catherine_normal20" )
 	self.nextStage:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.nextStage:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.nextStage.Click = function( )
 		if ( self.noAtt or ( self.data.att and self.createdAtt ) ) then
-			Derma_Query( LANG( "Character_Notify_CreateQ" ), "", LANG( "Basic_UI_YES" ), function( )
-				if ( !self.parent.createData.creating ) then
-					self.parent.createData.creating = true
-					self:AlphaTo( 0, 0.3, 0 )
-					table.Merge( self.parent.createData.datas, self.data )
-					netstream.Start( "catherine.character.Create", self.parent.createData.datas )
-				else
-					self:PrintErrorMessage( LANG( "Basic_UI_ReqToServer" ) )
-				end
-			end, LANG( "Basic_UI_NO" ), function( ) end )
+			self.parent.createData.datas.att = self.data.att
+			
+			self.parent.createData.currentStageInt = self.parent.createData.currentStageInt + 1
+			self.parent.createData.currentStage = vgui.Create( "catherine.character.stageFour", self.parent )
+			self:AlphaTo( 0, 0.3, 0, function( )
+				self:Remove( )
+			end )
 		else
 			self:PrintErrorMessage( LANG( "Character_Notify_IsSelectingAttribute" ) )
 		end
@@ -1002,11 +1023,12 @@ function PANEL:BuildRandomAttributeList( )
 		
 		timer.Simple( delay, function( )
 			if ( !IsValid( self ) ) then return end
+			surface.PlaySound( "buttons/button24.wav" )
 			
 			local panel = vgui.Create( "DPanel" )
 			panel:SetSize( 140, self.att:GetTall( ) )
 			panel:SetAlpha( 0 )
-			panel:AlphaTo( 255, 0.3, delta )
+			panel:AlphaTo( 255, 0.1, delta )
 			delta = delta + 0.1
 			panel.Paint = function( pnl, w, h )
 				draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 200 ) )
@@ -1087,6 +1109,76 @@ function PANEL:Paint( w, h )
 end
 
 vgui.Register( "catherine.character.stageThree", PANEL, "DPanel" )
+
+local PANEL = { }
+
+function PANEL:Init( )
+	self.parent = self:GetParent( )
+	self.w, self.h = self.parent.w, self.parent.h - ( self.parent.h * 0.2 )
+	
+	self:SetSize( self.w, self.h )
+	self:SetPos( self.parent.w / 2 - self.w / 2, self.parent.h * 0.1 )
+	
+	self.label01 = vgui.Create( "DLabel", self )
+	self.label01:SetPos( 15, 15 )
+	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
+	self.label01:SetFont( "catherine_normal25" )
+	self.label01:SetText( LANG( "Character_UI_CharFin" ) )
+	self.label01:SizeToContents( )
+	
+	self.name = vgui.Create( "DLabel", self )
+	self.name:SetPos( 15, 50 )
+	self.name:SetColor( Color( 255, 255, 255, 255 ) )
+	self.name:SetFont( "catherine_lightUI35" )
+	self.name:SetText( self.parent.createData.datas.name )
+	self.name:SizeToContents( )
+	self.name:SetPos( self.w / 2 - self.name:GetWide( ) / 2, self.h / 2 - self.name:GetTall( ) / 2 - 40 )
+	
+	self.desc = vgui.Create( "DLabel", self )
+	self.desc:SetColor( Color( 255, 255, 255, 255 ) )
+	self.desc:SetFont( "catherine_lightUI20" )
+	self.desc:SetText( self.parent.createData.datas.desc )
+	self.desc:SizeToContents( )
+	self.desc:SetPos( self.w / 2 - self.desc:GetWide( ) / 2, self.h / 2 - self.desc:GetTall( ) / 2 )
+	
+	self.nextStage = vgui.Create( "catherine.vgui.button", self )
+	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 15 )
+	self.nextStage:SetSize( self.w * 0.2, 30 )
+	self.nextStage:SetStr( LANG( "Character_UI_CREATE" ) )
+	self.nextStage:SetStrFont( "catherine_normal25" )
+	self.nextStage:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.nextStage:SetGradientColor( Color( 255, 255, 255, 255 ) )
+	self.nextStage.Click = function( )
+		if ( !self.parent.createData.creating ) then
+			Derma_Query( LANG( "Character_Notify_CreateQ" ), "", LANG( "Basic_UI_YES" ), function( )
+				if ( !self.parent.createData.creating ) then
+					self.parent.createData.creating = true
+					self:AlphaTo( 0, 0.3, 0 )
+					netstream.Start( "catherine.character.Create", self.parent.createData.datas )
+				else
+					self:PrintErrorMessage( LANG( "Basic_UI_ReqToServer" ) )
+				end
+			end, LANG( "Basic_UI_NO" ), function( ) end )
+		else
+			self:PrintErrorMessage( LANG( "Basic_UI_ReqToServer" ) )
+		end
+	end
+	self.nextStage.PaintOverAll = function( pnl, w, h )
+		surface.SetDrawColor( 255, 255, 255, 80 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0, h - 2, w, 2 )
+	end
+end
+
+function PANEL:PrintErrorMessage( msg )
+	Derma_Message( msg, LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+end
+
+function PANEL:Paint( w, h )
+
+end
+
+vgui.Register( "catherine.character.stageFour", PANEL, "DPanel" )
 
 catherine.menu.Register( function( )
 	return LANG( "Character_UI_Title" )

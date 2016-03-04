@@ -23,7 +23,22 @@ function Derma_Message( strText, _, strButtonText, sound )
 		surface.PlaySound( "CAT/notify01.wav" )
 	end
 	
-	local Window = vgui.Create( "DFrame" )
+	local blurAmount = 0
+	
+	local Background = vgui.Create( "DFrame" )
+	Background:SetTitle( "" )
+	Background:SetSize( ScrW( ), ScrH( ) )
+	Background:Center( )
+	Background:SetDraggable( false )
+	Background:ShowCloseButton( false )
+	Background:MakePopup( )
+	Background.Paint = function( pnl, w, h )
+		blurAmount = Lerp( 0.03, blurAmount, 5 )
+		
+		catherine.util.BlurDraw( 0, 0, w, h, blurAmount )
+	end
+	
+	local Window = vgui.Create( "DFrame", Background )
 	Window:SetTitle( "" )
 	Window:SetSize( ScrW( ), 0 )
 	Window:Center( )
@@ -38,19 +53,26 @@ function Derma_Message( strText, _, strButtonText, sound )
 		draw.RoundedBox( 0, 0, 0, w, 1, Color( 0, 0, 0, 255 ) )
 		draw.RoundedBox( 0, 0, h - 1, w, h, Color( 0, 0, 0, 255 ) )
 		
-		draw.SimpleText( LANG( "Basic_DermaUtil_MessageTitle" ):upper( ), "catherine_normal25", w / 2, 20, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.SimpleText( LANG( "Basic_DermaUtil_MessageTitle" ):upper( ), "catherine_normal20", 15, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 		
-		local wrapTexts = catherine.util.GetWrapTextData( strText, w / 3, "catherine_normal15" )
+		local wrapTexts = catherine.util.GetWrapTextData( strText, w / 2, "catherine_normal15" )
 		
 		if ( #wrapTexts == 1 ) then
-			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal15", w / 2, 110, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal15", w / 2, 75, Color( 255, 255, 255, 255 ), 1, 1 )
 		else
-			local textY = ( 110 - ( #wrapTexts * 20 ) / 2 / 2 ) / 2
+			local textY = 75 - ( #wrapTexts * 20 ) / 2
 			
 			for k, v in pairs( wrapTexts ) do
 				draw.SimpleText( v, "catherine_normal15", w / 2, textY + k * 20, Color( 255, 255, 255, 255 ), 1, 1 )
 			end
 		end
+	end
+	Window.Think = function( pnl )
+		pnl:MoveToFront( )
+		pnl:Center( )
+	end
+	Window.Close = function( pnl )
+		Background:Remove( )
 	end
 	
 	local Okay = vgui.Create( "catherine.vgui.button", Window )
@@ -58,7 +80,7 @@ function Derma_Message( strText, _, strButtonText, sound )
 	Okay:SetSize( 200, 25 )
 	Okay:SetStr( strButtonText or LANG( "Basic_UI_OK" ) )
 	Okay:SetStrColor( Color( 255, 255, 255, 255 ) )
-	Okay:SetGradientColor( Color( 255, 255, 255, 255 ) )
+	//Okay:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	Okay:SetStrFont( "catherine_normal15" )
 	Okay.Click = function( )
 		Window:SizeTo( ScrW( ), 0, 0.1, 0, nil, function( )
@@ -68,7 +90,7 @@ function Derma_Message( strText, _, strButtonText, sound )
 	Okay.PaintOverAll = function( pnl, w, h )
 		pnl:SetPos( Window:GetWide( ) - 220, Window:GetTall( ) - 35 )
 		
-		surface.SetDrawColor( 255, 255, 255, 30 )
+		surface.SetDrawColor( 255, 255, 255, math.max( math.sin( CurTime( ) * 8 ) * 255, 50 ) )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
 		surface.DrawTexturedRect( 0, h - 1, w, 1 )
 	end
@@ -77,9 +99,24 @@ function Derma_Message( strText, _, strButtonText, sound )
 end
 
 function Derma_Query( strText, _, ... )
-	surface.PlaySound( "CAT/notify02.wav" )
+	surface.PlaySound( "CAT/notify01.wav" )
 	
-	local Window = vgui.Create( "DFrame" )
+	local blurAmount = 0
+	
+	local Background = vgui.Create( "DFrame" )
+	Background:SetTitle( "" )
+	Background:SetSize( ScrW( ), ScrH( ) )
+	Background:Center( )
+	Background:SetDraggable( false )
+	Background:ShowCloseButton( false )
+	Background:MakePopup( )
+	Background.Paint = function( pnl, w, h )
+		blurAmount = Lerp( 0.03, blurAmount, 5 )
+		
+		catherine.util.BlurDraw( 0, 0, w, h, blurAmount )
+	end
+	
+	local Window = vgui.Create( "DFrame", Background )
 	Window:SetTitle( "" )
 	Window:SetSize( ScrW( ), 0 )
 	Window:Center( )
@@ -88,25 +125,30 @@ function Derma_Query( strText, _, ... )
 	Window:ShowCloseButton( false )
 	Window:MakePopup( )
 	Window.Paint = function( pnl, w, h )
-		pnl:Center( )
-		
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 255 ) )
 		draw.RoundedBox( 0, 0, 0, w, 1, Color( 0, 0, 0, 255 ) )
 		draw.RoundedBox( 0, 0, h - 1, w, h, Color( 0, 0, 0, 255 ) )
 		
-		draw.SimpleText( LANG( "Basic_DermaUtil_MessageTitle" ):upper( ), "catherine_normal25", w / 2, 20, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.SimpleText( LANG( "Basic_DermaUtil_QueryTitle" ):upper( ), "catherine_normal20", 15, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 		
-		local wrapTexts = catherine.util.GetWrapTextData( strText, w / 3, "catherine_normal15" )
+		local wrapTexts = catherine.util.GetWrapTextData( strText, w / 2, "catherine_normal15" )
 		
 		if ( #wrapTexts == 1 ) then
-			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal15", w / 2, 110, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( wrapTexts[ 1 ], "catherine_normal15", w / 2, 75, Color( 255, 255, 255, 255 ), 1, 1 )
 		else
-			local textY = ( 110 - ( #wrapTexts * 20 ) / 2 / 2 ) / 2
+			local textY = 75 - ( #wrapTexts * 20 ) / 2
 			
 			for k, v in pairs( wrapTexts ) do
 				draw.SimpleText( v, "catherine_normal15", w / 2, textY + k * 20, Color( 255, 255, 255, 255 ), 1, 1 )
 			end
 		end
+	end
+	Window.Think = function( pnl )
+		pnl:MoveToFront( )
+		pnl:Center( )
+	end
+	Window.Close = function( pnl )
+		Background:Remove( )
 	end
 	
 	local ButtonPanel = vgui.Create( "DPanel", Window )
@@ -162,9 +204,24 @@ function Derma_Query( strText, _, ... )
 end
 
 function Derma_StringRequest( _, strText, strDefaultText, fnEnter, fnCancel, strButtonText, strButtonCancelText )
-	surface.PlaySound( "CAT/notify02.wav" )
+	surface.PlaySound( "CAT/notify01.wav" )
 	
-	local Window = vgui.Create( "DFrame" )
+	local blurAmount = 0
+	
+	local Background = vgui.Create( "DFrame" )
+	Background:SetTitle( "" )
+	Background:SetSize( ScrW( ), ScrH( ) )
+	Background:Center( )
+	Background:SetDraggable( false )
+	Background:ShowCloseButton( false )
+	Background:MakePopup( )
+	Background.Paint = function( pnl, w, h )
+		blurAmount = Lerp( 0.03, blurAmount, 5 )
+		
+		catherine.util.BlurDraw( 0, 0, w, h, blurAmount )
+	end
+	
+	local Window = vgui.Create( "DFrame", Background )
 	Window:SetTitle( "" )
 	Window:SetSize( ScrW( ), 0 )
 	Window:Center( )
@@ -179,8 +236,15 @@ function Derma_StringRequest( _, strText, strDefaultText, fnEnter, fnCancel, str
 		draw.RoundedBox( 0, 0, 0, w, 1, Color( 0, 0, 0, 255 ) )
 		draw.RoundedBox( 0, 0, h - 1, w, h, Color( 0, 0, 0, 255 ) )
 		
-		draw.SimpleText( LANG( "Basic_DermaUtil_MessageTitle" ):upper( ), "catherine_normal25", w / 2, 20, Color( 255, 255, 255, 255 ), 1, 1 )
-		draw.SimpleText( strText, "catherine_normal15", w / 2, 70, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.SimpleText( LANG( "Basic_DermaUtil_QueryTitle" ):upper( ), "catherine_normal20", 15, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( strText, "catherine_normal15", w / 2, 55, Color( 255, 255, 255, 255 ), 1, 1 )
+	end
+	Window.Think = function( pnl )
+		pnl:MoveToFront( )
+		pnl:Center( )
+	end
+	Window.Close = function( pnl )
+		Background:Remove( )
 	end
 	
 	local TextEntry = vgui.Create( "DTextEntry", Window )
