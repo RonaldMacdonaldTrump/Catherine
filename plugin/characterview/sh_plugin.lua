@@ -139,22 +139,14 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 			self.lastView = table.Random( self.charViews )
 			self.nextViewChange = RealTime( ) + math.random( 7, 15 )
 		end
-
-		local angSin = math.sin( CurTime( ) / 6 )
-		local angSin2 = math.sin( CurTime( ) / 4 )
 		
 		if ( !self.lastPos or !self.lastAng ) then
 			self.lastPos = self.lastView.pos
-			self.lastAng = self.lastView.ang + Angle( 2 * angSin2, 4 * angSin, 0 )
+			self.lastAng = self.lastView.ang
 		end
 		
 		self.lastPos = LerpVector( 0.01, self.lastPos, self.lastView.pos )
-		
-		if ( catherine.intro.status ) then
-			self.lastAng = self.lastView.ang
-		else
-			self.lastAng = LerpAngle( 0.01, self.lastAng, self.lastView.ang + Angle( 2 * angSin2, 4 * angSin, 0 ) )
-		end
+		self.lastAng = LerpAngle( 0.01, self.lastAng, self.lastView.ang )
 		
 		return {
 			origin = self.lastPos,

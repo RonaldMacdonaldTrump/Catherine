@@ -22,6 +22,7 @@ CAT_THEME_PNLLIST = 2
 CAT_THEME_FORM = 3
 CAT_THEME_TEXTENT = 4
 CAT_THEME_MENU_BACKGROUND_NOTITLE = 5
+CAT_THEME_TEXTENT_UNDERLINE = 6
 
 --[[ Function Optimize :> ]]--
 local color = Color
@@ -55,6 +56,9 @@ local themes = {
 	[ CAT_THEME_TEXTENT ] = function( w, h )
 		draw_roundedBox( 0, 0, 0, w, 2, color( 255, 255, 255, 150 ) )
 		draw_roundedBox( 0, 0, h - 2, w, 2, color( 255, 255, 255, 150 ) )
+	end,
+	[ CAT_THEME_TEXTENT_UNDERLINE ] = function( w, h )
+		draw_roundedBox( 0, 0, h - 2, w, 2, color( 255, 255, 255, 255 ) )
 	end
 }
 

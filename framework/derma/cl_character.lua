@@ -26,13 +26,11 @@ function PANEL:Init( )
 	self.player = catherine.pl
 	self.w, self.h = ScrW( ), ScrH( )
 	self.blurAmount = 0
-	self.mainAlpha = 0
 	self.mainButtons = { }
 	self.mode = 0
-	self.backgroundPanelH = 0
+	self.logoA = 255
 	
-	local schemaTitle = catherine.util.StuffLanguage( Schema and Schema.Title or "Example" )
-	local schemaDesc = catherine.util.StuffLanguage( Schema and Schema.Desc or "Test" )
+	local layoutX, layoutY = self.w * 0.1, self.h * 0.3
 	
 	self:SetSize( self.w, self.h )
 	self:Center( )
@@ -44,9 +42,9 @@ function PANEL:Init( )
 	self:AlphaTo( 255, 0.3, 0 )
 	self.Paint = function( pnl, w, h )
 		if ( self.mode == 0 ) then
-			self.mainAlpha = Lerp( 0.03, self.mainAlpha, 255 )
+			self.logoA = math.Approach( self.logoA, 255, 10 )
 		else
-			self.mainAlpha = Lerp( 0.08, self.mainAlpha, 0 )
+			self.logoA = math.Approach( self.logoA, 0, 10 )
 		end
 		
 		if ( !catherine.character.IsCustomBackground( ) ) then
@@ -54,7 +52,7 @@ function PANEL:Init( )
 			
 			surface.SetDrawColor( 50, 50, 50, 255 )
 			surface.SetMaterial( Material( "gui/gradient_down" ) )
-			surface.DrawTexturedRect( 0, pnl.backgroundPanelH, w, h - pnl.backgroundPanelH )
+			surface.DrawTexturedRect( 0, 0, w, h )
 		else
 			if ( catherine.configs.enableCharacterPanelBlur ) then
 				if ( self.closing ) then
@@ -64,29 +62,105 @@ function PANEL:Init( )
 				end
 				
 				catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
-				draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 200 ) )
 			end
 		end
 		
-		if ( pnl.closing ) then
-			pnl.backgroundPanelH = Lerp( 0.05, pnl.backgroundPanelH, 0 )
-		else
-			pnl.backgroundPanelH = Lerp( 0.05, pnl.backgroundPanelH, h * 0.1 )
-		end
+		surface.SetDrawColor( 255, 255, 255, pnl.logoA )
+		surface.SetMaterial( Material( "cat/test.png" ) )
+		surface.DrawTexturedRect( layoutX, layoutY, 512, 90 )
 		
-		draw.RoundedBox( 0, 0, 0, w, pnl.backgroundPanelH, Color( 50, 50, 50, 255 ) )
-		draw.RoundedBox( 0, 0, h - pnl.backgroundPanelH, w, pnl.backgroundPanelH, Color( 50, 50, 50, 255 ) )
-		
-		draw.SimpleText( schemaTitle, "catherine_normal25", 30, h * 0.1 / 3, Color( 255, 255, 255, self.mainAlpha ), TEXT_ALIGN_LEFT, 1 )
-		draw.SimpleText( schemaDesc, "catherine_normal15", 30, h * 0.1 / 3 + 25, Color( 235, 235, 235, self.mainAlpha ), TEXT_ALIGN_LEFT, 1 )
+		draw.SimpleText( catherine.GetVersion( ) .. " " .. catherine.GetBuild( ), "catherine_normal15", 10, h - 20, Color( 255, 255, 255, self.logoA ), TEXT_ALIGN_LEFT, 1 )
 		
 		if ( self.createData and self.createData.creating ) then
 			draw.SimpleText( LANG( "Basic_UI_ReqToServer" ), "catherine_normal25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 	
+	self.create = vgui.Create( "catherine.vgui.button", self )
+	self.create:SetPos( layoutX, layoutY + 100 )
+	self.create:SetSize( self.w * 0.2, 30 )
+	self.create:SetStr( LANG( "Character_UI_CreateCharStr" ):upper( ) )
+	self.create:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.create:SetGradientColor( Color( 255, 255, 255, 255 ) )
+	self.create:SetStrFont( "catherine_lightUI20" )
+	self.create.Click = function( )
+		if ( #catherine.character.localCharacters >= catherine.configs.maxCharacters ) then
+			Derma_Message( LANG( "Character_Notify_MaxLimitHit" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+			return
+		end
+		
+		self:JoinMenu( function( )
+			self:CreateCharacterPanel( )
+		end )
+	end
+	self.create.PaintOverAll = function( pnl, w, h )
+		if ( #catherine.character.localCharacters >= catherine.configs.maxCharacters ) then
+			surface.SetDrawColor( 255, 0, 0, 30 )
+			surface.SetMaterial( Material( "gui/center_gradient" ) )
+			surface.DrawTexturedRect( 0, h - 1, w, 1 )
+		else
+			surface.SetDrawColor( 255, 255, 255, 20 )
+			surface.SetMaterial( Material( "gui/center_gradient" ) )
+			surface.DrawTexturedRect( 0, h - 1, w, 1 )
+		end
+	end
+	
+	self.mainButtons[ #self.mainButtons + 1 ] = self.create
+	
+	self.load = vgui.Create( "catherine.vgui.button", self )
+	self.load:SetPos( layoutX, layoutY + 140 )
+	self.load:SetSize( self.w * 0.2, 30 )
+	self.load:SetStr( LANG( "Character_UI_LoadCharStr" ):upper( ) )
+	self.load:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.load:SetGradientColor( Color( 255, 255, 255, 255 ) )
+	self.load:SetStrFont( "catherine_lightUI20" )
+	self.load.Click = function( )
+		self:JoinMenu( function( )
+			self:UseCharacterPanel( )
+		end )
+	end
+	self.load.PaintOverAll = function( pnl, w, h )
+		surface.SetDrawColor( 255, 255, 255, 20 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0, h - 1, w, 1 )
+	end
+	
+	self.mainButtons[ #self.mainButtons + 1 ] = self.load
+	
+	self.exit = vgui.Create( "catherine.vgui.button", self )
+	self.exit:SetPos( layoutX, layoutY + 180 )
+	self.exit:SetSize( self.w * 0.2, 30 )
+	self.exit:SetStr( "" )
+	self.exit:SetStrColor( Color( 255, 255, 255, 255 ) )
+	self.exit:SetGradientColor( Color( 255, 0, 0, 255 ) )
+	self.exit:SetStrFont( "catherine_lightUI20" )
+	self.exit.Click = function( )
+		if ( self.player:IsCharacterLoaded( ) ) then
+			self:Close( )
+		else
+			Derma_Query( LANG( "Character_Notify_ExitQ" ), "", LANG( "Basic_UI_YES" ), function( )
+				self:JoinMenu( function( )
+					RunConsoleCommand( "disconnect" )
+				end )
+			end, LANG( "Basic_UI_NO" ), function( ) end )
+		end
+	end
+	self.exit.PaintOverAll = function( pnl, w, h )
+		if ( self.player:IsCharacterLoaded( ) ) then
+			pnl:SetStr( LANG( "Character_UI_Close" ):upper( ) )
+		else
+			pnl:SetStr( LANG( "Character_UI_ExitServerStr" ):upper( ) )
+		end
+		
+		surface.SetDrawColor( 255, 0, 0, 20 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0, h - 1, w, 1 )
+	end
+	
+	self.mainButtons[ #self.mainButtons + 1 ] = self.exit
+	
 	self.changeLanguage = vgui.Create( "catherine.vgui.button", self )
-	self.changeLanguage:SetPos( self.w - ( self.w * 0.2 ) - 30, self.h * 0.1 / 2 - 30 / 2 )
+	self.changeLanguage:SetPos( self.w - ( self.w * 0.2 ) - 30, self.h - 50 )
 	self.changeLanguage:SetSize( self.w * 0.2, 30 )
 	self.changeLanguage:SetStr( "" )
 	self.changeLanguage:SetStrColor( Color( 255, 255, 255, 255 ) )
@@ -102,12 +176,10 @@ function PANEL:Init( )
 				
 				timer.Simple( 0, function( )
 					hook.Run( "LanguageChanged" )
-					schemaTitle = catherine.util.StuffLanguage( Schema and Schema.Title or "Example" )
-					schemaDesc = catherine.util.StuffLanguage( Schema and Schema.Desc or "Test" )
 					
-					self.createCharacter:SetStr( LANG( "Character_UI_CreateCharStr" ) )
-					self.useCharacter:SetStr( LANG( "Character_UI_LoadCharStr" ) )
-					self.back:SetStr( LANG( "Character_UI_BackStr" ) )
+					self.create:SetStr( LANG( "Character_UI_CreateCharStr" ):upper( ) )
+					self.load:SetStr( LANG( "Character_UI_LoadCharStr" ):upper( ) )
+					self.back:SetStr( LANG( "Character_UI_BackStr" ):upper( ) )
 				end )
 			end )
 		end
@@ -115,99 +187,22 @@ function PANEL:Init( )
 		menu:Open( )
 	end
 	self.changeLanguage.PaintOverAll = function( pnl, w, h )
-		surface.SetDrawColor( 255, 255, 255, 30 )
+		surface.SetDrawColor( 255, 255, 255, 20 )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
 		surface.DrawTexturedRect( 0, h - 1, w, 1 )
 		
 		local languageTable = catherine.language.FindByID( GetConVarString( "cat_convar_language" ) )
 		
 		if ( languageTable ) then
-			pnl:SetStr( languageTable.name )
+			pnl:SetStr( languageTable.name:upper( ) )
 		end
 	end
 	self.mainButtons[ #self.mainButtons + 1 ] = self.changeLanguage
 	
-	self.createCharacter = vgui.Create( "catherine.vgui.button", self )
-	self.createCharacter:SetPos( 30, self.h - self.h * 0.1 / 2 - 30 / 2 )
-	self.createCharacter:SetSize( self.w * 0.2, 30 )
-	self.createCharacter:SetStr( LANG( "Character_UI_CreateCharStr" ) )
-	self.createCharacter:SetStrColor( Color( 255, 255, 255, 255 ) )
-	self.createCharacter:SetGradientColor( Color( 255, 255, 255, 255 ) )
-	self.createCharacter.Click = function( )
-		if ( #catherine.character.localCharacters >= catherine.configs.maxCharacters ) then
-			Derma_Message( LANG( "Character_Notify_MaxLimitHit" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
-			return
-		end
-		
-		self:JoinMenu( function( )
-			self:CreateCharacterPanel( )
-		end )
-	end
-	self.createCharacter.PaintOverAll = function( pnl, w, h )
-		if ( #catherine.character.localCharacters >= catherine.configs.maxCharacters ) then
-			surface.SetDrawColor( 255, 0, 0, 30 )
-			surface.SetMaterial( Material( "gui/center_gradient" ) )
-			surface.DrawTexturedRect( 0, h - 1, w, 1 )
-		else
-			surface.SetDrawColor( 255, 255, 255, 30 )
-			surface.SetMaterial( Material( "gui/center_gradient" ) )
-			surface.DrawTexturedRect( 0, h - 1, w, 1 )
-		end
-	end
-	self.mainButtons[ #self.mainButtons + 1 ] = self.createCharacter
-	
-	self.useCharacter = vgui.Create( "catherine.vgui.button", self )
-	self.useCharacter:SetPos( 60 + self.w * 0.2, self.h - self.h * 0.1 / 2 - 30 / 2 )
-	self.useCharacter:SetSize( self.w * 0.2, 30 )
-	self.useCharacter:SetStr( LANG( "Character_UI_LoadCharStr" ) )
-	self.useCharacter:SetStrColor( Color( 255, 255, 255, 255 ) )
-	self.useCharacter:SetGradientColor( Color( 255, 255, 255, 255 ) )
-	self.useCharacter.Click = function( )
-		self:JoinMenu( function( )
-			self:UseCharacterPanel( )
-		end )
-	end
-	self.useCharacter.PaintOverAll = function( pnl, w, h )
-		surface.SetDrawColor( 255, 255, 255, 30 )
-		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0, h - 1, w, 1 )
-	end
-	self.mainButtons[ #self.mainButtons + 1 ] = self.useCharacter
-	
-	self.disconnect = vgui.Create( "catherine.vgui.button", self )
-	self.disconnect:SetPos( self.w - self.w * 0.2 - 30, self.h - self.h * 0.1 / 2 - 30 / 2 )
-	self.disconnect:SetSize( self.w * 0.2, 30 )
-	self.disconnect:SetStr( "" )
-	self.disconnect:SetStrColor( Color( 255, 255, 255, 255 ) )
-	self.disconnect:SetGradientColor( Color( 255, 0, 0, 255 ) )
-	self.disconnect.Click = function( )
-		if ( self.player:IsCharacterLoaded( ) ) then
-			self:Close( )
-		else
-			Derma_Query( LANG( "Character_Notify_ExitQ" ), "", LANG( "Basic_UI_YES" ), function( )
-				self:JoinMenu( function( )
-					RunConsoleCommand( "disconnect" )
-				end )
-			end, LANG( "Basic_UI_NO" ), function( ) end )
-		end
-	end
-	self.disconnect.PaintOverAll = function( pnl, w, h )
-		if ( self.player:IsCharacterLoaded( ) ) then
-			pnl:SetStr( LANG( "Character_UI_Close" ) )
-		else
-			pnl:SetStr( LANG( "Character_UI_ExitServerStr" ) )
-		end
-		
-		surface.SetDrawColor( 255, 50, 50, 30 )
-		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0, h - 1, w, 1 )
-	end
-	self.mainButtons[ #self.mainButtons + 1 ] = self.disconnect
-	
 	self.back = vgui.Create( "catherine.vgui.button", self )
-	self.back:SetPos( 30, self.h * 0.1 / 2 - 30 / 2 )
+	self.back:SetPos( 30, 20 )
 	self.back:SetSize( self.w * 0.2, 30 )
-	self.back:SetStr( LANG( "Character_UI_BackStr" ) )
+	self.back:SetStr( LANG( "Character_UI_BackStr" ):upper( ) )
 	self.back:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.back:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.back:SetVisible( false )
@@ -217,9 +212,17 @@ function PANEL:Init( )
 		
 		self:BackToMainMenu( )
 	end
+	self.back.Think = function( pnl )
+		pnl:MoveToFront( )
+	end
+	self.back.PaintOverAll = function( pnl, w, h )
+		surface.SetDrawColor( 255, 255, 255, 20 )
+		surface.SetMaterial( Material( "gui/center_gradient" ) )
+		surface.DrawTexturedRect( 0, h - 1, w, 1 )
+	end
 	
 	self:PlayMusic( )
-	self:ShowHint( )
+	// self:ShowHint( )
 end
 
 function PANEL:ShowHint( )
@@ -307,7 +310,7 @@ end
 function PANEL:UseCharacterPanel( )
 	self.loadCharacter = { Lists = { }, curr = 1 }
 	
-	local baseW, errMsg = 300, nil
+	local baseW = 300
 	local pl = catherine.pl
 	
 	for k, v in pairs( catherine.character.localCharacters ) do
@@ -318,19 +321,14 @@ function PANEL:UseCharacterPanel( )
 	end
 	
 	self.CharacterPanel = vgui.Create( "DPanel", self )
-	self.CharacterPanel:SetPos( 0, self.h * 0.1 )
-	self.CharacterPanel:SetSize( self.w, self.h - ( self.h * 0.2 ) )
+	self.CharacterPanel:SetPos( 0, 60 )
+	self.CharacterPanel:SetSize( self.w, self.h - 120 )
 	self.CharacterPanel:SetAlpha( 0 )
 	self.CharacterPanel:AlphaTo( 255, 0.2, 0 )
-	self.CharacterPanel:SetDrawBackground( false )
 	self.CharacterPanel.Paint = function( pnl, w, h )
-		if ( errMsg ) then
-			draw.SimpleText( errMsg, "catherine_normal30", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
-			return
-		end
-		
 		if ( #self.loadCharacter.Lists == 0 ) then
-			draw.SimpleText( LANG( "Character_UI_DontHaveAny" ), "catherine_normal30", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Character_UI_DontHaveAny" ), "catherine_lightUI25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 	
@@ -341,7 +339,7 @@ function PANEL:UseCharacterPanel( )
 			pnl.targetPos = pos
 		end
 		
-		pnl.targetPos = Lerp( 0.2, pnl.targetPos, pos )
+		pnl.targetPos = Lerp( 0.15, pnl.targetPos, pos )
 		
 		pnl:SetPos( pnl.targetPos, 30 )
 	end
@@ -367,7 +365,7 @@ function PANEL:UseCharacterPanel( )
 		panel.factionName = vgui.Create( "DLabel", panel )
 		panel.factionName:SetTextColor( Color( 255, 255, 255 ) )
 		panel.factionName:SetFont( "catherine_normal20" )
-		panel.factionName:SetText( factionName )
+		panel.factionName:SetText( factionName:upper( ) )
 		panel.factionName:SizeToContents( )
 		panel.factionName:SetPos( panel_w / 2 - panel.factionName:GetWide( ) / 2, 10 )
 		panel.factionName.PerformLayout = function( pnl, w, h )
@@ -478,6 +476,8 @@ function PANEL:UseCharacterPanel( )
 		if ( !self.loadCharacter.Lists[ self.loadCharacter.curr ] ) then return end
 		
 		local uniquePanel = self.loadCharacter.Lists[ self.loadCharacter.curr ].panel
+		
+		if ( !IsValid( uniquePanel ) ) then return end
 		
 		SetTargetPanelPos( uniquePanel, self.CharacterPanel:GetWide( ) / 2 - uniquePanel:GetWide( ) / 2, 255 )
 		
@@ -602,64 +602,85 @@ local PANEL = { }
 
 function PANEL:Init( )
 	self.parent = self:GetParent( )
-	self.w, self.h = self.parent.w, self.parent.h - ( self.parent.h * 0.2 )
+	self.w, self.h = self.parent.w, self.parent.h
 	self.data = { faction = nil }
-	self.factionList = catherine.faction.GetPlayerUsableFaction( self.parent.player )
-	self.factionImage = nil
+	self.selectedFaction = 1
+	self.factionList = { }
+	
+	for k, v in SortedPairs( catherine.faction.GetPlayerUsableFaction( self.parent.player ) ) do
+		self.factionList[ #self.factionList + 1 ] = {
+			factionData = v,
+			panel = nil
+		}
+	end
+	
+	local autoSelect = math.Round( #self.factionList / 2 )
+	
+	if ( self.factionList[ autoSelect ] and self.factionList[ autoSelect ].factionData ) then
+		self.data = { faction = self.factionList[ autoSelect ].factionData.uniqueID }
+		self.selectedFaction = autoSelect
+	end
 	
 	self:SetSize( self.w, self.h )
-	self:SetPos( self.parent.w / 2 - self.w / 2, self.parent.h * 0.1 )
+	self:SetPos( 0, 0 )
 	self:SetAlpha( 0 )
 	self:AlphaTo( 255, 0.3, 0 )
 	
 	self.label01 = vgui.Create( "DLabel", self )
-	self.label01:SetPos( 15, 15 )
 	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
-	self.label01:SetFont( "catherine_normal25" )
-	self.label01:SetText( LANG( "Character_UI_CharFaction" ) )
+	self.label01:SetFont( "catherine_lightUI30" )
+	self.label01:SetText( LANG( "Character_UI_CharFaction" ):upper( ) )
+	self.label01:SetPos( 0, 20 )
 	self.label01:SizeToContents( )
+	self.label01:CenterHorizontal( )
 	
-	self.selectFaction = vgui.Create( "catherine.vgui.button", self )
-	self.selectFaction:SetSize( self.w * 0.3, 50 )
-	self.selectFaction:SetPos( self.w / 2 - ( self.w * 0.3 ) / 2, self.h * 0.2 )
-	self.selectFaction:SetStr( LANG( "Character_UI_SelectFaction" ):upper( ) )
-	self.selectFaction:SetStrFont( "catherine_normal20" )
-	self.selectFaction:SetStrColor( Color( 255, 255, 255, 255 ) )
-	self.selectFaction:SetGradientColor( Color( 255, 255, 255, 255 ) )
-	self.selectFaction.Click = function( )
-		local menu = DermaMenu( )
+	for k, v in pairs( self.factionList ) do
+		local factionData = v.factionData
 		
-		for k, v in pairs( self.factionList ) do
-			local factionName = catherine.util.StuffLanguage( v.name )
+		v.panel = vgui.Create( "DPanel", self )
+		v.panel:SetSize( 512, 312 )
+		v.panel.x = 0
+		v.panel.y = 0
+		v.panel:Center( )
+		v.panel.Paint = function( pnl, w, h )
+			local material = Material( factionData.factionImage )
+			local name = catherine.util.StuffLanguage( factionData.name )
 			
-			menu:AddOption( factionName, function( )
-				self.selectFaction:SetStr( factionName:upper( ) )
-				self.data.faction = v.uniqueID
+			if ( material and !material:IsError( ) ) then
+				local material_w, material_h = material:Width( ), material:Height( )
 				
-				if ( v.factionImage ) then
-					self.factionImage = v.factionImage
-				elseif ( !v.factionImage ) then
-					self.factionImage = nil
-				end
-			end )
+				surface.SetDrawColor( 255, 255, 255, 255 )
+				surface.SetMaterial( material )
+				surface.DrawTexturedRect( w / 2 - material_w / 2, h - material_h, material_w, material_h )
+				
+				draw.SimpleText( name:upper( ), "catherine_lightUI30", w / 2, 30, Color( 255, 255, 255, 255 ), 1, 1 )
+			else
+				draw.SimpleText( name:upper( ), "catherine_lightUI30", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+			end
 		end
 		
-		menu:Open( )
-	end
-	self.selectFaction.PaintOverAll = function( pnl, w, h )
-		surface.SetDrawColor( 255, 255, 255, 30 )
-		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0, 0, w, 1 )
+		local panel = v.panel
+		local panel_w, panel_h = panel:GetWide( ), panel:GetTall( )
 		
-		surface.SetDrawColor( 255, 255, 255, 30 )
-		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0, h - 1, w, 1 )
+		panel.button = vgui.Create( "DButton", panel )
+		panel.button:SetSize( panel_w, panel_h )
+		panel.button:Center( )
+		panel.button:SetText( "" )
+		panel.button:SetDrawBackground( false )
+		panel.button.DoClick = function( )
+			if ( self.selectedFaction != k ) then
+				surface.PlaySound( "buttons/button24.wav" )
+				
+				self.selectedFaction = k
+				self.data.faction = factionData.uniqueID
+			end
+		end
 	end
 	
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
-	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 15 )
+	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 20 )
 	self.nextStage:SetSize( self.w * 0.2, 30 )
-	self.nextStage:SetStr( LANG( "Character_UI_NextStage" ) )
+	self.nextStage:SetStr( LANG( "Character_UI_NextStage" ):upper( ) )
 	self.nextStage:SetStrFont( "catherine_normal20" )
 	self.nextStage:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.nextStage:SetGradientColor( Color( 255, 255, 255, 255 ) )
@@ -690,28 +711,60 @@ function PANEL:PrintErrorMessage( msg )
 	Derma_Message( msg, LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 end
 
-function PANEL:GetFactionList( )
-	local faction = { }
+function PANEL:SetTargetPanelPos( pnl, pos, alpha )
+	if ( !IsValid( pnl ) ) then return end
 	
-	for k, v in pairs( catherine.faction.GetAll( ) ) do
-		if ( v.isWhitelist and catherine.faction.HasWhiteList( v.uniqueID ) == false ) then continue end
-		faction[ #faction + 1 ] = v
+	if ( !pnl.targetPos ) then
+		pnl.targetPos = pos
 	end
 	
-	return faction
+	if ( !pnl.targetAlpha ) then
+		pnl.targetAlpha = 0
+	end
+	
+	pnl.targetPos = Lerp( 0.2, pnl.targetPos, pos )
+	pnl.targetAlpha = Lerp( 0.1, pnl.targetAlpha, alpha )
+	
+	pnl:SetPos( pnl.targetPos, self.h / 2 - pnl:GetTall( ) / 2 )
+	pnl:SetAlpha( pnl.targetAlpha )
+end
+
+function PANEL:Think( )
+	if ( !self.factionList[ self.selectedFaction ] ) then return end
+	
+	local uniquePanel = self.factionList[ self.selectedFaction ].panel
+	
+	if ( !IsValid( uniquePanel ) ) then return end
+	
+	self:SetTargetPanelPos( uniquePanel, self:GetWide( ) / 2 - uniquePanel:GetWide( ) / 2, 255 )
+	
+	local right, left = uniquePanel.x + uniquePanel:GetWide( ) + 24, uniquePanel.x - 24
+	
+	for i = self.selectedFaction - 1, 1, -1 do
+		local prevPanel = self.factionList[ i ].panel
+		
+		if ( !IsValid( prevPanel ) ) then continue end
+		
+		self:SetTargetPanelPos( prevPanel, left - prevPanel:GetWide( ), ( 30 / self.selectedFaction ) * i )
+		left = prevPanel.x - 24
+	end
+	
+	for k, v in pairs( self.factionList ) do
+		if ( k > self.selectedFaction ) then
+			self:SetTargetPanelPos( v.panel, right, ( 30 / ( ( #self.factionList + 1 ) - self.selectedFaction ) ) * ( ( #self.factionList + 1 ) - k ) )
+			right = v.panel.x + v.panel:GetWide( ) + 24
+		end
+	end
 end
 
 function PANEL:Paint( w, h )
-	if ( self.factionImage ) then
-		local material = Material( self.factionImage )
+	if ( #self.factionList == 0 ) then
+		draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.SimpleText( LANG( "Character_UI_FactionHaveAny" ), "catherine_lightUI25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		
-		if ( material and !material:IsError( ) ) then
-			local material_w, material_h = material:Width( ), material:Height( )
-			
-			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.SetMaterial( material )
-			surface.DrawTexturedRect( w / 2 - material_w / 2, h - material_h - ( h * 0.2 ), material_w, material_h )
-		end
+		self.nextStage:SetVisible( false )
+	else
+		draw.RoundedBox( 0, w / 2 - 512 / 2, h / 2 - 312 / 2, 512, 312, Color( 0, 0, 0, 100 ) )
 	end
 end
 
@@ -721,7 +774,7 @@ local PANEL = { }
 
 function PANEL:Init( )
 	self.parent = self:GetParent( )
-	self.w, self.h = self.parent.w, self.parent.h - ( self.parent.h * 0.2 )
+	self.w, self.h = self.parent.w, self.parent.h
 	self.data = {
 		name = "",
 		desc = "",
@@ -729,61 +782,82 @@ function PANEL:Init( )
 	}
 	
 	self:SetSize( self.w, self.h )
-	self:SetPos( self.parent.w / 2 - self.w / 2, self.parent.h * 0.1 )
+	self:SetPos( 0, 0 )
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.3, 0 )
 	
 	self.label01 = vgui.Create( "DLabel", self )
-	self.label01:SetPos( 15, 15 )
 	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
-	self.label01:SetFont( "catherine_normal25" )
-	self.label01:SetText( LANG( "Character_UI_CharInfo" ) )
+	self.label01:SetFont( "catherine_lightUI30" )
+	self.label01:SetText( LANG( "Character_UI_CharInfo" ):upper( ) )
+	self.label01:SetPos( 0, 20 )
 	self.label01:SizeToContents( )
+	self.label01:CenterHorizontal( )
 	
 	self.name = vgui.Create( "DLabel", self )
-	self.name:SetPos( 15, 60 )
+	self.name:SetPos( 15, 90 )
 	self.name:SetColor( Color( 255, 255, 255, 255 ) )
-	self.name:SetFont( "catherine_normal20" )
+	self.name:SetFont( "catherine_lightUI25" )
 	self.name:SetText( LANG( "Character_UI_CharName" ) )
 	self.name:SizeToContents( )
 	
 	self.nameEnt = vgui.Create( "DTextEntry", self )
-	self.nameEnt:SetPos( 30 + self.name:GetSize( ), 60 )
-	self.nameEnt:SetSize( self.w - ( 30 + self.name:GetSize( ) + ( self.w * 0.2 ) ) - 70, 20 )	
-	self.nameEnt:SetFont( "catherine_normal15" )
+	self.nameEnt:SetPos( 15, 120 )
+	self.nameEnt:SetSize( self.w * 0.5 - 15, 30 )	
+	self.nameEnt:SetFont( "catherine_lightUI25" )
 	self.nameEnt:SetText( "" )
 	self.nameEnt:SetAllowNonAsciiCharacters( true )
 	self.nameEnt.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
-		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 255 ) )
+		local nameLen = pnl:GetText( ):utf8len( )
+		
+		catherine.theme.Draw( CAT_THEME_TEXTENT_UNDERLINE, w, h )
+		
+		if ( nameLen > catherine.configs.characterNameMaxLen ) then
+			pnl:DrawTextEntryText( Color( 255, 0, 0 ), Color( 45, 45, 45 ), Color( 255, 0, 0 ) )
+		elseif ( nameLen < catherine.configs.characterNameMinLen ) then
+			pnl:DrawTextEntryText( Color( 255, 150, 0 ), Color( 45, 45, 45 ), Color( 255, 150, 0 ) )
+		else
+			pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 255 ) )
+		end
 	end
 	self.nameEnt.OnTextChanged = function( pnl )
 		self.data.name = pnl:GetText( )
 	end
 	
 	self.desc = vgui.Create( "DLabel", self )
-	self.desc:SetPos( 15, 100 )
+	self.desc:SetPos( 15, 170 )
 	self.desc:SetColor( Color( 255, 255, 255, 255 ) )
-	self.desc:SetFont( "catherine_normal20" )
+	self.desc:SetFont( "catherine_lightUI25" )
 	self.desc:SetText( LANG( "Character_UI_CharDesc" ) )
 	self.desc:SizeToContents( )
 	
 	self.descEnt = vgui.Create( "DTextEntry", self )
-	self.descEnt:SetPos( 30 + self.desc:GetSize( ), 100 )
-	self.descEnt:SetSize( self.w - ( 30 + self.desc:GetSize( ) + ( self.w * 0.2 ) ) - 70, 20 )	
+	self.descEnt:SetPos( 15, 200 )
+	self.descEnt:SetSize( self.w * 0.7 - 15, 20 )	
 	self.descEnt:SetFont( "catherine_normal15" )
 	self.descEnt:SetText( "" )
 	self.descEnt:SetAllowNonAsciiCharacters( true )
 	self.descEnt.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_TEXTENT, w, h )
-		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 255 ) )
+		local descLen = pnl:GetText( ):utf8len( )
+		
+		catherine.theme.Draw( CAT_THEME_TEXTENT_UNDERLINE, w, h )
+		
+		if ( descLen > catherine.configs.characterDescMaxLen ) then
+			pnl:DrawTextEntryText( Color( 255, 0, 0 ), Color( 45, 45, 45 ), Color( 255, 0, 0 ) )
+		elseif ( descLen < catherine.configs.characterDescMinLen ) then
+			pnl:DrawTextEntryText( Color( 255, 150, 0 ), Color( 45, 45, 45 ), Color( 255, 150, 0 ) )
+		else
+			pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 255 ) )
+		end
 	end
 	self.descEnt.OnTextChanged = function( pnl )
 		self.data.desc = pnl:GetText( )
 	end
 	
 	self.modelLabel = vgui.Create( "DLabel", self )
-	self.modelLabel:SetPos( 15, 140 )
+	self.modelLabel:SetPos( 15, 240 )
 	self.modelLabel:SetColor( Color( 255, 255, 255, 255 ) )
-	self.modelLabel:SetFont( "catherine_normal20" )
+	self.modelLabel:SetFont( "catherine_lightUI25" )
 	self.modelLabel:SetText( LANG( "Character_UI_CharModel" ) )
 	self.modelLabel:SizeToContents( )
 	
@@ -810,8 +884,8 @@ function PANEL:Init( )
 	end
 	
 	self.model = vgui.Create( "DPanelList", self )
-	self.model:SetPos( 15, 170 )
-	self.model:SetSize( self.w - ( self.w * 0.2 ) - 35, self.h - 180 )
+	self.model:SetPos( 15, 280 )
+	self.model:SetSize( self.w - ( self.w * 0.2 ) - 35, self.h - 295 )
 	self.model:SetSpacing( 5 )
 	self.model:EnableHorizontal( true )
 	self.model:EnableVerticalScrollbar( false )
@@ -821,21 +895,29 @@ function PANEL:Init( )
 	if ( factionTable ) then
 		local delta = 0
 		
-		for k, v in pairs( factionTable.models ) do
-			local spawnIcon = vgui.Create( "SpawnIcon" )
-			spawnIcon:SetSize( 64, 64 )
-			spawnIcon:SetModel( v )
-			spawnIcon:SetToolTip( false )
-			spawnIcon:SetAlpha( 0 )
-			spawnIcon:AlphaTo( 255, 0.3, delta )
-			spawnIcon.PaintOver = function( pnl, w, h ) end
-			spawnIcon.DoClick = function( pnl )
-				self.data.model = v
-				self.previewModel:SetModel( v )
-			end
+		if ( #factionTable.models == 1 ) then
+			self.data.model = factionTable.models[ 1 ]
+			self.previewModel:SetModel( factionTable.models[ 1 ] )
 			
-			delta = delta + 0.03
-			self.model:AddItem( spawnIcon )
+			self.modelLabel:SetVisible( false )
+			self.model:SetVisible( false )
+		else
+			for k, v in pairs( factionTable.models ) do
+				local spawnIcon = vgui.Create( "SpawnIcon" )
+				spawnIcon:SetSize( 64, 64 )
+				spawnIcon:SetModel( v )
+				spawnIcon:SetToolTip( false )
+				spawnIcon:SetAlpha( 0 )
+				spawnIcon:AlphaTo( 255, 0.3, delta )
+				spawnIcon.PaintOver = function( pnl, w, h ) end
+				spawnIcon.DoClick = function( pnl )
+					self.data.model = v
+					self.previewModel:SetModel( v )
+				end
+				
+				delta = delta + 0.03
+				self.model:AddItem( spawnIcon )
+			end
 		end
 		
 		if ( factionTable.PostSetName ) then
@@ -862,9 +944,9 @@ function PANEL:Init( )
 	end
 	
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
-	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 15 )
+	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 20 )
 	self.nextStage:SetSize( self.w * 0.2, 30 )
-	self.nextStage:SetStr( LANG( "Character_UI_NextStage" ) )
+	self.nextStage:SetStr( LANG( "Character_UI_NextStage" ):upper( ) )
 	self.nextStage:SetStrFont( "catherine_normal20" )
 	self.nextStage:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.nextStage:SetGradientColor( Color( 255, 255, 255, 255 ) )
@@ -913,8 +995,7 @@ function PANEL:PrintErrorMessage( msg )
 end
 
 function PANEL:Paint( w, h )
-	draw.SimpleText( self.data.name:utf8len( ) .. "/" .. catherine.configs.characterNameMaxLen, "catherine_normal20", w - ( w * 0.2 ) - 25, 60 + 20 / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
-	draw.SimpleText( self.data.desc:utf8len( ) .. "/" .. catherine.configs.characterDescMaxLen, "catherine_normal20", w - ( w * 0.2 ) - 25, 100 + 20 / 2, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+
 end
 
 vgui.Register( "catherine.character.stageTwo", PANEL, "DPanel" )
@@ -923,7 +1004,7 @@ local PANEL = { }
 
 function PANEL:Init( )
 	self.parent = self:GetParent( )
-	self.w, self.h = self.parent.w, self.parent.h - ( self.parent.h * 0.2 )
+	self.w, self.h = self.parent.w, self.parent.h
 	self.haveAtt = false
 	self.createdAtt = false
 	self.data = {
@@ -931,20 +1012,17 @@ function PANEL:Init( )
 	}
 	
 	self:SetSize( self.w, self.h )
-	self:SetPos( self.parent.w / 2 - self.w / 2, self.parent.h * 0.1 )
-	
-	timer.Simple( 1, function( )
-		if ( IsValid( self ) ) then
-			netstream.Start( "catherine.character.GetRandomAttribute" )
-		end
-	end )
+	self:SetPos( 0, 0 )
+	self:SetAlpha( 0 )
+	self:AlphaTo( 255, 0.3, 0 )
 	
 	self.label01 = vgui.Create( "DLabel", self )
-	self.label01:SetPos( 15, 15 )
 	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
-	self.label01:SetFont( "catherine_normal25" )
-	self.label01:SetText( LANG( "Character_UI_CharAtt" ) )
+	self.label01:SetFont( "catherine_lightUI30" )
+	self.label01:SetText( LANG( "Character_UI_CharAtt" ):upper( ) )
+	self.label01:SetPos( 0, 20 )
 	self.label01:SizeToContents( )
+	self.label01:CenterHorizontal( )
 	
 	self.att = vgui.Create( "DPanelList", self )
 	self.att:SetSize( 140, self.h * 0.4 )
@@ -984,21 +1062,27 @@ function PANEL:Init( )
 	end
 	
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
-	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 15 )
+	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 20 )
 	self.nextStage:SetSize( self.w * 0.2, 30 )
-	self.nextStage:SetStr( LANG( "Character_UI_NextStage" ) )
-	self.nextStage:SetStrFont( "catherine_normal20" )
+	self.nextStage:SetStr( LANG( "Character_UI_CREATE" ):upper( ) )
+	self.nextStage:SetStrFont( "catherine_normal25" )
 	self.nextStage:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.nextStage:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.nextStage.Click = function( )
 		if ( self.noAtt or ( self.data.att and self.createdAtt ) ) then
-			self.parent.createData.datas.att = self.data.att
-			
-			self.parent.createData.currentStageInt = self.parent.createData.currentStageInt + 1
-			self.parent.createData.currentStage = vgui.Create( "catherine.character.stageFour", self.parent )
-			self:AlphaTo( 0, 0.3, 0, function( )
-				self:Remove( )
-			end )
+			if ( !self.parent.createData.creating ) then
+				Derma_Query( LANG( "Character_Notify_CreateQ" ), "", LANG( "Basic_UI_YES" ), function( )
+					if ( !self.parent.createData.creating ) then
+						self.parent.createData.creating = true
+						self:AlphaTo( 0, 0.3, 0 )
+						netstream.Start( "catherine.character.Create", self.parent.createData.datas )
+					else
+						self:PrintErrorMessage( LANG( "Basic_UI_ReqToServer" ) )
+					end
+				end, LANG( "Basic_UI_NO" ), function( ) end )
+			else
+				self:PrintErrorMessage( LANG( "Basic_UI_ReqToServer" ) )
+			end
 		else
 			self:PrintErrorMessage( LANG( "Character_Notify_IsSelectingAttribute" ) )
 		end
@@ -1008,6 +1092,12 @@ function PANEL:Init( )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
 		surface.DrawTexturedRect( 0, h - 2, w, 2 )
 	end
+	
+	timer.Simple( 1, function( )
+		if ( IsValid( self ) ) then
+			netstream.Start( "catherine.character.GetRandomAttribute" )
+		end
+	end )
 end
 
 function PANEL:BuildRandomAttributeList( )
@@ -1109,76 +1199,6 @@ function PANEL:Paint( w, h )
 end
 
 vgui.Register( "catherine.character.stageThree", PANEL, "DPanel" )
-
-local PANEL = { }
-
-function PANEL:Init( )
-	self.parent = self:GetParent( )
-	self.w, self.h = self.parent.w, self.parent.h - ( self.parent.h * 0.2 )
-	
-	self:SetSize( self.w, self.h )
-	self:SetPos( self.parent.w / 2 - self.w / 2, self.parent.h * 0.1 )
-	
-	self.label01 = vgui.Create( "DLabel", self )
-	self.label01:SetPos( 15, 15 )
-	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
-	self.label01:SetFont( "catherine_normal25" )
-	self.label01:SetText( LANG( "Character_UI_CharFin" ) )
-	self.label01:SizeToContents( )
-	
-	self.name = vgui.Create( "DLabel", self )
-	self.name:SetPos( 15, 50 )
-	self.name:SetColor( Color( 255, 255, 255, 255 ) )
-	self.name:SetFont( "catherine_lightUI35" )
-	self.name:SetText( self.parent.createData.datas.name )
-	self.name:SizeToContents( )
-	self.name:SetPos( self.w / 2 - self.name:GetWide( ) / 2, self.h / 2 - self.name:GetTall( ) / 2 - 40 )
-	
-	self.desc = vgui.Create( "DLabel", self )
-	self.desc:SetColor( Color( 255, 255, 255, 255 ) )
-	self.desc:SetFont( "catherine_lightUI20" )
-	self.desc:SetText( self.parent.createData.datas.desc )
-	self.desc:SizeToContents( )
-	self.desc:SetPos( self.w / 2 - self.desc:GetWide( ) / 2, self.h / 2 - self.desc:GetTall( ) / 2 )
-	
-	self.nextStage = vgui.Create( "catherine.vgui.button", self )
-	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 15 )
-	self.nextStage:SetSize( self.w * 0.2, 30 )
-	self.nextStage:SetStr( LANG( "Character_UI_CREATE" ) )
-	self.nextStage:SetStrFont( "catherine_normal25" )
-	self.nextStage:SetStrColor( Color( 255, 255, 255, 255 ) )
-	self.nextStage:SetGradientColor( Color( 255, 255, 255, 255 ) )
-	self.nextStage.Click = function( )
-		if ( !self.parent.createData.creating ) then
-			Derma_Query( LANG( "Character_Notify_CreateQ" ), "", LANG( "Basic_UI_YES" ), function( )
-				if ( !self.parent.createData.creating ) then
-					self.parent.createData.creating = true
-					self:AlphaTo( 0, 0.3, 0 )
-					netstream.Start( "catherine.character.Create", self.parent.createData.datas )
-				else
-					self:PrintErrorMessage( LANG( "Basic_UI_ReqToServer" ) )
-				end
-			end, LANG( "Basic_UI_NO" ), function( ) end )
-		else
-			self:PrintErrorMessage( LANG( "Basic_UI_ReqToServer" ) )
-		end
-	end
-	self.nextStage.PaintOverAll = function( pnl, w, h )
-		surface.SetDrawColor( 255, 255, 255, 80 )
-		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0, h - 2, w, 2 )
-	end
-end
-
-function PANEL:PrintErrorMessage( msg )
-	Derma_Message( msg, LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
-end
-
-function PANEL:Paint( w, h )
-
-end
-
-vgui.Register( "catherine.character.stageFour", PANEL, "DPanel" )
 
 catherine.menu.Register( function( )
 	return LANG( "Character_UI_Title" )

@@ -31,8 +31,6 @@ local entityCaches = { }
 local nextEntityCacheWork = RealTime( )
 local lastEntity = nil
 local toscreen = FindMetaTable( "Vector" ).ToScreen
-local catherine_framework_symbol = Material( catherine.configs.frameworkLogo, "smooth" ) or "__error_material"
-local schema_symbol = Material( catherine.configs.schemaLogo, "smooth" ) or "__error_material"
 local gradientUpMat = Material( "gui/gradient_up" )
 local gradientDownMat = Material( "gui/gradient_down" )
 local gradientLeftMat = Material( "gui/gradient" )
@@ -44,7 +42,6 @@ local trace_line = util.TraceLine
 function GM:InitPostEntity( )
 	catherine.pl = LocalPlayer( )
 	catherine.intro.startTime = SysTime( )
-	schema_symbol = Material( catherine.configs.schemaLogo, "smooth" ) or "__error_material"
 end
 
 function GM:Initialize( )
