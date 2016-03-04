@@ -31,6 +31,7 @@ function PANEL:Init( )
 	self.logoA = 255
 	
 	local layoutX, layoutY = self.w * 0.1, self.h * 0.3
+	local loadingR = 0
 	
 	self:SetSize( self.w, self.h )
 	self:Center( )
@@ -61,6 +62,7 @@ function PANEL:Init( )
 					self.blurAmount = Lerp( 0.03, self.blurAmount, 3 )
 				end
 				
+				draw.RoundedBox( 0, 0, 0, w, h, Color( 20, 20, 20, 150 ) )
 				catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 			end
 		end
@@ -72,7 +74,17 @@ function PANEL:Init( )
 		draw.SimpleText( catherine.GetVersion( ) .. " " .. catherine.GetBuild( ), "catherine_normal15", 10, h - 20, Color( 255, 255, 255, self.logoA ), TEXT_ALIGN_LEFT, 1 )
 		
 		if ( self.createData and self.createData.creating ) then
+			self.back:SetVisible( false )
+			
+			loadingR = loadingR + 10
+			
+			draw.NoTexture( )
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			catherine.geometry.DrawCircle( w / 2, h / 2 - 60, 15, 5, loadingR, 70, 100 )
+			
 			draw.SimpleText( LANG( "Basic_UI_ReqToServer" ), "catherine_normal25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+		else
+			self.back:SetVisible( true )
 		end
 	end
 	
@@ -221,7 +233,7 @@ function PANEL:Init( )
 		surface.DrawTexturedRect( 0, h - 1, w, 1 )
 	end
 	
-	self:PlayMusic( )
+	//self:PlayMusic( )
 	// self:ShowHint( )
 end
 
@@ -320,6 +332,8 @@ function PANEL:UseCharacterPanel( )
 		}
 	end
 	
+	local loadingR = 0
+	
 	self.CharacterPanel = vgui.Create( "DPanel", self )
 	self.CharacterPanel:SetPos( 0, 60 )
 	self.CharacterPanel:SetSize( self.w, self.h - 120 )
@@ -329,6 +343,28 @@ function PANEL:UseCharacterPanel( )
 		if ( #self.loadCharacter.Lists == 0 ) then
 			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
 			draw.SimpleText( LANG( "Character_UI_DontHaveAny" ), "catherine_lightUI25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+		end
+		
+		if ( pnl.loading ) then
+			for k, v in pairs( self.loadCharacter.Lists ) do
+				v.panel:SetVisible( false )
+			end
+			
+			self.back:SetVisible( false )
+			
+			loadingR = loadingR + 10
+			
+			draw.NoTexture( )
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			catherine.geometry.DrawCircle( w / 2, h / 2 - 60, 15, 5, loadingR, 70, 100 )
+			
+			draw.SimpleText( LANG( "Basic_UI_ReqToServer" ), "catherine_lightUI25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+		else
+			for k, v in pairs( self.loadCharacter.Lists ) do
+				v.panel:SetVisible( true )
+			end
+			
+			self.back:SetVisible( true )
 		end
 	end
 	
@@ -419,6 +455,13 @@ function PANEL:UseCharacterPanel( )
 		panel.useCharacter:SetToolTip( LANG( "Character_UI_UseCharacter" ) )
 		panel.useCharacter.Paint = function( pnl, w, h ) end
 		panel.useCharacter.DoClick = function( )
+			self.CharacterPanel.loading = true
+			
+			timer.Create( "catherine.vgui.character.CharacterLoadTimeout", 10, 1, function( )
+				self.CharacterPanel.loading = false
+				Derma_Message( LANG( "Basic_UI_ReqToServerFail" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+			end )
+			
 			netstream.Start( "catherine.character.Use", v.characterDatas._id )
 		end
 		
@@ -432,6 +475,13 @@ function PANEL:UseCharacterPanel( )
 		panel.deleteCharacter.Paint = function( pnl, w, h ) end
 		panel.deleteCharacter.DoClick = function( )
 			Derma_Query( LANG( "Character_Notify_DeleteQ" ), "", LANG( "Basic_UI_YES" ), function( )
+				self.CharacterPanel.loading = true
+			
+				timer.Create( "catherine.vgui.character.CharacterDeleteTimeout", 10, 1, function( )
+					self.CharacterPanel.loading = false
+					Derma_Message( LANG( "Basic_UI_ReqToServerFail" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+				end )
+				
 				netstream.Start( "catherine.character.Delete", v.characterDatas._id )
 			end, LANG( "Basic_UI_NO" ), function( ) end )
 		end
@@ -482,7 +532,10 @@ function PANEL:UseCharacterPanel( )
 			self.loadCharacter.curr = 1
 		end
 		
-		if ( !self.loadCharacter.Lists[ self.loadCharacter.curr ] ) then return end
+		if ( !self.loadCharacter.Lists[ self.loadCharacter.curr ] ) then
+			self.loadCharacter.curr = #catherine.character.localCharacters
+			return
+		end
 		
 		local uniquePanel = self.loadCharacter.Lists[ self.loadCharacter.curr ].panel
 		
@@ -615,6 +668,7 @@ function PANEL:Init( )
 	self.data = { faction = nil }
 	self.selectedFaction = 1
 	self.factionList = { }
+	self.moveAniList = { }
 	
 	for k, v in SortedPairs( catherine.faction.GetPlayerUsableFaction( self.parent.player ) ) do
 		self.factionList[ #self.factionList + 1 ] = {
@@ -630,10 +684,11 @@ function PANEL:Init( )
 		self.selectedFaction = autoSelect
 	end
 	
+	local alphaDelta = 0
+	
 	self:SetSize( self.w, self.h )
 	self:SetPos( 0, 0 )
-	self:SetAlpha( 0 )
-	self:AlphaTo( 255, 0.3, 0 )
+	//self:MoveTo( 0, 0, 0.3, 0 )
 	
 	self.label01 = vgui.Create( "DLabel", self )
 	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
@@ -642,6 +697,11 @@ function PANEL:Init( )
 	self.label01:SetPos( 0, 20 )
 	self.label01:SizeToContents( )
 	self.label01:CenterHorizontal( )
+	self.label01:SetAlpha( 0 )
+	self.label01:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.label01
 	
 	for k, v in pairs( self.factionList ) do
 		local factionData = v.factionData
@@ -684,6 +744,8 @@ function PANEL:Init( )
 				self.data.faction = factionData.uniqueID
 			end
 		end
+		
+		self.moveAniList[ #self.moveAniList + 1 ] = v.panel
 	end
 	
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
@@ -694,14 +756,35 @@ function PANEL:Init( )
 	self.nextStage:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.nextStage:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.nextStage.Click = function( )
+		if ( self.moving ) then return end
+		
 		if ( self.data.faction ) then
 			if ( catherine.faction.FindByID( self.data.faction ) ) then
+				surface.PlaySound( "garrysmod/ui_click.wav" )
+				
 				self.parent.createData.datas.faction = self.data.faction
-				self.parent.createData.currentStageInt = self.parent.createData.currentStageInt + 1
-				self.parent.createData.currentStage = vgui.Create( "catherine.character.stageTwo", self.parent )
-				self:AlphaTo( 0, 0.3, 0, function( )
-					self:Remove( )
-				end )
+				
+				local delta = 0
+				self.moving = true
+				
+				for k, v in pairs( self.moveAniList ) do
+					local x, y = v:GetPos( )
+					
+					if ( k == #self.moveAniList ) then
+						v:MoveTo( 0 - self.w, y, 0.5, delta, nil, function( )
+							self:Remove( )
+							
+							self.parent.createData.currentStageInt = self.parent.createData.currentStageInt + 1
+							self.parent.createData.currentStage = vgui.Create( "catherine.character.stageTwo", self.parent )
+						end )
+						
+						break
+					else
+						v:MoveTo( 0 - self.w, y, 0.5, delta )
+					end
+					
+					delta = delta + 0.1
+				end
 			else
 				self:PrintErrorMessage( LANG( "Faction_Notify_NotValid", self.data.faction ) )
 			end
@@ -714,6 +797,11 @@ function PANEL:Init( )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
 		surface.DrawTexturedRect( 0, h - 2, w, 2 )
 	end
+	self.nextStage:SetAlpha( 0 )
+	self.nextStage:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.nextStage
 end
 
 function PANEL:PrintErrorMessage( msg )
@@ -739,6 +827,7 @@ function PANEL:SetTargetPanelPos( pnl, pos, alpha )
 end
 
 function PANEL:Think( )
+	if ( self.moving ) then return end
 	if ( !self.factionList[ self.selectedFaction ] ) then return end
 	
 	local uniquePanel = self.factionList[ self.selectedFaction ].panel
@@ -772,8 +861,6 @@ function PANEL:Paint( w, h )
 		draw.SimpleText( LANG( "Character_UI_FactionHaveAny" ), "catherine_lightUI25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		
 		self.nextStage:SetVisible( false )
-	else
-		draw.RoundedBox( 0, w / 2 - 512 / 2, h / 2 - 312 / 2, 512, 312, Color( 0, 0, 0, 100 ) )
 	end
 end
 
@@ -789,11 +876,12 @@ function PANEL:Init( )
 		desc = "",
 		model = ""
 	}
+	self.moveAniList = { }
+	
+	local alphaDelta = 0
 	
 	self:SetSize( self.w, self.h )
 	self:SetPos( 0, 0 )
-	self:SetAlpha( 0 )
-	self:AlphaTo( 255, 0.3, 0 )
 	
 	self.label01 = vgui.Create( "DLabel", self )
 	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
@@ -802,6 +890,11 @@ function PANEL:Init( )
 	self.label01:SetPos( 0, 20 )
 	self.label01:SizeToContents( )
 	self.label01:CenterHorizontal( )
+	self.label01:SetAlpha( 0 )
+	self.label01:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.label01
 	
 	self.name = vgui.Create( "DLabel", self )
 	self.name:SetPos( 15, 90 )
@@ -809,6 +902,11 @@ function PANEL:Init( )
 	self.name:SetFont( "catherine_lightUI25" )
 	self.name:SetText( LANG( "Character_UI_CharName" ) )
 	self.name:SizeToContents( )
+	self.name:SetAlpha( 0 )
+	self.name:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.name
 	
 	self.nameEnt = vgui.Create( "DTextEntry", self )
 	self.nameEnt:SetPos( 15, 120 )
@@ -832,6 +930,11 @@ function PANEL:Init( )
 	self.nameEnt.OnTextChanged = function( pnl )
 		self.data.name = pnl:GetText( )
 	end
+	self.nameEnt:SetAlpha( 0 )
+	self.nameEnt:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.nameEnt
 	
 	self.desc = vgui.Create( "DLabel", self )
 	self.desc:SetPos( 15, 170 )
@@ -839,6 +942,11 @@ function PANEL:Init( )
 	self.desc:SetFont( "catherine_lightUI25" )
 	self.desc:SetText( LANG( "Character_UI_CharDesc" ) )
 	self.desc:SizeToContents( )
+	self.desc:SetAlpha( 0 )
+	self.desc:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.desc
 	
 	self.descEnt = vgui.Create( "DTextEntry", self )
 	self.descEnt:SetPos( 15, 200 )
@@ -862,6 +970,11 @@ function PANEL:Init( )
 	self.descEnt.OnTextChanged = function( pnl )
 		self.data.desc = pnl:GetText( )
 	end
+	self.descEnt:SetAlpha( 0 )
+	self.descEnt:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.descEnt
 	
 	self.modelLabel = vgui.Create( "DLabel", self )
 	self.modelLabel:SetPos( 15, 240 )
@@ -869,8 +982,11 @@ function PANEL:Init( )
 	self.modelLabel:SetFont( "catherine_lightUI25" )
 	self.modelLabel:SetText( LANG( "Character_UI_CharModel" ) )
 	self.modelLabel:SizeToContents( )
+	self.modelLabel:SetAlpha( 0 )
+	self.modelLabel:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
 	
-	local defAng = Angle( 0, 45, 0 )
+	self.moveAniList[ #self.moveAniList + 1 ] = self.modelLabel
 	
 	self.previewModel = vgui.Create( "DModelPanel", self )
 	self.previewModel:SetPos( self.w - ( self.w * 0.2 ) - 10, 60 )
@@ -880,17 +996,15 @@ function PANEL:Init( )
 	self.previewModel:SetDisabled( true )
 	self.previewModel.LayoutEntity = function( pnl, ent )
 		ent:SetIK( false )
-		
-		--[[
-			Based from
-			https://github.com/Chessnut/NutScript/blob/master/gamemode/derma/cl_charmenu.lua
-		]]--
-		ent:SetPoseParameter( "head_pitch", gui.MouseY( ) / ScrH( ) * 80 - 40 )
-		ent:SetPoseParameter( "head_yaw", ( gui.MouseX( ) / ScrW( ) - 0.75 ) * 70 + 23 )
-		ent:SetAngles( defAng )
+		ent:SetAngles( Angle( 0, 45, 0 ) )
 		
 		pnl:RunAnimation( )
 	end
+	self.previewModel:SetAlpha( 0 )
+	self.previewModel:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.previewModel
 	
 	self.model = vgui.Create( "DPanelList", self )
 	self.model:SetPos( 15, 280 )
@@ -898,15 +1012,31 @@ function PANEL:Init( )
 	self.model:SetSpacing( 5 )
 	self.model:EnableHorizontal( true )
 	self.model:EnableVerticalScrollbar( false )
+	self.model:SetAlpha( 0 )
+	self.model:AlphaTo( 255, 0.01, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.model
 	
 	local factionTable = catherine.faction.FindByID( self.parent.createData.datas.faction )
-
+	
 	if ( factionTable ) then
 		local delta = 0
 		
 		if ( #factionTable.models == 1 ) then
 			self.data.model = factionTable.models[ 1 ]
 			self.previewModel:SetModel( factionTable.models[ 1 ] )
+			
+			if ( IsValid( self.previewModel.Entity ) ) then
+				for k, v in pairs( self.previewModel.Entity:GetSequenceList( ) ) do
+					if ( v:find( "idle" ) ) then
+						local seq = self.previewModel.Entity:LookupSequence( v )
+						self.previewModel.Entity:SetSequence( seq )
+						
+						break
+					end
+				end
+			end
 			
 			self.modelLabel:SetVisible( false )
 			self.model:SetVisible( false )
@@ -920,8 +1050,21 @@ function PANEL:Init( )
 				spawnIcon:AlphaTo( 255, 0.3, delta )
 				spawnIcon.PaintOver = function( pnl, w, h ) end
 				spawnIcon.DoClick = function( pnl )
-					self.data.model = v
-					self.previewModel:SetModel( v )
+					if ( self.data.model != v ) then
+						self.data.model = v
+						self.previewModel:SetModel( v )
+						
+						if ( IsValid( self.previewModel.Entity ) ) then
+							for k, v in pairs( self.previewModel.Entity:GetSequenceList( ) ) do
+								if ( v:find( "idle" ) ) then
+									local seq = self.previewModel.Entity:LookupSequence( v )
+									self.previewModel.Entity:SetSequence( seq )
+									
+									break
+								end
+							end
+						end
+					end
 				end
 				
 				delta = delta + 0.03
@@ -951,7 +1094,7 @@ function PANEL:Init( )
 	else
 		self:PrintErrorMessage( LANG( "Faction_Notify_NotValid", self.parent.createData.datas.faction ) )
 	end
-	
+
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
 	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 20 )
 	self.nextStage:SetSize( self.w * 0.2, 30 )
@@ -960,6 +1103,7 @@ function PANEL:Init( )
 	self.nextStage:SetStrColor( Color( 255, 255, 255, 255 ) )
 	self.nextStage:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.nextStage.Click = function( )
+		if ( self.moving ) then return end
 		local i = 0
 		local pl = self.parent.player
 		
@@ -976,15 +1120,33 @@ function PANEL:Init( )
 					return
 				else
 					if ( i == 3 ) then
+						surface.PlaySound( "garrysmod/ui_click.wav" )
+						
 						self.parent.createData.datas.name = self.data.name
 						self.parent.createData.datas.desc = self.data.desc
 						self.parent.createData.datas.model = self.data.model
+						self.moving = true
 						
-						self.parent.createData.currentStageInt = self.parent.createData.currentStageInt + 1
-						self.parent.createData.currentStage = vgui.Create( "catherine.character.stageThree", self.parent )
-						self:AlphaTo( 0, 0.3, 0, function( )
-							self:Remove( )
-						end )
+						local delta = 0
+				
+						for k, v in pairs( self.moveAniList ) do
+							local x, y = v:GetPos( )
+							
+							if ( k == #self.moveAniList ) then
+								v:MoveTo( 0 - self.w, y, 0.5, delta, nil, function( )
+									self:Remove( )
+									
+									self.parent.createData.currentStageInt = self.parent.createData.currentStageInt + 1
+									self.parent.createData.currentStage = vgui.Create( "catherine.character.stageThree", self.parent )
+								end )
+								
+								break
+							else
+								v:MoveTo( 0 - self.w, y, 0.5, delta )
+							end
+							
+							delta = delta + 0.1
+						end
 						
 						return
 					end
@@ -997,6 +1159,11 @@ function PANEL:Init( )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
 		surface.DrawTexturedRect( 0, h - 2, w, 2 )
 	end
+	self.nextStage:SetAlpha( 0 )
+	self.nextStage:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.nextStage
 end
 
 function PANEL:PrintErrorMessage( msg )
@@ -1019,11 +1186,13 @@ function PANEL:Init( )
 	self.data = {
 		att = nil
 	}
+	self.moveAniList = { }
+	self.noDrawPaint = false
 	
 	self:SetSize( self.w, self.h )
 	self:SetPos( 0, 0 )
-	self:SetAlpha( 0 )
-	self:AlphaTo( 255, 0.3, 0 )
+	
+	local alphaDelta = 0
 	
 	self.label01 = vgui.Create( "DLabel", self )
 	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
@@ -1032,6 +1201,11 @@ function PANEL:Init( )
 	self.label01:SetPos( 0, 20 )
 	self.label01:SizeToContents( )
 	self.label01:CenterHorizontal( )
+	self.label01:SetAlpha( 0 )
+	self.label01:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.label01
 	
 	self.att = vgui.Create( "DPanelList", self )
 	self.att:SetSize( 140, self.h * 0.4 )
@@ -1069,6 +1243,11 @@ function PANEL:Init( )
 		
 		pnl:GetCanvas( ):SetSize( pnl:GetCanvas( ):GetWide( ), offset + pnl.Padding * 2 - pnl.Spacing ) 
 	end
+	self.att:SetAlpha( 0 )
+	self.att:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.att
 	
 	self.nextStage = vgui.Create( "catherine.vgui.button", self )
 	self.nextStage:SetPos( self.w - self.w * 0.2 - 10, 20 )
@@ -1079,13 +1258,39 @@ function PANEL:Init( )
 	self.nextStage:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.nextStage.Click = function( )
 		if ( self.noAtt or ( self.data.att and self.createdAtt ) ) then
+			surface.PlaySound( "garrysmod/ui_click.wav" )
+			
 			if ( !self.parent.createData.creating ) then
 				Derma_Query( LANG( "Character_Notify_CreateQ" ), "", LANG( "Basic_UI_YES" ), function( )
 					if ( !self.parent.createData.creating ) then
 						self.parent.createData.creating = true
-						self:AlphaTo( 0, 0.3, 0 )
-						table.Merge( self.parent.createData.datas, self.data )
-						netstream.Start( "catherine.character.Create", self.parent.createData.datas )
+						self.noDrawPaint = true
+						local delta = 0
+				
+						for k, v in pairs( self.moveAniList ) do
+							local x, y = v:GetPos( )
+							
+							if ( k == #self.moveAniList ) then
+								v:MoveTo( 0 - self.w, y, 0.5, delta, nil, function( )
+									timer.Create( "catherine.vgui.character.CharacterCreateTimeout", 10, 1, function( )
+										Derma_Message( LANG( "Basic_UI_ReqToServerFail" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+										
+										if ( IsValid( self ) ) then
+											self:Remove( )
+										end
+									end )
+									
+									table.Merge( self.parent.createData.datas, self.data )
+									netstream.Start( "catherine.character.Create", self.parent.createData.datas )
+								end )
+								
+								break
+							else
+								v:MoveTo( 0 - self.w, y, 0.5, delta )
+							end
+							
+							delta = delta + 0.1
+						end
 					else
 						self:PrintErrorMessage( LANG( "Basic_UI_ReqToServer" ) )
 					end
@@ -1102,6 +1307,11 @@ function PANEL:Init( )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
 		surface.DrawTexturedRect( 0, h - 2, w, 2 )
 	end
+	self.nextStage:SetAlpha( 0 )
+	self.nextStage:AlphaTo( 255, 0.5, alphaDelta )
+	alphaDelta = alphaDelta + 0.2
+	
+	self.moveAniList[ #self.moveAniList + 1 ] = self.nextStage
 	
 	timer.Simple( 1, function( )
 		if ( IsValid( self ) ) then
@@ -1196,6 +1406,8 @@ function PANEL:PrintErrorMessage( msg )
 end
 
 function PANEL:Paint( w, h )
+	if ( self.noDrawPaint ) then return end
+	
 	if ( self.data.att ) then
 		if ( table.Count( self.data.att ) > 0 ) then
 			draw.SimpleText( LANG( "Character_UI_ThisisAttribute" ), "catherine_normal25", w / 2, h * 0.2, Color( 255, 255, 255, 255 ), 1, 1 )
@@ -1209,6 +1421,11 @@ function PANEL:Paint( w, h )
 end
 
 vgui.Register( "catherine.character.stageThree", PANEL, "DPanel" )
+
+if ( IsValid( catherine.vgui.character ) ) then
+	catherine.vgui.character:Remove()
+	catherine.vgui.character=vgui.Create("catherine.vgui.character")
+end
 
 catherine.menu.Register( function( )
 	return LANG( "Character_UI_Title" )

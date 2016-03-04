@@ -689,12 +689,11 @@ else
 	end )
 	
 	netstream.Hook( "catherine.character.CreateResult", function( data )
+		timer.Remove( "catherine.vgui.character.CharacterCreateTimeout" )
+		
 		if ( data == true and IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.createData.currentStage ) ) then
-			catherine.vgui.character.createData.currentStage:AlphaTo( 0, 0.2, 0, function( _, pnl )
-				pnl:Remove( )
-				pnl = nil
-				catherine.vgui.character:BackToMainMenu( )
-			end )
+			catherine.vgui.character:BackToMainMenu( )
+			catherine.vgui.character.createData.currentStage:Remove( )
 			
 			catherine.vgui.character.createData = nil
 		else
@@ -703,20 +702,38 @@ else
 	end )
 	
 	netstream.Hook( "catherine.character.UseResult", function( data )
+		timer.Remove( "catherine.vgui.character.CharacterLoadTimeout" )
+		
 		if ( data == true and IsValid( catherine.vgui.character ) ) then
 			catherine.vgui.character:Close( )
 		else
+			if ( IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.CharacterPanel ) ) then
+				catherine.vgui.character.CharacterPanel.loading = false
+			end
+			
 			Derma_Message( catherine.util.StuffLanguage( data ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 		end
 	end )
 	
 	netstream.Hook( "catherine.character.DeleteResult", function( data )
-		if ( data == true and IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.CharacterPanel ) ) then
-			catherine.vgui.character.CharacterPanel:Remove( )
-			catherine.vgui.character:UseCharacterPanel( )
+		timer.Remove( "catherine.vgui.character.CharacterDeleteTimeout" )
+		
+		if ( data == true ) then
+			if ( IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.CharacterPanel ) ) then
+				local backup = catherine.vgui.character.loadCharacter.curr
+				
+				catherine.vgui.character.CharacterPanel:Remove( )
+				catherine.vgui.character:UseCharacterPanel( )
+				
+				catherine.vgui.character.loadCharacter.curr = #catherine.character.localCharacters
+			end
 			
 			Derma_Message( LANG( "Character_Notify_DeleteResult" ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 		else
+			if ( IsValid( catherine.vgui.character ) and IsValid( catherine.vgui.character.CharacterPanel ) ) then
+				catherine.vgui.character.CharacterPanel.loading = false
+			end
+			
 			Derma_Message( catherine.util.StuffLanguage( data ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
 		end
 	end )

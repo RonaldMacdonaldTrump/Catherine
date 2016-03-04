@@ -579,7 +579,8 @@ LANGUAGE.data = {
 	[ "Question_Notify_ContinueQ" ] = "이 질문의 답을 맞추시겠습니까?, 답이 틀릴 경우 서버에서 강제 퇴장 처리됩니다.",
 	
 	// Basic
-	[ "Basic_UI_ReqToServer" ] = "서버에 요청하는 중 ...",
+	[ "Basic_UI_ReqToServer" ] = "서버와 통신하는 중 ...",
+	[ "Basic_UI_ReqToServerFail" ] = "서버에서 응답이 없습니다, 잠시 후 다시 시도하세요.",
 	[ "Basic_UI_StringRequest" ] = "요청",
 	[ "Basic_UI_Question" ] = "질문",
 	[ "Basic_UI_Notify" ] = "안내",

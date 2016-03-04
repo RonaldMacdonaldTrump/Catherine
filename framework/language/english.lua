@@ -584,6 +584,7 @@ LANGUAGE.data = {
 	
 	// Basic
 	[ "Basic_UI_ReqToServer" ] = "Requesting to Server ...",
+	[ "Basic_UI_ReqToServerFail" ] = "Not response from the server, please try again later.",
 	[ "Basic_UI_StringRequest" ] = "Request",
 	[ "Basic_UI_Question" ] = "Question",
 	[ "Basic_UI_Notify" ] = "Notify",
