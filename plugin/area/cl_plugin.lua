@@ -107,7 +107,7 @@ function PLUGIN:HUDPaint( )
 		surface.PlaySound( "common/talk.wav" )
 	end
 	
-	draw.SimpleText( areaDisplay.text, "catherine_outline25", w * 0.8, h / 2, Color( 255, 255, 255, areaDisplay.a ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( areaDisplay.text, "catherine_outline25", w * 0.8, h * 0.8, Color( 255, 255, 255, areaDisplay.a ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 catherine.option.Register( "CONVAR_SHOW_AREA", "cat_convar_showarea", "^Option_Str_Area_Name", "^Option_Str_Area_Desc", "^Option_Category_01", CAT_OPTION_SWITCH )

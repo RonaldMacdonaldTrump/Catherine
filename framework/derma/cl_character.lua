@@ -181,7 +181,7 @@ function PANEL:Init( )
 		local menu = DermaMenu( )
 		
 		for k, v in pairs( catherine.language.GetAll( ) ) do
-			menu:AddOption( v.name, function( )
+			menu:AddOption( v.name:upper( ), function( )
 				RunConsoleCommand( "cat_convar_language", k )
 				catherine.help.lists = { }
 				catherine.menu.Rebuild( )

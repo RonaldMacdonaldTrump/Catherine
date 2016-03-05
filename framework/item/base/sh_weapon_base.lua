@@ -90,6 +90,7 @@ BASE.func.equip = {
 			catherine.attachment.Refresh( pl )
 			
 			pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
+			pl:SetupHands( )
 			catherine.character.SetCharVar( pl, "equippingWeaponTypes", playerWeaponType )
 			catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", true )
 		else

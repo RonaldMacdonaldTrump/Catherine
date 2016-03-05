@@ -22,55 +22,39 @@ function PANEL:Init( )
 	catherine.vgui.help = self
 	
 	self.helps = { }
-	self.loadingAni = 0
-	self.loadingAlpha = 0
 	self.isDef = true
 	
 	self:SetMenuSize( ScrW( ) * 0.95, ScrH( ) * 0.8 )
 	self:SetMenuName( LANG( "Help_UI_Title" ) )
-
-	self.categorys = vgui.Create( "DPanelList", self )
-	self.categorys:SetPos( 10, 35 )
-	self.categorys:SetSize( self.w * 0.2, self.h - 45 )
-	self.categorys:SetSpacing( 5 )
-	self.categorys:EnableHorizontal( false )
-	self.categorys:EnableVerticalScrollbar( true )
-	self.categorys.Paint = function( pnl, w, h ) end
+	
+	self.category = vgui.Create( "DHorizontalScroller", self )
+	self.category:SetPos( 10, 35 )
+	self.category:SetSize( self.w - 20, 20 )
 	
 	local defTitle = LANG( "Help_UI_DefPageTitle" )
 	local defDesc = LANG( "Help_UI_DefPageDesc" )
 	
 	self.html = vgui.Create( "DHTML", self )
-	self.html:SetPos( self.w * 0.2 + 20, 35 )
-	self.html:SetSize( self.w * 0.8 - 60, self.h - 45 )
+	self.html:SetPos( 10, 65 )
+	self.html:SetSize( self.w - 20, self.h - 75 )
 	self.html.Paint = function( pnl, w, h )
 		if ( self.isDef ) then
 			draw.SimpleText( defTitle, "catherine_normal25", w / 2, h / 2 - 25, Color( 255, 255, 255, 255 ), 1, 1 )
 			draw.SimpleText( defDesc, "catherine_normal20", w / 2, h / 2 + 10, Color( 235, 235, 235, 255 ), 1, 1 )
 		end
 	end
-
+	
 	self:InitalizeHelps( )
 end
 
 function PANEL:OnMenuRecovered( )
-	self:InitalizeHelps( )
-end
-
-function PANEL:MenuPaint( w, h )
-	if ( self.html:IsLoading( ) ) then
-		self.loadingAlpha = Lerp( 0.05, self.loadingAlpha, 255 )
-	elseif ( !self.html:IsLoading( ) and self.loadingAlpha > 0 ) then
-		self.loadingAlpha = Lerp( 0.05, self.loadingAlpha, 0 )
-	end
+	self.category:Remove( )
 	
-	if ( math.Round( self.loadingAlpha ) > 0 ) then
-		self.loadingAni = math.Approach( self.loadingAni, self.loadingAni - 5, 5 )
-		
-		draw.NoTexture( )
-		surface.SetDrawColor( 255, 255, 255, self.loadingAlpha )
-		catherine.geometry.DrawCircle( w - 20, 50, 10, 5, self.loadingAni, 70, 100 )
-	end
+	self.category = vgui.Create( "DHorizontalScroller", self )
+	self.category:SetPos( 10, 35 )
+	self.category:SetSize( self.w - 20, 20 )
+	
+	self:InitalizeHelps( )
 end
 
 function PANEL:InitalizeHelps( )
@@ -106,13 +90,15 @@ function PANEL:DoWork( data )
 end
 
 function PANEL:BuildHelps( )
-	self.categorys:Clear( )
-	
 	for k, v in SortedPairs( self.helps ) do
+		surface.SetFont( "catherine_normal20" )
+		
+		local tw, th = surface.GetTextSize( k )
+		
 		local panel = vgui.Create( "catherine.vgui.button", self )
-		panel:SetSize( self.categorys:GetWide( ), 30 )
+		panel:SetSize( tw + 40, 30 )
 		panel:SetStr( k )
-		panel:SetStrFont( "catherine_normal15" )
+		panel:SetStrFont( "catherine_normal20" )
 		panel:SetStrColor( Color( 255, 255, 255, 255 ) )
 		panel:SetGradientColor( Color( 255, 255, 255, 255 ) )
 		panel.Click = function( )
@@ -120,7 +106,7 @@ function PANEL:BuildHelps( )
 			self:DoWork( v )
 		end
 		
-		self.categorys:AddItem( panel )
+		self.category:AddPanel( panel )
 	end
 end
 

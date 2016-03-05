@@ -44,6 +44,30 @@ function GM:InitPostEntity( )
 	catherine.intro.startTime = SysTime( )
 end
 
+function GM:PostDrawViewModel( viewMdl, pl, wep )
+	if ( wep.UseHands or !wep:IsScripted( ) ) then
+		local ent = pl:GetHands( )
+		
+		if ( IsValid( ent ) ) then
+			local info = player_manager.TranslatePlayerHands( player_manager.TranslateToPlayerModelName( pl:GetModel( ) ) )
+			
+			if ( info ) then
+				if ( ent:GetModel( ) != info.model ) then
+					ent:SetModel( info.model )
+				end
+				
+				if ( ent:GetSkin( ) != info.skin ) then
+					ent:SetSkin( info.skin )
+				end
+				
+				ent:SetBodyGroups( info.body )
+			end
+			
+			ent:DrawModel( ) 
+		end
+	end
+end
+
 function GM:Initialize( )
 	CAT_CONVAR_ADMIN_ESP = CreateClientConVar( "cat_convar_adminesp", "1", true, true )
 	CAT_CONVAR_ITEM_ESP = CreateClientConVar( "cat_convar_itemesp", "0", true, true )

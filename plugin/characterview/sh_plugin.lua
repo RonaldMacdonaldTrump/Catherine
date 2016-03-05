@@ -135,9 +135,9 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 			self.lastView = table.Random( self.charViews )
 		end
 		
-		if ( self.nextViewChange <= RealTime( ) ) then
+		if ( self.nextViewChange <= SysTime( ) ) then
 			self.lastView = table.Random( self.charViews )
-			self.nextViewChange = RealTime( ) + math.random( 7, 15 )
+			self.nextViewChange = SysTime( ) + math.random( 10, 20 )
 		end
 		
 		if ( !self.lastPos or !self.lastAng ) then
@@ -145,8 +145,8 @@ function PLUGIN:CalcView( pl, pos, ang, fov )
 			self.lastAng = self.lastView.ang
 		end
 		
-		self.lastPos = LerpVector( 0.01, self.lastPos, self.lastView.pos )
-		self.lastAng = LerpAngle( 0.01, self.lastAng, self.lastView.ang )
+		self.lastPos = LerpVector( 0.05, self.lastPos, self.lastView.pos )
+		self.lastAng = LerpAngle( 0.05, self.lastAng, self.lastView.ang )
 		
 		return {
 			origin = self.lastPos,
