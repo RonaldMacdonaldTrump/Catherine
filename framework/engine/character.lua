@@ -60,7 +60,11 @@ catherine.character.NewVar( "name", {
 	field = "_name",
 	doNetworking = true,
 	default = "Johnson",
-	checkValid = function( pl, data )
+	checkValid = function( pl, data, isForce )
+		if ( isForce ) then
+			return true
+		end
+		
 		if ( data:find( "#" ) ) then
 			return false, "^Character_Notify_SetNameError"
 		end
@@ -77,7 +81,11 @@ catherine.character.NewVar( "desc", {
 	field = "_desc",
 	doNetworking = true,
 	default = "No desc.",
-	checkValid = function( pl, data )
+	checkValid = function( pl, data, isForce )
+		if ( isForce ) then
+			return true
+		end
+		
 		if ( data:find( "#" ) ) then
 			return false, "^Character_Notify_SetDescError"
 		end
@@ -285,7 +293,15 @@ if ( SERVER ) then
 		end
 		
 		local charVars = { }
-		local backup = { }
+		local faction = data[ "faction" ]
+		local factionTable = catherine.faction.FindByID( faction )
+		local isForceSetName = false
+		local isForceSetDesc = false
+		
+		if ( factionTable ) then
+			isForceSetName = tobool( factionTable.PostSetName )
+			isForceSetDesc = tobool( factionTable.PostSetDesc )
+		end
 		
 		if ( data[ "att" ] ) then
 			charVars[ "_att" ] = { }
@@ -308,7 +324,15 @@ if ( SERVER ) then
 				var = data[ k ]
 				
 				if ( v.checkValid ) then
-					local success, reason = v.checkValid( pl, var )
+					local isForce = false
+					
+					if ( k == "name" ) then
+						isForce = isForceSetName
+					elseif( k == "desc" ) then
+						isForce = isForceSetDesc
+					end
+					
+					local success, reason = v.checkValid( pl, var, isForce )
 					
 					if ( success == false ) then
 						netstream.Start( pl, "catherine.character.CreateResult", reason or "Unknown Error" )

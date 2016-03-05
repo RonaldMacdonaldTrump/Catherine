@@ -122,10 +122,6 @@ function GM:CharacterVarChanged( pl, key, value )
 	end
 end
 
-concommand.Add("setup",function(pl)
-	pl:SetupHands( )
-end)
-
 function GM:OnReloaded( )
 
 end

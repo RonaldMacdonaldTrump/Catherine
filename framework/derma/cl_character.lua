@@ -233,7 +233,7 @@ function PANEL:Init( )
 		surface.DrawTexturedRect( 0, h - 1, w, 1 )
 	end
 	
-	//self:PlayMusic( )
+	self:PlayMusic( )
 	// self:ShowHint( )
 end
 
@@ -877,6 +877,8 @@ function PANEL:Init( )
 		model = ""
 	}
 	self.moveAniList = { }
+	self.forceName = false
+	self.forceDesc = false
 	
 	local alphaDelta = 0
 	
@@ -915,17 +917,8 @@ function PANEL:Init( )
 	self.nameEnt:SetText( "" )
 	self.nameEnt:SetAllowNonAsciiCharacters( true )
 	self.nameEnt.Paint = function( pnl, w, h )
-		local nameLen = pnl:GetText( ):utf8len( )
-		
 		catherine.theme.Draw( CAT_THEME_TEXTENT_UNDERLINE, w, h )
-		
-		if ( nameLen > catherine.configs.characterNameMaxLen ) then
-			pnl:DrawTextEntryText( Color( 255, 0, 0 ), Color( 45, 45, 45 ), Color( 255, 0, 0 ) )
-		elseif ( nameLen < catherine.configs.characterNameMinLen ) then
-			pnl:DrawTextEntryText( Color( 255, 150, 0 ), Color( 45, 45, 45 ), Color( 255, 150, 0 ) )
-		else
-			pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 255 ) )
-		end
+		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 255 ) )
 	end
 	self.nameEnt.OnTextChanged = function( pnl )
 		self.data.name = pnl:GetText( )
@@ -955,17 +948,8 @@ function PANEL:Init( )
 	self.descEnt:SetText( "" )
 	self.descEnt:SetAllowNonAsciiCharacters( true )
 	self.descEnt.Paint = function( pnl, w, h )
-		local descLen = pnl:GetText( ):utf8len( )
-		
 		catherine.theme.Draw( CAT_THEME_TEXTENT_UNDERLINE, w, h )
-		
-		if ( descLen > catherine.configs.characterDescMaxLen ) then
-			pnl:DrawTextEntryText( Color( 255, 0, 0 ), Color( 45, 45, 45 ), Color( 255, 0, 0 ) )
-		elseif ( descLen < catherine.configs.characterDescMinLen ) then
-			pnl:DrawTextEntryText( Color( 255, 150, 0 ), Color( 45, 45, 45 ), Color( 255, 150, 0 ) )
-		else
-			pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 255 ) )
-		end
+		pnl:DrawTextEntryText( Color( 255, 255, 255 ), Color( 45, 45, 45 ), Color( 255, 255, 255 ) )
 	end
 	self.descEnt.OnTextChanged = function( pnl )
 		self.data.desc = pnl:GetText( )
@@ -1079,6 +1063,7 @@ function PANEL:Init( )
 				self.nameEnt:SetText( name )
 				self.nameEnt:SetEditable( false )
 				self.data.name = self.nameEnt:GetText( )
+				self.forceName = true
 			end
 		end
 		
@@ -1089,6 +1074,7 @@ function PANEL:Init( )
 				self.descEnt:SetText( desc )
 				self.descEnt:SetEditable( false )
 				self.data.desc = self.descEnt:GetText( )
+				self.forceDesc = true
 			end
 		end
 	else
@@ -1112,8 +1098,15 @@ function PANEL:Init( )
 			
 			if ( vars and vars.checkValid ) then
 				i = i + 1
+				local isForce = false
 				
-				local success, reason = vars.checkValid( pl, self.data[ k ] )
+				if ( k == "name" ) then
+					isForce = self.forceName
+				elseif ( k == "name" ) then
+					isForce = self.forceDesc
+				end
+				
+				local success, reason = vars.checkValid( pl, self.data[ k ], isForce )
 				
 				if ( success == false ) then
 					self:PrintErrorMessage( catherine.util.StuffLanguage( reason ) )
@@ -1171,7 +1164,25 @@ function PANEL:PrintErrorMessage( msg )
 end
 
 function PANEL:Paint( w, h )
-
+	if ( !self.forceName ) then
+		local nameLen = self.data.name:utf8len( )
+		
+		if ( nameLen > catherine.configs.characterNameMaxLen ) then
+			draw.RoundedBox( 0, 30 + self.nameEnt:GetWide( ), 120 + 15 / 2, 15, 15, Color( 255, 0, 0, 255 ) )
+		elseif ( nameLen < catherine.configs.characterNameMinLen ) then
+			draw.RoundedBox( 0, 30 + self.nameEnt:GetWide( ), 120 + 15 / 2, 15, 15, Color( 255, 150, 0, 255 ) )
+		end
+	end
+	
+	if ( !self.forceDesc ) then
+		local descLen = self.data.desc:utf8len( )
+		
+		if ( descLen > catherine.configs.characterDescMaxLen ) then
+			draw.RoundedBox( 0, 30 + self.descEnt:GetWide( ), 200, 15, 15, Color( 255, 0, 0, 255 ) )
+		elseif ( descLen < catherine.configs.characterDescMinLen ) then
+			draw.RoundedBox( 0, 30 + self.descEnt:GetWide( ), 200, 15, 15, Color( 255, 150, 0, 255 ) )
+		end
+	end
 end
 
 vgui.Register( "catherine.character.stageTwo", PANEL, "DPanel" )
