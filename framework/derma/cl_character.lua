@@ -101,6 +101,8 @@ function PANEL:Init( )
 			return
 		end
 		
+		hook.Remove( "PostRenderVGUI", "catherine.vgui.character.PostRenderVGUI" )
+		
 		self:JoinMenu( function( )
 			self:CreateCharacterPanel( )
 		end )
@@ -127,6 +129,8 @@ function PANEL:Init( )
 	self.load:SetGradientColor( Color( 255, 255, 255, 255 ) )
 	self.load:SetStrFont( "catherine_lightUI20" )
 	self.load.Click = function( )
+		hook.Remove( "PostRenderVGUI", "catherine.vgui.character.PostRenderVGUI" )
+		
 		self:JoinMenu( function( )
 			self:UseCharacterPanel( )
 		end )
@@ -182,17 +186,19 @@ function PANEL:Init( )
 		
 		for k, v in pairs( catherine.language.GetAll( ) ) do
 			menu:AddOption( v.name:upper( ), function( )
-				RunConsoleCommand( "cat_convar_language", k )
-				catherine.help.lists = { }
-				catherine.menu.Rebuild( )
-				
-				timer.Simple( 0, function( )
-					hook.Run( "LanguageChanged" )
+				if ( GetConVarString( "cat_convar_language" ) != v.uniqueID ) then
+					RunConsoleCommand( "cat_convar_language", k )
+					catherine.help.lists = { }
+					catherine.menu.Rebuild( )
 					
-					self.create:SetStr( LANG( "Character_UI_CreateCharStr" ):upper( ) )
-					self.load:SetStr( LANG( "Character_UI_LoadCharStr" ):upper( ) )
-					self.back:SetStr( LANG( "Character_UI_BackStr" ):upper( ) )
-				end )
+					timer.Simple( 0, function( )
+						hook.Run( "LanguageChanged" )
+						
+						self.create:SetStr( LANG( "Character_UI_CreateCharStr" ):upper( ) )
+						self.load:SetStr( LANG( "Character_UI_LoadCharStr" ):upper( ) )
+						self.back:SetStr( LANG( "Character_UI_BackStr" ):upper( ) )
+					end )
+				end
 			end )
 		end
 		
@@ -234,7 +240,7 @@ function PANEL:Init( )
 	end
 	
 	self:PlayMusic( )
-	// self:ShowHint( )
+	 self:ShowHint( )
 end
 
 function PANEL:ShowHint( )
@@ -242,7 +248,6 @@ function PANEL:ShowHint( )
 		local languageTable = catherine.language.FindByGmodLangID( GetConVarString( "gmod_language" ) )
 		local circleW = self.w
 		local run = RealTime( ) + 7
-		local backA = 0
 		
 		surface.PlaySound( "CAT/notify03.wav" )
 		
@@ -253,23 +258,19 @@ function PANEL:ShowHint( )
 			if ( run >= RealTime( ) ) then
 				circleW = Lerp( 0.06, circleW, self.changeLanguage:GetWide( ) / 2 )
 				wave = math.sin( CurTime( ) * 8 ) * 5
-				backA = Lerp( 0.06, backA, 150 )
 			else
-				circleW = Lerp( 0.06, circleW, self.w + 300 )
-				backA = Lerp( 0.06, backA, 0 )
+				circleW = Lerp( 0.08, circleW, self.w + 300 )
 				
 				if ( math.Round( circleW ) >= self.w + 150 ) then
 					hook.Remove( "PostRenderVGUI", "catherine.vgui.character.PostRenderVGUI" )
 				end
 			end
 			
-			draw.RoundedBox( 0, 0, 0, self.w, self.h, Color( 0, 0, 0, backA ) )
-			
 			draw.NoTexture( )
 			surface.SetDrawColor( 255, 255, 255, 255 )
 			catherine.geometry.DrawCircle( x + ( self.changeLanguage:GetWide( ) / 2 ), y + 30 / 2, circleW, 15 + wave, 90, 360, 100 )
 			
-			draw.SimpleText( FORCE_LANG( ( languageTable and languageTable.uniqueID or "english" ), "Character_UI_Hint01_Short" ), "catherine_normal20", x + ( self.changeLanguage:GetWide( ) / 2 ), y + circleW / 1.5, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( FORCE_LANG( ( languageTable and languageTable.uniqueID or "english" ), "Character_UI_Hint01_Short" ), "catherine_normal20", x + ( self.changeLanguage:GetWide( ) / 2 ), y - circleW / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end )
 		
 		catherine.catData.SetVar( "charHintShowed", "1", false, true )
@@ -1432,11 +1433,6 @@ function PANEL:Paint( w, h )
 end
 
 vgui.Register( "catherine.character.stageThree", PANEL, "DPanel" )
-
-if ( IsValid( catherine.vgui.character ) ) then
-	catherine.vgui.character:Remove()
-	catherine.vgui.character=vgui.Create("catherine.vgui.character")
-end
 
 catherine.menu.Register( function( )
 	return LANG( "Character_UI_Title" )

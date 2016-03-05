@@ -45,6 +45,7 @@ end
 
 function PLUGIN:HUDDrawScoreBoard( )
 	if ( GetConVarString( "cat_convar_showfps" ) == "0" ) then return end
+	if ( !catherine.pl:IsCharacterLoaded( ) or IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) then return end
 	local curFPS = math.Round( 1 / FrameTime( ) )
 	local minFPS = self.minFPS or 60
 	local maxFPS = self.maxFPS or 100
