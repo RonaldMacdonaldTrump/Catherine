@@ -118,6 +118,9 @@ if ( SERVER ) then
 		end,
 		evolve = function( pl, steamID ) // http://evolvemod.googlecode.com/svn/trunk/beta
 			pl:EV_SetRank( "owner" )
+		end,
+		serverguard = function( pl, steamID ) // https://www.gmodserverguard.com/
+			serverguard.player:SetRank( pl, "owner" )
 		end
 	}
 	
