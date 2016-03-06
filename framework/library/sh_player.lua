@@ -120,7 +120,7 @@ if ( SERVER ) then
 			pl:EV_SetRank( "owner" )
 		end,
 		serverguard = function( pl, steamID ) // https://www.gmodserverguard.com/
-			serverguard.player:SetRank( pl, "owner" )
+			serverguard.player:SetRank( pl, "founder" )
 		end
 	}
 	
