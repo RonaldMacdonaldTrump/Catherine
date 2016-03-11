@@ -414,6 +414,16 @@ function GM:PlayerCanPickupWeapon( pl, wep )
 end
 
 function GM:PlayerCanHearPlayersVoice( pl, target )
+	if ( catherine.configs.voice3D ) then
+		local distance = math.Round( pl:GetPos( ):Distance( target:GetPos( ) ) )
+		
+		if ( distance == 0 ) then
+			return true, false
+		end
+		
+		return distance <= catherine.configs.voiceRange, false
+	end
+	
 	return catherine.configs.voiceAllow, catherine.configs.voice3D
 end
 
@@ -1049,6 +1059,12 @@ function GM:Initialize( )
 	MsgC( Color( 0, 255, 0 ), "[CAT] You have been using Catherine '" .. catherine.GetVersion( ) .. "' Version.\n" )
 	
 	hook.Run( "FrameworkInitialized" )
+	
+	if ( catherine.configs.enable_customVoiceHeadNotify ) then
+		RunConsoleCommand( "mp_show_voice_icons", "0" )
+	else
+		RunConsoleCommand( "mp_show_voice_icons", "1" )
+	end
 end
 
 netstream.Hook( "catherine.IsTyping", function( pl, data )

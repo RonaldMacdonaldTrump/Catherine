@@ -20,53 +20,38 @@ local PANEL = { }
 
 function PANEL:Init( )
 	self.volume = 0
-	self.volumeColor = Color( 150, 255, 150, 255 )
-		
+	self.index = 1
+	self.volumeColor = Color( 255, 255, 255, 255 )
+	
 	self:SetAlpha( 0 )
 	self:AlphaTo( 255, 0.1, 0 )
-	
-	self.name = vgui.Create( "DLabel", self )
-	self.name:SetFont( "catherine_normal15" )
-	self.name:SetColor( Color( 90, 90, 90, 255 ) )
 end
 
-function PANEL:Setup( pl )
-	if ( catherine.pl:IsKnow( pl ) or catherine.pl == pl ) then
-		self.isKnow = true
-		
-		self.avatar = vgui.Create( "AvatarImage", self )
-		self.avatar:SetSize( 32, 32 )
-		self.avatar:SetPos( 4, 4 )
-		self.avatar:SetPlayer( pl )
-		self.avatar.PaintOver = function( pnl, w, h )
-			surface.SetDrawColor( 0, 0, 0, 255 )
-			surface.DrawOutlinedRect( 0, 0, w, h )
-		end
-		
-		self.name:SetText( pl:Name( ) )
-	else
-		self.isKnow = false
-		
-		self.avatar = vgui.Create( "AvatarImage", self )
-		self.avatar:SetSize( 32, 32 )
-		self.avatar:SetPos( 4, 4 )
-		self.avatar.PaintOver = function( pnl, w, h )
-			surface.SetDrawColor( 0, 0, 0, 255 )
-			surface.DrawOutlinedRect( 0, 0, w, h )
-		end
-		
-		self.name:SetText( pl:Desc( ):sub( 1, 33 ) .. "..." )
-	end
+function PANEL:Setup( talker )
+	self.index = #catherine.voicePanels + 1
 	
-	self:SetSize( 250, 40 )
-	self.name:SetPos( 42, 13 )
-	self.name:SizeToContents( )
+	catherine.voicePanels[ self.index ] = {
+		panel = self,
+		talker = talker
+	}
 	
-	self.player = pl
+	self.avatar = vgui.Create( "AvatarImage", self )
+	self.avatar:SetSize( 32, 32 )
+	self.avatar:SetPos( 4, 4 )
+	self.avatar:SetPlayer( talker )
+	self.avatar.PaintOver = function( pnl, w, h ) end
+	
+	self.avatar:SetPos( 4, 4 )
+	self:SetSize( 50, 40 )
+	self:SetPos( 0, 45 * ( self.index - 1 ) )
+	
+	self.player = talker
 end
 
 function PANEL:Think( )
 	if ( !IsValid( self.player ) or !self.player:IsSpeaking( ) ) then
+		catherine.voicePanels[ self.index ] = nil
+		
 		self:AlphaTo( 0, 0.1, 0, function( )
 			if ( IsValid( self ) ) then
 				self:Remove( )
@@ -78,14 +63,14 @@ end
 function PANEL:Paint( w, h )
 	if ( !IsValid( self.player ) ) then return end
 	
-	self.volume = Lerp( 0.03, self.volume, self.player:VoiceVolume( ) * h )
-			
+	self.volume = Lerp( 0.05, self.volume, self.player:VoiceVolume( ) * h )
+	
 	local volume = math.Round( self.volume )
-
+	
 	if ( volume <= 18 ) then
-		self.volumeColor.r = Lerp( 0.08, self.volumeColor.r, 150 )
+		self.volumeColor.r = Lerp( 0.08, self.volumeColor.r, 255 )
 		self.volumeColor.g = Lerp( 0.08, self.volumeColor.g, 255 )
-		self.volumeColor.h = Lerp( 0.08, self.volumeColor.b, 150 )
+		self.volumeColor.h = Lerp( 0.08, self.volumeColor.b, 255 )
 	elseif ( volume > 18 and volume <= 23 ) then
 		self.volumeColor.r = Lerp( 0.08, self.volumeColor.r, 255 )
 		self.volumeColor.g = Lerp( 0.08, self.volumeColor.g, 255 )
@@ -95,13 +80,28 @@ function PANEL:Paint( w, h )
 		self.volumeColor.g = Lerp( 0.08, self.volumeColor.g, 150 )
 		self.volumeColor.h = Lerp( 0.08, self.volumeColor.b, 150 )
 	end
-			
-	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
 	
-	draw.RoundedBox( 0, w - 15, h - self.volume, 15, self.volume, Color( self.volumeColor.r, self.volumeColor.g, self.volumeColor.b, 255 ) )
-	
-	surface.SetDrawColor( 0, 0, 0, 255 )
-	surface.DrawOutlinedRect( 0, 0, w, h )
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 0, 0, 0, 200 ) )
+	draw.RoundedBox( 0, w - 7, h - self.volume, 7, self.volume, Color( self.volumeColor.r, self.volumeColor.g, self.volumeColor.b, 255 ) )
 end
 
 derma.DefineControl( "VoiceNotify", "", PANEL, "DPanel" )
+
+if ( IsValid( g_VoicePanelList ) ) then
+	g_VoicePanelList:SetSize( 50, ScrH( ) - 250 )
+	g_VoicePanelList:SetPos( ScrW( ) - 60, 200 )
+end
+
+hook.Add( "InitPostEntity", "catherine.vgui.VoiceNotify.InitPostEntity", function( )
+	if ( IsValid( g_VoicePanelList ) ) then
+		g_VoicePanelList:SetSize( 50, ScrH( ) - 250 )
+		g_VoicePanelList:SetPos( ScrW( ) - 60, 200 )
+	end
+end )
+
+hook.Add( "ScreenResolutionFix", "catherine.vgui.VoiceNotify.ScreenResolutionFix", function( )
+	if ( IsValid( g_VoicePanelList ) ) then
+		g_VoicePanelList:SetSize( 50, ScrH( ) - 250 )
+		g_VoicePanelList:SetPos( ScrW( ) - 60, 200 )
+	end
+end )

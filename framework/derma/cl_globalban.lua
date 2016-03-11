@@ -35,11 +35,11 @@ function PANEL:Init( )
 	self.Lists.Paint = function( pnl, w, h )
 		if ( catherine.configs.enable_globalBan ) then
 			if ( self.globalBan and table.Count( self.globalBan ) == 0 ) then
-				draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
-				draw.SimpleText( LANG( "GlobalBan_UI_Blank" ), "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+				draw.SimpleText( ":)", "catherine_slight50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
+				draw.SimpleText( LANG( "GlobalBan_UI_Blank" ), "catherine_slight20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 			end
 		else
-			draw.SimpleText( LANG( "GlobalBan_UI_NotUsing" ), "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "GlobalBan_UI_NotUsing" ), "catherine_slight20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 	
@@ -52,7 +52,7 @@ end
 
 function PANEL:MenuPaint( w, h )
 	if ( self.globalBan ) then
-		draw.SimpleText( LANG( "GlobalBan_UI_Users", #self.globalBan ), "catherine_lightUI20", w - 10, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		draw.SimpleText( LANG( "GlobalBan_UI_Users", #self.globalBan ), "catherine_slight20", w - 10, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	end
 end
 
@@ -73,9 +73,9 @@ function PANEL:BuildGlobalBan( )
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Lists:GetWide( ), 80 )
 		panel.Paint = function( pnl, w, h )
-			draw.SimpleText( name, "catherine_normal25", 90, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( steamID, "catherine_normal15", w - 10, 60, Color( 235, 235, 235, 255 ), TEXT_ALIGN_RIGHT, 1 )
-			draw.SimpleText( reason, "catherine_normal15", 90, 60, Color( 255, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( name, "catherine_slight25", 90, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( steamID, "catherine_slight15", w - 10, 60, Color( 235, 235, 235, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			draw.SimpleText( reason, "catherine_slight15", 90, 60, Color( 255, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
 		end
 		
 		local avatar = vgui.Create( "AvatarImage", panel )

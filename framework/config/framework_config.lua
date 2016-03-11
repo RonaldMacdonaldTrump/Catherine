@@ -59,6 +59,8 @@ catherine.configs.defaultRPInformation = {
 catherine.configs.enable_rpTime = true --[[ Enabled a RP time system. ]]--
 catherine.configs.enable_globalBan = true --[[ Enabled a GlobalBan system. ]]--
 catherine.configs.enable_Lime = true --[[ Enabled a Lime system. (Anti Hack) ]]--
+catherine.configs.voiceRange = 500
+catherine.configs.enable_customVoiceHeadNotify = true
 
 if ( SERVER ) then
 	catherine.configs.attachmentBlacklist = {
@@ -79,7 +81,7 @@ if ( SERVER ) then
 	catherine.configs.netRegistryOptimizeInterval = 350
 	catherine.configs.characterSaveInterval = 300
 	catherine.configs.dataSaveInterval = 300
-	catherine.configs.voiceAllow = false --[[ Allow a Voice chat. ]]--
+	catherine.configs.voiceAllow = true --[[ Allow a Voice chat. ]]--
 	catherine.configs.voice3D = true --[[ Enabled the Voice 3D system. ]]--
 	catherine.configs.spawnTime = 60 --[[ Setting a Spawn time. ]]--
 	catherine.configs.clearMap = true --[[ Enabled a Map Clear system. (Remove a map HL2 HP, Armor station and Vehicles(Chair) ) ]]--

@@ -65,11 +65,11 @@ function PLUGIN:PostPlayerDraw( pl )
 			
 			local text = self.typingText
 
-			surface.SetFont( "catherine_normal50" )
+			surface.SetFont( "catherine_outline50" )
 			local tw, th = surface.GetTextSize( text )
 			
 			cam.Start3D2D( pos, Angle( 0, ang.y, 90 ), 0.08 )
-				draw.SimpleText( text, "catherine_normal50", 0 - tw / 2, 0, Color( 255, 255, 255, a ) )
+				draw.SimpleText( text, "catherine_outline50", 0 - tw / 2, 0, Color( 255, 255, 255, a ) )
 			cam.End3D2D( )
 		end
 	end

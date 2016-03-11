@@ -25,6 +25,7 @@ catherine.intro = catherine.intro or {
 	isReloadNotify = nil,
 	reloadCount = 0
 }
+catherine.voicePanels = { }
 catherine.deathColAlpha = catherine.deathColAlpha or 0
 catherine.screenResolution = catherine.screenResolution or { w = ScrW( ), h = ScrH( ) }
 local entityCaches = { }
@@ -170,6 +171,88 @@ function GM:HUDDrawScoreBoard( )
 			
 			draw.SimpleText( LANG( "Basic_Info_Loading" ), "catherine_lightUI20", w / 2, h - 30, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
+	end
+end
+
+if ( catherine.configs.enable_customVoiceHeadNotify ) then
+	function GM:DrawVoiceHeadNotify( pl )
+		if ( !pl:IsSpeaking( ) ) then return end
+		
+		local lp = catherine.pl
+		
+		if ( pl == lp ) then return end
+		
+		local a = catherine.util.GetAlphaFromDistance( lp:GetPos( ), pl:GetPos( ), catherine.configs.voiceRange )
+		
+		if ( a <= 0 ) then return end
+		
+		local index = pl:LookupBone( "ValveBiped.Bip01_Head1" )
+		
+		if ( index ) then
+			local pos = pl:GetBonePosition( index )
+			
+			if ( pos ) then
+				if ( !pl.CAT_voiceVolume or !pl.CAT_voiceColor ) then
+					pl.CAT_voiceVolume = 0
+					pl.CAT_voiceColor = Color( 255, 255, 255 )
+				end
+				
+				if ( !pl.CAT_voiceProfileImageVGUI or !IsValid( pl.CAT_voiceProfileImageVGUI ) ) then
+					local panel = vgui.Create( "AvatarImage" )
+					panel:SetSize( 32, 32 )
+					panel:SetPos( 0 - 19, 4 )
+					panel:SetPlayer( pl, 128 )
+					panel:SetPaintedManually( true )
+					panel:SetAlpha( a )
+					
+					pl.CAT_voiceProfileImageVGUI = panel
+				else
+					pl.CAT_voiceProfileImageVGUI:SetPos( 0 - 19, 4 )
+					pl.CAT_voiceProfileImageVGUI:SetPlayer( pl, 128 )
+					pl.CAT_voiceProfileImageVGUI:SetAlpha( a )
+				end
+				
+				pl.CAT_voiceVolume = Lerp( 0.05, pl.CAT_voiceVolume, pl:VoiceVolume( ) * 50 )
+				
+				local volume = math.Round( pl.CAT_voiceVolume )
+				
+				if ( volume <= 18 ) then
+					pl.CAT_voiceColor.r = Lerp( 0.08, pl.CAT_voiceColor.r, 255 )
+					pl.CAT_voiceColor.g = Lerp( 0.08, pl.CAT_voiceColor.g, 255 )
+					pl.CAT_voiceColor.h = Lerp( 0.08, pl.CAT_voiceColor.b, 255 )
+				elseif ( volume > 18 and volume <= 23 ) then
+					pl.CAT_voiceColor.r = Lerp( 0.08, pl.CAT_voiceColor.r, 255 )
+					pl.CAT_voiceColor.g = Lerp( 0.08, pl.CAT_voiceColor.g, 255 )
+					pl.CAT_voiceColor.h = Lerp( 0.08, pl.CAT_voiceColor.b, 150 )
+				elseif ( volume > 23 ) then
+					pl.CAT_voiceColor.r = Lerp( 0.08, pl.CAT_voiceColor.r, 255 )
+					pl.CAT_voiceColor.g = Lerp( 0.08, pl.CAT_voiceColor.g, 150 )
+					pl.CAT_voiceColor.h = Lerp( 0.08, pl.CAT_voiceColor.b, 150 )
+				end
+				
+				pos = pos + Vector( 0, 0, 25 )
+				local ang = lp:EyeAngles( )
+				
+				pos = pos + ang:Up( )
+				ang:RotateAroundAxis( ang:Forward( ), 90 )
+				ang:RotateAroundAxis( ang:Right( ), 90 )
+				
+				cam.Start3D2D( pos, Angle( 0, ang.y, 90 ), 0.15 )
+					draw.RoundedBox( 0, 0 - 47 / 2, 0, 47, 40, Color( 20, 20, 20, a / 2 ) )
+					draw.RoundedBox( 0, 17, 40 - pl.CAT_voiceVolume, 7, pl.CAT_voiceVolume, Color( pl.CAT_voiceColor.r, pl.CAT_voiceColor.g, pl.CAT_voiceColor.b, a ) )
+					
+					if ( IsValid( pl.CAT_voiceProfileImageVGUI ) ) then
+						pl.CAT_voiceProfileImageVGUI:PaintManual( )
+					end
+				cam.End3D2D( )
+			end
+		end
+	end
+end
+
+function GM:PostPlayerDraw( pl )
+	if ( catherine.configs.enable_customVoiceHeadNotify ) then
+		self:DrawVoiceHeadNotify( pl )
 	end
 end
 

@@ -705,13 +705,13 @@ else
 					if ( commandTable ) then
 						local commandText = "/" .. commandTable.command
 						
-						surface.SetFont( "catherine_normal25" )
+						surface.SetFont( "catherine_slight25" )
 						
 						local tw, th = surface.GetTextSize( commandText )
 						
-						draw.SimpleText( commandText, "catherine_normal25", 15, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
-						draw.SimpleText( commandTable.syntax, "catherine_normal15", 30 + tw, chatY - 48, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
-						draw.SimpleText( catherine.util.StuffLanguage( commandTable.desc ), "catherine_normal20", 15, chatY - 20, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( commandText, "catherine_slight25", 15, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( commandTable.syntax, "catherine_slight15", 30 + tw, chatY - 48, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( catherine.util.StuffLanguage( commandTable.desc ), "catherine_slight20", 15, chatY - 20, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
 					end
 				else
 					for k, v in pairs( commands ) do
@@ -719,7 +719,7 @@ else
 						
 						if ( yPos <= 10 ) then continue end
 						
-						draw.SimpleText( "/" .. v.command, "catherine_outline20", 15, yPos, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( "/" .. v.command, "catherine_slight20", 15, yPos, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 					end
 				end
 				

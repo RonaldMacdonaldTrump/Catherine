@@ -39,8 +39,8 @@ function PANEL:Init( )
 	self.html:SetSize( self.w - 20, self.h - 75 )
 	self.html.Paint = function( pnl, w, h )
 		if ( self.isDef ) then
-			draw.SimpleText( defTitle, "catherine_normal25", w / 2, h / 2 - 25, Color( 255, 255, 255, 255 ), 1, 1 )
-			draw.SimpleText( defDesc, "catherine_normal20", w / 2, h / 2 + 10, Color( 235, 235, 235, 255 ), 1, 1 )
+			draw.SimpleText( defTitle, "catherine_slight25", w / 2, h / 2 - 25, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( defDesc, "catherine_slight20", w / 2, h / 2 + 10, Color( 235, 235, 235, 255 ), 1, 1 )
 		end
 	end
 	
@@ -91,14 +91,14 @@ end
 
 function PANEL:BuildHelps( )
 	for k, v in SortedPairs( self.helps ) do
-		surface.SetFont( "catherine_normal20" )
+		surface.SetFont( "catherine_slight20" )
 		
 		local tw, th = surface.GetTextSize( k )
 		
 		local panel = vgui.Create( "catherine.vgui.button", self )
 		panel:SetSize( tw + 40, 30 )
 		panel:SetStr( k )
-		panel:SetStrFont( "catherine_normal20" )
+		panel:SetStrFont( "catherine_slight20" )
 		panel:SetStrColor( Color( 255, 255, 255, 255 ) )
 		panel:SetGradientColor( Color( 255, 255, 255, 255 ) )
 		panel.Click = function( )

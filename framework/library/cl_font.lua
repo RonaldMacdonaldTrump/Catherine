@@ -22,54 +22,64 @@ function catherine.font.Register( uniqueID, fontTable )
 	surface.CreateFont( uniqueID, fontTable )
 end
 
-local font = catherine.configs.Font
+hook.Add( "SchemaInitialized", "catherine.font.SchemaInitialized", function( )
+	local font = catherine.configs.Font
 
-for i = 1, 8 do
-	local size = 10 + ( 5 * i )
-	
-	catherine.font.Register( "catherine_normal" .. size, {
-		font = font,
-		size = size,
+	for i = 1, 8 do
+		local size = 10 + ( 5 * i )
+		
+		catherine.font.Register( "catherine_normal" .. size, {
+			font = font,
+			size = size,
+			weight = 1000
+		} )
+		
+		catherine.font.Register( "catherine_outline" .. size, {
+			font = font,
+			size = size,
+			weight = 1000,
+			outline = true
+		} )
+		
+		catherine.font.Register( "catherine_italic" .. size, {
+			font = font,
+			size = size,
+			weight = 1000,
+			italic = true
+		} )
+		
+		catherine.font.Register( "catherine_slight" .. size, {
+			font = "Segoe UI",
+			size = size,
+			weight = 1000
+		} )
+		
+		catherine.font.Register( "catherine_lightUI" .. size, {
+			//font = "Segoe UI Light",
+			font = font,
+			size = size,
+			weight = 1000
+		} )
+		
+		catherine.font.Register( "catherine_lightUIoutline" .. size, {
+			//font = "Segoe UI Light",
+			font = font,
+			size = size,
+			weight = 1000,
+			outline = true
+		} )
+	end
+
+	catherine.font.Register( "catherine_chat", {
+		font = "Segoe UI",
+		size = 17,
 		weight = 1000
 	} )
-	
-	catherine.font.Register( "catherine_outline" .. size, {
-		font = font,
-		size = size,
-		weight = 1000,
-		outline = true
-	} )
-	
-	catherine.font.Register( "catherine_italic" .. size, {
-		font = font,
-		size = size,
+
+	catherine.font.Register( "catherine_chat_italic", {
+		font = "Segoe UI",
+		size = 17,
 		weight = 1000,
 		italic = true
 	} )
-	
-	catherine.font.Register( "catherine_lightUI" .. size, {
-		font = "Segoe UI Light",
-		size = size,
-		weight = 1000
-	} )
-	
-	catherine.font.Register( "catherine_lightUIoutline" .. size, {
-		font = "Segoe UI Light",
-		size = size,
-		weight = 1000,
-		outline = true
-	} )
-end
-
-catherine.font.Register( "catherine_chat", {
-	font = font,
-	size = 17,
-	weight = 1000
-} )
-
-catherine.font.Register( "catherine_chat_italic", {
-	font = font,
-	size = 17,
-	weight = 1000,
-	italic = true
-} )
+end )

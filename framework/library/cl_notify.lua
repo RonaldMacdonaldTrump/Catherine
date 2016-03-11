@@ -77,6 +77,6 @@ function catherine.notify.Draw( )
 		v.y = lerp( 0.05, v.y, ( ScrH( ) - 10 ) - ( k * 25 ) )
 		
 		draw_roundedBox( 0, v.x, v.y, v.w, v.h, color( 50, 50, 50, v.a ) )
-		draw_simpleText( v.message, "catherine_normal15", v.x + v.w / 2, v.y + v.h / 2, color( 255, 255, 255, v.a ), 1, 1 )
+		draw_simpleText( v.message, "catherine_slight15", v.x + v.w / 2, v.y + v.h / 2, color( 255, 255, 255, v.a ), 1, 1 )
 	end
 end
