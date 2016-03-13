@@ -68,7 +68,7 @@ function PANEL:Init( )
 		end
 		
 		surface.SetDrawColor( 255, 255, 255, pnl.logoA )
-		surface.SetMaterial( Material( "cat/test.png" ) )
+		surface.SetMaterial( Material( "cat/test2.png", "smooth" ) )
 		surface.DrawTexturedRect( layoutX, layoutY, 512, 90 )
 		
 		draw.SimpleText( catherine.GetVersion( ) .. " " .. catherine.GetBuild( ), "catherine_normal15", 10, h - 20, Color( 255, 255, 255, self.logoA ), TEXT_ALIGN_LEFT, 1 )
@@ -227,6 +227,7 @@ function PANEL:Init( )
 	self.back:SetAlpha( 0 )
 	self.back.Click = function( )
 		if ( self.mode == 0 ) then return end
+		if ( self.createData and self.createData.currentStage and self.createData.currentStage.moving ) then return end
 		
 		self:BackToMainMenu( )
 	end
@@ -348,7 +349,9 @@ function PANEL:UseCharacterPanel( )
 		
 		if ( pnl.loading ) then
 			for k, v in pairs( self.loadCharacter.Lists ) do
-				v.panel:SetVisible( false )
+				if ( IsValid( v.panel ) ) then
+					v.panel:SetVisible( false )
+				end
 			end
 			
 			self.back:SetVisible( false )
@@ -362,7 +365,9 @@ function PANEL:UseCharacterPanel( )
 			draw.SimpleText( LANG( "Basic_UI_ReqToServer" ), "catherine_lightUI25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		else
 			for k, v in pairs( self.loadCharacter.Lists ) do
-				v.panel:SetVisible( true )
+				if ( IsValid( v.panel ) ) then
+					v.panel:SetVisible( true )
+				end
 			end
 			
 			self.back:SetVisible( true )
@@ -509,6 +514,12 @@ function PANEL:UseCharacterPanel( )
 			
 			panel.model:SetCamPos( min:Distance( max ) * Vector( 0.5, 0.5, 0.5 ) )
 			panel.model:SetLookAt( ( max + min ) / 2 )
+			
+			if ( v.characterDatas._charVar and v.characterDatas._charVar.subMaterial ) then
+				for k1, v1 in pairs( v.characterDatas._charVar.subMaterial ) do
+					panel.model.Entity:SetSubMaterial( v1[ 1 ], v1[ 2 ] )
+				end
+			end
 			
 			for k, v in pairs( panel.model.Entity:GetSequenceList( ) ) do
 				if ( v:find( "idle" ) ) then
@@ -689,7 +700,6 @@ function PANEL:Init( )
 	
 	self:SetSize( self.w, self.h )
 	self:SetPos( 0, 0 )
-	//self:MoveTo( 0, 0, 0.3, 0 )
 	
 	self.label01 = vgui.Create( "DLabel", self )
 	self.label01:SetColor( Color( 255, 255, 255, 255 ) )
@@ -713,7 +723,12 @@ function PANEL:Init( )
 		v.panel.y = 0
 		v.panel:Center( )
 		v.panel.Paint = function( pnl, w, h )
-			local material = Material( factionData.factionImage )
+			local material = nil
+			
+			if ( factionData.factionImage ) then
+				material = Material( factionData.factionImage )
+			end
+			
 			local name = catherine.util.StuffLanguage( factionData.name )
 			
 			if ( material and !material:IsError( ) ) then
@@ -1009,10 +1024,22 @@ function PANEL:Init( )
 		local delta = 0
 		
 		if ( #factionTable.models == 1 ) then
-			self.data.model = factionTable.models[ 1 ]
-			self.previewModel:SetModel( factionTable.models[ 1 ] )
+			local model = factionTable.models[ 1 ]
+			
+			if ( catherine.faction.IsTableModel( factionTable.models[ 1 ] ) ) then
+				model = factionTable.models[ 1 ].model
+			end
+			
+			self.data.model = model
+			self.previewModel:SetModel( model )
 			
 			if ( IsValid( self.previewModel.Entity ) ) then
+				if ( factionTable.models[ 1 ].subMaterials ) then
+					for k, v in pairs( factionTable.models[ 1 ].subMaterials ) do
+						self.previewModel.Entity:SetSubMaterial( v[ 1 ], v[ 2 ] )
+					end
+				end
+				
 				for k, v in pairs( self.previewModel.Entity:GetSequenceList( ) ) do
 					if ( v:find( "idle" ) ) then
 						local seq = self.previewModel.Entity:LookupSequence( v )
@@ -1027,22 +1054,34 @@ function PANEL:Init( )
 			self.model:SetVisible( false )
 		else
 			for k, v in pairs( factionTable.models ) do
+				local model = v
+				
+				if ( catherine.faction.IsTableModel( v ) ) then
+					model = v.model
+				end
+				
 				local spawnIcon = vgui.Create( "SpawnIcon" )
 				spawnIcon:SetSize( 64, 64 )
-				spawnIcon:SetModel( v )
+				spawnIcon:SetModel( model )
 				spawnIcon:SetToolTip( false )
 				spawnIcon:SetAlpha( 0 )
 				spawnIcon:AlphaTo( 255, 0.3, delta )
 				spawnIcon.PaintOver = function( pnl, w, h ) end
 				spawnIcon.DoClick = function( pnl )
-					if ( self.data.model != v ) then
-						self.data.model = v
-						self.previewModel:SetModel( v )
+					if ( self.data.model != model ) then
+						self.data.model = model
+						self.previewModel:SetModel( model )
 						
 						if ( IsValid( self.previewModel.Entity ) ) then
-							for k, v in pairs( self.previewModel.Entity:GetSequenceList( ) ) do
-								if ( v:find( "idle" ) ) then
-									local seq = self.previewModel.Entity:LookupSequence( v )
+							if ( v.subMaterials ) then
+								for k1, v1 in pairs( v.subMaterials ) do
+									self.previewModel.Entity:SetSubMaterial( v1[ 1 ], v1[ 2 ] )
+								end
+							end
+							
+							for k1, v1 in pairs( self.previewModel.Entity:GetSequenceList( ) ) do
+								if ( v1:find( "idle" ) ) then
+									local seq = self.previewModel.Entity:LookupSequence( v1 )
 									self.previewModel.Entity:SetSequence( seq )
 									
 									break
@@ -1116,13 +1155,13 @@ function PANEL:Init( )
 					if ( i == 3 ) then
 						surface.PlaySound( "garrysmod/ui_click.wav" )
 						
-						self.parent.createData.datas.name = self.data.name
-						self.parent.createData.datas.desc = self.data.desc
+						self.parent.createData.datas.name = self.data.name:Trim( )
+						self.parent.createData.datas.desc = self.data.desc:Trim( )
 						self.parent.createData.datas.model = self.data.model
 						self.moving = true
 						
 						local delta = 0
-				
+						
 						for k, v in pairs( self.moveAniList ) do
 							local x, y = v:GetPos( )
 							

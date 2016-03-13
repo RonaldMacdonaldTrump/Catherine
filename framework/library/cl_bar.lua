@@ -82,6 +82,8 @@ function catherine.bar.Draw( pl )
 	local curTime = CurTime( )
 	
 	for k, v in pairs( catherine.bar.lists ) do
+		if ( hook_run( "ShouldDrawTargetBar", pl, v ) == false ) then continue end
+		
 		local per = math_min( v.getFunc( pl ) / v.maxFunc( pl ), 1 )
 		
 		if ( v.prevValue != per ) then

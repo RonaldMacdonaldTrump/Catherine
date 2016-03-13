@@ -65,8 +65,16 @@ catherine.character.NewVar( "name", {
 			return true
 		end
 		
+		if ( data == "" ) then
+			return false, "^Character_Notify_SetNameError2"
+		end
+		
 		if ( data:find( "#" ) ) then
 			return false, "^Character_Notify_SetNameError"
+		end
+		
+		if ( data:Trim( ):utf8len( ) < catherine.configs.characterNameMinLen or data:Trim( ):utf8len( ) > catherine.configs.characterNameMaxLen ) then
+			return false, "^Character_Notify_SetNameError2"
 		end
 		
 		if ( data:utf8len( ) >= catherine.configs.characterNameMinLen and data:utf8len( ) <= catherine.configs.characterNameMaxLen ) then
@@ -86,8 +94,16 @@ catherine.character.NewVar( "desc", {
 			return true
 		end
 		
+		if ( data == "" ) then
+			return false, "^Character_Notify_SetDescError2"
+		end
+		
 		if ( data:find( "#" ) ) then
 			return false, "^Character_Notify_SetDescError"
+		end
+		
+		if ( data:Trim( ):utf8len( ) < catherine.configs.characterDescMinLen or data:Trim( ):utf8len( ) > catherine.configs.characterDescMaxLen ) then
+			return false, "^Character_Notify_SetDescError2"
 		end
 		
 		if ( data:utf8len( ) >= catherine.configs.characterDescMinLen and data:utf8len( ) <= catherine.configs.characterDescMaxLen ) then
@@ -259,6 +275,14 @@ if ( SERVER ) then
 		
 		pl:SetSkin( catherine.character.GetCharVar( pl, "skin", 0 ) )
 		
+		for k, v in pairs( pl:GetMaterials( ) ) do
+			pl:SetSubMaterial( k - 1, "" )
+		end
+		
+		for k, v in pairs( catherine.character.GetCharVar( pl, "subMaterial", { } ) ) do
+			pl:SetSubMaterial( v[ 1 ], v[ 2 ] )
+		end
+		
 		pl:SetNetVar( "charID", id )
 		pl:SetNetVar( "charLoaded", true )
 		
@@ -297,6 +321,7 @@ if ( SERVER ) then
 		local factionTable = catherine.faction.FindByID( faction )
 		local isForceSetName = false
 		local isForceSetDesc = false
+		local subMaterial = { }
 		
 		if ( factionTable ) then
 			isForceSetName = tobool( factionTable.PostSetName )
@@ -344,6 +369,19 @@ if ( SERVER ) then
 			if ( k != "att" ) then
 				charVars[ v.field ] = var
 			end
+		end
+		
+		if ( factionTable ) then
+			charVars[ "_charVar" ] = util.JSONToTable( charVars[ "_charVar" ] )
+			
+			for k, v in pairs( factionTable.models ) do
+				if ( catherine.faction.IsTableModel( v ) and v.model == data[ "model" ] and v.subMaterials ) then
+					subMaterial = v.subMaterials
+				end
+			end
+			
+			charVars[ "_charVar" ][ "subMaterial" ] = subMaterial
+			charVars[ "_charVar" ] = util.TableToJSON( charVars[ "_charVar" ] )
 		end
 		
 		hook.Add( "DatabaseError", "catherine.database.DatabaseError." .. steamID, function( query, err )
@@ -465,6 +503,13 @@ if ( SERVER ) then
 					if ( !v.doConversion ) then continue end
 					
 					data[ k1 ][ v.field ] = util.JSONToTable( data[ k1 ][ v.field ] ) or { }
+				end
+			end
+			
+			for k, v in pairs( data ) do
+				if ( !catherine.faction.FindByID( v._faction ) ) then
+					catherine.database.Query( "DELETE FROM `catherine_characters` WHERE _steamID = '" .. steamID .. "' AND _id = '" .. v._id .. "'" )
+					table.remove( data, k )
 				end
 			end
 			

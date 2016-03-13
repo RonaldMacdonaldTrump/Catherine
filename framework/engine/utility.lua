@@ -602,9 +602,6 @@ else
 	end )
 	
 	netstream.Hook( "catherine.util.QueryReceiver", function( data )
-		PrintTable(data)
-		print(data[ 2 ])
-		
 		Derma_Query( catherine.util.StuffLanguage( data[ 2 ] ), "", LANG( "Basic_UI_OK" ), function( )
 				netstream.Start( "catherine.util.QueryReceiverReceive", {
 					data[ 1 ],

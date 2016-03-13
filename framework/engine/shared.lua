@@ -266,7 +266,7 @@ function GM:DoAnimationEvent( pl, eve, data )
 	
 	if ( IsValid( wep ) ) then
 		holdType = catherine.util.GetHoldType( wep )
-	end
+	end	
 	
 	if ( !catherine.animation[ class ][ holdType ] ) then
 		holdType = "normal"

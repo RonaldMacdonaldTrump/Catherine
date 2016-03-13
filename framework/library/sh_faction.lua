@@ -32,11 +32,19 @@ function catherine.faction.Register( factionTable )
 	team.SetUp( factionTable.index, factionTable.name, factionTable.color )
 	
 	for k, v in pairs( factionTable.models or { } ) do
-		if ( SERVER ) then
-			resource.AddFile( v )
+		if ( catherine.faction.IsTableModel( v ) ) then
+			if ( SERVER ) then
+				resource.AddFile( v.model )
+			end
+			
+			util.PrecacheModel( v.model )
+		else
+			if ( SERVER ) then
+				resource.AddFile( v )
+			end
+			
+			util.PrecacheModel( v )
 		end
-		
-		util.PrecacheModel( v )
 	end
 	
 	if ( SERVER and factionTable.factionImage ) then
@@ -44,6 +52,14 @@ function catherine.faction.Register( factionTable )
 	end
 	
 	return factionTable.index
+end
+
+function catherine.faction.IsTableModel( data )
+	if ( data and type( data ) == "table" and data.model ) then
+		return true
+	end
+	
+	return false
 end
 
 function catherine.faction.New( uniqueID )

@@ -122,6 +122,8 @@ function PLUGIN:RenderScreenspaceEffects( )
 		tab[ "$pp_colour_mulg" ] = 0
 		tab[ "$pp_colour_mulb" ] = 0
 		
+		tab = hook.Run( "AdjustCharacterViewColorEffectData", tab ) or tab
+		
 		DrawColorModify( tab )
 	end
 end

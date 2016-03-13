@@ -51,7 +51,6 @@ if ( SERVER ) then
 			end
 			
 			catherine.character.RemoveDummy( )
-			catherine.player.UpdateLanguageSetting( pl )
 			
 			for i = 1, #initFunctions do
 				local libName, funcName = initFunctions[ i ][ 1 ], initFunctions[ i ][ 2 ]
@@ -63,6 +62,8 @@ if ( SERVER ) then
 					return
 				end
 			end
+			
+			catherine.player.UpdateLanguageSetting( pl )
 			
 			timer.Remove( "Catherine.timer.player.Initialize.Reload" )
 			
@@ -442,6 +443,10 @@ if ( SERVER ) then
 			
 			for k, v in pairs( pl:GetBodyGroups( ) ) do
 				ent:SetBodygroup( v.id, pl:GetBodygroup( v.id ) )
+			end
+			
+			for k, v in pairs( pl:GetMaterials( ) ) do
+				ent:SetSubMaterial( k - 1, pl:GetSubMaterial( k - 1 ) )
 			end
 			
 			pl.CAT_ragdoll = ent

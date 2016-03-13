@@ -328,8 +328,6 @@ else
 				function( )
 					if ( IsValid( ent ) ) then
 						catherine.item.Work( uniqueID, k, ent )
-					else
-						print("lol")
 					end
 				end ):SetImage( v.icon or "icon16/information.png" )
 			

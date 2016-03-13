@@ -278,33 +278,32 @@ function catherine.plugin.IncludeEffects( dir )
 		EFFECT = { ClassName = v:sub( 1, #v - 4 ) }
 		
 		catherine.util.Include( dir .. "/entities/effects/" .. v, "SHARED" )
-		effects.Register( EFFECT, EFFECT.ClassName )
+		
+		if ( CLIENT ) then
+			effects.Register( EFFECT, EFFECT.ClassName )
+		end
 		
 		EFFECT = nil
 	end
 	
 	for k, v in pairs( folders ) do
 		if ( SERVER ) then
-			if ( file.Exists( dir .. "/entities/weapons/" .. v .. "/cl_init.lua", "LUA" ) ) then
-				AddCSLuaFile( dir .. "/entities/weapons/" .. v .. "/cl_init.lua" )
-			elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/init.lua", "LUA" ) ) then
-				AddCSLuaFile( dir .. "/entities/weapons/" .. v .. "/init.lua" )
+			if ( file.Exists( dir .. "/entities/effects/" .. v .. "/cl_init.lua", "LUA" ) ) then
+				AddCSLuaFile( dir .. "/entities/effects/" .. v .. "/cl_init.lua" )
+			elseif ( file.Exists( dir .. "/entities/effects/" .. v .. "/init.lua", "LUA" ) ) then
+				AddCSLuaFile( dir .. "/entities/effects/" .. v .. "/init.lua" )
 			end
-			
-			if ( file.Exists( dir .. "/entities/weapons/" .. v .. "/cl_init.lua", "LUA" ) ) then
-				AddCSLuaFile( dir .. "/entities/weapons/" .. v .. "/cl_init.lua" )
-			end
-		elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/cl_init.lua", "LUA" ) ) then
+		elseif ( file.Exists( dir .. "/entities/effects/" .. v .. "/cl_init.lua", "LUA" ) ) then
 			EFFECT = { ClassName = v }
 			
-			include( dir .. "/entities/weapons/" .. v .. "/cl_init.lua" )
+			include( dir .. "/entities/effects/" .. v .. "/cl_init.lua" )
 			effects.Register( EFFECT, EFFECT.ClassName )
 			
 			EFFECT = nil
-		elseif ( file.Exists( dir .. "/entities/weapons/" .. v .. "/init.lua", "LUA" ) ) then
+		elseif ( file.Exists( dir .. "/entities/effects/" .. v .. "/init.lua", "LUA" ) ) then
 			EFFECT = { ClassName = v }
 			
-			include( dir .. "/entities/weapons/" .. v .. "/init.lua" )
+			include( dir .. "/entities/effects/" .. v .. "/init.lua" )
 			effects.Register( EFFECT, EFFECT.ClassName )
 			
 			EFFECT = nil

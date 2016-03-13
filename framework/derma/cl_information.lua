@@ -193,6 +193,10 @@ function PANEL:Init( )
 	end
 	
 	if ( IsValid( self.playerModel.Entity ) ) then
+		for k, v in pairs( pl:GetMaterials( ) ) do
+			self.playerModel.Entity:SetSubMaterial( k - 1, pl:GetSubMaterial( k - 1 ) )
+		end
+		
 		for k, v in pairs( self.playerModel.Entity:GetSequenceList( ) ) do
 			if ( v:find( "idle" ) ) then
 				local seq = self.playerModel.Entity:LookupSequence( v )

@@ -202,6 +202,10 @@ function PLUGIN:LegsWork( pl, speed )
 		legEnt:SetBodygroup( v.id, pl:GetBodygroup( v.id ) )
 	end
 	
+	for k, v in pairs( pl:GetMaterials( ) ) do
+		legEnt:SetSubMaterial( k - 1, pl:GetSubMaterial( k - 1 ) )
+	end
+	
 	self.velocity = pl:GetVelocity( ):Length2D( )
 	self.playBackRate = 1
 	

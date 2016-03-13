@@ -65,3 +65,7 @@ local themes = {
 function catherine.theme.Draw( typ, w, h )
 	themes[ typ ]( w, h )
 end
+
+function catherine.theme.Override( typ, func )
+	themes[ typ ] = func
+end
