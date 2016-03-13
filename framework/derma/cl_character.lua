@@ -374,7 +374,7 @@ function PANEL:UseCharacterPanel( )
 		end
 	end
 	
-	local function SetTargetPanelPos( pnl, pos, a )
+	local function SetTargetPanelPos( pnl, pos )
 		if ( !IsValid( pnl ) ) then return end
 		
 		if ( !pnl.targetPos ) then
@@ -553,7 +553,7 @@ function PANEL:UseCharacterPanel( )
 		
 		if ( !IsValid( uniquePanel ) ) then return end
 		
-		SetTargetPanelPos( uniquePanel, self.CharacterPanel:GetWide( ) / 2 - uniquePanel:GetWide( ) / 2, 255 )
+		SetTargetPanelPos( uniquePanel, self.CharacterPanel:GetWide( ) / 2 - uniquePanel:GetWide( ) / 2 )
 		
 		local right, left = uniquePanel.x + uniquePanel:GetWide( ) + 24, uniquePanel.x - 24
 		
@@ -562,13 +562,13 @@ function PANEL:UseCharacterPanel( )
 			
 			if ( !IsValid( prevPanel ) ) then continue end
 			
-			SetTargetPanelPos( prevPanel, left - prevPanel:GetWide( ), ( 30 / self.loadCharacter.curr ) * i )
+			SetTargetPanelPos( prevPanel, left - prevPanel:GetWide( ) )
 			left = prevPanel.x - 24
 		end
 		
 		for k, v in pairs( self.loadCharacter.Lists ) do
 			if ( k > self.loadCharacter.curr ) then
-				SetTargetPanelPos( v.panel, right, ( 30 / ( ( #self.loadCharacter.Lists + 1 ) - self.loadCharacter.curr ) ) * ( ( #self.loadCharacter.Lists + 1 ) - k ) )
+				SetTargetPanelPos( v.panel, right )
 				right = v.panel.x + v.panel:GetWide( ) + 24
 			end
 		end
@@ -859,13 +859,13 @@ function PANEL:Think( )
 		
 		if ( !IsValid( prevPanel ) ) then continue end
 		
-		self:SetTargetPanelPos( prevPanel, left - prevPanel:GetWide( ), ( 30 / self.selectedFaction ) * i )
+		self:SetTargetPanelPos( prevPanel, left - prevPanel:GetWide( ), ( 150 / self.selectedFaction ) * i )
 		left = prevPanel.x - 64
 	end
 	
 	for k, v in pairs( self.factionList ) do
 		if ( k > self.selectedFaction ) then
-			self:SetTargetPanelPos( v.panel, right, ( 30 / ( ( #self.factionList + 1 ) - self.selectedFaction ) ) * ( ( #self.factionList + 1 ) - k ) )
+			self:SetTargetPanelPos( v.panel, right, ( 150 / ( ( #self.factionList + 1 ) - self.selectedFaction ) ) * ( ( #self.factionList + 1 ) - k ) )
 			right = v.panel.x + v.panel:GetWide( ) + 64
 		end
 	end
