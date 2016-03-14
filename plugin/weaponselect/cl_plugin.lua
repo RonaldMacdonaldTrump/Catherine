@@ -143,8 +143,8 @@ function PLUGIN:HUDDraw( )
 		
 		local tw, th = surface.GetTextSize( v.name )
 		
-		draw.RoundedBox( 0, x - 5, y - th / 2, tw + 10, th, Color( 255, 255, 255, v.a ) )
-		draw.SimpleText( v.name, "catherine_normal20", x, y, Color( 0, 0, 0, v.a ), TEXT_ALIGN_LEFT, 1 )
+		draw.RoundedBox( 0, x - 5, y - th / 2, tw + 10, th, Color( 50, 50, 50, v.a ) )
+		draw.SimpleText( v.name, "catherine_normal20", x, y, Color( 255, 255, 255, v.a ), TEXT_ALIGN_LEFT, 1 )
 		
 		if ( self.currSlot == k ) then
 			local markupObject = v.markupObject
@@ -171,7 +171,7 @@ function PLUGIN:HUDDraw( )
 	
 	local lastSlot = self.slotData[ #self.slotData ]
 	
-	draw.RoundedBox( 0, x - 20, y + ( self.currSlot * 30 ), 10, 20, Color( 255, 255, 255, lastSlot.a ) )
+	draw.RoundedBox( 0, x - 20, y + ( self.currSlot * 30 ), 10, 20, Color( 50, 50, 50, lastSlot.a ) )
 end
 
 function PLUGIN:Refresh( pl, id, uniqueID )

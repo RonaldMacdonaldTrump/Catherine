@@ -908,9 +908,6 @@ function PANEL:Init( )
 	self.label01:SetPos( 0, 20 )
 	self.label01:SizeToContents( )
 	self.label01:CenterHorizontal( )
-	self.label01:SetAlpha( 0 )
-	self.label01:AlphaTo( 255, 0.5, alphaDelta )
-	alphaDelta = alphaDelta + 0.2
 	
 	self.moveAniList[ #self.moveAniList + 1 ] = self.label01
 	
@@ -920,9 +917,6 @@ function PANEL:Init( )
 	self.name:SetFont( "catherine_lightUI25" )
 	self.name:SetText( LANG( "Character_UI_CharName" ) )
 	self.name:SizeToContents( )
-	self.name:SetAlpha( 0 )
-	self.name:AlphaTo( 255, 0.5, alphaDelta )
-	alphaDelta = alphaDelta + 0.2
 	
 	self.moveAniList[ #self.moveAniList + 1 ] = self.name
 	
@@ -939,9 +933,6 @@ function PANEL:Init( )
 	self.nameEnt.OnTextChanged = function( pnl )
 		self.data.name = pnl:GetText( )
 	end
-	self.nameEnt:SetAlpha( 0 )
-	self.nameEnt:AlphaTo( 255, 0.5, alphaDelta )
-	alphaDelta = alphaDelta + 0.2
 	
 	self.moveAniList[ #self.moveAniList + 1 ] = self.nameEnt
 	
@@ -951,9 +942,6 @@ function PANEL:Init( )
 	self.desc:SetFont( "catherine_lightUI25" )
 	self.desc:SetText( LANG( "Character_UI_CharDesc" ) )
 	self.desc:SizeToContents( )
-	self.desc:SetAlpha( 0 )
-	self.desc:AlphaTo( 255, 0.5, alphaDelta )
-	alphaDelta = alphaDelta + 0.2
 	
 	self.moveAniList[ #self.moveAniList + 1 ] = self.desc
 	
@@ -970,9 +958,6 @@ function PANEL:Init( )
 	self.descEnt.OnTextChanged = function( pnl )
 		self.data.desc = pnl:GetText( )
 	end
-	self.descEnt:SetAlpha( 0 )
-	self.descEnt:AlphaTo( 255, 0.5, alphaDelta )
-	alphaDelta = alphaDelta + 0.2
 	
 	self.moveAniList[ #self.moveAniList + 1 ] = self.descEnt
 	
@@ -982,9 +967,6 @@ function PANEL:Init( )
 	self.modelLabel:SetFont( "catherine_lightUI25" )
 	self.modelLabel:SetText( LANG( "Character_UI_CharModel" ) )
 	self.modelLabel:SizeToContents( )
-	self.modelLabel:SetAlpha( 0 )
-	self.modelLabel:AlphaTo( 255, 0.5, alphaDelta )
-	alphaDelta = alphaDelta + 0.2
 	
 	self.moveAniList[ #self.moveAniList + 1 ] = self.modelLabel
 	
@@ -1000,9 +982,6 @@ function PANEL:Init( )
 		
 		pnl:RunAnimation( )
 	end
-	self.previewModel:SetAlpha( 0 )
-	self.previewModel:AlphaTo( 255, 0.5, alphaDelta )
-	alphaDelta = alphaDelta + 0.2
 	
 	self.moveAniList[ #self.moveAniList + 1 ] = self.previewModel
 	
@@ -1012,9 +991,6 @@ function PANEL:Init( )
 	self.model:SetSpacing( 5 )
 	self.model:EnableHorizontal( true )
 	self.model:EnableVerticalScrollbar( false )
-	self.model:SetAlpha( 0 )
-	self.model:AlphaTo( 255, 0.01, alphaDelta )
-	alphaDelta = alphaDelta + 0.2
 	
 	self.moveAniList[ #self.moveAniList + 1 ] = self.model
 	
@@ -1060,6 +1036,70 @@ function PANEL:Init( )
 					model = v.model
 				end
 				
+				local icon = vgui.Create( "DModelPanel" )
+				//icon:SetPos( self.w - ( self.w * 0.2 ) - 10, 60 )
+				icon:SetSize( 100, 100 )
+				icon:SetFOV( 15 )
+				icon:SetModel( model )
+				icon:MoveToBack( )
+				icon:SetDisabled( true )
+				icon.LayoutEntity = function( pnl, ent )
+					ent:SetIK( false )
+					
+					local boneIndex = ent:LookupBone( "ValveBiped.Bip01_Head1" )
+					local entMin, entMax = ent:GetRenderBounds( )
+					
+					if ( boneIndex ) then
+						local pos, ang = ent:GetBonePosition( boneIndex )
+						
+						if ( pos ) then
+							pnl:SetLookAt( pos )
+						end
+					else
+						pnl:SetLookAt( ( entMax + entMin ) / 2 )
+					end
+					
+					ent:SetAngles( Angle( 0, 45, 0 ) )
+					//pnl:RunAnimation( )
+				end
+				icon.PaintOver = function( pnl, w, h )
+					surface.SetDrawColor( 255, 255, 255, 100 )
+					surface.DrawOutlinedRect( 0, 0, w, h )
+				end
+				
+				if ( v.subMaterials ) then
+					for k1, v1 in pairs( v.subMaterials ) do
+						icon.Entity:SetSubMaterial( v1[ 1 ], v1[ 2 ] )
+					end
+				end
+				
+				local button = vgui.Create( "DButton", icon )
+				button:SetText( "" )
+				button:Dock( FILL )
+				button.Paint = function( pnl, w, h ) end
+				button.DoClick = function( pnl )
+					self.data.model = model
+					self.previewModel:SetModel( model )
+					
+					if ( IsValid( self.previewModel.Entity ) ) then
+						if ( v.subMaterials ) then
+							for k1, v1 in pairs( v.subMaterials ) do
+								self.previewModel.Entity:SetSubMaterial( v1[ 1 ], v1[ 2 ] )
+							end
+						end
+						
+						for k1, v1 in pairs( self.previewModel.Entity:GetSequenceList( ) ) do
+							if ( v1:find( "idle" ) ) then
+								local seq = self.previewModel.Entity:LookupSequence( v1 )
+								self.previewModel.Entity:SetSequence( seq )
+								
+								break
+							end
+						end
+					end
+				end
+				
+				--[[
 				local spawnIcon = vgui.Create( "SpawnIcon" )
 				spawnIcon:SetSize( 64, 64 )
 				spawnIcon:SetModel( model )
@@ -1068,31 +1108,29 @@ function PANEL:Init( )
 				spawnIcon:AlphaTo( 255, 0.3, delta )
 				spawnIcon.PaintOver = function( pnl, w, h ) end
 				spawnIcon.DoClick = function( pnl )
-					if ( self.data.model != model ) then
-						self.data.model = model
-						self.previewModel:SetModel( model )
-						
-						if ( IsValid( self.previewModel.Entity ) ) then
-							if ( v.subMaterials ) then
-								for k1, v1 in pairs( v.subMaterials ) do
-									self.previewModel.Entity:SetSubMaterial( v1[ 1 ], v1[ 2 ] )
-								end
+					self.data.model = model
+					self.previewModel:SetModel( model )
+					
+					if ( IsValid( self.previewModel.Entity ) ) then
+						if ( v.subMaterials ) then
+							for k1, v1 in pairs( v.subMaterials ) do
+								self.previewModel.Entity:SetSubMaterial( v1[ 1 ], v1[ 2 ] )
 							end
-							
-							for k1, v1 in pairs( self.previewModel.Entity:GetSequenceList( ) ) do
-								if ( v1:find( "idle" ) ) then
-									local seq = self.previewModel.Entity:LookupSequence( v1 )
-									self.previewModel.Entity:SetSequence( seq )
-									
-									break
-								end
+						end
+						
+						for k1, v1 in pairs( self.previewModel.Entity:GetSequenceList( ) ) do
+							if ( v1:find( "idle" ) ) then
+								local seq = self.previewModel.Entity:LookupSequence( v1 )
+								self.previewModel.Entity:SetSequence( seq )
+								
+								break
 							end
 						end
 					end
 				end
-				
+				--]]
 				delta = delta + 0.03
-				self.model:AddItem( spawnIcon )
+				self.model:AddItem( icon )
 			end
 		end
 		
@@ -1192,9 +1230,6 @@ function PANEL:Init( )
 		surface.SetMaterial( Material( "gui/center_gradient" ) )
 		surface.DrawTexturedRect( 0, h - 2, w, 2 )
 	end
-	self.nextStage:SetAlpha( 0 )
-	self.nextStage:AlphaTo( 255, 0.5, alphaDelta )
-	alphaDelta = alphaDelta + 0.2
 	
 	self.moveAniList[ #self.moveAniList + 1 ] = self.nextStage
 end
