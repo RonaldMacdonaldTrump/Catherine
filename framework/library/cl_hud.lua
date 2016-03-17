@@ -31,7 +31,7 @@ local blockedModules = { }
 
 --[[ Function Optimize :> ]]--
 local gradient_center = Material( "gui/center_gradient" )
-local vignetteMat = Material( "CAT/vignette.png" ) or "__material__error"
+local vignetteMat = Material( "CAT/vignette.png" )
 local animationApproach = math.Approach
 local setColor = surface.SetDrawColor
 local setMat = surface.SetMaterial
@@ -87,7 +87,7 @@ function catherine.hud.DeathScreen( pl, w, h )
 end
 
 timer.Create( "catherine.hud.VignetteCheck", 2, 0, function( )
-	if ( vignetteMat == "__material__error" ) then return end
+	if ( !vignetteMat or vignetteMat:IsError( ) ) then return end
 	local pl = catherine.pl
 	
 	if ( !IsValid( pl ) ) then return end
@@ -101,7 +101,7 @@ timer.Create( "catherine.hud.VignetteCheck", 2, 0, function( )
 end )
 
 function catherine.hud.Vignette( pl, w, h )
-	if ( vignetteMat == "__material__error" ) then return end
+	if ( !vignetteMat or vignetteMat:IsError( ) ) then return end
 	if ( hook.Run( "ShouldDrawVignette", pl ) == false ) then return end
 	
 	catherine.hud.vAlpha = animationApproach( catherine.hud.vAlpha, catherine.hud.vAlphaTarget, FrameTime( ) * 90 )

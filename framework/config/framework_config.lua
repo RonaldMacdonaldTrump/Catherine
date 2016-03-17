@@ -81,7 +81,7 @@ if ( SERVER ) then
 	catherine.configs.netRegistryOptimizeInterval = 350
 	catherine.configs.characterSaveInterval = 300
 	catherine.configs.dataSaveInterval = 300
-	catherine.configs.voiceAllow = true --[[ Allow a Voice chat. ]]--
+	catherine.configs.voiceAllow = false --[[ Allow a Voice chat. ]]--
 	catherine.configs.voice3D = true --[[ Enabled the Voice 3D system. ]]--
 	catherine.configs.spawnTime = 60 --[[ Setting a Spawn time. ]]--
 	catherine.configs.clearMap = true --[[ Enabled a Map Clear system. (Remove a map HL2 HP, Armor station and Vehicles(Chair) ) ]]--
@@ -131,6 +131,7 @@ else
 	catherine.configs.schemaLogo = ""
 	catherine.configs.mainColor = Color( 255, 255, 255 )
 	
+	catherine.configs.mainBarMaterial = "CAT/bar.png"
 	catherine.configs.mainBarWideScale = 0.25
 	catherine.configs.mainBarTallSize = 8
 	catherine.configs.maxChatboxLine = 50

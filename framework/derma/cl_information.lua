@@ -37,11 +37,11 @@ function PANEL:Init( )
 	self:SetAlpha( 0 )
 	self:AlphaTo( 255, 0.3, 0 )
 	
-	self.limbBaseMaterial = Material( "CAT/limb/body.png", "smooth" ) or "__error_material"
+	self.limbBaseMaterial = Material( "CAT/limb/body.png", "smooth" )
 	
 	local limbBaseMaterial_w, limbBaseMaterial_h = 150, 341
 	
-	if ( self.limbBaseMaterial != "__error_material" ) then
+	if ( self.limbBaseMaterial and !self.limbBaseMaterial:IsError( ) ) then
 		limbBaseMaterial_w, limbBaseMaterial_h = self.limbBaseMaterial:Width( ) / 1.7, self.limbBaseMaterial:Height( ) / 1.5 // 150, 341
 	end
 	
@@ -255,9 +255,9 @@ function PANEL:Paint( w, h )
 	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 100 ) )
 	catherine.util.BlurDraw( 0, 0, w, h, self.blurAmount )
 	
-	local limbBaseMaterial_w, limbBaseMaterial_h = 150, 341 // 150, 341
+	local limbBaseMaterial_w, limbBaseMaterial_h = 150, 341
 	
-	if ( self.limbBaseMaterial != "__error_material" ) then
+	if ( self.limbBaseMaterial and !self.limbBaseMaterial:IsError( ) ) then
 		limbBaseMaterial_w, limbBaseMaterial_h = self.limbBaseMaterial:Width( ) / 1.7, self.limbBaseMaterial:Height( ) / 1.5
 		
 		surface.SetDrawColor( 255, 255, 255, 255 )

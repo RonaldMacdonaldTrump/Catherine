@@ -67,9 +67,13 @@ function PANEL:Init( )
 			end
 		end
 		
-		surface.SetDrawColor( 255, 255, 255, pnl.logoA )
-		surface.SetMaterial( Material( "cat/test.png", "smooth" ) )
-		surface.DrawTexturedRect( layoutX, layoutY, 512, 90 )
+		local schemaLogo = Material( catherine.configs.schemaLogo, "smooth" )
+		
+		if ( schemaLogo and !schemaLogo:IsError( ) ) then
+			surface.SetDrawColor( 255, 255, 255, pnl.logoA )
+			surface.SetMaterial( schemaLogo )
+			surface.DrawTexturedRect( layoutX, layoutY, 512, 90 )
+		end
 		
 		draw.SimpleText( catherine.GetVersion( ) .. " " .. catherine.GetBuild( ), "catherine_normal15", 10, h - 20, Color( 255, 255, 255, self.logoA ), TEXT_ALIGN_LEFT, 1 )
 		

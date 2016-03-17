@@ -26,8 +26,6 @@ function PANEL:Init( )
 	self.w, self.h = ScrW( ), ScrH( )
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
 	self.blurAmount = 0
-	self.frameworkMaterial = Material( catherine.configs.frameworkLogo, "smooth" ) or "__error_material"
-	self.schemaMaterial = Material( catherine.configs.schemaLogo, "smooth" ) or "__error_material"
 	
 	self:SetSize( self.w, self.h )
 	self:SetPos( self.x, self.y )
@@ -43,30 +41,8 @@ function PANEL:Init( )
 	self.leftPanel:SetPos( 0 - self.leftPanel:GetWide( ), 0 )
 	self.leftPanel:MoveTo( 0, 0, 0.2, 0 )
 	self.leftPanel.Paint = function( pnl, w, h )
-		local symbolW, symbolH = 270 / 3, 512 / 3
-		
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 255 ) )
-		
-		//draw.RoundedBox( 0, 10, ( h * 0.2 + symbolH / 2 ) + 50, w - 20, 2, Color( 255, 255, 255, 255 ) )
 		draw.SimpleText( GetHostName( ), "catherine_normal20", w / 2, 20, Color( 255, 255, 255, 255 ), 1, 1 )
-		
-		--[[
-		if ( self.schemaMaterial == "__error_material" ) then
-			if ( self.frameworkMaterial != "__error_material" ) then
-				local frameworkMaterial_w, frameworkMaterial_h = self.frameworkMaterial:Width( ) / 4, self.frameworkMaterial:Height( ) / 4
-				
-				surface.SetDrawColor( 255, 255, 255, 255 )
-				surface.SetMaterial( self.frameworkMaterial )
-				surface.DrawTexturedRect( w / 2 - frameworkMaterial_w / 2, h * 0.2 - frameworkMaterial_h / 2, frameworkMaterial_w, frameworkMaterial_h )
-			end
-		else
-			local schemaMaterial_w, schemaMaterial_h = self.schemaMaterial:Width( ) / 4, self.schemaMaterial:Height( ) / 4
-			
-			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.SetMaterial( self.schemaMaterial )
-			surface.DrawTexturedRect( w / 2 - schemaMaterial_w / 2, h * 0.2 - schemaMaterial_h / 2, schemaMaterial_w, schemaMaterial_h )
-		end
-		--]]
 	end
 	self.leftPanel.PerformLayout = function( )
 		self.close:SetPos( 10, self.h - 50 )

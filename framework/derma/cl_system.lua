@@ -23,7 +23,7 @@ function PANEL:Init( )
 	
 	self.w, self.h = ScrW( ), ScrH( )
 	self.x, self.y = ScrW( ) / 2 - self.w / 2, ScrH( ) / 2 - self.h / 2
-	self.frameworkMaterial = Material( catherine.configs.frameworkLogo, "smooth" ) or "__error_material"
+	self.frameworkMaterial = Material( catherine.configs.frameworkLogo, "smooth" )
 	self.frameworkMaterialA = 0
 	
 	self:SetSize( self.w, self.h )
@@ -33,7 +33,7 @@ function PANEL:Init( )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	
-	if ( self.frameworkMaterial == "__error_material" ) then
+	if ( !self.frameworkMaterial or !self.frameworkMaterial:IsError( ) ) then
 		self:InstallModules( )
 	end
 end
@@ -1068,7 +1068,7 @@ function PANEL:Paint( w, h )
 	draw.RoundedBox( 0, 0, 0, w, h, Color( 245, 245, 245, 255 ) )
 	draw.SimpleText( LANG( "System_UI_Title" ), "catherine_normal25", 20, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
 	
-	if ( self.frameworkMaterial != "__error_material" ) then
+	if ( self.frameworkMaterial and !self.frameworkMaterial:IsError( ) ) then
 		self.frameworkMaterialA = Lerp( 0.03, self.frameworkMaterialA, 255 )
 		
 		if ( !self.moduleInstalled and math.Round( self.frameworkMaterialA ) >= 250 ) then
