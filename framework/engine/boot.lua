@@ -57,6 +57,12 @@ catherine.UpdateLog = [[
 		<h2><center>Catherine Update Log</center><small>Version ]] .. GM.Version .. [[</small></h2>
 	</div>
 	
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<h3 class="panel-title">Released the CATHERINE 1.0.</h3>
+		</div>
+	</div>
+	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	</body>
