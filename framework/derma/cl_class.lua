@@ -31,11 +31,9 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-		
 		if ( self.classes and table.Count( self.classes ) == 0 ) then
-			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( LANG( "Class_UI_NoJoinable" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Class_UI_NoJoinable" ), "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 	
@@ -55,27 +53,38 @@ end
 function PANEL:BuildClasses( )
 	self.Lists:Clear( )
 	
-	local unknownMaterial = Material( "CAT/ui/icon_idk.png", "smooth" )
-	
 	for k, v in pairs( self.classes or { } ) do
 		local noModel = false
 		local name = catherine.util.StuffLanguage( v.name )
 		local desc = catherine.util.StuffLanguage( v.desc )
+		local image = nil
+		
+		if ( v.image ) then
+			image = Material( v.image )
+		end
 		
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Lists:GetWide( ), 70 )
 		panel.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
-			
-			draw.SimpleText( name, "catherine_normal25", 80, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( desc, "catherine_normal15", 80, 50, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( LANG( "Class_UI_LimitStr", #catherine.class.GetPlayers( v.uniqueID ), v.limit or LANG( "Class_UI_Unlimited" ) ), "catherine_normal20", w - 10, 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
-			draw.SimpleText( LANG( "Class_UI_SalaryStr", catherine.cash.GetCompleteName( v.salary or 0 ) ), "catherine_normal20", w - 10, 50, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			draw.SimpleText( name, "catherine_normal25", 80, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( desc, "catherine_normal15", 80, 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( LANG( "Class_UI_LimitStr", #catherine.class.GetPlayers( v.uniqueID ), v.limit or LANG( "Class_UI_Unlimited" ) ), "catherine_normal20", w - 10, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			draw.SimpleText( LANG( "Class_UI_SalaryStr", catherine.cash.GetCompleteName( v.salary or 0 ) ), "catherine_normal20", w - 10, 50, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 			
 			if ( noModel ) then
+				draw.SimpleText( "?", "catherine_lightUI40", 5 + 60 / 2, 5 + 60 / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+				
 				surface.SetDrawColor( 255, 255, 255, 255 )
-				surface.SetMaterial( unknownMaterial )
+				surface.DrawOutlinedRect( 5, 5, 60, 60 )
+			end
+			
+			if ( image ) then
+				surface.SetDrawColor( 255, 255, 255, 255 )
+				surface.SetMaterial( image )
 				surface.DrawTexturedRect( 5, 5, 60, 60 )
+				
+				surface.SetDrawColor( 255, 255, 255, 255 )
+				surface.DrawOutlinedRect( 5, 5, 60, 60 )
 			end
 		end
 		
@@ -105,6 +114,9 @@ function PANEL:BuildClasses( )
 			else
 				spawnIcon:SetModel( v.model )
 			end
+		elseif ( v.image ) then
+			spawnIcon:SetVisible( false )
+			noModel = false
 		else
 			spawnIcon:SetVisible( false )
 			noModel = true

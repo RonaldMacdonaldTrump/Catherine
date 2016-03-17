@@ -200,25 +200,114 @@ function GM:PlayerCharacterLoaded( pl )
 	end
 	
 	local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
+	local class = pl:Class( )
+	local timerID = "Catherine.timer.AutoSalary." .. pl:SteamID( )
 	
-	if ( factionTable and factionTable.salary and factionTable.salary > 0 ) then
-		local timerID = "Catherine.timer.AutoSalary." .. pl:SteamID( )
+	if ( class ) then
+		local classTable = catherine.class.FindByIndex( class )
 		
-		timer.Remove( timerID )
-		timer.Create( timerID, factionTable.salaryTime or 350, 0, function( )
-			if ( !IsValid( pl ) ) then
+		if ( classTable and classTable.salary and classTable.salary > 0 ) then
+			timer.Create( timerID, classTable.salaryTime or 350, 0, function( )
+				if ( !IsValid( pl ) ) then
+					timer.Remove( timerID )
+					return
+				end
+				
+				local amount = hook.Run( "GetClassSalaryAmount", pl, classTable ) or classTable.salary
+				
+				catherine.cash.Give( pl, amount )
+				catherine.util.NotifyLang( pl, "Cash_Notify_Salary", catherine.cash.GetCompleteName( amount ) )
+			end )
+		else
+			if ( factionTable and factionTable.salary and factionTable.salary > 0 ) then
+				timer.Create( timerID, factionTable.salaryTime or 350, 0, function( )
+					if ( !IsValid( pl ) ) then
+						timer.Remove( timerID )
+						return
+					end
+					
+					local amount = hook.Run( "GetSalaryAmount", pl, factionTable ) or factionTable.salary
+					
+					catherine.cash.Give( pl, amount )
+					catherine.util.NotifyLang( pl, "Cash_Notify_Salary", catherine.cash.GetCompleteName( amount ) )
+				end )
+			else
 				timer.Remove( timerID )
-				return
 			end
-			
-			local amount = hook.Run( "GetSalaryAmount", pl, factionTable ) or factionTable.salary
-			
-			catherine.cash.Give( pl, amount )
-			catherine.util.NotifyLang( pl, "Cash_Notify_Salary", catherine.cash.GetCompleteName( amount ) )
-		end )
+		end
+	else
+		if ( factionTable and factionTable.salary and factionTable.salary > 0 ) then
+			timer.Create( timerID, factionTable.salaryTime or 350, 0, function( )
+				if ( !IsValid( pl ) ) then
+					timer.Remove( timerID )
+					return
+				end
+				
+				local amount = hook.Run( "GetSalaryAmount", pl, factionTable ) or factionTable.salary
+				
+				catherine.cash.Give( pl, amount )
+				catherine.util.NotifyLang( pl, "Cash_Notify_Salary", catherine.cash.GetCompleteName( amount ) )
+			end )
+		else
+			timer.Remove( timerID )
+		end
 	end
 	
 	pl:SendLua( "catherine.bar.InitializeWide( )" )
+end
+
+function GM:PostSetClass( pl, classTable )
+	local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
+	local class = pl:Class( )
+	local timerID = "Catherine.timer.AutoSalary." .. pl:SteamID( )
+	
+	if ( class ) then
+		if ( classTable and classTable.salary and classTable.salary > 0 ) then
+			timer.Create( timerID, classTable.salaryTime or 350, 0, function( )
+				if ( !IsValid( pl ) ) then
+					timer.Remove( timerID )
+					return
+				end
+				
+				local amount = hook.Run( "GetClassSalaryAmount", pl, classTable ) or classTable.salary
+				
+				catherine.cash.Give( pl, amount )
+				catherine.util.NotifyLang( pl, "Cash_Notify_Salary", catherine.cash.GetCompleteName( amount ) )
+			end )
+		else
+			if ( factionTable and factionTable.salary and factionTable.salary > 0 ) then
+				timer.Create( timerID, factionTable.salaryTime or 350, 0, function( )
+					if ( !IsValid( pl ) ) then
+						timer.Remove( timerID )
+						return
+					end
+					
+					local amount = hook.Run( "GetSalaryAmount", pl, factionTable ) or factionTable.salary
+					
+					catherine.cash.Give( pl, amount )
+					catherine.util.NotifyLang( pl, "Cash_Notify_Salary", catherine.cash.GetCompleteName( amount ) )
+				end )
+			else
+				timer.Remove( timerID )
+			end
+		end
+	else
+		if ( factionTable and factionTable.salary and factionTable.salary > 0 ) then
+			timer.Create( timerID, factionTable.salaryTime or 350, 0, function( )
+				if ( !IsValid( pl ) ) then
+					timer.Remove( timerID )
+					return
+				end
+				
+				local amount = hook.Run( "GetSalaryAmount", pl, factionTable ) or factionTable.salary
+				
+				catherine.cash.Give( pl, amount )
+				catherine.util.NotifyLang( pl, "Cash_Notify_Salary", catherine.cash.GetCompleteName( amount ) )
+			end )
+		else
+			timer.Remove( timerID )
+		end
+	end
 end
 
 function GM:PlayerSpawn( pl )

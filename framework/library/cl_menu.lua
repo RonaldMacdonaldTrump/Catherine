@@ -36,6 +36,28 @@ function catherine.menu.Register( name, uniqueID, func, canLook )
 	}
 end
 
+function catherine.menu.Override( uniqueID, name, func, canLook )
+	for k, v in pairs( catherine.menu.lists ) do
+		if ( v.uniqueID == uniqueID ) then
+			local data = catherine.menu.lists[ k ]
+			
+			if ( name ) then
+				data.name = name
+			end
+			
+			if ( func ) then
+				data.func = func
+			end
+			
+			if ( canLook ) then
+				data.canLook = canLook
+			end
+			
+			break
+		end
+	end
+end
+
 function catherine.menu.GetAll( )
 	return catherine.menu.lists
 end

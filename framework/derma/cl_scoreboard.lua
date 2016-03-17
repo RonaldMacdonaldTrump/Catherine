@@ -24,7 +24,7 @@ function PANEL:Init( )
 	self.playerCount = 0
 	self.shouldOpen = hook.Run( "ShouldOpenScoreboard", self.player )
 	
-	self:SetMenuSize( ScrW( ) * 0.65, ScrH( ) * 0.85 )
+	self:SetMenuSize( ScrW( ) * 0.8, ScrH( ) * 0.85 )
 	self:SetMenuName( LANG( "Scoreboard_UI_Title" ) )
 	
 	self.Lists = vgui.Create( "DPanelList", self )
@@ -62,11 +62,31 @@ function PANEL:SortPlayerLists( )
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		local factionTable = catherine.faction.FindByIndex( v:Team( ) )
-		if ( !factionTable ) then continue end
-		local name = factionTable.name or "LOADING"
 		
-		players[ name ] = players[ name ] or { }
-		players[ name ][ #players[ name ] + 1 ] = v
+		if ( !factionTable ) then continue end
+		
+		local class = v:Class( )
+		
+		if ( class ) then
+			local classTable = catherine.class.FindByIndex( class )
+			
+			if ( classTable and classTable.name and classTable.showInUI ) then
+				local name = classTable.name or "CLASS"
+				
+				players[ name ] = players[ name ] or { }
+				players[ name ][ #players[ name ] + 1 ] = v
+			else
+				local name = factionTable.name or "LOADING"
+				
+				players[ name ] = players[ name ] or { }
+				players[ name ][ #players[ name ] + 1 ] = v
+			end
+		else
+			local name = factionTable.name or "LOADING"
+			
+			players[ name ] = players[ name ] or { }
+			players[ name ][ #players[ name ] + 1 ] = v
+		end
 	end
 	
 	self.playerLists = players

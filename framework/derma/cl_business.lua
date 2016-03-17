@@ -100,11 +100,13 @@ end
 function PANEL:InitializeBusiness( )
 	local pl = self.player
 	local team = pl:Team( )
+	local class = pl:Class( )
 	local items = { }
 	
 	for k, v in pairs( catherine.item.GetAll( ) ) do
 		if ( v.ShowOnBusiness and v:ShowOnBusiness( pl ) == false ) then continue end
 		if ( ( !v.ShowOnBusiness or v:ShowOnBusiness( pl ) == false ) and !table.HasValue( v.onBusinessFactions or { }, team ) ) then continue end
+		if ( class and ( ( !v.ShowOnBusiness or v:ShowOnBusiness( pl ) == false ) and !table.HasValue( v.onBusinessClasses or { }, class ) ) ) then continue end
 		local category = v.category
 		
 		items[ category ] = items[ category ] or { }

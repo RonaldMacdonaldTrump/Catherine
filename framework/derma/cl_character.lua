@@ -897,6 +897,7 @@ function PANEL:Init( )
 	self.forceDesc = false
 	
 	local alphaDelta = 0
+	local selectedIndex = 0
 	
 	self:SetSize( self.w, self.h )
 	self:SetPos( 0, 0 )
@@ -1036,14 +1037,23 @@ function PANEL:Init( )
 					model = v.model
 				end
 				
+				local iconA = 0
+				
 				local icon = vgui.Create( "DModelPanel" )
-				//icon:SetPos( self.w - ( self.w * 0.2 ) - 10, 60 )
 				icon:SetSize( 100, 100 )
 				icon:SetFOV( 15 )
 				icon:SetModel( model )
 				icon:MoveToBack( )
 				icon:SetDisabled( true )
 				icon.LayoutEntity = function( pnl, ent )
+					if ( selectedIndex == k ) then
+						iconA = Lerp( 0.09, iconA, 255 / 1.5 )
+					else
+						iconA = Lerp( 0.09, iconA, 0 )
+					end
+					
+					draw.RoundedBox( 0, 0, 0, 100, 100, Color( 255, 255, 255, iconA ) )
+					
 					ent:SetIK( false )
 					
 					local boneIndex = ent:LookupBone( "ValveBiped.Bip01_Head1" )
@@ -1060,10 +1070,9 @@ function PANEL:Init( )
 					end
 					
 					ent:SetAngles( Angle( 0, 45, 0 ) )
-					//pnl:RunAnimation( )
 				end
 				icon.PaintOver = function( pnl, w, h )
-					surface.SetDrawColor( 255, 255, 255, 100 )
+					surface.SetDrawColor( 255, 255, 255, 50 )
 					surface.DrawOutlinedRect( 0, 0, w, h )
 				end
 				
@@ -1080,6 +1089,7 @@ function PANEL:Init( )
 				button.DoClick = function( pnl )
 					self.data.model = model
 					self.previewModel:SetModel( model )
+					selectedIndex = k
 					
 					if ( IsValid( self.previewModel.Entity ) ) then
 						if ( v.subMaterials ) then
@@ -1099,36 +1109,6 @@ function PANEL:Init( )
 					end
 				end
 				
-				--[[
-				local spawnIcon = vgui.Create( "SpawnIcon" )
-				spawnIcon:SetSize( 64, 64 )
-				spawnIcon:SetModel( model )
-				spawnIcon:SetToolTip( false )
-				spawnIcon:SetAlpha( 0 )
-				spawnIcon:AlphaTo( 255, 0.3, delta )
-				spawnIcon.PaintOver = function( pnl, w, h ) end
-				spawnIcon.DoClick = function( pnl )
-					self.data.model = model
-					self.previewModel:SetModel( model )
-					
-					if ( IsValid( self.previewModel.Entity ) ) then
-						if ( v.subMaterials ) then
-							for k1, v1 in pairs( v.subMaterials ) do
-								self.previewModel.Entity:SetSubMaterial( v1[ 1 ], v1[ 2 ] )
-							end
-						end
-						
-						for k1, v1 in pairs( self.previewModel.Entity:GetSequenceList( ) ) do
-							if ( v1:find( "idle" ) ) then
-								local seq = self.previewModel.Entity:LookupSequence( v1 )
-								self.previewModel.Entity:SetSequence( seq )
-								
-								break
-							end
-						end
-					end
-				end
-				--]]
 				delta = delta + 0.03
 				self.model:AddItem( icon )
 			end

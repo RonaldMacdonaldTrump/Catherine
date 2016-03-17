@@ -23,6 +23,10 @@ CAT_THEME_FORM = 3
 CAT_THEME_TEXTENT = 4
 CAT_THEME_MENU_BACKGROUND_NOTITLE = 5
 CAT_THEME_TEXTENT_UNDERLINE = 6
+CAT_THEME_WEIGHT_BACKGROUND = 7
+CAT_THEME_DERMA_MENU_BACKGROUND = 8
+CAT_THEME_DERMA_MENU_OPTION_SELECTED = 9
+CAT_THEME_DERMA_MENU_OPTION_TEXT_COLOR = 10
 
 --[[ Function Optimize :> ]]--
 local color = Color
@@ -59,11 +63,30 @@ local themes = {
 	end,
 	[ CAT_THEME_TEXTENT_UNDERLINE ] = function( w, h )
 		draw_roundedBox( 0, 0, h - 2, w, 2, color( 255, 255, 255, 255 ) )
+	end,
+	[ CAT_THEME_WEIGHT_BACKGROUND ] = function( w, h )
+		draw_roundedBox( 0, 0, 0, w, h, color( 50, 50, 50, 255 ) )
+	end,
+	[ CAT_THEME_WEIGHT_BACKGROUND ] = function( w, h )
+		draw_roundedBox( 0, 0, 0, w, h, color( 50, 50, 50, 255 ) )
+	end,
+	[ CAT_THEME_DERMA_MENU_BACKGROUND ] = function( w, h )
+		draw_roundedBox( 0, 0, 0, w, h, color( 50, 50, 50, 255 ) )
+	end,
+	[ CAT_THEME_DERMA_MENU_OPTION_SELECTED ] = function( w, h )
+		draw_roundedBox( 0, 10, h - 1, w - 20, 1, color( 255, 255, 255, 255 ) )
+	end,
+	[ CAT_THEME_DERMA_MENU_OPTION_TEXT_COLOR ] = function( )
+		return color( 255, 255, 255, 255 )
 	end
 }
 
 function catherine.theme.Draw( typ, w, h )
 	themes[ typ ]( w, h )
+end
+
+function catherine.theme.GetValue( typ )
+	return themes[ typ ]( )
 end
 
 function catherine.theme.Override( typ, func )

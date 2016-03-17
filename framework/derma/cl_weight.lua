@@ -31,7 +31,7 @@ function PANEL:Paint( w, h )
 	self.invWeightAni = Lerp( 0.08, self.invWeightAni, per * h )
 	self.invWeightTextAni = Lerp( 0.08, self.invWeightTextAni, per )
 	
-	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 255 ) )
+	catherine.theme.Draw( CAT_THEME_WEIGHT_BACKGROUND, w, h )
 	draw.RoundedBox( 0, 0, h - self.invWeightAni, w, self.invWeightAni, Color( 255, 255, 255, 255 ) )
 	
 	if ( self.showText ) then

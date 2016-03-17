@@ -141,6 +141,12 @@ function PANEL:Init( )
 		pnl:MoveTo( self.w / 2 + limbBaseMaterial_w / 2 + 20, self.h / 2 - limbBaseMaterial_h / 2 + ( self.name:GetTall( ) / 2 ) + ( self.desc:GetTall( ) / 2 ), 0.3, 0.2 )
 	end
 	
+	local classTable = catherine.class.FindByIndex( pl:Class( ) )
+	
+	if ( classTable and classTable.name and classTable.showInUI ) then
+		self.factionName:SetText( pl:FactionName( ) .. " : " .. catherine.util.StuffLanguage( classTable.name ) )
+	end
+	
 	local defAng = Angle( 0, 45, 0 )
 	
 	self.playerModel = vgui.Create( "DModelPanel", self )
