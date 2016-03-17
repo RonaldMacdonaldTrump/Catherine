@@ -31,6 +31,7 @@ PLUGIN.renderPos = nil
 PLUGIN.renderColor = { }
 PLUGIN.clipVector = vector_up * -1
 PLUGIN.forwardOffset = -20
+PLUGIN.nextMatSet = CurTime( )
 PLUGIN.lastCharID = PLUGIN.lastCharID or 0
 local hiddenBones = {
 	"ValveBiped.Bip01_Spine1",
@@ -111,6 +112,10 @@ function PLUGIN:CreateLegs( )
 		legEnt:SetBodygroup( v.id, pl:GetBodygroup( v.id ) )
 	end
 	
+	for k, v in pairs( pl:GetMaterials( ) ) do
+		legEnt:SetSubMaterial( k - 1, pl:GetSubMaterial( k - 1 ) )
+	end
+	
 	legEnt.lastTick = 0
 	
 	self.lastCharID = pl:GetCharacterID( )
@@ -174,6 +179,7 @@ function PLUGIN:LegsWork( pl, speed )
 		self.renderColor = { }
 		self.clipVector = vector_up * -1
 		self.forwardOffset = -20
+		self.nextMatSet = CurTime( ) + 10
 		
 		self.lastCharID = pl:GetCharacterID( )
 	end
@@ -202,8 +208,12 @@ function PLUGIN:LegsWork( pl, speed )
 		legEnt:SetBodygroup( v.id, pl:GetBodygroup( v.id ) )
 	end
 	
-	for k, v in pairs( pl:GetMaterials( ) ) do
-		legEnt:SetSubMaterial( k - 1, pl:GetSubMaterial( k - 1 ) )
+	if ( ( self.nextMatSet or 0 ) <= CurTime( ) ) then
+		for k, v in pairs( pl:GetMaterials( ) ) do
+			legEnt:SetSubMaterial( k - 1, pl:GetSubMaterial( k - 1 ) )
+		end
+		
+		self.nextMatSet = CurTime( ) + 10
 	end
 	
 	self.velocity = pl:GetVelocity( ):Length2D( )

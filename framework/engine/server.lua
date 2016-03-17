@@ -195,9 +195,7 @@ function GM:PlayerCharacterLoaded( pl )
 		pl:SetHealth( health )
 	end
 	
-	if ( armor != 0 ) then
-		pl:SetArmor( armor )
-	end
+	pl:SetArmor( armor )
 	
 	local factionTable = catherine.faction.FindByIndex( pl:Team( ) )
 	local class = pl:Class( )
@@ -519,10 +517,7 @@ end
 function GM:PostCharacterSave( pl )
 	if ( pl:Alive( ) ) then
 		catherine.character.SetCharVar( pl, "char_health", pl:Health( ) )
-		
-		if ( pl:Armor( ) != 0 ) then
-			catherine.character.SetCharVar( pl, "char_armor", pl:Armor( ) )
-		end
+		catherine.character.SetCharVar( pl, "char_armor", pl:Armor( ) )
 	end
 end
 

@@ -68,7 +68,7 @@ function PANEL:Init( )
 		end
 		
 		surface.SetDrawColor( 255, 255, 255, pnl.logoA )
-		surface.SetMaterial( Material( "cat/test2.png", "smooth" ) )
+		surface.SetMaterial( Material( "cat/test.png", "smooth" ) )
 		surface.DrawTexturedRect( layoutX, layoutY, 512, 90 )
 		
 		draw.SimpleText( catherine.GetVersion( ) .. " " .. catherine.GetBuild( ), "catherine_normal15", 10, h - 20, Color( 255, 255, 255, self.logoA ), TEXT_ALIGN_LEFT, 1 )
@@ -1011,7 +1011,7 @@ function PANEL:Init( )
 			self.previewModel:SetModel( model )
 			
 			if ( IsValid( self.previewModel.Entity ) ) then
-				if ( factionTable.models[ 1 ].subMaterials ) then
+				if ( istable( factionTable.models[ 1 ] ) and factionTable.models[ 1 ].subMaterials ) then
 					for k, v in pairs( factionTable.models[ 1 ].subMaterials ) do
 						self.previewModel.Entity:SetSubMaterial( v[ 1 ], v[ 2 ] )
 					end
@@ -1076,7 +1076,7 @@ function PANEL:Init( )
 					surface.DrawOutlinedRect( 0, 0, w, h )
 				end
 				
-				if ( v.subMaterials ) then
+				if ( istable( v ) and v.subMaterials ) then
 					for k1, v1 in pairs( v.subMaterials ) do
 						icon.Entity:SetSubMaterial( v1[ 1 ], v1[ 2 ] )
 					end
@@ -1092,7 +1092,7 @@ function PANEL:Init( )
 					selectedIndex = k
 					
 					if ( IsValid( self.previewModel.Entity ) ) then
-						if ( v.subMaterials ) then
+						if ( istable( v ) and v.subMaterials ) then
 							for k1, v1 in pairs( v.subMaterials ) do
 								self.previewModel.Entity:SetSubMaterial( v1[ 1 ], v1[ 2 ] )
 							end

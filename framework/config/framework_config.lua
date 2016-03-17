@@ -129,7 +129,7 @@ if ( SERVER ) then
 else
 	catherine.configs.frameworkLogo = "CAT/symbol/cat_v4.png"
 	catherine.configs.schemaLogo = ""
-	catherine.configs.mainColor = Color( 50, 50, 50 )
+	catherine.configs.mainColor = Color( 255, 255, 255 )
 	
 	catherine.configs.mainBarWideScale = 0.25
 	catherine.configs.mainBarTallSize = 8

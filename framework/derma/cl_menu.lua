@@ -96,15 +96,13 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:AddMenuItem( name, uniqueID, func )
-	surface.SetFont( "catherine_lightUI25" )
+	surface.SetFont( "catherine_lightUI20" )
 	
 	local tw, th = surface.GetTextSize( name )
-	local mainCol = catherine.configs.mainColor
 	
 	local menuItem = vgui.Create( "DButton" )
 	menuItem:SetText( "" )
-	menuItem:SetFont( "catherine_lightUI25" )
-	menuItem:SetSize( tw + 40, self.menus:GetTall( ) )
+	menuItem:SetSize( tw + 30, self.menus:GetTall( ) )
 	menuItem:SetDrawBackground( false )
 	menuItem.lineAlpha = 0
 	menuItem.DoClick = function( pnl )
@@ -171,14 +169,16 @@ function PANEL:AddMenuItem( name, uniqueID, func )
 		end
 	end
 	menuItem.Paint = function( pnl, w, h )
+		local mainCol = catherine.configs.mainColor
+		
 		if ( catherine.menu.GetActivePanelUniqueID( ) == uniqueID ) then
 			pnl.lineAlpha = Lerp( 0.2, pnl.lineAlpha, 255 )
 		else
 			pnl.lineAlpha = Lerp( 0.2, pnl.lineAlpha, 0 )
 		end
 		
-		draw.RoundedBox( 0, 0, h - 3, w, 3, Color( 255, 255, 255, pnl.lineAlpha ) )
-		draw.SimpleText( name:upper( ), "catherine_lightUI25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
+		draw.RoundedBox( 0, 0, h - 3, w, 3, Color( mainCol.r, mainCol.g, mainCol.b, pnl.lineAlpha ) )
+		draw.SimpleText( name:upper( ), "catherine_lightUI20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 	end
 	
 	self.menus:AddPanel( menuItem )

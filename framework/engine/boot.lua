@@ -27,7 +27,7 @@ GM.Description = "A neat and beautiful role-play framework for Garry's Mod."
 GM.Author = "L7D"
 GM.Website = "https://github.com/L7D/Catherine"
 GM.Email = "smhjyh2009@gmail.com"
-GM.Version = "0.95.2"
+GM.Version = "1.0"
 GM.Build = "CAT"
 
 catherine.FolderName = GM.FolderName
@@ -55,60 +55,6 @@ catherine.UpdateLog = [[
 <body>
 	<div class="page-header">
 		<h2><center>Catherine Update Log</center><small>Version ]] .. GM.Version .. [[</small></h2>
-	</div>
-	
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<h3 class="panel-title">Added the Lot a hooks.</h3>
-		</div>
-	</div>
-	
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<h3 class="panel-title">Added the Query Character ban command.</h3>
-		</div>
-	</div>
-	
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<h3 class="panel-title">Added the ban command in the Scoreboard UI.</h3>
-		</div>
-	</div>
-	
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<h3 class="panel-title">Added the Config Viewer in the System UI.</h3>
-		</div>
-	</div>
-	
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<h3 class="panel-title">Added the new Library 'popNotify'.</h3>
-		</div>
-	</div>
-	
-	<div class="panel panel-danger">
-		<div class="panel-body">
-			<h3 class="panel-title">Fixed the Scoreboard, Option UI scroll bug.</h3>
-		</div>
-	</div>
-	
-	<div class="panel panel-danger">
-		<div class="panel-body">
-			<h3 class="panel-title">Fixed the Data Backup system.</h3>
-		</div>
-	</div>
-	
-	<div class="panel panel-danger">
-		<div class="panel-body">
-			<h3 class="panel-title">Fixed the Class UI bug.</h3>
-		</div>
-	</div>
-	
-	<div class="panel panel-danger">
-		<div class="panel-body">
-			<h3 class="panel-title">Fixed the 'Action' plugin bug.</h3>
-		</div>
 	</div>
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
