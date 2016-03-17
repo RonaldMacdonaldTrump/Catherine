@@ -25,12 +25,12 @@ end
 function catherine.util.Include( dir, typ )
 	dir = dir:lower( )
 	
-	if ( SERVER and ( typ == "SERVER" or dir:find( "sv_" ) ) ) then 
+	if ( SERVER and ( typ == "SERVER" or dir:find( "sv_" ) ) ) then
 		include( dir )
 	elseif ( typ == "CLIENT" or dir:find( "cl_" ) ) then
-		if ( SERVER ) then 
-			AddCSLuaFile( dir )
-		else 
+		AddCSLuaFile( dir )
+		
+		if ( CLIENT ) then
 			include( dir )
 		end
 	elseif ( typ == "SHARED" or dir:find( "sh_" ) ) then
@@ -40,10 +40,9 @@ function catherine.util.Include( dir, typ )
 end
 
 function catherine.util.IncludeInDir( dir, prefix )
-	local dir2 = ( prefix or "catherine/framework/" ) .. dir .. "/*.lua"
 	local dir3 = ( prefix or "catherine/framework/" ) .. dir
-
-	for k, v in pairs( file.Find( dir2, "LUA" ) ) do
+	
+	for k, v in pairs( file.Find( ( prefix or "catherine/framework/" ) .. dir .. "/*.lua", "LUA" ) ) do
 		catherine.util.Include( dir3 .. "/" .. v )
 	end
 end
@@ -52,6 +51,10 @@ function catherine.util.CalcDistanceByPos( loc, target )
 	if ( !IsValid( loc ) or !IsValid( target ) ) then return 0 end
 	
 	return loc:GetPos( ):Distance( target:GetPos( ) )
+end
+
+function catherine.util.IsSteamID( steamID )
+	return steamID:match( "STEAM_[0-5]:[0-9]:[0-9]+" )
 end
 
 function catherine.util.FindPlayerByName( name )
@@ -73,10 +76,10 @@ end
 function catherine.util.CheckStringMatch( one, two )
 	if ( one and two ) then
 		local one2, two2 = one:lower( ), two:lower( )
-
+		
 		if ( one == two ) then return true end
 		if ( one2 == two2 ) then return true end
-
+		
 		if ( one:find( two ) ) then return true end
 		if ( one2:find( two2 ) ) then return true end
 	end
@@ -103,7 +106,7 @@ end
 
 function catherine.util.GetChatTimeStamp( )
 	local hour = tonumber( os.date( "%H" ) )
-
+	
 	return os.date( "%p" ) .. " " .. ( hour > 12 and hour - 12 or hour ) .. ":" .. os.date( "%M" )
 end
 
@@ -144,13 +147,13 @@ function catherine.util.FolderDirectoryTranslate( dir )
 end
 
 function catherine.util.GetItemDropPos( pl )
-	local tr = util.TraceLine( {
-		start = pl:GetShootPos( ) - pl:GetAimVector( ) * 64,
-		endpos = pl:GetShootPos( ) + pl:GetAimVector( ) * 86,
-		filter = pl
-	} )
-
-	return tr.HitPos + tr.HitNormal * 36
+	local tr = pl:GetEyeTraceNoCursor( )
+	
+	if ( pl:GetShootPos( ):Distance( tr.HitPos ) < 100 ) then
+		return tr.HitPos
+	end
+	
+	return pl:GetShootPos( ) + pl:GetAimVector( ) * 100
 end
 
 function catherine.util.RemoveEntityByClass( class )
@@ -161,7 +164,7 @@ end
 
 function catherine.util.IsInBox( ent, minVector, maxVector, ignoreZPos )
 	local pos = ent:GetPos( )
-
+	
 	if ( ignoreZPos ) then
 		if ( ( pos.x >= math.min( minVector.x, maxVector.x ) and pos.x <= math.max( minVector.x, maxVector.x ) )
 		and ( pos.y >= math.min( minVector.y, maxVector.y ) and pos.y <= math.max( minVector.y, maxVector.y ) ) ) then
@@ -182,6 +185,18 @@ function catherine.util.GetDoorPartner( ent )
 			return v
 		end
 	end
+end
+
+function catherine.util.GetDoorPartners( ent )
+	local partners = { }
+	
+	for k, v in pairs( ents.FindInSphere( ent:GetPos( ), 128 ) ) do
+		if ( v:GetClass( ) == "prop_door_rotating" and ent:GetModel( ) == v:GetModel( ) and ent != v ) then
+			partners[ #partners + 1 ] = v
+		end
+	end
+	
+	return partners
 end
 
 local holdTypes = {
@@ -238,11 +253,11 @@ function catherine.util.GetDivideTextData( text, width )
 	if ( tw <= width ) then
 		return { ( text:gsub( "%s", " " ) ) }, tw
 	end
-
+	
 	for i = 1, #ex do
 		line = line .. " " .. ex[ i ]
 		tw = line:utf8len( )
-
+		
 		if ( tw > width ) then
 			wrapData[ #wrapData + 1 ] = line
 			line = ""
@@ -256,7 +271,9 @@ function catherine.util.GetDivideTextData( text, width )
 	return wrapData
 end
 
-catherine.util.IncludeInDir( "engine/external" )
+catherine.util.Include( "catherine/framework/engine/external/sh_netstream2.lua" )
+catherine.util.Include( "catherine/framework/engine/external/sh_pon.lua" )
+catherine.util.Include( "catherine/framework/engine/external/sh_utf8.lua" )
 
 if ( SERVER ) then
 	catherine.util.receiver = catherine.util.receiver or { str = { }, qry = { } }
@@ -288,24 +305,32 @@ if ( SERVER ) then
 			{ ... }
 		} )
 	end
-
+	
 	function catherine.util.StuffLanguage( pl, key, ... )
+		key = key or "^Basic_LangKeyError"
+		
 		return key:Left( 1 ) == "^" and LANG( pl, key:sub( 2 ), ... ) or key
 	end
 	
+	function catherine.util.GetForceClientConVar( pl, convarID, func )
+		netstream.Start( pl, "catherine.util.GetForceClientConVar", convarID )
+		
+		netstream.Hook( "catherine.util.GetForceClientConVarReceive", function( pl, data )
+			func( data )
+		end )
+	end
+	
 	function catherine.util.ProgressBar( pl, message, time, func )
-		if ( func ) then
-			local timerID = pl:SteamID( )
-			
-			timer.Remove( timerID )
-			
-			if ( message != false ) then
-				timer.Create( timerID, time, 1, function( )
-					if ( IsValid( pl ) ) then
-						func( pl )
-					end
-				end )
-			end
+		local timerID = pl:SteamID( )
+		
+		timer.Remove( timerID )
+		
+		if ( message != false and func ) then
+			timer.Create( timerID, time, 1, function( )
+				if ( IsValid( pl ) ) then
+					func( pl )
+				end
+			end )
 		end
 		
 		netstream.Start( pl, "catherine.util.ProgressBar", {
@@ -317,7 +342,7 @@ if ( SERVER ) then
 	function catherine.util.TopNotify( pl, message )
 		netstream.Start( pl, "catherine.util.TopNotify", message )
 	end
-
+	
 	function catherine.util.PlayAdvanceSound( pl, uniqueID, dir, volume )
 		pl.CAT_soundAdvPlaying = pl.CAT_soundAdvPlaying or { }
 		
@@ -346,13 +371,18 @@ if ( SERVER ) then
 			} )
 		end
 	end
-
+	
+	local resourceBlockFolders = {
+		".svn",
+		".git"
+	}
+	
 	function catherine.util.AddResourceInFolder( dir )
-		local files, dirs = file.Find( dir .. "/*", "GAME" )
+		local files, folders = file.Find( dir .. "/*", "GAME" )
 		
-		table.RemoveByValue( dirs, ".svn" )
-		
-		for k, v in pairs( dirs ) do
+		for k, v in pairs( folders ) do
+			if ( table.HasValue( resourceBlockFolders, v ) ) then continue end
+			
 			catherine.util.AddResourceInFolder( dir .. "/" .. v )
 		end
 		
@@ -362,9 +392,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.util.ForceDoorOpen( ent, lifeTime, vel, ignorePartnerDoor )
-		if ( !ent:IsDoor( ) ) then
-			return
-		end
+		if ( !ent:IsDoor( ) ) then return end
 		
 		lifeTime = lifeTime or 150
 		vel = vel or VectorRand( ) * 120
@@ -372,7 +400,7 @@ if ( SERVER ) then
 		if ( IsValid( ent.CAT_doorDummy ) ) then
 			ent.CAT_doorDummy:Remove( )
 		end
-
+		
 		local partner = catherine.util.GetDoorPartner( ent )
 		
 		if ( IsValid( partner ) and !ignorePartnerDoor ) then
@@ -394,7 +422,7 @@ if ( SERVER ) then
 		dummyEnt:Spawn( )
 		dummyEnt:CallOnRemove( "RecoverDoor", function( )
 			if ( !IsValid( ent ) ) then return end
-
+			
 			ent:SetNotSolid( false )
 			ent:SetNoDraw( false )
 			ent:DrawShadow( true )
@@ -417,11 +445,11 @@ if ( SERVER ) then
 		ent.CAT_doorDummy = dummyEnt
 		ent.CAT_ignoreUse = true
 		
-		for k, v in ipairs( ent:GetBodyGroups( ) ) do
+		for k, v in pairs( ent:GetBodyGroups( ) ) do
 			dummyEnt:SetBodygroup( v.id, ent:GetBodygroup( v.id ) )
 		end
-
-		for k, v in ipairs( ents.GetAll( ) ) do
+		
+		for k, v in pairs( ents.GetAll( ) ) do
 			if ( v:GetParent( ) != ent ) then continue end
 			
 			v:SetNotSolid( true )
@@ -447,7 +475,7 @@ if ( SERVER ) then
 				timer.Remove( timerID )
 			end
 		end )
-
+		
 		timer.Create( timerID2, lifeTime, 1, function( )
 			if ( !IsValid( ent ) or !IsValid( ent.CAT_doorDummy ) ) then
 				return
@@ -455,7 +483,7 @@ if ( SERVER ) then
 			
 			local timerID3 = "Catherine.timer.DoorFade." .. ent:EntIndex( )
 			local alpha = col.a
-
+			
 			timer.Create( timerID3, 0.1, col.a, function( )
 				if ( IsValid( dummyEnt ) ) then
 					alpha = alpha - 1
@@ -485,7 +513,15 @@ if ( SERVER ) then
 	function catherine.util.StopMotionBlur( pl, fadeTime )
 		netstream.Start( pl, "catherine.util.StopMotionBlur", fadeTime )
 	end
-
+	
+	function catherine.util.SendDermaMessage( pl, msg, okStr, sound )
+		netstream.Start( pl, "catherine.util.SendDermaMessage", {
+			msg,
+			okStr or false,
+			sound
+		} )
+	end
+	
 	function catherine.util.StringReceiver( pl, id, msg, defV, func )
 		local steamID = pl:SteamID( )
 		
@@ -518,8 +554,8 @@ if ( SERVER ) then
 			fadeTime
 		} )
 	end
-
-	netstream.Hook( "catherine.util.StringReceiver_Receive", function( pl, data )
+	
+	netstream.Hook( "catherine.util.StringReceiverReceive", function( pl, data )
 		local id = data[ 1 ]
 		local steamID = pl:SteamID( )
 		local rec = catherine.util.receiver.str
@@ -530,7 +566,7 @@ if ( SERVER ) then
 		catherine.util.receiver.str[ steamID ][ id ] = nil
 	end )
 	
-	netstream.Hook( "catherine.util.QueryReceiver_Receive", function( pl, data )
+	netstream.Hook( "catherine.util.QueryReceiverReceive", function( pl, data )
 		local id = data[ 1 ]
 		local steamID = pl:SteamID( )
 		local rec = catherine.util.receiver.qry
@@ -547,9 +583,17 @@ else
 	catherine.util.dermaMenuTitle = catherine.util.dermaMenuTitle or nil
 	local blurMat = Material( "pp/blurscreen" )
 	
+	netstream.Hook( "catherine.util.SendDermaMessage", function( data )
+		Derma_Message( data[ 1 ], nil, data[ 2 ] or LANG( "Basic_UI_OK" ), data[ 3 ] )
+	end )
+	
+	netstream.Hook( "catherine.util.GetForceClientConVar", function( data )
+		netstream.Start( "catherine.util.GetForceClientConVarReceive", GetConVarString( data ) )
+	end )
+	
 	netstream.Hook( "catherine.util.StringReceiver", function( data )
 		Derma_StringRequest( "", catherine.util.StuffLanguage( data[ 2 ] ), data[ 3 ] or "", function( val )
-				netstream.Start( "catherine.util.StringReceiver_Receive", {
+				netstream.Start( "catherine.util.StringReceiverReceive", {
 					data[ 1 ],
 					val
 				} )
@@ -559,12 +603,12 @@ else
 	
 	netstream.Hook( "catherine.util.QueryReceiver", function( data )
 		Derma_Query( catherine.util.StuffLanguage( data[ 2 ] ), "", LANG( "Basic_UI_OK" ), function( )
-				netstream.Start( "catherine.util.QueryReceiver_Receive", {
+				netstream.Start( "catherine.util.QueryReceiverReceive", {
 					data[ 1 ],
 					true
 				} )
 			end, LANG( "Basic_UI_NO" ), function( ) 
-				netstream.Start( "catherine.util.QueryReceiver_Receive", {
+				netstream.Start( "catherine.util.QueryReceiverReceive", {
 					data[ 1 ],
 					false
 				} )
@@ -597,13 +641,13 @@ else
 			catherine.util.motionBlur = motionBlurData
 		end
 	end )
-
+	
 	netstream.Hook( "catherine.util.ScreenColorEffect", function( data )
 		local col = data[ 1 ]
 		local time = CurTime( ) + ( data[ 2 ] or 0.1 )
 		local fadeTime = data[ 3 ] or 0.03
 		local a = 255
-
+		
 		hook.Remove( "HUDPaint", "catherine.util.ScreenColorEffect" )
 		hook.Add( "HUDPaint", "catherine.util.ScreenColorEffect", function( )
 			if ( time <= CurTime( ) ) then
@@ -618,13 +662,13 @@ else
 			draw.RoundedBox( 0, 0, 0, ScrW( ), ScrH( ), Color( col.r, col.g, col.b, a ) )
 		end )
 	end )
-
+	
 	netstream.Hook( "catherine.util.PlayAdvanceSound", function( data )
 		if ( !IsValid( catherine.pl ) ) then return end
 		local uniqueID = data[ 1 ]
 		local dir = data[ 2 ]
 		local volume = data[ 3 ]
-
+		
 		if ( catherine.util.advSounds[ uniqueID ] ) then
 			catherine.util.advSounds[ uniqueID ]:Stop( )
 		end
@@ -655,7 +699,7 @@ else
 			catherine.util.advSounds[ uniqueID ] = nil
 		end
 	end )
-
+	
 	netstream.Hook( "catherine.util.Notify", function( data )
 		catherine.notify.Add( data[ 1 ], data[ 2 ] )
 	end )
@@ -667,7 +711,7 @@ else
 	netstream.Hook( "catherine.util.NotifyAllLang", function( data )
 		catherine.notify.Add( LANG( data[ 1 ], unpack( data[ 2 ] ) ) )
 	end )
-
+	
 	netstream.Hook( "catherine.util.ProgressBar", function( data )
 		if ( data[ 1 ] == false ) then
 			catherine.hud.progressBar = nil
@@ -685,19 +729,21 @@ else
 		
 		catherine.hud.TopNotifyAdd( data )
 	end )
-
+	
 	function catherine.util.PlayButtonSound( typ )
 	
 	end
 	
 	function catherine.util.StuffLanguage( key, ... )
+		key = key or "^Basic_LangKeyError"
+		
 		return key:Left( 1 ) == "^" and LANG( key:sub( 2 ), ... ) or key
 	end
 	
 	function catherine.util.DrawCoolText( message, font, x, y, col, xA, yA, backgroundCol, backgroundBor )
 		if ( !message or !font or !x or !y ) then return end
 		backgroundBor = backgroundBor or 5
-
+		
 		surface.SetFont( font )
 		local tw, th = surface.GetTextSize( message )
 		
@@ -730,7 +776,7 @@ else
 	function catherine.util.BlurDraw( x, y, w, h, amount )
 		surface.SetMaterial( blurMat )
 		surface.SetDrawColor( 255, 255, 255 )
-
+		
 		for i = -0.2, 1, 0.2 do
 			blurMat:SetFloat( "$blur", i * ( amount or 5 ) )
 			blurMat:Recompute( )
@@ -738,7 +784,7 @@ else
 			surface.DrawTexturedRectUV( x, y, w, h, x / ScrW( ), y / ScrH( ), ( x + w ) / ScrW( ), ( y + h ) / ScrH( ) )
 		end
 	end
-
+	
 	function catherine.util.GetWrapTextData( text, width, font )
 		font = font or "catherine_normal15"
 		surface.SetFont( font )
@@ -752,7 +798,7 @@ else
 		if ( tw <= width ) then
 			return { ( text:gsub( "%s", " " ) ) }, tw
 		end
-
+		
 		for i = 1, #ex do
 			line = line .. " " .. ex[ i ]
 			tw = surface.GetTextSize( line )

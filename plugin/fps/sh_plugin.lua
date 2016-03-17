@@ -23,10 +23,10 @@ PLUGIN.desc = "^FPS_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "FPS_Plugin_Name" ] = "FPS",
-	[ "FPS_Plugin_Desc" ] = "Good stuff.",
+	[ "FPS_Plugin_Desc" ] = "Showing the FPS.",
 	[ "Option_Str_FPS_Name" ] = "Show FPS",
 	[ "Option_Str_FPS_Desc" ] = "Displays the FPS.",
-	[ "Hint_FPS_01" ] = "If you want look FPS?, go to the Setting!"
+	[ "Hint_FPS_01" ] = "If you want look FPS?, go to the Setting menu!"
 } )
 
 catherine.language.Merge( "korean", {
@@ -34,7 +34,7 @@ catherine.language.Merge( "korean", {
 	[ "FPS_Plugin_Desc" ] = "FPS 를 표시합니다.",
 	[ "Option_Str_FPS_Name" ] = "FPS 표시",
 	[ "Option_Str_FPS_Desc" ] = "FPS 를 표시합니다.",
-	[ "Hint_FPS_01" ] = "현재 FPS 를 보고 싶으신가요?, 설정에 가세요!"
+	[ "Hint_FPS_01" ] = "현재 FPS 를 보고 싶으신가요?, 설정 메뉴에 가세요!"
 } )
 
 if ( SERVER ) then return end
@@ -43,8 +43,9 @@ function PLUGIN:Initialize( )
 	CAT_CONVAR_FPS = CreateClientConVar( "cat_convar_showfps", "0", true, true )
 end
 
-function PLUGIN:HUDPaint( )
+function PLUGIN:HUDDrawScoreBoard( )
 	if ( GetConVarString( "cat_convar_showfps" ) == "0" ) then return end
+	if ( !catherine.pl:IsCharacterLoaded( ) or IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) then return end
 	local curFPS = math.Round( 1 / FrameTime( ) )
 	local minFPS = self.minFPS or 60
 	local maxFPS = self.maxFPS or 100
@@ -53,7 +54,7 @@ function PLUGIN:HUDPaint( )
 		self.barH = 1
 	end
 	
-	self.barH = math.Approach( self.barH, ( curFPS / maxFPS ) * 100, 0.5 )
+	self.barH = math.Approach( self.barH, ( curFPS / maxFPS ) * 100, 1 )
 	
 	local barH = self.barH
 	
@@ -67,8 +68,8 @@ function PLUGIN:HUDPaint( )
 	
 	draw.SimpleText( curFPS .. " FPS", "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	draw.RoundedBox( 0, ScrW( ) - 30, ( ScrH( ) / 2 ) - barH, 20, barH, Color( 255, 255, 255, 255 ) )
-	draw.SimpleText( "Max : " .. maxFPS, "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 40, Color( 150, 255, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
-	draw.SimpleText( "Min : " .. minFPS, "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 55, Color( 255, 150, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( "MAX : " .. maxFPS, "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 40, Color( 150, 255, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( "MIN : " .. minFPS, "catherine_fps", ScrW( ) - 10, ScrH( ) / 2 + 55, Color( 255, 150, 150, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 catherine.font.Register( "catherine_fps", {

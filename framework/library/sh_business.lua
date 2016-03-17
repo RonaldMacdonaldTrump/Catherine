@@ -34,11 +34,15 @@ if ( SERVER ) then
 			cost = cost + ( itemTable.cost * v )
 		end
 		
-		if ( !catherine.cash.Has( pl, cost ) ) then
-			catherine.util.NotifyLang( pl, "Cash_Notify_HasNot" )
+		if ( table.Count( shipLists ) <= 0 ) then
 			return
 		end
-
+		
+		if ( !catherine.cash.Has( pl, cost ) ) then
+			catherine.util.NotifyLang( pl, "Cash_Notify_HasNot", catherine.cash.GetOnlySingular( ) )
+			return
+		end
+		
 		local ent = ents.Create( "cat_shipment" )
 		ent:SetPos( catherine.util.GetItemDropPos( pl ) )
 		ent:SetAngles( Angle( ) )
@@ -65,6 +69,10 @@ if ( SERVER ) then
 		data = Entity( data )
 		
 		if ( IsValid( data ) ) then
+			if ( hook.Run( "ShouldPlayShipmentRemoveSound", pl, data ) != false ) then
+				data:EmitSound( hook.Run( "GetShipmentRemoveSound", pl, data ) or "physics/wood/wood_box_impact_hard" .. math.random( 1, 3 ) .. ".wav", 60 )
+			end
+			
 			data:Remove( )
 		end
 	end )

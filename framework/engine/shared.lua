@@ -72,87 +72,86 @@ function GM:CalcMainActivity( pl, velo )
 	local holdType = "normal"
 	local status = WEAPON_LOWERED
 	local act = "idle"
-
+	
 	if ( twoD( velo ) >= catherine.configs.playerDefaultRunSpeed - 10 ) then
 		act = "run"
 	elseif ( twoD( velo ) >= 5 ) then
 		act = "walk"
 	end
-
+	
 	if ( IsValid( wep ) ) then
 		holdType = catherine.util.GetHoldType( wep )
-
+		
 		if ( wep.AlwaysRaised or catherine.configs.alwaysRaised[ wep:GetClass( ) ] ) then
 			status = WEAPON_RAISED
 		end
 	end
-
+	
 	if ( pl:GetWeaponRaised( ) ) then
 		status = WEAPON_RAISED
 	end
-
+	
 	if ( mdl:find( "/player" ) or mdl:find( "/playermodel" ) or class == "player" ) then
 		local calcIdle, calcOver = self.BaseClass:CalcMainActivity( pl, velo )
-
+		
 		if ( status == WEAPON_LOWERED ) then
 			if ( pl:Crouching( ) ) then
 				act = act.."_crouch"
 			end
-
+			
 			if ( !pl:OnGround( ) ) then
 				act = "jump"
 			end
-
+			
 			if ( !normalHoldTypes[ holdType ] ) then
 				calcIdle = _G[ "ACT_HL2MP_" .. act:upper( ) .. "_PASSIVE" ]
 			else
 				calcIdle = act == "jump" and ACT_HL2MP_JUMP_PASSIVE or _G[ "ACT_HL2MP_" .. act:upper( ) ]
 			end
 		end
-
+		
 		pl.CalcIdle = calcIdle
 		pl.CalcOver = calcOver
-
+		
 		return pl.CalcIdle, pl.CalcOver
 	end
 	
 	if ( pl:IsCharacterLoaded( ) and pl:Alive( ) ) then
 		pl.CalcOver = -1
-
+		
 		if ( pl:Crouching( ) ) then
 			act = act .. "_crouch"
 		end
-
+		
 		local aniClass = catherine.animation[ class ]
-
+		
 		if ( !aniClass ) then
 			class = "citizen_male"
 		end
-
+		
 		if ( !aniClass[ holdType ] ) then
 			holdType = "normal"
 		end
-
+		
 		if ( !aniClass[ holdType ][ act ] ) then
 			act = "idle"
 		end
-
+		
 		local ani = aniClass[ holdType ][ act ]
 		local val = ACT_IDLE
-
+		
 		if ( !pl:OnGround( ) ) then
 			pl.CalcIdle = aniClass.glide or ACT_GLIDE
 		elseif ( pl:InVehicle( ) ) then
 			local vehicleTable = aniClass.vehicle
-			local class = "chair" // need fix. :)
+			local vehicle = pl:GetVehicle( )
+			local class = vehicle:IsChair( ) and "chair" or vehicle:GetClass( )
 			
 			if ( vehicleTable and vehicleTable[ class ] ) then
 				local act = vehicleTable[ class ][ 1 ]
-				local vecFix = vehicleTable[ class ][ 2 ]
+				local posFix = vehicleTable[ class ][ 2 ]
 				
-				if ( vecFix ) then
-					pl:ManipulateBonePosition( 0, vecFix )
-				end
+				pl:ManipulateBonePosition( 0, posFix )
 				
 				if ( act ) then
 					if ( type( act ) == "string" ) then
@@ -166,7 +165,7 @@ function GM:CalcMainActivity( pl, velo )
 			pl:ManipulateBonePosition( 0, vector_origin )
 			
 			val = ani[ status ]
-
+			
 			if ( type( val ) == "string" ) then
 				pl.CalcOver = pl:LookupSequence( val )
 			else
@@ -175,23 +174,29 @@ function GM:CalcMainActivity( pl, velo )
 		end
 		
 		local seqAni = pl:GetNetVar( "seqAni" )
-
+		
 		if ( seqAni ) then
 			pl.CalcOver = pl:LookupSequence( seqAni )
 		end
-
+		
 		if ( CLIENT ) then
 			pl:SetIK( false )
 		end
-
+		
 		pl:SetPoseParameter( "move_yaw", math.NormalizeAngle( velo:Angle( ).yaw - pl:EyeAngles( ).y ) )
-
+		
 		return pl.CalcIdle or ACT_IDLE, pl.CalcOver or -1
 	end
 end
 
-function GM:PlayerNoClip( pl, bool )
-	local force = hook.Run( "PlayerCanNoClip", pl, bool )
+function GM:PlayerCanNoClip( pl, status )
+	if ( pl:IsRagdolled( ) ) then
+		return false
+	end
+end
+
+function GM:PlayerNoClip( pl, status )
+	local force = hook.Run( "PlayerCanNoClip", pl, status )
 	local isAdmin = pl:IsAdmin( )
 	
 	if ( !isAdmin or force == false ) then
@@ -209,11 +214,12 @@ function GM:PlayerNoClip( pl, bool )
 		pl:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
 		
 		if ( SERVER ) then
+			pl:SetNoTarget( true )
 			pl:DrawWorldModel( false )
 			pl:SetNetVar( "nocliping", true )
 			
-			if ( pl:IsInGod( ) ) then
-				pl.CAT_alreadyNoclipGod = true
+			if ( pl:HasGodMode( ) ) then
+				pl.CAT_godmodeAlready = true
 			else
 				pl:GodEnable( )
 			end
@@ -227,13 +233,13 @@ function GM:PlayerNoClip( pl, bool )
 		pl:SetCollisionGroup( COLLISION_GROUP_PLAYER )
 		
 		if ( SERVER ) then
+			pl:SetNoTarget( false )
 			pl:DrawWorldModel( true )
 			pl:SetNetVar( "nocliping", false )
 			
-			if ( pl.CAT_alreadyNoclipGod ) then
-				pl.CAT_alreadyNoclipGod = nil
-			else
+			if ( !pl.CAT_godmodeAlready ) then
 				pl:GodDisable( )
+				pl.CAT_godmodeAlready = nil
 			end
 		end
 		
@@ -246,46 +252,46 @@ end
 function GM:DoAnimationEvent( pl, eve, data )
 	local mdl = pl:GetModel( ):lower( )
 	local class = catherine.animation.Get( mdl )
-
+	
 	if ( mdl:find( "/player/" ) or mdl:find( "/playermodel" ) or class == "player" ) then
 		return self.BaseClass:DoAnimationEvent( pl, eve, data )
 	end
-
+	
 	local wep = pl:GetActiveWeapon( )
 	local holdType = "normal"
 	
 	if ( !catherine.animation[ class ] ) then
 		class = "citizen_male"
 	end
-
+	
 	if ( IsValid( wep ) ) then
 		holdType = catherine.util.GetHoldType( wep )
-	end
-
+	end	
+	
 	if ( !catherine.animation[ class ][ holdType ] ) then
 		holdType = "normal"
 	end
-
-	local SAO = catherine.animation[ class ][ holdType ]
-
+	
+	local ani = catherine.animation[ class ][ holdType ]
+	
 	if ( eve == PLAYERANIMEVENT_ATTACK_PRIMARY ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, SAO.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
-
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
+		
 		return ACT_VM_PRIMARYATTACK
 	elseif ( eve == PLAYERANIMEVENT_ATTACK_SECONDARY ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, SAO.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
-
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true )
+		
 		return ACT_VM_SECONDARYATTACK
 	elseif ( eve == PLAYERANIMEVENT_RELOAD ) then
-		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, SAO.reload or ACT_GESTURE_RELOAD_SMG1, true )
-
+		pl:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ani.reload or ACT_GESTURE_RELOAD_SMG1, true )
+		
 		return ACT_INVALID
 	elseif ( eve == PLAYERANIMEVENT_CANCEL_RELOAD ) then
 		pl:AnimResetGestureSlot( GESTURE_SLOT_ATTACK_AND_RELOAD )
-
+		
 		return ACT_INVALID
 	end
-
+	
 	return nil
 end
 
@@ -303,8 +309,12 @@ function GM:StartCommand( pl, cmd )
 	end
 end
 
-function GM:PlayerCanThrowPunch( pl )
-	return pl:GetWeaponRaised( )
+function GM:PlayerShouldThrowPunch( pl )
+	if ( pl:GetWeaponRaised( ) ) then
+		return true
+	else
+		return false
+	end
 end
 
 function GM:GetPlayerInformation( pl, target, isFull )

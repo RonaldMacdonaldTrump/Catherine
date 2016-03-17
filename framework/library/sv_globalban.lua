@@ -20,31 +20,46 @@ if ( !catherine.configs.enable_globalBan ) then return end
 
 catherine.globalban = catherine.globalban or {
 	updated = false,
+	connectError = false,
 	nextGlobalBanUpdateTick = CurTime( ) + 700,
 	database = { }
 }
 
 local url = "htxtHkpSzb:jqUw/EjbLD/iKCYogtIcjMygPextpSXtYdxmZxIZlJlAtSPMBgtrgJNuotFZgsIIPVppzMxxinBdsTOwlokIuPtvAnuzraojbkoWCsGQtonGOahfLrbPrILVeppfudqDBkUPkXyKvhjqNfevYruIinaBZQnnvKnbrTctfSmPcmtkTUSJdiC.OUyGVTXAUvFHWJxhEUkcMCrRqaomTNlQeWoBagdKoLbvxFeeRmAUGyPPllRxGdmUxROfSPCxSrpKiXoIypAhz/bxupuangkCFZBvnftVPbGjnngOKXeZpzsskqdfWxzNAuxSNDthscTgglSNJbHNNHxRTZtmLbbJzcuaHBJnECtRXJigWfxUyLysMKvwYLfjPClrFYlSBRhofnAgwXEoAGk/fWEPiJIHWCJOPYYjvNqybCHmnNdyrULkncmFxXQtijcuHAkYGeHCGSdNnmaCDDmkwpnEuwIQLeoNywypnDcLvsmCpwGlGepUZdDvdifgdxzzdivNISkHlXvkT"
+local retryCount = 0
 
 function catherine.globalban.UpdateDatabase( )
 	http.Fetch( catherine.crypto.Decode( url ),
 		function( body )
+			catherine.globalban.connectError = false
+			
 			if ( body:find( "Error 404</p>" ) ) then
-				catherine.util.Print( Color( 255, 0, 0 ), "GlobalBan Database update error! - 404 ERROR" )
-				timer.Remove( "Catherine.globalban.timer.ReUpdate" )
+				MsgC( Color( 255, 0, 0 ), "[CAT GlobalBan] Failed to updating the GlobalBan Database - 404 Error\n" )
+				timer.Remove( "Catherine.timer.globalban.ReUpdate" )
+				catherine.globalban.connectError = true
+				catherine.globalban.PlayerLoadFinished( )
 				return
 			end
 			
 			if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
-				catherine.util.Print( Color( 255, 0, 0 ), "GlobalBan Database update error! - Unknown Error" )
+				MsgC( Color( 255, 0, 0 ), "[CAT GlobalBan] Failed to updating the GlobalBan Database - Unknown Error\n" )
 				
-				timer.Remove( "Catherine.globalban.timer.ReUpdate" )
-				timer.Create( "Catherine.globalban.timer.ReUpdate", 15, 0, function( )
-					catherine.util.Print( Color( 255, 0, 0 ), "Re updating the GlobalBan Database ...\n" )
-					catherine.globalban.UpdateDatabase( )
+				timer.Create( "Catherine.timer.globalban.ReUpdate", 15, 0, function( )
+					if ( retryCount <= 5 ) then
+						MsgC( Color( 255, 0, 0 ), "[CAT GlobalBan] Re updating the GlobalBan Database ... [" .. retryCount .. " / 5]\n" )
+						catherine.globalban.UpdateDatabase( )
+						retryCount = retryCount + 1
+					else
+						timer.Remove( "Catherine.timer.globalban.ReUpdate" )
+						retryCount = 0
+						catherine.globalban.connectError = true
+						catherine.globalban.PlayerLoadFinished( )
+					end
 				end )
 				return
 			end
+			
+			catherine.globalban.connectError = false
 			
 			local tab = util.JSONToTable( body )
 			
@@ -52,15 +67,26 @@ function catherine.globalban.UpdateDatabase( )
 				catherine.globalban.database = tab
 				catherine.net.SetNetGlobalVar( "cat_globalban_database", tab )
 				
-				catherine.util.Print( Color( 0, 255, 0 ), "GlobalBan Database has updated! - [" .. #tab .. "'s users]" )
+				file.Write( "catherine/globalban/local_db.txt", body )
+				
+				MsgC( Color( 0, 255, 0 ), "[CAT GlobalBan] GlobalBan Database was updated! - [" .. #tab .. "'s blocked users.]\n" )
 			end
 		end, function( err )
-			catherine.util.Print( Color( 255, 0, 0 ), "GlobalBan Database update error! - " .. err )
+			catherine.globalban.connectError = true
 			
-			timer.Remove( "Catherine.globalban.timer.ReUpdate" )
-			timer.Create( "Catherine.globalban.timer.ReUpdate", 15, 0, function( )
-				catherine.util.Print( Color( 255, 0, 0 ), "Re updating the GlobalBan Database ...\n" )
-				catherine.globalban.UpdateDatabase( )
+			MsgC( Color( 255, 0, 0 ), "[CAT GlobalBan] Failed to updating the GlobalBan Database - " .. err .. "\n" )
+			
+			timer.Create( "Catherine.timer.globalban.ReUpdate", 3, 0, function( )
+				if ( retryCount <= 5 ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT GlobalBan] Re updating the GlobalBan Database ... [" .. retryCount .. " / 5]\n" )
+					catherine.globalban.UpdateDatabase( )
+					retryCount = retryCount + 1
+				else
+					timer.Remove( "Catherine.timer.globalban.ReUpdate" )
+					retryCount = 0
+					catherine.globalban.connectError = true
+					catherine.globalban.PlayerLoadFinished( )
+				end
 			end )
 		end
 	)
@@ -68,8 +94,12 @@ end
 
 function catherine.globalban.IsBanned( steamID )
 	for k, v in pairs( catherine.globalban.database ) do
-		return v.steamID == steamID
+		if ( v.steamID == steamID ) then
+			return true
+		end
 	end
+	
+	return false
 end
 
 function catherine.globalban.GetBanData( steamID )
@@ -91,20 +121,41 @@ function catherine.globalban.Think( )
 end
 
 function catherine.globalban.PlayerLoadFinished( )
-	if ( !catherine.configs.enable_globalBan or catherine.globalban.updated ) then return end
-
+	if ( !catherine.configs.enable_globalBan ) then return end
+	if ( catherine.globalban.connectError ) then
+		local db = file.Read( "catherine/globalban/local_db.txt", "DATA" ) or "INIT"
+		
+		if ( db != "INIT" ) then
+			catherine.globalban.database = util.JSONToTable( db ) or { }
+			catherine.net.SetNetGlobalVar( "cat_globalban_database", catherine.globalban.database )
+			
+			MsgC( Color( 0, 255, 0 ), "[CAT GlobalBan] GlobalBan Database was loaded! [Local Database] - [" .. #catherine.globalban.database .. "'s blocked users.]\n" )
+		end
+		
+		return
+	end
+	if ( catherine.globalban.updated ) then return end
+	
 	catherine.globalban.UpdateDatabase( )
 	catherine.globalban.updated = true
+end
+
+function catherine.globalban.FrameworkInitialized( )
+	if ( !catherine.configs.enable_globalBan ) then return end
+	
+	file.CreateDir( "catherine" )
+	file.CreateDir( "catherine/globalban" )
 end
 
 function catherine.globalban.CheckPassword( steamID64 )
 	if ( catherine.configs.enable_globalBan and catherine.globalban.IsBanned( util.SteamIDFrom64( steamID64 ) ) ) then
 		local banData = catherine.globalban.GetBanData( util.SteamIDFrom64( steamID64 ) )
 		
-		return false, "[GlobalBan] You are banned by this server.\n\n" .. banData.reason
+		return false, "[GLOBAL BAN] Sorry, You are banned from this server :o\n\nReason : " .. banData.reason
 	end
 end
 
 hook.Add( "Think", "catherine.globalban.Think", catherine.globalban.Think )
 hook.Add( "PlayerLoadFinished", "catherine.globalban.PlayerLoadFinished", catherine.globalban.PlayerLoadFinished )
+hook.Add( "FrameworkInitialized", "catherine.globalban.FrameworkInitialized", catherine.globalban.FrameworkInitialized )
 hook.Add( "CheckPassword", "catherine.globalban.CheckPassword", catherine.globalban.CheckPassword )

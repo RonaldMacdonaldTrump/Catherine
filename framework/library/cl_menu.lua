@@ -17,9 +17,9 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 catherine.menu = catherine.menu or {
-	activeButtonData = { },
 	activePanel = nil,
-	activePanelName = nil
+	activePanelName = nil,
+	activePanelUniqueID = nil
 }
 catherine.menu.lists = { }
 CAT_MENU_STATUS_SAMEMENU = 1
@@ -27,12 +27,35 @@ CAT_MENU_STATUS_SAMEMENU_NO = 2
 CAT_MENU_STATUS_NOTSAMEMENU = 3
 CAT_MENU_STATUS_NOTSAMEMENU_NO = 4
 
-function catherine.menu.Register( name, func, canLook )
+function catherine.menu.Register( name, uniqueID, func, canLook )
 	catherine.menu.lists[ #catherine.menu.lists + 1 ] = {
 		name = name,
+		uniqueID = uniqueID,
 		func = func,
 		canLook = canLook
 	}
+end
+
+function catherine.menu.Override( uniqueID, name, func, canLook )
+	for k, v in pairs( catherine.menu.lists ) do
+		if ( v.uniqueID == uniqueID ) then
+			local data = catherine.menu.lists[ k ]
+			
+			if ( name ) then
+				data.name = name
+			end
+			
+			if ( func ) then
+				data.func = func
+			end
+			
+			if ( canLook ) then
+				data.canLook = canLook
+			end
+			
+			break
+		end
+	end
 end
 
 function catherine.menu.GetAll( )
@@ -47,50 +70,59 @@ function catherine.menu.GetActivePanel( )
 	return catherine.menu.activePanel
 end
 
-function catherine.menu.GetActiveButtonData( )
-	return catherine.menu.activeButtonData.w, catherine.menu.activeButtonData.x
-end
-
 function catherine.menu.GetActivePanelName( )
 	return catherine.menu.activePanelName
+end
+
+function catherine.menu.GetActivePanelUniqueID( )
+	return catherine.menu.activePanelUniqueID
 end
 
 function catherine.menu.SetActivePanel( pnl )
 	catherine.menu.activePanel = pnl
 end
 
-function catherine.menu.SetActiveButton( pnl )
-	catherine.menu.activeButton = pnl
-end
-
 function catherine.menu.SetActivePanelName( name )
 	catherine.menu.activePanelName = name
 end
 
-function catherine.menu.SetActivePanelData( w, x )
-	catherine.menu.activeButtonData = {
-		w = w,
-		x = x
-	}
+function catherine.menu.SetActivePanelUniqueID( uniqueID )
+	catherine.menu.activePanelUniqueID = uniqueID
 end
 
 function catherine.menu.RecoverLastActivePanel( menuPanel )
 	local activePanel = catherine.menu.GetActivePanel( )
-
+	local pl = catherine.pl
+	
 	if ( IsValid( activePanel ) and type( activePanel ) == "Panel" and activePanel:IsHiding( ) ) then
-		local w, x = catherine.menu.GetActiveButtonData( )
+		for k, v in pairs( catherine.menu.GetAll( ) ) do
+			if ( v.uniqueID == catherine.menu.GetActivePanelUniqueID( ) ) then
+				if ( v.canLook and v.canLook( pl ) == false ) then
+					catherine.menu.SetActivePanel( nil )
+					catherine.menu.SetActivePanelName( nil )
+					catherine.menu.SetActivePanelUniqueID( nil )
+					
+					return
+				end
+			end
+		end
 		
 		activePanel:Show( )
 		activePanel:OnMenuRecovered( )
-		
-		menuPanel.activePanelShowTargetX = x
-		menuPanel.activePanelShowTargetW = w
 	end
 end
 
 function catherine.menu.Rebuild( )
 	if ( IsValid( catherine.vgui.menu ) ) then
-		catherine.vgui.menu:Remove( )
+		if ( catherine.vgui.menu:IsVisible( ) ) then
+			catherine.vgui.menu:Remove( )
+			
+			timer.Simple( 0, function( )
+				catherine.vgui.menu = vgui.Create( "catherine.vgui.menu" )
+			end )
+		else
+			catherine.vgui.menu:Remove( )
+		end
 	end
 end
 
@@ -102,10 +134,7 @@ function catherine.menu.VGUIMousePressed( pnl, code )
 		activePanel:Close( )
 		catherine.menu.SetActivePanel( nil )
 		catherine.menu.SetActivePanelName( nil )
-		catherine.menu.SetActivePanelData( 0, 0 )
-		
-		menuPanel.activePanelShowTargetX = 0
-		menuPanel.activePanelShowTargetW = 0
+		catherine.menu.SetActivePanelUniqueID( nil )
 	end
 end
 

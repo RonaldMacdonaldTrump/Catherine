@@ -23,7 +23,7 @@ PLUGIN.desc = "^SavePos_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "SavePos_Plugin_Name" ] = "Save Pos",
-	[ "SavePos_Plugin_Desc" ] = "Good stuff."
+	[ "SavePos_Plugin_Desc" ] = "Saving the character position of the last."
 } )
 
 catherine.language.Merge( "korean", {
@@ -56,7 +56,7 @@ function PLUGIN:PlayerDeath( pl )
 end
 
 function PLUGIN:PostCharacterSave( pl )
-	if ( !pl:IsCharacterLoaded( ) or pl:IsStuck( ) ) then return end
+	if ( !pl:IsCharacterLoaded( ) or pl:IsStuck( ) or pl:IsNoclipping( ) or pl:IsRagdolled( ) or !pl:Alive( ) or !pl:IsOnGround( ) ) then return end
 	
 	catherine.character.SetCharVar( pl, "lastPos", {
 		pos = pl:GetPos( ),

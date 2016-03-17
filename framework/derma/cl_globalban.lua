@@ -33,15 +33,13 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )
 	self.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-		
 		if ( catherine.configs.enable_globalBan ) then
 			if ( self.globalBan and table.Count( self.globalBan ) == 0 ) then
-				draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
-				draw.SimpleText( LANG( "GlobalBan_UI_Blank" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+				draw.SimpleText( ":)", "catherine_slight50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
+				draw.SimpleText( LANG( "GlobalBan_UI_Blank" ), "catherine_slight20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 			end
 		else
-			draw.SimpleText( LANG( "GlobalBan_UI_NotUsing" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "GlobalBan_UI_NotUsing" ), "catherine_slight20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
 	
@@ -54,7 +52,7 @@ end
 
 function PANEL:MenuPaint( w, h )
 	if ( self.globalBan ) then
-		draw.SimpleText( LANG( "GlobalBan_UI_Users", #self.globalBan ), "catherine_normal20", w, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
+		draw.SimpleText( LANG( "GlobalBan_UI_Users", #self.globalBan ), "catherine_slight20", w - 10, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
 	end
 end
 
@@ -75,11 +73,9 @@ function PANEL:BuildGlobalBan( )
 		local panel = vgui.Create( "DPanel" )
 		panel:SetSize( self.Lists:GetWide( ), 80 )
 		panel.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
-			
-			draw.SimpleText( name, "catherine_normal25", 90, 20, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
-			draw.SimpleText( steamID, "catherine_normal15", w - 10, 60, Color( 90, 90, 90, 255 ), TEXT_ALIGN_RIGHT, 1 )
-			draw.SimpleText( reason, "catherine_normal15", 90, 60, Color( 255, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( name, "catherine_slight25", 90, 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+			draw.SimpleText( steamID, "catherine_slight15", w - 10, 60, Color( 235, 235, 235, 255 ), TEXT_ALIGN_RIGHT, 1 )
+			draw.SimpleText( reason, "catherine_slight15", 90, 60, Color( 255, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
 		end
 		
 		local avatar = vgui.Create( "AvatarImage", panel )
@@ -87,7 +83,7 @@ function PANEL:BuildGlobalBan( )
 		avatar:SetSize( 70, 70 )
 		avatar:SetSteamID( steamID64, 84 )
 		avatar.PaintOver = function( pnl, w, h )
-			surface.SetDrawColor( 50, 50, 50, 150 )
+			surface.SetDrawColor( 255, 255, 255, 255 )
 			surface.DrawOutlinedRect( 0, 0, w, h )
 		end
 			
@@ -104,14 +100,14 @@ function PANEL:BuildGlobalBan( )
 		self.Lists:AddItem( panel )
 	end
 	
-	scrollBar:AnimateTo( scroll, 0, 0, 0 )
+	scrollBar:SetScroll( scroll, 0, 0, 0 )
 end
 
 vgui.Register( "catherine.vgui.globalban", PANEL, "catherine.vgui.menuBase" )
 
 catherine.menu.Register( function( )
 	return LANG( "GlobalBan_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "globalban", function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.globalban ) and catherine.vgui.globalban or vgui.Create( "catherine.vgui.globalban", menuPnl )
 end, function( pl )
 	return pl:IsAdmin( )

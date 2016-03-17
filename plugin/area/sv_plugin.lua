@@ -28,12 +28,12 @@ function PLUGIN:LoadAreas( )
 	self.areas = catherine.data.Get( "areas", { } )
 end
 
-function PLUGIN:DataLoad( )
-	self:LoadAreas( )
-end
-
 function PLUGIN:DataSave( )
 	self:SaveAreas( )
+end
+
+function PLUGIN:DataLoad( )
+	self:LoadAreas( )
 end
 
 function PLUGIN:AddArea( name, minVector, maxVector )
@@ -108,10 +108,16 @@ function PLUGIN:PlayerAreaChanged( pl, areaID )
 	if ( !areaID ) then return end
 	
 	if ( pl:GetInfo( "cat_convar_showarea" ) == "1" ) then
-		local areaTable = self:FindAreaByID( areaID )
+		if ( hook.Run( "PlayerShouldAreaNotify", pl, areaID ) == false ) then return end
+		
+		local areaTable = table.Copy( self:FindAreaByID( areaID ) )
 		
 		if ( areaTable ) then
+			areaTable = hook.Run( "PreStartAreaNotify", pl, areaTable ) or areaTable
+			
 			netstream.Start( pl, "catherine.plugin.area.Display", areaTable.name )
+			
+			hook.Run( "PostStartAreaNotify", pl, areaTable )
 		end
 	end
 end

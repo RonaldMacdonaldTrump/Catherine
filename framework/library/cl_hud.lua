@@ -16,28 +16,22 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-if ( !catherine.option ) then
-	catherine.util.Include( "cl_option.lua" )
-end
-
 catherine.hud = catherine.hud or {
 	welcomeIntroWorkingData = nil,
-	welcomeIntroAnimations = { },
 	progressBar = nil,
 	topNotify = nil,
 	welcomeIntro = nil,
-	clip1 = 0,
-	pre = 0,
 	vAlpha = 0,
 	vAlphaTarget = 255,
-	
-	characterSaving = { }
+	sAlpha = 0,
+	sAlphaTarget = 255
 }
+catherine.hud.welcomeIntroAnimations = { }
 local blockedModules = { }
 
---[[ Function Optimize ]]--
+--[[ Function Optimize :> ]]--
 local gradient_center = Material( "gui/center_gradient" )
-local vignetteMat = Material( "CAT/vignette.png" ) or "__material__error"
+local vignetteMat = Material( "CAT/vignette.png" )
 local animationApproach = math.Approach
 local setColor = surface.SetDrawColor
 local setMat = surface.SetMaterial
@@ -70,7 +64,6 @@ function catherine.hud.Draw( pl )
 	catherine.hud.ProgressBar( pl, w, h )
 	catherine.hud.TopNotify( pl, w, h )
 	catherine.hud.WelcomeIntro( pl, w, h )
-	catherine.hud.CharacterSave( pl, w, h )
 end
 
 function catherine.hud.ZipTie( pl, w, h )
@@ -90,26 +83,26 @@ function catherine.hud.DeathScreen( pl, w, h )
 	
 	if ( deathTime == 0 or nextSpawnTime == 0 ) then return end
 	
-	local per = math.TimeFraction( deathTime, nextSpawnTime, CurTime( ) )
-	
-	drawBox( 0, 0, 0, w, h, Color( 20, 20, 20, per * 255 ) )
+	drawBox( 0, 0, 0, w, h, Color( 20, 20, 20, timeFrac( deathTime, nextSpawnTime, CurTime( ) ) * 255 ) )
 end
 
-timer.Create( "catherine.hud.VignetteCheck", 1.5, 0, function( )
-	if ( !IsValid( catherine.pl ) or vignetteMat == "__material__error" ) then return end
-	local data = { start = catherine.pl:GetPos( ) }
+timer.Create( "catherine.hud.VignetteCheck", 2, 0, function( )
+	if ( !vignetteMat or vignetteMat:IsError( ) ) then return end
+	local pl = catherine.pl
+	
+	if ( !IsValid( pl ) ) then return end
+	if ( hook.Run( "ShouldCheckVignette", pl ) == false ) then return end
+	
+	local data = { start = pl:GetPos( ) }
 	data.endpos = data.start + Vector( 0, 0, 2000 )
 	local tr = traceLine( data )
 	
-	if ( !tr.Hit or tr.HitSky ) then
-		catherine.hud.vAlphaTarget = 125
-	else
-		catherine.hud.vAlphaTarget = 255
-	end
+	catherine.hud.vAlphaTarget = ( !tr.Hit or tr.HitSky ) and 125 or 255
 end )
 
 function catherine.hud.Vignette( pl, w, h )
-	if ( vignetteMat == "__material__error" ) then return end
+	if ( !vignetteMat or vignetteMat:IsError( ) ) then return end
+	if ( hook.Run( "ShouldDrawVignette", pl ) == false ) then return end
 	
 	catherine.hud.vAlpha = animationApproach( catherine.hud.vAlpha, catherine.hud.vAlphaTarget, FrameTime( ) * 90 )
 	
@@ -119,57 +112,87 @@ function catherine.hud.Vignette( pl, w, h )
 end
 
 function catherine.hud.ScreenDamage( pl, w, h )
-
+	if ( hook.Run( "ShouldDrawScreenDamage", pl ) == false ) then return end
+	
+	if ( pl:Alive( ) and pl:Health( ) <= 35 ) then
+		catherine.hud.sAlphaTarget = 150 * ( 1 - ( pl:Health( ) / 35 ) )
+	else
+		catherine.hud.sAlphaTarget = 0
+	end
+	
+	catherine.hud.sAlpha = animationApproach( catherine.hud.sAlpha, catherine.hud.sAlphaTarget, FrameTime( ) * 90 )
+	
+	if ( math.Round( catherine.hud.sAlpha ) > 0 ) then
+		setColor( 255, 0, 0, catherine.hud.sAlpha )
+		setMat( Material( "cat/4.png") )
+		drawMat( 0, 0, w, h )
+	end
 end
 
 function catherine.hud.Ammo( pl, w, h )
 	local wep = pl:GetActiveWeapon( )
 	if ( !IsValid( wep ) or wep.DrawHUD == false ) then return end
+	if ( hook.Run( "ShouldDrawAmmo", pl ) == false ) then return end
 	local clip1 = wep:Clip1( )
 	local pre = pl:GetAmmoCount( wep:GetPrimaryAmmoType( ) )
-	//local sec = catherine.pl:GetAmmoCount( wep:GetSecondaryAmmoType( ) )
-	
-	catherine.hud.clip1 = Lerp( 0.03, catherine.hud.clip1, clip1 )
-	catherine.hud.pre = Lerp( 0.03, catherine.hud.pre, pre )
+	local sec = pl:GetAmmoCount( wep:GetSecondaryAmmoType( ) )
 	
 	if ( clip1 > 0 or pre > 0 ) then
-		drawText( clip1 == -1 and pre or mathR( catherine.hud.clip1 ) .. " / " .. mathR( catherine.hud.pre ), "catherine_normal25", w - 30, h - 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		clip1 = mathR( clip1 )
+		pre = mathR( pre )
+		
+		surface.SetFont( "catherine_normal20" )
+		
+		local clip1MaxW, clip1MaxH = surface.GetTextSize( wep:GetMaxClip1( ) )
+		local circleSize = math.max( clip1MaxW, 15 )
+		
+		noTex( )
+		setColor( 255, 255, 255, 255 )
+		drawCircle( w - 80 - ( circleSize / 2 ), h - 20 - ( circleSize / 2 ), circleSize, 3, 90, 360, 100 )
+		
+		noTex( )
+		setColor( 255, 50, 50, 255 )
+		drawCircle( w - 80 - ( circleSize / 2 ), h - 20 - ( circleSize / 2 ), circleSize, 3, 90, clip1 / wep:GetMaxClip1( ) * 360, 100 )
+		
+		drawText( clip1, "catherine_normal20", w - 80 - ( circleSize / 2 ), h - 20 - ( circleSize / 2 ), Color( 255, 255, 255, 255 ), 1, 1 )
+		drawText( pre, "catherine_normal25", w - 20, h - 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		
+		if ( sec > 0 ) then
+			drawText( "★" .. mathR( sec ), "catherine_normal35", w - 20, h - 70, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, 1 )
+		end
 	end
 end
 
 function catherine.hud.WelcomeIntroInitialize( noRun )
 	local scrW, scrH = ScrW( ), ScrH( )
-	local information = hook.Run( "GetSchemaInformation" )
-
-	catherine.hud.RegisterWelcomeIntroAnimation( 1, function( )
-		return information.title
-	end, "catherine_normal25", 2, 9, nil, scrW * 0.8, scrH * 0.55, TEXT_ALIGN_RIGHT )
-
-	catherine.hud.RegisterWelcomeIntroAnimation( 2, function( )
-		return information.desc
-	end, "catherine_normal15", 6, 8, nil, scrW * 0.8, scrH * 0.55 + 35, TEXT_ALIGN_RIGHT )
-
-	catherine.hud.RegisterWelcomeIntroAnimation( 3, function( )
-		return catherine.environment.GetDateString( ) .. " : " .. catherine.environment.GetTimeString( )
-	end, "catherine_normal15", 8, 10, nil, scrW * 0.8, scrH * 0.55 + 55, TEXT_ALIGN_RIGHT )
-
-	catherine.hud.RegisterWelcomeIntroAnimation( 4, function( )
-		return information.author
-	end, "catherine_normal20", 7, 9, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
-
+	local gm_information = hook.Run( "GetFrameworkInformation" )
+	local schema_information = hook.Run( "GetSchemaInformation" )
+	
+	catherine.hud.RegisterWelcomeIntroAnimation( function( )
+		return schema_information.title
+	end, "catherine_outline35", 8, nil, scrW * 0.8, scrH / 2, TEXT_ALIGN_RIGHT )
+	
+	catherine.hud.RegisterWelcomeIntroAnimation( function( )
+		return gm_information.author
+	end, "catherine_outline20", 8, nil, scrW * 0.15, scrH * 0.8, TEXT_ALIGN_LEFT )
+	
+	catherine.hud.RegisterWelcomeIntroAnimation( function( )
+		return schema_information.author
+	end, "catherine_outline20", 8, nil, scrW * 0.85, scrH * 0.8, TEXT_ALIGN_RIGHT )
+	
 	if ( !noRun ) then
-		catherine.hud.welcomeIntroWorkingData = { initStartTime = CurTime( ) }
+		catherine.hud.welcomeIntroWorkingData = { initStartTime = CurTime( ), runID = 1 }
 	end
 end
 
-function catherine.hud.RegisterWelcomeIntroAnimation( key, text, font, startTime, showingTime, col, startX, startY, xAlign, yAlign )
-	catherine.hud.welcomeIntroAnimations[ key ] = {
+function catherine.hud.RegisterWelcomeIntroAnimation( text, font, showingTime, col, startX, startY, xAlign, yAlign )
+	catherine.hud.welcomeIntroAnimations[ #catherine.hud.welcomeIntroAnimations + 1 ] = {
 		text = "",
 		font = font,
 		targetText = text,
 		startX = startX,
 		startY = startY,
-		startTime = startTime,
+		startTime = CurTime( ),
 		showingTime = showingTime,
 		a = 0,
 		xAlign = xAlign,
@@ -181,44 +204,49 @@ function catherine.hud.RegisterWelcomeIntroAnimation( key, text, font, startTime
 end
 
 function catherine.hud.WelcomeIntro( pl, w, h )
-	if ( !catherine.hud.welcomeIntroWorkingData ) then return end
+	if ( !catherine.hud.welcomeIntroWorkingData or !catherine.hud.welcomeIntroAnimations ) then return end
+	if ( hook.Run( "ShouldDrawWelcomeIntro", pl ) == false ) then return end
 	local data = catherine.hud.welcomeIntroWorkingData
+	local runningData = catherine.hud.welcomeIntroAnimations[ data.runID ]
 	
-	for k, v in pairs( catherine.hud.welcomeIntroAnimations ) do
-		if ( data.initStartTime + v.startTime <= CurTime( ) ) then
-			if ( !v.initStartTime ) then
-				v.initStartTime = CurTime( )
-			end
-
-			if ( v.initStartTime + v.showingTime - 1 <= CurTime( ) ) then
-				if ( v.a <= 0 ) then
-					continue
-				else
-					v.a = Lerp( 0.03, v.a, 0 )
-				end
-			else
-				v.a = Lerp( 0.03, v.a, 255 )
-			end
-			
-			local targetText = type( v.targetText ) == "function" and v.targetText( ) or v.targetText
-			
-			if ( v.textTime <= CurTime( ) and v.text:utf8len( ) < targetText:utf8len( ) ) then
-				local text = targetText:utf8sub( v.textSubCount, v.textSubCount )
-				
-				v.text = v.text .. text
-				v.textSubCount = v.textSubCount + 1
-				v.textTime = CurTime( ) + v.textTimeDelay
-			end
-			
-			local col = v.col or Color( 255, 255, 255 )
-			
-			drawText( v.text, v.font, v.startX, v.startY, Color( col.r, col.g, col.b, v.a ), v.xAlign or 1, v.yAlign or 1 )
-		end
-		
-		if ( data.initStartTime + 60 <= CurTime( ) ) then
-			catherine.hud.welcomeIntroWorkingData = nil
-		end
+	if ( !runningData ) then
+		return
 	end
+	
+	local curTime = CurTime( )
+		
+	if ( runningData.startTime + runningData.showingTime - 1 <= curTime ) then
+		if ( math.Round( runningData.a ) <= 0 ) then
+			data.runID = data.runID + 1
+			runningData = catherine.hud.welcomeIntroAnimations[ data.runID ]
+			
+			if ( !runningData ) then
+				catherine.hud.welcomeIntroWorkingData = nil
+				return
+			end
+			runningData.startTime = curTime
+		else
+			runningData.a = Lerp( 0.03, runningData.a, 0 )
+		end
+	else
+		runningData.a = Lerp( 0.03, runningData.a, 255 )
+	end
+	
+	local targetText = type( runningData.targetText ) == "function" and runningData.targetText( ) or runningData.targetText
+	
+	if ( runningData.textTime <= curTime and runningData.text:utf8len( ) < targetText:utf8len( ) ) then
+		local text = targetText:utf8sub( runningData.textSubCount, runningData.textSubCount )
+		
+		runningData.text = runningData.text .. text
+		runningData.textSubCount = runningData.textSubCount + 1
+		runningData.textTime = curTime + runningData.textTimeDelay
+		
+		surface.PlaySound( "common/talk.wav" )
+	end
+	
+	local col = runningData.col or Color( 255, 255, 255 )
+	
+	drawText( runningData.text, runningData.font, runningData.startX, runningData.startY, Color( col.r, col.g, col.b, runningData.a ), runningData.xAlign or 1, runningData.yAlign or 1 )
 end
 
 function catherine.hud.ProgressBarAdd( message, endTime )
@@ -235,7 +263,8 @@ end
 
 function catherine.hud.TopNotify( pl, w, h )
 	if ( !catherine.hud.topNotify ) then return end
-
+	if ( hook.Run( "ShouldDrawTopNotify", pl ) == false ) then return end
+	
 	setColor( 50, 50, 50, 150 )
 	setMat( gradient_center )
 	drawMat( 0, h / 2 - 80, w, 110 )
@@ -245,13 +274,14 @@ end
 
 function catherine.hud.ProgressBar( pl, w, h )
 	if ( !catherine.hud.progressBar ) then return end
+	if ( hook.Run( "ShouldDrawProgressBar", pl ) == false ) then return end
 	local data = catherine.hud.progressBar
 	
 	if ( data.endTime <= CurTime( ) ) then
 		catherine.hud.progressBar = nil
 		return
 	end
-
+	
 	local frac = 1 - timeFrac( data.startTime, data.endTime, CurTime( ) )
 	
 	setColor( 50, 50, 50, 150 )
@@ -269,42 +299,22 @@ function catherine.hud.ProgressBar( pl, w, h )
 	drawText( data.message or "", "catherine_normal25", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 end
 
-function catherine.hud.CharacterSave( pl, w, h )
-	local data = catherine.hud.characterSaving
-	
-	if ( data and #data != 0 ) then
-		if ( data.status ) then
-			data.a = Lerp( 0.03, data.a, 200 )
-		else
-			if ( math.Round( data.a ) > 0 ) then
-				data.a = Lerp( 0.03, data.a, 0 )
-			else
-				catherine.hud.characterSaving = nil
-				return
-			end
-		end
-		
-		data.rotate = math.Approach( data.rotate, data.rotate - 4, 4 )
-		
-		drawBox( 0, w - 70, 40, 50, 50, Color( 255, 255, 255, data.a ) )
-		
-		noTex( )
-		setColor( 90, 90, 90, data.a )
-		drawCircle( w - 45, 65, 15, 5, 90, 360, 100 )
-		
-		noTex( )
-		setColor( 255, 255, 255, data.a )
-		drawCircle( w - 45, 65, 15, 5, data.rotate, 90, 100 )
-	end
-end
-
 local modules = {
 	"CHudHealth",
 	"CHudBattery",
 	"CHudAmmo",
 	"CHudSecondaryAmmo",
 	"CHudCrosshair",
-	"CHudDamageIndicator"
+	"CHudDamageIndicator",
+	"CHudCloseCaption",
+	"CHudGeiger",
+	"CHudHintDisplay",
+	"CHudMessage",
+	"CHudPoisonDamageIndicator",
+	"CHudGameMessage",
+	"CHudDeathNotice",
+	"CHudSquadStatus",
+	"CHudVoiceStatus"
 }
 
 for i = 1, #modules do

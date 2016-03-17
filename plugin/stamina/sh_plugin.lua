@@ -23,21 +23,25 @@ PLUGIN.desc = "^ST_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "ST_Plugin_Name" ] = "Stamina",
-	[ "ST_Plugin_Desc" ] = "Good stuff.",
+	[ "ST_Plugin_Desc" ] = "Adding the Stamina for the more Realistic.",
 	[ "Stamina_Title" ] = "Stamina",
-	[ "Stamina_Desc" ] = "How long you can run for."
+	[ "Stamina_Desc" ] = "Can run a long time if the highest."
 } )
 
 catherine.language.Merge( "korean", {
 	[ "ST_Plugin_Name" ] = "기력",
-	[ "ST_Plugin_Desc" ] = "RP 를 위한 기력 플러그인 입니다.",
+	[ "ST_Plugin_Desc" ] = "현실적인 기력 시스템을 추가합니다.",
 	[ "Stamina_Title" ] = "기력",
-	[ "Stamina_Desc" ] = "높을 수록 장시간을 달릴 수 있습니다."
+	[ "Stamina_Desc" ] = "높을 수록 오래 달릴 수 있습니다."
 } )
 
 if ( SERVER ) then
 	function PLUGIN:PlayerDeath( pl )
 		catherine.character.SetCharVar( pl, "stamina", 100 )
+	end
+	
+	function PLUGIN:GetPunchStaminaDecreaseAmount( pl, stamina )
+		return math.Clamp( 15 * ( 1 - ( catherine.attribute.GetProgress( pl, CAT_ATT_STAMINA ) / 100 ) ), 6, 15 )
 	end
 	
 	function PLUGIN:GetCustomPlayerDefaultRunSpeed( pl )
@@ -56,7 +60,7 @@ if ( SERVER ) then
 	end
 
 	function PLUGIN:PlayerThink( pl )
-		if ( pl:IsNoclipping( ) ) then return end
+		if ( pl:IsNoclipping( ) or !pl:IsOnGround( ) ) then return end
 		local curTime = CurTime( )
 		
 		if ( pl:IsRunning( ) ) then

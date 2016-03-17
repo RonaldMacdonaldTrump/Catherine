@@ -45,24 +45,17 @@ local function facingWallBack( pl )
 	end
 end
 
-CAT_ACT_STARTANI = 1
-CAT_ACT_EXITANI = 2
-
-local actionTable = {
+PLUGIN.actions = {
 	[ "sit" ] = {
 		text = "Sit!",
 		actions = {
 			citizen_male = {
 				seq = "sit_ground",
-				noAutoExit = true,
-				doStartSeq = "Idle_to_Sit_Ground",
-				doExitSeq = "Sit_Ground_to_Idle"
+				noAutoExit = true
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "sit_ground",
-				noAutoExit = true,
-				doStartSeq = "Idle_to_Sit_Ground",
-				doExitSeq = "Sit_Ground_to_Idle"
+				noAutoExit = true
 			}
 		}
 	},
@@ -74,8 +67,67 @@ local actionTable = {
 				noAutoExit = true,
 				OnCheck = facingWallBack
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "plazaidle4",
+				noAutoExit = true,
+				OnCheck = facingWallBack
+			}
+		}
+	},
+	[ "lying" ] = {
+		text = "Lying!",
+		actions = {
+			citizen_male = {
+				seq = "Lying_Down",
+				noAutoExit = true
+			},
+			citizen_female = {
+				seq = "Lying_Down",
+				noAutoExit = true
+			}
+		}
+	},
+	[ "standpockets" ] = {
+		text = "Stand Pockets!",
+		actions = {
+			citizen_male = {
+				seq = "d1_t02_playground_cit2_pockets",
+				noAutoExit = true
+			},
+			citizen_female = {
+				seq = "d1_t02_playground_cit2_pockets",
+				noAutoExit = true
+			}
+		}
+	},
+	[ "pant" ] = {
+		text = "Pant!",
+		actions = {
+			citizen_male = {
+				seq = "d2_coast03_postbattle_idle02",
+				noAutoExit = true
+			},
+			citizen_female = {
+				seq = "d2_coast03_postbattle_idle02",
+				noAutoExit = true
+			}
+		}
+	},
+	[ "leanback" ] = {
+		text = "Lean Back!",
+		actions = {
+			citizen_male = {
+				seq = "lean_back",
+				noAutoExit = true,
+				OnCheck = facingWallBack
+			},
+			citizen_female = {
+				seq = "lean_back",
+				noAutoExit = true,
+				OnCheck = facingWallBack
+			},
+			metrocop = {
+				seq = "plazalean",
 				noAutoExit = true,
 				OnCheck = facingWallBack
 			}
@@ -87,8 +139,19 @@ local actionTable = {
 			citizen_male = {
 				seq = "cheer1"
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "cheer1"
+			}
+		}
+	},
+	[ "clap" ] = {
+		text = "Clap!",
+		actions = {
+			citizen_male = {
+				seq = "cheer2",
+			},
+			citizen_female = {
+				seq = "cheer2"
 			}
 		}
 	},
@@ -99,7 +162,7 @@ local actionTable = {
 				seq = "lineidle01",
 				noAutoExit = true
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "lineidle01",
 				noAutoExit = true
 			},
@@ -115,7 +178,7 @@ local actionTable = {
 			citizen_male = {
 				seq = "wave"
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "wave"
 			}
 		}
@@ -126,7 +189,7 @@ local actionTable = {
 			citizen_male = {
 				seq = "wave_close"
 			},
-			citizen_felame = {
+			citizen_female = {
 				seq = "wave_close"
 			}
 		}
@@ -140,7 +203,51 @@ local actionTable = {
 				OnCheck = facingWall
 			}
 		}
+	},
+	[ "arrestlow" ] = {
+		text = "Arrest!",
+		actions = {
+			citizen_male = {
+				seq = "arrestidle",
+				noAutoExit = true
+			}
+		}
+	},
+	[ "injured" ] = {
+		text = "Injured!",
+		actions = {
+			citizen_male = {
+				seq = "d1_town05_Wounded_Idle_1",
+				noAutoExit = true
+			},
+			citizen_female = {
+				seq = "d1_town05_Wounded_Idle_1",
+				noAutoExit = true
+			}
+		}
+	},
+	[ "injured2" ] = {
+		text = "Injured!",
+		actions = {
+			citizen_male = {
+				seq = "d1_town05_Wounded_Idle_2",
+				noAutoExit = true
+			}
+		}
+	},
+	[ "injuredwall" ] = {
+		text = "Injured!",
+		actions = {
+			citizen_male = {
+				seq = "injured1",
+				noAutoExit = true,
+				OnCheck = facingWallBack
+			},
+			citizen_female = {
+				seq = "injured1",
+				noAutoExit = true,
+				OnCheck = facingWallBack
+			}
+		}
 	}
 }
-
-PLUGIN.actions = actionTable

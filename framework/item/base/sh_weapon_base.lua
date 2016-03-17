@@ -25,8 +25,11 @@ BASE.weight = 0
 BASE.isWeapon = true
 BASE.weaponClass = "weapon_smg1"
 BASE.itemData = {
-	equiped = false
+	equiped = false,
+	clip1 = 0,
+	clip2 = 0
 }
+BASE.useDynamicItemData = true
 BASE.weaponType = "primary"
 BASE.attachmentLimit = {
 	primary = 1,
@@ -47,7 +50,7 @@ BASE.func.equip = {
 		
 		local playerWeaponType = catherine.character.GetCharVar( pl, "equippingWeaponTypes", { } )
 		local itemWeaponType = itemTable.weaponType
-
+		
 		if (
 			playerWeaponType[ itemWeaponType ] and
 			( !itemTable.attachmentLimit[ itemWeaponType ] or
@@ -58,28 +61,41 @@ BASE.func.equip = {
 		end
 		
 		if ( type( ent ) == "Entity" ) then
-			catherine.item.Give( pl, itemTable.uniqueID )
+			local itemData = ent:GetItemData( )
+			
+			itemData.equiped = nil
+			
+			catherine.item.Give( pl, itemTable.uniqueID, nil, nil, itemData )
 			ent:Remove( )
 		end
-
-		local wep = pl:Give( itemTable.weaponClass )
+		
+		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
+			pl:StripWeapon( itemTable.weaponClass )
+		end
+		
+		local wep = pl:Give( itemTable.weaponClass, true )
 		
 		if ( IsValid( wep ) ) then
 			pl:SelectWeapon( itemTable.weaponClass )
-			wep:SetClip1( 0 )
-		end
-
-		if ( playerWeaponType[ itemWeaponType ] ) then
-			playerWeaponType[ itemWeaponType ] = playerWeaponType[ itemWeaponType ] + 1
+			
+			wep:SetClip1( catherine.inventory.GetItemData( pl, itemTable.uniqueID, "clip1", 0 ) )
+			wep:SetClip2( catherine.inventory.GetItemData( pl, itemTable.uniqueID, "clip2", 0 ) )
+			
+			if ( playerWeaponType[ itemWeaponType ] ) then
+				playerWeaponType[ itemWeaponType ] = playerWeaponType[ itemWeaponType ] + 1
+			else
+				playerWeaponType[ itemWeaponType ] = 1
+			end
+			
+			catherine.attachment.Refresh( pl )
+			
+			pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
+			pl:SetupHands( )
+			catherine.character.SetCharVar( pl, "equippingWeaponTypes", playerWeaponType )
+			catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", true )
 		else
-			playerWeaponType[ itemWeaponType ] = 1
+			ErrorNoHalt( "\n[CAT ERROR] On the Item <" .. itemTable.uniqueID .. "> called the weapon <" .. itemTable.weaponClass .. "> does not exist :< ...\n" )
 		end
-
-		catherine.attachment.Refresh( pl )
-		
-		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 40 )
-		catherine.character.SetCharVar( pl, "equippingWeaponTypes", playerWeaponType )
-		catherine.inventory.SetItemData( pl, itemTable.uniqueID, "equiped", true )
 	end,
 	canLook = function( pl, itemTable )
 		return !catherine.inventory.IsEquipped( itemTable.uniqueID )
@@ -91,12 +107,18 @@ BASE.func.unequip = {
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
 		if ( pl:HasWeapon( itemTable.weaponClass ) ) then
-			pl:StripWeapon( itemTable.weaponClass )
+			local wep = pl:GetWeapon( itemTable.weaponClass )
+			
+			if ( IsValid( wep ) ) then
+				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "clip1", wep:Clip1( ) )
+				catherine.inventory.SetItemData( pl, itemTable.uniqueID, "clip2", wep:Clip2( ) )
+				pl:StripWeapon( itemTable.weaponClass )
+			end
 		end
 		
 		local playerWeaponType = catherine.character.GetCharVar( pl, "equippingWeaponTypes", { } )
 		local itemWeaponType = itemTable.weaponType
-
+		
 		if ( playerWeaponType[ itemWeaponType ] ) then
 			playerWeaponType[ itemWeaponType ] = playerWeaponType[ itemWeaponType ] - 1
 			
@@ -124,26 +146,45 @@ if ( SERVER ) then
 			local itemTable = catherine.item.FindByID( k )
 			
 			if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( pl, k ) ) then continue end
-
+			
 			catherine.item.Work( pl, k, "equip" )
 		end
 		
 		timer.Simple( 0, function( )
-			if ( catherine.configs.giveHand and pl:HasWeapon( "cat_fist" ) ) then
+			if ( pl:HasWeapon( "cat_fist" ) ) then
 				pl:SelectWeapon( "cat_fist" )
 			end
 		end )
 	end )
 	
 	catherine.item.RegisterHook( "CharacterLoadingStart", BASE, function( pl )
+		if ( !pl:IsCharacterLoaded( ) ) then return end
+		
+		for k, v in pairs( catherine.inventory.Get( pl ) ) do
+			local itemTable = catherine.item.FindByID( k )
+			
+			if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( pl, k ) ) then continue end
+			
+			local wep = pl:GetWeapon( itemTable.weaponClass )
+			
+			if ( IsValid( wep ) ) then
+				catherine.inventory.SetItemData( pl, k, "clip1", wep:Clip1( ) )
+				catherine.inventory.SetItemData( pl, k, "clip2", wep:Clip2( ) )
+			end
+		end
+		
 		catherine.character.SetCharVar( pl, "equippingWeaponTypes", { } )
 	end )
 	
 	catherine.item.RegisterHook( "PlayerDeath", BASE, function( pl )
 		for k, v in pairs( catherine.inventory.Get( pl ) ) do
+			local itemTable = catherine.item.FindByID( k )
+			
 			if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( pl, k ) ) then continue end
 			
 			catherine.item.Work( pl, k, "unequip" )
+			catherine.inventory.SetItemData( pl, k, "clip1", 0 )
+			catherine.inventory.SetItemData( pl, k, "clip2", 0 )
 			catherine.item.Spawn( k, pl:GetPos( ) )
 			catherine.item.Take( pl, k )
 		end
@@ -172,14 +213,29 @@ if ( SERVER ) then
 			catherine.item.Work( pl, itemTable.uniqueID, "unequip" )
 		end
 	end )
+	
+	catherine.item.RegisterHook( "DataSave", BASE, function( )
+		for k, v in pairs( player.GetAllByLoaded( ) ) do
+			for k1, v1 in pairs( catherine.inventory.Get( v ) ) do
+				local itemTable = catherine.item.FindByID( k1 )
+				
+				if ( !itemTable.isWeapon or !catherine.inventory.IsEquipped( v, k1 ) ) then continue end
+				
+				local wep = v:GetWeapon( itemTable.weaponClass )
+				
+				if ( IsValid( wep ) ) then
+					catherine.inventory.SetItemData( v, k1, "clip1", wep:Clip1( ) )
+					catherine.inventory.SetItemData( v, k1, "clip2", wep:Clip2( ) )
+				end
+			end
+		end
+	end )
 else
 	function BASE:DoRightClick( pl, itemData )
-		local uniqueID = self.uniqueID
-		
-		if ( catherine.inventory.IsEquipped( uniqueID ) ) then
-			catherine.item.Work( uniqueID, "unequip", true )
+		if ( itemData.equiped ) then
+			catherine.item.Work( self.uniqueID, "unequip", true )
 		else
-			catherine.item.Work( uniqueID, "equip", true )
+			catherine.item.Work( self.uniqueID, "equip", true )
 		end
 	end
 end

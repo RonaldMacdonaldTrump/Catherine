@@ -16,8 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-CAT_HOOK_PLUGIN_CACHES = { }
-
 hook.CallCatHooks = hook.CallCatHooks or hook.Call
 
 function hook.Call( hookID, gamemode, ... )
@@ -26,7 +24,7 @@ function hook.Call( hookID, gamemode, ... )
 	if ( cacheData ) then
 		for k, v in pairs( cacheData ) do
 			local success, result = pcall( v, k, ... )
-
+			
 			if ( success ) then
 				result = { result }
 				
@@ -38,7 +36,7 @@ function hook.Call( hookID, gamemode, ... )
 			end
 		end
 	end
-
+	
 	if ( Schema and Schema[ hookID ] ) then
 		local success, result = pcall( Schema[ hookID ], Schema, ... )
 		

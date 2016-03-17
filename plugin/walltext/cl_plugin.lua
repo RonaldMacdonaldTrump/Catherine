@@ -33,10 +33,18 @@ netstream.Hook( "catherine.plugin.walltext.RemoveText", function( data )
 end )
 
 function PLUGIN:DrawText( data )
-	local object = catherine.markup.Parse( "<font=catherine_walltext>" .. data.text .. "</font>" )
+	local col = data.col
+	local object = nil
+	
+	if ( col and table.HasValue( self.colorMap, col ) ) then
+		object = catherine.markup.Parse( "<font=catherine_walltext><color=" .. col .. ">" .. data.text .. "</font></color>" )
+	else
+		object = catherine.markup.Parse( "<font=catherine_walltext>" .. data.text .. "</font>" )
+	end
 	
 	function object:DrawText( text, font, x, y, col, hA, vA, a )
 		col.a = a
+		
 		draw.SimpleText( text, font, x, y, col, 0, 1, 2, Color( 0, 0, 0, a ) )
 	end
 	
@@ -45,7 +53,8 @@ function PLUGIN:DrawText( data )
 		ang = data.ang,
 		text = data.text,
 		object = object,
-		size = data.size
+		size = data.size,
+		col = data.col
 	}
 end
 

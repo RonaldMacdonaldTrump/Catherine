@@ -25,6 +25,7 @@ BASE.weight = 1
 BASE.isAlcohol = true
 BASE.useDynamicItemData = false
 BASE.attributeAdd = { }
+BASE.attributeRemove = { }
 BASE.headDamageAmount = 10
 BASE.headDamageStartAmount = 2
 BASE.staminaAdd = 10
@@ -46,7 +47,11 @@ BASE.func.drink = {
 		end
 		
 		for k, v in pairs( itemTable.attributeAdd ) do
-			catherine.attribute.AddBoostProgress( pl, v.uniqueID, v.boost, v.removeTime or 300 )
+			catherine.attribute.AddTemporaryIncreaseProgress( pl, v.uniqueID, v.amount, v.removeTime or 300 )
+		end
+		
+		for k, v in pairs( itemTable.attributeRemove ) do
+			catherine.attribute.AddTemporaryDecreaseProgress( pl, v.uniqueID, v.amount, v.removeTime or 300 )
 		end
 		
 		pl:EmitSound( table.Random( {
@@ -75,7 +80,7 @@ BASE.func.drink = {
 			stack = stack + 1
 			stackTable[ itemTable.uniqueID ] = stack
 		end
-
+		
 		catherine.character.SetCharVar( pl, "alcohol_stack", stackTable )
 	end
 }

@@ -38,7 +38,7 @@ BASE.func.wear = {
 	func = function( pl, itemTable, ent )
 		local bodygroups = catherine.character.GetCharVar( pl, "bodygroups", { } )
 		local bodygroupID = itemTable.bodyGroup
-
+		
 		if ( bodygroupID < pl:GetNumBodyGroups( ) ) then
 			local wearingBodyGroups = catherine.character.GetCharVar( pl, "wearing_bodyGroups", { } )
 			
@@ -46,7 +46,7 @@ BASE.func.wear = {
 				catherine.item.Give( pl, itemTable.uniqueID )
 				ent:Remove( )
 			end
-
+			
 			if ( !bodygroups[ bodygroupID ] and pl:GetBodygroup( bodygroupID ) == 0 ) then
 				bodygroups[ bodygroupID ] = itemTable.bodyGroupSubModelIndex
 				
@@ -144,7 +144,7 @@ if ( SERVER ) then
 				local itemTable = catherine.item.FindByID( k )
 				
 				if ( !itemTable.isBodygroupCloth or !catherine.inventory.GetItemData( pl, k, "wearing" ) or pl:GetBodygroup( itemTable.bodyGroup ) == itemTable.bodyGroupSubModelIndex ) then continue end
-
+				
 				catherine.item.Work( pl, k, "wear" )
 			end
 		end )
@@ -186,21 +186,19 @@ if ( SERVER ) then
 		end
 	end )
 else
-	function BASE:DrawInformation( pl, itemTable, w, h, itemData )
+	function BASE:DrawInformation( pl, w, h, itemData )
 		if ( itemData.wearing ) then
 			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.SetMaterial( Material( "CAT/ui/accept.png" ) )
+			surface.SetMaterial( Material( "icon16/accept.png" ) )
 			surface.DrawTexturedRect( 5, 5, 16, 16 )
 		end
 	end
 	
 	function BASE:DoRightClick( pl, itemData )
-		local uniqueID = self.uniqueID
-		
 		if ( itemData.wearing ) then
-			catherine.item.Work( uniqueID, "takeoff", true )
+			catherine.item.Work( self.uniqueID, "takeoff", true )
 		else
-			catherine.item.Work( uniqueID, "wear", true )
+			catherine.item.Work( self.uniqueID, "wear", true )
 		end
 	end
 end

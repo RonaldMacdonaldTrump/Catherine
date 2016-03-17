@@ -41,7 +41,7 @@ if ( SERVER ) then
 			if ( !boneIndex ) then
 				return false, "^Accessory_Wear_BoneIndexError"
 			end
-
+			
 			local accessoryEnt = ents.Create( "cat_accessory_base" )
 			accessoryEnt:DrawShadow( false )
 			accessoryEnt:SetNotSolid( true )
@@ -111,7 +111,7 @@ function catherine.accessory.CanWork( pl, workID, data )
 		
 		local accessoryDatas = catherine.character.GetCharVar( pl, "accessory", { } )
 		local accessoryData = accessoryDatas[ itemTable.bone ]
-
+		
 		if ( accessoryData and IsValid( Entity( accessoryData ) ) ) then
 			return false, "^Accessory_Wear_BoneError"
 		end
@@ -123,7 +123,7 @@ function catherine.accessory.CanWork( pl, workID, data )
 		if ( !itemTable.model ) then
 			return false, "^Accessory_Wear_ModelError"
 		end
-
+		
 		if ( !catherine.character.GetCharVar( pl, "accessory", { } )[ itemTable.bone ] ) then
 			return false, "^Accessory_Wear_BoneNotExists"
 		end

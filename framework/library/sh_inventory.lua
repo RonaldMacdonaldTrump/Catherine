@@ -23,7 +23,7 @@ end
 catherine.inventory = catherine.inventory or { }
 local META = FindMetaTable( "Player" )
 
-// Optimize.
+// Function Optimize.
 local getCharVar = catherine.character.GetCharVar
 local setVar = catherine.character.SetVar
 local getVar = catherine.character.GetVar
@@ -324,9 +324,15 @@ else
 		return catherine.inventory.GetItemDatas( uniqueID )
 	end
 	
-	function catherine.inventory.CharacterVarChanged( pl, key )
-		if ( key == "_inv" and pl == catherine.pl and IsValid( catherine.vgui.inventory ) and !catherine.vgui.inventory:IsHiding( ) ) then
-			catherine.vgui.inventory:BuildInventory( )
+	function catherine.inventory.CharacterVarChanged( pl, key, value )
+		if ( key == "_inv" ) then
+			if ( IsValid( catherine.vgui.inventory ) and !catherine.vgui.inventory:IsHiding( ) ) then
+				catherine.vgui.inventory:BuildInventory( )
+			end
+			
+			if ( IsValid( catherine.vgui.storage ) ) then
+				catherine.vgui.storage:InitializeStorage( catherine.vgui.storage.ent )
+			end
 		end
 	end
 	

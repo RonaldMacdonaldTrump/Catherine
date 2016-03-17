@@ -20,6 +20,8 @@ catherine.storage = catherine.storage or { }
 CAT_STORAGE_ACTION_ADD = 1
 CAT_STORAGE_ACTION_REMOVE = 2
 CAT_STORAGE_ACTION_SETPASSWORD = 3
+CAT_STORAGE_ACTION_SAVECASH = 4
+CAT_STORAGE_ACTION_GETCASH = 5
 
 if ( SERVER ) then
 	catherine.storage.lists = { }
@@ -36,10 +38,16 @@ if ( SERVER ) then
 	end
 
 	catherine.storage.Register( "Wardrobe", "The Wardrobe to put clothes.", "models/props_c17/FurnitureDresser001a.mdl", 8, "physics/wood/wood_box_impact_soft2.wav", "physics/wood/wood_box_impact_soft3.wav" )
-	catherine.storage.Register( "Desk", "A Desk.", "models/props_interiors/Furniture_Desk01a.mdl", 7, "physics/wood/wood_box_impact_soft2.wav", "physics/wood/wood_box_impact_soft3.wav" )
-	catherine.storage.Register( "Oil drum", "A Oil drum.", "models/props_c17/oildrum001.mdl", 5 )
-	catherine.storage.Register( "Lockers", "A Lockers.", "models/props_c17/Lockers001a.mdl", 12, "physics/metal/metal_sheet_impact_hard6.wav", "physics/metal/metal_sheet_impact_hard8.wav" )
-	catherine.storage.Register( "Fridge", "A Fridge.", "models/props_c17/FurnitureFridge001a.mdl", 7, "physics/plastic/plastic_box_impact_soft2.wav", "physics/plastic/plastic_box_impact_soft4.wav" )
+	catherine.storage.Register( "Desk", "A Desk to put books.", "models/props_interiors/Furniture_Desk01a.mdl", 7, "physics/wood/wood_box_impact_soft2.wav", "physics/wood/wood_box_impact_soft3.wav" )
+	catherine.storage.Register( "Oil drum", "A Oil drum to put Oil.", "models/props_c17/oildrum001.mdl", 5 )
+	catherine.storage.Register( "Lockers", "A Lockers to put clothes.", "models/props_c17/Lockers001a.mdl", 12, "physics/metal/metal_sheet_impact_hard6.wav", "physics/metal/metal_sheet_impact_hard8.wav" )
+	catherine.storage.Register( "Fridge", "A Fridge to put foods.", "models/props_c17/FurnitureFridge001a.mdl", 7, "physics/plastic/plastic_box_impact_soft2.wav", "physics/plastic/plastic_box_impact_soft4.wav" )
+	catherine.storage.Register( "Storage", "A Storage to put anythings.", "models/props_wasteland/controlroom_filecabinet002a.mdl", 7, "physics/metal/metal_sheet_impact_hard6.wav", "physics/metal/metal_sheet_impact_hard8.wav" )
+	catherine.storage.Register( "Desk", "A Desk.", "models/props_c17/FurnitureDrawer002a.mdl", 4, "physics/plastic/plastic_box_impact_soft2.wav", "physics/plastic/plastic_box_impact_soft4.wav" )
+	catherine.storage.Register( "Small storage", "A Small storage to put anythings.", "models/props_wasteland/controlroom_filecabinet001a.mdl", 3, "physics/metal/metal_sheet_impact_hard6.wav", "physics/metal/metal_sheet_impact_hard8.wav" )
+	catherine.storage.Register( "Small storage", "A Small storage to put anythings.", "models/props_lab/filecabinet02.mdl", 3, "physics/metal/metal_sheet_impact_hard6.wav", "physics/metal/metal_sheet_impact_hard8.wav" )
+	catherine.storage.Register( "Trash bin", "A Trash bin to put garbage.", "models/props_junk/TrashBin01a.mdl", 5, "physics/wood/wood_box_impact_soft2.wav", "physics/wood/wood_box_impact_soft3.wav" )
+	catherine.storage.Register( "Desk", "A Desk to put books.", "models/props_interiors/Furniture_Vanity01a.mdl", 7, "physics/wood/wood_box_impact_soft2.wav", "physics/wood/wood_box_impact_soft3.wav" )
 	
 	function catherine.storage.GetAll( )
 		return catherine.storage.lists
@@ -54,7 +62,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.storage.Work( pl, ent, workID, data )
-		ent = Entity( ent )
+		ent = type( ent ) == "number" and Entity( ent ) or ent
 		
 		if ( !IsValid( pl ) or !IsValid( ent ) or !workID or !data ) then return end
 		
@@ -75,9 +83,27 @@ if ( SERVER ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_DontHave" )
 				return
 			end
-
-			if ( itemTable.IsPersistent ) then
-				catherine.util.NotifyLang( pl, "Inventory_Notify_IsPersistent" )
+			
+			if ( itemTable.isPersistent ) then
+				if ( uniqueID == "wallet" ) then
+					catherine.util.StringReceiver( pl, "Storage_WalletAmountQ", LANG( pl, "Item_StoreQ_Wallet", catherine.cash.GetOnlySingular( ) ), catherine.cash.Get( pl ), function( _, amount )
+						amount = tonumber( amount )
+						
+						if ( amount ) then
+							if ( catherine.cash.Has( pl, amount ) ) then
+								catherine.storage.Work( pl, ent, CAT_STORAGE_ACTION_SAVECASH, amount )
+							else
+								catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+							end
+						else
+							catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+						end
+					end )
+					
+					return
+				end
+				
+				catherine.util.NotifyLang( pl, "Inventory_Notify_isPersistent" )
 				return
 			end
 			
@@ -125,7 +151,28 @@ if ( SERVER ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 				return
 			end
-
+			
+			if ( itemTable.isPersistent ) then
+				if ( data == "wallet" ) then
+					local haveCash = inventory[ data ].itemData.amount
+					
+					catherine.util.StringReceiver( pl, "Storage_WalletAmountQ", LANG( pl, "Item_GetQ_Wallet", catherine.cash.GetOnlySingular( ) ), haveCash or 0, function( _, amount )
+						amount = tonumber( amount )
+						
+						if ( amount ) then
+							catherine.storage.Work( pl, ent, CAT_STORAGE_ACTION_GETCASH, amount )
+						else
+							catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+						end
+					end )
+					
+					return
+				end
+				
+				catherine.util.NotifyLang( pl, "Inventory_Notify_isPersistent" )
+				return
+			end
+			
 			if ( !catherine.inventory.HasSpace( pl, itemTable.weight ) ) then
 				catherine.util.NotifyLang( pl, "Inventory_Notify_HasNotSpace" )
 				return
@@ -156,6 +203,55 @@ if ( SERVER ) then
 			hook.Run( "PostItemStorageTake", pl, ent, itemTable, data )
 		elseif ( workID == CAT_STORAGE_ACTION_SETPASSWORD ) then
 			ent.password = data != "" and data or nil
+		elseif ( workID == CAT_STORAGE_ACTION_SAVECASH ) then
+			if ( type( data ) == "number" ) then
+				if ( catherine.cash.Has( pl, data ) ) then
+					local resultAmount = catherine.storage.GetCash( ent ) + data
+					
+					catherine.cash.Take( pl, data )
+					catherine.storage.SetCash( ent, resultAmount )
+					
+					local inventory = catherine.storage.GetInv( ent )
+					
+					inventory[ "wallet" ] = {
+						uniqueID = "wallet",
+						itemCount = 1,
+						itemData = {
+							amount = resultAmount
+						}
+					}
+					
+					catherine.storage.SetInv( ent, inventory )
+				else
+					catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+				end
+			end
+		elseif ( workID == CAT_STORAGE_ACTION_GETCASH ) then
+			if ( type( data ) == "number" ) then
+				local cash = catherine.storage.GetCash( ent )
+				
+				if ( cash >= data and data > 0 ) then
+					local inventory = catherine.storage.GetInv( ent )
+					local resultAmount = math.max( cash - data, 0 )
+					
+					if ( inventory[ "wallet" ] ) then
+						inventory[ "wallet" ] = {
+							uniqueID = "wallet",
+							itemCount = 1,
+							itemData = {
+								amount = resultAmount
+							}
+						}
+						
+						catherine.storage.SetInv( ent, inventory )
+					end
+					
+					catherine.cash.Give( pl, data )
+					catherine.storage.SetCash( ent, resultAmount )
+				else
+					catherine.util.NotifyLang( pl, "Cash_Notify_NotValidAmount" )
+				end
+			end
 		end
 		
 		netstream.Start( pl, "catherine.storage.RefreshPanel", ent:EntIndex( ) )
@@ -178,10 +274,12 @@ if ( SERVER ) then
 		ent.isStorage = true
 		ent.maxWeight = data.maxWeight or originalData.maxWeight
 		ent.password = data.password
+		ent.cash = data.cash or 0
 
 		ent:SetNetVar( "name", ent.name )
 		ent:SetNetVar( "desc", ent.desc )
 		ent:SetNetVar( "inv", ent.inv )
+		ent:SetNetVar( "cash", ent.cash )
 		ent:SetNetVar( "maxWeight", ent.maxWeight )
 		ent:SetNetVar( "isStorage", true )
 
@@ -189,6 +287,7 @@ if ( SERVER ) then
 			{
 				uniqueID = "ID_OPEN",
 				text = "^Storage_OpenStr",
+				icon = "icon16/eye.png",
 				func = function( pl, ent )
 					if ( !ent.CAT_storageOpenSound ) then
 						local storageListData = catherine.storage.FindByModel( ent:GetModel( ) )
@@ -224,11 +323,20 @@ if ( SERVER ) then
 
 	function catherine.storage.SetInv( ent, data )
 		ent.inv = data
-		ent:SetNetVar( "inv", ent.inv )
+		ent:SetNetVar( "inv", data )
+	end
+	
+	function catherine.storage.SetCash( ent, amount )
+		ent.cash = amount
+		ent:SetNetVar( "cash", amount )
 	end
 	
 	function catherine.storage.GetInv( ent )
 		return table.Copy( ent.inv or { } )
+	end
+	
+	function catherine.storage.GetCash( ent )
+		return ent.cash or 0
 	end
 	
 	function catherine.storage.GetWeights( ent, customAdd )
@@ -310,25 +418,23 @@ if ( SERVER ) then
 		end )
 	end
 
-	local staticPropPlugin = catherine.plugin.Get( "staticprop" )
-
+	local plugin = catherine.plugin.Get( "permanententity" )
+	
 	function catherine.storage.PlayerSpawnedProp( pl, _, ent )
 		timer.Simple( 1, function( )
 			if ( IsValid( ent ) ) then
 				local success = catherine.storage.Make( ent )
 
-				if ( staticPropPlugin and success ) then
+				if ( plugin and success ) then
 					ent.CAT_isStorageCustom = true
 					
 					ent:SetNetVar( "isStatic", true )
-					staticPropPlugin:DataSave( )
 				end
 			end
 		end )
 	end
 
 	hook.Add( "DataSave", "catherine.storage.DataSave", catherine.storage.DataSave )
-	hook.Add( "DataLoad", "catherine.storage.DataLoad", catherine.storage.DataLoad )
 	hook.Add( "PlayerSpawnedProp", "catherine.storage.PlayerSpawnedProp", catherine.storage.PlayerSpawnedProp )
 	
 	netstream.Hook( "catherine.storage.Work", function( pl, data )
@@ -373,6 +479,10 @@ else
 		return table.Copy( ent:GetNetVar( "inv", { } ) )
 	end
 	
+	function catherine.storage.GetCash( ent )
+		return ent:GetNetVar( "cash", 0 )
+	end
+	
 	function catherine.storage.GetWeights( ent, customAdd )
 		local inventory = catherine.storage.GetInv( ent )
 		local weight = 0
@@ -393,16 +503,16 @@ else
 		
 		return inventory[ uniqueID ] and inventory[ uniqueID ].itemCount or 0
 	end
-
+	
 	local toscreen = FindMetaTable( "Vector" ).ToScreen
-
+	
 	function catherine.storage.DrawEntityTargetID( pl, ent, a )
 		if ( !ent:GetNetVar( "isStorage", false ) ) then return end
 		local pos = toscreen( ent:LocalToWorld( ent:OBBCenter( ) ) )
 		local x, y = pos.x, pos.y
 		
-		draw.SimpleText( ent:GetNetVar( "name", "" ), "catherine_outline20", x, y, Color( 255, 255, 255, a ), 1, 1 )
-		draw.SimpleText( ent:GetNetVar( "desc", "" ), "catherine_outline15", x, y + 20, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent:GetNetVar( "name", "" ), "catherine_outline25", x, y, Color( 255, 255, 255, a ), 1, 1 )
+		draw.SimpleText( ent:GetNetVar( "desc", "" ), "catherine_outline20", x, y + 25, Color( 255, 255, 255, a ), 1, 1 )
 	end
 	
 	hook.Add( "DrawEntityTargetID", "catherine.storage.DrawEntityTargetID", catherine.storage.DrawEntityTargetID )

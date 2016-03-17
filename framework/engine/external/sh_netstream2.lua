@@ -9,146 +9,121 @@
 		https://github.com/thelastpenguin/gLUA-Library/tree/master/pON
 --]]
 
-
-local type, error, pcall, pairs, _player = type, error, pcall, pairs, player;
-
-if (!pon) then
-	include( "sh_pon.lua" )
+if ( !pon ) then
 	AddCSLuaFile( "sh_pon.lua" )
-end;
+	include( "sh_pon.lua" )
+end
 
-AddCSLuaFile();
+AddCSLuaFile( )
 
-netstream = netstream or {};
-netstream.stored = netstream.stored or {};
+netstream = netstream or { stored = { } }
 
--- A function to split data for a data stream.
-function netstream.Split(data)
-	local index = 1;
-	local result = {};
-	local buffer = {};
+local type, error, pcall, pairs, player, table_concat, pon_encode, pon_decode, net_Start, net_Send, net_SendToServer, net_Receive, net_WriteString, net_ReadString, net_WriteUInt, net_ReadUInt, net_WriteData, net_ReadData = type, error, pcall, pairs, player, table.concat, pon.encode, pon.decode, net.Start, net.Send, net.SendToServer, net.Receive, net.WriteString, net.ReadString, net.WriteUInt, net.ReadUInt, net.WriteData, net.ReadData
 
-	for i = 0, string.len(data) do
-		buffer[#buffer + 1] = string.sub(data, i, i);
+function netstream.Split( data )
+	local index, result, buffer = 1, { }, { }
+	
+	for i = 0, data:len( ) do
+		buffer[ #buffer + 1 ] = data:sub( i, i )
+		
+		if ( #buffer == 32768 ) then
+			result[ #result + 1 ] = table_concat( buffer )
+			index = index + 1
+			buffer = { }
+		end
+	end
+	
+	result[ #result + 1 ] = table_concat( buffer )
+	
+	return result
+end
+
+function netstream.Hook( name, func )
+	netstream.stored[ name ] = func
+end
+
+if ( SERVER ) then
+	util.AddNetworkString( "NetStream.DataStream" )
+	
+	function netstream.Start( pl, name, ... )
+		local receiver, shouldSend = { }, false
+		
+		if ( type( pl ) != "table" ) then
+			pl = pl and { pl } or player.GetAll( )
+		end
+		
+		for k, v in pairs( pl ) do
+			if ( type( v ) == "Player" ) then
+				receiver[ #receiver + 1 ] = v
 				
-		if (#buffer == 32768) then
-			result[#result + 1] = table.concat(buffer);
-				index = index + 1;
-			buffer = {};
-		end;
-	end;
-			
-	result[#result + 1] = table.concat(buffer);
-	
-	return result;
-end;
-
--- A function to hook a data stream.
-function netstream.Hook(name, Callback)
-	netstream.stored[name] = Callback;
-end;
-
-if (SERVER) then
-	util.AddNetworkString("NetStreamDS");
-
-	-- A function to start a net stream.
-	function netstream.Start(player, name, ...)
-		local recipients = {};
-		local bShouldSend = false;
-	
-		if (type(player) != "table") then
-			if (!player) then
-				player = _player.GetAll();
-			else
-				player = {player};
-			end;
-		end;
-		
-		for k, v in pairs(player) do
-			if (type(v) == "Player") then
-				recipients[#recipients + 1] = v;
+				shouldSend = true
+			elseif ( type( k ) == "Player" ) then
+				receiver[ #receiver + 1 ] = k
 				
-				bShouldSend = true;
-			elseif (type(k) == "Player") then
-				recipients[#recipients + 1] = k;
-			
-				bShouldSend = true;
-			end;
-		end;
+				shouldSend = true
+			end
+		end
 		
-		local dataTable = {...};
-		local encodedData = pon.encode(dataTable);
+		if ( shouldSend ) then
+			local encodedData = pon_encode( { ... } )
 			
-		if (encodedData and #encodedData > 0 and bShouldSend) then
-			net.Start("NetStreamDS");
-				net.WriteString(name);
-				net.WriteUInt(#encodedData, 32);
-				net.WriteData(encodedData, #encodedData);
-			net.Send(recipients);
-		end;
-	end;
+			if ( encodedData and #encodedData > 0 ) then
+				net_Start( "NetStream.DataStream" )
+				net_WriteString( name )
+				net_WriteUInt( #encodedData, 32 )
+				net_WriteData( encodedData, #encodedData )
+				net_Send( receiver )
+			end
+		end
+	end
 	
-	net.Receive("NetStreamDS", function(length, player)
-		local NS_DS_NAME = net.ReadString();
-		local NS_DS_LENGTH = net.ReadUInt(32);
-		local NS_DS_DATA = net.ReadData(NS_DS_LENGTH);
+	net_Receive( "NetStream.DataStream", function( len, pl )
+		local NET_NAME, NET_LEN = net_ReadString( ), net_ReadUInt( 32 )
+		local NET_DATA = net_ReadData( NET_LEN )
 		
-		if (NS_DS_NAME and NS_DS_DATA and NS_DS_LENGTH) then
-			player.nsDataStreamName = NS_DS_NAME;
-			player.nsDataStreamData = "";
-			
-			if (player.nsDataStreamName and player.nsDataStreamData) then
-				player.nsDataStreamData = NS_DS_DATA;
-								
-				if (netstream.stored[player.nsDataStreamName]) then
-					local bStatus, value = pcall(pon.decode, player.nsDataStreamData);
-					
-					if (bStatus) then
-						netstream.stored[player.nsDataStreamName](player, unpack(value));
-					else
-						ErrorNoHalt("NetStream: '"..NS_DS_NAME.."'\n"..value.."\n");
-					end;
-				end;
+		if ( NET_NAME and NET_DATA and NET_LEN ) then
+			if ( netstream.stored[ NET_NAME ] ) then
+				local success, value = pcall( pon_decode, NET_DATA )
 				
-				player.nsDataStreamName = nil;
-				player.nsDataStreamData = nil;
-			end;
-		end;
-		
-		NS_DS_NAME, NS_DS_DATA, NS_DS_LENGTH = nil, nil, nil;
-	end);
-else
-	-- A function to start a net stream.
-	function netstream.Start(name, ...)
-		local dataTable = {...};
-		local encodedData = pon.encode(dataTable);
-		
-		if (encodedData and #encodedData > 0) then
-			net.Start("NetStreamDS");
-				net.WriteString(name);
-				net.WriteUInt(#encodedData, 32);
-				net.WriteData(encodedData, #encodedData);
-			net.SendToServer();
-		end;
-	end;
-	
-	net.Receive("NetStreamDS", function(length)
-		local NS_DS_NAME = net.ReadString();
-		local NS_DS_LENGTH = net.ReadUInt(32);
-		local NS_DS_DATA = net.ReadData(NS_DS_LENGTH);
-		
-		if (NS_DS_NAME and NS_DS_DATA and NS_DS_LENGTH) then
-			if (netstream.stored[NS_DS_NAME]) then
-				local bStatus, value = pcall(pon.decode, NS_DS_DATA);
-			
-				if (bStatus) then
-					netstream.stored[NS_DS_NAME](unpack(value));
+				if ( success ) then
+					netstream.stored[ NET_NAME ]( pl, unpack( value ) )
 				else
-					ErrorNoHalt("NetStream: '"..NS_DS_NAME.."'\n"..value.."\n");
-				end;
-			end;
-		end;
+					ErrorNoHalt( "\n[CAT NetStream ERROR] An error of run working on Netstream '" .. NET_NAME .. "' hook!\n\n" .. value .. "\n" )
+				end
+			end
+		end
 		
-		NS_DS_NAME, NS_DS_DATA, NS_DS_LENGTH = nil, nil, nil;
-	end);
-end;
+		NET_NAME, NET_DATA, NET_LEN = nil, nil, nil
+	end )
+else
+	function netstream.Start( name, ... )
+		local encodedData = pon_encode( { ... } )
+		
+		if ( encodedData and #encodedData > 0 ) then
+			net_Start( "NetStream.DataStream" )
+			net_WriteString( name )
+			net_WriteUInt( #encodedData, 32 )
+			net_WriteData( encodedData, #encodedData )
+			net_SendToServer( )
+		end
+	end
+	
+	net_Receive( "NetStream.DataStream", function( len )
+		local NET_NAME, NET_LEN = net_ReadString( ), net_ReadUInt( 32 )
+		local NET_DATA = net_ReadData( NET_LEN )
+		
+		if ( NET_NAME and NET_DATA and NET_LEN ) then
+			if ( netstream.stored[ NET_NAME ] ) then
+				local success, value = pcall( pon_decode, NET_DATA )
+			
+				if ( success ) then
+					netstream.stored[ NET_NAME ]( unpack( value ) )
+				else
+					ErrorNoHalt( "\n[CAT NetStream ERROR] An error of run working on Netstream '" .. NET_NAME .. "' hook!\n\n" .. value .. "\n" )
+				end
+			end
+		end
+		
+		NET_NAME, NET_DATA, NET_LEN = nil, nil, nil
+	end )
+end

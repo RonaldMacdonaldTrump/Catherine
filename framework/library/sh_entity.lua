@@ -19,6 +19,16 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.entity = catherine.entity or { }
 local META = FindMetaTable( "Entity" )
 local getClass = META.GetClass
+local getModel = META.GetModel
+local chairs = { }
+
+do
+	for k, v in pairs( list.Get( "Vehicles" ) ) do
+		if ( v.Category == "Chairs" ) then
+			chairs[ v.Model ] = true
+		end
+	end
+end
 
 function catherine.entity.IsDoor( ent )
 	local class = getClass( ent )
@@ -27,7 +37,11 @@ function catherine.entity.IsDoor( ent )
 end
 
 function catherine.entity.IsProp( ent )
-	return ent:GetClass( ):find( "prop_" )
+	return getClass( ent ):find( "prop_" )
+end
+
+function catherine.entity.IsChair( ent )
+	return chairs[ getModel( ent ) ]
 end
 
 function META:IsDoor( )
@@ -38,6 +52,10 @@ end
 
 function META:IsProp( )
 	return getClass( self ):find( "prop_" )
+end
+
+function META:IsChair( )
+	return chairs[ getModel( self ) ]
 end
 
 if ( SERVER ) then
@@ -57,7 +75,7 @@ if ( SERVER ) then
 		local col = ent:GetColor( )
 		local alpha = 0
 		local fadeAmount = col.a / time
-		local timerID = "Catherine.timer.entity.DoorFadeOut." .. ent:EntIndex( )
+		local timerID = "Catherine.timer.entity.EntFadeOut." .. ent:EntIndex( )
 		
 		ent.CAT_originalColor = col
 		ent.CAT_originalRenderMode = ent:GetRenderMode( )
@@ -90,7 +108,7 @@ if ( SERVER ) then
 	function catherine.entity.StopFadeOut( ent, func )
 		if ( !ent.CAT_isFadeouting ) then return end
 		
-		timer.Remove( "Catherine.timer.entity.DoorFadeOut." .. ent:EntIndex( ) )
+		timer.Remove( "Catherine.timer.entity.EntFadeOut." .. ent:EntIndex( ) )
 		
 		if ( ent.CAT_originalColor and ent.CAT_originalRenderMode ) then
 			ent:SetColor( ent.CAT_originalColor )
@@ -119,7 +137,7 @@ if ( SERVER ) then
 	function catherine.entity.GetIgnoreUse( ent )
 		return ent.CAT_ignoreUse
 	end
-
+	
 	function catherine.entity.RegisterUseMenu( ent, menuTable )
 		local forServer = { }
 		local forClient = { }
@@ -133,9 +151,9 @@ if ( SERVER ) then
 			}
 		end
 		
-		ent.IsCustomUse = true
+		ent.isCustomUse = true
 		catherine.entity.customUse[ ent:EntIndex( ) ] = forServer
-
+		
 		ent:SetNetVar( "customUseClient", forClient )
 	end
 	
@@ -160,9 +178,9 @@ if ( SERVER ) then
 	function catherine.entity.EntityRemoved( ent )
 		catherine.entity.customUse[ ent:EntIndex( ) ] = nil
 	end
-
+	
 	hook.Add( "EntityRemoved", "catherine.entity.EntityRemoved", catherine.entity.EntityRemoved )
-
+	
 	netstream.Hook( "catherine.entity.customUseMenu_Receive", function( pl, data )
 		catherine.entity.RunUseMenu( pl, data[ 1 ], data[ 2 ] )
 	end )
@@ -191,7 +209,7 @@ else
 		
 		menu:Open( )
 		menu:Center( )
-
+		
 		if ( isAv ) then
 			catherine.util.SetDermaMenuTitle( menu, LANG( "Basic_UI_EntityMenuOptionTitle" ) )
 		end
@@ -211,8 +229,6 @@ else
 	
 	hook.Add( "LanguageChanged", "catherine.entity.LanguageChanged", catherine.entity.LanguageChanged )
 end
-
-
 
 function catherine.entity.GetPlayer( ent )
 	return ent:GetNetVar( "player" )

@@ -23,7 +23,7 @@ PLUGIN.desc = "^AW_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "AW_Plugin_Name" ] = "Auto Whitelist",
-	[ "AW_Plugin_Desc" ] = "Good stuff."
+	[ "AW_Plugin_Desc" ] = "Give the whitelist if passed the long time."
 } )
 
 catherine.language.Merge( "korean", {
@@ -48,30 +48,29 @@ if ( SERVER ) then
 	function PLUGIN:PlayerSpawnedInCharacter( pl )
 		if ( !self.enable ) then return end
 		
-		pl.CAT_aw_nextRefresh = pl.CAT_aw_nextRefresh or CurTime( ) + self.refreshTime
+		pl.CAT_aw_nextTick = pl.CAT_aw_nextTick or CurTime( ) + self.refreshTime
 	end
 	
-	function PLUGIN:Think( )
+	function PLUGIN:PlayerThink( pl )
 		if ( !self.enable ) then return end
 		
-		for k, v in pairs( player.GetAllByLoaded( ) ) do
-			if ( ( v.CAT_aw_nextRefresh or 0 ) <= CurTime( ) ) then
-				local prevTime = catherine.character.GetCharVar( v, "aw_playTime", 0 )
+		if ( ( pl.CAT_aw_nextTick or 0 ) <= CurTime( ) ) then
+			local prevTime = catherine.character.GetCharVar( pl, "aw_playTime", 0 )
+			
+			catherine.character.SetCharVar( pl, "aw_playTime", prevTime + self.refreshTime )
+			
+			for k, v in pairs( self.lists ) do
+				local factionTable = catherine.faction.FindByID( k )
 				
-				catherine.character.SetCharVar( v, "aw_playTime", prevTime + self.refreshTime )
+				if ( !factionTable or !factionTable.isWhitelist ) then continue end
+				if ( catherine.faction.HasWhiteList( pl, k ) ) then continue end
 				
-				for k1, v1 in pairs( self.lists ) do
-					local factionTable = catherine.faction.FindByID( k1 )
-					
-					if ( !factionTable or !factionTable.isWhitelist or catherine.faction.HasWhiteList( v, k1 ) ) then continue end
-					
-					if ( prevTime + self.refreshTime >= v1 ) then
-						catherine.faction.AddWhiteList( v, k1 )
-					end
+				if ( prevTime + self.refreshTime >= v ) then
+					catherine.faction.AddWhiteList( pl, k )
 				end
-				
-				v.CAT_aw_nextRefresh = CurTime( ) + self.refreshTime
 			end
+			
+			pl.CAT_aw_nextTick = CurTime( ) + self.refreshTime
 		end
 	end
 end

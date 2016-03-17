@@ -25,7 +25,7 @@ SWEP.Purpose = "^Weapon_Key_Purpose"
 SWEP.Author = "L7D"
 SWEP.ViewModel = Model( "models/weapons/c_arms_cstrike.mdl" )
 SWEP.WorldModel = ""
-SWEP.AlwaysLowered = true
+SWEP.IsAlwaysLowered = true
 SWEP.CanFireLowered = true
 SWEP.DrawHUD = false
 
@@ -121,4 +121,12 @@ function SWEP:SecondaryAttack( )
 	end )
 	
 	self:SetNextSecondaryFire( CurTime( ) + 4 )
+end
+
+if ( CLIENT ) then
+	function SWEP:PreDrawViewModel( viewMdl, wep, pl )
+		if ( IsValid( viewMdl ) and !viewMdl:GetNoDraw( ) ) then
+			viewMdl:SetNoDraw( true )
+		end
+	end
 end

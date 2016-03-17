@@ -198,7 +198,8 @@ function PANEL:Paint( w, h )
 
 	if ( !self:GetDrawBackground() ) then return end
 
-	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+	catherine.theme.Draw( CAT_THEME_DERMA_MENU_BACKGROUND, w, h )
+	
 	return true
 
 end
@@ -390,7 +391,7 @@ function PANEL:Init()
 	self:SetTextInset( 30, 0 )			-- Room for icon on left
 	self:SetChecked( false )
 	self:SetFont( "catherine_normal15" )
-	self:SetTextColor( Color( 50, 50, 50, 255 ) )
+	self:SetTextColor( catherine.theme.GetValue( CAT_THEME_DERMA_MENU_OPTION_TEXT_COLOR ) )
 	
 end
 
@@ -455,9 +456,7 @@ end
 -----------------------------------------------------------]]
 function PANEL:Paint( w, h )
 	if ( self.m_cursorEntered ) then
-		surface.SetDrawColor( 70, 70, 70, 255 )
-		surface.SetMaterial( Material( "gui/center_gradient" ) )
-		surface.DrawTexturedRect( 0, h - 1, w, 1 )
+		catherine.theme.Draw( CAT_THEME_DERMA_MENU_OPTION_SELECTED, w, h )
 	end
 
 	--
@@ -601,7 +600,7 @@ function PANEL:Init()
 	self.DeleteContentsOnClose = false
 	self:SetText( "" )
 	self:SetFont( "catherine_normal20" )
-	self:SetTextColor( Color( 50, 50, 50 ) )
+	self:SetTextColor( Color( 255, 255, 255 ) )
 end
 
 --[[---------------------------------------------------------
@@ -681,7 +680,7 @@ end
 function PANEL:Paint( w, h )
 
 	self:PositionTooltip()
-	draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+	draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 255 ) )
 
 end
 

@@ -19,9 +19,7 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 catherine.command = catherine.command or { lists = { } }
 
 function catherine.command.Register( commandTable )
-	if ( !commandTable or !commandTable.uniqueID or !commandTable.command ) then
-		return
-	end
+	if ( !commandTable or !commandTable.uniqueID or !commandTable.command ) then return end
 	
 	commandTable.syntax = commandTable.syntax or "[None]"
 	commandTable.desc = commandTable.desc or "^Command_DefDesc"
@@ -38,19 +36,29 @@ function catherine.command.FindByID( uniqueID )
 end
 
 function catherine.command.FindByCMD( command )
+	command = command:lower( )
+	
 	for k, v in pairs( catherine.command.GetAll( ) ) do
-		if ( v.command == command ) then
-			return catherine.command.lists[ k ]
+		if ( v.otherCommand and type ( v.otherCommand ) == "table" and #v.otherCommand != 0 ) then
+			for k1, v1 in pairs( v.otherCommand ) do
+				if ( v1:lower( ) == command ) then
+					return v
+				end
+			end
+		end
+		
+		if ( v.command:lower( ) == command ) then
+			return v
 		end
 	end
 end
 
 function catherine.command.IsCommand( text )
-	if ( text:sub( 1, 1 ) != "/" ) then return end
+	if ( text:sub( 1, 1 ) != "/" ) then return false end
 	local toArgs = catherine.command.TransferToArgsTab( text )
 	local command = toArgs[ 1 ]:sub( 2, #toArgs[ 1 ] )
 	
-	return catherine.command.FindByCMD( command ) or false
+	return catherine.command.FindByCMD( command ) or 1
 end
 
 function catherine.command.TransferToArgsTab( text )
@@ -61,7 +69,7 @@ function catherine.command.TransferToArgsTab( text )
 	for i = 1, #text do
 		if ( i <= skip ) then continue end
 		local k = text:sub( i, i )
-
+		
 		if ( k == "\"" or k == "'" ) then
 			local match = text:sub( i ):match( "%b" .. k .. k )
 			
@@ -105,10 +113,8 @@ if ( SERVER ) then
 			return
 		end
 		
-		if ( !commandTable.runFunc ) then
-			return
-		end
-
+		if ( !commandTable.runFunc ) then return end
+		
 		local success, result = pcall( commandTable.runFunc, pl, args )
 		
 		if ( success ) then
@@ -123,7 +129,7 @@ if ( SERVER ) then
 		local id = args[ 1 ]:sub( 2, #args[ 1 ] )
 		
 		table.remove( args, 1 )
-
+		
 		catherine.command.Run( pl, id, args )
 	end
 	
@@ -170,11 +176,11 @@ else
 		<div class="page-header">
 			<h1>%s&nbsp&nbsp<small>%s</small></h1>
 		</div>
-
+		
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	]]
-
+	
 	local function rebuildCommand( )
 		local title_command = LANG( "Help_Category_Command" )
 		local html = Format( command_htmlValue, title_command, LANG( "Help_Desc_Command" ) )
@@ -183,7 +189,7 @@ else
 		for k, v in SortedPairs( catherine.command.GetAll( ) ) do
 			local havePermission = nil
 			
-			if ( v.canRun and v.canRun( pl, k ) == true ) then
+			if ( v.canRun and v.canRun( pl, v ) == true ) then
 				havePermission = true
 			elseif ( !v.canRun ) then
 				havePermission = true
@@ -218,9 +224,35 @@ else
 	function catherine.command.GetMatchCommands( text )
 		local commands = { }
 		local sub = 0
-		text = text:sub( 2 )
+		text = text:utf8sub( 2 )
+		
+		for k, v in pairs( catherine.chat.lists ) do
+			if ( v.command ) then
+				local command = type( v.command ) == "table" and v.command or { v.command }
+				
+				for k1, v1 in pairs( command ) do
+					if ( v1:sub( 2 ) == text ) then
+						commands[ #commands + 1 ] = {
+							command = v1:sub( 2 ),
+							syntax = "[None]",
+							desc = "^Command_DefDesc"
+						}
+						sub = text:utf8len( )
+					end
+				end
+			end
+		end
 		
 		for k, v in pairs( catherine.command.GetAll( ) ) do
+			if ( v.otherCommand and type( v.otherCommand ) == "table" and #v.otherCommand != 0 ) then
+				for k1, v1 in pairs( v.otherCommand ) do
+					if ( v1 == text ) then
+						commands[ #commands + 1 ] = v
+						sub = text:utf8len( )
+					end
+				end
+			end
+			
 			if ( catherine.util.CheckStringMatch( v.command, text ) ) then
 				commands[ #commands + 1 ] = v
 				sub = text:utf8len( )

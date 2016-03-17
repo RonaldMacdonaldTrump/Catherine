@@ -29,8 +29,12 @@ function catherine.schema.Initialization( )
 		IntroTitle = "Example",
 		IntroDesc = "A schema."
 	}
-
+	
 	local schemaFolderName = Schema.FolderName
+	
+	if ( SERVER ) then
+		catherine.plugin.LoadActiveList( )
+	end
 	
 	catherine.faction.Include( schemaFolderName .. "/schema" )
 	catherine.class.Include( schemaFolderName .. "/schema" )
@@ -40,9 +44,14 @@ function catherine.schema.Initialization( )
 	catherine.language.Include( schemaFolderName .. "/schema", "schema" )
 	catherine.util.IncludeInDir( "library", schemaFolderName .. "/schema/" )
 	catherine.util.IncludeInDir( "derma", schemaFolderName .. "/schema/" )
+	
 	catherine.plugin.Include( schemaFolderName )
 	catherine.plugin.Include( catherine.FolderName )
-
+	
+	if ( SERVER ) then
+		catherine.plugin.SendDeactivePlugins( nil )
+	end
+	
 	if ( !catherine.schema.loaded ) then
 		catherine.schema.loaded = true
 	end
@@ -52,4 +61,8 @@ end
 
 function catherine.schema.GetUniqueID( )
 	return Schema and Schema.UniqueID or "catherine"
+end
+
+function catherine.schema.IsLoaded( )
+	return catherine.schema.loaded
 end

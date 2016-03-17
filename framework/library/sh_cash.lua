@@ -16,22 +16,35 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.cash = catherine.cash or { name = "Dollar" }
+catherine.cash = catherine.cash or { singular = "Dollar", plural = "Dollars" }
 
-function catherine.cash.GetOnlyName( )
-	return catherine.cash.name
+function catherine.cash.GetOnlySingular( )
+	return catherine.cash.singular
 end
 
-function catherine.cash.SetName( name )
-	catherine.cash.name = name
+function catherine.cash.GetOnlyPlural( )
+	return catherine.cash.plural
 end
 
-function catherine.cash.GetName( amount )
-	return amount .. " " .. catherine.cash.name
+function catherine.cash.GetName( )
+	return catherine.cash.singular, catherine.cash.plural
+end
+
+function catherine.cash.SetName( singular, plural )
+	catherine.cash.singular = singular
+	catherine.cash.plural = plural
+end
+
+function catherine.cash.GetCompleteName( amount )
+	return amount .. " " .. ( amount > 1 and catherine.cash.plural or catherine.cash.singular )
 end
 
 function catherine.cash.Has( pl, amount )
-	return catherine.cash.Get( pl ) >= math.max( amount or 0, 0 )
+	if ( amount < 0 ) then
+		return false
+	end
+	
+	return catherine.cash.Get( pl ) >= amount
 end
 
 function catherine.cash.Get( pl )
@@ -67,5 +80,13 @@ if ( SERVER ) then
 		catherine.character.SetVar( pl, "_cash", math.max( catherine.cash.Get( pl ) - amount, 0 ) )
 		
 		return true
+	end
+	
+	function catherine.cash.Spawn( pos, ang, amount )
+		amount = tonumber( amount )
+		
+		if ( !amount or amount <= 0 ) then return false end
+		
+		catherine.item.Spawn( "wallet", pos, ang, { amount = amount } )
 	end
 end

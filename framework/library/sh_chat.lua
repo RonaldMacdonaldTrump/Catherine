@@ -16,7 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-catherine.chat = catherine.chat or { lists = { } }
+catherine.chat = catherine.chat or { }
+catherine.chat.lists = { }
 
 function catherine.chat.Register( uniqueID, classTable )
 	classTable = classTable or { }
@@ -47,7 +48,7 @@ function catherine.chat.FindIDByText( text )
 		local command = v.command or ""
 		
 		for k2, v2 in pairs( type( command ) == "table" and command or { } ) do
-			if ( text:sub( 1, #v2 ) != v2 ) then continue end
+			if ( text:sub( 1, #v2 ):lower( ) != v2:lower( ) ) then continue end
 			
 			return k or "ic"
 		end
@@ -84,7 +85,7 @@ catherine.chat.Register( "me", {
 		chat.AddText( Color( 193, 255, 193 ), "** " .. pl:Name( ) .. " - " .. text )
 	end,
 	font = "catherine_chat_italic",
-	command = { "/me", "/ME", "/Me" },
+	command = { "/me", "/ME", "/Me", "/mE" },
 	canHearRange = 800,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
@@ -94,7 +95,7 @@ catherine.chat.Register( "it", {
 		chat.AddText( Color( 193, 255, 193 ), "*** " .. pl:Name( ) .. " - " .. text )
 	end,
 	font = "catherine_chat_italic",
-	command = { "/it" },
+	command = { "/it", "/It", "/iT" },
 	canHearRange = 550,
 	canRun = function( pl ) return pl:Alive( ) end
 } )
@@ -145,7 +146,7 @@ catherine.chat.Register( "event", {
 		end
 	end,
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
-	command = { "/event" }
+	command = { "/event", "/Event" }
 } )
 
 catherine.chat.Register( "yell", {
@@ -198,6 +199,12 @@ catherine.chat.Register( "ooc", {
 			icon = Material( "icon16/shield.png" )
 		elseif ( pl:IsAdmin( ) ) then
 			icon = Material( "icon16/star.png" )
+		end
+		
+		local override = hook.Run( "GetChatIcon", pl, "ooc", text )
+		
+		if ( override ) then
+			icon = Material( override )
 		end
 		
 		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
@@ -265,48 +272,30 @@ catherine.chat.Register( "looc", {
 } )
 
 catherine.chat.Register( "connect", {
-	func = function( pl, text )
-		local icon = Material( "icon16/user.png" )
-		
-		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
-			icon = Material( "icon16/thumb_up.png" )
-		elseif ( pl:IsSuperAdmin( ) ) then
-			icon = Material( "icon16/shield.png" )
-		elseif ( pl:IsAdmin( ) ) then
-			icon = Material( "icon16/star.png" )
-		end
-		
+	func = function( pl, text, ex )
 		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
-			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Connect", pl:Name( ) ) )
+			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", Material( "icon16/server.png" ), Color( 238, 232, 170 ), LANG( "Chat_Str_Connect", ex[ 1 ] ) )
 		else
-			chat.AddText( icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Connect", pl:Name( ) ) )
+			chat.AddText( icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Connect", ex[ 1 ] ) )
 		end
 	end,
 	isGlobal = true
 } )
 
 catherine.chat.Register( "disconnect", {
-	func = function( pl, text )
-		local icon = Material( "icon16/user.png" )
-		
-		if ( pl:SteamID( ) == "STEAM_0:1:25704824" ) then
-			icon = Material( "icon16/thumb_up.png" )
-		elseif ( pl:IsSuperAdmin( ) ) then
-			icon = Material( "icon16/shield.png" )
-		elseif ( pl:IsAdmin( ) ) then
-			icon = Material( "icon16/star.png" )
-		end
-		
+	func = function( pl, text, ex )
 		if ( GetConVarString( "cat_convar_chat_timestamp" ) == "1" ) then
-			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
+			chat.AddText( Color( 150, 150, 150 ), "(" .. catherine.util.GetChatTimeStamp( ) .. ") ", Material( "icon16/server.png" ), Color( 238, 232, 170 ), LANG( "Chat_Str_Disconnect", ex[ 1 ] ) )
 		else
-			chat.AddText( icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Disconnect", pl:SteamName( ) ) )
+			chat.AddText( icon, Color( 238, 232, 170 ), LANG( "Chat_Str_Disconnect", ex[ 1 ] ) )
 		end
 	end,
 	isGlobal = true
 } )
 
 if ( SERVER ) then
+	catherine.chat.chatTypedHistoryBackup = catherine.chat.chatTypedHistoryBackup or { }
+	
 	function catherine.chat.Run( pl, text )
 		local classTable = catherine.chat.FindByID( catherine.chat.FindIDByText( text ) )
 		
@@ -327,8 +316,7 @@ if ( SERVER ) then
 		local commandTable = classTable.command or { }
 		local noSpace = classTable.noSpace
 		
-		// What the hell is this code!? :< ...
-		for k, v in ipairs( type( commandTable ) == "table" and commandTable or { commandTable } ) do
+		for k, v in pairs( type( commandTable ) == "table" and commandTable or { commandTable } ) do
 			if ( text:sub( 1, #v + ( noSpace and 0 or 1 ) ) == v .. ( noSpace and "" or " " ) ) then
 				text = text:sub( #( v .. ( noSpace and "" or " " ) ) + 1 )
 			
@@ -339,10 +327,21 @@ if ( SERVER ) then
 				break
 			end
 		end
-
-		if ( catherine.command.IsCommand( text ) ) then
-			catherine.command.RunByText( pl, text )
-			
+		
+		local isCommand = catherine.command.IsCommand( text )
+		
+		if ( isCommand ) then
+			if ( isCommand == 1 ) then
+				catherine.util.NotifyLang( pl, "Command_Notify_NotFound" )
+				return
+			else
+				catherine.command.RunByText( pl, text )
+				return
+			end
+		end
+		
+		if ( text == "" ) then
+			catherine.util.NotifyLang( pl, "Basic_Notify_InputText" )
 			return
 		end
 		
@@ -376,22 +375,27 @@ if ( SERVER ) then
 			netstream.Start( nil, "catherine.chat.Post", {
 				pl,
 				uniqueID,
-				text,
+				text or "",
 				{ ... }
 			} )
 		else
 			if ( type( forceTarget ) == "table" and #forceTarget > 0 ) then
-				netstream.Start( forceTarget, "catherine.chat.Post", {
-					pl,
-					uniqueID,
-					text,
-					{ ... }
-				} )
+				for k, v in pairs( forceTarget ) do
+					if ( uniqueID != "pm" and ( catherine.block.IsBlocked( pl, v, CAT_BLOCK_TYPE_ALL_CHAT ) or catherine.block.IsBlocked( v, pl, CAT_BLOCK_TYPE_ALL_CHAT ) ) ) then continue end
+					if ( catherine.block.IsBlocked( pl, v, CAT_BLOCK_TYPE_PM_CHAT ) or catherine.block.IsBlocked( v, pl, CAT_BLOCK_TYPE_PM_CHAT ) ) then continue end
+					
+					netstream.Start( v, "catherine.chat.Post", {
+						pl,
+						uniqueID,
+						text or "",
+						{ ... }
+					} )
+				end
 			else
 				netstream.Start( catherine.chat.GetListener( pl, classTable ), "catherine.chat.Post", {
 					pl,
 					uniqueID,
-					text,
+					text or "",
 					{ ... }
 				} )
 			end
@@ -408,8 +412,10 @@ if ( SERVER ) then
 		
 		for k, v in pairs( player.GetAllByLoaded( ) ) do
 			if ( classTable.canHear and classTable.canHear( pl ) == false ) then continue end
+			if ( pl == v ) then continue end
+			if ( catherine.block.IsBlocked( pl, v, CAT_BLOCK_TYPE_ALL_CHAT ) or catherine.block.IsBlocked( v, pl, CAT_BLOCK_TYPE_ALL_CHAT ) ) then continue end
 			
-			if ( pl != v and catherine.util.CalcDistanceByPos( pl, v ) <= range ) then
+			if ( catherine.util.CalcDistanceByPos( pl, v ) <= range ) then
 				target[ #target + 1 ] = v
 			end
 		end
@@ -423,6 +429,25 @@ if ( SERVER ) then
 		end
 		
 		return true
+	end
+	
+	function catherine.chat.AddPlayerChatHistory( pl, text )
+		local steamID = pl:SteamID( )
+		
+		catherine.chat.chatTypedHistoryBackup[ steamID ] = catherine.chat.chatTypedHistoryBackup[ steamID ] or { }
+		catherine.chat.chatTypedHistoryBackup[ steamID ][ #catherine.chat.chatTypedHistoryBackup[ steamID ] + 1 ] = text
+		
+		if ( #catherine.chat.chatTypedHistoryBackup[ steamID ] > 20 ) then
+			table.remove( catherine.chat.chatTypedHistoryBackup[ steamID ], 1 )
+		end
+	end
+	
+	function catherine.chat.GetPlayerChatHistory( pl )
+		return catherine.chat.chatTypedHistoryBackup[ pl:SteamID( ) ]
+	end
+	
+	function catherine.chat.StartChatHistoryRestore( pl )
+		netstream.Start( pl, "catherine.chat.RestoreChatHistory", catherine.chat.GetPlayerChatHistory( pl ) )
 	end
 	
 	function catherine.chat.RunByID( pl, uniqueID, text, target, ... )
@@ -474,16 +499,22 @@ else
 	netstream.Hook( "catherine.chat.Post", function( data )
 		local speaker = data[ 1 ]
 		local classTable = catherine.chat.FindByID( data[ 2 ] )
-
-		if ( classTable and IsValid( speaker ) ) then
+		
+		if ( classTable ) then
 			if ( classTable.font ) then
 				catherine.chat.SetOverrideFont( classTable.font )
+				
 				classTable.func( speaker, data[ 3 ], data[ 4 ] )
+				
 				catherine.chat.SetOverrideFont( nil )
 			else
 				classTable.func( speaker, data[ 3 ], data[ 4 ] )
 			end
 		end
+	end )
+	
+	netstream.Hook( "catherine.chat.RestoreChatHistory", function( data )
+		catherine.chat.chatTypedHistory = data
 	end )
 	
 	catherine.hud.RegisterBlockModule( "CHudChat" )
@@ -503,7 +534,7 @@ else
 		
 		surface.PlaySound( "common/talk.wav" )
 
-		for k, v in ipairs( data ) do
+		for k, v in pairs( data ) do
 			if ( type( v ) != "Player" ) then continue end
 			local pl = v
 			local index = k
@@ -566,10 +597,10 @@ else
 		}
 	end
 	
-	function catherine.chat.GetSizePosData( ) // Problem?
+	function catherine.chat.GetSizePosData( )
 		local data = catherine.chat.sizePosData
 		
-		return data.w, data.h, data.x, data.y // 4?
+		return data.w, data.h, data.x, data.y
 	end
 
 	function catherine.chat.Create( force )
@@ -595,7 +626,7 @@ else
 			catherine.chat.backPanel:Remove( )
 		end
 
-		catherine.chat.Create( )
+		catherine.chat.Create( true )
 	end
 	
 	function catherine.chat.SizePosFix( )
@@ -641,7 +672,7 @@ else
 	end
 	
 	function catherine.chat.Show( )
-		if ( hook.Run( "CantStartChat", catherine.pl ) == true ) then return end
+		if ( hook.Run( "ShouldStartChat", catherine.pl ) == false ) then return end
 		local chatBoxW, chatBoxH, chatBoxX, chatBoxY = catherine.chat.GetSizePosData( )
 		
 		if ( !IsValid( catherine.chat.backPanel ) ) then
@@ -674,26 +705,26 @@ else
 					if ( commandTable ) then
 						local commandText = "/" .. commandTable.command
 						
-						surface.SetFont( "catherine_normal25" )
+						surface.SetFont( "catherine_slight25" )
 						
 						local tw, th = surface.GetTextSize( commandText )
 						
-						draw.SimpleText( commandText, "catherine_normal25", 15, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
-						draw.SimpleText( commandTable.syntax, "catherine_normal15", 30 + tw, chatY - 48, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
-						draw.SimpleText( catherine.util.StuffLanguage( commandTable.desc ), "catherine_normal20", 15, chatY - 20, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( commandText, "catherine_slight25", 15, chatY - 50, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( commandTable.syntax, "catherine_slight15", 30 + tw, chatY - 48, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
+						draw.SimpleText( catherine.util.StuffLanguage( commandTable.desc ), "catherine_slight20", 15, chatY - 20, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
 					end
 				else
 					for k, v in pairs( commands ) do
 						local yPos = chatY - ( 20 * k )
 						
 						if ( yPos <= 10 ) then continue end
-
-						draw.SimpleText( "/" .. v.command, "catherine_normal20", 15, yPos, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+						
+						draw.SimpleText( "/" .. v.command, "catherine_slight20", 15, yPos, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
 					end
 				end
 				
-				if ( pnl.history.alpha > 10 ) then
-					pnl.history.alpha = Lerp( 0.05, pnl.history.alpha, 100 )
+				if ( pnl.history.alpha > 50 ) then
+					pnl.history.alpha = Lerp( 0.05, pnl.history.alpha, 50 )
 					pnl.history:SetAlpha( pnl.history.alpha )
 				end
 			else
@@ -716,9 +747,9 @@ else
 		end
 		textEnt:SetAllowNonAsciiCharacters( true )
 		textEnt.Paint = function( pnl, w, h )
-			draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 200 ) )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 235, 235, 235, 255 ) )
 			
-			surface.SetDrawColor( 0, 0, 0, 200 )
+			surface.SetDrawColor( 0, 0, 0, 255 )
 			surface.DrawOutlinedRect( 0, 0, w, h )
 			
 			pnl:DrawTextEntryText( color_black, color_black, color_black )
@@ -726,8 +757,8 @@ else
 		textEnt.OnTextChanged = function( pnl )
 			typingText = pnl:GetText( )
 			
-			if ( typingText:utf8len( ) >= 150 ) then
-				typingText = typingText:utf8sub( 1, 150 )
+			if ( typingText:utf8len( ) >= 130 ) then
+				typingText = typingText:utf8sub( 1, 130 )
 				
 				pnl:SetText( typingText )
 			end
@@ -767,7 +798,8 @@ else
 	end
 	
 	function catherine.chat.Hide( )
-		if ( hook.Run( "CantFinishChat", catherine.pl ) == true ) then return end
+		if ( hook.Run( "ShouldFinishChat", catherine.pl ) == false ) then return end
+		
 		catherine.chat.isOpened = false
 		
 		local self = catherine.chat.chatPanel

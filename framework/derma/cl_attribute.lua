@@ -30,9 +30,7 @@ function PANEL:Init( )
 	self.Lists:SetSpacing( 5 )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )
-	self.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-	end
+	self.Lists:SetDrawBackground( false )
 
 	self:BuildAttribute( )
 end
@@ -49,7 +47,7 @@ function PANEL:BuildAttribute( )
 		item:SetTall( 90 )
 		item:SetAttribute( v )
 		item:SetProgress( catherine.attribute.GetProgress( k ) )
-		item:SetBoostProgress( catherine.attribute.GetBoostProgress( k ) )
+		item:SetTemporaryProgress( { catherine.attribute.GetTemporaryProgress( k ) } )
 
 		self.Lists:AddItem( item )
 	end
@@ -62,63 +60,77 @@ local PANEL = { }
 function PANEL:Init( )
 	self.attributeTable = nil
 	self.attAni = 0
-	self.attBoostAni = 0
+	self.attIncreaseAni = 0
+	self.attDecreaseAni = 0
 	
 	self.attTextAni = 0
 	self.attProgress = 0
 	
-	self.attBoostProgress = 0
+	self.attIncreaseProgress = 0
+	self.attDecreaseProgress = 0
 end
 
 function PANEL:Paint( w, h )
 	if ( !self.attributeTable ) then return end
 	local per = self.attProgress / self.attributeTable.max
+	local perForAni = per
 	local per2 = 0
+	local per3 = 0
 	
-	if ( self.attBoostProgress != 0 ) then
-		per2 = self.attBoostProgress / self.attributeTable.max
-		self.attBoostAni = Lerp( 0.08, self.attBoostAni, per2 * 360 )
+	if ( self.attIncreaseProgress != 0 ) then
+		per2 = self.attIncreaseProgress / self.attributeTable.max
+		self.attIncreaseAni = Lerp( 0.08, self.attIncreaseAni, per2 * 360 )
 	end
 	
-	self.attAni = Lerp( 0.08, self.attAni, per * 360 )
-	self.attTextAni = Lerp( 0.1, self.attTextAni, per + per2 )
+	if ( self.attDecreaseProgress != 0 ) then
+		per3 = self.attDecreaseProgress / self.attributeTable.max
+		perForAni = perForAni - per3
+		self.attDecreaseAni = Lerp( 0.08, self.attDecreaseAni, per3 * 360 )
+	end
 	
-	draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
+	self.attAni = Lerp( 0.08, self.attAni, perForAni * 360 )
+	self.attTextAni = Lerp( 0.1, self.attTextAni, per + per2 - per3 )
 	
 	draw.NoTexture( )
-	surface.SetDrawColor( 200, 200, 200, 255 )
+	surface.SetDrawColor( 100, 100, 100, 255 )
 	catherine.geometry.DrawCircle( w - ( h / 3 ) - 15, h / 2, h / 3, 5, 90, 360, 100 )
 	
 	draw.NoTexture( )
-	surface.SetDrawColor( 90, 90, 90, 255 )
+	surface.SetDrawColor( 255, 255, 255, 255 )
 	catherine.geometry.DrawCircle( w - ( h / 3 ) - 15, h / 2, h / 3, 5, 90, self.attAni, 100 )
 	
 	if ( per2 != 0 ) then
 		draw.NoTexture( )
 		surface.SetDrawColor( 90, 255, 90, 255 )
-		catherine.geometry.DrawCircle( w - ( h / 3 ) - 15, h / 2, h / 3, 5, 90 + self.attAni, self.attBoostAni, 100 )	
+		catherine.geometry.DrawCircle( w - ( h / 3 ) - 15, h / 2, h / 3, 5, 90 + self.attAni, self.attIncreaseAni, 100 )	
+	end
+	
+	if ( per3 != 0 ) then
+		draw.NoTexture( )
+		surface.SetDrawColor( 255, 90, 90, 255 )
+		catherine.geometry.DrawCircle( w - ( h / 3 ) - 15, h / 2, h / 3, 5, 90 + self.attAni + self.attIncreaseAni, self.attDecreaseAni, 100 )	
 	end
 	
 	if ( self.attributeTable.image ) then
 		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.DrawRect( 10, 10, 70, 70 )
+		
+		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( Material( self.attributeTable.image, "smooth" ) )
 		surface.DrawTexturedRect( 15, 15, 60, 60 )
-		
-		surface.SetDrawColor( 50, 50, 50, 255 )
-		surface.DrawOutlinedRect( 10, 10, 70, 70 )
 	else
+		surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.DrawRect( 10, 10, 70, 70 )
+		
 		surface.SetDrawColor( 255, 255, 255, 255 )
 		surface.SetMaterial( Material( "CAT/ui/icon_idk.png", "smooth" ) )
 		surface.DrawTexturedRect( 15, 15, 60, 60 )
-		
-		surface.SetDrawColor( 50, 50, 50, 255 )
-		surface.DrawOutlinedRect( 10, 10, 70, 70 )
 	end
 	
-	draw.SimpleText( self.attribute_name, "catherine_normal25", 100, 30, Color( 0, 0, 0, 255 ), TEXT_ALIGN_LEFT, 1 )
-	draw.SimpleText( self.attribute_desc, "catherine_normal15", 100, 60, Color( 90, 90, 90, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.attribute_name, "catherine_normal25", 100, 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, 1 )
+	draw.SimpleText( self.attribute_desc, "catherine_normal15", 100, 60, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, 1 )
 	
-	draw.SimpleText( math.Round( self.attTextAni * 100 ) .. " %", "catherine_normal20", w - ( h / 3 ) - 15, h / 2, Color( 0, 0, 0, 255 ), 1, 1 )
+	draw.SimpleText( math.Round( self.attTextAni * 100 ) .. " %", "catherine_normal20", w - ( h / 3 ) - 15, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 end
 
 function PANEL:SetAttribute( attributeTable )
@@ -131,14 +143,15 @@ function PANEL:SetProgress( progress )
 	self.attProgress = progress
 end
 
-function PANEL:SetBoostProgress( progress )
-	self.attBoostProgress = progress
+function PANEL:SetTemporaryProgress( progressTable )
+	self.attIncreaseProgress = progressTable[ 1 ]
+	self.attDecreaseProgress = progressTable[ 2 ]
 end
 
 vgui.Register( "catherine.vgui.attributeItem", PANEL, "DPanel" )
 
 catherine.menu.Register( function( )
 	return LANG( "Attribute_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "att", function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.attribute ) and catherine.vgui.attribute or vgui.Create( "catherine.vgui.attribute", menuPnl )
 end )

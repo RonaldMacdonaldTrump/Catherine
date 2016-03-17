@@ -66,6 +66,11 @@ function PLUGIN:SaveVendors( )
 	for k, v in pairs( ents.FindByClass( "cat_vendor" ) ) do
 		if ( !v.vendorData ) then continue end
 		local vendorData = v.vendorData
+		local bodyGroupResult = { }
+		
+		for k1, v1 in pairs( v:GetBodyGroups( ) ) do
+			bodyGroupResult[ #bodyGroupResult + 1 ] = v:GetBodygroup( v1.id )
+		end
 		
 		data[ #data + 1 ] = {
 			name = vendorData.name,
@@ -79,7 +84,11 @@ function PLUGIN:SaveVendors( )
 			items = vendorData.items,
 			model = vendorData.model,
 			pos = v:GetPos( ),
-			ang = v:GetAngles( )
+			ang = v:GetAngles( ),
+			mat = v:GetMaterial( ),
+			col = v:GetColor( ),
+			skin = v:GetSkin( ),
+			bodyGroup = bodyGroupResult
 		}
 	end
 	
@@ -95,17 +104,25 @@ function PLUGIN:LoadVendors( )
 		ent:SetAngles( v.ang )
 		ent:Spawn( )
 		ent:Activate( )
-
+		
 		self:MakeVendor( ent, v )
 		
 		ent:SetModel( v.model )
+		ent:SetSkin( v.skin or 0 )
+		ent:SetColor( v.col or Color( 255, 255, 255, 255 ) )
+		ent:SetMaterial( v.mat or "" )
+		
+		if ( v.bodyGroup and type( v.bodyGroup ) == "table" and #v.bodyGroup > 0 ) then
+			ent:SetBodyGroups( table.concat( v.bodyGroup, "" ) )
+		end
+		
 		ent:InitializeAnimation( )
 	end
 end
 
 function PLUGIN:MakeVendor( ent, data )
 	if ( !IsValid( ent ) or !data ) then return end
-
+	
 	ent.vendorData = { }
 	
 	for k, v in pairs( vars ) do
@@ -120,7 +137,7 @@ end
 
 function PLUGIN:SetVendorData( ent, id, data, noSync )
 	if ( !IsValid( ent ) or !id or !data ) then return end
-
+	
 	ent.vendorData[ id ] = data
 	ent:SetNetVar( id, data )
 	
@@ -167,18 +184,18 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 			return
 		end
 		
-		if ( itemTable.IsPersistent ) then
-			catherine.util.NotifyLang( pl, "Inventory_Notify_IsPersistent" )
+		if ( itemTable.isPersistent ) then
+			catherine.util.NotifyLang( pl, "Inventory_Notify_isPersistent" )
 			return
 		end
 		
-		--[[ // 나중에 ㅋ
+		--[[
 		// Vendor 가 사야할 아이템 숫자가 플레이어의 인벤토리 아이템 수보다 많을때?
 		if ( catherine.inventory.GetItemInt( pl, uniqueID ) < count ) then
 			catherine.util.Notify( pl, "!!!!" )
 			return
 		end
-		--]]
+		]]--
 		
 		local playerCash = catherine.cash.Get( pl )
 		local vendorCash = self:GetVendorData( ent, "cash", 0 )
@@ -192,7 +209,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		local itemCost = math.Round( ( vendorInv[ uniqueID ].cost * count ) / self.VENDOR_SOLD_DISCOUNTPER )
 		
 		if ( vendorCash < itemCost ) then
-			catherine.util.NotifyLang( pl, "Vendor_Notify_VendorNoHasCash", catherine.cash.GetOnlyName( ) )
+			catherine.util.NotifyLang( pl, "Vendor_Notify_VendorNoHasCash", catherine.cash.GetOnlySingular( ) )
 			return
 		end
 		
@@ -211,7 +228,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		self:SetVendorData( ent, "cash", vendorCash - itemCost )
 		
 		hook.Run( "PostItemVendorSell", pl, ent, itemTable, data )
-		catherine.util.NotifyLang( pl, "Vendor_Notify_Sell", catherine.util.StuffLanguage( pl, itemTable.name ), catherine.cash.GetName( itemCost ) )
+		catherine.util.NotifyLang( pl, "Vendor_Notify_Sell", catherine.util.StuffLanguage( pl, itemTable.name ), catherine.cash.GetCompleteName( itemCost ) )
 	elseif ( workID == CAT_VENDOR_ACTION_SELL ) then
 		local uniqueID = data.uniqueID
 		local itemTable = catherine.item.FindByID( uniqueID )
@@ -238,7 +255,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		local itemCost = vendorInv[ uniqueID ].cost * count
 		
 		if ( itemCost > playerCash ) then
-			catherine.util.NotifyLang( pl, "Cash_Notify_HasNot" )
+			catherine.util.NotifyLang( pl, "Cash_Notify_HasNot", catherine.cash.GetOnlySingular( ) )
 			return 
 		end
 		
@@ -267,7 +284,7 @@ function PLUGIN:VendorWork( pl, ent, workID, data )
 		self:SetVendorData( ent, "cash", vendorCash + itemCost )
 		
 		hook.Run( "PostItemVendorBuy", pl, ent, itemTable, data )
-		catherine.util.NotifyLang( pl, "Vendor_Notify_Buy", catherine.util.StuffLanguage( pl, itemTable.name ), catherine.cash.GetName( itemCost ) )
+		catherine.util.NotifyLang( pl, "Vendor_Notify_Buy", catherine.util.StuffLanguage( pl, itemTable.name ), catherine.cash.GetCompleteName( itemCost ) )
 	elseif ( workID == CAT_VENDOR_ACTION_SETTING_CHANGE ) then
 		if ( !pl:IsAdmin( ) ) then
 			catherine.util.NotifyLang( pl, "Player_Message_HasNotPermission" )
@@ -354,12 +371,20 @@ function PLUGIN:CanUseVendor( pl, ent )
 	return true
 end
 
-function PLUGIN:DataLoad( )
+function PLUGIN:PreCleanupMap( )
+	self:SaveVendors( )
+end
+
+function PLUGIN:PostCleanupMapDelayed( )
 	self:LoadVendors( )
 end
 
 function PLUGIN:DataSave( )
 	self:SaveVendors( )
+end
+
+function PLUGIN:DataLoad( )
+	self:LoadVendors( )
 end
 
 netstream.Hook( "catherine.plugin.vendor.VendorWork", function( pl, data )

@@ -19,7 +19,6 @@ along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 local DeriveGamemode = DeriveGamemode
 local AddCSLuaFile = AddCSLuaFile
 local include = include
-local baseDir = "catherine/framework"
 
 DeriveGamemode( "sandbox" )
 
@@ -28,62 +27,114 @@ GM.Description = "A neat and beautiful role-play framework for Garry's Mod."
 GM.Author = "L7D"
 GM.Website = "https://github.com/L7D/Catherine"
 GM.Email = "smhjyh2009@gmail.com"
-GM.Version = "2015/08/27"
-GM.Build = "DEV"
+GM.Version = "1.0"
+GM.Build = "CAT"
 
 catherine.FolderName = GM.FolderName
+catherine.UpdateLog = [[
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<style>
+		@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+		body {
+			font-family: "Open Sans", "나눔고딕", "NanumGothic", "맑은 고딕", "Malgun Gothic", "serif", "sans-serif"; 
+			-webkit-font-smoothing: antialiased;
+			width: %spx;
+			max-width: %spx;
+			margin: 0 auto;
+		}
+	</style>
+</head>
+<body>
+	<div class="page-header">
+		<h2><center>Catherine Update Log</center><small>Version ]] .. GM.Version .. [[</small></h2>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<h3 class="panel-title">Released the CATHERINE 1.0.</h3>
+		</div>
+	</div>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	</body>
+</html>
+]]
 
 function catherine.Boot( )
 	local sysTime = SysTime( )
 	
-	AddCSLuaFile( baseDir .. "/engine/utility.lua" )
-	include( baseDir .. "/engine/utility.lua" )
+	AddCSLuaFile( "catherine/framework/engine/utility.lua" )
+	include( "catherine/framework/engine/utility.lua" )
 	
-	AddCSLuaFile( baseDir .. "/config/framework_config.lua" )
-	include( baseDir .. "/config/framework_config.lua" )
+	AddCSLuaFile( "catherine/framework/config/framework_config.lua" )
+	include( "catherine/framework/config/framework_config.lua" )
 	
-	AddCSLuaFile( baseDir .. "/engine/character.lua" )
-	include( baseDir .. "/engine/character.lua" )
+	AddCSLuaFile( "catherine/framework/engine/character.lua" )
+	include( "catherine/framework/engine/character.lua" )
+	
+	AddCSLuaFile( "catherine/framework/engine/plugin.lua" )
+	include( "catherine/framework/engine/plugin.lua" )
 	
 	catherine.util.IncludeInDir( "library" )
 	
-	AddCSLuaFile( baseDir .. "/engine/schema.lua" )
-	include( baseDir .. "/engine/schema.lua" )
+	AddCSLuaFile( "catherine/framework/engine/hook.lua" )
+	include( "catherine/framework/engine/hook.lua" )
+	
+	AddCSLuaFile( "catherine/framework/engine/schema.lua" )
+	include( "catherine/framework/engine/schema.lua" )
 	
 	if ( SERVER ) then
-		AddCSLuaFile( baseDir .. "/engine/client.lua" )
-		AddCSLuaFile( baseDir .. "/engine/shared.lua" )
-		AddCSLuaFile( baseDir .. "/engine/lime.lua" )
-		AddCSLuaFile( baseDir .. "/engine/external_x.lua" )
-		include( baseDir .. "/engine/server.lua" )
-		include( baseDir .. "/engine/shared.lua" )
-		include( baseDir .. "/engine/crypto.lua" )
-		include( baseDir .. "/engine/data.lua" )
-		include( baseDir .. "/engine/database.lua" )
-		include( baseDir .. "/engine/resource.lua" )
-		include( baseDir .. "/engine/external_x.lua" )
-		include( baseDir .. "/engine/lime.lua" )
+		AddCSLuaFile( "catherine/framework/engine/client.lua" )
+		AddCSLuaFile( "catherine/framework/engine/shared.lua" )
+		AddCSLuaFile( "catherine/framework/engine/lime.lua" )
+		AddCSLuaFile( "catherine/framework/engine/external_x.lua" )
+		AddCSLuaFile( "catherine/framework/engine/database.lua" )
+		AddCSLuaFile( "catherine/framework/engine/dev.lua" )
+		
+		include( "catherine/framework/engine/server.lua" )
+		include( "catherine/framework/engine/shared.lua" )
+		include( "catherine/framework/engine/crypto.lua" )
+		include( "catherine/framework/engine/crypto_v2.lua" )
+		include( "catherine/framework/engine/data.lua" )
+		include( "catherine/framework/engine/database.lua" )
+		include( "catherine/framework/engine/resource.lua" )
+		include( "catherine/framework/engine/external_x.lua" )
+		include( "catherine/framework/engine/patchx.lua" )
+		include( "catherine/framework/engine/lime.lua" )
+		include( "catherine/framework/engine/dev.lua" )
+		include( "catherine/framework/engine/external/sv_catherine.lua" )
 	else
-		include( baseDir .. "/engine/client.lua" )
-		include( baseDir .. "/engine/shared.lua" )
-		include( baseDir .. "/engine/lime.lua" )
-		include( baseDir .. "/engine/external_x.lua" )
+		include( "catherine/framework/engine/client.lua" )
+		include( "catherine/framework/engine/shared.lua" )
+		include( "catherine/framework/engine/lime.lua" )
+		include( "catherine/framework/engine/external_x.lua" )
+		include( "catherine/framework/engine/database.lua" )
+		include( "catherine/framework/engine/dev.lua" )
 	end
 	
 	catherine.util.IncludeInDir( "derma" )
 	
-	AddCSLuaFile( baseDir .. "/command/commands.lua" )
-	include( baseDir .. "/command/commands.lua" )
-	
-	if ( SERVER and !catherine.database.Connected ) then
-		catherine.database.Connect( )
-	end
+	AddCSLuaFile( "catherine/framework/command/commands.lua" )
+	include( "catherine/framework/command/commands.lua" )
 	
 	if ( !catherine.isInitialized ) then
 		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are loaded at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
 		catherine.isInitialized = true
 	else
-		MsgC( Color( 0, 255, 0 ), "[CAT] Catherine framework are refreshed at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
+		MsgC( Color( 0, 255, 255 ), "[CAT] Catherine framework are refreshed at " .. math.Round( SysTime( ) - sysTime, 3 ) .. "(sec).\n" )
+	end
+	
+	if ( SERVER and !catherine.database.connected ) then
+		catherine.database.Connect( )
 	end
 end
 

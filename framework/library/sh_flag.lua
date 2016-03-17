@@ -185,11 +185,11 @@ if ( SERVER ) then
 	
 	function catherine.flag.PlayerSpawnedInCharacter( pl )
 		for k, v in pairs( catherine.flag.GetAll( ) ) do
-			if ( catherine.player.IsIgnoreGiveFlagWeapon( pl ) or !catherine.flag.Has( pl, v.uniqueID ) or !v.onSpawn ) then continue end
-
+			if ( catherine.player.IsIgnoreGiveFlagWeapon( pl ) or !catherine.flag.Has( pl, k ) or !v.onSpawn ) then continue end
+			
 			v.onSpawn( pl )
 		end
-
+		
 		if ( !pl.CAT_flag_buildHelp or pl.CAT_flag_buildHelp != pl:GetCharacterID( ) ) then
 			netstream.Start( pl, "catherine.flag.BuildHelp" )
 			pl.CAT_flag_buildHelp = pl:GetCharacterID( )
@@ -240,11 +240,11 @@ else
 		<div class="page-header">
 			<h1>%s&nbsp&nbsp<small>%s</small></h1>
 		</div>
-
+		
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	]]
-
+	
 	local function rebuildFlag( )
 		local title_flag = LANG( "Help_Category_Flag" )
 		local html = Format( flag_htmlValue, title_flag, LANG( "Help_Desc_Flag" ) )
@@ -259,7 +259,7 @@ else
 				</div>
 			]]
 		end
-
+		
 		html = html .. [[</body></html>]]
 		
 		catherine.help.Register( CAT_HELP_HTML, title_flag, html, true )
@@ -295,7 +295,7 @@ else
 			rebuildFlag( )
 		end
 	end
-
+	
 	hook.Add( "LanguageChanged", "catherine.flag.LanguageChanged", catherine.flag.LanguageChanged )
 	hook.Add( "InitPostEntity", "catherine.flag.InitPostEntity", catherine.flag.InitPostEntity )
 	

@@ -21,15 +21,16 @@ catherine.recognize = catherine.recognize or { }
 if ( SERVER ) then
 	function catherine.recognize.DoKnow( pl, code, target )
 		target = { target } or nil
-
+		
 		if ( code == 0 ) then
 			target = target or catherine.chat.GetListener( pl, "ic" )
 		else
 			target = catherine.chat.GetListener( pl, code == 1 and "whisper" or "yell" )
 		end
-
+		
 		for k, v in pairs( target or { } ) do
-			if ( v == pl or !IsValid( v ) ) then continue end
+			if ( pl == v ) then continue end
+			if ( !IsValid( v ) ) then continue end
 			
 			catherine.recognize.RegisterKnow( pl, v )
 		end
@@ -50,65 +51,24 @@ if ( SERVER ) then
 	function catherine.recognize.Initialize( pl )
 		catherine.character.SetCharVar( pl, "recognize", { } )
 	end
-
-	function catherine.recognize.PlayerDeath( pl )
-		catherine.recognize.Initialize( pl )
-	end
-	
-	hook.Add( "PlayerDeath", "catherine.recognize.PlayerDeath", catherine.recognize.PlayerDeath )
 	
 	netstream.Hook( "catherine.recognize.DoKnow", function( pl, data )
 		catherine.recognize.DoKnow( pl, data[ 1 ], data[ 2 ] )
 	end )
 else
 	netstream.Hook( "catherine.recognize.SelectMenu", function( )
-		local menu = DermaMenu( )
-		
-		menu:AddOption( LANG( "Recognize_UI_Option_LookingPlayer" ), function( )
-			local pl = catherine.pl
-			
-			local data = { }
-			data.start = pl:GetShootPos( )
-			data.endpos = data.start + pl:GetAimVector( ) * 70
-			data.filter = pl
-			local ent = util.TraceLine( data ).Entity
-
-			if ( IsValid( ent ) and ent:IsPlayer( ) ) then
-				netstream.Start( "catherine.recognize.DoKnow", {
-					0,
-					ent
-				} )
-			else
-				catherine.notify.Add( LANG( "Entity_Notify_NotPlayer" ), 5 )
-			end
-		end ):SetImage( "icon16/status_online.png" )
-		
-		menu:AddOption( LANG( "Recognize_UI_Option_TalkRange" ), function( )
-			netstream.Start( "catherine.recognize.DoKnow", { 0 } )
-		end ):SetImage( "icon16/user.png" )
-		
-		menu:AddOption( LANG( "Recognize_UI_Option_WhisperRange" ), function( )
-			netstream.Start( "catherine.recognize.DoKnow", { 1 } )
-		end ):SetImage( "icon16/user_green.png" )
-		
-		menu:AddOption( LANG( "Recognize_UI_Option_YellRange" ), function( )
-			netstream.Start( "catherine.recognize.DoKnow", { 2 } )
-		end ):SetImage( "icon16/user_red.png" )
-		
-		menu:Open( )
-		menu:Center( )
-		
-		catherine.util.SetDermaMenuTitle( menu, LANG( "Basic_UI_RecogniseMenuOptionTitle" ) )
-			
-		menu.OnRemove = function( )
-			catherine.util.SetDermaMenuTitle( )
+		if ( IsValid( catherine.vgui.recognize ) ) then
+			catherine.vgui.recognize:Remove( )
+			catherine.vgui.recognize = nil
 		end
+		
+		catherine.vgui.recognize = vgui.Create( "catherine.vgui.recognize" )
 	end )
 end
 
 function catherine.recognize.IsKnowTarget( pl, target )
 	local factionTable = catherine.faction.FindByIndex( target:Team( ) )
-
+	
 	return ( factionTable and factionTable.alwaysRecognized ) and true or table.HasValue( catherine.character.GetCharVar( pl, "recognize", { } ), target:GetCharacterID( ) )
 end
 
@@ -116,6 +76,6 @@ local META = FindMetaTable( "Player" )
 
 function META:IsKnow( target )
 	local factionTable = catherine.faction.FindByIndex( target:Team( ) )
-
+	
 	return ( factionTable and factionTable.alwaysRecognized ) and true or table.HasValue( catherine.character.GetCharVar( self, "recognize", { } ), target:GetCharacterID( ) )
 end

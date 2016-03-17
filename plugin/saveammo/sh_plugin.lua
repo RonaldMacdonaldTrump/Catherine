@@ -23,7 +23,7 @@ PLUGIN.desc = "^SA_Plugin_Desc"
 
 catherine.language.Merge( "english", {
 	[ "SA_Plugin_Name" ] = "Save Ammo",
-	[ "SA_Plugin_Desc" ] = "Good stuff."
+	[ "SA_Plugin_Desc" ] = "Saving the player ammos."
 } )
 
 catherine.language.Merge( "korean", {
@@ -33,7 +33,7 @@ catherine.language.Merge( "korean", {
 
 if ( CLIENT ) then return end
 
-local Ammo_Types = {
+local ammoTypes = {
 	"ar2",
 	"alyxgun",
 	"pistol",
@@ -59,25 +59,32 @@ local Ammo_Types = {
 }
 
 function PLUGIN:PostCharacterSave( pl )
-	local tab = { }
+	local data = { }
 	
-	for k, v in pairs( Ammo_Types ) do
+	for k, v in pairs( ammoTypes ) do
 		local ammoCount = pl:GetAmmoCount( v )
 		
 		if ( ammoCount > 0 ) then
-			tab[ v ] = ammoCount
+			data[ v ] = ammoCount
 		end
 	end
 	
-	catherine.character.SetCharVar( pl, "ammos", tab )
+	catherine.character.SetCharVar( pl, "ammos", data )
 end
 
-function PLUGIN:PlayerSpawnedInCharacter( pl )
+function PLUGIN:PlayerDeath( pl )
 	pl:RemoveAllAmmo( )
-
-	for k, v in pairs( catherine.character.GetCharVar( pl, "ammos", { } ) ) do
-		pl:SetAmmo( tonumber( v ) or 0, k )
-	end
-	
 	catherine.character.SetCharVar( pl, "ammos", nil )
+end
+
+function PLUGIN:OnSpawnedInCharacter( pl )
+	timer.Simple( 1, function( )
+		pl:RemoveAllAmmo( )
+		
+		for k, v in pairs( catherine.character.GetCharVar( pl, "ammos", { } ) ) do
+			pl:SetAmmo( tonumber( v ) or 0, tostring( k ) )
+		end
+		
+		catherine.character.SetCharVar( pl, "ammos", nil )
+	end )
 end

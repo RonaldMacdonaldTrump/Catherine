@@ -20,6 +20,7 @@ catherine.bar = catherine.bar or { }
 catherine.bar.lists = { }
 local barW = ScrW( ) * catherine.configs.mainBarWideScale
 local barH = catherine.configs.mainBarTallSize
+local bar_material = Material( catherine.configs.mainBarMaterial )
 
 --[[ Function Optimize :> ]]--
 local math_approach = math.Approach
@@ -56,6 +57,12 @@ function catherine.bar.Register( uniqueID, alwaysShowing, getFunc, maxFunc, col,
 	}
 end
 
+function catherine.bar.InitializeWide( )
+	for k, v in pairs( catherine.bar.lists ) do
+		v.w = 0
+	end
+end
+
 function catherine.bar.Remove( uniqueID )
 	for k, v in pairs( catherine.bar.lists ) do
 		if ( v.uniqueID and v.uniqueID == uniqueID ) then
@@ -64,54 +71,66 @@ function catherine.bar.Remove( uniqueID )
 	end
 end
 
-function catherine.bar.Draw( )
+function catherine.bar.Draw( pl )
 	if ( #catherine.bar.lists == 0 or getconVar( "cat_convar_bar" ) == "0" ) then return end
-	local pl = catherine.pl
 	
-	if ( hook_run( "CanDrawBar", pl ) == false ) then
+	if ( hook_run( "ShouldDrawBar", pl ) == false ) then
 		hook_run( "HUDDrawBarBottom", 5, 5 )
 		return
 	end
 	
 	local i = 0
+	local curTime = CurTime( )
 	
 	for k, v in pairs( catherine.bar.lists ) do
+		if ( hook_run( "ShouldDrawTargetBar", pl, v ) == false ) then continue end
+		
 		local per = math_min( v.getFunc( pl ) / v.maxFunc( pl ), 1 )
 		
 		if ( v.prevValue != per ) then
-			v.lifeTime = CurTime( ) + ( v.lifeTimeFade or 5 )
+			v.lifeTime = curTime + ( v.lifeTimeFade or 5 )
 		end
-
+		
 		v.prevValue = per
 		
 		if ( !v.alwaysShowing ) then
-			if ( v.lifeTime <= CurTime( ) ) then
-				v.a = lerp( 0.03, v.a, 0 )
+			if ( v.lifeTime <= curTime ) then
+				v.a = lerp( FrameTime( ) * 90, v.a, 0 )
 			else
 				if ( per != 0 ) then
 					i = i + 1
-					v.a = lerp( 0.03, v.a, 255 )
+					v.a = lerp( FrameTime( ) * 90, v.a, 255 )
 				else
-					v.a = lerp( 0.03, v.a, 0 )
+					v.a = lerp( FrameTime( ) * 90, v.a, 0 )
 				end
 			end
 		else
 			if ( per != 0 ) then
 				i = i + 1
-				v.a = lerp( 0.03, v.a, 255 )
+				v.a = lerp( FrameTime( ) * 90, v.a, 255 )
 			else
-				v.a = lerp( 0.03, v.a, 0 )
+				v.a = lerp( FrameTime( ) * 90, v.a, 0 )
 			end
 		end
-
-		v.w = math_approach( v.w, barW * per, 1 )
-		v.y = lerp( 0.09, v.y, -barH + i * barH * 2 )
+		
+		v.w = math_approach( v.w, barW * per, FrameTime( ) * 90 )
+		v.y = lerp( 0.09, v.y, -( barH / 2 ) + ( ( barH + 3 ) * i ) )
 		
 		if ( math_round( v.a ) > 0 ) then
 			local col = v.col
 			
-			draw_roundedBox( 0, 5, v.y, barW, barH, color( 255, 255, 255, v.a / 1.5 ) )
-			draw_roundedBox( 0, 5, v.y, v.w, barH, color( col.r, col.g, col.b, v.a ) )
+			if ( bar_material and !bar_material:IsError( ) ) then
+				surface.SetDrawColor( col.r - 100, col.g - 100, col.b - 100, v.a )
+				surface.SetMaterial( bar_material )
+				surface.DrawTexturedRect( 5, v.y, barW, barH )
+				
+				surface.SetDrawColor( col.r, col.g, col.b, v.a )
+				surface.SetMaterial( bar_material )
+				surface.DrawTexturedRect( 5, v.y, v.w, barH )
+			else
+				draw.RoundedBox( 0, 5, v.y, barW, barH, Color( col.r - 100, col.g - 100, col.b - 100, v.a ) )
+				draw.RoundedBox( 0, 5, v.y, v.w, barH, Color( col.r, col.g, col.b, v.a ) )
+			end
 		end
 	end
 	

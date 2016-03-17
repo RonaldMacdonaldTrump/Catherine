@@ -53,9 +53,8 @@ if ( SERVER ) then
 		end
 		
 		if ( #answers != #questionTable ) then
-			local kickMessage = LANG( pl, "Question_KickMessage" )
-				
-			pl:Kick( kickMessage )
+			pl:Kick( LANG( pl, "Question_KickMessage" ) )
+			
 			return
 		end
 		
@@ -67,9 +66,8 @@ if ( SERVER ) then
 		
 		for k, v in pairs( answers ) do
 			if ( v != answerIndexes[ k ] ) then
-				local kickMessage = LANG( pl, "Question_KickMessage" )
+				pl:Kick( LANG( pl, "Question_KickMessage" ) )
 				
-				pl:Kick( kickMessage )
 				return
 			end
 		end
@@ -83,7 +81,7 @@ if ( SERVER ) then
 	end
 	
 	function catherine.question.IsQuestionComplete( pl )
-		return catherine.catData.GetVar( pl, "question" )
+		return catherine.catData.GetVar( pl, "question" ) == "1"
 	end
 	
 	netstream.Hook( "catherine.question.Check", function( pl, data )
@@ -105,17 +103,20 @@ else
 			catherine.vgui.question:Remove( )
 		end
 		
-		catherine.vgui.question = vgui.Create( "catherine.vgui.question" )
+		if ( IsValid( catherine.vgui.character ) ) then
+			catherine.vgui.character:Remove( )
+		end
+		
 		catherine.vgui.character = vgui.Create( "catherine.vgui.character" )
+		catherine.vgui.question = vgui.Create( "catherine.vgui.question" )
 		
 		if ( IsValid( catherine.vgui.character ) ) then
 			catherine.vgui.character:SetVisible( false )
-			catherine.vgui.character:MoveToBack( )
 		end
 	end
-
+	
 	function catherine.question.CanQuestion( )
-		if ( !catherine.configs.enableQuiz or catherine.catData.GetVar( "question" ) or #catherine.question.GetAll( ) == 0 ) then
+		if ( !catherine.configs.enableQuiz or catherine.catData.GetVar( "question" ) == "1" or #catherine.question.GetAll( ) == 0 ) then
 			return false
 		else
 			return true

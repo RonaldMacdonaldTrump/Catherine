@@ -20,11 +20,11 @@ local PANEL = { }
 
 function PANEL:Init( )
 	catherine.vgui.scoreboard = self
-
+	
 	self.playerCount = 0
-	self.cantLook = hook.Run( "PlayerCantLookScoreboard", self.player )
-
-	self:SetMenuSize( ScrW( ) * 0.65, ScrH( ) * 0.85 )
+	self.shouldOpen = hook.Run( "ShouldOpenScoreboard", self.player )
+	
+	self:SetMenuSize( ScrW( ) * 0.8, ScrH( ) * 0.85 )
 	self:SetMenuName( LANG( "Scoreboard_UI_Title" ) )
 	
 	self.Lists = vgui.Create( "DPanelList", self )
@@ -34,14 +34,12 @@ function PANEL:Init( )
 	self.Lists:EnableHorizontal( false )
 	self.Lists:EnableVerticalScrollbar( true )	
 	self.Lists.Paint = function( pnl, w, h )
-		catherine.theme.Draw( CAT_THEME_PNLLIST, w, h )
-		
-		if ( self.cantLook == true ) then
-			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 50, 50, 50, 255 ), 1, 1 )
-			draw.SimpleText( LANG( "Scoreboard_UI_CanNotLook_Str" ), "catherine_normal20", w / 2, h / 2, Color( 50, 50, 50, 255 ), 1, 1 )
+		if ( self.shouldOpen == false ) then
+			draw.SimpleText( ":)", "catherine_normal50", w / 2, h / 2 - 50, Color( 255, 255, 255, 255 ), 1, 1 )
+			draw.SimpleText( LANG( "Scoreboard_UI_CanNotLook_Str" ), "catherine_normal20", w / 2, h / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 		end
 	end
-
+	
 	self:Refresh( )
 end
 
@@ -50,7 +48,7 @@ function PANEL:OnMenuRecovered( )
 end
 
 function PANEL:MenuPaint( w, h )
-	draw.SimpleText( GetHostName( ) .. " | " .. #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_normal20", w, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_LEFT )
+	draw.SimpleText( GetHostName( ) .. " | " .. #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_lightUI20", w - 10, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 function PANEL:Refresh( )
@@ -64,11 +62,31 @@ function PANEL:SortPlayerLists( )
 	
 	for k, v in pairs( player.GetAllByLoaded( ) ) do
 		local factionTable = catherine.faction.FindByIndex( v:Team( ) )
-		if ( !factionTable ) then continue end
-		local name = factionTable.name or "LOADING"
 		
-		players[ name ] = players[ name ] or { }
-		players[ name ][ #players[ name ] + 1 ] = v
+		if ( !factionTable ) then continue end
+		
+		local class = v:Class( )
+		
+		if ( class ) then
+			local classTable = catherine.class.FindByIndex( class )
+			
+			if ( classTable and classTable.name and classTable.showInUI ) then
+				local name = classTable.name or "CLASS"
+				
+				players[ name ] = players[ name ] or { }
+				players[ name ][ #players[ name ] + 1 ] = v
+			else
+				local name = factionTable.name or "LOADING"
+				
+				players[ name ] = players[ name ] or { }
+				players[ name ][ #players[ name ] + 1 ] = v
+			end
+		else
+			local name = factionTable.name or "LOADING"
+			
+			players[ name ] = players[ name ] or { }
+			players[ name ][ #players[ name ] + 1 ] = v
+		end
 	end
 	
 	self.playerLists = players
@@ -77,25 +95,23 @@ function PANEL:SortPlayerLists( )
 end
 
 function PANEL:RefreshPlayerLists( )
-	if ( self.cantLook == true ) then return end
+	if ( self.shouldOpen == false ) then return end
 	local pl = self.player
 	local scrollBar = self.Lists.VBar
 	local scroll = scrollBar.Scroll
 	
 	self.Lists:Clear( )
-
-	for k, v in pairs( self.playerLists or { } ) do
+	
+	for k, v in SortedPairs( self.playerLists or { } ) do
 		local form = vgui.Create( "DForm" )
 		form:SetSize( self.Lists:GetWide( ), 64 )
 		form:SetName( catherine.util.StuffLanguage( k ) )
-		form:SetAnimTime( 0.5 )
-		form.Paint = function( pnl, w, h )
-			catherine.theme.Draw( CAT_THEME_FORM, w, h )
-		end
-		form.Header:SetFont( "catherine_normal15" )
-		form.Header:SetTextColor( Color( 90, 90, 90, 255 ) )
-
-		for k1, v1 in pairs( v ) do
+		form.Paint = function( pnl, w, h ) end
+		form.Header:SetFont( "catherine_lightUI25" )
+		form.Header:SetTall( 25 )
+		form.Header:SetTextColor( Color( 255, 255, 255, 255 ) )
+		
+		for k1, v1 in SortedPairs( v ) do
 			local know = pl == v1 and true or pl:IsKnow( v1 )
 			
 			local panel = vgui.Create( "DPanel" )
@@ -105,28 +121,18 @@ function PANEL:RefreshPlayerLists( )
 					self:Refresh( )
 					return
 				end
-
-				draw.RoundedBox( 0, 0, h - 1, w, 1, Color( 50, 50, 50, 90 ) )
 				
-				if ( v1:SteamID( ) == "STEAM_0:1:25704824" ) then
-					surface.SetDrawColor( 255, 255, 255, 255 )
-					surface.SetMaterial( Material( "icon16/award_star_gold_1.png" ) )
-					surface.DrawTexturedRect( w - 40, h / 2 - 16 / 2, 16, 16 )
-					
-					draw.SimpleText( LANG( "Scoreboard_UI_Author" ), "catherine_normal15", w - 50, h / 2, Color( 50, 50, 50, 255 ), TEXT_ALIGN_RIGHT, 1 )
-				end
+				hook.Run( "ScoreboardPlayerListPanelPaint", pl, v1, w, h )
 				
 				if ( !know ) then
-					surface.SetDrawColor( 255, 255, 255, 255 )
-					surface.SetMaterial( Material( "CAT/ui/icon_idk.png", "smooth" ) )
-					surface.DrawTexturedRect( 55, 10, 30, 30 )
+					draw.SimpleText( "?", "catherine_lightUI40", 50 + 40 / 2, 5 + 40 / 2, Color( 255, 255, 255, 255 ), 1, 1 )
 					
-					surface.SetDrawColor( 50, 50, 50, 150 )
+					surface.SetDrawColor( 255, 255, 255, 255 )
 					surface.DrawOutlinedRect( 50, 5, 40, 40 )
 				end
 				
-				draw.SimpleText( v1:Name( ), "catherine_normal20", 100, 5, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-				draw.SimpleText( ( know and v1:Desc( ) or LANG( "Scoreboard_UI_UnknownDesc" ) ), "catherine_normal15", 100, 30, Color( 50, 50, 50, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.SimpleText( v1:Name( ), "catherine_normal20", 100, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.SimpleText( ( know and v1:Desc( ) or LANG( "Scoreboard_UI_UnknownDesc" ) ), "catherine_normal15", 100, 30, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 			end
 			
 			local avatar = vgui.Create( "AvatarImage", panel )
@@ -134,7 +140,7 @@ function PANEL:RefreshPlayerLists( )
 			avatar:SetSize( 40, 40 )
 			avatar:SetPlayer( v1, 64 )
 			avatar.PaintOver = function( pnl, w, h )
-				surface.SetDrawColor( 50, 50, 50, 150 )
+				surface.SetDrawColor( 255, 255, 255, 255 )
 				surface.DrawOutlinedRect( 0, 0, w, h )
 			end
 			
@@ -151,12 +157,11 @@ function PANEL:RefreshPlayerLists( )
 			local spawnIcon = vgui.Create( "SpawnIcon", panel )
 			spawnIcon:SetPos( 50, 5 )
 			spawnIcon:SetSize( 40, 40 )
-			spawnIcon:SetModel( v1:GetModel( ), v1:GetSkin( ) )
+			spawnIcon:SetModel( v1:GetModel( ), v1:GetSkin( ) or 0 )
 			spawnIcon:SetToolTip( false )
 			spawnIcon:SetDisabled( true )
-			spawnIcon:RebuildSpawnIcon( )
 			spawnIcon.PaintOver = function( pnl, w, h )
-				surface.SetDrawColor( 50, 50, 50, 150 )
+				surface.SetDrawColor( 255, 255, 255, 255 )
 				surface.DrawOutlinedRect( 0, 0, w, h )
 			end
 			
@@ -170,13 +175,19 @@ function PANEL:RefreshPlayerLists( )
 		self.Lists:AddItem( form )
 	end
 	
-	scrollBar:AnimateTo( scroll, 0, 0, 0 )
+	scrollBar:AnimateTo( scroll, 0.3, 0, 0.1 )
 end
 
 vgui.Register( "catherine.vgui.scoreboard", PANEL, "catherine.vgui.menuBase" )
 
 catherine.menu.Register( function( )
 	return LANG( "Scoreboard_UI_Title" )
-end, function( menuPnl, itemPnl )
+end, "scoreboard", function( menuPnl, itemPnl )
 	return IsValid( catherine.vgui.scoreboard ) and catherine.vgui.scoreboard or vgui.Create( "catherine.vgui.scoreboard", menuPnl )
+end, function( pl )
+	if ( hook.Run( "ShouldOpenScoreboard", pl ) == false ) then
+		return false
+	else
+		return true
+	end
 end )

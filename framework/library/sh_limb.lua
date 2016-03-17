@@ -35,15 +35,6 @@ catherine.limb.bones = {
 	[ "ValveBiped.Bip01_Pelvis" ] = HITGROUP_STOMACH,
 	[ "ValveBiped.Bip01_Spine1" ] = HITGROUP_CHEST,
 	[ "ValveBiped.Bip01_Spine2" ] = HITGROUP_CHEST
-};
-local healAmount = {
-	[ HITGROUP_HEAD ] = 0.4,
-	[ HITGROUP_CHEST ] = 0.8,
-	[ HITGROUP_STOMACH ] = 0.5,
-	[ HITGROUP_RIGHTARM ] = 1,
-	[ HITGROUP_LEFTARM ] = 1,
-	[ HITGROUP_LEFTLEG ] = 1,
-	[ HITGROUP_RIGHTLEG ] = 1
 }
 
 function catherine.limb.BoneToHitGroup( boneID )
@@ -51,9 +42,9 @@ function catherine.limb.BoneToHitGroup( boneID )
 end
 
 if ( SERVER ) then
-	local limbDamageAutoRecover = catherine.configs.limbDamageAutoRecover
-	catherine.limb.NextRecoverTick = catherine.limb.NextRecoverTick or CurTime( ) + limbDamageAutoRecover
-
+	local healAmount = catherine.configs.limbHealAmount
+	local limbDamageAutoHealInterval = catherine.configs.limbDamageAutoHeal
+	
 	function catherine.limb.TakeDamage( pl, hitGroup, amount )
 		local limbTable = catherine.character.GetCharVar( pl, "limbTable", { } )
 		
@@ -103,32 +94,34 @@ if ( SERVER ) then
 		catherine.character.SetCharVar( pl, "limbTable", { } )
 	end
 	
-	function catherine.limb.Think( )
-		if ( catherine.limb.NextRecoverTick <= CurTime( ) ) then
-			for k, v in pairs( player.GetAllByLoaded( ) ) do
-				for k1, v1 in pairs( catherine.character.GetCharVar( v, "limbTable", { } ) ) do
-					local healAmount = healAmount[ k1 ]
+	function catherine.limb.PlayerThink( pl )
+		if ( !catherine.limb.IsAnyDamaged( pl ) ) then return end
+		
+		if ( ( pl.CAT_limbNextHealTick or 0 ) <= CurTime( ) ) then
+			if ( hook.Run( "PlayerShouldAutoHealLimbDamage", pl ) == false ) then return end
+			
+			for k, v in pairs( catherine.character.GetCharVar( pl, "limbTable", { } ) ) do
+				local healAmount = healAmount[ k ]
 
-					if ( healAmount ) then
-						catherine.limb.HealDamage( v, k1, healAmount )
-					end
+				if ( healAmount ) then
+					catherine.limb.HealDamage( pl, k, healAmount )
 				end
 			end
 			
-			catherine.limb.NextRecoverTick = CurTime( ) + limbDamageAutoRecover
+			pl.CAT_limbNextHealTick = CurTime( ) + ( hook.Run( "GetAutoHealInterval", pl ) or limbDamageAutoHealInterval )
 		end
 	end
 	
-	hook.Add( "Think", "catherine.limb.Think", catherine.limb.Think )
+	hook.Add( "PlayerThink", "catherine.limb.PlayerThink", catherine.limb.PlayerThink )
 else
 	catherine.limb.materials = {
-		[ HITGROUP_HEAD ] = Material( "CAT/Limb/head.png" ),
-		[ HITGROUP_CHEST ] = Material( "CAT/Limb/chest.png" ),
-		[ HITGROUP_STOMACH ] = Material( "CAT/Limb/stomach.png" ),
-		[ HITGROUP_RIGHTARM ] = Material( "CAT/Limb/right_arm.png" ),
-		[ HITGROUP_LEFTARM ] = Material( "CAT/Limb/left_arm.png" ),
-		[ HITGROUP_LEFTLEG ] = Material( "CAT/Limb/left_leg.png" ),
-		[ HITGROUP_RIGHTLEG ] = Material( "CAT/Limb/right_leg.png" )
+		[ HITGROUP_HEAD ] = Material( "CAT/Limb/head.png", "smooth" ),
+		[ HITGROUP_CHEST ] = Material( "CAT/Limb/chest.png", "smooth" ),
+		[ HITGROUP_STOMACH ] = Material( "CAT/Limb/stomach.png", "smooth" ),
+		[ HITGROUP_RIGHTARM ] = Material( "CAT/Limb/right_arm.png", "smooth" ),
+		[ HITGROUP_LEFTARM ] = Material( "CAT/Limb/left_arm.png", "smooth" ),
+		[ HITGROUP_LEFTLEG ] = Material( "CAT/Limb/left_leg.png", "smooth" ),
+		[ HITGROUP_RIGHTLEG ] = Material( "CAT/Limb/right_leg.png", "smooth" )
 	}
 	
 	function catherine.limb.GetColor( damage )

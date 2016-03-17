@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
+
 --[[
 List of ammo types:
 	AR2 - Ammunition of the AR2/Pulse Rifle
@@ -39,7 +40,7 @@ List of ammo types:
 	HelicopterGun
 	AR2AltFire - Ammunition of the AR2/Pulse Rifle 'combine ball' (secondary fire)
 	slam - Like Grenade, but for the Selectable Lightweight Attack Munition (S.L.A.M)
---]]
+]]--
 
 local BASE = catherine.item.New( "AMMO", nil, true )
 BASE.name = "Ammo Base"

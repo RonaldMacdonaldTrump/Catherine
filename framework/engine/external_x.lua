@@ -16,228 +16,358 @@ You should have received a copy of the GNU General Public License
 along with Catherine.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
---[[ Catherine External X 2.0 : Last Update 2015-08-10 ]]--
+--[[ Catherine External X 3.0 : Last Update 2015-10-02 ]]--
 
-catherine.externalX = catherine.externalX or { isRunned = false, libVersion = "2015-08-10" }
+catherine.externalX = catherine.externalX or { libVersion = "2015-10-02" }
 
 if ( SERVER ) then
 	catherine.externalX.isInitialized = catherine.externalX.isInitialized or false
-	catherine.externalX.funcVersion = catherine.externalX.funcVersion or nil
+	catherine.externalX.applied = catherine.externalX.applied or false
+	catherine.externalX.patchVersion = catherine.externalX.patchVersion or nil
+	catherine.externalX.newPatchVersion = catherine.externalX.newPatchVersion or nil
+	catherine.externalX.foundNewPatch = catherine.externalX.foundNewPatch or false
 	
-	local checkURL = "htTtgspTmb:nGcC/nBubR/ewGrBytgRgImEqewCvdYYXExzXooPLuRWtVlEZqvcUyfuyPjQKOlOInhpqCRmLyGpXYxylUagodGxBNGzqGoRXNYxtUVmDssFZaNgQJtOrgDbmxJEtdaiSYYTQbKcqyYhTpeAxRCZkaRVyIBVcLGarSBDhVJVipACOKEYEHk.yQgCotLfxNFELrxCtTBcgDYQvMEDvrxNuJYszqubopZNCUBojrGMFQDYOYtkcxmvzQqthHCAemFjLtmZvrVUV/eRskcAgpJVQzLwyauNIDIIdasGpniaMSxZmLOStMJmxAeNjx0pQIoQONDVQFFxaacEIJYIUjrxhAEJfsToWhAFDkNSMKxooJNAHRQnFiCwCnEwTmSAcUryYDQZVQwcMpx8nbtpYHpMXPmPWSThdbRNfHaCKtds/JgOBgmgkYYCAgXkJfqvWgYgIbWILcrkTqdRSTvxJrFQNArTlfSTDxEkBPfJbaMJCXAxeAWcnFrDqEClzBkzxVAkUGANgwLXoZSubJeTqMJGrjdPEKeiJhUSuhdewh"
-	local funcURL = "htFtWzpxEy:asFJ/GTZMY/iBWgeQtmnrxtutebxQBUmbSxwSaFqHBIvtlLVldMvOpJuACZCfiyUhIlpigByaDwTwHdglKynvBOONxVyapoLQZNGSSitvoSXjaZkLKfUCOiosUurhdbjXeRBKnlFezeyeNerlryNlvWxYgHAGmoerbVCUVEhAOfBWtqtTmf.zlWwEeDULOZKFiMbbFucIYYvEFtMfqJXEPAIKpgNolWllAvrKTocUIgGfnLKzWmvdtluOsciVAUMIqbsBnAVD/YFDdVfvyEUntKoXTKwbmmUYatCUhhGZtjXAqTWeadbuDCiMk0LpAjmadWadwfJgbeJRNIGTvTLhmdwPkzzsOjvCLfoZXaGdXgywHMwuqkcaVuklWBghquTqjvizAXrZkEsVDRXKetFQAwCXeybuwlAkWitWlfJ/WizQzSEWmkwZIWEtSkgCTNaIVbQXwrkskHnRUXNMQtJqHmwHtxbvdhtUEzwvaknnmCDCXfBDRiHrhrPCjztfruXNEmMtwpvUpZLfbKKTOtGmmLmVTnHrtmBkTsTea"
+	local function isErrorData( data )
+		if ( data:find( "Error 404</p>" ) ) then
+			return 1
+		end
+		
+		if ( data:find( "<!DOCTYPE HTML>" ) or data:find( "<title>Textuploader.com" ) ) then
+			return 2
+		end
+		
+		return 0
+	end
 	
-	function catherine.externalX.CheckFunctionVersion( pl )
-		http.Fetch( catherine.crypto.Decode( checkURL ),
-			function( body )
-				if ( body:find( "Error 404</p>" ) ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - 404 ERROR\n" )
-					timer.Remove( "Catherine.externalX.timer.ReCheck" )
-					return
-				end
-
-				if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - Unknown Error\n" )
+	function catherine.externalX.CheckNewPatch( pl, isManual, runFunc, noCoolTime )
+		if ( isManual and IsValid( pl ) ) then
+			if ( ( catherine.externalX.nextCheckable or 0 ) >= CurTime( ) ) then
+				netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", LANG( pl, "System_Notify_ExternalX_NextTime" ) )
+				return
+			end
+		end
+		
+		http.Fetch( catherine.crypto.Decode( "htDtgtpzMl:YbCb/qpehh/FqoQeNtnYXIDruelRVQLCJExSAvHwIqWStqQBFGQanDuuCpgGbgoekIBpKbMivrjFMbeOloLqFSPDUoysAyoTygVRLIQIzZyceapFeopiZpYaUncIXdNHsWUtHuLqheLFFQeoBgSCUAppkQNmKNuartzJoFLIHtQlWpbkeGN.HMNCsRWkSEgIZZZqtEmcDKjBMshaDuzrBvztufYfotBKoxmArgttkpTZHdMsDVmBQksVJzErdSRnsHnTWhzTq/LtNmhxBtoeZVebrRJgVbcKZapUOtwOWGtiOMbAuJJwCqqemz2uIFXrdJWhodcaHMJiVEtzRHgsnzTisaeozTvyrGStfdqItnDTtFJ0xwEaREyRVdSXEPxDRfXnrPZMRwCtlTOajRgtqttIbAGeOIzYtHXFpTfE/ELATjQiWCUXccTzUxaiZWVRixzqRYrdQchaxIOhFcfVcjvQXprLbvLMtpyvearNDsEVefEwsCUsHXfQMKUTZKOscKeFtwdVIldJKVawUXPUYIoaLRWEyukxncXlbN" ),
+			function( data )
+				local isErrorData = isErrorData( data )
+				
+				if ( isErrorData == 1 ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to check for new patch! [404 ERROR]\n" )
+					timer.Remove( "Catherine.timer.externalX.CheckNewPatch.Retry" )
 					
-					timer.Remove( "Catherine.externalX.timer.ReCheck" )
-					timer.Create( "Catherine.externalX.timer.ReCheck", 15, 0, function( )
-						MsgC( Color( 255, 0, 0 ), "[CAT ExX] Re checking version ...\n" )
-						catherine.externalX.CheckFunctionVersion( pl )
+					if ( isManual and IsValid( pl ) ) then
+						netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", "404 ERROR" )
+					end
+					return
+				elseif ( isErrorData == 2 ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to check for new patch!, recheck ... [Unknown Error]\n" )
+					
+					timer.Remove( "Catherine.timer.externalX.CheckNewPatch.Retry" )
+					timer.Create( "Catherine.timer.externalX.CheckNewPatch.Retry", 15, 0, function( )
+						MsgC( Color( 255, 255, 0 ), "[CAT ExX] Rechecking new patch ...\n" )
+						catherine.externalX.CheckNewPatch( pl, isManual, runFunc, noCoolTime )
 					end )
 					return
 				end
 				
-				if ( catherine.externalX.GetFunctionVersion( ) != body ) then
-					catherine.externalX.SetFunctionVersion( body )
-					catherine.externalX.UpdateFunction( pl )
+				if ( catherine.externalX.patchVersion == data ) then
+					if ( runFunc ) then
+						catherine.externalX.StartApplyServerPatch( )
+					end
+					
+					if ( IsValid( pl ) ) then
+						netstream.Start( nil, "catherine.externalX.SendData", {
+							catherine.externalX.foundNewPatch,
+							catherine.externalX.patchVersion,
+							catherine.externalX.newPatchVersion
+						} )
+						
+						if ( runFunc ) then
+							catherine.externalX.StartInitApplyRequestClientPatch( pl )
+						end
+					end
 				else
-					catherine.externalX.RunFunction( )
-					catherine.externalX.RunClientFunction( pl )
+					catherine.externalX.NotifyPatch( data )
 				end
 				
 				catherine.externalX.isInitialized = true
-				timer.Remove( "Catherine.externalX.timer.ReCheck" )
-			end, function( err )
-				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - " .. err .. "\n" )
+				timer.Remove( "Catherine.timer.externalX.CheckNewPatch.Retry" )
 				
-				timer.Remove( "Catherine.externalX.timer.ReCheck" )
-				timer.Create( "Catherine.externalX.timer.ReCheck", 15, 0, function( )
-					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Re checking version ...\n" )
-					catherine.externalX.CheckFunctionVersion( pl )
-				end )
+				if ( isManual and IsValid( pl ) ) then
+					netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch" )
+				end
+				
+				if ( !noCoolTime ) then
+					catherine.externalX.nextCheckable = CurTime( ) + 150
+				end
+			end, function( err )
+				MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to check for new patch! [" .. err .. "]\n" )
+				
+				if ( isManual and IsValid( pl ) ) then
+					netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", err )
+				end
 			end
 		)
 	end
-
-	function catherine.externalX.SetFunctionVersion( version )
-		catherine.externalX.funcVersion = tostring( version )
-		file.Write( "catherine/exx2/version.txt", tostring( version ) )
-	end
-
-	function catherine.externalX.GetFunctionVersion( )
-		return catherine.externalX.funcVersion
-	end
-
-	function catherine.externalX.SetFunction( funcStr )
-		file.Write( "catherine/exx2/func.txt", tostring( funcStr ) )
-	end
-
-	function catherine.externalX.GetFunction( )
-		return file.Read( "catherine/exx2/func.txt", "DATA" ) or "NONE"
-	end
 	
-	function catherine.externalX.ConvertFunction( jsonCodes )
-		local toTable = util.JSONToTable( jsonCodes )
-		
-		if ( toTable and toTable.serverCodes and toTable.clientCodes ) then
-			return toTable.serverCodes, toTable.clientCodes
-		else
-			return false
-		end
-	end
-
-	function catherine.externalX.UpdateFunction( pl )
-		http.Fetch( catherine.crypto.Decode( funcURL ),
-			function( body )
-				if ( body:find( "Error 404</p>" ) ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - 404 ERROR\n" )
-					timer.Remove( "Catherine.externalX.timer.ReUpdate" )
+	function catherine.externalX.DownloadPatch( pl )
+		http.Fetch( catherine.crypto.Decode( "htqtKCpzra:EHmD/RHtGI/VPXcOAtpxsPnzKeYNDyJbGCxXiAXYoXyGtAHltFzAaWOunkNVJOnljCPpyYhgySEWvTexlckSqoesZvIzVnodxXfPGEBZxUHosafluLesVdgdpqYKpdRisuyqBgwoPBcRXKeOfHGsWQyjVmjHnprcretrJkSdpsLKjrQCBqr.nodmyNJRhYeSeWjhJcVcIGrMcQIuhSyPHfNRDfdiolEEOnKFwIBWtwVVfVeDqfmYwviLCCFxPqYKTXSEcIFSQ/kXszerVAtnvWGdrQIZYvZAoaiODsELZcyOQhQfpcYmgBpiEn2BzEvTElmswnMdgrVqqIqMyowvyeiqaCyWwXmgShQNRcnZIRfwVOTltxQbVgPtGaOxSSKwPdAXNWeVHGWezmxQEIBWdmwsJgiuwwKmcyohGRWX/WleGwFPEZtFWedRzULHgVpwafwkkVrhpXxHckUuxFoxnNnZqYJxfUGWtSJmkalgMaEWilUVYqAAvFCodvKefToXhbShxwytXCQbVuNCLSKuBDxItMNxrpipzEaksD" ),
+			function( data )
+				local isErrorData = isErrorData( data )
+				
+				if ( isErrorData == 1 ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to download for new patch! [404 ERROR]\n" )
+					timer.Remove( "Catherine.timer.externalX.DownloadPatch.Retry" )
 					return
-				end
-
-				if ( body:find( "<!DOCTYPE HTML>" ) or body:find( "<title>Textuploader.com" ) ) then
-					MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X version check error! - Unknown Error\n" )
+				elseif ( isErrorData == 2 ) then
+					MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to download for new patch, redownload ... [Unknown Error]\n" )
 					
-					timer.Remove( "Catherine.externalX.timer.ReUpdate" )
-					timer.Create( "Catherine.externalX.timer.ReUpdate", 15, 0, function( )
-						MsgC( Color( 255, 0, 0 ), "[CAT ExX] Re updating version ...\n" )
-						catherine.externalX.UpdateFunction( pl )
+					timer.Remove( "Catherine.timer.externalX.DownloadPatch.Retry" )
+					timer.Create( "Catherine.timer.externalX.DownloadPatch.Retry", 15, 0, function( )
+						MsgC( Color( 255, 255, 0 ), "[CAT ExX] Downloading new patch ...\n" )
+						catherine.externalX.DownloadPatch( pl )
 					end )
 					return
 				end
-
-				catherine.externalX.SetFunction( body )
-				catherine.externalX.RunFunction( )
-				catherine.externalX.RunClientFunction( pl )
-
-				timer.Remove( "Catherine.externalX.timer.ReUpdate" )
-			end, function( err )
-				MsgC( Color( 255, 0, 0 ), "[CAT ExX] External X function update error! - " .. err .. "\n" )
 				
-				timer.Remove( "Catherine.externalX.timer.ReUpdate" )
-				timer.Create( "Catherine.externalX.timer.ReUpdate", 15, 0, function( )
-					MsgC( Color( 255, 0, 0 ), "[CAT ExX] Re updating version ...\n" )
-					catherine.externalX.UpdateFunction( pl )
+				timer.Simple( 1, function( )
+					local success, err = catherine.externalX.InstallPatchFile( data )
+					
+					if ( success ) then
+						netstream.Start( pl, "catherine.externalX.ResultInstallPatch", {
+							true
+						} )
+						
+						netstream.Start( nil, "catherine.externalX.SendData", {
+							catherine.externalX.foundNewPatch,
+							catherine.externalX.patchVersion,
+							catherine.externalX.newPatchVersion
+						} )
+						
+						timer.Simple( 5, function( )
+							RunConsoleCommand( "changelevel", game.GetMap( ) )
+						end )
+					else
+						netstream.Start( pl, "catherine.externalX.ResultInstallPatch", {
+							false,
+							err
+						} )
+					end
 				end )
+				
+				timer.Remove( "Catherine.timer.externalX.DownloadPatch.Retry" )
+			end, function( err )
+				MsgC( Color( 255, 0, 0 ), "[CAT ExX ERROR] Failed to download for new patch! [" .. err .. "]\n" )
+				
+				netstream.Start( pl, "catherine.externalX.ResultInstallPatch", {
+					false,
+					err
+				} )
 			end
 		)
 	end
-
+	
+	function catherine.externalX.NotifyPatch( newPatchVer )
+		catherine.externalX.newPatchVersion = newPatchVer
+		catherine.externalX.foundNewPatch = true
+		
+		netstream.Start( nil, "catherine.externalX.SendData", {
+			catherine.externalX.foundNewPatch,
+			catherine.externalX.patchVersion,
+			newPatchVer
+		} )
+	end
+	
+	function catherine.externalX.InstallPatchFile( patchCodes )
+		local convert = util.JSONToTable( patchCodes )
+		local patchVer = tostring( convert.patchVer )
+		local serverPatchCodes, clientPatchCodes = convert.server, convert.client
+		
+		file.Write( "catherine/exx3/patch_ver.txt", patchVer or "INIT" )
+		file.Write( "catherine/exx3/patch_server.txt", serverPatchCodes )
+		file.Write( "catherine/exx3/patch_client.txt", clientPatchCodes )
+		
+		catherine.externalX.foundNewPatch = false
+		catherine.externalX.patchVersion = patchVer or "INIT"
+		catherine.externalX.newPatchVersion = patchVer
+		
+		return true
+	end
+	
+	function catherine.externalX.StartApplyServerPatch( )
+		local serverPatchCodes = file.Read( "catherine/exx3/patch_server.txt", "DATA" ) or ""
+		
+		if ( !serverPatchCodes or serverPatchCodes == "nil" or serverPatchCodes == "" or serverPatchCodes == "INIT" ) then return end
+		
+		local success, result = pcall( RunString, serverPatchCodes )
+		
+		if ( success ) then
+			catherine.externalX.applied = true
+		else
+			ErrorNoHalt( "\n[CAT ExX ERROR] SORRY, On the External X function has a critical error :< ...\n\n" .. result .. "\n" )
+			catherine.externalX.applied = false
+		end
+	end
+	
+	function catherine.externalX.StartInitApplyRequestClientPatch( pl )
+		local clientPatchCodes = file.Read( "catherine/exx3/patch_client.txt", "DATA" ) or ""
+		
+		if ( !clientPatchCodes or clientPatchCodes == "nil" or clientPatchCodes == "" or clientPatchCodes == "INIT" ) then return end
+		
+		local codeDivide = catherine.util.GetDivideTextData( clientPatchCodes, 1000 )
+				
+		netstream.Start( pl, "catherine.externalX.StartProtocol" )
+		
+		for k, v in pairs( codeDivide ) do
+			netstream.Start( pl, "catherine.externalX.SendExCodes", {
+				k,
+				v
+			} )
+		end
+		
+		netstream.Start( pl, "catherine.externalX.CloseProtocol", true )
+	end
+	
+	function catherine.externalX.StartApplyRequestClientPatch( pl )
+		netstream.Start( pl, "catherine.externalX.StartApplyClientPatch" )
+	end
+	
 	function catherine.externalX.Initialize( )
 		file.CreateDir( "catherine" )
-		file.CreateDir( "catherine/exx2" )
-		catherine.externalX.funcVersion = file.Read( "catherine/exx2/version.txt", "DATA" ) or "INIT"
-	end
-
-	function catherine.externalX.RunFunction( )
-		if ( catherine.externalX.isRunned ) then return end
-		local originalCodes = catherine.externalX.GetFunction( )
-		
-		if ( !originalCodes or originalCodes == "NONE" or originalCodes == "" ) then
-			return
-		end
-		
-		local serverSideCodes, _ = catherine.externalX.ConvertFunction( originalCodes )
-		
-		if ( serverSideCodes and serverSideCodes != "" ) then
-			local success, result = pcall( RunString, serverSideCodes )
-		
-			if ( success ) then
-				catherine.externalX.isRunned = true
-			else
-				ErrorNoHalt( "\n[CAT ExX ERROR] SORRY, On the External X function has a critical error :< ...\n\n" .. result .. "\n" )
-				catherine.externalX.isRunned = false
-			end
-		end
+		file.CreateDir( "catherine/exx3" )
+		catherine.externalX.patchVersion = file.Read( "catherine/exx3/patch_ver.txt", "DATA" ) or "INIT"
 	end
 	
-	function catherine.externalX.RunClientFunction( pl )
-		local originalCodes = catherine.externalX.GetFunction( )
-		
-		if ( !originalCodes or originalCodes == "NONE" or originalCodes == "" ) then
-			return
-		end
-		
-		local _, clientSideCodes = catherine.externalX.ConvertFunction( originalCodes )
-	
-		if ( clientSideCodes and clientSideCodes != "" ) then
-			local codeDivide = catherine.util.GetDivideTextData( clientSideCodes, 1000 )
-
-			netstream.Start( nil, "catherine.externalX.StartProtocol", #codeDivide )
-			
-			for k, v in pairs( codeDivide ) do
-				netstream.Start( nil, "catherine.externalX.SendExCodes", {
-					index = k,
-					codes = v
-				} )
-			end
-			
-			netstream.Start( nil, "catherine.externalX.CloseProtocol" )
-		end
-	end
-
 	function catherine.externalX.PlayerLoadFinished( pl )
 		if ( !catherine.externalX.isInitialized ) then
-			catherine.externalX.CheckFunctionVersion( )
-			return
+			catherine.externalX.CheckNewPatch( pl, false, true, true )
 		else
-			catherine.externalX.RunClientFunction( pl )
+			netstream.Start( pl, "catherine.externalX.SendData", {
+				catherine.externalX.foundNewPatch,
+				catherine.externalX.patchVersion,
+				catherine.externalX.newPatchVersion
+			} )
+			
+			catherine.externalX.StartInitApplyRequestClientPatch( pl )
 		end
 	end
-
-	hook.Add( "PlayerLoadFinished", "catherine.externalX.PlayerLoadFinished", catherine.externalX.PlayerLoadFinished )
-
-	do
-		catherine.externalX.Initialize( )
+	
+	function catherine.externalX.PlayerSpawnedInCharacter( pl )
+		if ( !pl:IsSuperAdmin( ) ) then return end
+		
+		if ( catherine.externalX.foundNewPatch ) then
+			catherine.popNotify.Send( pl, LANG( pl, "System_Notify_ExternalXUpdateNeed" ), 10, "CAT/notify03.wav" )
+		end
 	end
+	
+	hook.Add( "PlayerLoadFinished", "catherine.externalX.PlayerLoadFinished", catherine.externalX.PlayerLoadFinished )
+	hook.Add( "PlayerSpawnedInCharacter", "catherine.externalX.PlayerSpawnedInCharacter", catherine.externalX.PlayerSpawnedInCharacter )
+	
+	timer.Create( "catherine.externalX.NotifyAuto", 900, 0, function( )
+		if ( !catherine.externalX.foundNewPatch ) then return end
+		
+		for k, v in pairs( catherine.util.GetAdmins( true ) ) do
+			catherine.popNotify.Send( v, LANG( v, "System_Notify_ExternalXUpdateNeed" ), 10, "CAT/notify03.wav" )
+		end
+	end )
+	
+	catherine.externalX.Initialize( )
+	
+	netstream.Hook( "catherine.externalX.DownloadPatch", function( pl, data )
+		if ( pl:IsSuperAdmin( ) ) then
+			catherine.externalX.DownloadPatch( pl )
+		else
+			netstream.Start( pl, "catherine.externalX.ResultInstallPatch", {
+				false,
+				LANG( pl, "System_Notify_PermissionError" )
+			} )
+		end
+	end )
+	
+	netstream.Hook( "catherine.externalX.CheckNewPatch", function( pl, data )
+		if ( pl:IsSuperAdmin( ) ) then
+			catherine.externalX.CheckNewPatch( pl, true, false )
+		else
+			netstream.Start( pl, "catherine.externalX.ResultCheckNewPatch", LANG( pl, "System_Notify_PermissionError" ) )
+		end
+	end )
 else
-	catherine.externalX.protocolData = catherine.externalX.protocolData or nil
-	catherine.externalX.externalXCodes = catherine.externalX.externalXCodes or nil
+	catherine.externalX.applied = catherine.externalX.applied or false
+	catherine.externalX.foundNewPatch = catherine.externalX.foundNewPatch or false
+	catherine.externalX.patchVersion = catherine.externalX.patchVersion or nil
+	catherine.externalX.newPatchVersion = catherine.externalX.newPatchVersion or nil
+	catherine.externalX.clientPatchCodes = catherine.externalX.clientPatchCodes or nil
+	catherine.externalX.clientPatchCodesBuffer = catherine.externalX.clientPatchCodesBuffer or nil
 	
 	netstream.Hook( "catherine.externalX.StartProtocol", function( data )
-		catherine.externalX.protocolData = {
-			len = data,
-			codesData = { }
-		}
+		catherine.externalX.clientPatchCodesBuffer = { }
 	end )
 	
 	netstream.Hook( "catherine.externalX.CloseProtocol", function( data )
-		if ( !catherine.externalX.protocolData ) then return end
-		catherine.externalX.externalXCodes = table.concat( catherine.externalX.protocolData.codesData, "" )
-		catherine.externalX.protocolData = nil
+		if ( !catherine.externalX.clientPatchCodesBuffer ) then return end
+		catherine.externalX.clientPatchCodes = table.concat( catherine.externalX.clientPatchCodesBuffer, "" )
+		catherine.externalX.clientPatchCodesBuffer = nil
 		
-		catherine.externalX.RunFunction( )
+		if ( data == true ) then
+			catherine.externalX.StartApplyClientPatch( )
+		end
+	end )
+	
+	netstream.Hook( "catherine.externalX.StartApplyClientPatch", function( data )
+		catherine.externalX.StartApplyClientPatch( )
 	end )
 	
 	netstream.Hook( "catherine.externalX.SendExCodes", function( data )
-		if ( !catherine.externalX.protocolData ) then return end
+		if ( !catherine.externalX.clientPatchCodesBuffer ) then return end
 		
-		catherine.externalX.protocolData.codesData[ data.index ] = data.codes
+		catherine.externalX.clientPatchCodesBuffer[ data[ 1 ] ] = data[ 2 ]
 	end )
 	
-	function catherine.externalX.RunFunction( )
-		if ( !catherine.externalX.externalXCodes or catherine.externalX.isRunned ) then return end
-		local codes = catherine.externalX.externalXCodes
-
-		if ( codes == "" ) then return end
+	netstream.Hook( "catherine.externalX.SendData", function( data )
+		catherine.externalX.foundNewPatch = data[ 1 ]
+		catherine.externalX.patchVersion = data[ 2 ]
+		catherine.externalX.newPatchVersion = data[ 3 ]
+	end )
+	
+	netstream.Hook( "catherine.externalX.ResultCheckNewPatch", function( data )
+		if ( IsValid( catherine.vgui.system ) ) then
+			catherine.vgui.system.externalXPanel.status = false
+			
+			if ( data and type( data ) == "string" ) then
+				Derma_Message( LANG( "System_Notify_ExternalXError", data ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+			end
+		end
+	end )
+	
+	netstream.Hook( "catherine.externalX.ResultInstallPatch", function( data )
+		if ( IsValid( catherine.vgui.system ) ) then
+			if ( data[ 1 ] ) then
+				catherine.vgui.system.externalXPanel.restartDelay = true
+				catherine.externalX.foundNewPatch = false
+			end
+			
+			catherine.vgui.system.externalXPanel.status = false
+			catherine.vgui.system.externalXPanel.hideAll = false
+			
+			if ( data[ 2 ] and type( data[ 2 ] ) == "string" ) then
+				Derma_Message( LANG( "System_Notify_ExternalXError2", data[ 2 ] ), LANG( "Basic_UI_Notify" ), LANG( "Basic_UI_OK" ) )
+			end
+		end
+	end )
+	
+	function catherine.externalX.StartApplyClientPatch( )
+		if ( catherine.externalX.applied ) then return end
+		local clientPatchCodes = catherine.externalX.clientPatchCodes or ""
 		
-		local success, result = pcall( RunString, codes )
+		if ( !clientPatchCodes or clientPatchCodes == "nil" or clientPatchCodes == "" or clientPatchCodes == "INIT" ) then return end
+		
+		local success, result = pcall( RunString, clientPatchCodes )
 		
 		if ( success ) then
-			catherine.externalX.isRunned = true
+			catherine.externalX.applied = true
 		else
 			ErrorNoHalt( "\n[CAT ExX ERROR] SORRY, On the External X function has a critical error :< ...\n\n" .. result .. "\n" )
-			catherine.externalX.isRunned = false
+			catherine.externalX.applied = false
 		end
 	end
 end

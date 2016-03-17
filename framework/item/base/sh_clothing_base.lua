@@ -27,6 +27,12 @@ BASE.itemData = {
 }
 BASE.isCloth = true
 BASE.useDynamicItemData = false
+--[[
+BASE.replacement = {
+	{ "group(%d+)", "group03m" }
+}
+BASE.model = ""
+--]]
 BASE.func = { }
 BASE.func.wear = {
 	text = "^Item_FuncStr01_Clothing",
@@ -34,13 +40,9 @@ BASE.func.wear = {
 	canShowIsWorld = true,
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
-		if ( catherine.character.GetCharVar( pl, "clothWearing" ) ) then
-			return
-		end
+		if ( catherine.character.GetCharVar( pl, "clothWearing" ) ) then return end
 		
-		local originalModel = catherine.character.GetCharVar( pl, "originalModel" )
-		
-		if ( !originalModel ) then
+		if ( !catherine.character.GetCharVar( pl, "originalModel" ) ) then
 			catherine.character.SetCharVar( pl, "originalModel", pl:GetModel( ) )
 		end
 		
@@ -51,16 +53,25 @@ BASE.func.wear = {
 		if ( newModel:find( "female" ) or catherine.animation.Get( newModel ) == "citizen_female" and itemTable.femaleModel ) then
 			newModel = itemTable.femaleModel
 		end
-
-		if ( replacement and #replacement == 2 ) then
-			newModel = playerModel:gsub( replacement[ 1 ], replacement[ 2 ] )
+		
+		if ( replacement ) then
+			for k, v in pairs( replacement ) do
+				if ( type( v ) == "table" ) then
+					newModel = playerModel:gsub( v[ 1 ], v[ 2 ] )
+				end
+			end
+		end
+		
+		if ( util.IsValidModel( newModel ) ) then
+			ErrorNoHalt( "\n[CAT ERROR] On the Item <" .. itemTable.uniqueID .. "> replacement model <" .. newModel .. "> was not valid! :< ...\n" )
+			return
 		end
 		
 		if ( type( ent ) == "Entity" ) then
 			catherine.item.Give( pl, itemTable.uniqueID )
 			ent:Remove( )
 		end
-
+		
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 100 )
 		pl:SetModel( newModel )
 		pl:SetupHands( )
@@ -78,6 +89,11 @@ BASE.func.takeoff = {
 	canShowIsMenu = true,
 	func = function( pl, itemTable, ent )
 		local originalModel = catherine.character.GetCharVar( pl, "originalModel", pl:GetModel( ) )
+		
+		if ( util.IsValidModel( originalModel ) ) then
+			ErrorNoHalt( "\n[CAT ERROR] On the Item <" .. itemTable.uniqueID .. "> original model <" .. originalModel .. "> was not valid! :< ...\n" )
+			return
+		end
 		
 		pl:EmitSound( "npc/combine_soldier/gear" .. math.random( 1, 6 ) .. ".wav", 100 )
 		pl:SetModel( originalModel )
@@ -138,21 +154,19 @@ if ( SERVER ) then
 		end
 	end )
 else
-	function BASE:DrawInformation( pl, itemTable, w, h, itemData )
+	function BASE:DrawInformation( pl, w, h, itemData )
 		if ( itemData.wearing ) then
 			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.SetMaterial( Material( "CAT/ui/accept.png" ) )
+			surface.SetMaterial( Material( "icon16/accept.png" ) )
 			surface.DrawTexturedRect( 5, 5, 16, 16 )
 		end
 	end
 	
 	function BASE:DoRightClick( pl, itemData )
-		local uniqueID = self.uniqueID
-		
 		if ( itemData.wearing ) then
-			catherine.item.Work( uniqueID, "takeoff", true )
+			catherine.item.Work( self.uniqueID, "takeoff", true )
 		else
-			catherine.item.Work( uniqueID, "wear", true )
+			catherine.item.Work( self.uniqueID, "wear", true )
 		end
 	end
 end

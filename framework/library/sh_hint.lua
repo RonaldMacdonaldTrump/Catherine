@@ -26,66 +26,109 @@ function catherine.hint.Register( message, canLook )
 	}
 end
 
+function catherine.hint.Remove( index )
+	table.remove( catherine.hint.lists, index )
+end
+
+function catherine.hint.GetAll( )
+	return catherine.hint.lists
+end
+
+function catherine.hint.FindByIndex( index )
+	return catherine.hint.lists[ index ]
+end
+
 if ( SERVER ) then
-	catherine.hint.NextTick = catherine.hint.NextTick or CurTime( ) + catherine.configs.hintInterval
+	catherine.hint.nextHintTick = catherine.hint.nextHintTick or catherine.configs.hintInterval
 	
-	function catherine.hint.Work( )
-		local rand = math.random( 1, #catherine.hint.lists )
-		local hintTable = catherine.hint.lists[ rand ]
-
-		for k, v in pairs( hintTable and player.GetAllByLoaded( ) or { } ) do
-			if ( v:GetInfo( "cat_convar_hint" ) == "0" ) then continue end
-			if ( hook.Run( "CanSendHint", v, hintTable ) == false or ( hintTable.canLook and hintTable.canLook( v ) == false ) ) then continue end
-			
-			netstream.Start( v, "catherine.hint.Receive", rand )
+	function catherine.hint.SendHint( pl, index )
+		if ( pl:GetInfo( "cat_convar_hint" ) == "0" ) then return end
+		local hintTable = catherine.hint.FindByIndex( index )
+		
+		if ( !hintTable ) then return end
+		if ( hook.Run( "PlayerShouldSendHint", pl, hintTable ) == false or ( hintTable.canLook and hintTable.canLook( pl ) == false ) ) then return end
+		
+		netstream.Start( pl, "catherine.hint.Receive", index )
+	end
+	
+	function catherine.hint.SendRandomHint( pl )
+		if ( pl:GetInfo( "cat_convar_hint" ) == "0" ) then return end
+		local index = math.random( 1, #catherine.hint.lists )
+		local hintTable = catherine.hint.FindByIndex( index )
+		
+		if ( !hintTable ) then return end
+		if ( hook.Run( "PlayerShouldSendHint", pl, hintTable ) == false or ( hintTable.canLook and hintTable.canLook( pl ) == false ) ) then return end
+		
+		netstream.Start( pl, "catherine.hint.Receive", index )
+	end
+	
+	function catherine.hint.SendHintToAllPlayer( index )
+		for k, v in pairs( player.GetAllByLoaded( ) ) do
+			catherine.hint.SendHint( v, index )
 		end
 	end
 	
-	function catherine.hint.Think( )
-		if ( #catherine.hint.lists != 0 and catherine.hint.NextTick <= CurTime( ) ) then
-			catherine.hint.Work( )
-			
-			catherine.hint.NextTick = CurTime( ) + catherine.configs.hintInterval + math.random( 10, 20 )
+	function catherine.hint.SendRandomHintToAllPlayer( )
+		for k, v in pairs( player.GetAllByLoaded( ) ) do
+			catherine.hint.SendRandomHint( v )
 		end
 	end
-
-	hook.Add( "Think", "catherine.hint.Think", catherine.hint.Think )
+	
+	timer.Create( "Catherine.timer.hint.AutoSendRandomHintToAllPlayer", catherine.configs.hintInterval, 0, function( )
+		if ( #catherine.hint.GetAll( ) != 0 ) then
+			catherine.hint.SendRandomHintToAllPlayer( )
+		end
+	end )
 else
-	catherine.hint.curHint = catherine.hint.curHint or nil
+	catherine.hint.currHint = catherine.hint.currHint or nil
+	local gradient_right = Material( "VGUI/gradient-r" )
 	
 	netstream.Hook( "catherine.hint.Receive", function( data )
-		local msg = catherine.util.StuffLanguage( catherine.hint.lists[ data ].message )
+		local hintTable = catherine.hint.FindByIndex( data )
+		
+		if ( !hintTable ) then return end
+		
+		local msg = catherine.util.StuffLanguage( hintTable.message )
+		
 		surface.SetFont( "catherine_normal20" )
+		
 		local tw, th = surface.GetTextSize( msg )
 		
-		catherine.hint.curHint = {
+		local hintData = {
+			index = data,
 			message = msg,
 			time = CurTime( ) + 15,
-			targetX = ScrW( ) - ( tw / 2 ) - 10,
-			x = ScrW( )
+			a = 0,
+			tw = tw
 		}
+		
+		hintData = hook.Run( "PreAddHint", catherine.pl, hintData ) or hintData
+		
+		catherine.hint.currHint = hintData
 	end )
 	
 	function catherine.hint.Draw( )
-		if ( !catherine.hint.curHint or GetConVarString( "cat_convar_hint" ) == "0" ) then return end
-		if ( hook.Run( "CanDrawHint", catherine.pl, catherine.hint.curHint ) == false ) then return end
-		local t = catherine.hint.curHint
+		if ( !catherine.hint.currHint or GetConVarString( "cat_convar_hint" ) == "0" ) then return end
+		if ( hook.Run( "ShouldDrawHint", catherine.pl, catherine.hint.currHint ) == false ) then return end
+		local t = catherine.hint.currHint
 		
 		if ( t.time <= CurTime( ) ) then
-			t.x = Lerp( 0.003, t.x, ScrW( ) * 1.5 )
+			t.a = Lerp( 0.02, t.a, 0 )
 			
-			if ( t.x >= ScrW( ) * 1.3 ) then
-				catherine.hint.curHint = nil
+			if ( math.Round( t.a ) <= 0 ) then
+				catherine.hint.currHint = nil
 				return
 			end
 		else
-			t.x = Lerp( 0.03, t.x, t.targetX )
+			t.a = Lerp( 0.02, t.a, 255 )
 		end
 		
-		draw.SimpleText( t.message, "catherine_normal20", t.x, 5, Color( 255, 255, 255, 255 ), 1 )
+		draw.SimpleText( t.message, "catherine_outline20", ScrW( ) - 10, 15, Color( 255, 255, 255, t.a ), TEXT_ALIGN_RIGHT, 1 )
 	end
 end
 
-for i = 1, 5 do
-	catherine.hint.Register( "^Hint_Message_0" .. i )
-end
+catherine.hint.Register( "^Hint_Message_01" )
+catherine.hint.Register( "^Hint_Message_02" )
+catherine.hint.Register( "^Hint_Message_03" )
+catherine.hint.Register( "^Hint_Message_04" )
+catherine.hint.Register( "^Hint_Message_05" )

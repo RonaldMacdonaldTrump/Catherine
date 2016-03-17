@@ -24,7 +24,7 @@ PLUGIN.charViews = PLUGIN.charViews or { }
 
 catherine.language.Merge( "english", {
 	[ "CharacterView_Plugin_Name" ] = "Character View",
-	[ "CharacterView_Plugin_Desc" ] = "Good stuff.",
+	[ "CharacterView_Plugin_Desc" ] = "Adding the Character View in the Character menu.",
 	[ "CharacterView_Notify_Add" ] = "You are added character view on your position.",
 	[ "CharacterView_Notify_Remove" ] = "You are removed %s's character view on your position.",
 	[ "CharacterView_Notify_NoView" ] = "Doesn't have character view on this position."
@@ -32,7 +32,7 @@ catherine.language.Merge( "english", {
 
 catherine.language.Merge( "korean", {
 	[ "CharacterView_Plugin_Name" ] = "캐릭터 뷰",
-	[ "CharacterView_Plugin_Desc" ] = "캐릭터 창에 멋진 뷰 화면을 적용합니다.",
+	[ "CharacterView_Plugin_Desc" ] = "캐릭터 창에 위치 시점을 추가합니다.",
 	[ "CharacterView_Notify_Add" ] = "당신은 현재 캐릭터 뷰를 추가했습니다.",
 	[ "CharacterView_Notify_Remove" ] = "당신은 이 위치에 있는 %s개의 캐릭터 뷰를 제거했습니다.",
 	[ "CharacterView_Notify_NoView" ] = "이 위치에는 캐릭터 뷰가 없습니다!"
@@ -56,14 +56,16 @@ catherine.command.Register( {
 	uniqueID = "&uniqueID_charViewRemove",
 	command = "charviewremove",
 	desc = "Remove the Character View.",
+	syntax = "[Range]",
 	canRun = function( pl ) return pl:IsSuperAdmin( ) end,
 	runFunc = function( pl, args )
 		local pos = pl:GetPos( )
 		local i = 0
+		local range = math.max( tonumber( args[ 1 ] or 256 ), 1 )
 		
 		for k, v in pairs( PLUGIN.charViews ) do
-			if ( catherine.util.CalcDistanceByPos( v.pos, pos ) <= 256 ) then
-				table.remove( PLUGIN.charViews, k )
+			if ( pos:Distance( v.pos ) <= range ) then
+				PLUGIN.charViews[ k ] = nil
 				i = i + 1
 			end
 		end
@@ -81,6 +83,7 @@ catherine.command.Register( {
 if ( SERVER ) then return end
 
 PLUGIN.nextViewChange = PLUGIN.nextViewChange or RealTime( ) + 5
+PLUGIN.thirdPersonChange = PLUGIN.thirdPersonChange or false
 
 netstream.Hook( "catherine.plugin.characterview.SyncViews", function( data )
 	PLUGIN.charViews = data
@@ -89,32 +92,63 @@ netstream.Hook( "catherine.plugin.characterview.SyncViews", function( data )
 end )
 
 function PLUGIN:ShouldDrawLocalPlayer( pl )
-	if ( pl:IsActioning( ) or GetConVarString( "cat_convar_thirdperson" ) == "1" ) then return end
+	if ( pl:IsActioning( ) ) then return end
 	
-	return ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) ) and catherine.character.customBackgroundEnabled
+	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or catherine.intro.status ) and catherine.character.IsCustomBackground( ) ) then
+		if ( GetConVarString( "cat_convar_thirdperson" ) == "1" ) then
+			RunConsoleCommand( "cat_convar_thirdperson", "0" )
+			self.thirdPersonChange = true
+		end
+		
+		return true
+	end
+	
+	if ( self.thirdPersonChange ) then
+		RunConsoleCommand( "cat_convar_thirdperson", "1" )
+		self.thirdPersonChange = false
+	end
+end
+
+function PLUGIN:RenderScreenspaceEffects( )
+	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or catherine.intro.status ) and catherine.character.IsCustomBackground( ) ) then
+		local tab = { }
+		tab[ "$pp_colour_addr" ] = 0
+		tab[ "$pp_colour_addg" ] = 0
+		tab[ "$pp_colour_addb" ] = 0
+		tab[ "$pp_colour_brightness" ] = 0
+		tab[ "$pp_colour_contrast" ] = 1
+		tab[ "$pp_colour_colour" ] = 0
+		tab[ "$pp_colour_mulr" ] = 0
+		tab[ "$pp_colour_mulg" ] = 0
+		tab[ "$pp_colour_mulb" ] = 0
+		
+		tab = hook.Run( "AdjustCharacterViewColorEffectData", tab ) or tab
+		
+		DrawColorModify( tab )
+	end
 end
 
 function PLUGIN:CalcView( pl, pos, ang, fov )
-	if ( ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or !pl:IsCharacterLoaded( ) ) and catherine.character.customBackgroundEnabled and #self.charViews > 0 ) then
+	if ( !catherine.character.IsCustomBackground( ) ) then return end
+	if ( #self.charViews <= 0 ) then return end
+	
+	if ( IsValid( catherine.vgui.character ) or IsValid( catherine.vgui.question ) or catherine.intro.status ) then
 		if ( !self.lastView ) then
 			self.lastView = table.Random( self.charViews )
 		end
 		
-		if ( self.nextViewChange <= RealTime( ) ) then
+		if ( self.nextViewChange <= SysTime( ) ) then
 			self.lastView = table.Random( self.charViews )
-			self.nextViewChange = RealTime( ) + math.random( 7, 15 )
+			self.nextViewChange = SysTime( ) + math.random( 10, 20 )
 		end
-
-		local angSin = math.sin( CurTime( ) / 6 )
-		local angSin2 = math.sin( CurTime( ) / 4 )
 		
 		if ( !self.lastPos or !self.lastAng ) then
 			self.lastPos = self.lastView.pos
-			self.lastAng = self.lastView.ang + Angle( 2 * angSin2, 4 * angSin, 0 )
+			self.lastAng = self.lastView.ang
 		end
 		
-		self.lastPos = LerpVector( 0.01, self.lastPos, self.lastView.pos )
-		self.lastAng = LerpAngle( 0.01, self.lastAng, self.lastView.ang + Angle( 2 * angSin2, 4 * angSin, 0 ) )
+		self.lastPos = LerpVector( 0.05, self.lastPos, self.lastView.pos )
+		self.lastAng = LerpAngle( 0.05, self.lastAng, self.lastView.ang )
 		
 		return {
 			origin = self.lastPos,

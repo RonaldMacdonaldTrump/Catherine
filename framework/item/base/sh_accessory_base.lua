@@ -89,7 +89,7 @@ if ( SERVER ) then
 				if ( itemTable.isAccessory ) then
 					local accessoryDatas = catherine.character.GetCharVar( pl, "accessory", { } )
 					local accessoryData = Entity( accessoryDatas[ itemTable.bone ] or 0 )
-
+					
 					if ( !catherine.inventory.GetItemData( pl, k, "wearing" ) or ( IsValid( accessoryData ) and accessoryData:GetClass( ) == "cat_accessory_base" ) ) then continue end
 					
 					accessoryDatas[ itemTable.bone ] = nil
@@ -125,11 +125,19 @@ if ( SERVER ) then
 		end
 	end )
 else
-	function BASE:DrawInformation( pl, itemTable, w, h, itemData )
+	function BASE:DrawInformation( pl, w, h, itemData )
 		if ( itemData.wearing ) then
 			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.SetMaterial( Material( "CAT/ui/accept.png" ) )
+			surface.SetMaterial( Material( "icon16/accept.png" ) )
 			surface.DrawTexturedRect( 5, 5, 16, 16 )
+		end
+	end
+	
+	function BASE:DoRightClick( pl, itemData )
+		if ( itemData.wearing ) then
+			catherine.item.Work( self.uniqueID, "takeoff", true )
+		else
+			catherine.item.Work( self.uniqueID, "wear", true )
 		end
 	end
 end

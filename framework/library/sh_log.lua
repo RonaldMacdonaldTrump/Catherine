@@ -35,7 +35,7 @@ if ( SERVER ) then
 		end
 		
 		MsgC( printColor, "[CAT LOG] " .. str .. "\n" )
-		file.Append( "catherine/log/" .. today .. ".txt", ( flag == CAT_LOG_FLAG_IMPORTANT and "*****" or "" ) .. "[" .. os.date( "%X" ) .. "]" .. ( str or "No Str" ) .. "\n" )
+		file.Append( "catherine/log/" .. today .. ".txt", ( flag == CAT_LOG_FLAG_IMPORTANT and "*****" or "" ) .. "[" .. os.date( "%X" ) .. "]" .. ( str or "No Str" ) .. "\r\n" )
 	end
 	
 	function catherine.log.Initialize( )

@@ -30,7 +30,11 @@ function PLUGIN:LoadTexts( )
 	self.textLists = catherine.data.Get( "walltext", { } )
 end
 
-function PLUGIN:DataLoad( )
+function PLUGIN:PreCleanupMap( )
+	self:SaveTexts( )
+end
+
+function PLUGIN:PostCleanupMapDelayed( )
 	self:LoadTexts( )
 end
 
@@ -38,7 +42,11 @@ function PLUGIN:DataSave( )
 	self:SaveTexts( )
 end
 
-function PLUGIN:AddText( pl, text, size )
+function PLUGIN:DataLoad( )
+	self:LoadTexts( )
+end
+
+function PLUGIN:AddText( pl, text, size, col )
 	local tr = pl:GetEyeTraceNoCursor( )
 	local index = #self.textLists + 1
 	local data = {
@@ -46,7 +54,8 @@ function PLUGIN:AddText( pl, text, size )
 		pos = tr.HitPos + tr.HitNormal,
 		ang = tr.HitNormal:Angle( ),
 		text = text,
-		size = math.max( math.abs( size or 1 ) / 8, 0.005 )
+		size = math.max( math.abs( size or 1 ) / 8, 0.005 ),
+		col = col
 	}
 	local ang = data.ang
 	
@@ -66,9 +75,9 @@ function PLUGIN:RemoveText( pos, rad )
 	local i = 0
 	
 	for k, v in pairs( self.textLists ) do
-		if ( catherine.util.CalcDistanceByPos( v.pos, pos ) <= rad ) then
+		if ( pos:Distance( v.pos ) <= rad ) then
 			netstream.Start( nil, "catherine.plugin.walltext.RemoveText", v.index )
-			table.remove( self.textLists, k )
+			self.textLists[ k ] = nil
 			i = i + 1
 		end
 	end
@@ -85,7 +94,8 @@ function PLUGIN:SyncTextAll( pl )
 			text = v.text,
 			pos = v.pos,
 			ang = v.ang,
-			size = v.size
+			size = v.size,
+			col = v.col
 		} )
 	end
 end

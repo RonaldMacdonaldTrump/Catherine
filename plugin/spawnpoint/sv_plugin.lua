@@ -27,16 +27,17 @@ function PLUGIN:LoadPoints( )
 	self.lists = catherine.data.Get( "spawnpoints", { } )
 end
 
-function PLUGIN:DataLoad( )
-	self:LoadPoints( )
-end
-
 function PLUGIN:DataSave( )
 	self:SavePoints( )
 end
 
+function PLUGIN:DataLoad( )
+	self:LoadPoints( )
+end
+
 function PLUGIN:GetRandomPos( faction )
 	local map = game.GetMap( )
+	
 	if ( !faction or !self.lists[ map ] or !self.lists[ map ][ faction ] or #self.lists[ map ][ faction ] == 0 ) then return end
 	
 	return table.Random( self.lists[ map ][ faction ] )

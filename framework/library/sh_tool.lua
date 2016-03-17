@@ -282,7 +282,7 @@ function CAT_TOOL_METATABLE:UpdateGhostEntity( )
 	
 	if ( !trace.Hit ) then return end
 	
-	local Ang1, Ang2 = self:GetNormal( 1 ):Angle(), ( trace.HitNormal * -1 ):Angle( )
+	local Ang1, Ang2 = self:GetNormal( 1 ):Angle( ), ( trace.HitNormal * -1 ):Angle( )
 	local TargetAngle = self:GetEnt( 1 ):AlignAngles( Ang1, Ang2 )
 	
 	self.GhostEntity:SetPos( self:GetEnt( 1 ):GetPos( ) )

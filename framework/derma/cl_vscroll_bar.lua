@@ -86,7 +86,7 @@ function PANEL:Init()
 		self:GetParent():AddScroll( -1 )
 	end
 	self.btnUp.Paint = function( panel, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 90, 90, 90, 255 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
 	end
 	
 	self.btnDown = vgui.Create( "DButton", self )
@@ -95,7 +95,7 @@ function PANEL:Init()
 		self:GetParent():AddScroll( 1 )
 	end
 	self.btnDown.Paint = function( panel, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 90, 90, 90, 255 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
 	end
 	
 	self.btnGrip = vgui.Create( "DScrollBarGrip", self )
@@ -103,7 +103,7 @@ function PANEL:Init()
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 190, 190, 190, 255 ) )
 	end
 	
-	self:SetSize( 15, 15 )
+	self:SetSize( 10, 15 )
 end
 
 --[[---------------------------------------------------------
@@ -179,7 +179,7 @@ function PANEL:OnMouseWheeled( dlta )
 	-- We return true if the scrollbar changed.
 	-- If it didn't, we feed the mousehweeling to the parent panel
 	
-	return self:AddScroll( dlta * -2 )
+	return self:AddScroll( dlta * -5 )
 end
 
 --[[---------------------------------------------------------
@@ -366,6 +366,7 @@ function PANEL:PerformLayout()
 	self.btnDown:SetPos( 0, self:GetTall() - Wide, Wide, Wide )
 	self.btnDown:SetSize( Wide, Wide )
 
+	self:SetWide( 5 )
 end
 
 

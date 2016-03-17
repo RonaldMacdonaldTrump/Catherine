@@ -21,23 +21,19 @@ local META = FindMetaTable( "Entity" )
 local META2 = FindMetaTable( "Player" )
 
 if ( SERVER ) then
-	catherine.net.NextOptimizeTick = catherine.net.NextOptimizeTick or CurTime( ) + catherine.configs.netRegistryOptimizeInterval
-
 	function catherine.net.SetNetVar( ent, key, value, noSync )
-		catherine.net.entityRegistry[ ent ] = catherine.net.entityRegistry[ ent ] or { }
-		catherine.net.entityRegistry[ ent ][ key ] = value
+		local id = ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( )
+		
+		catherine.net.entityRegistry[ id ] = catherine.net.entityRegistry[ id ] or { }
+		catherine.net.entityRegistry[ id ][ key ] = value
 		
 		if ( !noSync ) then
 			netstream.Start( nil, "catherine.net.SetNetVar", {
-				ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( ),
+				id,
 				key,
 				value
 			} )
 		end
-	end
-	
-	function catherine.net.GetNetVar( ent, key, default )
-		return catherine.net.entityRegistry[ ent ] and catherine.net.entityRegistry[ ent ][ key ] or default
 	end
 	
 	function catherine.net.SetNetGlobalVar( key, value, noSync )
@@ -50,84 +46,83 @@ if ( SERVER ) then
 			} )
 		end
 	end
-
-	function catherine.net.SendAllNetworkRegistries( pl )
-		local convert = { }
+	
+	function META:SetNetVar( key, value, noSync )
+		local id = self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( )
 		
-		for k, v in pairs( catherine.net.entityRegistry ) do
-			if ( !IsValid( k ) ) then continue end
-			
-			convert[ k:IsPlayer( ) and k:SteamID( ) or k:EntIndex( ) ] = v
+		catherine.net.entityRegistry[ id ] = catherine.net.entityRegistry[ id ] or { }
+		catherine.net.entityRegistry[ id ][ key ] = value
+		
+		if ( !noSync ) then
+			netstream.Start( nil, "catherine.net.SetNetVar", {
+				id,
+				key,
+				value
+			} )
 		end
-
+	end
+	
+	function META2:SetNetVar( key, value, noSync )
+		local id = self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( )
+		
+		catherine.net.entityRegistry[ id ] = catherine.net.entityRegistry[ id ] or { }
+		catherine.net.entityRegistry[ id ][ key ] = value
+		
+		if ( !noSync ) then
+			netstream.Start( nil, "catherine.net.SetNetVar", {
+				id,
+				key,
+				value
+			} )
+		end
+	end
+	
+	function catherine.net.GetNetVar( ent, key, default )
+		local id = ent:IsPlayer( ) and ent:SteamID( ) or ent:EntIndex( )
+		
+		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
+	end
+	
+	function catherine.net.GetNetGlobalVar( key, default )
+		return catherine.net.globalRegistry[ key ] or default
+	end
+	
+	function META:GetNetVar( key, default )
+		local id = self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( )
+		
+		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
+	end
+	
+	function META2:GetNetVar( key, default )
+		local id = self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( )
+		
+		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
+	end
+	
+	function catherine.net.SendAllNetworkRegistries( pl )
 		netstream.Start( pl, "catherine.net.SendAllNetworkRegistries", {
-			convert,
+			catherine.net.entityRegistry,
 			catherine.net.globalRegistry
 		} )
 	end
 	
-	local function scanErrorInTable( tab )
-		for k, v in pairs( tab ) do
-			local keyType = type( k )
-			local valueType = type( v )
-			
-			if ( ( keyType == "Entity" or keyType == "Player" ) and !IsValid( k ) ) then
-				tab[ k ] = nil
-			end
-
-			if ( type( v ) == "table" ) then
-				scanErrorInTable( v )
-			else
-				if ( ( valueType == "Entity" or valueType == "Player" ) and !IsValid( v ) ) then
-					tab[ k ] = nil
-				end
-			end
-		end
-	end
-	
-	function catherine.net.ScanErrorInNetworkRegistry( send, pl )
-		for k, v in pairs( catherine.net.entityRegistry ) do
-			local keyType = type( k )
-			
-			if ( ( keyType == "Entity" or keyType == "Player" ) and !IsValid( k ) ) then
-				catherine.net.entityRegistry[ k ] = nil
-			end
-			
-			if ( type( v ) == "table" ) then
-				scanErrorInTable( v )
-			end
-		end
-		
-		if ( send ) then
-			catherine.net.SendAllNetworkRegistries( pl )
-		end
-	end
-
-	function META:SetNetVar( key, value, noSync )
-		catherine.net.SetNetVar( self, key, value, noSync )
-	end
-	
-	META2.SetNetVar = META.SetNetVar
-	
-	function catherine.net.Think( )
-		if ( catherine.net.NextOptimizeTick <= CurTime( ) ) then
-			catherine.net.ScanErrorInNetworkRegistry( )
-			
-			catherine.net.NextOptimizeTick = CurTime( ) + catherine.configs.netRegistryOptimizeInterval
-		end
-	end
-
 	function catherine.net.EntityRemoved( ent )
-		catherine.net.entityRegistry[ ent ] = nil
-		netstream.Start( nil, "catherine.net.ClearNetVar", ent:EntIndex( ) )
+		local id = ent:EntIndex( )
+		
+		catherine.net.entityRegistry[ id ] = nil
+		netstream.Start( nil, "catherine.net.ClearNetVar", id )
 	end
-
+	
 	function catherine.net.PlayerDisconnected( pl )
-		catherine.net.entityRegistry[ pl ] = nil
-		netstream.Start( nil, "catherine.net.ClearNetVar", pl:SteamID( ) )
+		-- 네트워크 레지스트리가 바로 삭제되면 일부 데이터저장에서 문제가 발생합니다.
+		local id = pl:SteamID( )
+		
+		timer.Simple( 2, function( )
+			catherine.net.entityRegistry[ id ] = nil
+			netstream.Start( nil, "catherine.net.ClearNetVar", id )
+		end )
 	end
-
-	hook.Add( "Think", "catherine.net.Think", catherine.net.Think )
+	
 	hook.Add( "EntityRemoved", "catherine.net.EntityRemoved", catherine.net.EntityRemoved )
 	hook.Add( "PlayerDisconnected", "catherine.net.PlayerDisconnected", catherine.net.PlayerDisconnected )
 else
@@ -141,7 +136,7 @@ else
 	netstream.Hook( "catherine.net.SetNetGlobalVar", function( data )
 		catherine.net.globalRegistry[ data[ 1 ] ] = data[ 2 ]
 	end )
-
+	
 	netstream.Hook( "catherine.net.ClearNetVar", function( data )
 		catherine.net.entityRegistry[ data ] = nil
 	end )
@@ -160,12 +155,20 @@ else
 		
 		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
 	end
-end
-
-function catherine.net.GetNetGlobalVar( key, default )
-	return catherine.net.globalRegistry[ key ] or default
-end
-
-function META:GetNetVar( key, default )
-	return catherine.net.GetNetVar( self, key, default )
+	
+	function catherine.net.GetNetGlobalVar( key, default )
+		return catherine.net.globalRegistry[ key ] or default
+	end
+	
+	function META:GetNetVar( key, default )
+		local id = self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( )
+		
+		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
+	end
+	
+	function META2:GetNetVar( key, default )
+		local id = self:IsPlayer( ) and self:SteamID( ) or self:EntIndex( )
+		
+		return catherine.net.entityRegistry[ id ] and catherine.net.entityRegistry[ id ][ key ] or default
+	end
 end

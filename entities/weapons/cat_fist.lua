@@ -70,23 +70,20 @@ function SWEP:PrimaryAttack( )
 	if ( !IsFirstTimePredicted( ) or CLIENT ) then return end
 	local pl = self.Owner
 	
-	if ( hook.Run( "PlayerCanThrowPunch", pl ) == false ) then
-		return
-	end
+	if ( hook.Run( "PlayerShouldThrowPunch", pl ) == false ) then return end
 	
 	local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
 	
-	if ( stamina < 10 ) then
-		return
-	end
+	if ( stamina < 10 ) then return end
 	
-	local tr = { }
-	tr.start = pl:GetShootPos( )
-	tr.endpos = tr.start + pl:GetAimVector( ) * self.HitDistance
-	tr.filter = pl
-	local ent = util.TraceLine( tr ).Entity
+	local data = { }
+	data.start = pl:GetShootPos( )
+	data.endpos = data.start + pl:GetAimVector( ) * self.HitDistance
+	data.filter = pl
+	local tr = util.TraceLine( data )
+	local ent = tr.Entity
 	
-	catherine.character.SetCharVar( pl, "stamina", stamina - 5 )
+	catherine.character.SetCharVar( pl, "stamina", stamina - hook.Run( "GetPunchStaminaDecreaseAmount", pl, stamina ) )
 	
 	pl:SetAnimation( PLAYER_ATTACK1 )
 	
@@ -98,18 +95,20 @@ function SWEP:PrimaryAttack( )
 		
 		viewMdl:SendViewModelMatchingSequence( viewMdl:LookupSequence( table.Random( { "fists_left", "fists_right" } ) ) )
 	end )
-
+	
 	pl:EmitSound( "npc/vort/claw_swing" .. math.random( 1, 2 ) .. ".wav" )
 	pl:LagCompensation( true )
-
+	
 	if ( IsValid( ent ) ) then
+		local damage = hook.Run( "AdjustPunchDamage", pl, ent )
+		
 		pl:EmitSound( "Flesh.ImpactHard" )
-
+		
 		if ( ent:IsPlayer( ) ) then
 			local dmgInfo = DamageInfo( )
 			dmgInfo:SetAttacker( pl )
 			dmgInfo:SetInflictor( self )
-			dmgInfo:SetDamage( math.random( 8, 12 ) )
+			dmgInfo:SetDamage( damage or math.random( 8, 12 ) )
 			
 			ent:TakeDamageInfo( dmgInfo )
 			
@@ -126,7 +125,7 @@ function SWEP:PrimaryAttack( )
 				local dmgInfo = DamageInfo( )
 				dmgInfo:SetAttacker( pl )
 				dmgInfo:SetInflictor( self )
-				dmgInfo:SetDamage( math.random( 8, 12 ) )
+				dmgInfo:SetDamage( damage or math.random( 8, 12 ) )
 				
 				target:TakeDamageInfo( dmgInfo )
 				
@@ -139,7 +138,7 @@ function SWEP:PrimaryAttack( )
 			end
 		end
 		
-		hook.Run( "PlayerThrowPunch", pl, tr.Hit )
+		hook.Run( "PlayerThrowPunch", pl, ent, damage, tr, tr.Hit )
 	end
 	
 	pl:LagCompensation( false )
@@ -148,21 +147,21 @@ end
 
 function SWEP:CanMoveable( pl, ent )
 	if ( CLIENT ) then return end
-
+	
 	if ( ent:IsPlayerHolding( ) ) then
 		return false
 	end
 	
 	local physObject = ent:GetPhysicsObject( )
-
+	
 	if ( !IsValid( physObject ) ) then
 		return false
 	end
-
+	
 	if ( physObject:GetMass( ) > 90 or !physObject:IsMoveable( ) ) then
 		return false
 	end
-
+	
 	return true
 end
 
@@ -170,17 +169,15 @@ function SWEP:DoPickup( pl, ent, stamina )
 	if ( ent:IsPlayerHolding( ) ) then
 		return
 	end
-
+	
 	timer.Simple( FrameTime( ) * 10, function( )
-		if ( !IsValid( ent ) or ent:IsPlayerHolding( ) ) then
-			return
-		end
-
+		if ( !IsValid( ent ) or ent:IsPlayerHolding( ) ) then return end
+		
 		pl:PickupObject( ent )
 		pl:EmitSound( "physics/body/body_medium_impact_soft" .. math.random( 1, 3 ) .. ".wav", 75 )
 		catherine.character.SetCharVar( pl, "stamina", stamina - 5 )
 	end )
-
+	
 	self:SetNextSecondaryFire( CurTime( ) + self.Secondary.Delay )
 end
 
@@ -189,9 +186,7 @@ function SWEP:SecondaryAttack( )
 	local pl = self.Owner
 	local stamina = catherine.character.GetCharVar( pl, "stamina", 100 )
 	
-	if ( stamina < 10 ) then
-		return
-	end
+	if ( stamina < 10 ) then return end
 	
 	local data = { }
 	data.start = pl:GetShootPos( )
@@ -206,7 +201,7 @@ function SWEP:SecondaryAttack( )
 			local physObject = ent:GetPhysicsObject( )
 			
 			physObject:Wake( )
-
+			
 			self:DoPickup( pl, ent, stamina )
 		end
 	end

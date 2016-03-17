@@ -26,8 +26,7 @@ _G[ catherine.lime.XCode ] = _G[ catherine.lime.XCode ] or GetConVarString
 if ( SERVER ) then
 	catherine.lime.masterData = catherine.lime.masterData or { }
 	catherine.lime.doing = catherine.lime.doing or false
-	catherine.lime.NextCheckTick = catherine.lime.NextCheckTick or CurTime( ) + catherine.configs.limeCheckInterval
-
+	
 	function catherine.lime.Work( )
 		if ( !catherine.lime or catherine.lime.doing ) then return end
 		local masterData = {
@@ -86,11 +85,9 @@ if ( SERVER ) then
 						local steamName, steamID = v:SteamName( ), v:SteamID( )
 
 						if ( receiveData[ v ].sendTime - SysTime( ) >= 15 ) then
-							local kickMessage = LANG( v, "AntiHaX_KickMessage_TimeOut" )
-							
 							MsgC( Color( 255, 255, 0 ), "[CAT Lime] Kicked time out player.[" .. steamName .. "/" .. steamID	.. "]\n" )
 							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked time out player.[" .. steamName .. "/" .. steamID .. "]", true )
-							v:Kick( kickMessage )
+							v:Kick( LANG( v, "AntiHaX_KickMessage_TimeOut" ) )
 							receiveData[ v ] = nil
 							continue
 						end
@@ -108,8 +105,6 @@ if ( SERVER ) then
 						end
 						
 						if ( isHack ) then
-							local kickMessage = LANG( v, "AntiHaX_KickMessage" )
-							
 							MsgC( Color( 255, 0, 0 ), "[CAT Lime] Kicked hack player.[" .. steamName .. "/" .. steamID .. "]\n" )
 							catherine.log.Add( CAT_LOG_FLAG_IMPORTANT, "Kicked hack player.[" .. steamName .. "/" .. steamID .. "]", true )
 							
@@ -118,7 +113,7 @@ if ( SERVER ) then
 								v:ChatPrint( LANG( v, "AntiHaX_KickMessageNotifyAdmin", steamName, steamID ) )
 							end
 							
-							v:Kick( kickMessage )
+							v:Kick( LANG( v, "AntiHaX_KickMessage" ) )
 							receiveData[ v ] = nil
 							continue
 						else
@@ -143,19 +138,14 @@ if ( SERVER ) then
 			end
 		end )
 	end
-
-	function catherine.lime.Think( )
-		if ( !catherine.configs.enable_Lime or !catherine.lime or catherine.lime.doing ) then return end
-		
-		if ( catherine.lime.NextCheckTick <= CurTime( ) ) then
-			MsgC( Color( 255, 255, 0 ), "[CAT Lime] Checking the players ...\n" )
-			catherine.lime.Work( )
-			
-			catherine.lime.NextCheckTick = CurTime( ) + catherine.configs.limeCheckInterval
-		end
-	end
 	
-	hook.Add( "Think", "catherine.lime.Think", catherine.lime.Think )
+	timer.Create( "Catherine.timer.lime.AutoCheck", catherine.configs.limeCheckInterval, 0, function( )
+		if ( !catherine.configs.enable_Lime ) then return end
+		if ( !catherine.lime or catherine.lime.doing ) then return end
+		
+		MsgC( Color( 255, 255, 0 ), "[CAT Lime] Checking the players ...\n" )
+		catherine.lime.Work( )
+	end )
 
 	netstream.Hook( "catherine.lime.CheckRequest_Receive", function( pl, data )
 		if ( !catherine.lime or !catherine.lime.doing ) then return end
@@ -181,8 +171,8 @@ else
 end
 
 do
-	timer.Remove( "Catherine.lime.timer.CheckSystem" )
-	timer.Create( "Catherine.lime.timer.CheckSystem", 10, 0, function( )
+	timer.Remove( "Catherine.timer.lime.CheckSystem" )
+	timer.Create( "Catherine.timer.lime.CheckSystem", 30, 0, function( )
 		if ( catherine.configs.enable_Lime and !catherine.lime ) then
 			MsgC( Color( 255, 0, 0 ), "[CAT Lime WARNING] 'catherine.lime' variable is nil!, This happened from the unknown Lime Exploit!!!\n" )
 		end
