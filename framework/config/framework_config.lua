@@ -127,7 +127,7 @@ if ( SERVER ) then
 	catherine.configs.enable_Log = true --[[ Enabled a Log system. ]]--
 	catherine.configs.enable_Environment = true --[[ Enabled a Environment system. (Day, Night, Skycolor) ]]--
 else
-	catherine.configs.frameworkLogo = "CAT/symbol/cat_v4.png"
+	catherine.configs.frameworkLogo = "CAT/symbol/cat_v5.png"
 	catherine.configs.schemaLogo = ""
 	catherine.configs.mainColor = Color( 255, 255, 255 )
 	

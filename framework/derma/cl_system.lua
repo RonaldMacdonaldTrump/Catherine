@@ -33,7 +33,7 @@ function PANEL:Init( )
 	self:SetTitle( "" )
 	self:MakePopup( )
 	
-	if ( !self.frameworkMaterial or !self.frameworkMaterial:IsError( ) ) then
+	if ( !self.frameworkMaterial or self.frameworkMaterial:IsError( ) ) then
 		self:InstallModules( )
 	end
 end
@@ -1078,7 +1078,7 @@ function PANEL:Paint( w, h )
 		
 		local frameworkMaterial_w, frameworkMaterial_h = self.frameworkMaterial:Width( ) / 2, self.frameworkMaterial:Height( ) / 2
 		
-		surface.SetDrawColor( 255, 255, 255, self.frameworkMaterialA )
+		surface.SetDrawColor( 50, 50, 50, self.frameworkMaterialA )
 		surface.SetMaterial( self.frameworkMaterial )
 		surface.DrawTexturedRect( w / 2 - frameworkMaterial_w / 2, h / 2 - frameworkMaterial_h / 2, frameworkMaterial_w, frameworkMaterial_h )
 	end

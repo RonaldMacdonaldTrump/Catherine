@@ -140,7 +140,7 @@ function GM:CanPlayerSuicide( pl )
 end
 
 function GM:GetGameDescription( )
-	return "CAT : " .. ( Schema and Schema.Name or "Unknown" )
+	return "CAT 1.0 : " .. ( Schema and Schema.Name or "Unknown" )
 end
 
 function GM:PlayerSpray( pl )

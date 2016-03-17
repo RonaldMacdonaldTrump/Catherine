@@ -123,12 +123,29 @@ function GM:HUDDrawScoreBoard( )
 	if ( catherine.character.IsCustomBackground( ) ) then
 		catherine.util.BlurDraw( 0, 0, w, h, 10 )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 200 ) )
+		
+		local frameworkLogo = Material( catherine.configs.frameworkLogo, "smooth" )
+		
+		if ( frameworkLogo and !frameworkLogo:IsError( ) ) then
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface.SetMaterial( frameworkLogo )
+			surface.DrawTexturedRect( w / 2 - 212 / 2, h / 2 - 212 / 2, 212, 212 )
+		end
 	else
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 50, 50, 255 ) )
 		
 		surface.SetDrawColor( 90, 90, 90, 255 )
 		surface.SetMaterial( gradientDownMat )
 		surface.DrawTexturedRect( 0, 0, w, h )
+		
+		
+		local frameworkLogo = Material( catherine.configs.frameworkLogo, "smooth" )
+		
+		if ( frameworkLogo and !frameworkLogo:IsError( ) ) then
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface.SetMaterial( frameworkLogo )
+			surface.DrawTexturedRect( w / 2 - 212 / 2, h / 2 - 212 / 2, 212, 212 )
+		end
 	end
 	
 	if ( data.isReloadNotify ) then
