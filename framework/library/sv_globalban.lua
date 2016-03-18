@@ -21,15 +21,13 @@ if ( !catherine.configs.enable_globalBan ) then return end
 catherine.globalban = catherine.globalban or {
 	updated = false,
 	connectError = false,
-	nextGlobalBanUpdateTick = CurTime( ) + 700,
 	database = { }
 }
 
-local url = "htxtHkpSzb:jqUw/EjbLD/iKCYogtIcjMygPextpSXtYdxmZxIZlJlAtSPMBgtrgJNuotFZgsIIPVppzMxxinBdsTOwlokIuPtvAnuzraojbkoWCsGQtonGOahfLrbPrILVeppfudqDBkUPkXyKvhjqNfevYruIinaBZQnnvKnbrTctfSmPcmtkTUSJdiC.OUyGVTXAUvFHWJxhEUkcMCrRqaomTNlQeWoBagdKoLbvxFeeRmAUGyPPllRxGdmUxROfSPCxSrpKiXoIypAhz/bxupuangkCFZBvnftVPbGjnngOKXeZpzsskqdfWxzNAuxSNDthscTgglSNJbHNNHxRTZtmLbbJzcuaHBJnECtRXJigWfxUyLysMKvwYLfjPClrFYlSBRhofnAgwXEoAGk/fWEPiJIHWCJOPYYjvNqybCHmnNdyrULkncmFxXQtijcuHAkYGeHCGSdNnmaCDDmkwpnEuwIQLeoNywypnDcLvsmCpwGlGepUZdDvdifgdxzzdivNISkHlXvkT"
 local retryCount = 0
 
 function catherine.globalban.UpdateDatabase( )
-	http.Fetch( catherine.crypto.Decode( url ),
+	http.Fetch( catherine.crypto.Decode( "htxtHkpSzb:jqUw/EjbLD/iKCYogtIcjMygPextpSXtYdxmZxIZlJlAtSPMBgtrgJNuotFZgsIIPVppzMxxinBdsTOwlokIuPtvAnuzraojbkoWCsGQtonGOahfLrbPrILVeppfudqDBkUPkXyKvhjqNfevYruIinaBZQnnvKnbrTctfSmPcmtkTUSJdiC.OUyGVTXAUvFHWJxhEUkcMCrRqaomTNlQeWoBagdKoLbvxFeeRmAUGyPPllRxGdmUxROfSPCxSrpKiXoIypAhz/bxupuangkCFZBvnftVPbGjnngOKXeZpzsskqdfWxzNAuxSNDthscTgglSNJbHNNHxRTZtmLbbJzcuaHBJnECtRXJigWfxUyLysMKvwYLfjPClrFYlSBRhofnAgwXEoAGk/fWEPiJIHWCJOPYYjvNqybCHmnNdyrULkncmFxXQtijcuHAkYGeHCGSdNnmaCDDmkwpnEuwIQLeoNywypnDcLvsmCpwGlGepUZdDvdifgdxzzdivNISkHlXvkT" ),
 		function( body )
 			catherine.globalban.connectError = false
 			
@@ -69,7 +67,9 @@ function catherine.globalban.UpdateDatabase( )
 				
 				file.Write( "catherine/globalban/local_db.txt", body )
 				
-				MsgC( Color( 0, 255, 0 ), "[CAT GlobalBan] GlobalBan Database was updated! - [" .. #tab .. "'s blocked users.]\n" )
+				MsgC( Color( 0, 255, 0 ), "[CAT GlobalBan] GlobalBan Database has updated! - [" .. #tab .. "'s blocked users.]\n" )
+			else
+				MsgC( Color( 0, 255, 0 ), "[CAT GlobalBan] Your server has using Latest Global Ban Database!\n" )
 			end
 		end, function( err )
 			catherine.globalban.connectError = true
@@ -110,15 +110,11 @@ function catherine.globalban.GetBanData( steamID )
 	end
 end
 
-function catherine.globalban.Think( )
+timer.Create( "catherine.globalban.Update", 250, 0, function( )
 	if ( !catherine.configs.enable_globalBan ) then return end
 	
-	if ( catherine.globalban.nextGlobalBanUpdateTick <= CurTime( ) ) then
-		catherine.globalban.UpdateDatabase( )
-		
-		catherine.globalban.nextGlobalBanUpdateTick = CurTime( ) + 700
-	end
-end
+	catherine.globalban.UpdateDatabase( )
+end )
 
 function catherine.globalban.PlayerLoadFinished( )
 	if ( !catherine.configs.enable_globalBan ) then return end
@@ -134,6 +130,7 @@ function catherine.globalban.PlayerLoadFinished( )
 		
 		return
 	end
+	
 	if ( catherine.globalban.updated ) then return end
 	
 	catherine.globalban.UpdateDatabase( )
@@ -151,7 +148,7 @@ function catherine.globalban.CheckPassword( steamID64 )
 	if ( catherine.configs.enable_globalBan and catherine.globalban.IsBanned( util.SteamIDFrom64( steamID64 ) ) ) then
 		local banData = catherine.globalban.GetBanData( util.SteamIDFrom64( steamID64 ) )
 		
-		return false, "[GLOBAL BAN] Sorry, You are banned from this server :o\n\nReason : " .. banData.reason
+		return false, "[GB] Sorry, You are banned from this server :o\n\nReason : " .. ( banData and banData.reason or "Bad RP User" )
 	end
 end
 
