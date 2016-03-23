@@ -948,6 +948,12 @@ function GM:CharacterMenuJoined( pl )
 	if ( IsValid( catherine.chat.backPanel ) ) then
 		catherine.chat.backPanel:SetVisible( false )
 	end
+	
+	timer.Simple( 0, function( )
+		if ( IsValid( catherine.vgui.character ) and !steamworks.IsSubscribed( "491904294" ) ) then
+			vgui.Create( "catherine.vgui.resource", catherine.vgui.character )
+		end
+	end )
 end
 
 function GM:CharacterMenuExited( pl )

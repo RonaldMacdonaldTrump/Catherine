@@ -387,6 +387,12 @@ LANGUAGE.data = {
 	// Plugin
 	[ "Plugin_Value_Author" ] = "개발 및 디자인 - '%s'",
 	
+	// Resource
+	[ "Resource_UI_Title" ] = "콘텐츠 파일 안내",
+	[ "Resource_UI_Subscribe" ] = "구독하기",
+	[ "Resource_UI_SubscribeNotify" ] = "구독 후 게임을 다시 시작해야 할 수 있습니다.",
+	[ "Resource_UI_Value" ] = "공식 캐서린 콘텐츠 파일이 구독되어 있지 않습니다, 잠재적인 오류 콘텐츠가 있을 수 있습니다, 지금 구독하세요!",
+	
 	// Storage
 	[ "Storage_UI_YourInv" ] = "당신의 인벤토리",
 	[ "Storage_UI_StorageCash" ] = "이 저장소는 %s 가 저장되어 있습니다.",

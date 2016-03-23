@@ -391,6 +391,12 @@ LANGUAGE.data = {
 	// Plugin
 	[ "Plugin_Value_Author" ] = "Development and design by '%s'",
 	
+	// Resource
+	[ "Resource_UI_Title" ] = "Notification for Content File",
+	[ "Resource_UI_Subscribe" ] = "Subscribe",
+	[ "Resource_UI_SubscribeNotify" ] = "If you are subscribe, will be game need to restart.",
+	[ "Resource_UI_Value" ] = "You are not subscribed Official Catherine Content Workshop file, this is will be error of game, Subscribe now!",
+	
 	// Storage
 	[ "Storage_UI_YourInv" ] = "Your Inventory",
 	[ "Storage_UI_StorageCash" ] = "This storage have a %s.",

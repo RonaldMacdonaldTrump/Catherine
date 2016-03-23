@@ -245,7 +245,7 @@ function PANEL:Init( )
 	end
 	
 	self:PlayMusic( )
-	 self:ShowHint( )
+	self:ShowHint( )
 end
 
 function PANEL:ShowHint( )
@@ -610,11 +610,8 @@ function PANEL:BackToMainMenu( )
 		end )
 	end
 	
-	if ( IsValid( self.UpdatePanel ) ) then
-		self.UpdatePanel:AlphaTo( 0, 0.2, 0, function( _, pnl )
-			pnl:Remove( )
-			pnl = nil
-		end )
+	if ( IsValid( catherine.vgui.resource ) ) then
+		catherine.vgui.resource:Show( )
 	end
 end
 
@@ -636,6 +633,10 @@ function PANEL:JoinMenu( func )
 			func( )
 		end
 	end )
+	
+	if ( IsValid( catherine.vgui.resource ) ) then
+		catherine.vgui.resource:Hide( )
+	end
 	
 	self.mode = 1
 end
@@ -663,6 +664,10 @@ function PANEL:Close( )
 			
 			music:SetVolume( vol )
 		end )
+	end
+	
+	if ( IsValid( catherine.vgui.resource ) ) then
+		catherine.vgui.resource:Close( )
 	end
 	
 	self:AlphaTo( 0, 0.3, 0, function( )
