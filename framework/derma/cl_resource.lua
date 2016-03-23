@@ -32,7 +32,7 @@ function PANEL:Init( )
 	self:SetDraggable( false )
 	self:MakePopup( )
 	self:SetDrawOnTop( true )
-	self:MoveTo( ScrW( ) - self.w - 20, self.y, 0.3, 0 )
+	self:MoveTo( ScrW( ) - self.w - 20, self.y, 0.2, 0 )
 	
 	self.subscribe = vgui.Create( "catherine.vgui.button", self )
 	self.subscribe:SetPos( self.w / 2 - ( self.w - 20 ) / 2, self.h - 50 )
@@ -84,7 +84,7 @@ function PANEL:Show( )
 	self.showing = true
 	
 	self:SetVisible( true )
-	self:MoveTo( ScrW( ) - self.w - 20, self.y, 0.3, 0 )
+	self:MoveTo( ScrW( ) - self.w - 20, self.y, 0.2, 0 )
 end
 
 function PANEL:Hide( )
@@ -92,7 +92,7 @@ function PANEL:Hide( )
 	
 	self.showing = false
 	
-	self:MoveTo( ScrW( ), self.y, 0.3, 0, nil, function( )
+	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
 		self:SetVisible( false )
 	end )
 end
@@ -102,7 +102,7 @@ function PANEL:Close( )
 	
 	self.closing = true
 	
-	self:MoveTo( ScrW( ), self.y, 0.3, 0, nil, function( )
+	self:MoveTo( ScrW( ), self.y, 0.2, 0, nil, function( )
 		self:Remove( )
 		self = nil
 	end )

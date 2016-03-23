@@ -35,9 +35,33 @@ catherine.language.Merge( "korean", {
 
 if ( SERVER ) then
 	local blockClasses = { "ooc", "looc" }
+	
+	--[[
+		누구나 욕을 많이 알고 있죠, 다만 쓰지 않을 뿐 입니다 ..
+		^__^
+	--]]
 	local profanityList = {
 		"병신",
-		"씨발"
+		"씨발",
+		"애미",
+		"애비",
+		"섹스",
+		"미친",
+		"시발",
+		"개새끼",
+		"새끼",
+		"좆",
+		"좃",
+		"걸레년",
+		"보지", // ^-^
+		"자지", // ^-^
+		"쎾쓰",
+		"섹쓰",
+		"Sex",
+		"Fuck",
+		"Suck",
+		"Motherfucker",
+		"Mother fucker"
 	}
 	
 	function PLUGIN:IsProfanity( text )
@@ -60,6 +84,4 @@ if ( SERVER ) then
 			return false
 		end
 	end
-else
-
 end

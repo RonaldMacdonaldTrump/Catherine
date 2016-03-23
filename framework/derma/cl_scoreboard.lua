@@ -44,17 +44,26 @@ function PANEL:Init( )
 end
 
 function PANEL:OnMenuRecovered( )
+	self.shouldOpen = hook.Run( "ShouldOpenScoreboard", self.player )
 	self:Refresh( )
 end
 
 function PANEL:MenuPaint( w, h )
-	draw.SimpleText( GetHostName( ) .. " | " .. #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_lightUI20", w - 10, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
+	draw.SimpleText( GetHostName( ) .. "      " .. #player.GetAll( ) .. " / " .. game.MaxPlayers( ), "catherine_lightUI20", w - 10, 13, Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, 1 )
 end
 
 function PANEL:Refresh( )
 	self.playerCount = #player.GetAllByLoaded( )
 	
 	self:SortPlayerLists( )
+end
+
+function PANEL:IsPlayerDataChanged( pl, name, desc, model )
+	if ( pl:Name( ) != name or pl:Desc( ) != desc or pl:GetModel( ) != model ) then
+		return true
+	end
+	
+	return false
 end
 
 function PANEL:SortPlayerLists( )
@@ -76,13 +85,13 @@ function PANEL:SortPlayerLists( )
 				players[ name ] = players[ name ] or { }
 				players[ name ][ #players[ name ] + 1 ] = v
 			else
-				local name = factionTable.name or "LOADING"
+				local name = factionTable and factionTable.name or "LOADING"
 				
 				players[ name ] = players[ name ] or { }
 				players[ name ][ #players[ name ] + 1 ] = v
 			end
 		else
-			local name = factionTable.name or "LOADING"
+			local name = factionTable and factionTable.name or "LOADING"
 			
 			players[ name ] = players[ name ] or { }
 			players[ name ][ #players[ name ] + 1 ] = v
@@ -113,13 +122,26 @@ function PANEL:RefreshPlayerLists( )
 		
 		for k1, v1 in SortedPairs( v ) do
 			local know = pl == v1 and true or pl:IsKnow( v1 )
+			local nextRefresh = CurTime( ) + k1
+			local name = v1:Name( )
+			local descOriginal = v1:Desc( )
+			local desc = catherine.util.GetWrapTextData( ( know and descOriginal or LANG( "Scoreboard_UI_UnknownDesc" ) ), form:GetWide( ) - 400, "catherine_normal15" )
 			
 			local panel = vgui.Create( "DPanel" )
-			panel:SetSize( form:GetWide( ), 50 )
+			panel:SetSize( form:GetWide( ), 30 + ( #desc * 20 ) )
 			panel.Paint = function( pnl, w, h )
 				if ( !IsValid( v1 ) ) then
 					self:Refresh( )
 					return
+				end
+				
+				if ( nextRefresh <= CurTime( ) ) then
+					if ( self:IsPlayerDataChanged( v1, name, descOriginal, v1:GetModel( ) ) ) then
+						self:Refresh( )
+						return
+					end
+					
+					nextRefresh = CurTime( ) + k1
 				end
 				
 				hook.Run( "ScoreboardPlayerListPanelPaint", pl, v1, w, h )
@@ -131,8 +153,19 @@ function PANEL:RefreshPlayerLists( )
 					surface.DrawOutlinedRect( 50, 5, 40, 40 )
 				end
 				
-				draw.SimpleText( v1:Name( ), "catherine_normal20", 100, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
-				draw.SimpleText( ( know and v1:Desc( ) or LANG( "Scoreboard_UI_UnknownDesc" ) ), "catherine_normal15", 100, 30, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				draw.SimpleText( name, "catherine_lightUI20", 100, 5, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				
+				if ( #desc == 1 ) then
+					draw.SimpleText( desc[ 1 ], "catherine_normal15", 100, 30, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+				else
+					local textY = 30
+					
+					for k, v in pairs( desc ) do
+						draw.SimpleText( v, "catherine_normal15", 100, textY, Color( 235, 235, 235, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+						
+						textY = textY + 20
+					end
+				end
 			end
 			
 			local avatar = vgui.Create( "AvatarImage", panel )

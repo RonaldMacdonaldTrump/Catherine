@@ -37,7 +37,7 @@ catherine.configs.baseInventoryWeight = 10
 catherine.configs.characterNameMinLen = 5
 catherine.configs.characterNameMaxLen = 35
 catherine.configs.characterDescMinLen = 32
-catherine.configs.characterDescMaxLen = 72
+catherine.configs.characterDescMaxLen = 1000
 catherine.configs.doorDescMaxLen = 30
 catherine.configs.Font = "Segoe UI" --[[ Setting a default UI font. ]]--
 catherine.configs.enableQuiz = true --[[ Enabled a Quiz system. ]]--
@@ -83,12 +83,12 @@ if ( SERVER ) then
 	catherine.configs.dataSaveInterval = 300
 	catherine.configs.voiceAllow = false --[[ Allow a Voice chat. ]]--
 	catherine.configs.voice3D = true --[[ Enabled the Voice 3D system. ]]--
-	catherine.configs.spawnTime = 60 --[[ Setting a Spawn time. ]]--
+	catherine.configs.spawnTime = 120 --[[ Setting a Spawn time. ]]--
 	catherine.configs.clearMap = true --[[ Enabled a Map Clear system. (Remove a map HL2 HP, Armor station and Vehicles(Chair) ) ]]--
 	catherine.configs.doorBreach = true --[[ Enabled a Door Breach system. (Shoot the door handle to open) ]]--
 	
 	catherine.configs.enable_oocDelay = true --[[ Enabled a OOC delay. ]]--
-	catherine.configs.enable_loocDelay = false --[[ Enabled a LOOC delay. ]]--
+	catherine.configs.enable_loocDelay = true --[[ Enabled a LOOC delay. ]]--
 	catherine.configs.charMakeRandomAttributeBlacklist = { }
 	catherine.configs.charMakeRandomAttributeMinPoint = 3
 	catherine.configs.charMakeRandomAttributeMaxPoint = 18
@@ -110,8 +110,8 @@ if ( SERVER ) then
 			return true
 		end
 	end
-	catherine.configs.oocDelay = 60 --[[ Setting a OOC delay. ]]--
-	catherine.configs.loocDelay = 2 --[[ Setting a LOOC delay. ]]--
+	catherine.configs.oocDelay = 180 --[[ Setting a OOC delay. ]]--
+	catherine.configs.loocDelay = 5 --[[ Setting a LOOC delay. ]]--
 	
 	catherine.configs.limbDamageAutoHeal = 5
 	catherine.configs.limbHealAmount = {
